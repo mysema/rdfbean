@@ -1,0 +1,15 @@
+com.mysema.rdfbean
+com.mysema.rdfbean.annotations
+com.mysema.rdfbean.model
+com.mysema.rdfbean.object
+com.mysema.rdfbean.object.identity
+com.mysema.rdfbean.owl
+com.mysema.rdfbean.query
+com.mysema.rdfbean.rdfs
+com.mysema.rdfbean.schema
+com.mysema.rdfbean.sesame
+com.mysema.rdfbean.sesame.query
+com.mysema.rdfbean.sesame.query.serializer
+com.mysema.rdfbean.spring
+com.mysema.rdfbean.xsd
+com.mysema.util
