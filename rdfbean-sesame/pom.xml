@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mysema.rdf</groupId>
+  <artifactId>rdfbean-sesame</artifactId>
+  <packaging>jar</packaging>
+  <name>RDFBean - Sesame</name>
+  
+  <parent>
+  <groupId>com.mysema.rdf</groupId>
+    <artifactId>rdfbean-root</artifactId>
+    <version>0.6.0</version>
+  </parent>  
+  
+  <dependencies>
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-owl</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>   
+    
+    <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-repository-sail</artifactId>
+      <version>2.2.4</version>
+    </dependency>                
+    <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-sail-memory</artifactId>
+      <version>2.2.4</version>
+    </dependency>      
+    <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-rio-turtle</artifactId>
+      <version>2.2.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-rio-rdfxml</artifactId>
+      <version>3.0-alpha1</version>
+    </dependency>    
+    
+    <!-- test deps -->
+   <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-core</artifactId>
+      <version>${project.parent.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>    
+       
+  </dependencies>
+
+<!-- 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.myfaces.tobago</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <version>1.0.20</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <force>true</force>
+              <fork>false</fork>
+              <factory>com.mysema.query.apt.APTFactory</factory>
+              <generated>target/generated-sources/java</generated>
+              <nocompile>true</nocompile>
+              <A>
+                -AdestPackage=com.mysema.rdf.model,
+                -AnamePrefix=Q,
+                -Aprofile=querydsl
+              </A>
+              <includes>
+                <include>com/mysema/rdf/model/*.java</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+-->  
+</project>

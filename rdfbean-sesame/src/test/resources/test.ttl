@@ -1,0 +1,81 @@
+@prefix : <http://semantics.mysema.com/test#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl2xml: <http://www.w3.org/2006/12/owl2-xml#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# Classes
+
+:TestType1 rdf:type owl:Class  .
+:TestType2 rdf:type owl:Class  .
+
+# Properties
+
+:directProperty1 rdf:type owl:DatatypeProperty, owl:FunctionalProperty ;
+             rdfs:domain :TestType1 ;
+             rdfs:range xsd:string .
+             
+:directProperty2 rdf:type owl:DatatypeProperty, owl:FunctionalProperty ;
+             rdfs:domain :TestType2 ;
+             rdfs:range xsd:string .             
+
+# Instances
+
+:instance1 rdf:type :TestType1 ;
+    :directProperty1 "metaonto_elements" ;
+    :localizedProperty "fi"@fi , "en"@en ;
+    :numericProperty "10"^^xsd:int ;
+    :listProperty (
+        [
+            rdf:type :TestType2 ;
+            :testType :instance1 ;
+            :directProperty2 "target_idspace"^^xsd:string ;
+        ]
+        [
+            rdf:type :TestType2 ;
+            :testType :instance1 ;
+            :directProperty2 "nsprefix"^^xsd:string ;
+        ]
+    ) ;
+    :setProperty [
+        rdf:type :TestType2 ;
+        :testType :instance1 ;
+        :directProperty2 "target_idspace"^^xsd:string ;
+      ] ,  [
+        rdf:type :TestType2 ;
+        :testType :instance1 ;
+        :directProperty2 "target_idspace"^^xsd:string ;
+      ] .
+
+## create table propertymap  
+:instance2 rdf:type :TestType1 ;
+    :directProperty1 "propertymap"^^xsd:string ;
+    :localizedProperty "en"@fi , "fi"@en ;
+    :numericProperty "20"^^xsd:int ;
+    :listProperty (
+        [
+            rdf:type :TestType2 ;
+            :testType :instance2 ;
+            :directProperty2 "idspace"^^xsd:string ;
+        ]  
+        [
+            rdf:type :TestType2 ;
+            :testType :instance2 ;
+            :directProperty2 "predicate"^^xsd:string ; 
+        ]
+        [
+            rdf:type :TestType2 ;
+            :testType :instance2 ;
+            :directProperty2 "tableid"^^xsd:string ; 
+        ] 
+    ) ;
+    :setProperty [
+        rdf:type :TestType2 ;
+        :testType :instance1 ;
+        :directProperty2 "target_idspace"^^xsd:string ;
+      ] ,  [
+        rdf:type :TestType2 ;
+        :testType :instance1 ;
+        :directProperty2 "target_idspace"^^xsd:string ;
+      ] .
