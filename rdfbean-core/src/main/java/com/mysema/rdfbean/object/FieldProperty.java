@@ -6,7 +6,6 @@
 package com.mysema.rdfbean.object;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 import org.springframework.beans.BeanWrapper;

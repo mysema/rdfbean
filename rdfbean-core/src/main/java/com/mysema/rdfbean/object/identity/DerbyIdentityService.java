@@ -13,8 +13,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -49,8 +47,7 @@ public class DerbyIdentityService extends JDBCIdentityService {
     protected Connection getConnection() {
         try {
             Connection conn = DriverManager.getConnection(connectionUrl, username, password);
-            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            conn.setAutoCommit(false);
+            conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);            
             return conn;
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -62,6 +59,7 @@ public class DerbyIdentityService extends JDBCIdentityService {
         Connection connection = getConnection();        
         Statement stmt = null;
         try{
+            connection.setAutoCommit(false);
             CallableStatement cs = null;
             try{
                 cs = connection.prepareCall(checkCall);
@@ -72,7 +70,7 @@ public class DerbyIdentityService extends JDBCIdentityService {
                 JDBCUtil.safeClose(cs);
             }
             
-            stmt = connection.createStatement();
+            stmt = connection.createStatement();            
             List<String> lines = IOUtils.readLines(getClass().getResourceAsStream("derby.sql"));
             lines.add("");
             StringBuffer buffer = new StringBuffer();
@@ -95,10 +93,10 @@ public class DerbyIdentityService extends JDBCIdentityService {
     }
     
     public void reset() throws IOException{
-        Connection connection = getConnection();
-        Statement stmt = null;
-        
+        Connection connection = getConnection();        
+        Statement stmt = null;        
         try{
+            connection.setAutoCommit(false);
             stmt = connection.createStatement();
             stmt.execute("DROP TABLE ids");
             stmt.execute("DROP PROCEDURE getid");
@@ -111,5 +109,6 @@ public class DerbyIdentityService extends JDBCIdentityService {
             JDBCUtil.safeClose(null, stmt, connection);
         }
     }
+
 
 }

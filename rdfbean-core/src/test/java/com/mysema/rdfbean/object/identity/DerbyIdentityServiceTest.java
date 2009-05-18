@@ -87,6 +87,29 @@ public class DerbyIdentityServiceTest {
         assertFalse(lid.equals(identityService.getLID(otherContext, id)));
     }
     
+//    @Test
+//    public void commit() throws IOException{
+//        identityService.beginTransaction();
+//        BID context = new BID("_:node1445r1ioqx128");
+//        BID otherContext = new BID("_:node1445r1ioqx120");
+//        BID id = new BID("_:node1445r1ioqx129");        
+//        LID lid = identityService.getLID(context, id);
+//        identityService.commit();
+//        assertEquals(id, identityService.getID(lid));
+//        assertEquals(id, identityService.getID(lid));        
+//        assertFalse(lid.equals(identityService.getLID(otherContext, id)));        
+//    }
+//    
+//    @Test
+//    public void rollback() throws IOException{
+//        identityService.beginTransaction();
+//        BID context = new BID("_:node1445r1ioqx128");
+//        BID id = new BID("_:node1445r1ioqx129");        
+//        LID lid = identityService.getLID(context, id);
+//        identityService.rollback();
+//        assertNull(identityService.getID(lid));        
+//    }
+        
     @Test
     public void testGetLID(){
         assertTrue(identityService.getID(new LID("123")) == null);

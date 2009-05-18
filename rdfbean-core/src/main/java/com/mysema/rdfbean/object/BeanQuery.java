@@ -8,6 +8,7 @@ package com.mysema.rdfbean.object;
 import java.io.Closeable;
 
 import com.mysema.query.Projectable;
+import com.mysema.query.QueryModifiers;
 import com.mysema.query.grammar.OrderSpecifier;
 import com.mysema.query.grammar.types.Expr;
 
@@ -25,7 +26,6 @@ public interface BeanQuery extends Projectable, Closeable{
     
     BeanQuery where(Expr.EBoolean... o);
     
-//    BeanQuery restrict(QueryModifiers mod);
+    BeanQuery restrict(QueryModifiers mod);
 
-//    <RT> SearchResults<RT> listResults(Expr<RT> expr);
 }

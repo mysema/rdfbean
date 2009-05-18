@@ -8,6 +8,7 @@ package com.mysema.rdfbean.object;
 import java.io.Closeable;
 import java.util.Iterator;
 
+import com.mysema.query.QueryModifiers;
 import com.mysema.query.collections.IteratorSource;
 import com.mysema.query.collections.support.CustomQueryable;
 import com.mysema.query.grammar.types.Expr;
@@ -44,6 +45,12 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
     @Override
     public void close(){
 //        session.close();
+    }
+
+    @Override
+    public BeanQuery restrict(QueryModifiers mod) {
+        getInnerQuery().getMetadata().setModifiers(mod);
+        return this;
     }
     
 }

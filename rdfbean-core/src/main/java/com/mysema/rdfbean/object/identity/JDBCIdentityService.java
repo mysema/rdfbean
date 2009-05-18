@@ -30,7 +30,7 @@ import com.mysema.util.JDBCUtil;
  */
 public abstract class JDBCIdentityService implements IdentityService{
     
-    private String createLIDStatement = "{ call createlid(?,?,?) }";  
+    private String createLIDStatement = "{ call createlid(?,?,?) }";
     
     private String getIDStatement = "{ call getid(?) }";
     
@@ -48,9 +48,9 @@ public abstract class JDBCIdentityService implements IdentityService{
         this.getLIDStatement = Assert.hasText(getlid);
         this.createLIDStatement = Assert.hasText(createlid);
     }
-    
+ 
     protected abstract Connection getConnection();
-
+    
     @Override
     public ID getID(LID lid) {
         if (idMap.containsKey(lid)){
@@ -68,10 +68,8 @@ public abstract class JDBCIdentityService implements IdentityService{
                     boolean is_uid = rs.getShort(2) == 1;                    
                     ID rv = is_uid ? new UID(id) : new BID(id);
                     idMap.put(lid, rv);
-                    conn.commit();
                     return rv;
                 }else{
-                    conn.rollback();
                     return null;
                 }                        
             } catch (SQLException e) {
@@ -81,6 +79,7 @@ public abstract class JDBCIdentityService implements IdentityService{
             }    
         }                    
     }
+    
     
     @Override
     public LID getLID(ID model, ID id) {
@@ -102,7 +101,6 @@ public abstract class JDBCIdentityService implements IdentityService{
                     long lid = rs.getLong(1);
                     LID rv = new LID(lid);
                     lidMap.put(key, rv);        
-                    conn.commit();
                     return rv;
                 }else{
                     JDBCUtil.safeClose(rs, stmt, null);
@@ -112,17 +110,15 @@ public abstract class JDBCIdentityService implements IdentityService{
                         long lid = rs.getLong(1);
                         LID rv = new LID(lid);
                         lidMap.put(key, rv);
-                        conn.commit();
                         return rv;
                     }else{        
-                        conn.rollback();
                         throw new IllegalArgumentException("No LID for " + id + " (" + model + ")");
                     }
                 }            
             } catch (SQLException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }finally{
-                JDBCUtil.safeClose(rs, stmt, conn);
+                JDBCUtil.safeClose(rs, stmt, conn);                    
             }     
         }        
     }
@@ -131,7 +127,8 @@ public abstract class JDBCIdentityService implements IdentityService{
     public LID getLID(UID id) {        
         return getLID(null, id);
     }
-    
+
+
     private CallableStatement prepareForGetCreateLID(String call, ID model, ID id, Connection conn) throws SQLException {
         CallableStatement stmt;
         stmt = conn.prepareCall(call);
@@ -144,7 +141,5 @@ public abstract class JDBCIdentityService implements IdentityService{
         stmt.setShort(3, (short)(id instanceof UID ? 1 : 0));
         return stmt;
     }
-    
-    
     
 }

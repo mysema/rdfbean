@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import com.mysema.query.ProjectableAdapter;
 import com.mysema.query.QueryBaseWithProjection;
+import com.mysema.query.QueryModifiers;
 import com.mysema.query.grammar.OrderSpecifier;
 import com.mysema.query.grammar.types.Expr;
 import com.mysema.query.grammar.types.Expr.EBoolean;
@@ -53,6 +54,12 @@ public class BeanQueryAdapter extends ProjectableAdapter implements BeanQuery{
     @Override
     public void close() throws IOException {
         closeable.close();
+    }
+
+    @Override
+    public BeanQuery restrict(QueryModifiers mod) {
+        query.getMetadata().setModifiers(mod);
+        return this;
     }
 
 }

@@ -33,7 +33,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
     private static final long serialVersionUID = -4060513400839374983L;
 
     private final SimpleSessionContext sessionContext;
-    
+        
     private boolean clearSessionOnRB = false;
 
     private boolean skipFlushForRoTx = false;
@@ -71,7 +71,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
      */
     @Override
     protected Object doGetTransaction() {
-        Session session = sessionContext.getOrCreateSession();        
+        Session session = sessionContext.getOrCreateSession();               
         return new TransactionObject(session);
     }
 
@@ -95,12 +95,13 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
     @Override
     protected void doBegin(Object transaction, TransactionDefinition definition)
             throws TransactionException {
-        try {
+        try {            
+            // session
             Session s = ((TransactionObject) transaction).getSession();
             s.beginTransaction(
                     definition.isReadOnly(), 
                     determineTimeout(definition),
-                    definition.getIsolationLevel());     
+                    definition.getIsolationLevel());
         } catch (RuntimeException oe) {
             throw new TransactionSystemException("error beginning transaction", oe);
         }
@@ -118,13 +119,13 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
      */
     @Override
     protected void doCommit(DefaultTransactionStatus status)
-            throws TransactionException {
+            throws TransactionException {        
         TransactionObject txObj = (TransactionObject) status.getTransaction();
         RDFBeanTransaction tx = txObj.getTransaction();
         if (tx == null){
             throw new TransactionUsageException("no transaction active");
         }
-        try {
+        try {            
             tx.commit();
         } catch (RuntimeException oe) {
             throw new TransactionSystemException("error committing transaction", oe);
@@ -150,11 +151,10 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
         if (tx == null){
             throw new TransactionUsageException("no transaction active");
         }
-        try {
+        try {            
             tx.rollback();
         } catch (RuntimeException oe) {
-            throw new TransactionSystemException(
-                    "error rolling back transaction", oe);
+            throw new TransactionSystemException("error rolling back transaction", oe);
         } finally {
             sessionContext.releaseSession();
             if (clearSessionOnRB) {
