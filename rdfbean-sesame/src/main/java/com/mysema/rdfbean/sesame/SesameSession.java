@@ -13,8 +13,8 @@ import java.util.Locale;
 
 import org.openrdf.model.*;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
+import org.openrdf.result.ModelResult;
+import org.openrdf.store.StoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +89,7 @@ public class SesameSession extends AbstractSession<Value, Resource, BNode, URI, 
                 } else {
                     connection.add(statement, context);
                 }
-            } catch (RepositoryException e) {
+            } catch (StoreException e) {
                 throw new RuntimeException(e);
             }    
         }        
@@ -139,23 +139,23 @@ public class SesameSession extends AbstractSession<Value, Resource, BNode, URI, 
 
     @Override
     protected List<Statement> findStatements(Resource subject, URI predicate, Value object, boolean includeInferred, URI context) {
-        RepositoryResult<Statement> statements = null;
+        ModelResult statements = null;
         try {
             if (context == null) {
-                statements = connection.getStatements(subject, predicate, object, includeInferred);
+                statements = connection.match(subject, predicate, object, includeInferred);
             } else if (includeInferred) {
-                statements = connection.getStatements(subject, predicate, object, includeInferred, context, null);
+                statements = connection.match(subject, predicate, object, includeInferred, context, null);
             } else {
-                statements = connection.getStatements(subject, predicate, object, includeInferred, context);
+                statements = connection.match(subject, predicate, object, includeInferred, context);
             }
             return statements.asList();
-        } catch (RepositoryException e) {
+        } catch (StoreException e) {
             throw new RuntimeException(e);
         } finally {
             if (statements != null) {
                 try {
                     statements.close();
-                } catch (RepositoryException e1) {
+                } catch (StoreException e1) {
                     throw new RuntimeException(e1);
                 }
             }
@@ -195,7 +195,7 @@ public class SesameSession extends AbstractSession<Value, Resource, BNode, URI, 
                 } else {
                     connection.remove(statement);
                 }
-            } catch (RepositoryException e) {
+            } catch (StoreException e) {
                 throw new RuntimeException(e);
             }    
         }

@@ -13,13 +13,11 @@ import java.util.*;
 
 import org.openrdf.model.*;
 import org.openrdf.query.BindingSet;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.algebra.*;
-import org.openrdf.query.parser.ParsedTupleQuery;
-import org.openrdf.repository.RepositoryException;
+import org.openrdf.query.parser.TupleQueryModel;
+import org.openrdf.result.TupleResult;
+import org.openrdf.store.StoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.SimpleTypeConverter;
@@ -86,7 +84,7 @@ public class SesameQuery extends
     
     private List<OrderElem> orderElements = new ArrayList<OrderElem>(); 
 
-    private TupleQueryResult queryResult;
+    private TupleResult queryResult;
 
     private final Map<UID, Var> resToVar = new HashMap<UID, Var>();
     
@@ -161,7 +159,7 @@ public class SesameQuery extends
         if (queryResult != null){
             try {
                 queryResult.close();
-            } catch (QueryEvaluationException e) {
+            } catch (StoreException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
         }
@@ -213,11 +211,11 @@ public class SesameQuery extends
         
         // evaluate it
         try {
-            ParsedTupleQuery query;
+            TupleQueryModel query;
             if (getMetadata().isDistinct()){
-                query = new ParsedTupleQuery(new Distinct(tupleExpr));
+                query = new TupleQueryModel(new Distinct(tupleExpr));
             }else{
-                query = new ParsedTupleQuery(tupleExpr);
+                query = new TupleQueryModel(tupleExpr);
             }
             
             logQuery(query);
@@ -232,7 +230,7 @@ public class SesameQuery extends
                 public boolean hasNext() {
                     try {                        
                         return queryResult.hasNext();
-                    } catch (QueryEvaluationException e) {
+                    } catch (StoreException e) {
                         throw new RuntimeException(e.getMessage(), e);
                     }
                 }
@@ -245,7 +243,7 @@ public class SesameQuery extends
                             values[i] = bindingSet.getValue(bindingNames.get(i));
                         }
                         return values;
-                    } catch (QueryEvaluationException e) {
+                    } catch (StoreException e) {
                         throw new RuntimeException(e.getMessage(), e);
                     }
                 }
@@ -253,16 +251,12 @@ public class SesameQuery extends
                     // do nothing
                 }                
             };
-        } catch (RepositoryException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        } catch (MalformedQueryException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        } catch (QueryEvaluationException e) {
+        } catch (StoreException e) {
             throw new RuntimeException(e.getMessage(), e);
         }        
     }
 
-    protected void logQuery(ParsedTupleQuery query) {
+    protected void logQuery(TupleQueryModel query) {
         if (queryTreeLogger.isDebugEnabled()){
             queryTreeLogger.debug(query.toString());                    
         }                        

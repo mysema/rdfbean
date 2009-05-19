@@ -10,7 +10,7 @@
   <parent>
   <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
-    <version>0.6.1-SNAPSHOT</version>
+    <version>0.6.2-SNAPSHOT</version>
   </parent>  
   
   <dependencies>
@@ -28,22 +28,22 @@
     <dependency>
       <groupId>org.openrdf.sesame</groupId>
       <artifactId>sesame-repository-sail</artifactId>
-      <version>2.2.4</version>
+      <version>${sesame.version}</version>
     </dependency>                
     <dependency>
       <groupId>org.openrdf.sesame</groupId>
       <artifactId>sesame-sail-memory</artifactId>
-      <version>2.2.4</version>
+      <version>${sesame.version}</version>
     </dependency>      
     <dependency>
       <groupId>org.openrdf.sesame</groupId>
       <artifactId>sesame-rio-turtle</artifactId>
-      <version>2.2.4</version>
+      <version>${sesame.version}</version>
     </dependency>
     <dependency>
       <groupId>org.openrdf.sesame</groupId>
       <artifactId>sesame-rio-rdfxml</artifactId>
-      <version>3.0-alpha1</version>
+      <version>${sesame.version}</version>
     </dependency>    
     
     <!-- test deps -->
@@ -57,38 +57,4 @@
        
   </dependencies>
 
-<!-- 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.myfaces.tobago</groupId>
-        <artifactId>maven-apt-plugin</artifactId>
-        <version>1.0.20</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>execute</goal>
-            </goals>
-            <configuration>
-              <force>true</force>
-              <fork>false</fork>
-              <factory>com.mysema.query.apt.APTFactory</factory>
-              <generated>target/generated-sources/java</generated>
-              <nocompile>true</nocompile>
-              <A>
-                -AdestPackage=com.mysema.rdf.model,
-                -AnamePrefix=Q,
-                -Aprofile=querydsl
-              </A>
-              <includes>
-                <include>com/mysema/rdf/model/*.java</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
--->  
 </project>

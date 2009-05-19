@@ -14,8 +14,8 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.parser.ParsedTupleQuery;
-import org.openrdf.repository.RepositoryException;
+import org.openrdf.query.parser.TupleQueryModel;
+import org.openrdf.store.StoreException;
 
 import com.mysema.query.grammar.types.Expr;
 import com.mysema.query.grammar.types.PathMetadata;
@@ -162,7 +162,7 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
     protected TestType instance;
     
     @Before
-    public void setUp() throws RepositoryException{
+    public void setUp() throws StoreException{
         session = createSession(FI, TestType.class, TestType2.class);
     }
     
@@ -175,7 +175,7 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
         SesameQuery query = new SesameQuery(session, 
                 StatementPattern.Scope.NAMED_CONTEXTS){
             @Override
-            protected void logQuery(ParsedTupleQuery query) {
+            protected void logQuery(TupleQueryModel query) {
                 System.out.println(new QuerySerializer(query,true).toString());
             }
         };

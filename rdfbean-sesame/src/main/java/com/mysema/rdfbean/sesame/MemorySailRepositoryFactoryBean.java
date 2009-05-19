@@ -15,11 +15,11 @@ import org.apache.commons.lang.StringUtils;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
+import org.openrdf.store.StoreException;
 import org.springframework.beans.factory.FactoryBean;
 
 /**
@@ -56,7 +56,7 @@ public class MemorySailRepositoryFactoryBean implements FactoryBean {
 		return repository;
 	}
 	
-	private void initialize(Repository repository) throws RepositoryException, RDFParseException, IOException {
+	private void initialize(Repository repository) throws StoreException, RDFParseException, IOException {
         repository.initialize();
         RepositoryConnection connection = repository.getConnection();
         try {

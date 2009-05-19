@@ -12,8 +12,8 @@ import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
@@ -38,7 +38,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     private SesameSessionFactory sessionFactory;
     
     @Before
-    public void setUp() throws RepositoryException, RDFParseException, IOException{
+    public void setUp() throws StoreException, RDFParseException, IOException{
         sessionFactory = new SesameSessionFactory();
         sessionFactory.setDefaultConfiguration(new DefaultConfiguration(OWL.class.getPackage()));
         sessionFactory.setIdentityService(MemoryIdentityService.instance());
@@ -46,7 +46,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     }
     
     @Test
-    public void commit() throws RepositoryException, ClassNotFoundException{
+    public void commit() throws StoreException, ClassNotFoundException{
         Session session = createSession(FI, OWL.class.getPackage());
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
@@ -59,7 +59,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     }
         
     @Test
-    public void rollback() throws RepositoryException, ClassNotFoundException{
+    public void rollback() throws StoreException, ClassNotFoundException{
         Session session = createSession(FI, OWL.class.getPackage());
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();

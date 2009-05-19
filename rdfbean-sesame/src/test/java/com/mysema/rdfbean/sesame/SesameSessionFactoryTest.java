@@ -11,12 +11,12 @@ import org.junit.Test;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
+import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.object.DefaultConfiguration;
@@ -31,7 +31,7 @@ import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 public class SesameSessionFactoryTest {
     
     @Test
-    public void test() throws RepositoryException, RDFParseException, IOException{
+    public void test() throws StoreException, RDFParseException, IOException{
         MemoryStore store = new MemoryStore();
         Repository repository = new SailRepository(new ForwardChainingRDFSInferencer(store));            
         repository.initialize();

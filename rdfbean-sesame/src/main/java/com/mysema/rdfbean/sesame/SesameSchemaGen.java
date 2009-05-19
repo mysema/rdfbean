@@ -13,7 +13,6 @@ import java.util.Set;
 
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
@@ -22,6 +21,7 @@ import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
+import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
@@ -48,23 +48,23 @@ public class SesameSchemaGen extends SchemaGen {
 		this.identityService = identityService;
 	}
 
-    public void generateTurtle(Configuration configuration, OutputStream out) throws RepositoryException, RDFHandlerException {
+    public void generateTurtle(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException {
         generateSchema(configuration, new TurtleWriter(out));
     }
 
-    public void generateTurtle(Configuration configuration, Writer out) throws RepositoryException, RDFHandlerException {
+    public void generateTurtle(Configuration configuration, Writer out) throws StoreException, RDFHandlerException {
         generateSchema(configuration, new TurtleWriter(out));
     }
 
-    public void generateRDFXML(Configuration configuration, OutputStream out) throws RepositoryException, RDFHandlerException {
+    public void generateRDFXML(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException {
         generateSchema(configuration, new RDFXMLPrettyWriter(out));
     }
 
-    public void generateRDFXML(Configuration configuration, Writer out) throws RepositoryException, RDFHandlerException {
+    public void generateRDFXML(Configuration configuration, Writer out) throws StoreException, RDFHandlerException {
         generateSchema(configuration, new RDFXMLPrettyWriter(out));
     }
 	
-	public void generateSchema(Configuration configuration, RDFHandler handler) throws RepositoryException, RDFHandlerException {
+	public void generateSchema(Configuration configuration, RDFHandler handler) throws StoreException, RDFHandlerException {
 		for (Map.Entry<String, String> entry : namespaces.entrySet()) {
 			handler.handleNamespace(entry.getKey(), entry.getValue());
 		}

@@ -8,9 +8,9 @@ package com.mysema.rdfbean.sesame;
 import java.io.IOException;
 
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.store.StoreException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 
@@ -62,7 +62,7 @@ public class RDFSource {
 		this.resource = Assert.notNull(resource);
 	}
 	
-	public void readInto(RepositoryConnection conn) throws RDFParseException, RepositoryException, IOException {
+	public void readInto(RepositoryConnection conn) throws RDFParseException, StoreException, IOException {
         if (format == null) {
             format = RDFFormat.forFileName(resource.getFilename());
         }

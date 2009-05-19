@@ -9,6 +9,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.mysema.query.grammar.types.Path.PString;
+
 
 /**
  * StringHandlingTest provides
@@ -17,24 +19,28 @@ import org.junit.Test;
  * @version $Id$
  */
 public class StringHandlingTest extends AbstractSesameQueryTest{
+    
+    private PString stringPath = var.listProperty(1).directProperty;
 
     @Test
     public void startsWith(){
-        assertEquals(1, where(var.listProperty(1).directProperty.startsWith("ns")).list(var).size());     
+        assertEquals(1, where(stringPath.startsWith("ns")).list(var).size());     
     }
     
     @Test
     public void startsWithIgnoreCase(){
-        assertEquals(1, where(var.listProperty(1).directProperty.startsWith("NS",false)).list(var).size());   
+        assertEquals(1, where(stringPath.startsWith("NS",false)).list(var).size());   
     }
     
     @Test
     public void endsWith(){
-        assertEquals(1, where(var.listProperty(1).directProperty.endsWith("ix")).list(var).size());     
+        assertEquals(1, where(stringPath.endsWith("ix")).list(var).size());     
     }
     
     @Test
     public void endsWithIgnoreCase(){
-        assertEquals(1, where(var.listProperty(1).directProperty.endsWith("IX",false)).list(var).size());   
+        assertEquals(1, where(stringPath.endsWith("IX",false)).list(var).size());   
     }
+    
+    
 }

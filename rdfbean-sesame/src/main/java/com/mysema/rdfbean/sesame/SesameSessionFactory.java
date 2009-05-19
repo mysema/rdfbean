@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.openrdf.repository.Repository;
-import org.openrdf.repository.RepositoryException;
+import org.openrdf.store.StoreException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -52,7 +52,7 @@ public class SesameSessionFactory extends AbstractSessionFactory {
 	            }
             }
             return session;
-        } catch (RepositoryException e) {
+        } catch (StoreException e) {
         	throw new RuntimeException(e);
 		}
 	}

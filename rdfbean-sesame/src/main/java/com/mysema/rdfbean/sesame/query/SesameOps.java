@@ -111,37 +111,48 @@ class SesameOps {
         byOp.put(LIKE, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
-                return new Like(args.get(0), ((Var)args.get(1)).getValue().stringValue(),false);
+                ValueExpr first = new Str(args.get(0));
+                return new Regex(first, 
+                        ((Var)args.get(1)).getValue().stringValue(),false);
             }            
         });
         byOp.put(STARTSWITH, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
-                return new Like(args.get(0), ((Var)args.get(1)).getValue().stringValue()+"*",true);
+                ValueExpr first = new Str(args.get(0));
+                return new Regex(first, 
+                        ((Var)args.get(1)).getValue().stringValue()+"*",true);
             }            
         });
         byOp.put(ENDSWITH, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
-                return new Like(args.get(0), "*"+((Var)args.get(1)).getValue().stringValue(),true);
+                ValueExpr first = new Str(args.get(0));
+                return new Regex(first,
+                        "*"+((Var)args.get(1)).getValue().stringValue(),true);
             }            
         });
         byOp.put(STARTSWITH_IC, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
-                return new Like(args.get(0), ((Var)args.get(1)).getValue().stringValue()+"*",false);
+                ValueExpr first = new Str(args.get(0));
+                return new Regex(first, 
+                        ((Var)args.get(1)).getValue().stringValue()+"*",false);
             }            
         });
         byOp.put(ENDSWITH_IC, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
-                return new Like(args.get(0), "*"+((Var)args.get(1)).getValue().stringValue(),false);
+                ValueExpr first = new Str(args.get(0));
+                return new Regex(first, 
+                        "*"+((Var)args.get(1)).getValue().stringValue(),false);
             }            
         });
         byOp.put(MATCHES, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
-                return new Regex(args.get(0), args.get(1), null);
+                ValueExpr first = new Str(args.get(0));
+                return new Regex(first, args.get(1), null);
             }            
         }); 
         

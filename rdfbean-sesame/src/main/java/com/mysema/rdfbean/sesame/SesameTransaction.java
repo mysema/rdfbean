@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.sesame;
 
-import org.openrdf.repository.RepositoryException;
+import org.openrdf.store.StoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class SesameTransaction implements RDFBeanTransaction{
         }        
         try {
             session.getConnection().commit();
-        } catch (RepositoryException e) {
+        } catch (StoreException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
             throw new RuntimeException(error, e);
@@ -58,7 +58,7 @@ public class SesameTransaction implements RDFBeanTransaction{
     public void rollback() {
        try {
            session.getConnection().rollback();           
-       } catch (RepositoryException e) {
+       } catch (StoreException e) {
            String error = "Caught " + e.getClass().getName();
            logger.error(error, e);
            throw new RuntimeException(error, e);
@@ -75,8 +75,10 @@ public class SesameTransaction implements RDFBeanTransaction{
 
     public void begin() {
         try {
-            session.getConnection().setAutoCommit(false);
-        } catch (RepositoryException e) {
+//            session.getConnection().setAutoCommit(false);
+//            session.getConnection().setTransactionIsolation(isolation);
+            session.getConnection().begin();            
+        } catch (StoreException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
             throw new RuntimeException(error, e);

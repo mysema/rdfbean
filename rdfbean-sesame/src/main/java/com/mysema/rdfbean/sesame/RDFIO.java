@@ -13,7 +13,6 @@ import java.io.OutputStream;
 
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -21,6 +20,7 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.sail.memory.MemoryStore;
+import org.openrdf.store.StoreException;
 
 import com.mysema.commons.lang.Assert;
 
@@ -48,12 +48,12 @@ public class RDFIO {
         this.targetFormat = targetFormat;
     }
     
-    public void export(RepositoryConnection conn, RDFFormat format, OutputStream out) throws RepositoryException, RDFHandlerException {
+    public void export(RepositoryConnection conn, RDFFormat format, OutputStream out) throws StoreException, RDFHandlerException {
         RDFWriter writer = Rio.createWriter(targetFormat, out);
         conn.export(writer);
     }
 
-    public boolean run() throws RepositoryException, RDFParseException, IOException, RDFHandlerException {
+    public boolean run() throws StoreException, RDFParseException, IOException, RDFHandlerException {
         Assert.notNull(sources);
 
         MemoryStore store = new MemoryStore();
