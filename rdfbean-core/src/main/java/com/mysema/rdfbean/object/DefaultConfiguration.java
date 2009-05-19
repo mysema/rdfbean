@@ -5,10 +5,7 @@
  */
 package com.mysema.rdfbean.object;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -20,7 +17,10 @@ import java.util.UUID;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.MappedClasses;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
 
 /**
@@ -101,54 +101,6 @@ public class DefaultConfiguration implements Configuration {
         // TODO filter unmapped types?
         return true;
     }
-    
-    /* (non-Javadoc)
-     * @see com.mysema.rdfbean.object.ExecutionContext#createInstance(org.openrdfbean.model.Resource, java.util.Collection, java.lang.Class)
-     */
-	@Override
-    public <T, N, R extends N, U extends R> T createInstance(R subject, 
-            Collection<R> types, 
-            Class<T> requiredType,
-            RDFBinder<R> binder, 
-            Dialect<N, R, ?, U, ?, ?> dialect) {
-        T instance;
-        Class<? extends T> actualType = matchType(types, requiredType, dialect);
-        if (actualType != null) {
-            if (!allowCreate(actualType)) {
-                instance = null;
-            } else {
-                try {
-                    MappedClass mappedClass = MappedClass.getMappedClass(actualType);
-                	MappedConstructor mappedConstructor = 
-                		mappedClass.getConstructor();
-                	if (mappedConstructor == null) {
-                	    instance = actualType.newInstance();
-                	} else {
-                    	List<Object> constructorArguments = 
-                    		binder.getConstructorArguments(mappedClass, subject, mappedConstructor);
-                        @SuppressWarnings("unchecked")
-                    	Constructor<T> constructor = (Constructor<T>) mappedConstructor.getConstructor(); 
-                        instance = constructor.newInstance(constructorArguments.toArray());
-                	}
-                } catch (InstantiationException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                } catch (SecurityException e) {
-                    throw new RuntimeException(e);
-    			} catch (IllegalArgumentException e) {
-                    throw new RuntimeException(e);
-    			} catch (InvocationTargetException e) {
-                    throw new RuntimeException(e);
-    			}
-            }
-        } else {
-        	throw new IllegalArgumentException("Cannot convert instance " + subject
-        			+ " with types " + types + " into required type " + requiredType);
-        }
-        binder.bind(subject, instance);
-        return instance;
-    }
 	
 	@Override
 	public boolean allowCreate(Class<?> clazz) {
@@ -163,32 +115,6 @@ public class DefaultConfiguration implements Configuration {
     public List<Class<?>> getMappedClasses(UID uid) {
 	    return type2classes.get(uid.getId());
 	}
-
-    @SuppressWarnings("unchecked")
-    public <T, N, R extends N, U extends R> Class<? extends T> matchType(Collection<R> types, Class<T> targetType,
-            Dialect<N, R, ?, U, ?, ?> dialect) {
-        Class<? extends T> result = targetType;
-        boolean foundMatch = types.isEmpty();
-        for (R type : types) {
-            if (dialect.getNodeType(type) == NodeType.URI) {
-                UID uid = dialect.getUID((U) type);
-                List<Class<?>> classes = type2classes.get(uid.getId());
-                if (classes != null) {
-                    for (Class<?> clazz : classes) {
-                        if ((result == null || result.isAssignableFrom(clazz)) && !clazz.isInterface()) {
-                            foundMatch = true;
-                            result = (Class<? extends T>) clazz;
-                        }
-                    }
-                }
-            }
-        }
-        if (foundMatch) {
-            return result;
-        } else {
-            return null;
-        }
-    }
 
     @Override
     public UID getContext(Class<?> javaClass) {

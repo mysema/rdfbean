@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.object;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +52,7 @@ public abstract class AbstractSession<N,
         B extends R, 
         U extends R, 
         L extends N, 
-        S> implements Session, RDFBinder<R> {
+        S> implements Session {
     
     private Converter converter = new Converter();
     
@@ -221,9 +223,7 @@ public abstract class AbstractSession<N,
         bind(getId(mappedClass, instance), instance);
     }
         
-    @Override
     public <T> void bind(R subject, T instance) {
-        put(subject, instance);
         if (instance != null) {
             if (instance instanceof LifeCycleAware) {
                 ((LifeCycleAware) instance).beforeBinding();
@@ -369,11 +369,9 @@ public abstract class AbstractSession<N,
                 }
             }
             if (polymorphic) {
-                instance = conf.createInstance(subject, 
+                instance = createInstance(subject, 
                         findTypes(subject, context), 
-                        requiredClass,
-                        this,
-                        getDialect());
+                        requiredClass);
             } else {
                 Collection<R> types;
                 UID uid = MappedClass.getUID(requiredClass);
@@ -382,16 +380,85 @@ public abstract class AbstractSession<N,
                 } else {
                     types = Collections.emptyList();
                 }
-                instance = conf.createInstance(subject, 
+                instance = createInstance(subject, 
                         types, 
-                        requiredClass, 
-                        this,
-                        getDialect());
+                        requiredClass);
             }
-            // Ensure that instance gets cached even if not binded
             put(subject, instance);
+            bind(subject, instance);
         }
         return (T) instance;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T, N, R extends N, U extends R> Class<? extends T> matchType(Collection<R> types, Class<T> targetType,
+            Dialect<N, R, ?, U, ?, ?> dialect) {
+        Class<? extends T> result = targetType;
+        boolean foundMatch = types.isEmpty();
+        for (R type : types) {
+            if (dialect.getNodeType(type) == NodeType.URI) {
+                UID uid = dialect.getUID((U) type);
+                List<Class<?>> classes = conf.getMappedClasses(uid);
+                if (classes != null) {
+                    for (Class<?> clazz : classes) {
+                        if ((result == null || result.isAssignableFrom(clazz)) && !clazz.isInterface()) {
+                            foundMatch = true;
+                            result = (Class<? extends T>) clazz;
+                        }
+                    }
+                }
+            }
+        }
+        if (foundMatch) {
+            return result;
+        } else {
+            return null;
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see com.mysema.rdfbean.object.ExecutionContext#createInstance(org.openrdfbean.model.Resource, java.util.Collection, java.lang.Class)
+     */
+    protected <T> T createInstance(R subject, 
+            Collection<R> types, 
+            Class<T> requiredType) {
+        Dialect<N,R,B,U,L,S> dialect = getDialect();
+        T instance;
+        Class<? extends T> actualType = matchType(types, requiredType, dialect);
+        if (actualType != null) {
+            if (!conf.allowCreate(actualType)) {
+                instance = null;
+            } else {
+                try {
+                    MappedClass mappedClass = MappedClass.getMappedClass(actualType);
+                    MappedConstructor mappedConstructor = 
+                        mappedClass.getConstructor();
+                    if (mappedConstructor == null) {
+                        instance = actualType.newInstance();
+                    } else {
+                        List<Object> constructorArguments = 
+                            getConstructorArguments(mappedClass, subject, mappedConstructor);
+                        @SuppressWarnings("unchecked")
+                        Constructor<T> constructor = (Constructor<T>) mappedConstructor.getConstructor(); 
+                        instance = constructor.newInstance(constructorArguments.toArray());
+                    }
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (SecurityException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalArgumentException e) {
+                    throw new RuntimeException(e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Cannot convert instance " + subject
+                    + " with types " + types + " into required type " + requiredType);
+        }
+        return instance;
     }
 
     @SuppressWarnings("unchecked")
@@ -732,8 +799,7 @@ public abstract class AbstractSession<N,
         return (T) get(clazz, subject);
     }
 
-    @Override
-	public List<Object> getConstructorArguments(MappedClass mappedClass, R subject, MappedConstructor mappedConstructor) {
+	private List<Object> getConstructorArguments(MappedClass mappedClass, R subject, MappedConstructor mappedConstructor) {
         List<Object> constructorArguments = new ArrayList<Object>(mappedConstructor.getArgumentCount());
         // TODO parentContext?
         U context = getContext(mappedConstructor.getDeclaringClass(), null);
