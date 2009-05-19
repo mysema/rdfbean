@@ -26,6 +26,10 @@ public interface BeanQuery extends Projectable, Closeable{
     
     BeanQuery where(Expr.EBoolean... o);
     
+    BeanQuery limit(long limit);
+    
+    BeanQuery offset(long offset);
+    
     BeanQuery restrict(QueryModifiers mod);
 
 }

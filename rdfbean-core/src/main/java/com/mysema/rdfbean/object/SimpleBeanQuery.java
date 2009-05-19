@@ -49,7 +49,19 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
 
     @Override
     public BeanQuery restrict(QueryModifiers mod) {
-        getInnerQuery().getMetadata().setModifiers(mod);
+        getMetadata().setModifiers(mod);
+        return this;
+    }
+
+    @Override
+    public BeanQuery limit(long limit) {
+        getMetadata().getModifiers().setLimit(limit);
+        return this;
+    }
+
+    @Override
+    public BeanQuery offset(long offset) {
+        getMetadata().getModifiers().setOffset(offset);
         return this;
     }
     
