@@ -24,20 +24,6 @@ public interface Session extends ObjectRepository {
     
     /**
      * 
-     * @param instance
-     * @return
-     */
-    LID save(Object instance);
-    
-    /**
-     * 
-     * @param instance
-     * @return
-     */
-    List<LID> saveAll(Object... instance);
-
-    /**
-     * 
      * @param ns
      * @param parent
      */
@@ -58,7 +44,7 @@ public interface Session extends ObjectRepository {
      * @throws RDFBeanException on an error
      */
     public RDFBeanTransaction beginTransaction();
-
+    
     /**
      * Begins a new transaction. All session usage is within transaction scope.
      *
@@ -72,7 +58,7 @@ public interface Session extends ObjectRepository {
      *                      a new transaction
      */
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel);
-    
+
     /**
      * 
      */
@@ -83,13 +69,6 @@ public interface Session extends ObjectRepository {
      */
     void close();
     
-    /**
-     * 
-     * @param exprs
-     * @return
-     */
-    BeanQuery from(EEntity<?>... exprs);
-
     /**
      * 
      * @param <T>
@@ -106,7 +85,7 @@ public interface Session extends ObjectRepository {
      * @return
      */
     <T> List<T> findInstances(Class<T> clazz, LID clazzUri);
-
+    
     /**
      * 
      * @param <T>
@@ -115,7 +94,19 @@ public interface Session extends ObjectRepository {
      * @return
      */
     <T> List<T> findInstances(Class<T> clazz, UID clazzUri);
+
+    /**
+     * 
+     */
+    void flush();
     
+    /**
+     * 
+     * @param exprs
+     * @return
+     */
+    BeanQuery from(EEntity<?>... exprs);
+
     /**
      * 
      * @param <T>
@@ -124,7 +115,7 @@ public interface Session extends ObjectRepository {
      * @return
      */
     <T> T get(Class<T> clazz, ID subject);
-    
+
     /**
      * 
      * @param <T>
@@ -133,15 +124,6 @@ public interface Session extends ObjectRepository {
      * @return
      */
     <T> T get(Class<T> clazz, LID subject);
-    
-    /**
-     * 
-     * @param <T>
-     * @param id
-     * @param clazz
-     * @return
-     */
-    <T> T getById(String id, Class<T> clazz);
     
     /**
      * 
@@ -164,10 +146,26 @@ public interface Session extends ObjectRepository {
     
     /**
      * 
+     * @param <T>
+     * @param id
+     * @param clazz
+     * @return
+     */
+    <T> T getById(String id, Class<T> clazz);
+    
+    /**
+     * 
      * @param id
      * @return
      */
     LID getLID(ID id);
+    
+    /**
+     * Get the current transaction or <code>null</code> if none is bound
+     * 
+     * @return
+     */
+    RDFBeanTransaction getTransaction();
     
     /**
      * 
@@ -176,10 +174,17 @@ public interface Session extends ObjectRepository {
     boolean isReadOnly();
     
     /**
-     * Get the current transaction or <code>null</code> if none is bound
      * 
+     * @param instance
      * @return
      */
-    RDFBeanTransaction getTransaction();
+    LID save(Object instance);
+    
+    /**
+     * 
+     * @param instance
+     * @return
+     */
+    List<LID> saveAll(Object... instance);
 
 }

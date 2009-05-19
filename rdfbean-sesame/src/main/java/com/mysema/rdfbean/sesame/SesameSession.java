@@ -81,13 +81,13 @@ public class SesameSession extends AbstractSession<Value, Resource, BNode, URI, 
     }
 
     @Override
-    protected void addStatement(Resource subject, URI predicate, Value object, URI context) {
+    protected void addStatement(Statement statement, URI context) {
         if (!roTnx){
             try {
                 if (context == null) {
-                    connection.add(vf.createStatement(subject, predicate, object));
+                    connection.add(statement);
                 } else {
-                    connection.add(vf.createStatement(subject, predicate, object), context);
+                    connection.add(statement, context);
                 }
             } catch (RepositoryException e) {
                 throw new RuntimeException(e);
@@ -187,14 +187,18 @@ public class SesameSession extends AbstractSession<Value, Resource, BNode, URI, 
     }
     
     @Override
-    protected void removeStatement(Statement statement) {
+    protected void removeStatement(Statement statement, URI context) {
         if (!roTnx){
             try {
-                connection.remove(statement);
+                if (context == null) {
+                    connection.remove(statement, context);
+                } else {
+                    connection.remove(statement);
+                }
             } catch (RepositoryException e) {
                 throw new RuntimeException(e);
             }    
-        }        
+        }
     }
    
 }

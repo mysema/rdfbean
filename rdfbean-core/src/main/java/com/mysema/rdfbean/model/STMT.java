@@ -57,4 +57,8 @@ public final class STMT {
         }
     }
     
+    public String toString() {
+        return "" + subject + " " + predicate + " " + object;
+    }
+    
 }

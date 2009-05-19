@@ -111,8 +111,8 @@ public class MiniSession extends AbstractSession<NODE, ID, BID, UID, LIT, STMT> 
     }
     
     @Override
-    protected void addStatement(ID subject, UID predicate, NODE object, UID context) {
-        repository.add(new STMT(subject, predicate, object));
+    protected void addStatement(STMT stmt, UID context) {
+        repository.add(stmt);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class MiniSession extends AbstractSession<NODE, ID, BID, UID, LIT, STMT> 
     }
 
     @Override
-    protected void removeStatement(STMT statement) {
+    protected void removeStatement(STMT statement, UID context) {
         repository.removeStatement(statement);
     }
 

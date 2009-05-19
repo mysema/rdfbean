@@ -54,6 +54,56 @@ public abstract class AbstractSession<N,
         L extends N, 
         S> implements Session {
     
+    private class ContextualStatement {
+        private S statement;
+        private U context;
+        public ContextualStatement(S statement, U context) {
+            this.statement = Assert.notNull(statement);
+            this.context = context;
+        }
+        public S getStatement() {
+            return statement;
+        }
+        public U getContext() {
+            return context;
+        }
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result
+                    + ((context == null) ? 0 : context.hashCode());
+            result = prime * result + statement.hashCode();
+            return result;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            ContextualStatement other = (ContextualStatement) obj;
+            if (context == null) {
+                if (other.context != null) {
+                    return false;
+                }
+            } else if (!context.equals(other.context)) {
+                return false;
+            }
+            if (!statement.equals(other.statement)) {
+                return false;
+            }
+            return true;
+        }
+        public String toString() {
+            return "(" + statement + ")@" + context;
+        }
+    }
+    
     private Converter converter = new Converter();
     
     private U coreLocalId;
@@ -63,6 +113,8 @@ public abstract class AbstractSession<N,
 	private Configuration conf;
 
     private IdentityService identityService;
+    
+    private FlushMode flushMode = FlushMode.ALWAYS;
 
     private boolean initialized = false;
     
@@ -94,9 +146,14 @@ public abstract class AbstractSession<N,
 
     private Map<Object, R> resourceCache = new IdentityHashMap<Object, R>();
     
+    private Set<ContextualStatement> addedStatements = new LinkedHashSet<ContextualStatement>();
+    
+    private Set<ContextualStatement> removedStatements = new LinkedHashSet<ContextualStatement>();
+    
     private Set<Object> seen;
     
     // TODO make configurable: !conf.isReadOnly() 
+    
 //    private Map<Object, Set<S>> objectStatements = new IdentityHashMap<Object, Set<S>>();
     
 //    private Deque<Object> loadStack = new LinkedList<Object>();
@@ -141,10 +198,18 @@ public abstract class AbstractSession<N,
     @Override
     public LID save(Object instance) {
         initialize();
+        boolean flush = false;
         if (seen == null) {
             seen = new HashSet<Object>();
+            flush = true;
         }
     	R subject = toRDF(instance, null);
+    	if (flush) {
+    	    seen = null;
+    	    if (flushMode == FlushMode.ALWAYS) {
+    	        flush();
+    	    }
+    	}
     	return toLID(subject);
     }
     
@@ -155,6 +220,10 @@ public abstract class AbstractSession<N,
         for (Object instance : instances) {
             ids.add(save(instance));
         }
+        seen = null;
+        if (flushMode == FlushMode.ALWAYS) {
+            flush();
+        }
         return ids;
     }
 
@@ -162,7 +231,7 @@ public abstract class AbstractSession<N,
         Dialect<N,R,B,U,L,S> dialect = getDialect();
         BID bid = dialect.getBID(bnode);
         String lid = identityService.getLID(model, bid).getId();
-        addStatement(bnode, coreLocalId, dialect.getLiteral(new LIT(lid)), null);
+        recordAddStatement(bnode, coreLocalId, dialect.getLiteral(new LIT(lid)), null);
     }
 
     @Override
@@ -171,8 +240,8 @@ public abstract class AbstractSession<N,
         Assert.notNull(parent);
         parentRepositories.put(ns, parent);
     }
-
-    protected abstract void addStatement(R subject, U predicate, N object, U contexts);
+    
+    protected abstract void addStatement(S statement, U contexts);
 
     private R assignId(MappedClass mappedClass, Object instance) {
         R subject = createResource(instance);
@@ -207,7 +276,7 @@ public abstract class AbstractSession<N,
             // modelId
             B subject = dialect.createBNode();
             B modelId = dialect.createBNode();
-            addStatement(subject, coreModelId, modelId, null);
+            recordAddStatement(subject, coreModelId, modelId, null);
 
             model = dialect.getBID(modelId);
 
@@ -707,6 +776,17 @@ public abstract class AbstractSession<N,
         return values;
     }
     
+    public void flush() {
+        for (ContextualStatement stmt : removedStatements) {
+            removeStatement(stmt.getStatement(), stmt.getContext());
+        }
+        removedStatements.clear();
+        for (ContextualStatement stmt : addedStatements) {
+            addStatement(stmt.getStatement(), stmt.getContext());
+        }
+        addedStatements.clear();
+    }
+    
 //    private Set<S> getStatementCache() {
 //        Object currentObject = getCurrentObject();
 //        if (currentObject != null) {
@@ -1008,11 +1088,27 @@ public abstract class AbstractSession<N,
         }
     }
     
-    protected abstract void removeStatement(S statement);
+    private void recordRemoveStatement(S statement, U context) {
+        ContextualStatement cstatement = new ContextualStatement(statement, context);
+        if (!addedStatements.remove(cstatement)) {
+            removedStatements.add(cstatement);
+        }
+    }
+    
+    private void recordAddStatement(R subject, U predicate, N object, U context) {
+        ContextualStatement statement = new ContextualStatement(
+                    getDialect().createStatement(subject, predicate, object), 
+                    context);
+        if (!removedStatements.remove(statement)) {
+            addedStatements.add(statement);
+        }
+    }
+    
+    protected abstract void removeStatement(S statement, U context);
 
     protected void removeStatements(R subject, U predicate, N object, U context) {
         for (S statement : findStatements(subject, predicate, object, false, context)) {
-            removeStatement(statement);
+            recordRemoveStatement(statement, context);
         }
     }
     
@@ -1066,7 +1162,7 @@ public abstract class AbstractSession<N,
         Dialect<N,R,B,U,L,S> dialect = getDialect();
         UID uri = mappedClass.getUID();
         if (uri != null) {
-            addStatement(subject, rdfType, dialect.getURI(uri), context);
+            recordAddStatement(subject, rdfType, dialect.getURI(uri), context);
         }
         
         MappedProperty<?> property;
@@ -1077,7 +1173,7 @@ public abstract class AbstractSession<N,
 
                 if (update) {
                     for (S statement : findStatements(subject, predicate, null, false, context)) {
-                        removeStatement(statement);
+                        recordRemoveStatement(statement, context);
                         // Check if it's a list
                         removeList(dialect.getObject(statement), context, dialect);
                     }
@@ -1089,13 +1185,13 @@ public abstract class AbstractSession<N,
                     if (property.isList()) {
                         R first = toRDFList((List<?>) object, context);
                         if (first != null) {
-                            addStatement(subject, predicate, first, context);
+                            recordAddStatement(subject, predicate, first, context);
                         }
                     } else if (property.isCollection()) {
                         for (Object o : (Collection<?>) object) {
                             N value = toRDFValue(o, context);
                             if (value != null) {
-                                addStatement(subject, predicate, value, context);
+                                recordAddStatement(subject, predicate, value, context);
                             }
                         }
                     } else if (property.isLocalized()) {
@@ -1104,18 +1200,18 @@ public abstract class AbstractSession<N,
                                 if (entry.getValue() != null) {
                                     LIT lit = new LIT(entry.getValue().toString(), entry.getKey());
                                     L literal = dialect.getLiteral(lit);
-                                    addStatement(subject, predicate, literal, context);
+                                    recordAddStatement(subject, predicate, literal, context);
                                 }
                             }
                         } else {
                             LIT lit = new LIT(object.toString(), getCurrentLocale());
                             L literal = dialect.getLiteral(lit);
-                            addStatement(subject, predicate, literal, context);
+                            recordAddStatement(subject, predicate, literal, context);
                         }
                     } else {
                         N value = toRDFValue(object, context);
                         if (value != null) {
-                            addStatement(subject, predicate, value, context);
+                            recordAddStatement(subject, predicate, value, context);
                         }
                     }
                 }
@@ -1173,7 +1269,7 @@ public abstract class AbstractSession<N,
             // ...of type rdf:List
             if (findStatements(bnode, rdfType, rdfList, true, context).size() > 0) {
                 for (S statement : findStatements(bnode, null, null, false, context)) {
-                    removeStatement(statement);
+                    recordRemoveStatement(statement, context);
                     removeList(dialect.getObject(statement), context, dialect);
                 }
             }
@@ -1189,14 +1285,14 @@ public abstract class AbstractSession<N,
                 firstNode = currentNode = dialect.createBNode();
             } else {
                 B nextNode = dialect.createBNode();
-                addStatement(currentNode, rdfRest, nextNode, context);
+                recordAddStatement(currentNode, rdfRest, nextNode, context);
                 currentNode = nextNode;
             }
-            addStatement(currentNode, rdfType, rdfList, context);
-            addStatement(currentNode, rdfFirst, toRDFValue(value, context), context);
+            recordAddStatement(currentNode, rdfType, rdfList, context);
+            recordAddStatement(currentNode, rdfFirst, toRDFValue(value, context), context);
         }
         if (currentNode != null) {
-            addStatement(currentNode, rdfRest, rdfNil, context);
+            recordAddStatement(currentNode, rdfRest, rdfNil, context);
         }
         return firstNode;
     }
@@ -1227,6 +1323,14 @@ public abstract class AbstractSession<N,
         List<S> statements = findStatements(bnode, coreLocalId, 
                 dialect.getLiteral(new LIT(lid)), true, null);
         return statements.size() == 1;
+    }
+
+    public FlushMode getFlushMode() {
+        return flushMode;
+    }
+
+    public void setFlushMode(FlushMode flushMode) {
+        this.flushMode = flushMode;
     }
 
 }
