@@ -45,8 +45,6 @@ public class DefaultConfiguration implements Configuration {
     
     private UID defaultContext;
     
-    private String basePath;
-    
     private Set<String> restrictedResources = new HashSet<String>(buildinNamespaces);
     
     public DefaultConfiguration() {}
@@ -132,15 +130,6 @@ public class DefaultConfiguration implements Configuration {
 
     public void setDefaultContext(String ctx) {
         this.defaultContext = new UID(ctx);
-    }
-
-    @Override
-    public String getBasePath() {
-        return basePath;
-    }
-
-    public void setBasePath(String basePath) {
-        this.basePath = basePath;
     }
 
     @Override

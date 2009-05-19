@@ -22,9 +22,6 @@ public interface Configuration {
 
     UID getContext(Class<?> javaClass);
 
-    @Deprecated
-    String getBasePath();
-
     boolean isRestricted(UID uid);
 
     UID createURI(Object instance);
