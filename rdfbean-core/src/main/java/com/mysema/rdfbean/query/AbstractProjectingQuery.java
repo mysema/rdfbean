@@ -5,13 +5,22 @@
  */
 package com.mysema.rdfbean.query;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
+import org.apache.commons.collections15.IteratorUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.mutable.MutableInt;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.query.JoinExpression;
+import com.mysema.query.JoinType;
 import com.mysema.query.QueryBaseWithProjection;
+import com.mysema.query.QueryModifiers;
+import com.mysema.query.SearchResults;
+import com.mysema.query.collections.iterators.LimitingIterator;
 import com.mysema.query.grammar.types.Expr;
 import com.mysema.query.grammar.types.Path;
 import com.mysema.query.grammar.types.PathMetadata;
@@ -69,14 +78,64 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     
     @Override
     public long count() {
-        throw new UnsupportedOperationException();
+        // TODO : use aggregate function
+        for(JoinExpression<?> je : getMetadata().getJoins()){
+            if (je.getType() == JoinType.DEFAULT || je.getType() == JoinType.INNERJOIN){
+                addToProjection(je.getTarget());    
+            }            
+        }
+        long total = 0l;
+        Iterator<?> it = getInnerResults();
+        while (it.hasNext()){
+            total++;
+            it.next();
+        }
+        return total;
+    }
+    
+    @Override
+    public <RT> SearchResults<RT> listResults(Expr<RT> expr) {
+        // TODO : simplify this
+        addToProjection(expr);
+        
+        QueryModifiers modifiers = getMetadata().getModifiers();
+        if (modifiers.isRestricting()){
+            Iterator<N[]> iterator = getInnerResults();
+            if (iterator.hasNext()){
+                List<N[]> total = IteratorUtils.toList(iterator);            
+                iterator = getPagedResults(total.iterator(), modifiers);
+                if (iterator.hasNext()){
+                    List<RT> targetList = new ArrayList<RT>();
+                    while (iterator.hasNext()){
+                        N[] nodes = iterator.next();
+                        targetList.add(getAsProjectionValue(expr, nodes, new MutableInt()));
+                    }
+                    return new SearchResults<RT>(targetList, modifiers, total.size());
+                }else{
+                    return new SearchResults<RT>(Collections.<RT>emptyList(), modifiers, total.size());
+                }
+            }else{
+                return SearchResults.emptyResults();
+            }    
+        }else{
+            List<RT> results = list(expr);
+            return new SearchResults<RT>(results, Long.MAX_VALUE, 0l, results.size());
+        }                
     }
 
+    private Iterator<N[]> getPagedResults(){        
+        return getPagedResults(getInnerResults(), getMetadata().getModifiers());
+    }
+
+    private Iterator<N[]> getPagedResults(Iterator<N[]> iterator, QueryModifiers modifiers) {
+        return LimitingIterator.transform(iterator, modifiers);
+    }
+    
     @Override
     public <RT> Iterator<RT> iterate(final Expr<RT> expr) {
         addToProjection(expr);
         
-        final Iterator<N[]> innerResults = getInnerResults();
+        final Iterator<N[]> innerResults = getPagedResults();
         return new Iterator<RT>(){
             public boolean hasNext() {
                 return innerResults.hasNext();
@@ -95,7 +154,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         addToProjection(first, second);
         addToProjection(rest);
         
-        final Iterator<N[]> innerResults = getInnerResults();
+        final Iterator<N[]> innerResults = getPagedResults();
         return new Iterator<Object[]>(){
             public boolean hasNext() {
                 return innerResults.hasNext();

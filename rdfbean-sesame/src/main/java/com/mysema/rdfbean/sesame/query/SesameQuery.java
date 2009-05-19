@@ -638,5 +638,4 @@ public class SesameQuery extends
 
     }
     
-
 }
