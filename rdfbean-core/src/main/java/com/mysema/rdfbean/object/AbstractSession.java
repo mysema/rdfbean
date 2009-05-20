@@ -292,7 +292,7 @@ public abstract class AbstractSession<N,
         bind(getId(mappedClass, instance), instance);
     }
         
-    public <T> void bind(R subject, T instance) {
+    public <T> T bind(R subject, T instance) {
         if (instance != null) {
             if (instance instanceof LifeCycleAware) {
                 ((LifeCycleAware) instance).beforeBinding();
@@ -317,6 +317,7 @@ public abstract class AbstractSession<N,
                 ((LifeCycleAware) instance).afterBinding();
             }
         }
+        return instance;
     }
     
     private void cleanupModel(){
@@ -356,14 +357,27 @@ public abstract class AbstractSession<N,
     }
 
     @SuppressWarnings("unchecked")
-    private Object convertCollection(MappedPath propertyPath, Set<N> values, U context)
+    private Object convertCollection(MappedPath propertyPath, Collection<N> values, U context)
             throws InstantiationException, IllegalAccessException, Exception {
-        MappedProperty<?> propertyDefinition = propertyPath.getMappedProperty();
+        MappedProperty<?> mappedProperty = propertyPath.getMappedProperty();
         Object convertedValue;
-        Class collectionType = propertyDefinition.getCollectionType();
-        Type targetType = propertyDefinition.getComponentType();
+        Class<?> targetType = mappedProperty.getComponentType();
+        int size = values.size();
+        if (mappedProperty.isList() && size > 0) {
+            if (size == 1) {
+                N node = values.iterator().next();
+                if (getDialect().isResource(node)) {
+                    values = convertList((R) node, context, targetType);
+                } 
+                // TODO log error?
+            } 
+            // TODO log error?
+        } else {
+            // TODO support containers?
+        }
+        Class collectionType = mappedProperty.getCollectionType();
         Collection collection = (Collection) collectionType.newInstance();
-        for (N value : expandListOrContainer(values, context)) {
+        for (N value : values) {
             collection.add(convertValue(value, targetType, propertyPath));
         }
         convertedValue = collection;
@@ -443,12 +457,12 @@ public abstract class AbstractSession<N,
                         requiredClass);
             } else {
                 Collection<R> types;
-                UID uid = MappedClass.getUID(requiredClass);
-                if (uid != null) {
-                    types = Collections.singleton(dialect.getResource(uid));
-                } else {
+//                UID uid = MappedClass.getUID(requiredClass);
+//                if (uid != null) {
+//                    types = Collections.singleton(dialect.getResource(uid));
+//                } else {
                     types = Collections.emptyList();
-                }
+//                }
                 instance = createInstance(subject, 
                         types, 
                         requiredClass);
@@ -460,8 +474,8 @@ public abstract class AbstractSession<N,
     }
 
     @SuppressWarnings("unchecked")
-    public <T, N, R extends N, U extends R> Class<? extends T> matchType(Collection<R> types, Class<T> targetType,
-            Dialect<N, R, ?, U, ?, ?> dialect) {
+    protected <T> Class<? extends T> matchType(Collection<R> types, Class<T> targetType) {
+        Dialect<N,R,B,U,L,S> dialect = getDialect();
         Class<? extends T> result = targetType;
         boolean foundMatch = types.isEmpty();
         for (R type : types) {
@@ -491,9 +505,8 @@ public abstract class AbstractSession<N,
     protected <T> T createInstance(R subject, 
             Collection<R> types, 
             Class<T> requiredType) {
-        Dialect<N,R,B,U,L,S> dialect = getDialect();
         T instance;
-        Class<? extends T> actualType = matchType(types, requiredType, dialect);
+        Class<? extends T> actualType = matchType(types, requiredType);
         if (actualType != null) {
             if (!conf.allowCreate(actualType)) {
                 instance = null;
@@ -626,9 +639,8 @@ public abstract class AbstractSession<N,
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<N> expandList(R subject, U context) {
+    private Collection<N> convertList(R subject, U context, Class<?> targetType) {
         List<N> list = new ArrayList<N>();
-//        TODO: RDFList rdfList = 
         while (subject != null && !subject.equals(rdfNil)) {
             list.add(getFunctionalValue(subject, rdfFirst, false, context));
             subject = (R) getFunctionalValue(subject, rdfRest, false, context);
@@ -636,27 +648,27 @@ public abstract class AbstractSession<N,
         return list;
     }
 
-    @SuppressWarnings("unchecked")
-	private Collection<N> expandListOrContainer(Set<N> values, U context) {
-        Dialect<N,R,B,U,L,S> dialect = getDialect();
-        if (values.size() == 1) {
-            N value = values.iterator().next();
-            if (dialect.isResource(value)) {
-                R subject = (R) value;
-                List<R> types = findTypes(subject, context);
-                if (types.contains(rdfList)) {
-                    return expandList(subject, context);
-                } else {
-                    // TODO: Containers
-                    return values;
-                }
-            } else {
-                return values;
-            }
-        } else {
-            return values;
-        }
-    }
+//    @SuppressWarnings("unchecked")
+//	private Collection<N> convertListOrContainer(Set<N> values, U context) {
+//        Dialect<N,R,B,U,L,S> dialect = getDialect();
+//        if (values.size() == 1) {
+//            N value = values.iterator().next();
+//            if (dialect.isResource(value)) {
+//                R subject = (R) value;
+//                List<R> types = findTypes(subject, context);
+//                if (types.contains(rdfList)) {
+//                    return convertList(subject, context);
+//                } else {
+//                    // TODO: Containers
+//                    return values;
+//                }
+//            } else {
+//                return values;
+//            }
+//        } else {
+//            return values;
+//        }
+//    }
 
     private Collection<R> filterSubject(List<S> statements) {
         Dialect<N,R,B,U,L,S> dialect = getDialect();
@@ -1114,9 +1126,9 @@ public abstract class AbstractSession<N,
     
     @SuppressWarnings("unchecked")
     private <T> void setId(MappedClass mappedClass, R subject, T instance) {
-        Dialect<N,R,B,U,L,S> dialect = getDialect();
         MappedProperty<?> idProperty = mappedClass.getIdProperty();
         if (idProperty != null && !mappedClass.isEnum()) {
+            Dialect<N,R,B,U,L,S> dialect = getDialect();
         	Object id = null;
         	Identifier identifier;
             Class<?> type = idProperty.getType();
