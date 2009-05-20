@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.MappedClasses;
@@ -111,7 +112,7 @@ public class DefaultConfiguration implements Configuration {
     }
 
     public List<Class<?>> getMappedClasses(UID uid) {
-	    return type2classes.get(uid.getId());
+	    return type2classes.get(Assert.notNull(uid).getId());
 	}
 
     @Override

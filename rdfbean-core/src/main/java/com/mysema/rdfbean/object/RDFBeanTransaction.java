@@ -17,6 +17,7 @@ public interface RDFBeanTransaction {
     /**
      * 
      */
+    // FIXME remove this method, as it conflicts with Session.beginTransaction()
     public void begin();
 
     /**

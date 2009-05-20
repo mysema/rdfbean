@@ -330,6 +330,10 @@ public abstract class AbstractSession<N,
     @Override
     public void clear() {
         instanceCache.clear();
+        resourceCache = new IdentityHashMap<Object, R>();
+        addedStatements = new LinkedHashSet<ContextualStatement>();
+        removedStatements = new LinkedHashSet<ContextualStatement>();
+        seen = null;
     }
 
     protected Collection<R> convert(Collection<UID> uids) {
@@ -708,10 +712,14 @@ public abstract class AbstractSession<N,
     
     private <T> void findInstances(Class<T> clazz, UID uri, final Set<T> instances) {
         initialize();
+        if (uri == null) {
+            throw new IllegalArgumentException("Unmapped class: " + clazz);
+        }
         Dialect<N,R,B,U,L,S> dialect = getDialect();
         U context = getContext(clazz, null);
         try {
             boolean foundMatch = false;
+            // FIXME find classes assignable from uri through rdfs:subClassOf 
             for (Class<?> mappedClass : conf.getMappedClasses(uri)) {
                 if (clazz.isAssignableFrom(mappedClass)) {
                     foundMatch = true;
