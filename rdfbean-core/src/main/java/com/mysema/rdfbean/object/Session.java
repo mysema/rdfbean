@@ -16,6 +16,7 @@ import com.mysema.rdfbean.model.UID;
  * 
  * Session provides
  *
+ * @author sasa
  * @author tiwe
  * @version $Id$
  *

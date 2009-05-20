@@ -54,7 +54,7 @@ public abstract class AbstractSession<N,
         L extends N, 
         S> implements Session {
     
-    private class ContextualStatement {
+    protected class ContextualStatement {
         private S statement;
         private U context;
         public ContextualStatement(S statement, U context) {
@@ -241,7 +241,9 @@ public abstract class AbstractSession<N,
         parentRepositories.put(ns, parent);
     }
     
-    protected abstract void addStatement(S statement, U contexts);
+    protected void addStatement(S statement, U contexts) {
+        throw new UnsupportedOperationException("addStatement");
+    }
 
     private R assignId(MappedClass mappedClass, Object instance) {
         R subject = createResource(instance);
@@ -789,14 +791,18 @@ public abstract class AbstractSession<N,
     }
     
     public void flush() {
+        update(removedStatements, addedStatements);
+        removedStatements = new LinkedHashSet<ContextualStatement>();
+        addedStatements = new LinkedHashSet<ContextualStatement>();
+    }
+    
+    protected void update(Set<ContextualStatement> removedStatements, Set<ContextualStatement> addedStatements) {
         for (ContextualStatement stmt : removedStatements) {
             removeStatement(stmt.getStatement(), stmt.getContext());
         }
-        removedStatements.clear();
         for (ContextualStatement stmt : addedStatements) {
             addStatement(stmt.getStatement(), stmt.getContext());
         }
-        addedStatements.clear();
     }
     
 //    private Set<S> getStatementCache() {
@@ -1116,7 +1122,9 @@ public abstract class AbstractSession<N,
         }
     }
     
-    protected abstract void removeStatement(S statement, U context);
+    protected void removeStatement(S statement, U context) {
+        throw new UnsupportedOperationException("removeStatement");
+    }
 
     protected void removeStatements(R subject, U predicate, N object, U context) {
         for (S statement : findStatements(subject, predicate, object, false, context)) {
