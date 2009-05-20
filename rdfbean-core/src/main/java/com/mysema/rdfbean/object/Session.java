@@ -16,21 +16,21 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.identity.IdentityService;
 
 /**
- * Session provides access point for persisting and querying persisted instances of mapped classes.
+ * Session provides an access point for persisting and querying persisted instances of mapped classes.
  * Classes are mapped using {@link ClassMapping} for types and e.g. {@link Predicate} for 
  * properties. 
  * <p>
  * Session provides
  * <ul>
- * <li>Getters for known individuals</li>
- * <li>Finders for all instances of a mapped class</li>
- * <li>Means for creating type safe queries over domain model of mapped classes</li>
- * <li>Means for persisting new instances as well as updating existing</li>
- * <li>Manual transaction management</li>
- * <li>Flush management</li>
- * <li>A mapping from a natural RDF resource id (URI or blank node) to a short 
+ * <li>getters for known individuals</li>
+ * <li>finders for all instances of a mapped class</li>
+ * <li>means for creating type safe queries over domain model of mapped classes</li>
+ * <li>means for persisting new instances as well as updating existing</li>
+ * <li>manual transaction management</li>
+ * <li>flush management</li>
+ * <li>a mapping from a natural RDF resource id (URI or blank node) to a short 
  *     numeric local identifier (see {@link IdentityService}).</li>
- * <li>Autowiring mapped properties of a transient instance</li>
+ * <li>autowiring mapped properties of a transient instance</li>
  * </ul>
  *
  * @author sasa
@@ -41,17 +41,17 @@ import com.mysema.rdfbean.object.identity.IdentityService;
 public interface Session extends ObjectRepository {
     
     /**
-     * Registers parent ObjectRepository for injections from given namespace.
+     * Registers a parent ObjectRepository for injections from a given namespace.
      * 
-     * @param ns        the namespace associated with given ObjectRepository.
+     * @param namespace  the namespace associated with given ObjectRepository.
      * @param parent    
      */
-    void addParent(String ns, ObjectRepository parent);
+    void addParent(String namespace, ObjectRepository parent);
     
     /**
-     * Binds mapped properties (e.g. default values) of given object. Object doesn't 
+     * Binds mapped properties (e.g. default values) of a given object. The object doesn't 
      * have to be a mapped/managed class ({@link ClassMapping}) itself but if it has 
-     * mapped properties, those are binded. 
+     * mapped properties, those are bound. 
      * 
      * @param object
      */
@@ -81,7 +81,7 @@ public interface Session extends ObjectRepository {
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel);
 
     /**
-     * Empties primary cache and discards all unflushed changes.
+     * Empties the primary cache and discards all unflushed changes.
      */
     void clear();
 
@@ -91,7 +91,7 @@ public interface Session extends ObjectRepository {
     void close();
     
     /**
-     * Finds instances of given mapped class.
+     * Finds instances of a given mapped class.
      * 
      * @param clazz     mapped class of instances to be returned.
      * @return          all instances of given class.
@@ -130,7 +130,7 @@ public interface Session extends ObjectRepository {
     BeanQuery from(EEntity<?>... exprs);
 
     /**
-     * Returns a bean of type clazz with given natural id (URI or blank node) or null if not found.
+     * Returns a bean of type clazz with the given natural id (URI or blank node) or null if not found.
      * 
      * @param clazz     type of queried object.
      * @param subject   ID of queried object.
@@ -139,7 +139,7 @@ public interface Session extends ObjectRepository {
     <T> T get(Class<T> clazz, ID subject);
 
     /**
-     * Returns a bean of type clazz with given local id or null if not found.
+     * Returns a bean of type clazz with the given local id or null if not found.
      * 
      * @param clazz     type of queried object.
      * @param subject   locla id of queried object.
@@ -154,7 +154,7 @@ public interface Session extends ObjectRepository {
      * @param subject
      * @return
      */
-    <T, I extends ID> List<T> getAll(Class<T> clazz, I... subject);
+    <T> List<T> getAll(Class<T> clazz, ID... subject);
     
     /**
      * Bulk fetch. See get(Class,LID). 
@@ -218,7 +218,7 @@ public interface Session extends ObjectRepository {
     FlushMode getFlushMode();
 
     /**
-     * Set's the flushMode of this session.
+     * Sets the flushMode of this session.
      * 
      * @param flushMode 
      */

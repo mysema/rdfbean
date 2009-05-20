@@ -872,7 +872,7 @@ public abstract class AbstractSession<N,
     }
     
     @Override
-    public <T, I extends ID> List<T> getAll(Class<T> clazz, I... subjects) {
+    public <T> List<T> getAll(Class<T> clazz, ID... subjects) {
         List<T> instances = new ArrayList<T>(subjects.length);
         for (ID subject : subjects) {
             instances.add(get(clazz, subject));
