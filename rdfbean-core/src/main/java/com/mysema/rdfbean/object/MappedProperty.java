@@ -5,19 +5,18 @@
  */
 package com.mysema.rdfbean.object;
 
-import static org.springframework.util.StringUtils.hasLength;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
-import org.springframework.beans.BeanWrapper;
+import org.apache.commons.collections15.BeanMap;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.*;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniDialect;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.util.StringUtils;
 
 /**
  * @author sasa
@@ -27,7 +26,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 
 	private static String getParentNs(MapElements mapElements, Member member) {
         String ns = mapElements.ns();
-        if (!hasLength(ns)) {
+        if (!StringUtils.hasLength(ns)) {
             ns = MappedClass.getClassNs(member.getDeclaringClass());
         }
         return ns;
@@ -281,7 +280,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 	
 	public abstract boolean isVirtual();
 
-    public abstract void setValue(BeanWrapper beanWrapper, Object value);
+    public abstract void setValue(BeanMap beanWrapper, Object value);
 
 	public void validate(MappedPath path) {
 		if (isMixin()) {

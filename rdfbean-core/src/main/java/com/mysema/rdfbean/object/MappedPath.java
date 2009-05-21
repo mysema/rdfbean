@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.object;
 
-import static org.springframework.util.StringUtils.hasLength;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -17,6 +15,7 @@ import java.util.List;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.*;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.util.StringUtils;
 
 /**
  * @author sasa
@@ -72,7 +71,7 @@ public class MappedPath {
         Path path = property.getAnnotation(Path.class);
         Predicate[] predicates;
         if (path != null) {
-            if (hasLength(path.ns())) {
+            if (StringUtils.hasLength(path.ns())) {
                 parentNs = path.ns();
             }
             predicates = path.value();

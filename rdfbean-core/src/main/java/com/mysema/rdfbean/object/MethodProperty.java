@@ -8,8 +8,7 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
+import org.apache.commons.collections15.BeanMap;
 
 /**
  * @author sasa
@@ -75,14 +74,17 @@ public class MethodProperty extends MappedProperty<Method> {
 	}
 
 	@Override
-	public void setValue(BeanWrapper beanWrapper, Object value) {
-		beanWrapper.setPropertyValue(getName(), value);
+	public void setValue(BeanMap beanMap, Object value) {
+//		beanWrapper.setPropertyValue(getName(), value);
+	    beanMap.put(getName(), value);
 	}
 
     @Override
     public Object getValue(Object instance) {
-        BeanWrapper beanWrapper = new BeanWrapperImpl(instance);
-        return beanWrapper.getPropertyValue(getName());
+//        BeanWrapper beanWrapper = new BeanWrapperImpl(instance);
+//        return beanWrapper.getPropertyValue(getName());
+        BeanMap beanMap = new BeanMap(instance);
+        return beanMap.get(getName());
     }
 
 	@Override

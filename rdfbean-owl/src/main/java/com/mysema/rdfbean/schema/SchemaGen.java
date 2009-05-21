@@ -5,34 +5,15 @@
  */
 package com.mysema.rdfbean.schema;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Required;
 
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.Converter;
-import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.MappedClass;
-import com.mysema.rdfbean.object.MappedPath;
-import com.mysema.rdfbean.object.MappedPredicate;
-import com.mysema.rdfbean.object.MappedProperty;
-import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionFactory;
-import com.mysema.rdfbean.owl.DatatypeProperty;
-import com.mysema.rdfbean.owl.OWLClass;
-import com.mysema.rdfbean.owl.ObjectProperty;
-import com.mysema.rdfbean.owl.Ontology;
-import com.mysema.rdfbean.owl.Restriction;
-import com.mysema.rdfbean.owl.TypedList;
+import com.mysema.rdfbean.object.*;
+import com.mysema.rdfbean.owl.*;
 import com.mysema.rdfbean.rdfs.RDFProperty;
 import com.mysema.rdfbean.rdfs.RDFSClass;
 import com.mysema.rdfbean.rdfs.RDFSDatatype;
@@ -49,7 +30,7 @@ public class SchemaGen {
     
     private SessionFactory sessionFactory;
     
-    private Converter converter = new Converter();
+    private ConverterRegistry converterRegistry = new ConverterRegistry();
     
     private Set<String> exportNamespaces = new HashSet<String>();
     
@@ -196,7 +177,7 @@ public class SchemaGen {
                                     if (mappedProperty.isAnyResource()) {
                                         range = RDFS.Resource;
                                     } else {
-                                        range = converter.getDatatype(mappedProperty.getType());
+                                        range = converterRegistry.getDatatype(mappedProperty.getType());
                                     }
                                     if (range != null) {
                                         property.addRange(getDatatype(range, resources));

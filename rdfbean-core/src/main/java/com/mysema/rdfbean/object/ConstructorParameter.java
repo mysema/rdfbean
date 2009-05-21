@@ -8,7 +8,7 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
-import org.springframework.beans.BeanWrapper;
+import org.apache.commons.collections15.BeanMap;
 
 import com.mysema.rdfbean.annotations.InjectProperty;
 
@@ -57,7 +57,7 @@ public class ConstructorParameter extends MappedProperty<Constructor<?>> {
 	}
 
 	@Override
-	public void setValue(BeanWrapper beanWrapper, Object value) {
+	public void setValue(BeanMap beanWrapper, Object value) {
 		throw new UnsupportedOperationException();
 	}
 

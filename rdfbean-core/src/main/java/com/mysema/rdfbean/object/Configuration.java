@@ -11,6 +11,8 @@ import java.util.Set;
 import com.mysema.rdfbean.model.UID;
 
 public interface Configuration {
+    
+    ConverterRegistry getConverterRegistry();
 
     boolean allowCreate(Class<?> clazz);
     

@@ -8,12 +8,11 @@ package com.mysema.rdfbean;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.util.StringUtils;
-
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
+import com.mysema.util.StringUtils;
 
 /**
  * Namespaces provides utility methods for namespace to prefix mappings

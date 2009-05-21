@@ -8,7 +8,7 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
-import org.springframework.beans.BeanWrapper;
+import org.apache.commons.collections15.BeanMap;
 
 /**
  * @author sasa
@@ -35,12 +35,13 @@ public class FieldProperty extends MappedProperty<Field> {
 	}
 
 	@Override
-	public void setValue(BeanWrapper beanWrapper, Object value) {
+	public void setValue(BeanMap beanMap, Object value) {
 	    if (value == null && field.getType().isPrimitive()) {
 	        return;
 	    }
 		try {
-            field.set(beanWrapper.getWrappedInstance(), value);
+//            field.set(beanWrapper.getWrappedInstance(), value);
+            field.set(beanMap.getBean(), value);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

@@ -8,38 +8,18 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
-import org.springframework.beans.BeanWrapperImpl;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.grammar.types.Expr.EEntity;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.Dialect;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
-import com.mysema.rdfbean.model.Identifier;
-import com.mysema.rdfbean.model.LID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.NodeType;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.identity.IdentityService;
 import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 
@@ -104,14 +84,13 @@ public abstract class AbstractSession<N,
         }
     }
     
-    private Converter converter = new Converter();
-    
     private U coreLocalId;
     
 	private U coreModelId;
     
 	private Configuration conf;
 
+	// TODO : move to Configuration ?!?
     private IdentityService identityService;
     
     private FlushMode flushMode = FlushMode.ALWAYS;
@@ -310,7 +289,7 @@ public abstract class AbstractSession<N,
                     if (!property.isVirtual()) {
                         Object convertedValue = getPathValue(mappedClass, path, subject, context);
                         if (convertedValue != null) {
-                            property.setValue(new BeanWrapperImpl(instance), convertedValue);
+                            property.setValue(new BeanMap(instance), convertedValue);
                         }
                     }
                 }
@@ -611,7 +590,7 @@ public abstract class AbstractSession<N,
                     if (node instanceof LIT) {
                         datatype = ((LIT) node).getDatatype();
                     }
-                    convertedValue = converter.convert(node.getValue(), datatype, targetClass);
+                    convertedValue = conf.getConverterRegistry().fromString(node.getValue(), datatype, targetClass);
                 }
             } catch (IllegalArgumentException e) {
                 if (propertyPath.isIgnoreInvalid()) {
@@ -927,10 +906,6 @@ public abstract class AbstractSession<N,
     public U getContext(Object object, U defaultContext) {
         return getContext(object.getClass(), defaultContext);
     }
-
-    public Converter getConverter(){
-        return converter;
-    }
     
     public Locale getCurrentLocale() {
         if (locales != null && !locales.isEmpty()) {
@@ -942,6 +917,10 @@ public abstract class AbstractSession<N,
     }
     
     public abstract Dialect<N,R,B,U,L,S> getDialect();
+    
+    public ConverterRegistry getConverterRegistry(){
+        return conf.getConverterRegistry();
+    }
 
     private N getFunctionalValue(R subject, U predicate, boolean includeInferred, U context) {
         List<S> statements = findStatements(subject, predicate, null, includeInferred, context);
@@ -1170,7 +1149,7 @@ public abstract class AbstractSession<N,
                             "Cannot assign id of " + mappedClass + " into " + type);
                 }
 			}
-            idProperty.setValue(new BeanWrapperImpl(instance), id);
+            idProperty.setValue(new BeanMap(instance), id);
         }
     }
 
@@ -1326,9 +1305,9 @@ public abstract class AbstractSession<N,
     }
 
     private L toRDFLiteral(Object o) {
-        Dialect<N,R,B,U,L,S> dialect = getDialect();
-        UID dataType = converter.getDatatype(o);
-        return dialect.getLiteral(new LIT(converter.toString(o), dataType));
+        Dialect<N,R,B,U,L,S> dialect = getDialect();        
+        UID dataType = conf.getConverterRegistry().getDatatype(o);
+        return dialect.getLiteral(new LIT(conf.getConverterRegistry().toString(o), dataType));
     }
 
     private N toRDFValue(Object object, U context) {

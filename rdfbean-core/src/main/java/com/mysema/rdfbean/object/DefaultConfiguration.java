@@ -42,17 +42,15 @@ public class DefaultConfiguration implements Configuration {
 
     private Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
 
-    private Map<String, List<Class<?>>> type2classes = new HashMap<String, List<Class<?>>>();
+    private ConverterRegistry converterRegistry = new ConverterRegistry();
     
     private UID defaultContext;
     
     private Set<String> restrictedResources = new HashSet<String>(buildinNamespaces);
     
-    public DefaultConfiguration() {}
+    private Map<String, List<Class<?>>> type2classes = new HashMap<String, List<Class<?>>>();
     
-    public DefaultConfiguration(Class<?>... classes) {
-        addClasses(classes);
-    }
+    public DefaultConfiguration() {}
     
     public DefaultConfiguration(boolean asPackages, Class<?>... classes) {
         if (asPackages) {
@@ -62,6 +60,10 @@ public class DefaultConfiguration implements Configuration {
         } else {
             addClasses(classes);
         }
+    }
+    
+    public DefaultConfiguration(Class<?>... classes) {
+        addClasses(classes);
     }
     
     public DefaultConfiguration(Package... packages) {
@@ -93,27 +95,25 @@ public class DefaultConfiguration implements Configuration {
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.mysema.rdfbean.object.ExecutionContext#allowRead(com.mysema.rdfbean.object.MappedPath)
-     */
-    public boolean allowRead(MappedPath path) {
+    @Override
+	public boolean allowCreate(Class<?> clazz) {
+	    return true;
+	}
+	
+	public boolean allowRead(MappedPath path) {
         // TODO filter unmapped types?
         return true;
     }
 	
 	@Override
-	public boolean allowCreate(Class<?> clazz) {
-	    return true;
-	}
-	
-	@Override
-    public Set<Class<?>> getMappedClasses() {
-        return classes;
+    public UID createURI(Object instance) {
+        Class<?> clazz = instance.getClass();
+        UID context = getContext(clazz);
+        if (context != null) {
+            return new UID(context.getId() + "#", clazz.getSimpleName() + "-" + UUID.randomUUID().toString());
+        }
+        return null;
     }
-
-    public List<Class<?>> getMappedClasses(UID uid) {
-	    return type2classes.get(Assert.notNull(uid).getId());
-	}
 
     @Override
     public UID getContext(Class<?> javaClass) {
@@ -129,23 +129,27 @@ public class DefaultConfiguration implements Configuration {
         }
     }
 
-    public void setDefaultContext(String ctx) {
-        this.defaultContext = new UID(ctx);
+    @Override
+    public ConverterRegistry getConverterRegistry() {
+        return converterRegistry;
     }
+
+    @Override
+    public Set<Class<?>> getMappedClasses() {
+        return classes;
+    }
+
+    public List<Class<?>> getMappedClasses(UID uid) {
+	    return type2classes.get(Assert.notNull(uid).getId());
+	}
 
     @Override
     public boolean isRestricted(UID uid) {
         return restrictedResources.contains(uid.getId()) || restrictedResources.contains(uid.ns());
     }
 
-    @Override
-    public UID createURI(Object instance) {
-        Class<?> clazz = instance.getClass();
-        UID context = getContext(clazz);
-        if (context != null) {
-            return new UID(context.getId() + "#", clazz.getSimpleName() + "-" + UUID.randomUUID().toString());
-        }
-        return null;
+    public void setDefaultContext(String ctx) {
+        this.defaultContext = new UID(ctx);
     }
     
 }

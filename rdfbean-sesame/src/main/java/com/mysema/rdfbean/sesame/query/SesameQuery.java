@@ -39,7 +39,7 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.Converter;
+import com.mysema.rdfbean.object.ConverterRegistry;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
@@ -339,7 +339,7 @@ public class SesameQuery extends
             return constToVar.get(javaValue);
         }else{
             Value rdfValue;
-            Converter converter = sesameSession.getConverter();
+            ConverterRegistry converter = sesameSession.getConverterRegistry();
             if (javaValue instanceof Class){
                 rdfValue = getTypeForJavaClass((Class<?>)javaValue);
             }else if (converter.supports(javaValue.getClass())){
