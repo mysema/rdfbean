@@ -53,19 +53,6 @@
       <artifactId>spring-tx</artifactId>
       <version>${spring.version}</version>
     </dependency>
-<!--      
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.2.1</version>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-      <version>1.8.0</version>
-    </dependency>
--->        
 	<dependency>
       <groupId>joda-time</groupId>
 	  <artifactId>joda-time</artifactId>
