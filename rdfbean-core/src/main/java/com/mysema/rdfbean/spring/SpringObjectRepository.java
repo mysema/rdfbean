@@ -14,6 +14,7 @@ import com.mysema.rdfbean.object.ObjectRepository;
  * @author sasa
  *
  */
+//TODO : move to rdfbean-spring
 public class SpringObjectRepository implements ObjectRepository {
     
     private BeanFactory beanFactory;

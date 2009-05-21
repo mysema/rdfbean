@@ -28,6 +28,7 @@ import com.mysema.rdfbean.object.SimpleSessionContext;
  * @version $Id$
  *
  */
+// TODO : move to rdfbean-spring
 public class RDFBeanTransactionManager extends AbstractPlatformTransactionManager implements SessionContext{
 
     private static final long serialVersionUID = -4060513400839374983L;
