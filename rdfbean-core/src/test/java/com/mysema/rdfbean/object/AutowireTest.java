@@ -26,15 +26,19 @@ public class AutowireTest {
 
     @ClassMapping(ns=TEST.NS)
     public final static class DomainType<T> {
+        
         @Predicate(ns=RDF.NS, ln="type")
         Class<T> parametrizedClass;
+        
         @Id(IDType.URI)
         String uri = TEST.NS + "domainType";
     }
     
     public static class Command {
+        
         @Default(ns=TEST.NS, ln="domainType")
         DomainType<DomainType<?>> domainType;
+    
     }
     
     @Test
@@ -46,6 +50,7 @@ public class AutowireTest {
         Session session = new MiniSession(repository, DomainType.class);
         Command command = new Command();
         assertNull(command.domainType);
+
         session.autowire(command);
         assertNotNull(command.domainType);
         assertNotNull(command.domainType.parametrizedClass);

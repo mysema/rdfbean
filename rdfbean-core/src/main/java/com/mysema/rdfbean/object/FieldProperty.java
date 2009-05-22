@@ -48,9 +48,9 @@ public class FieldProperty extends MappedProperty<Field> {
 	}
 
     @Override
-    public Object getValue(Object instance) {
+    public Object getValue(BeanMap instance) {
         try {
-            return field.get(instance);
+            return field.get(instance.getBean());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

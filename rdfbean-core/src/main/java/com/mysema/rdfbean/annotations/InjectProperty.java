@@ -21,18 +21,26 @@ import java.lang.annotation.Target;
  * <pre>
  * &#64;ClassMapping(ns=TEST.NS)
  * public final class DateInterval {
+ * 
  *   &#64;Prediate
  *   private LocalDate start;
+ *   
  *   &#64;Predicate
  *   private LocalDate end;
  *   
  *   public DateInterval(
- *          &#64;InjectProperty("start") LocalDate start,
- *          &#64;InjectProperty("end") LocalDate end) {
+ *          &#64;InjectProperty("start") 
+ *          LocalDate start,
+ *          
+ *          &#64;InjectProperty("end") 
+ *          LocalDate end
+ *       ) {
  *     this.start = Assert.notNull(start);
  *     this.end = Assert.notNull(end);
  *   }
+ *   
  *   public LocalDate getStart() { return start; }
+ *   
  *   public LocalDate getEnd() { return end; }
  * }
  * </pre>

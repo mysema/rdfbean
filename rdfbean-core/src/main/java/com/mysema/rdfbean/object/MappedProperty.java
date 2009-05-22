@@ -204,7 +204,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 	
 	public abstract Class<?> getType();
 	
-	public abstract Object getValue(Object instance);
+	public abstract Object getValue(BeanMap instance);
     
     public UID getValuePredicate() {
 		MapElements mapKey = getAnnotation(MapElements.class);

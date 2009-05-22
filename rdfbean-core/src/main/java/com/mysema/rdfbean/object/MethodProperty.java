@@ -80,11 +80,8 @@ public class MethodProperty extends MappedProperty<Method> {
 	}
 
     @Override
-    public Object getValue(Object instance) {
-//        BeanWrapper beanWrapper = new BeanWrapperImpl(instance);
-//        return beanWrapper.getPropertyValue(getName());
-        BeanMap beanMap = new BeanMap(instance);
-        return beanMap.get(getName());
+    public Object getValue(BeanMap instance) {
+        return instance.get(getName());
     }
 
 	@Override

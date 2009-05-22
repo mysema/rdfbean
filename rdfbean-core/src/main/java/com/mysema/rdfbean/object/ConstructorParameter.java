@@ -48,7 +48,7 @@ public class ConstructorParameter extends MappedProperty<Constructor<?>> {
 	}
 
 	@Override
-	public Object getValue(Object instance) {
+	public Object getValue(BeanMap instance) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -63,7 +63,7 @@ public class ConstructorParameter extends MappedProperty<Constructor<?>> {
 
     @Override
     public boolean isVirtual() {
-        return false;
+        return getAnnotation(InjectProperty.class) == null;
     }
 	
 }

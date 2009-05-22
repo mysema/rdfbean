@@ -14,8 +14,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * &#64;MapElements defines how Map's key and value are mapped to RDF.
+ * Map's are mapped using 1) &#64;Predicate to define target and 
+ * 2) MapElements to define how that object is mapped to Map elements.
+ * 
+ * <pre>
+ *   &#64;Predicate(ns=RDFS.NS, ln="subClassOf", inv=true)
+ *   &#64;MapElements(key=&#64;Predicate(ns=RDFS.NS, ln="label"))
+ *   private Map<String, RDFSClass> subClassesByLabel;
+ * </pre>
+ * 
+ * If component (value) type is not readable from property's generic
+ * signature, it can be defined using &#64;ComponentType.
  * @author sasa
- *
  */
 @Target( { METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)

@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -71,41 +72,30 @@ public class MappedClass {
     	}
 	}
 
-    private static void collectFieldPaths(Class<?> clazz, MappedClass mappedClass, boolean inherited) {
+    private static void collectFieldPaths(Class<?> clazz, MappedClass mappedClass) {
         if (!clazz.isInterface()) {
-            String classNs = MappedClass.getClassNs(clazz);
             MappedPath path;
+            String classNs = MappedClass.getClassNs(clazz);
             for (Field field : clazz.getDeclaredFields()) {
-                path = MappedPath.getPathMapping(classNs, field, inherited);
+                path = MappedPath.getPathMapping(classNs, field);
                 if (path != null) {
                     mappedClass.addMappedPath(path);
                 }
             }
-            Class<?> superClass = clazz.getSuperclass();
-            if (superClass != null) {
-                collectFieldPaths(superClass, mappedClass, true);
+        }
+    }
+
+    private static void collectMethodPaths(Class<?> clazz, MappedClass mappedClass) {
+        MappedPath path;
+        String classNs = MappedClass.getClassNs(clazz);
+        for (Method method : clazz.getDeclaredMethods()) {
+            path = MappedPath.getPathMapping(classNs, method);
+            if (path != null) {
+                mappedClass.mergeMappedPath(path);
             }
         }
     }
 
-    private static void collectMethodPaths(Class<?> clazz, MappedClass mappedClass, boolean inherited) {
-        String classNs = MappedClass.getClassNs(clazz);
-        MappedPath path;
-        for (Method method : clazz.getDeclaredMethods()) {
-            path = MappedPath.getPathMapping(classNs, method, inherited);
-            if (path != null) {
-                mappedClass.addMappedPath(path);
-            }
-        }
-        Class<?> superClass = clazz.getSuperclass();
-        if (superClass != null) {
-            collectMethodPaths(superClass, mappedClass, true);
-        }
-        for (Class<?> iface : clazz.getInterfaces()) {
-            collectMethodPaths(iface, mappedClass, true);
-        }
-    }
-    
     public static String getClassNs(Class<?> clazz) {
         ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
         if (cmap != null) {
@@ -146,8 +136,29 @@ public class MappedClass {
         MappedClass mappedClass = mappedClasses.get(clazz);
         if (mappedClass == null) {
             mappedClass = new MappedClass(clazz);
-            collectFieldPaths(clazz, mappedClass, false);
-            collectMethodPaths(clazz, mappedClass, false);
+            
+            // Collect super class properties 
+            Class<?> superClass = clazz.getSuperclass();
+            if (superClass != null) {
+                MappedClass mappedSuperClass = getMappedClass(superClass);
+                for (MappedPath path : mappedSuperClass.getProperties()) {
+                    mappedClass.addMappedPath(new MappedPath(path.getMappedProperty(), 
+                            path.getPredicatePath(), true));
+                }
+            }
+            
+            // Collect interface properties (me'rge with super class properties)
+            for (Class<?> iface : clazz.getInterfaces()) {
+                MappedClass mappedInterface = getMappedClass(iface);
+                for (MappedPath path : mappedInterface.getProperties()) {
+                    mappedClass.mergeMappedPath(new MappedPath(path.getMappedProperty(), 
+                            path.getPredicatePath(), true));
+                }
+            }
+
+            // Collect direct properties (merge with super properties)
+            collectFieldPaths(clazz, mappedClass);
+            collectMethodPaths(clazz, mappedClass);
             assignConstructor(clazz, mappedClass);
             mappedClass.close();
             mappedClasses.put(clazz, mappedClass);
@@ -161,7 +172,7 @@ public class MappedClass {
     
     private MappedProperty<?> idProperty;
     
-    private List<MappedPath> properties = new ArrayList<MappedPath>();
+    private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
     
     private MappedConstructor constructor;
     
@@ -171,32 +182,55 @@ public class MappedClass {
     }
 
     private void addMappedPath(MappedPath path) {
-        if (path.getMappedProperty().isIdReference()) {
+        addMappedPath(path, false);
+    }
+
+    private void addMappedPath(MappedPath path, boolean merge) {
+        MappedProperty<?> property = path.getMappedProperty();
+        MappedPath existingPath = properties.get(property.getName());
+
+        if (!merge && existingPath != null) {
+            throw new IllegalArgumentException("Duplicate property: " + path + " and ");
+        }
+        
+        else if (path.getMappedProperty().isIdReference()) {
             if (idProperty != null) {
                 throw new IllegalArgumentException("Duplicate ID property: " + 
                         idProperty + " and " + path.getMappedProperty());
             }
             idProperty = path.getMappedProperty();
-            properties.add(path);
-        } else {
-        	boolean merged = false;
-        	for (MappedPath other : properties) {
-        		merged |= other.merge(path);
-        	}
-        	if (!merged) {
-        		properties.add(path);
-        	}
+            properties.put(path.getName(), path);
+        } 
+
+        else if (existingPath != null) {
+            existingPath.getMappedProperty().addAnnotations(property);
+        } 
+        
+        else {
+            properties.put(path.getName(), path);
         }
     }
     
+    private void mergeMappedPath(MappedPath path) {
+        addMappedPath(path, true);
+    }
+    
 	private void close() {
-		Collections.sort(properties, new Comparator<MappedPath>() {
-			@Override
-			public int compare(MappedPath o1, MappedPath o2) {
-				return o1.getOrder() - o2.getOrder();
-			}
-		});
-        properties = Collections.unmodifiableList(properties);
+	    MappedPath[] paths = properties.values().toArray(new MappedPath[properties.size()]);
+	    // Sort properties into bind order
+	    Arrays.sort(paths, new Comparator<MappedPath>() {
+            @Override
+            public int compare(MappedPath o1, MappedPath o2) {
+                return o1.getOrder() - o2.getOrder();
+            }
+        });
+	    // Rebuild properties map using bind ordering
+        properties = new LinkedHashMap<String, MappedPath>();
+        for (MappedPath path : paths) {
+            properties.put(path.getName(), path);
+        }
+        // Close properties map from further changes
+        properties = Collections.unmodifiableMap(properties);
     }
     
     public MappedConstructor getConstructor() {
@@ -208,13 +242,12 @@ public class MappedClass {
     }
 
     public MappedPath getMappedPath(String name) {
-    	for (MappedPath path : properties) {
-    		MappedProperty<?> property = path.getMappedProperty();
-    		if (property != null && property.getName().equals(name)) {
-    			return path;
-    		}
-    	}
-    	throw new IllegalArgumentException("No such property: " + name + " in " + clazz);
+        MappedPath path = properties.get(name);
+        if (path != null) {
+            return path;
+        } else {
+            throw new IllegalArgumentException("No such property: " + name + " in " + clazz);
+        }
     }
     
     public Class<?> getJavaClass() {
@@ -225,8 +258,8 @@ public class MappedClass {
         return uid;
     }
     
-    public List<MappedPath> getProperties() {
-        return properties;
+    public Iterable<MappedPath> getProperties() {
+        return properties.values();
     }
 
     public boolean isPolymorphic() {

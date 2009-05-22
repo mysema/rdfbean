@@ -14,35 +14,61 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author sasa
+ * Basic mapping of RDF predicates to Java Bean properties. 
+ * Annotation may be applied on fields, getters, setters and constructor parameters. 
  * 
+ * @author sasa
  */
 @Target( { METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Predicate {
 
+    /**
+     * True if inferred statements should be included. For example including 
+     * inferred statements of rdfs:subClassOf predicate would return all super
+     * classes. 
+     * <p>
+     * NOTE: Supported inferences depend on actual RDF repository implementation.
+     */
     boolean includeInferred() default false;
     
+    /**
+     * True if invalid values should be ignored. 
+     */
     boolean ignoreInvalid() default false;
 
     /**
-     * @return true if property is mapped to inverse of this predicate, i.e.
-     *         (*value*, predicate, this). If false, then maps directly to this
-     *         predicate (this, predicate, *value*).
+     * True if property is mapped to inverse of this predicate, i.e.
+     * triple(*value*, predicate, this). If false, then maps directly to this
+     * predicate triple(this, predicate, *value*).
      */
     boolean inv() default false;
 
     /**
-     * @return Local name of the mapped resource. Uses class or property name as
-     *         default (empty string).
+     * Local name of the mapped resource. Uses property's name as
+     *         default.
      */
     String ln() default "";
 
     /**
-     * @return Namespace of the resource. If empty string, uses parent namespace
+     * Namespace of the predicate. If empty, uses parent namespace (path's or class's).
      */
     String ns() default "";
 
+    /**
+     * Context (URI) in which mapped statements reside. For example if 
+     * instances and ontology reside in different contexts and one needs
+     * meta information about the instance directly through the instance itself:
+     * 
+     * <pre>
+     *   &#64;Path(
+     *      &#64;Predicate(ns=RDF.NS, ln="type"), 
+     *      &#64;Predicate(ns=RDFS.NS, ln="label", context=ONTOLOGY_CONTEXT)
+     *   )
+     *   &#64;Localized
+     *   private String typeLabel;
+     * </pre>
+     */
     String context() default "";
     
 }

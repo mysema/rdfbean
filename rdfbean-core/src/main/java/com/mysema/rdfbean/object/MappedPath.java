@@ -23,26 +23,26 @@ import com.mysema.util.StringUtils;
  */
 public class MappedPath {
 
-    static MappedPath getMappedPath(MappedProperty<?> property, List<MappedPredicate> path, boolean inherited) {
+    static MappedPath getMappedPath(MappedProperty<?> property, List<MappedPredicate> path) {
         if (path != null) {
-            return new MappedPath(property, path, inherited);
+            return new MappedPath(property, path, false);
         } else {
             if (property.isAnnotationPresent(Inject.class) 
                     || property.isAnnotationPresent(Mixin.class)
                     || property.isAnnotationPresent(Id.class)
                     || property.isAnnotationPresent(Default.class)
                     || property.isAnnotationPresent(Defaults.class)) {
-                return new MappedPath(property, Collections.<MappedPredicate>emptyList(), inherited);
+                return new MappedPath(property, Collections.<MappedPredicate>emptyList(), false);
             } else {
             	return null;
             }
         }
     }
 
-    static MappedPath getPathMapping(String classNs, Field field, boolean inherited) {
+    static MappedPath getPathMapping(String classNs, Field field) {
         FieldProperty property = new FieldProperty(field);
         List<MappedPredicate> path = getPredicatePath(classNs, property);
-        return getMappedPath(property, path, inherited);
+        return getMappedPath(property, path);
     }
 
     static MappedPath getPathMapping(MappedClass mappedClass, Constructor<?> constructor, int parameterIndex) {
@@ -51,15 +51,15 @@ public class MappedPath {
     		return mappedClass.getMappedPath(constructorParameter.getReferencedProperty());
     	} else {
 	        List<MappedPredicate> path = getPredicatePath(mappedClass.getClassNs(), constructorParameter);
-	        return getMappedPath(constructorParameter, path, false);
+	        return getMappedPath(constructorParameter, path);
     	}
     }
     
-    static MappedPath getPathMapping(String classNs, Method method, boolean inherited) {
+    static MappedPath getPathMapping(String classNs, Method method) {
         MethodProperty property = MethodProperty.getMethodPropertyOrNull(method);
         if (property != null) {
             List<MappedPredicate> path = getPredicatePath(classNs, property);
-            return getMappedPath(property, path, inherited);
+            return getMappedPath(property, path);
         } else {
             return null;
         }
@@ -133,6 +133,10 @@ public class MappedPath {
 	public MappedProperty<?> getMappedProperty() {
         return mappedProperty;
     }
+	
+	public String getName() {
+	    return mappedProperty.getName();
+	}
 
     public List<MappedPredicate> getPredicatePath() {
         return predicatePath;

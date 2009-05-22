@@ -246,7 +246,7 @@ public abstract class AbstractSession<N,
         throw new UnsupportedOperationException("addStatement");
     }
 
-    private R assignId(MappedClass mappedClass, Object instance) {
+    private R assignId(MappedClass mappedClass, BeanMap instance) {
         R subject = createResource(instance);
         setId(mappedClass, subject, instance);
         return subject;
@@ -291,8 +291,9 @@ public abstract class AbstractSession<N,
     @Override
     public void autowire(Object instance) {
         Assert.notNull(instance);
-        MappedClass mappedClass = MappedClass.getMappedClass(instance.getClass());
-        bind(getId(mappedClass, instance), instance);
+        BeanMap beanMap = toBeanMap(instance);
+        MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
+        bind(getId(mappedClass, beanMap), beanMap);
     }
         
     public <T> T bind(R subject, T instance) {
@@ -302,8 +303,9 @@ public abstract class AbstractSession<N,
             }
             // TODO: default context
             U context = getContext(instance, null);
-            MappedClass mappedClass = MappedClass.getMappedClass(instance.getClass());
-            setId(mappedClass, subject, instance);
+            BeanMap beanMap = toBeanMap(instance);
+            MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
+            setId(mappedClass, subject, beanMap);
 //            loadStack.add(instance);
             for (MappedPath path : mappedClass.getProperties()) {
                 if (!path.isConstructorParameter()) {
@@ -311,7 +313,7 @@ public abstract class AbstractSession<N,
                     if (!property.isVirtual()) {
                         Object convertedValue = getPathValue(mappedClass, path, subject, context);
                         if (convertedValue != null) {
-                            property.setValue(new BeanMap(instance), convertedValue);
+                            property.setValue(beanMap, convertedValue);
                         }
                     }
                 }
@@ -926,7 +928,7 @@ public abstract class AbstractSession<N,
     }
     
     public U getContext(Object object, U defaultContext) {
-        return getContext(object.getClass(), defaultContext);
+        return getContext(getClass(object), defaultContext);
     }
     
     public Locale getCurrentLocale() {
@@ -968,7 +970,7 @@ public abstract class AbstractSession<N,
         MappedProperty<?> idProperty = mappedClass.getIdProperty();
         if (idProperty != null) {
             // Assigned id
-            Object id = idProperty.getValue(instance);
+            Object id = idProperty.getValue(toBeanMap(instance));
             if (id != null) {
                 if (idProperty.getIDType() == IDType.LOCAL) {
                     LID lid;
@@ -995,12 +997,9 @@ public abstract class AbstractSession<N,
     }
     
     public R getId(Object instance){
-        MappedClass mappedClass = MappedClass.getMappedClass(instance.getClass());
-        if (mappedClass != null){
-            return getId(mappedClass, instance);    
-        }else{
-            throw new IllegalArgumentException("No mapped class for " + instance.getClass().getName());
-        }        
+        BeanMap beanMap = toBeanMap(instance);
+        MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
+        return getId(mappedClass, beanMap);    
     }
     
     public IdentityService getIdentityService() {
@@ -1145,7 +1144,7 @@ public abstract class AbstractSession<N,
     }
     
     @SuppressWarnings("unchecked")
-    private <T> void setId(MappedClass mappedClass, R subject, T instance) {
+    private <T> void setId(MappedClass mappedClass, R subject, BeanMap instance) {
         MappedProperty<?> idProperty = mappedClass.getIdProperty();
         if (idProperty != null && !mappedClass.isEnum() && !idProperty.isVirtual()) {
             Dialect<N,R,B,U,L,S> dialect = getDialect();
@@ -1174,7 +1173,7 @@ public abstract class AbstractSession<N,
                             "Cannot assign id of " + mappedClass + " into " + type);
                 }
 			}
-            idProperty.setValue(new BeanMap(instance), id);
+            idProperty.setValue(instance, id);
         }
     }
 
@@ -1189,6 +1188,10 @@ public abstract class AbstractSession<N,
         return identityService.getLID(getModel(), getDialect().getID(resource));
     }
 
+    protected BeanMap toBeanMap(Object instance) {
+        return instance instanceof BeanMap ? (BeanMap) instance : new BeanMap(instance);
+    }
+    
     @SuppressWarnings("unchecked")
     private void toRDF(Object instance, R subject, U context, MappedClass mappedClass, boolean update) {
         Dialect<N,R,B,U,L,S> dialect = getDialect();
@@ -1196,7 +1199,7 @@ public abstract class AbstractSession<N,
         if (uri != null) {
             recordAddStatement(subject, rdfType, dialect.getURI(uri), context);
         }
-        
+        BeanMap beanMap = toBeanMap(instance);
         MappedProperty<?> property;
         for (MappedPath path : mappedClass.getProperties()) {
             property = path.getMappedProperty();
@@ -1221,7 +1224,7 @@ public abstract class AbstractSession<N,
                     }
                 }
                 
-                Object object = property.getValue(instance);
+                Object object = property.getValue(beanMap);
                 if (object != null) {
                     if (property.isList()) {
                         R first = toRDFList((List<?>) object, context);
@@ -1257,25 +1260,31 @@ public abstract class AbstractSession<N,
                     }
                 }
             } else if (property.isMixin()) {
-                Object object = property.getValue(instance);
+                Object object = property.getValue(beanMap);
                 if (object != null) {
                     U subContext = getContext(object, context);
-                    toRDF(object, subject, subContext, MappedClass.getMappedClass(object.getClass()), update);
+                    toRDF(object, subject, subContext, MappedClass.getMappedClass(getClass(object)), update);
                 }
             }
         }
     }
 
+    protected Class<?> getClass(Object object) {
+        return object instanceof BeanMap ? ((BeanMap) object).getBean().getClass() : object.getClass();
+    }
+    
     @SuppressWarnings("unchecked")
     private R toRDF(Object instance, U parentContext) {
-        MappedClass mappedClass = MappedClass.getMappedClass(Assert.notNull(instance).getClass());
-        U context = getContext(instance.getClass(), parentContext);
+        BeanMap beanMap = toBeanMap(Assert.notNull(instance));
+        Class<?> clazz = getClass(instance);
+        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        U context = getContext(clazz, parentContext);
         if (context == null) {
             // TODO ???
         }
         R subject = resourceCache.get(instance);
         if (subject == null) {
-            subject = getId(mappedClass, instance);
+            subject = getId(mappedClass, beanMap);
         }
         if (mappedClass.isEnum()) {
             subject = getDialect().getURI(mappedClass.getClassNs() + ((Enum<?>) instance).name());
@@ -1286,7 +1295,7 @@ public abstract class AbstractSession<N,
 
             // Create
             if (subject == null) {
-                subject = assignId(mappedClass, instance);
+                subject = assignId(mappedClass, beanMap);
             }
             put(subject, instance);
 
@@ -1296,7 +1305,7 @@ public abstract class AbstractSession<N,
                 return subject;
             }
             
-            toRDF(instance, subject, context, mappedClass, update);
+            toRDF(beanMap, subject, context, mappedClass, update);
         }
         return subject;
     }
@@ -1348,7 +1357,7 @@ public abstract class AbstractSession<N,
         if (object == null) {
             return null;
         } else {
-            Class<?> type = object.getClass();
+            Class<?> type = getClass(object);
             if (type.isAnnotationPresent(ClassMapping.class)) {
                 return toRDF(object, context);
             } else if (object instanceof UID) {

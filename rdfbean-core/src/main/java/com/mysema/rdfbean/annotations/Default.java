@@ -18,6 +18,7 @@ import java.lang.annotation.Target;
  * <pre>
  * &#64;ClassMapping(ns=TEST.NS)
  * public class User {
+ * 
  *   &#64;Default(ns=TEST.NS, "UserRole")
  *   &#64;Predicate
  *   private Role role;
