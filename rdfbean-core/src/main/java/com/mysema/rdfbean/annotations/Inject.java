@@ -15,8 +15,23 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Denotes that the property the value should be acquired from Session's parent ObjectRepository, 
+ * e.g. a service bean managed by Spring. Used in conjunction with {@link Predicate} and/or 
+ * {@link Default}
+ * this can be used to define a) constant, b) data dependent or c) data dependent 
+ * with optional default value service references. 
+ * <p>
+ * Injection can be used for example for 
+ * <ul>
+ * <li>Pluggable authorization service used in bean's methods 
+ *     to check access rights manually usign {@link Inject} and {@link Default}.</li>
+ * <li>Data dependent UI handlers (e.g. Spring MVC Controllers) with some generic 
+ *     default controller that is overridable in data using {@link Inject}, {@link Default} 
+ *     and {@link Predicate}.</li>
+ * <li>Manual - and thus well controlled - lazy loading.<li>
+ * </ul>
+ * 
  * @author sasa
- *
  */
 @Target( { METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)

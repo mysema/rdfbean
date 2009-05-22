@@ -8,18 +8,40 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
+import org.apache.commons.lang.ObjectUtils;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.types.expr.EEntity;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.Dialect;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.model.Identifier;
+import com.mysema.rdfbean.model.LID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.NodeType;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.identity.IdentityService;
 import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 
@@ -107,7 +129,7 @@ public abstract class AbstractSession<N,
             }
     );
 
-    private List<Locale> locales;
+    private Iterable<Locale> locales;
     
     private BID model;
     
@@ -145,16 +167,16 @@ public abstract class AbstractSession<N,
         this(Collections.<Locale>emptyList(), ctx);
     }
 
-    public AbstractSession(List<Locale> locales, Class<?>... classes) {
+    public AbstractSession(Iterable<Locale> locales, Class<?>... classes) {
         this(locales, new DefaultConfiguration(classes));
     }
     
-    public AbstractSession(List<Locale> locales, Configuration defaultCtx) {
+    public AbstractSession(Iterable<Locale> locales, Configuration defaultCtx) {
         this.locales = locales;
         this.conf = defaultCtx;
     }
 
-    public AbstractSession(List<Locale> locales, Package... packages) throws ClassNotFoundException {
+    public AbstractSession(Iterable<Locale> locales, Package... packages) throws ClassNotFoundException {
         this(locales, new DefaultConfiguration(packages));
     }
     
@@ -908,12 +930,13 @@ public abstract class AbstractSession<N,
     }
     
     public Locale getCurrentLocale() {
-        if (locales != null && !locales.isEmpty()) {
-            return locales.get(0);
-        } else {
-            // TODO default locale, null or empty locale?
-            return Locale.getDefault();
+        if (locales != null) {
+            Iterator<Locale> liter = locales.iterator();
+            if (liter.hasNext()) {
+                return liter.next();
+            }
         }
+        return Locale.ROOT;
     }
     
     public abstract Dialect<N,R,B,U,L,S> getDialect();
@@ -956,13 +979,15 @@ public abstract class AbstractSession<N,
                     }
                     return dialect.getResource(identityService.getID(lid));
                 } else {
-                    UID uid = null;
-                    if (id instanceof UID) {
-                        uid = (UID) id;
+                    ID rid = null;
+                    if (rid instanceof UID) {
+                        rid = (UID) id;
+                    } else if (idProperty.getIDType() == IDType.URI) {
+                        rid = new UID(id.toString());
                     } else {
-                        uid = new UID(id.toString());
+                        rid = (ID) id;
                     }
-                    return dialect.getResource(uid);
+                    return dialect.getResource(rid);
                 }
             }
         }
@@ -1122,7 +1147,7 @@ public abstract class AbstractSession<N,
     @SuppressWarnings("unchecked")
     private <T> void setId(MappedClass mappedClass, R subject, T instance) {
         MappedProperty<?> idProperty = mappedClass.getIdProperty();
-        if (idProperty != null && !mappedClass.isEnum()) {
+        if (idProperty != null && !mappedClass.isEnum() && !idProperty.isVirtual()) {
             Dialect<N,R,B,U,L,S> dialect = getDialect();
         	Object id = null;
         	Identifier identifier;
@@ -1137,7 +1162,7 @@ public abstract class AbstractSession<N,
                     identifier = null;
                 }
 			} else {
-			    identifier = dialect.getID((U) subject);
+			    identifier = dialect.getID((R) subject);
 			}
 			if (identifier != null) {
                 if (String.class.isAssignableFrom(type)) {
@@ -1174,21 +1199,30 @@ public abstract class AbstractSession<N,
         
         MappedProperty<?> property;
         for (MappedPath path : mappedClass.getProperties()) {
+            property = path.getMappedProperty();
             if (path.isSimpleProperty()) {
                 MappedPredicate mappedPredicate = path.get(0);
                 U predicate = dialect.getURI(mappedPredicate.uid());
 
                 if (update) {
                     for (S statement : findStatements(subject, predicate, null, false, context)) {
-                        recordRemoveStatement(statement, context);
-                        // Check if it's a list
-                        removeList(dialect.getObject(statement), context, dialect);
+                        if (property.isLocalized() && String.class.equals(property.getType())) {
+                            LIT lit = dialect.getLIT((L) dialect.getObject(statement));
+                            if (ObjectUtils.equals(getCurrentLocale(), lit.getLang())) {
+                                recordRemoveStatement(statement, context);
+                            }
+                        } else {
+                            recordRemoveStatement(statement, context);
+
+                            if (property.isList()) {
+                                removeList(dialect.getObject(statement), context, dialect);
+                            }
+                        }
                     }
                 }
                 
-                Object object = path.getMappedProperty().getValue(instance);
+                Object object = property.getValue(instance);
                 if (object != null) {
-                    property = path.getMappedProperty();
                     if (property.isList()) {
                         R first = toRDFList((List<?>) object, context);
                         if (first != null) {
@@ -1222,8 +1256,8 @@ public abstract class AbstractSession<N,
                         }
                     }
                 }
-            } else if (path.getMappedProperty().isMixin()) {
-                Object object = path.getMappedProperty().getValue(instance);
+            } else if (property.isMixin()) {
+                Object object = property.getValue(instance);
                 if (object != null) {
                     U subContext = getContext(object, context);
                     toRDF(object, subject, subContext, MappedClass.getMappedClass(object.getClass()), update);

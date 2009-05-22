@@ -28,15 +28,15 @@ public class MiniSession extends AbstractSession<NODE, ID, BID, UID, LIT, STMT> 
         this(new MiniRepository(), ctx);
     }
 
-    public MiniSession(List<Locale> locales, Class<?>... classes) {
+    public MiniSession(Iterable<Locale> locales, Class<?>... classes) {
         this(new MiniRepository(), locales, classes);
     }
 
-    public MiniSession(List<Locale> locales, Configuration defaultCtx) {
+    public MiniSession(Iterable<Locale> locales, Configuration defaultCtx) {
         this(new MiniRepository(), locales, defaultCtx);
     }
 
-    public MiniSession(List<Locale> locales, Package... packages) throws ClassNotFoundException {
+    public MiniSession(Iterable<Locale> locales, Package... packages) throws ClassNotFoundException {
         this(new MiniRepository(), locales, packages);
     }
 
@@ -64,19 +64,19 @@ public class MiniSession extends AbstractSession<NODE, ID, BID, UID, LIT, STMT> 
         this.dialect = repository.getDialect();
     }
 
-    public MiniSession(MiniRepository repository, List<Locale> locales, Class<?>... classes) {
+    public MiniSession(MiniRepository repository, Iterable<Locale> locales, Class<?>... classes) {
         super(locales, classes);
         this.repository = repository;
         this.dialect = repository.getDialect();
     }
 
-    public MiniSession(MiniRepository repository, List<Locale> locales, Configuration defaultCtx) {
+    public MiniSession(MiniRepository repository, Iterable<Locale> locales, Configuration defaultCtx) {
         super(locales, defaultCtx);
         this.repository = repository;
         this.dialect = repository.getDialect();
     }
 
-    public MiniSession(MiniRepository repository, List<Locale> locales, Package... packages) throws ClassNotFoundException {
+    public MiniSession(MiniRepository repository, Iterable<Locale> locales, Package... packages) throws ClassNotFoundException {
         super(locales, packages);
         this.repository = repository;
         this.dialect = repository.getDialect();

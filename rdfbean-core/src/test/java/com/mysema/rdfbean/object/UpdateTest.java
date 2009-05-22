@@ -8,15 +8,20 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.mysema.commons.l10n.support.LocaleIterable;
+import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.LID;
@@ -64,6 +69,10 @@ public class UpdateTest {
         List<Employee> managers = new ArrayList<Employee>();
         
         @Predicate
+        @Localized
+        String description;
+        
+        @Predicate
         String name;
 
         public Company() {}
@@ -101,19 +110,25 @@ public class UpdateTest {
     public void init() {
         Company company = new Company();
         company.name = "Example";
+        company.description = "In English";
+        
         Employee employee = new Employee();
         employee.age = 30;
         employee.name = "John Doe";
         employee.company = company;
-
+        
         repository = new MiniRepository();
         identityService = MemoryIdentityService.instance();
         ids = newSession().saveAll(employee, company);
     }
 
     private MiniSession newSession() {
-        session = new MiniSession(repository, Employee.class, Company.class,
-                EmployeeInfo.class);
+        return newSession(Locale.ENGLISH);
+    }
+
+    private MiniSession newSession(Locale locale) {
+        session = new MiniSession(repository, new LocaleIterable(locale, false),
+                Employee.class, Company.class, EmployeeInfo.class);
         session.setIdentityService(identityService);
         return session;
     }
@@ -239,5 +254,23 @@ public class UpdateTest {
         assertEquals(30, employee.age);
         assertNotNull(employee.company);
         assertEquals("Example", employee.company.name);
+    }
+    
+    @Test
+    public void localizedProperty() {
+        newSession(Locale.UK);
+        Company company = getCompany();
+        assertEquals("In English", company.description);
+
+        company.description = "In UK English";
+        session.save(company);
+        
+        newSession(Locale.UK);
+        company = getCompany();
+        assertEquals("In UK English", company.description);
+        
+        newSession(Locale.ENGLISH);
+        company = getCompany();
+        assertEquals("In English", company.description);
     }
 }
