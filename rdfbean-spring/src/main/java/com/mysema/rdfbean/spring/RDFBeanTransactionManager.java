@@ -99,7 +99,6 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
                     determineTimeout(definition),
                     definition.getIsolationLevel());
             
-            ((TransactionObject)transaction).setSavedFlushMode(s.getFlushMode());
             s.setFlushMode(FlushMode.COMMIT);
             
         } catch (RuntimeException oe) {
@@ -135,8 +134,8 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
         } catch (RuntimeException oe) {
             throw new TransactionSystemException("error committing transaction", oe);
         } finally {
-            if (txObj.getFlushMode() != null){
-                txObj.getSession().setFlushMode(txObj.getFlushMode());    
+            if (txObj.getOriginalFlushMode() != null){
+                txObj.getSession().setFlushMode(txObj.getOriginalFlushMode());    
             }            
             sessionContext.releaseSession();
         }
@@ -164,8 +163,8 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
         } catch (RuntimeException oe) {
             throw new TransactionSystemException("error rolling back transaction", oe);
         } finally {
-            if (txObj.getFlushMode() != null){
-                txObj.getSession().setFlushMode(txObj.getFlushMode());    
+            if (txObj.getOriginalFlushMode() != null){
+                txObj.getSession().setFlushMode(txObj.getOriginalFlushMode());    
             }            
             sessionContext.releaseSession();
             if (clearSessionOnRB) {
@@ -263,16 +262,13 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
         
         public TransactionObject(Session session) {
             this.session = session;
+            this.flushMode = session.getFlushMode();
         }
 
-        public FlushMode getFlushMode(){
+        public FlushMode getOriginalFlushMode(){
             return flushMode;
         }
         
-        public void setSavedFlushMode(FlushMode flushMode) {
-            this.flushMode = flushMode;            
-        }
-
         Session getSession() {
             return session;
         }
