@@ -8,12 +8,12 @@ package com.mysema.rdfbean.object;
 import java.io.Closeable;
 import java.io.IOException;
 
-import com.mysema.query.ProjectableAdapter;
-import com.mysema.query.QueryBaseWithProjection;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.grammar.OrderSpecifier;
-import com.mysema.query.grammar.types.Expr;
-import com.mysema.query.grammar.types.Expr.EBoolean;
+import com.mysema.query.support.ProjectableAdapter;
+import com.mysema.query.support.QueryBaseWithProjection;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.expr.Expr;
 
 /**
  * BeanQueryAdapter provides

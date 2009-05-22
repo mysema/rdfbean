@@ -7,7 +7,7 @@ package com.mysema.rdfbean.object;
 
 import java.util.List;
 
-import com.mysema.query.grammar.types.Expr.EEntity;
+import com.mysema.query.types.expr.EEntity;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;

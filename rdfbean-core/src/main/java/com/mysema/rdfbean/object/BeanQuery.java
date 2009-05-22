@@ -9,8 +9,9 @@ import java.io.Closeable;
 
 import com.mysema.query.Projectable;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.grammar.OrderSpecifier;
-import com.mysema.query.grammar.types.Expr;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.expr.Expr;
 
 /**
  * BeanQuery is a Query interface for Java Bean based RDF data projections
@@ -24,7 +25,7 @@ public interface BeanQuery extends Projectable, Closeable{
     
     BeanQuery orderBy(OrderSpecifier<?>... o);
     
-    BeanQuery where(Expr.EBoolean... o);
+    BeanQuery where(EBoolean... o);
     
     BeanQuery limit(long limit);
     

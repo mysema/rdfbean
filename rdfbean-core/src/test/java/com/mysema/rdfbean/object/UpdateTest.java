@@ -3,8 +3,6 @@
  */
 package com.mysema.rdfbean.object;
 
-import static com.mysema.query.grammar.GrammarWithAlias.$;
-import static com.mysema.query.grammar.GrammarWithAlias.alias;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -25,6 +23,8 @@ import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.object.identity.IdentityService;
 import com.mysema.rdfbean.object.identity.MemoryIdentityService;
+
+import static com.mysema.query.alias.GrammarWithAlias.*;
 
 /**
  * @author sasa

@@ -10,7 +10,7 @@
   <parent>
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
-    <version>0.6.2-SNAPSHOT</version>
+    <version>0.6.3-SNAPSHOT</version>
   </parent>  
   
   <dependencies>
@@ -37,22 +37,6 @@
       <artifactId>mysema-commons-l10n</artifactId>
       <version>0.1.3-SNAPSHOT</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-      <version>${spring.version}</version>
-    </dependency>        
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-tx</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
 	<dependency>
       <groupId>joda-time</groupId>
 	  <artifactId>joda-time</artifactId>
@@ -63,11 +47,6 @@
       <artifactId>derby</artifactId>
       <version>10.4.2.0</version>
     </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <version>1.0.1B</version>
-    </dependency>    
   </dependencies>
 
   <build>

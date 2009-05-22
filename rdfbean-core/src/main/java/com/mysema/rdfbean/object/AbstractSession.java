@@ -16,7 +16,7 @@ import org.apache.commons.collections15.map.LazyMap;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.grammar.types.Expr.EEntity;
+import com.mysema.query.types.expr.EEntity;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.*;

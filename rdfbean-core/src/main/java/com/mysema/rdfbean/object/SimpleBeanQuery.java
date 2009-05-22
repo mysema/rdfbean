@@ -11,7 +11,7 @@ import java.util.Iterator;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.collections.IteratorSource;
 import com.mysema.query.collections.support.CustomQueryable;
-import com.mysema.query.grammar.types.Expr;
+import com.mysema.query.types.expr.Expr;
 
 /**
  * ColQuery based BeanQuery implementation
