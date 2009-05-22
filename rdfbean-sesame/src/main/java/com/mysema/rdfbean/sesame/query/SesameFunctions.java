@@ -22,8 +22,8 @@ import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.Function;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
-import com.mysema.query.grammar.Ops;
-import com.mysema.query.grammar.Ops.Op;
+import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.operation.Ops.Op;
 import com.mysema.rdfbean.query.Constants;
 import com.mysema.rdfbean.sesame.query.SesameOps.Transformer;
 

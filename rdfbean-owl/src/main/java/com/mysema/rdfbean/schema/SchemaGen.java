@@ -7,8 +7,6 @@ package com.mysema.rdfbean.schema;
 
 import java.util.*;
 
-import org.springframework.beans.factory.annotation.Required;
-
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
@@ -236,13 +234,11 @@ public class SchemaGen {
         return this;
     }
     
-    @Required
     public SchemaGen setConfiguration(Configuration configuration) {
         this.configuration = configuration;
         return this;
     }
 
-    @Required
     public SchemaGen setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
         return this;

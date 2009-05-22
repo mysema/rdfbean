@@ -11,27 +11,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.openrdf.model.BNode;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
+import org.openrdf.model.*;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.ModelResult;
 import org.openrdf.store.StoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mysema.query.grammar.types.Expr.EEntity;
+import com.mysema.query.types.expr.EEntity;
 import com.mysema.rdfbean.model.Dialect;
-import com.mysema.rdfbean.object.AbstractSession;
-import com.mysema.rdfbean.object.BeanQuery;
-import com.mysema.rdfbean.object.BeanQueryAdapter;
-import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
+import com.mysema.rdfbean.object.*;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
 
 /**

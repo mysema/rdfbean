@@ -17,9 +17,13 @@ import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.store.StoreException;
 
-import com.mysema.query.grammar.types.Expr;
-import com.mysema.query.grammar.types.PathMetadata;
-import com.mysema.query.grammar.types.Path.PEntity;
+import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.expr.Expr;
+import com.mysema.query.types.path.PComponentMap;
+import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.PNumber;
+import com.mysema.query.types.path.PString;
+import com.mysema.query.types.path.PathMetadata;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
@@ -129,8 +133,8 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
         public final PComponentMap<java.util.Locale,java.lang.String> localizedAsMap = _simplemap("localizedAsMap",java.util.Locale.class,java.lang.String.class);       
         public final PNumber<Integer> numericProperty = _number("numericProperty",Integer.class);
         public final PString notExistantProperty = _string("notExistantProperty");
-        public final com.mysema.query.grammar.types.Path.PEntityList<TestType2> listProperty = _entitylist("listProperty",TestType2.class,"TestType2");
-        public final com.mysema.query.grammar.types.Path.PEntityCollection<TestType2> setProperty = _entitycol("setProperty",TestType2.class,"TestType2");
+        public final com.mysema.query.types.path.PEntityList<TestType2> listProperty = _entitylist("listProperty",TestType2.class,"TestType2");
+        public final com.mysema.query.types.path.PEntityCollection<TestType2> setProperty = _entitycol("setProperty",TestType2.class,"TestType2");
         public QTestType2 listProperty(int index) {
             return new QTestType2(PathMetadata.forListAccess(listProperty,index));
         }
@@ -182,7 +186,7 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
         return new BeanQueryAdapter(query, query);
     }
     
-    protected BeanQuery where(Expr.EBoolean... e){
+    protected BeanQuery where(EBoolean... e){
         return newQuery().from(var).where(e);
     }
 }

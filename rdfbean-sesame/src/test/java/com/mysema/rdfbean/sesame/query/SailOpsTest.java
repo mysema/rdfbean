@@ -14,8 +14,8 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections15.ComparatorUtils;
 import org.junit.Test;
 
-import com.mysema.query.grammar.Ops;
-import com.mysema.query.grammar.Ops.Op;
+import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.operation.Ops.Op;
 
 
 /**

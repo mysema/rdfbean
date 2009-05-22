@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import static com.mysema.query.grammar.types.PathMetadata.*;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
@@ -20,21 +18,19 @@ import org.openrdf.result.TupleResult;
 import org.openrdf.store.StoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.SimpleTypeConverter;
-import org.springframework.beans.TypeConverter;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
-import com.mysema.query.grammar.Ops;
-import com.mysema.query.grammar.OrderSpecifier;
-import com.mysema.query.grammar.Ops.Op;
-import com.mysema.query.grammar.types.Expr;
-import com.mysema.query.grammar.types.Operation;
-import com.mysema.query.grammar.types.Path;
-import com.mysema.query.grammar.types.PathMetadata;
-import com.mysema.query.grammar.types.Expr.EBoolean;
-import com.mysema.query.grammar.types.Expr.EConstant;
-import com.mysema.query.grammar.types.Expr.EConstructor;
-import com.mysema.query.grammar.types.PathMetadata.PathType;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.expr.EConstant;
+import com.mysema.query.types.expr.EConstructor;
+import com.mysema.query.types.expr.Expr;
+import com.mysema.query.types.operation.Operation;
+import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.operation.Ops.Op;
+import com.mysema.query.types.path.Path;
+import com.mysema.query.types.path.PathMetadata;
+import com.mysema.query.types.path.PathMetadata.PathType;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
@@ -98,7 +94,7 @@ public class SesameQuery extends
     
     private JoinBuilder statementPatterns = new JoinBuilder();
 
-    private final TypeConverter typeConverter = new SimpleTypeConverter();
+//    private final TypeConverter typeConverter = new SimpleTypeConverter();
     
     private boolean includeInferred = true;
         
@@ -165,9 +161,8 @@ public class SesameQuery extends
         }
     }
         
-    @SuppressWarnings("unchecked")
     protected <RT> RT convert(Class<RT> rt, Literal literal) {
-        return (RT) typeConverter.convertIfNecessary(literal.stringValue(), rt);
+        return sesameSession.getConverterRegistry().fromString(literal.getLabel(), null, rt);
     }
 
     private void addFilterCondition(ValueExpr filterCondition) {
@@ -439,7 +434,7 @@ public class SesameQuery extends
         
         MappedPath mappedPath;
         PathType pathType = path.getMetadata().getPathType();
-        if (pathType.equals(PROPERTY)) {
+        if (pathType.equals(PathMetadata.PROPERTY)) {
             mappedPath = getMappedPathForPropertyPath(path);   
         }else{
             mappedPath = getMappedPathForPropertyPath(path.getMetadata().getParent());
@@ -448,9 +443,9 @@ public class SesameQuery extends
         if (!mappedPath.getPredicatePath().isEmpty()){
             if (mappedPath.getMappedProperty().isLocalized()){
                 String value = operation.getArg(1).toString();
-                if (pathType.equals(PROPERTY)){
+                if (pathType.equals(PathMetadata.PROPERTY)){
                     locale = sesameSession.getCurrentLocale();
-                }else if (pathType.equals(MAPVALUE_CONSTANT)){
+                }else if (pathType.equals(PathMetadata.MAPVALUE_CONSTANT)){
                     locale = ((EConstant<Locale>)path.getMetadata().getExpression()).getConstant();                        
                 }else{
                     throw new IllegalArgumentException("Unsupported path type " + pathType);
@@ -559,7 +554,7 @@ public class SesameQuery extends
             Var pathNode = null;
             Var matchedVar = pathToMatchedVar.get(path);
             
-            if (pathType.equals(PROPERTY)) {
+            if (pathType.equals(PathMetadata.PROPERTY)) {
                 MappedPath mappedPath = getMappedPathForPropertyPath(path); 
                 List<MappedPredicate> predPath = mappedPath.getPredicatePath();
                 if (predPath.size() > 0){
@@ -584,14 +579,14 @@ public class SesameQuery extends
                     pathNode =  parentNode;
                 }
 
-            } else if (pathType.equals(ARRAY_SIZE) || pathType.equals(SIZE)) {
+            } else if (pathType.equals(PathMetadata.ARRAY_SIZE) || pathType.equals(PathMetadata.SIZE)) {
                 throw new UnsupportedOperationException(pathType + " not supported!");
                 
-            } else if (pathType.equals(ARRAYVALUE) || pathType.equals(LISTVALUE)) {
+            } else if (pathType.equals(PathMetadata.ARRAYVALUE) || pathType.equals(PathMetadata.LISTVALUE)) {
                 // ?!? 
                 throw new UnsupportedOperationException(pathType + " not supported!");
                 
-            } else if (pathType.equals(ARRAYVALUE_CONSTANT) || pathType.equals(LISTVALUE_CONSTANT)) {
+            } else if (pathType.equals(PathMetadata.ARRAYVALUE_CONSTANT) || pathType.equals(PathMetadata.LISTVALUE_CONSTANT)) {
                 @SuppressWarnings("unchecked")
                 int index = getIntValue((EConstant<Integer>)md.getExpression());                
                 for (int i = 0; i < index; i++){
@@ -602,7 +597,7 @@ public class SesameQuery extends
                 pathNode = new Var(varNames.next());
                 match(parentNode, RDF.first, pathNode);
 
-            } else if (pathType.equals(MAPVALUE) || pathType.equals(MAPVALUE_CONSTANT)) {     
+            } else if (pathType.equals(PathMetadata.MAPVALUE) || pathType.equals(PathMetadata.MAPVALUE_CONSTANT)) {     
                 MappedPath mappedPath = getMappedPathForPropertyPath(md.getParent()); 
                 MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
                 if (!mappedProperty.isLocalized()){

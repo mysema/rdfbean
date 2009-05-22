@@ -5,13 +5,6 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import static com.mysema.query.grammar.Ops.*;
-import static java.util.Arrays.asList;
-import static org.openrdf.query.algebra.MathExpr.MathOp.DIVIDE;
-import static org.openrdf.query.algebra.MathExpr.MathOp.MINUS;
-import static org.openrdf.query.algebra.MathExpr.MathOp.MULTIPLY;
-import static org.openrdf.query.algebra.MathExpr.MathOp.PLUS;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,8 +15,9 @@ import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
-import com.mysema.query.grammar.Ops;
-import com.mysema.query.grammar.Ops.Op;
+import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.operation.Ops.Op;
+import static com.mysema.query.types.operation.Ops.*;
 
 /**
  * SailOps provides Op -> ValueExpr mappings for Sesame query creation
@@ -82,7 +76,7 @@ class SesameOps {
         });
         
         // COMPARISON        
-        Iterator<CompareOp> compareOps = asList(
+        Iterator<CompareOp> compareOps = Arrays.asList(
                 CompareOp.EQ, CompareOp.EQ, CompareOp.NE, CompareOp.NE, 
                 CompareOp.LT, CompareOp.LE, CompareOp.GT, CompareOp.GE).iterator();
         for (Op<?> op : Arrays.<Op<?>>asList(EQ_OBJECT, EQ_PRIMITIVE, NE_OBJECT, NE_PRIMITIVE, LT, LOE, GT, GOE)){            
@@ -157,7 +151,7 @@ class SesameOps {
         }); 
         
         // MATH        
-        Iterator<MathOp> mathOps = asList(PLUS, MINUS, MULTIPLY, DIVIDE).iterator();
+        Iterator<MathOp> mathOps = Arrays.asList(MathOp.PLUS, MathOp.MINUS, MathOp.MULTIPLY, MathOp.DIVIDE).iterator();
         for (Op<?> op : Arrays.<Op<?>>asList(ADD, SUB, MULT, DIV)){
             byOp.put(op, new MathExprTransformer(mathOps.next()));
         }

@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
