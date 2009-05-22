@@ -13,11 +13,7 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.SmartTransactionObject;
 
-import com.mysema.rdfbean.object.AbstractSessionFactory;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
-import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionContext;
-import com.mysema.rdfbean.object.SimpleSessionContext;
+import com.mysema.rdfbean.object.*;
 
 
 /**
@@ -102,6 +98,10 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
                     definition.isReadOnly(), 
                     determineTimeout(definition),
                     definition.getIsolationLevel());
+            
+            ((TransactionObject)transaction).setSavedFlushMode(s.getFlushMode());
+            s.setFlushMode(FlushMode.COMMIT);
+            
         } catch (RuntimeException oe) {
             throw new TransactionSystemException("error beginning transaction", oe);
         }
@@ -125,11 +125,19 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
         if (tx == null){
             throw new TransactionUsageException("no transaction active");
         }
+        
+        if (!skipFlushForRoTx || !txObj.getSession().isReadOnly()){
+            txObj.getSession().flush();    
+        }        
+        
         try {            
             tx.commit();
         } catch (RuntimeException oe) {
             throw new TransactionSystemException("error committing transaction", oe);
         } finally {
+            if (txObj.getFlushMode() != null){
+                txObj.getSession().setFlushMode(txObj.getFlushMode());    
+            }            
             sessionContext.releaseSession();
         }
     }
@@ -156,6 +164,9 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
         } catch (RuntimeException oe) {
             throw new TransactionSystemException("error rolling back transaction", oe);
         } finally {
+            if (txObj.getFlushMode() != null){
+                txObj.getSession().setFlushMode(txObj.getFlushMode());    
+            }            
             sessionContext.releaseSession();
             if (clearSessionOnRB) {
                 txObj.getSession().clear();
@@ -248,8 +259,18 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
     private class TransactionObject implements SmartTransactionObject {
         private final Session session;
 
+        private FlushMode flushMode;
+        
         public TransactionObject(Session session) {
             this.session = session;
+        }
+
+        public FlushMode getFlushMode(){
+            return flushMode;
+        }
+        
+        public void setSavedFlushMode(FlushMode flushMode) {
+            this.flushMode = flushMode;            
         }
 
         Session getSession() {

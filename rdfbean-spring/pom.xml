@@ -39,6 +39,20 @@
       <artifactId>jta</artifactId>
       <version>1.0.1B</version>
     </dependency>        
+    
+    <!--  test deps -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <version>${spring.version}</version>
+      <scope>test</scope>
+    </dependency>    
+    <dependency>
+      <groupId>org.easymock</groupId>
+      <artifactId>easymock</artifactId>
+      <version>2.4</version>
+      <scope>test</scope>
+    </dependency>     
   </dependencies>
   
 </project>

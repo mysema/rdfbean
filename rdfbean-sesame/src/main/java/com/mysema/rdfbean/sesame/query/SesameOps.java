@@ -126,6 +126,14 @@ class SesameOps {
                         "*"+((Var)args.get(1)).getValue().stringValue(),true);
             }            
         });
+        byOp.put(CONTAINS, new Transformer(){
+            @Override
+            public ValueExpr transform(List<ValueExpr> args) {
+                ValueExpr first = new Str(args.get(0));
+                return new Regex(first,
+                        "*"+((Var)args.get(1)).getValue().stringValue()+"*",true);
+            }            
+        });
         byOp.put(STARTSWITH_IC, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {

@@ -13,12 +13,6 @@ package com.mysema.rdfbean.object;
  * @version $Id$
  */
 public interface RDFBeanTransaction {
-    
-    /**
-     * 
-     */
-    // FIXME remove this method, as it conflicts with Session.beginTransaction()
-    public void begin();
 
     /**
      * Flush the session, commit and close the connection.

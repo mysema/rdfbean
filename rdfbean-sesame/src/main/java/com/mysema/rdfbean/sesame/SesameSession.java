@@ -35,7 +35,7 @@ public class SesameSession extends AbstractSession<Value, Resource, BNode, URI, 
     
     private SesameDialect dialect;
     
-    private RDFBeanTransaction localTxn = null;
+    private SesameTransaction localTxn = null;
     
     private boolean roTnx = false;
 
@@ -101,7 +101,8 @@ public class SesameSession extends AbstractSession<Value, Resource, BNode, URI, 
         
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
         logger.debug("beginTransaction");
-        createTransaction(readOnly, txTimeout, isolationLevel).begin();
+        createTransaction(readOnly, txTimeout, isolationLevel);
+        localTxn.begin();
         return localTxn;
     }
 
