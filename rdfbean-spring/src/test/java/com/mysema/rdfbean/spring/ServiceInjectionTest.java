@@ -47,7 +47,7 @@ public class ServiceInjectionTest {
     
     public static class HelloUnderWorldService implements ServiceInterface {
         public String doYourThing(RichBean rbean) {
-            return "Wellcome to the Underworld, " + rbean.getLabel()+"!";
+            return "Welcome to the Underworld, " + rbean.getLabel()+"!";
         }
     }
     
@@ -101,7 +101,7 @@ public class ServiceInjectionTest {
         // Override default value
         repository.add(STMT(subject, UID(TEST.NS, "service"), UID(SRV.NS, "helloUnderWorld")));
         rbean = session.findInstances(RichBean.class).get(0);
-        assertEquals("Wellcome to the Underworld, RichBean!", rbean.executeService());
+        assertEquals("Welcome to the Underworld, RichBean!", rbean.executeService());
     }
 
     @Test
