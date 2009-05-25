@@ -8,18 +8,7 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.collections15.Factory;
@@ -31,17 +20,7 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.query.types.expr.EEntity;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.Dialect;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
-import com.mysema.rdfbean.model.Identifier;
-import com.mysema.rdfbean.model.LID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.NodeType;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.identity.IdentityService;
 import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 
@@ -144,7 +123,7 @@ public abstract class AbstractSession<N,
     private U rdfRest;
     
     private U rdfType;
-
+    
     private Map<Object, R> resourceCache = new IdentityHashMap<Object, R>();
     
     private Set<ContextualStatement> addedStatements = new LinkedHashSet<ContextualStatement>();
@@ -232,7 +211,7 @@ public abstract class AbstractSession<N,
         Dialect<N,R,B,U,L,S> dialect = getDialect();
         BID bid = dialect.getBID(bnode);
         String lid = identityService.getLID(model, bid).getId();
-        recordAddStatement(bnode, coreLocalId, dialect.getLiteral(new LIT(lid)), null);
+        recordAddStatement(bnode, coreLocalId, dialect.getLiteral(lid), null);
     }
 
     @Override
@@ -1101,7 +1080,7 @@ public abstract class AbstractSession<N,
     
     private void initURIs() {
         Dialect<N,R,B,U,L,S> dialect = getDialect();
-        this.coreLocalId = dialect.getURI(CORE.localId);
+        coreLocalId = dialect.getURI(CORE.localId);
         coreModelId = dialect.getURI(CORE.modelId);
         rdfRest = dialect.getURI(RDF.rest);
         rdfFirst = dialect.getURI(RDF.first);
@@ -1242,14 +1221,12 @@ public abstract class AbstractSession<N,
                         if (property.isMap()) {
                             for (Map.Entry<Locale, String> entry : ((Map<Locale, String>) object).entrySet()) {
                                 if (entry.getValue() != null) {
-                                    LIT lit = new LIT(entry.getValue().toString(), entry.getKey());
-                                    L literal = dialect.getLiteral(lit);
+                                    L literal = dialect.getLiteral(entry.getValue().toString(), entry.getKey());
                                     recordAddStatement(subject, predicate, literal, context);
                                 }
                             }
                         } else {
-                            LIT lit = new LIT(object.toString(), getCurrentLocale());
-                            L literal = dialect.getLiteral(lit);
+                            L literal = dialect.getLiteral(object.toString(), getCurrentLocale());
                             recordAddStatement(subject, predicate, literal, context);
                         }
                     } else {
@@ -1350,7 +1327,7 @@ public abstract class AbstractSession<N,
     private L toRDFLiteral(Object o) {
         Dialect<N,R,B,U,L,S> dialect = getDialect();        
         UID dataType = conf.getConverterRegistry().getDatatype(o);
-        return dialect.getLiteral(new LIT(conf.getConverterRegistry().toString(o), dataType));
+        return dialect.getLiteral(conf.getConverterRegistry().toString(o), dialect.getURI(dataType));
     }
 
     private N toRDFValue(Object object, U context) {
@@ -1370,8 +1347,7 @@ public abstract class AbstractSession<N,
 
     private boolean verifyLocalId(Dialect<N,R,B,U,L,S> dialect, BID model, B bnode) {
         String lid = identityService.getLID(model, dialect.getBID(bnode)).getId();
-        List<S> statements = findStatements(bnode, coreLocalId, 
-                dialect.getLiteral(new LIT(lid)), true, null);
+        List<S> statements = findStatements(bnode, coreLocalId, dialect.getLiteral(lid), true, null);
         return statements.size() == 1;
     }
 

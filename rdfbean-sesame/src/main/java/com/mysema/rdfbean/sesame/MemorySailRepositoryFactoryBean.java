@@ -26,6 +26,7 @@ import org.springframework.beans.factory.FactoryBean;
  * @author sasa
  *
  */
+//TODO : get rid of Spring dependency
 public class MemorySailRepositoryFactoryBean implements FactoryBean {
 
 	private List<RDFSource> sources;

@@ -86,7 +86,8 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
 
     @Override
     public Literal getLiteral(String value) {
-        return vf.createLiteral(value, getURI(XSD.stringType));
+//        return vf.createLiteral(value, getURI(XSD.stringType));
+        return vf.createLiteral(value);
     }
 
     @Override

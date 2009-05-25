@@ -16,6 +16,7 @@ import org.springframework.core.io.Resource;
 
 import com.mysema.commons.lang.Assert;
 
+// TODO : get rid of Spring dependency
 public class RDFSource {
 
 	private Resource resource;

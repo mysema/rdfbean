@@ -17,7 +17,7 @@ public interface RDFBeanTransaction {
     /**
      * Flush the session, commit and close the connection.
      *
-     * @throws OtmException on an error in commit
+     * @throws RDFBeanException on an error in commit
      */
     public void commit();
     
@@ -37,7 +37,7 @@ public interface RDFBeanTransaction {
     /**
      * Rollback the transaction and close the connection. Session data is left alone.
      *
-     * @throws OtmException on an error in roll-back
+     * @throws RDFBeanException on an error in roll-back
      */
     public void rollback();
 

@@ -35,7 +35,6 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.ConverterRegistry;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
