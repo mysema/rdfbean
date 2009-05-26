@@ -103,7 +103,7 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
     @Test
     public void typeOf(){
         System.out.println("typeOf");
-        assertEquals(2, where(var.typeOf(TestType.class)).list(var).size());
+        assertEquals(2, where(var.instanceOf(TestType.class)).list(var).size());
     }
     
     @Test

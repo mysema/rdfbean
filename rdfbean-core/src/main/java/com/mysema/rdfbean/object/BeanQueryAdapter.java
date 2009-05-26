@@ -13,7 +13,7 @@ import com.mysema.query.support.ProjectableAdapter;
 import com.mysema.query.support.QueryBaseWithProjection;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.expr.Expr;
+import com.mysema.query.types.path.PEntity;
 
 /**
  * BeanQueryAdapter provides
@@ -34,7 +34,7 @@ public class BeanQueryAdapter extends ProjectableAdapter implements BeanQuery{
     }
     
     @Override
-    public BeanQuery from(Expr<?>... o) {
+    public BeanQuery from(PEntity<?>... o) {
         query.from(o);
         return this;
     }

@@ -17,7 +17,7 @@ import org.apache.commons.lang.ObjectUtils;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.types.expr.EEntity;
+import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.*;
@@ -822,7 +822,7 @@ public abstract class AbstractSession<N,
 //    }
 
     @Override
-    public BeanQuery from(EEntity<?>... expr) {
+    public BeanQuery from(PEntity<?>... expr) {
         return new SimpleBeanQuery(this).from(expr);
     }
 

@@ -7,7 +7,7 @@ package com.mysema.rdfbean.object;
 
 import java.util.List;
 
-import com.mysema.query.types.expr.EEntity;
+import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
@@ -127,7 +127,7 @@ public interface Session extends ObjectRepository {
      * @param exprs     Querydsl source expressions.
      * @return
      */
-    BeanQuery from(EEntity<?>... exprs);
+    BeanQuery from(PEntity<?>... exprs);
 
     /**
      * Returns a bean of type clazz with the given natural id (URI or blank node) or null if not found.

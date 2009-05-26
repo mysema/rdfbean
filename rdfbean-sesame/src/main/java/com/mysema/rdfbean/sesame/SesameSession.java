@@ -18,7 +18,7 @@ import org.openrdf.store.StoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mysema.query.types.expr.EEntity;
+import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.object.*;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
@@ -164,7 +164,7 @@ public class SesameSession extends AbstractSession<Value, Resource, BNode, URI, 
     }
     
     @Override
-    public BeanQuery from(EEntity<?>... exprs) {
+    public BeanQuery from(PEntity<?>... exprs) {
         SesameQuery query = new SesameQuery(this);
         query.getMetadata().setDistinct(true);
         return new BeanQueryAdapter(query,query).from(exprs);

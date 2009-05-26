@@ -102,7 +102,7 @@ public class SesameFunctions {
                     return args[0].stringValue().equalsIgnoreCase(args[1].stringValue());
                 }                        
             },
-            new BooleanFunction("empty", Ops.ISEMPTY){
+            new BooleanFunction("empty", Ops.COL_ISEMPTY){
                 protected boolean convert(Value... args){
                     return args[0].stringValue().length() == 0;
                 }                        

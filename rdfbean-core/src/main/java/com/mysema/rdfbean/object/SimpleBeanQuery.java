@@ -12,6 +12,7 @@ import com.mysema.query.QueryModifiers;
 import com.mysema.query.collections.IteratorSource;
 import com.mysema.query.collections.support.CustomQueryable;
 import com.mysema.query.types.expr.Expr;
+import com.mysema.query.types.path.PEntity;
 
 /**
  * ColQuery based BeanQuery implementation
@@ -48,9 +49,8 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
     }
 
     @Override
-    public BeanQuery restrict(QueryModifiers mod) {
-        getMetadata().setModifiers(mod);
-        return this;
+    public BeanQuery from(PEntity<?>... o) {
+        return super.from(o);
     }
 
     @Override
@@ -62,6 +62,12 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
     @Override
     public BeanQuery offset(long offset) {
         getMetadata().getModifiers().setOffset(offset);
+        return this;
+    }
+
+    @Override
+    public BeanQuery restrict(QueryModifiers mod) {
+        getMetadata().setModifiers(mod);
         return this;
     }
     
