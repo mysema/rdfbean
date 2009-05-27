@@ -166,14 +166,14 @@ class SesameOps {
         
         // VARIOUS
         // TODO : aggreate function or something else ?!?
-        byOp.put(Ops.OpMath.MAX, new Transformer(){
+        byOp.put(Ops.Math.MAX, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 return new Max(args.get(0));
             }            
         });
         // TODO : aggreate function or something else ?!?
-        byOp.put(Ops.OpMath.MIN, new Transformer(){
+        byOp.put(Ops.Math.MIN, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 return new Min(args.get(0));

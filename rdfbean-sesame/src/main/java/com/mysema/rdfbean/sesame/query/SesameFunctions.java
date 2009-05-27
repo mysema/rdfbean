@@ -77,7 +77,7 @@ public class SesameFunctions {
                     }                
                 }
             },
-            new StringFunction("space", Ops.OpString.SPACE){
+            new StringFunction("space", Ops.StringOps.SPACE){
                 protected String convert(Value... args){
                     return StringUtils.leftPad("", Integer.valueOf(args[1].stringValue()));
                 }                        
@@ -136,19 +136,19 @@ public class SesameFunctions {
         // OTHER NUMERIC
         
         register(
-                new BaseFunction("ceil", Ops.OpMath.CEIL){
+                new BaseFunction("ceil", Ops.Math.CEIL){
                     @Override
                     public Value evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
                         return valueFactory.createLiteral(Math.ceil(Double.valueOf(args[0].stringValue())));
                     }                    
                 },
-                new BaseFunction("floor", Ops.OpMath.FLOOR){
+                new BaseFunction("floor", Ops.Math.FLOOR){
                     @Override
                     public Value evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
                         return valueFactory.createLiteral(Math.ceil(Double.valueOf(args[0].stringValue())));
                     }                    
                 },
-                new BaseFunction("abs", Ops.OpMath.ABS){
+                new BaseFunction("abs", Ops.Math.ABS){
                     @Override
                     public Value evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
                         if (args[0].stringValue().startsWith("-")){
@@ -166,32 +166,32 @@ public class SesameFunctions {
         // OTHER DATE / TIME
         
         register(
-                new IntegerFunction("year", Ops.OpDateTime.YEAR){
+                new IntegerFunction("year", Ops.DateTime.YEAR){
                     protected int convert(Value... args) {
                         return datatypeFactory.newXMLGregorianCalendar(args[0].stringValue()).getYear();
                     }                    
                 },
-                new IntegerFunction("month", Ops.OpDateTime.MONTH){
+                new IntegerFunction("month", Ops.DateTime.MONTH){
                     protected int convert(Value... args) {
                         return datatypeFactory.newXMLGregorianCalendar(args[0].stringValue()).getMonth();
                     }                    
                 },
-                new IntegerFunction("day", Ops.OpDateTime.DAY){
+                new IntegerFunction("day", Ops.DateTime.DAY){
                     protected int convert(Value... args) {
                         return datatypeFactory.newXMLGregorianCalendar(args[0].stringValue()).getDay();
                     }                    
                 },
-                new IntegerFunction("hour", Ops.OpDateTime.HOUR){
+                new IntegerFunction("hour", Ops.DateTime.HOUR){
                     protected int convert(Value... args) {
                         return datatypeFactory.newXMLGregorianCalendar(args[0].stringValue()).getHour();
                     }                    
                 },
-                new IntegerFunction("minute", Ops.OpDateTime.MINUTE){
+                new IntegerFunction("minute", Ops.DateTime.MINUTE){
                     protected int convert(Value... args) {
                         return datatypeFactory.newXMLGregorianCalendar(args[0].stringValue()).getMinute();
                     }                    
                 },
-                new IntegerFunction("second", Ops.OpDateTime.SECOND){
+                new IntegerFunction("second", Ops.DateTime.SECOND){
                     protected int convert(Value... args) {
                         return datatypeFactory.newXMLGregorianCalendar(args[0].stringValue()).getSecond();
                     }                    

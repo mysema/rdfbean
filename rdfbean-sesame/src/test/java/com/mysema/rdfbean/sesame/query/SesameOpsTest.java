@@ -34,10 +34,9 @@ public class SesameOpsTest {
                 new BeanComparator("declaringClass.simpleName"),
                 new BeanComparator("name")));
         for (Class<?> cl : Arrays.<Class<?>>asList(Ops.class, 
-                Ops.OpDateTime.class, 
-                Ops.OpMath.class, 
-                Ops.OpNumberAgg.class, 
-                Ops.OpString.class)){
+                Ops.DateTime.class, 
+                Ops.Math.class,                 
+                Ops.StringOps.class)){
             for (Field field : cl.getDeclaredFields()){
                 if (Operator.class.isAssignableFrom(field.getType())){
                     opFields.add(field);
