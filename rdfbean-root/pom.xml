@@ -11,14 +11,13 @@
   <parent>
     <groupId>com.mysema.home</groupId>
     <artifactId>mysema-source</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
   </parent>
   
   <properties>
-    <querydsl.version>0.3.7-SNAPSHOT</querydsl.version>
+    <querydsl.version>0.3.9-SNAPSHOT</querydsl.version>
     <spring.version>2.5.5</spring.version>
     <sesame.version>3.0-alpha1</sesame.version>
-    <failIfNoTests>false</failIfNoTests>
   </properties>
   
   <modules>
@@ -58,40 +57,7 @@
   </dependencies>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <ajdtVersion>none</ajdtVersion>
-        </configuration>
-      </plugin>    
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.4.3</version>
-        <configuration>
-          <useSystemClassLoader>false</useSystemClassLoader>
-        </configuration>
-      </plugin>      
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+    <plugins> 
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
         <version>2.0-beta-6</version>

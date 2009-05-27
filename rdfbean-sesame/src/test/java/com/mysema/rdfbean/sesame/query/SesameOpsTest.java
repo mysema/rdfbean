@@ -14,8 +14,8 @@ import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.collections15.ComparatorUtils;
 import org.junit.Test;
 
+import com.mysema.query.types.operation.Operator;
 import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.operation.Ops.Op;
 
 
 /**
@@ -24,7 +24,7 @@ import com.mysema.query.types.operation.Ops.Op;
  * @author tiwe
  * @version $Id$
  */
-public class SailOpsTest {
+public class SesameOpsTest {
 
     @SuppressWarnings("unchecked")
     @Test
@@ -39,7 +39,7 @@ public class SailOpsTest {
                 Ops.OpNumberAgg.class, 
                 Ops.OpString.class)){
             for (Field field : cl.getDeclaredFields()){
-                if (Op.class.isAssignableFrom(field.getType())){
+                if (Operator.class.isAssignableFrom(field.getType())){
                     opFields.add(field);
                 }
             }            
@@ -47,7 +47,7 @@ public class SailOpsTest {
         
         int counter = 0;
         for (Field field : opFields){
-            if (sailOps.getTransformer((Op<?>) field.get(null)) == null){
+            if (sailOps.getTransformer((Operator<?>) field.get(null)) == null){
                 System.err.println(
                         field.getDeclaringClass().getSimpleName()+"."+
                         field.getName() + 

@@ -22,8 +22,8 @@ import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.Function;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
+import com.mysema.query.types.operation.Operator;
 import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.operation.Ops.Op;
 import com.mysema.rdfbean.query.Constants;
 import com.mysema.rdfbean.sesame.query.SesameOps.Transformer;
 
@@ -37,7 +37,7 @@ public class SesameFunctions {
     
     private static final DatatypeFactory datatypeFactory;
 
-    private static final Map<Op<?>,String> opToFunctionURI = new HashMap<Op<?>,String>();
+    private static final Map<Operator<?>,String> opToFunctionURI = new HashMap<Operator<?>,String>();
     
     static{
         try {
@@ -199,8 +199,8 @@ public class SesameFunctions {
         );
     }
 
-    public static void addTransformers(Map<Op<?>, Transformer> byOp) {
-        for(final Map.Entry<Op<?>,String> e : opToFunctionURI.entrySet()){
+    public static void addTransformers(Map<Operator<?>, Transformer> byOp) {
+        for(final Map.Entry<Operator<?>,String> e : opToFunctionURI.entrySet()){
             byOp.put(e.getKey(), new Transformer(){
                 @Override
                 public ValueExpr transform(List<ValueExpr> args) {
@@ -214,7 +214,7 @@ public class SesameFunctions {
     private static void register(BaseFunction... functions){
         for (BaseFunction function : functions){
             FunctionRegistry.getInstance().add(function);
-            for (Op<?> op : function.getOps()){
+            for (Operator<?> op : function.getOps()){
                 opToFunctionURI.put(op, function.getURI());    
             }    
         }                
@@ -225,8 +225,8 @@ public class SesameFunctions {
      */
     static abstract class BaseFunction implements Function{
         private final String uri;
-        private final Op<?>[] ops;
-        public BaseFunction(String ln, Op<?>...ops){
+        private final Operator<?>[] ops;
+        public BaseFunction(String ln, Operator<?>...ops){
             this.uri = Constants.NS + ln;
             this.ops = ops;
         }
@@ -235,7 +235,7 @@ public class SesameFunctions {
         public final String getURI() {
             return uri;
         }        
-        public final Op<?>[] getOps(){
+        public final Operator<?>[] getOps(){
             return ops;
         }
     }
@@ -244,7 +244,7 @@ public class SesameFunctions {
      * String typed function
      */
     static abstract class StringFunction extends BaseFunction{
-        public StringFunction(String uri, Op<?>...ops){
+        public StringFunction(String uri, Operator<?>...ops){
             super(uri, ops);
         }
         @Override
@@ -258,7 +258,7 @@ public class SesameFunctions {
      * Boolean typed function
      */
     static abstract class BooleanFunction extends BaseFunction{
-        public BooleanFunction(String uri, Op<?>...ops){
+        public BooleanFunction(String uri, Operator<?>...ops){
             super(uri, ops);
         }
         @Override
@@ -272,7 +272,7 @@ public class SesameFunctions {
      * Integer typed function
      */
     static abstract class IntegerFunction extends BaseFunction{
-        public IntegerFunction(String uri, Op<?>...ops){
+        public IntegerFunction(String uri, Operator<?>...ops){
             super(uri, ops);
         }
         @Override

@@ -31,47 +31,53 @@ public class ListQueriesTest extends AbstractSesameQueryTest{
     @Test
     public void eq(){
         // eq
-        assertEquals(0, where(size.eq(1)).list(var).size());
-        assertEquals(1, where(size.eq(2)).list(var).size());
-        assertEquals(1, where(size.eq(3)).list(var).size());
+        assertEquals(0, where(size.eq(1)).count());
+        assertEquals(1, where(size.eq(2)).count());
+        assertEquals(1, where(size.eq(3)).count());
     }
     
     @Test
     public void goe(){
         // goe
-        assertEquals(2, where(size.goe(1)).list(var).size());
-        assertEquals(2, where(size.goe(2)).list(var).size());
-        assertEquals(1, where(size.goe(3)).list(var).size());
-        assertEquals(0, where(size.goe(4)).list(var).size());
+        assertEquals(2, where(size.goe(1)).count());
+        assertEquals(2, where(size.goe(2)).count());
+        assertEquals(1, where(size.goe(3)).count());
+        assertEquals(0, where(size.goe(4)).count());
     }
     
     @Test
     public void gt(){
         // gt
-        assertEquals(2, where(size.gt(0)).list(var).size());
-        assertEquals(2, where(size.gt(1)).list(var).size());
-        assertEquals(1, where(size.gt(2)).list(var).size());
-        assertEquals(0, where(size.gt(3)).list(var).size());
+        assertEquals(2, where(size.gt(0)).count());
+        assertEquals(2, where(size.gt(1)).count());
+        assertEquals(1, where(size.gt(2)).count());
+        assertEquals(0, where(size.gt(3)).count());
     }
     
     @Test
     public void loe(){
         // loe
-        assertEquals(0, where(size.loe(0)).list(var).size());
-        assertEquals(0, where(size.loe(1)).list(var).size());
-        assertEquals(1, where(size.loe(2)).list(var).size());
-        assertEquals(2, where(size.loe(3)).list(var).size());
-        assertEquals(2, where(size.loe(4)).list(var).size());
+        assertEquals(0, where(size.loe(0)).count());
+        assertEquals(0, where(size.loe(1)).count());
+        assertEquals(1, where(size.loe(2)).count());
+        assertEquals(2, where(size.loe(3)).count());
+        assertEquals(2, where(size.loe(4)).count());
     }
     
     @Test
     public void lt(){
         // lt
-        assertEquals(0, where(size.lt(1)).list(var).size());
-        assertEquals(0, where(size.lt(2)).list(var).size());
-        assertEquals(1, where(size.lt(3)).list(var).size());
-        assertEquals(2, where(size.lt(4)).list(var).size());
-        assertEquals(2, where(size.lt(5)).list(var).size());
+        assertEquals(0, where(size.lt(1)).count());
+        assertEquals(0, where(size.lt(2)).count());
+        assertEquals(1, where(size.lt(3)).count());
+        assertEquals(2, where(size.lt(4)).count());
+        assertEquals(2, where(size.lt(5)).count());
+    }
+    
+    @Test
+    public void isEmpty(){
+        assertEquals(0, where(var.listProperty.isEmpty()).count());
+        assertEquals(2, where(var.listProperty.isNotEmpty()).count());
     }
     
 }

@@ -77,8 +77,8 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
     @Test
     public void byNonExistantProperty(){
         System.out.println("byNonExistantProperty");
-        assertEquals(2, where(var.notExistantProperty.isnull()).list(var).size());        
-        assertEquals(0, where(var.notExistantProperty.isnotnull()).list(var).size());
+        assertEquals(2, where(var.notExistantProperty.isNull()).list(var).size());        
+        assertEquals(0, where(var.notExistantProperty.isNotNull()).list(var).size());
     }
     
     @Test

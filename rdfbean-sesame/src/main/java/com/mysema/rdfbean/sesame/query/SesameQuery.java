@@ -26,11 +26,11 @@ import com.mysema.query.types.expr.EConstant;
 import com.mysema.query.types.expr.EConstructor;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.operation.Operation;
+import com.mysema.query.types.operation.Operator;
 import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.operation.Ops.Op;
 import com.mysema.query.types.path.Path;
 import com.mysema.query.types.path.PathMetadata;
-import com.mysema.query.types.path.PathMetadata.PathType;
+import com.mysema.query.types.path.PathType;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
@@ -70,7 +70,7 @@ public class SesameQuery extends
 
     private boolean idPropertyInOperation = false;
     
-    private Stack<Op<?>> operatorStack = new Stack<Op<?>>();
+    private Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
 
     private final Map<Path<?>, Var> pathToVar = new HashMap<Path<?>, Var>();
     
@@ -350,7 +350,7 @@ public class SesameQuery extends
     }
     
     private ValueExpr transformOperation(Operation<?,?> operation) {
-        Op<?> op = operation.getOperator();
+        Operator<?> op = operation.getOperator();
         Transformer transformer;
         
         // path in path
@@ -369,6 +369,27 @@ public class SesameQuery extends
          // size(col)    
         }else if (isSizeCompareConstant(operation, op)){            
             return transformSizeCompareConstant(operation, op);
+            
+        // is empty / not is empty
+        }else if (op.equals(Ops.COL_ISEMPTY) || op.equals(Ops.COL_ISNOTEMPTY)){
+            Var pathVar = transformPath((Path<?>)operation.getArg(0));            
+            if (op.equals(Ops.COL_ISEMPTY)){
+                if (inNegation()){
+                    return new Compare(pathVar, toVar(RDF.nil), Compare.CompareOp.EQ);    
+                }else{
+                    pathVar.setValue(dialect.getResource(RDF.nil));
+                    return null;    
+                }
+            }else{
+                Var rest = new Var(varNames.next());
+                JoinBuilder builder = new JoinBuilder();
+                match(builder, pathVar, RDF.rest, rest);
+                return new Exists(builder.getJoins());
+            }
+            
+        }else if (op.equals(Ops.MAP_ISEMPTY) || op.equals(Ops.MAP_ISNOTEMPTY)){
+            // TODO
+            return null;
             
         // path == path
         }else if (isPathEqPath(operation, op)){
@@ -432,7 +453,7 @@ public class SesameQuery extends
         
         MappedPath mappedPath;
         PathType pathType = path.getMetadata().getPathType();
-        if (pathType.equals(PathMetadata.PROPERTY)) {
+        if (pathType.equals(PathType.PROPERTY)) {
             mappedPath = getMappedPathForPropertyPath(path);   
         }else{
             mappedPath = getMappedPathForPropertyPath(path.getMetadata().getParent());
@@ -441,9 +462,9 @@ public class SesameQuery extends
         if (!mappedPath.getPredicatePath().isEmpty()){
             if (mappedPath.getMappedProperty().isLocalized()){
                 String value = operation.getArg(1).toString();
-                if (pathType.equals(PathMetadata.PROPERTY)){
+                if (pathType.equals(PathType.PROPERTY)){
                     locale = sesameSession.getCurrentLocale();
-                }else if (pathType.equals(PathMetadata.MAPVALUE_CONSTANT)){
+                }else if (pathType.equals(PathType.MAPVALUE_CONSTANT)){
                     locale = ((EConstant<Locale>)path.getMetadata().getExpression()).getConstant();                        
                 }else{
                     throw new IllegalArgumentException("Unsupported path type " + pathType);
@@ -476,7 +497,7 @@ public class SesameQuery extends
         }                
     }
         
-    private ValueExpr transformSizeCompareConstant(Operation<?, ?> operation, Op<?> op) {
+    private ValueExpr transformSizeCompareConstant(Operation<?, ?> operation, Operator<?> op) {        
         @SuppressWarnings("unchecked")
         int size = getIntValue((EConstant<Integer>) operation.getArg(1));
         if (op == Ops.GOE){
@@ -488,8 +509,9 @@ public class SesameQuery extends
         }
         
         JoinBuilder builder = new JoinBuilder();
-        // path to last
-        Var pathVar = transformPath(((Path<?>)operation.getArg(0)).getMetadata().getParent());                        
+        // path from size operation
+        Path<?> path = (Path<?>)((Operation<?,?>)operation.getArg(0)).getArg(0); 
+        Var pathVar = transformPath(path);                                
         for (int i=0; i < size-1; i++){
             Var rest = new Var(varNames.next());
             match(builder, pathVar, RDF.rest, rest);
@@ -517,28 +539,33 @@ public class SesameQuery extends
         
     }
 
-    private boolean isPathInPath(Operation<?, ?> operation, Op<?> op) {
+    private boolean isPathInPath(Operation<?, ?> operation, Operator<?> op) {
         return op.equals(Ops.IN) 
                 && operation.getArg(0) instanceof Path 
                 && operation.getArg(1) instanceof Path;
     }
 
-    private boolean isPathEqPath(Operation<?, ?> operation, Op<?> op) {
+    private boolean isPathEqPath(Operation<?, ?> operation, Operator<?> op) {
         return  Ops.equalsOps.contains(op)
                 && operation.getArg(0) instanceof Path 
                 && operation.getArg(1) instanceof Path;
     }
     
-    private boolean isPathEqNeConstant(Operation<?, ?> operation, Op<?> op) {
+    private boolean isPathEqNeConstant(Operation<?, ?> operation, Operator<?> op) {
         return (Ops.equalsOps.contains(op) || Ops.notEqualsOps.contains(op)) 
                 && operation.getArg(0) instanceof Path 
                 && operation.getArg(1) instanceof EConstant;
     }
     
-    private boolean isSizeCompareConstant(Operation<?, ?> operation, Op<?> op) {
-        return Ops.compareOps.contains(op) 
-                && operation.getArg(0) instanceof Path 
-                && ((Path<?>)operation.getArg(0)).getMetadata().getPathType() == PathMetadata.SIZE;
+    @SuppressWarnings("unchecked")
+    private boolean isSizeCompareConstant(Operation<?, ?> operation, Operator<?> op) {
+        if (Ops.compareOps.contains(op)){
+            Expr<?> arg1 = operation.getArg(0);
+            return (arg1 instanceof Operation && ((Operation)arg1).getOperator().equals(Ops.COL_SIZE));
+        }else{
+            return false;
+        }
+        
     }
     
     private Var transformPath(Path<?> path) {
@@ -552,7 +579,7 @@ public class SesameQuery extends
             Var pathNode = null;
             Var matchedVar = pathToMatchedVar.get(path);
             
-            if (pathType.equals(PathMetadata.PROPERTY)) {
+            if (pathType.equals(PathType.PROPERTY)) {
                 MappedPath mappedPath = getMappedPathForPropertyPath(path); 
                 List<MappedPredicate> predPath = mappedPath.getPredicatePath();
                 if (predPath.size() > 0){
@@ -577,14 +604,11 @@ public class SesameQuery extends
                     pathNode =  parentNode;
                 }
 
-            } else if (pathType.equals(PathMetadata.ARRAY_SIZE) || pathType.equals(PathMetadata.SIZE)) {
-                throw new UnsupportedOperationException(pathType + " not supported!");
-                
-            } else if (pathType.equals(PathMetadata.ARRAYVALUE) || pathType.equals(PathMetadata.LISTVALUE)) {
+            } else if (pathType.equals(PathType.ARRAYVALUE) || pathType.equals(PathType.LISTVALUE)) {
                 // ?!? 
                 throw new UnsupportedOperationException(pathType + " not supported!");
                 
-            } else if (pathType.equals(PathMetadata.ARRAYVALUE_CONSTANT) || pathType.equals(PathMetadata.LISTVALUE_CONSTANT)) {
+            } else if (pathType.equals(PathType.ARRAYVALUE_CONSTANT) || pathType.equals(PathType.LISTVALUE_CONSTANT)) {
                 @SuppressWarnings("unchecked")
                 int index = getIntValue((EConstant<Integer>)md.getExpression());                
                 for (int i = 0; i < index; i++){
@@ -595,7 +619,7 @@ public class SesameQuery extends
                 pathNode = new Var(varNames.next());
                 match(parentNode, RDF.first, pathNode);
 
-            } else if (pathType.equals(PathMetadata.MAPVALUE) || pathType.equals(PathMetadata.MAPVALUE_CONSTANT)) {     
+            } else if (pathType.equals(PathType.MAPVALUE) || pathType.equals(PathType.MAPVALUE_CONSTANT)) {     
                 MappedPath mappedPath = getMappedPathForPropertyPath(md.getParent()); 
                 MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
                 if (!mappedProperty.isLocalized()){
