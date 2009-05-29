@@ -35,6 +35,8 @@ public abstract class AbstractSession<N,
         L extends N, 
         S> implements Session {
     
+    // XXX In sesame Statements have a context which affects equals. How about Jena and other 
+    // RDF API's?
     protected class ContextualStatement {
         private S statement;
         private U context;
@@ -98,15 +100,7 @@ public abstract class AbstractSession<N,
 
     private boolean initialized = false;
     
-    Map<R, List<Object>> instanceCache = LazyMap.decorate(
-        new HashMap<R, List<Object>>(), 
-            new Factory<List<Object>>() {
-                @Override
-                public List<Object> create() {
-                    return new ArrayList<Object>();
-                }
-            }
-    );
+    Map<R, List<Object>> instanceCache;
 
     private Iterable<Locale> locales;
     
@@ -126,17 +120,11 @@ public abstract class AbstractSession<N,
     
     private Map<Object, R> resourceCache = new IdentityHashMap<Object, R>();
     
-    private Set<ContextualStatement> addedStatements = new LinkedHashSet<ContextualStatement>();
+    private Set<ContextualStatement> addedStatements;
     
-    private Set<ContextualStatement> removedStatements = new LinkedHashSet<ContextualStatement>();
+    private Set<ContextualStatement> removedStatements;
     
     private Set<Object> seen;
-    
-    // TODO make configurable: !conf.isReadOnly() 
-    
-//    private Map<Object, Set<S>> objectStatements = new IdentityHashMap<Object, Set<S>>();
-    
-//    private Deque<Object> loadStack = new LinkedList<Object>();
     
     public AbstractSession(Class<?>... classes) {
         this(Collections.<Locale>emptyList(), new DefaultConfiguration(classes));
@@ -269,18 +257,19 @@ public abstract class AbstractSession<N,
 
     @Override
     public void autowire(Object instance) {
+        initialize();
         Assert.notNull(instance);
         BeanMap beanMap = toBeanMap(instance);
         MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
         bind(getId(mappedClass, beanMap), beanMap);
     }
         
-    public <T> T bind(R subject, T instance) {
+    protected <T> T bind(R subject, T instance) {
         if (instance != null) {
             if (instance instanceof LifeCycleAware) {
                 ((LifeCycleAware) instance).beforeBinding();
             }
-            // TODO: default context
+            // TODO: defaultContext parameter?
             U context = getContext(instance, null);
             BeanMap beanMap = toBeanMap(instance);
             MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
@@ -311,7 +300,15 @@ public abstract class AbstractSession<N,
     
     @Override
     public void clear() {
-        instanceCache.clear();
+        instanceCache = LazyMap.decorate(
+                new HashMap<R, List<Object>>(), 
+                new Factory<List<Object>>() {
+                    @Override
+                    public List<Object> create() {
+                        return new ArrayList<Object>();
+                    }
+                }
+        );
         resourceCache = new IdentityHashMap<Object, R>();
         addedStatements = new LinkedHashSet<ContextualStatement>();
         removedStatements = new LinkedHashSet<ContextualStatement>();
@@ -397,8 +394,8 @@ public abstract class AbstractSession<N,
             throws Exception {
         MappedProperty<?> propertyDefinition = propertyPath.getMappedProperty();
         Object convertedValue;
-        Type componentType = propertyDefinition.getComponentType();
-        Type keyType = propertyDefinition.getKeyType();
+        Class<?> componentType = propertyDefinition.getComponentType();
+        Class<?> keyType = propertyDefinition.getKeyType();
         Map map = new HashMap();
         for (N value : values) {
             // Map key
@@ -434,8 +431,9 @@ public abstract class AbstractSession<N,
                     UID uri = dialect.getUID((U) subject);
                     ObjectRepository orepo = parentRepositories.get(uri.ns());
                     if (orepo != null) {
-                        return (T) orepo.getBean(requiredClass, 
-                        		ID.uriRef(uri.ns(), uri.ln()));
+                        return (T) orepo.getBean(requiredClass, uri);
+                    } else {
+                        throw new IllegalArgumentException("No such parent repository: " + uri.ns());
                     }
                 }
             }
@@ -444,13 +442,7 @@ public abstract class AbstractSession<N,
                         findTypes(subject, context), 
                         requiredClass);
             } else {
-                Collection<R> types;
-//                UID uid = MappedClass.getUID(requiredClass);
-//                if (uid != null) {
-//                    types = Collections.singleton(dialect.getResource(uid));
-//                } else {
-                    types = Collections.emptyList();
-//                }
+                Collection<R> types = Collections.emptyList();
                 instance = createInstance(subject, 
                         types, 
                         requiredClass);
@@ -487,9 +479,6 @@ public abstract class AbstractSession<N,
         }
     }
     
-    /* (non-Javadoc)
-     * @see com.mysema.rdfbean.object.ExecutionContext#createInstance(org.openrdfbean.model.Resource, java.util.Collection, java.lang.Class)
-     */
     protected <T> T createInstance(R subject, 
             Collection<R> types, 
             Class<T> requiredType) {
@@ -542,7 +531,7 @@ public abstract class AbstractSession<N,
     }
     
     @SuppressWarnings("unchecked")
-    private Object convertValue(N value, Type targetType, MappedPath propertyPath) throws Exception {
+    private Object convertValue(N value, Class<?> targetType, MappedPath propertyPath) throws Exception {
         Class targetClass = MappedProperty.getGenericClass(targetType, 0);
         Dialect<N,R,B,U,L,S> dialect = getDialect();
         MappedProperty mappedProperty = propertyPath.getMappedProperty();
@@ -587,6 +576,15 @@ public abstract class AbstractSession<N,
                                 + " into " + propertyPath);
                     }
                 }
+                // ID reference
+                else if (ID.class.isAssignableFrom(targetType)) {
+                    if (node instanceof ID) {
+                        convertedValue = node;
+                    } else {
+                        throw new IllegalArgumentException("Cannot assign " + value
+                                + " into " + propertyPath);
+                    }
+                }
                 // Use standard property editors for others
                 else {
                     UID datatype = null;
@@ -608,7 +606,7 @@ public abstract class AbstractSession<N,
         return convertedValue;
     }
     protected R createResource(Object instance) {
-        UID uri = conf.createURI(instance);
+        UID uri = conf.createURI(toBeanMap(instance).getBean());
         if (uri != null) {
             return getDialect().getURI(uri);
         } else {
@@ -635,28 +633,6 @@ public abstract class AbstractSession<N,
         }
         return list;
     }
-
-//    @SuppressWarnings("unchecked")
-//	private Collection<N> convertListOrContainer(Set<N> values, U context) {
-//        Dialect<N,R,B,U,L,S> dialect = getDialect();
-//        if (values.size() == 1) {
-//            N value = values.iterator().next();
-//            if (dialect.isResource(value)) {
-//                R subject = (R) value;
-//                List<R> types = findTypes(subject, context);
-//                if (types.contains(rdfList)) {
-//                    return convertList(subject, context);
-//                } else {
-//                    // TODO: Containers
-//                    return values;
-//                }
-//            } else {
-//                return values;
-//            }
-//        } else {
-//            return values;
-//        }
-//    }
 
     private Collection<R> filterSubject(List<S> statements) {
         Dialect<N,R,B,U,L,S> dialect = getDialect();
@@ -694,26 +670,17 @@ public abstract class AbstractSession<N,
     
     private <T> void findInstances(Class<T> clazz, UID uri, final Set<T> instances) {
         initialize();
-        if (uri == null) {
-            throw new IllegalArgumentException("Unmapped class: " + clazz);
-        }
+//        if (uri == null) {
+//            throw new IllegalArgumentException("Unmapped class: " + clazz);
+//        }
         Dialect<N,R,B,U,L,S> dialect = getDialect();
         U context = getContext(clazz, null);
         try {
-            boolean foundMatch = false;
-            // FIXME find classes assignable from uri through rdfs:subClassOf 
-            for (Class<?> mappedClass : conf.getMappedClasses(uri)) {
-                if (clazz.isAssignableFrom(mappedClass)) {
-                    foundMatch = true;
-                    break;
-                }
-            }
-            if (foundMatch) {
-                Set<R> resources = new LinkedHashSet<R>();
-                resources.addAll(filterSubject(findStatements(null, rdfType, dialect.getURI(uri), true, context)));
-                for (R subject : resources) {
-                    instances.add(getBean(clazz, subject));
-                }
+            Set<R> resources = new LinkedHashSet<R>();
+            U type = uri != null ? dialect.getURI(uri) : null;
+            resources.addAll(filterSubject(findStatements(null, rdfType, type, true, context)));
+            for (R subject : resources) {
+                instances.add(getBean(clazz, subject));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -1067,8 +1034,9 @@ public abstract class AbstractSession<N,
         return convertedValue;
     }
 
-    private void initialize() {
+    protected void initialize() {
         if (!initialized) {
+            clear();
             if (identityService == null) {
                 identityService = MemoryIdentityService.instance();
             }

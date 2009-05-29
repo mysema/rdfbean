@@ -159,7 +159,7 @@ public class MappedPath {
     }
     
     public static boolean isWildcard(Class<?> type) {
-    	return type == null;
+    	return type == null || Object.class.equals(type);
     }
     
     public boolean isClassReference() {

@@ -33,6 +33,9 @@ public abstract class Dialect
 
     public abstract B getBNode(BID bid);
 
+    // Can this be generalized? Jena?
+//    public abstract UID getContext(S statement);
+    
     public abstract ID getID(R resource);
 
     public abstract LIT getLIT(L literal);

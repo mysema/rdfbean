@@ -55,6 +55,7 @@ public class ConstructorParametersTest {
 	@Test
 	public void constructorInjection() {
 		Session session = new MiniSession(ChildType.class, ParentType.class, ParentServiceType.class);
+		session.addParent(TEST.NS, session);
 		ChildType child = session.getBean(ChildType.class, new UID(TEST.NS, "child"));
 		assertNotNull(child);
 		assertNotNull(child.parent);

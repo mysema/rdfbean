@@ -51,7 +51,6 @@ public class SchemaGen {
             session.save(ont);
         }
         Map<UID, RDFSResource> resources = new HashMap<UID, RDFSResource>();
-        Set<Class<?>> seen = new HashSet<Class<?>>();
         resources.put(RDF.List, new RDFSClass<RDFSResource>(RDF.List));
         resources.put(RDF.first, new RDFProperty(RDF.first));
         resources.put(RDF.rest, new RDFProperty(RDF.rest));
@@ -60,14 +59,14 @@ public class SchemaGen {
         resources.put(RDFS.comment, new RDFProperty(RDFS.comment));
         resources.put(RDFS.Resource, new RDFSClass<Object>(RDFS.Resource));
         for (Class<?> clazz : configuration.getMappedClasses()) {
-            processClass(clazz, session, resources, seen);
+            processClass(clazz, session, resources);
         }
         session.saveAll(resources.values().toArray());
     }
 
     @SuppressWarnings("unchecked")
     private RDFSClass<RDFSResource> processClass(Class<?> clazz, Session session, 
-            Map<UID, RDFSResource> resources, Set<Class<?>> seen) {
+            Map<UID, RDFSResource> resources) {
         if (clazz == null) {
             return null;
         }
@@ -85,15 +84,15 @@ public class SchemaGen {
                     resources.put(cuid, owlClass);
                     // label
                     owlClass.setLabel(Locale.ROOT, cuid.getLocalName());
-                } else if (!seen.add(clazz)) {
+                } else {
                     return owlClass;
                 }
     
                 // super class
-                addParent(clazz.getSuperclass(), owlClass, session, resources, seen);
+                addParent(clazz.getSuperclass(), owlClass, session, resources);
                 // interfaces
                 for (Class<?> iface : clazz.getInterfaces()) {
-                    addParent(iface, owlClass, session, resources, seen);
+                    addParent(iface, owlClass, session, resources);
                 }
                 
                 if (mappedClass.isEnum()) {
@@ -140,7 +139,7 @@ public class SchemaGen {
                                     if (property.getRange().isEmpty()) {
                                         RDFSClass<?> componentType = 
                                             processClass(mappedProperty.getComponentType(), session, 
-                                                    resources, seen);
+                                                    resources);
                                         if (useTypedLists && componentType != null) {
                                             property.addRange(new TypedList(cuid.ns(), componentType));
                                         } else {
@@ -151,7 +150,7 @@ public class SchemaGen {
                                 } else {
                                     RDFSClass<?> componentType = 
                                         processClass(mappedProperty.getComponentType(), session, 
-                                                resources, seen);
+                                                resources);
                                     if (componentType != null) {
                                         restriction.setAllValuesFrom(componentType);
                                     }
@@ -159,7 +158,7 @@ public class SchemaGen {
                             } else if (mappedPath.isReference()) {
                                 if (property.getRange().isEmpty()) {
                                     RDFSClass<?> range = processClass(mappedProperty.getType(), 
-                                            session, resources, seen);
+                                            session, resources);
                                     if (range != null) {
                                         property.addRange(range);
                                     } else if (mappedProperty.isAnyResource()) {
@@ -194,9 +193,9 @@ public class SchemaGen {
                             minCardinality.setMinCardinality(1);
                             owlClass.addSuperClass(minCardinality);
                         }
-                        if (!seenProperty) {
-                            session.save(property);
-                        }
+//                        if (!seenProperty) {
+//                            session.save(property);
+//                        }
                     }
                 }
             }
@@ -215,9 +214,9 @@ public class SchemaGen {
     }
 
     private void addParent(Class<?> clazz, OWLClass owlClass, Session session, 
-            Map<UID, RDFSResource> resources, Set<Class<?>> seen) {
+            Map<UID, RDFSResource> resources) {
         if (clazz != null) {
-            RDFSClass<RDFSResource> parent = processClass(clazz, session, resources, seen);
+            RDFSClass<RDFSResource> parent = processClass(clazz, session, resources);
             if (parent != null) {
                 owlClass.addSuperClass(parent);
             }
