@@ -9,24 +9,14 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
 import org.apache.commons.lang.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
@@ -34,17 +24,7 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
-import com.mysema.rdfbean.model.Identifier;
-import com.mysema.rdfbean.model.LID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.identity.IdentityService;
 import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 
@@ -53,8 +33,10 @@ import com.mysema.rdfbean.object.identity.MemoryIdentityService;
  * 
  */
 public class SessionImpl implements Session {
+  
+    private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
     
-	private Configuration conf;
+    private Configuration conf;
 
     private IdentityService identityService;
     
@@ -404,14 +386,19 @@ public class SessionImpl implements Session {
                         instance = constructor.newInstance(constructorArguments.toArray());
                     }
                 } catch (InstantiationException e) {
+                    logger.error(e.getMessage(), e);
                     throw new RuntimeException(e);
                 } catch (IllegalAccessException e) {
+                    logger.error(e.getMessage(), e);
                     throw new RuntimeException(e);
                 } catch (SecurityException e) {
+                    logger.error(e.getMessage(), e);
                     throw new RuntimeException(e);
                 } catch (IllegalArgumentException e) {
+                    logger.error(e.getMessage(), e);
                     throw new RuntimeException(e);
                 } catch (InvocationTargetException e) {
+                    logger.error(e.getMessage(), e);
                     throw new RuntimeException(e);
                 }
             }
@@ -497,6 +484,7 @@ public class SessionImpl implements Session {
                 if (propertyPath.isIgnoreInvalid()) {
                     convertedValue = null;
                 } else {
+                    logger.error(e.getMessage(), e);
                     throw new IllegalArgumentException("Error assigning " + propertyPath, e);
                 }
             }
@@ -526,6 +514,7 @@ public class SessionImpl implements Session {
                 try {
                     stmts.close();
                 } catch (IOException e) {
+                    logger.error(e.getMessage(), e);
                     throw new RuntimeException(e);
                 }
             }
