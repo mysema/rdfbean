@@ -75,7 +75,7 @@
         </executions>
       </plugin> 
       <plugin>
-        <groupId>com.mysema.commons</groupId>
+        <groupId>com.mysema.maven</groupId>
         <artifactId>maven-apt-plugin</artifactId>
         <version>0.1.0</version>
         <executions>
