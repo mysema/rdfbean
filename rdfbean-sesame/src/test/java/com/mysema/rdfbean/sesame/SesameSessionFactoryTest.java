@@ -20,6 +20,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.object.DefaultConfiguration;
+import com.mysema.rdfbean.object.SessionFactoryImpl;
 
 /**
  * SesameSessionFactoryTest provides
@@ -43,9 +44,9 @@ public class SesameSessionFactoryTest {
         }
         connection.close();
         
-        SesameSessionFactory sessionFactory = new SesameSessionFactory();
+        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setDefaultConfiguration(new DefaultConfiguration());
-        sessionFactory.setRepository(repository);
+        sessionFactory.setRepository(new SesameRepository(repository));
         
 //        assertTrue(sessionFactory.getCurrentSession() == null);
 //        assertTrue(SessionFactoryUtils.createSession(sessionFactory));

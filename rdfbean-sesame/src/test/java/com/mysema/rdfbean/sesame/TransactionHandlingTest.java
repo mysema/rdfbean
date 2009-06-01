@@ -18,6 +18,8 @@ import org.openrdf.store.StoreException;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionFactory;
+import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.object.SessionUtil;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.QRestriction;
@@ -35,13 +37,13 @@ public class TransactionHandlingTest extends SessionTestBase{
     
     private QRestriction restriction = QRestriction.restriction;
     
-    private SesameSessionFactory sessionFactory;
+    private SessionFactoryImpl sessionFactory;
     
     @Before
     public void setUp() throws StoreException, RDFParseException, IOException{
-        sessionFactory = new SesameSessionFactory();
+        sessionFactory = new SessionFactoryImpl();
         sessionFactory.setDefaultConfiguration(new DefaultConfiguration(OWL.class.getPackage()));
-        sessionFactory.setRepository(repository);
+        sessionFactory.setRepository(new SesameRepository(repository));
     }
     
     @Test

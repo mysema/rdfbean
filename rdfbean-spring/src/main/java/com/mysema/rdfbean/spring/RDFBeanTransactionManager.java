@@ -37,7 +37,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
     /**
      * Create a new RDFBeanTransactionManager instance.
      */
-    public RDFBeanTransactionManager(AbstractSessionFactory sessionFactory) {
+    public RDFBeanTransactionManager(SessionFactoryImpl sessionFactory) {
         this.sessionContext = new SimpleSessionContext(sessionFactory);
         sessionFactory.setSessionContext(this);
         setRollbackOnCommitFailure(false);

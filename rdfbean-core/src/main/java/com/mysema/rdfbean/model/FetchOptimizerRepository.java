@@ -21,16 +21,6 @@ public class FetchOptimizerRepository implements Repository<MiniDialect> {
     private List<FetchStrategy> fetchStrategies = new ArrayList<FetchStrategy>();
     
     @Override
-    public void add(STMT... stmts) {
-        throw new UnsupportedOperationException("add");
-    }
-
-    @Override
-    public MiniDialect getDialect() {
-        throw new UnsupportedOperationException("getDialect");
-    }
-
-    @Override
     public RDFConnection openConnection() {
         return new FetchOptimizer(repository.openConnection(), includeInferred, fetchStrategies);
     }
