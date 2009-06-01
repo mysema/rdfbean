@@ -25,31 +25,21 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.myfaces.tobago</groupId>
+        <groupId>com.mysema.commons</groupId>
         <artifactId>maven-apt-plugin</artifactId>
-        <version>1.0.20</version>
+        <version>0.1.0</version>
         <executions>
           <execution>
-            <phase>generate-sources</phase>
             <goals>
-              <goal>execute</goal>
+              <goal>process</goal>
             </goals>
             <configuration>
-              <force>true</force>
-              <fork>false</fork>
-              <factory>com.mysema.rdfbean.query.BeanAPTFactory</factory>
-              <generated>target/generated-sources/java</generated>
-              <nocompile>true</nocompile>
-              <A>
-                -AnamePrefix=Q
-              </A>
-              <includes>
-                <include>com/mysema/rdfbean/rdfs/*.java</include>
-              </includes>
+              <outputDirectory>target/generated-sources/java</outputDirectory>
+              <processor>com.mysema.rdfbean.query.BeanAnnotationProcessor</processor>
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin>  
     </plugins>
   </build>
    

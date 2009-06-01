@@ -54,7 +54,9 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         this.dialect = Assert.notNull(dialect);
         this.session = Assert.notNull(session);
     }
-        
+    
+    public abstract SubType from(Expr<?>... o);
+    
     protected abstract Iterator<N[]> getInnerResults();
     
     protected int getIntValue(EConstant<Integer> constant){

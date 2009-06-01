@@ -441,7 +441,7 @@ public class SesameQuery extends
             return transformPathEqNeConstant(operation);
             
         // expr typeOf expr
-        }else if (op.equals(Ops.ISTYPEOF)){    
+        }else if (op.equals(Ops.INSTANCEOF)){    
             StatementPattern pattern = new StatementPattern(
                     patternScope,
                     (Var)toValue(operation.getArg(0)),

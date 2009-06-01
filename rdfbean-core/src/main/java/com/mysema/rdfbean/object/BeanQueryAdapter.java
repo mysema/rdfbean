@@ -10,10 +10,10 @@ import java.io.IOException;
 
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.support.ProjectableAdapter;
-import com.mysema.query.support.QueryBaseWithProjection;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PEntity;
+import com.mysema.rdfbean.query.AbstractProjectingQuery;
 
 /**
  * BeanQueryAdapter provides
@@ -23,11 +23,11 @@ import com.mysema.query.types.path.PEntity;
  */
 public class BeanQueryAdapter extends ProjectableAdapter implements BeanQuery{
 
-    private final QueryBaseWithProjection<?,?> query;
+    private final AbstractProjectingQuery<?,?,?,?,?,?,?> query;
     
     private final Closeable closeable;
     
-    public BeanQueryAdapter(QueryBaseWithProjection<?,?> query, Closeable closeable){
+    public BeanQueryAdapter(AbstractProjectingQuery<?,?,?,?,?,?,?> query, Closeable closeable){
         super(query);
         this.query = query;
         this.closeable = closeable;
