@@ -125,7 +125,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
             throw new TransactionUsageException("no transaction active");
         }
         
-        if (!skipFlushForRoTx || !txObj.getSession().isReadOnly()){
+        if (!skipFlushForRoTx || !txObj.isRollbackOnly()){
             txObj.getSession().flush();    
         }        
         

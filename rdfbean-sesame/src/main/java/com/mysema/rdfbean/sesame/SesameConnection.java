@@ -91,6 +91,9 @@ public class SesameConnection implements RDFConnection {
     @Override
     public RDFBeanTransaction beginTransaction(Session session, boolean readOnly, int txTimeout, int isolationLevel) {
         localTxn = new SesameTransaction(this, isolationLevel);        
+        if (readOnly) {
+            localTxn.setRollbackOnly();
+        }
         roTnx = readOnly;
         localTxn.begin();
         return localTxn;

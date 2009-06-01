@@ -1182,22 +1182,16 @@ public class SessionImpl implements Session {
 
     @Override
     public RDFBeanTransaction beginTransaction() {
-        return beginTransaction(isReadOnly(), -1, java.sql.Connection.TRANSACTION_READ_COMMITTED);
+        return beginTransaction(false, -1, java.sql.Connection.TRANSACTION_READ_COMMITTED);
     }
 
     @Override
-    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout,
-            int isolationLevel) {
+    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
         if (transaction != null) {
             throw new IllegalStateException("Transaction exists already");
         }
         transaction = connection.beginTransaction(this, readOnly, txTimeout, isolationLevel);
         return transaction;
-    }
-
-    @Override
-    public boolean isReadOnly() {
-        return false;
     }
 
     @Override

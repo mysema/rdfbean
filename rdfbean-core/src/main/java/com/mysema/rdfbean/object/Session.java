@@ -194,11 +194,6 @@ public interface Session extends ObjectRepository, Closeable {
     RDFBeanTransaction getTransaction();
     
     /**
-     * @return  true if this session is read-only.
-     */
-    boolean isReadOnly();
-    
-    /**
      * Saves (create or update) the given instance and returns an id assigned to it. 
      * <p>
      * NOTE: Changes are not actually persisted until flush is called. See {@link FlushMode}.
