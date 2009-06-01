@@ -27,13 +27,10 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.identity.IdentityService;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.schema.SchemaGen;
 
 public class SesameSchemaGen extends SchemaGen {
-
-	private IdentityService identityService;
 	
 	private final Map<String, String> namespaces = new LinkedHashMap<String, String>();
 	
@@ -42,10 +39,6 @@ public class SesameSchemaGen extends SchemaGen {
 		namespaces.put("rdfs", RDFS.NS);
 		namespaces.put("owl", OWL.NS);
 		namespaces.put("xsd", XSD.NS);
-	}
-	
-	public SesameSchemaGen(IdentityService identityService) {
-		this.identityService = identityService;
 	}
 
     public void generateTurtle(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException {
@@ -79,7 +72,6 @@ public class SesameSchemaGen extends SchemaGen {
         repository.initialize();
 		
 		SesameSessionFactory sessionFactory = new SesameSessionFactory();
-		sessionFactory.setIdentityService(identityService);
 		sessionFactory.setRepository(repository);
 		
 		setConfiguration(configuration);

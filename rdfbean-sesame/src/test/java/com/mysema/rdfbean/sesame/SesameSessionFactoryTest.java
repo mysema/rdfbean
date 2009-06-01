@@ -20,7 +20,6 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 
 /**
  * SesameSessionFactoryTest provides
@@ -46,7 +45,6 @@ public class SesameSessionFactoryTest {
         
         SesameSessionFactory sessionFactory = new SesameSessionFactory();
         sessionFactory.setDefaultConfiguration(new DefaultConfiguration());
-        sessionFactory.setIdentityService(MemoryIdentityService.instance());
         sessionFactory.setRepository(repository);
         
 //        assertTrue(sessionFactory.getCurrentSession() == null);

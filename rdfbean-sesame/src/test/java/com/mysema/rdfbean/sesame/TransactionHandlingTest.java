@@ -19,7 +19,6 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
-import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.QRestriction;
 import com.mysema.rdfbean.owl.Restriction;
@@ -42,7 +41,6 @@ public class TransactionHandlingTest extends SessionTestBase{
     public void setUp() throws StoreException, RDFParseException, IOException{
         sessionFactory = new SesameSessionFactory();
         sessionFactory.setDefaultConfiguration(new DefaultConfiguration(OWL.class.getPackage()));
-        sessionFactory.setIdentityService(MemoryIdentityService.instance());
         sessionFactory.setRepository(repository);
     }
     

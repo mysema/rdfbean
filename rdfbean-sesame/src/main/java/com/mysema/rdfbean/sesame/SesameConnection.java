@@ -22,8 +22,6 @@ import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.ModelResult;
 import org.openrdf.store.StoreException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.BID;
@@ -46,7 +44,7 @@ import com.mysema.rdfbean.sesame.query.SesameQuery;
  */
 public class SesameConnection implements RDFConnection {
     
-    private static final Logger logger = LoggerFactory.getLogger(SesameConnection.class);
+//    private static final Logger logger = LoggerFactory.getLogger(SesameConnection.class);
     
     private RepositoryConnection connection;
     
