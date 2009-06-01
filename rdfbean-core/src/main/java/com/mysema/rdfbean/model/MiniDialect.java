@@ -33,7 +33,7 @@ public final class MiniDialect extends Dialect<NODE, ID, BID, UID, LIT, STMT> {
     }
 
     public static STMT STMT(ID subject, UID predicate, NODE object) {
-        return new STMT(subject, predicate, object);
+        return new STMT(subject, predicate, object, null, true);
     }
 
     public static UID UID(String ns, String ln) {
@@ -69,7 +69,7 @@ public final class MiniDialect extends Dialect<NODE, ID, BID, UID, LIT, STMT> {
 
     @Override
     public STMT createStatement(ID subject, UID predicate, NODE object) {
-        return new STMT(subject, predicate, object);
+        return new STMT(subject, predicate, object, null, true);
     }
 
     @Override

@@ -931,7 +931,7 @@ public class SessionImpl implements Session {
     }
     
     private void recordAddStatement(ID subject, UID predicate, NODE object, UID context) {
-        STMT statement = new STMT(subject, predicate, object, context);
+        STMT statement = new STMT(subject, predicate, object, context, true);
         if (!removedStatements.remove(statement)) {
             addedStatements.add(statement);
         }

@@ -13,6 +13,8 @@ public interface RDFConnection extends Closeable {
     CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context, boolean includeInferred);
 
     void update(Set<STMT> removedStatements, Set<STMT> addedStatements);
+    
+    void clear();
 
     BeanQuery createQuery(Session session);
 

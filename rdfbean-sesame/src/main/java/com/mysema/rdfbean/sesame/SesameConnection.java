@@ -136,7 +136,7 @@ public class SesameConnection implements RDFConnection {
 
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
-            NODE object, UID context, boolean includeInferred) {
+            NODE object, UID context, final boolean includeInferred) {
         final ModelResult statements = 
             findStatements(convert(subject), convert(predicate), convert(object), 
                     includeInferred, convert(context));
@@ -154,7 +154,7 @@ public class SesameConnection implements RDFConnection {
             @Override
             public STMT next() {
                 try {
-                    return convert(statements.next());
+                    return convert(statements.next(), !includeInferred);
                 } catch (StoreException e) {
                     throw new RuntimeException(e);
                 }
@@ -176,12 +176,13 @@ public class SesameConnection implements RDFConnection {
         };
     }
 
-    private STMT convert(Statement statement) {
+    private STMT convert(Statement statement, boolean asserted) {
         return new STMT(
                 convert(statement.getSubject()), 
                 convert(statement.getPredicate()), 
                 convert(statement.getObject()), 
-                (UID) convert(statement.getContext())
+                (UID) convert(statement.getContext()),
+                asserted
             );
     }
     
@@ -259,6 +260,10 @@ public class SesameConnection implements RDFConnection {
                     ));
         }
         return statements;
+    }
+
+    @Override
+    public void clear() {
     }
 
 }

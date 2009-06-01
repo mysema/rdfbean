@@ -23,18 +23,23 @@ public final class STMT {
     private NODE object;
     
     private UID context;
+    
+    private Boolean asserted;
 
     public STMT(ID subject, UID predicate, NODE object) {
-        this.subject = Assert.notNull(subject);
-        this.predicate = Assert.notNull(predicate);
-        this.object = Assert.notNull(object);
+        this(subject, predicate, object, null);
     }
 
     public STMT(ID subject, UID predicate, NODE object, UID context) {
+        this(subject, predicate, object, context, true);
+    }
+
+    public STMT(ID subject, UID predicate, NODE object, UID context, boolean asserted) {
         this.subject = Assert.notNull(subject);
         this.predicate = Assert.notNull(predicate);
         this.object = Assert.notNull(object);
         this.context = context;
+        this.asserted = Boolean.valueOf(asserted);
     }
 
     public NODE getObject() {
@@ -50,7 +55,7 @@ public final class STMT {
     }
     
     public int hashCode() {
-        return NODE.hashCode(subject, predicate, object);
+        return NODE.hashCode(subject, predicate, object, context, asserted);
     }
 
     public boolean equals(Object obj) {
@@ -61,7 +66,8 @@ public final class STMT {
             return NODE.nullSafeEquals(this.subject, other.subject)
                 && NODE.nullSafeEquals(this.predicate, other.predicate)
                 && NODE.nullSafeEquals(this.object, other.object)
-                && NODE.nullSafeEquals(this.context, other.context);
+                && NODE.nullSafeEquals(this.context, other.context)
+                && NODE.nullSafeEquals(this.asserted, other.asserted);
         } else {
             return false;
         }
@@ -77,6 +83,10 @@ public final class STMT {
 
     public boolean isObjectStatement() {
         return object instanceof ID;
+    }
+
+    public boolean isAsserted() {
+        return asserted;
     }
     
 }

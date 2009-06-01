@@ -39,7 +39,11 @@ public class MiniConnection implements RDFConnection {
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, boolean includeInferred) {
-        return repository.findStatements(subject, predicate, object, context);
+        return repository.findStatements(subject, predicate, object, context, includeInferred);
+    }
+
+    public void addStatements(CloseableIterator<STMT> stmts) {
+        this.repository.addStatements(stmts);
     }
 
     @Override
@@ -57,6 +61,9 @@ public class MiniConnection implements RDFConnection {
             boolean readOnly, int txTimeout, int isolationLevel) {
         throw new UnsupportedOperationException("createTransaction");
     }
-    
+
+    @Override
+    public void clear() {
+    }
 
 }

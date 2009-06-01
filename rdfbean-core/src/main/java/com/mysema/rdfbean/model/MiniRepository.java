@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -37,18 +38,25 @@ public final class MiniRepository implements Repository<MiniDialect> {
         statements.addAll(Arrays.asList(stmts));
     }
 
-    public CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context) {
+    public CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
         List<STMT> stmts = new ArrayList<STMT>();
         for (STMT stmt : statements){
-            if (subject != null && !stmt.getSubject().equals(subject)) {
-                continue;
-            } else if (predicate != null && !predicate.equals(stmt.getPredicate())) {
-                continue;
-            } else if (object != null && !object.equals(stmt.getObject())) {
-                continue;
-            } else if (context != null && !context.equals(stmt.getContext())) {
-                continue;
-            } else {
+            if (
+                    // Subject match
+                    (subject == null || stmt.getSubject().equals(subject)) &&
+
+                    // Predicate match
+                    (predicate == null || predicate.equals(stmt.getPredicate())) &&
+                    
+                    // Object match
+                    (object == null || object.equals(stmt.getObject())) &&
+                    
+                    // Context match
+                    (context == null || context.equals(stmt.getContext())) &&
+                    
+                    // Asserted or includeInferred statement
+                    (includeInferred || stmt.isAsserted())
+            ) {
                 stmts.add(stmt);
             }
         }
@@ -67,4 +75,17 @@ public final class MiniRepository implements Repository<MiniDialect> {
         return new MiniConnection(this);
     }
     
+    public void addStatements(CloseableIterator<STMT> stmts) {
+        try {
+            while (stmts.hasNext()) {
+                add(stmts.next());
+            }
+        } finally {
+            try {
+                stmts.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

@@ -25,6 +25,7 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.FetchOptimizer;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
 
@@ -121,7 +122,8 @@ public class UpdateTest {
     }
 
     private Session newSession(Locale locale) {
-        session = SessionUtil.openSession(repository, new LocaleIterable(locale, false),
+        session = SessionUtil.openSession(
+                new FetchOptimizer(repository.openConnection()), new LocaleIterable(locale, false),
                 Employee.class, Company.class, EmployeeInfo.class);
         return session;
     }
@@ -211,7 +213,7 @@ public class UpdateTest {
         assertEquals(2, company.managers.size());
         assertEquals("Big Boss", company.managers.get(0).name);
         
-        int rsize = IteratorWrapper.asList(repository.findStatements(null, null, null, null)).size();
+        int rsize = IteratorWrapper.asList(repository.findStatements(null, null, null, null, false)).size();
         
         // Promote John Doe in manager list
         boss = company.managers.get(0);
@@ -227,7 +229,7 @@ public class UpdateTest {
         assertEquals("Ex-Boss", company.managers.get(1).name);
         
         // See that there's no garbage left...
-        assertEquals(rsize, IteratorWrapper.asList(repository.findStatements(null, null, null, null)).size());
+        assertEquals(rsize, IteratorWrapper.asList(repository.findStatements(null, null, null, null, false)).size());
     }
     
     @Test

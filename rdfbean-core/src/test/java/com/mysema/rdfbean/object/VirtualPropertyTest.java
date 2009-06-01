@@ -58,7 +58,7 @@ public class VirtualPropertyTest {
         // Persistence
         session.save(new Person("John", "Doe"));
         List<STMT> statements = IteratorWrapper.asList(repository
-                .findStatements(null, new UID(TEST.NS, "displayName"), null, null));
+                .findStatements(null, new UID(TEST.NS, "displayName"), null, null, false));
         assertEquals(1, statements.size());
         STMT stmt = statements.get(0);
         assertEquals("John Doe", stmt.getObject().getValue());
