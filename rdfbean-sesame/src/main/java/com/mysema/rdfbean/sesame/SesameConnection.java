@@ -52,7 +52,7 @@ public class SesameConnection implements RDFConnection {
     
     private SesameTransaction localTxn = null;
     
-    private boolean roTnx = false;
+    private boolean readonlyTnx = false;
 
     private ValueFactory vf;
     
@@ -64,12 +64,12 @@ public class SesameConnection implements RDFConnection {
 
     public void cleanUpAfterCommit(){
         localTxn = null;
-        roTnx = false;
+        readonlyTnx = false;
     }
     
     public void cleanUpAfterRollback(){
         localTxn = null;
-        roTnx = false;
+        readonlyTnx = false;
         close();
     }
     
@@ -89,10 +89,7 @@ public class SesameConnection implements RDFConnection {
     @Override
     public RDFBeanTransaction beginTransaction(Session session, boolean readOnly, int txTimeout, int isolationLevel) {
         localTxn = new SesameTransaction(this, isolationLevel);        
-        if (readOnly) {
-            localTxn.setRollbackOnly();
-        }
-        roTnx = readOnly;
+        readonlyTnx = readOnly;
         localTxn.begin();
         return localTxn;
     }
@@ -238,7 +235,7 @@ public class SesameConnection implements RDFConnection {
 
     @Override
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
-        if (!roTnx){
+        if (!readonlyTnx){
             try {
                 connection.remove(convert(removedStatements));
                 connection.add(convert(addedStatements));
