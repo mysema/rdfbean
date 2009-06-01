@@ -11,4 +11,6 @@ public interface Repository<T extends Dialect<?, ?, ?, ?, ?, ?>> {
 
     T getDialect();
 
+    RDFConnection openConnection();
+
 }

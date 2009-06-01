@@ -17,6 +17,7 @@ import com.mysema.rdfbean.object.AbstractSessionFactory;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.ObjectRepository;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionImpl;
 import com.mysema.rdfbean.object.identity.IdentityService;
 
 /**
@@ -42,9 +43,8 @@ public class SesameSessionFactory extends AbstractSessionFactory {
 	public Session openSession(Configuration configuration) {
 		Repository repository = repositoryRef.get();
         try {
-            SesameSession session = new SesameSession(repository.getConnection(), 
-                    LocaleContextHolder.getLocale(),
-                    configuration);
+            SesameConnection connection = new SesameConnection(repository.getConnection());
+            SessionImpl session = new SessionImpl(configuration, connection, LocaleContextHolder.getLocale());
             session.setIdentityService(identityService);
             if (objectRepositories != null) {
 	            for (Map.Entry<String, ObjectRepository> entry : objectRepositories.entrySet()) {

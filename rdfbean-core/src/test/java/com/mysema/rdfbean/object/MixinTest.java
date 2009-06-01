@@ -37,7 +37,7 @@ public class MixinTest {
 
     @Test
     public void selfReferenceTest() {
-        MiniSession session = new MiniSession(AType.class, BType.class);
+        Session session = SessionUtil.openSession(AType.class, BType.class);
         LID lid = session.getLID(new BID("atype"));
         AType atype = session.get(AType.class, lid);
         assertNotNull(atype);

@@ -5,7 +5,9 @@
  */
 package com.mysema.rdfbean.object;
 
+import java.io.Closeable;
 import java.util.List;
+import java.util.Locale;
 
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.annotations.ClassMapping;
@@ -38,7 +40,7 @@ import com.mysema.rdfbean.object.identity.IdentityService;
  * @version $Id$
  *
  */
-public interface Session extends ObjectRepository {
+public interface Session extends ObjectRepository, Closeable {
     
     /**
      * Registers a parent ObjectRepository for injections from a given namespace.
@@ -84,11 +86,6 @@ public interface Session extends ObjectRepository {
      * Empties the primary cache and discards all unflushed changes.
      */
     void clear();
-
-    /**
-     * Closes this session and releases all held resources (e.g. database connections or file locks).
-     */
-    void close();
     
     /**
      * Finds instances of a given mapped class.
@@ -175,6 +172,13 @@ public interface Session extends ObjectRepository {
     <T> T getById(String id, Class<T> clazz);
     
     /**
+     * @return  Configuration used by this session.
+     */
+    Configuration getConfiguration();
+
+    ID getId(Object instance);
+    
+    /**
      * Returns the local id (LID) corresponding to given natural id. 
      * 
      * @param id    natural id, URI or blank node
@@ -223,5 +227,7 @@ public interface Session extends ObjectRepository {
      * @param flushMode 
      */
     void setFlushMode(FlushMode flushMode);
+
+    Locale getCurrentLocale();
 
 }

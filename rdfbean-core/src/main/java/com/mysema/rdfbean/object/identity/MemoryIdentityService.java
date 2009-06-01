@@ -36,6 +36,10 @@ public class MemoryIdentityService implements IdentityService {
     private File cacheFile;
     
     private static final HashMap<String, IdentityService> instances = new HashMap<String, IdentityService>();
+    
+    static {
+        instances.put(null, new MemoryIdentityService());
+    }
 
     private int idCount = 0;
     
@@ -148,7 +152,7 @@ public class MemoryIdentityService implements IdentityService {
     }
 
     public static IdentityService instance() {
-        return new MemoryIdentityService();
+        return instances.get(null);
     }
 
     public synchronized static IdentityService instance(String fileName) {

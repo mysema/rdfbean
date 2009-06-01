@@ -32,7 +32,10 @@ import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.BeanQueryAdapter;
-import com.mysema.rdfbean.sesame.SesameSession;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionImpl;
+import com.mysema.rdfbean.sesame.SesameConnection;
+import com.mysema.rdfbean.sesame.SesameDialect;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.sesame.query.serializer.QuerySerializer;
 
@@ -159,7 +162,9 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
     
     protected QTestType2 var2 = new QTestType2("var2");
     
-    protected SesameSession session;
+    protected Session session;
+    
+    protected SesameConnection connection;
     
     protected List<TestType> instances;
     
@@ -168,6 +173,7 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
     @Before
     public void setUp() throws StoreException{
         session = createSession(FI, TestType.class, TestType2.class);
+        connection = (SesameConnection) ((SessionImpl) session).getConnection();
     }
     
     @After
@@ -177,6 +183,8 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
     
     protected BeanQuery newQuery(){
         SesameQuery query = new SesameQuery(session, 
+                (SesameDialect) connection.getDialect(),
+                connection.getConnection(),
                 StatementPattern.Scope.NAMED_CONTEXTS){
             @Override
             protected void logQuery(TupleQueryModel query) {

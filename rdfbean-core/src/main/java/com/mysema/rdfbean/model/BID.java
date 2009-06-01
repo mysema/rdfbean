@@ -36,4 +36,24 @@ public final class BID extends ID {
 		return NodeType.BLANK;
 	}
 
+    @Override
+    public boolean isBNode() {
+        return true;
+    }
+
+    @Override
+    public boolean isLiteral() {
+        return false;
+    }
+
+    @Override
+    public boolean isResource() {
+        return true;
+    }
+
+    @Override
+    public boolean isURI() {
+        return false;
+    }
+
 }

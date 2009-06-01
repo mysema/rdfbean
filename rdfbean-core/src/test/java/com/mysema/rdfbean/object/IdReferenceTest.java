@@ -38,7 +38,7 @@ public class IdReferenceTest {
     
     @Test
     public void uri() {
-        Session session = new MiniSession(IDResource.class);
+        Session session = SessionUtil.openSession(IDResource.class);
         IDResource resource1 = session.getBean(IDResource.class, ID.uriRef(TEST.NS, "localResource"));
         assertNotNull(resource1);
         
@@ -55,7 +55,7 @@ public class IdReferenceTest {
     
     @Test
     public void bnode(){
-        MiniSession session = new MiniSession(IDResource.class);
+        Session session = SessionUtil.openSession(IDResource.class);
         LID lid = session.getLID(new BID("foobar"));
         IDResource resource1 = session.get(IDResource.class, lid);
         assertNotNull(resource1);
@@ -68,7 +68,7 @@ public class IdReferenceTest {
     
     @Test
     public void local(){
-        MiniSession session = new MiniSession(LIDResource.class);
+        Session session = SessionUtil.openSession(LIDResource.class);
         LID lid = session.getLID(new BID("foobar"));
         LIDResource resource1 = session.get(LIDResource.class, lid);
         assertNotNull(resource1);

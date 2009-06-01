@@ -22,12 +22,13 @@ import com.mysema.rdfbean.annotations.Inject;
 import com.mysema.rdfbean.annotations.Mixin;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.MiniConnection;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.MiniSession;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionUtil;
 
 /**
  * @author sasa
@@ -91,7 +92,7 @@ public class ServiceInjectionTest {
                 STMT(subject, RDFS.label, LIT("RichBean"))
         );
 
-        Session session = new MiniSession(repository, RichBean.class);
+        Session session = SessionUtil.openSession(repository, RichBean.class);
         session.addParent(SRV.NS, new SpringObjectRepository(applicationContext));
         RichBean rbean = session.findInstances(RichBean.class).get(0);
         assertEquals("Hello RichBean!", rbean.executeService());
@@ -107,7 +108,7 @@ public class ServiceInjectionTest {
     @Test
     public void mixinInjection() {
         UID uid = new UID(SRV.NS, "helloWorld");
-        Session session = new MiniSession(MixinInjection.class);
+        Session session = SessionUtil.openSession(MixinInjection.class);
         session.addParent(SRV.NS, new SpringObjectRepository(applicationContext));
         MixinInjection mixin = session.getBean(MixinInjection.class, uid);
         assertNotNull(mixin);

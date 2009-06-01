@@ -16,11 +16,11 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Default;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniRepository;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 
 public class AutowireTest {
 
@@ -47,7 +47,7 @@ public class AutowireTest {
         repository.add(
             new STMT(new UID(TEST.NS, "domainType"), RDF.type, new UID(TEST.NS, "DomainType"))
         );
-        Session session = new MiniSession(repository, DomainType.class);
+        Session session = SessionUtil.openSession(repository, DomainType.class);
         Command command = new Command();
         assertNull(command.domainType);
 

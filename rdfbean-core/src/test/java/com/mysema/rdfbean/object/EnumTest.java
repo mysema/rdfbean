@@ -34,11 +34,11 @@ public class EnumTest {
     
     @Test
     public void testEnum() {
-        MiniSession session = new MiniSession(EnumType.class, EnumRef.class);
-        MiniRepository repository = session.getRepository();
+        MiniRepository repository = new MiniRepository();
+        Session session = SessionUtil.openSession(repository, EnumType.class, EnumRef.class);
         session.save(new EnumRef(EnumType.SECONDARY));
         
-        session = new MiniSession(repository, EnumType.class, EnumRef.class);
+        session = SessionUtil.openSession(repository, EnumType.class, EnumRef.class);
         EnumRef eref = session.findInstances(EnumRef.class).get(0);
         assertEquals(EnumType.SECONDARY, eref.etype);
     }

@@ -24,7 +24,7 @@ public class ClassReferenceTest {
     
     @Test
     public void classReference() {
-        Session session = new MiniSession(ClassReference.class);
+        Session session = SessionUtil.openSession(ClassReference.class);
         ClassReference cref = session.getBean(ClassReference.class, new UID(TEST.NS, "foo"));
         assertEquals(ClassReference.class, cref.type);
     }

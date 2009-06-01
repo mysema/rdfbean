@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.mysema.commons.lang.IteratorWrapper;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.InjectProperty;
@@ -52,17 +53,18 @@ public class VirtualPropertyTest {
     @Test
     public void testVirtualProperties() {
         MiniRepository repository = new MiniRepository();
-        MiniSession session = new MiniSession(repository, Party.class, Person.class);
+        Session session = SessionUtil.openSession(repository, Party.class, Person.class);
         
         // Persistence
         session.save(new Person("John", "Doe"));
-        List<STMT> statements = repository.findStatements(null, new UID(TEST.NS, "displayName"), null);
+        List<STMT> statements = IteratorWrapper.asList(repository
+                .findStatements(null, new UID(TEST.NS, "displayName"), null, null));
         assertEquals(1, statements.size());
         STMT stmt = statements.get(0);
         assertEquals("John Doe", stmt.getObject().getValue());
         
         // Retrieval
-        session = new MiniSession(repository, Party.class, Person.class);
+        session = SessionUtil.openSession(repository, Party.class, Person.class);
         Person person = session.findInstances(Person.class).get(0);
         assertEquals("John Doe", person.getDisplayName());
     }

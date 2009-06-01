@@ -54,7 +54,7 @@ public class LocalizationTest {
                 STMT(subject, RDFS.label, LIT("in english", EN))
         );
         
-        Session session = new MiniSession(repository, locales, LocalizedMapTest.class);
+        Session session = SessionUtil.openSession(repository, locales, LocalizedMapTest.class);
         LocalizedMapTest lmaptest = session.getBean(LocalizedMapTest.class, subject);
         assertNotNull(lmaptest.getLabels());
         assertEquals("suomeksi", lmaptest.getLabels().get(FI));

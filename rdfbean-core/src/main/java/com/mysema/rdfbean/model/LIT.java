@@ -97,5 +97,25 @@ public final class LIT extends NODE {
             return "\"" + value + "\"^^" + datatype;
         }
     }
+
+    @Override
+    public boolean isBNode() {
+        return false;
+    }
+
+    @Override
+    public boolean isLiteral() {
+        return true;
+    }
+
+    @Override
+    public boolean isResource() {
+        return false;
+    }
+
+    @Override
+    public boolean isURI() {
+        return false;
+    }
     
 }

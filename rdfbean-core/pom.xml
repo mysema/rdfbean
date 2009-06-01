@@ -10,10 +10,15 @@
   <parent>
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.7.0-SNAPSHOT</version>
   </parent>  
   
   <dependencies>
+    <dependency>
+      <groupId>com.mysema.commons</groupId>
+      <artifactId>mysema-commons-lang</artifactId>
+      <version>0.1.4</version>
+    </dependency>
     <dependency>
       <!-- Mysema Source component -->
       <groupId>com.mysema.querydsl</groupId>

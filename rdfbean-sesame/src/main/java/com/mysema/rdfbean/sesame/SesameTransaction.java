@@ -39,7 +39,7 @@ public class SesameTransaction implements RDFBeanTransaction{
         isolationLevels = Collections.unmodifiableMap(levels);
     }
     
-    private SesameSession session;
+    private SesameConnection connection;
     
     private boolean rollBackOnly;
     
@@ -47,8 +47,8 @@ public class SesameTransaction implements RDFBeanTransaction{
     
     private Isolation isolationLevel;
     
-    public SesameTransaction(SesameSession session, int isolationLevel) {
-        this.session = Assert.notNull(session);
+    public SesameTransaction(SesameConnection connection, int isolationLevel) {
+        this.connection = Assert.notNull(connection);
         this.isolationLevel = isolationLevels.containsKey(isolationLevel) 
             ? isolationLevels.get(isolationLevel) : null;
     }
@@ -59,13 +59,13 @@ public class SesameTransaction implements RDFBeanTransaction{
             throw new RuntimeException("Transaction is rollBackOnly");
         }        
         try {
-            session.getConnection().commit();
+            connection.getConnection().commit();
         } catch (StoreException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
             throw new RuntimeException(error, e);
         }finally{
-            session.cleanUpAfterCommit();
+            connection.cleanUpAfterCommit();
         }
         
     }
@@ -78,13 +78,13 @@ public class SesameTransaction implements RDFBeanTransaction{
     @Override
     public void rollback() {
        try {
-           session.getConnection().rollback();           
+           connection.getConnection().rollback();           
        } catch (StoreException e) {
            String error = "Caught " + e.getClass().getName();
            logger.error(error, e);
            throw new RuntimeException(error, e);
        }finally{
-           session.cleanUpAfterRollback();
+           connection.cleanUpAfterRollback();
        }        
     }
 
@@ -96,8 +96,8 @@ public class SesameTransaction implements RDFBeanTransaction{
 
     public void begin() {
         try {
-            session.getConnection().setTransactionIsolation(isolationLevel);
-            session.getConnection().begin();            
+            connection.getConnection().setTransactionIsolation(isolationLevel);
+            connection.getConnection().begin();            
         } catch (StoreException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);

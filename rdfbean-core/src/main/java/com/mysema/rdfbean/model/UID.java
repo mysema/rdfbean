@@ -68,4 +68,24 @@ public final class UID extends ID {
 		return NodeType.URI;
 	}
 
+    @Override
+    public boolean isBNode() {
+        return false;
+    }
+
+    @Override
+    public boolean isLiteral() {
+        return false;
+    }
+
+    @Override
+    public boolean isResource() {
+        return true;
+    }
+
+    @Override
+    public boolean isURI() {
+        return true;
+    }
+
 }

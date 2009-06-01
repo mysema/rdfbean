@@ -3,12 +3,13 @@
  */
 package com.mysema.rdfbean.object;
 
+import static com.mysema.query.alias.GrammarWithAlias.$;
+import static com.mysema.query.alias.GrammarWithAlias.alias;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -18,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.commons.l10n.support.LocaleIterable;
-import com.mysema.commons.l10n.support.LocaleUtil;
+import com.mysema.commons.lang.IteratorWrapper;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Localized;
@@ -26,10 +27,6 @@ import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
-import com.mysema.rdfbean.object.identity.IdentityService;
-import com.mysema.rdfbean.object.identity.MemoryIdentityService;
-
-import static com.mysema.query.alias.GrammarWithAlias.*;
 
 /**
  * @author sasa
@@ -101,10 +98,8 @@ public class UpdateTest {
     private List<LID> ids;
     
     private MiniRepository repository;
-
-    private IdentityService identityService;
     
-    private MiniSession session;
+    private Session session;
 
     @Before
     public void init() {
@@ -118,18 +113,16 @@ public class UpdateTest {
         employee.company = company;
         
         repository = new MiniRepository();
-        identityService = MemoryIdentityService.instance();
         ids = newSession().saveAll(employee, company);
     }
 
-    private MiniSession newSession() {
+    private Session newSession() {
         return newSession(Locale.ENGLISH);
     }
 
-    private MiniSession newSession(Locale locale) {
-        session = new MiniSession(repository, new LocaleIterable(locale, false),
+    private Session newSession(Locale locale) {
+        session = SessionUtil.openSession(repository, new LocaleIterable(locale, false),
                 Employee.class, Company.class, EmployeeInfo.class);
-        session.setIdentityService(identityService);
         return session;
     }
     
@@ -218,7 +211,7 @@ public class UpdateTest {
         assertEquals(2, company.managers.size());
         assertEquals("Big Boss", company.managers.get(0).name);
         
-        int rsize = repository.findStatements(null, null, null).size();
+        int rsize = IteratorWrapper.asList(repository.findStatements(null, null, null, null)).size();
         
         // Promote John Doe in manager list
         boss = company.managers.get(0);
@@ -234,7 +227,7 @@ public class UpdateTest {
         assertEquals("Ex-Boss", company.managers.get(1).name);
         
         // See that there's no garbage left...
-        assertEquals(rsize, repository.findStatements(null, null, null).size());
+        assertEquals(rsize, IteratorWrapper.asList(repository.findStatements(null, null, null, null)).size());
     }
     
     @Test

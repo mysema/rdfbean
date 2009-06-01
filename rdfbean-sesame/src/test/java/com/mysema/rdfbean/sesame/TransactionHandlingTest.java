@@ -18,6 +18,7 @@ import org.openrdf.store.StoreException;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionUtil;
 import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.QRestriction;
@@ -47,7 +48,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     
     @Test
     public void commit() throws StoreException, ClassNotFoundException{
-        Session session = createSession(FI, OWL.class.getPackage());
+        Session session = SessionUtil.openSession(newRDFConnection(), FI, OWL.class.getPackage());
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
         session.save(new Restriction());

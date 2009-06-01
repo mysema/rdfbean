@@ -7,13 +7,40 @@ package com.mysema.rdfbean.sesame.query;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Stack;
 
-import org.openrdf.model.*;
+import org.openrdf.model.BNode;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.algebra.*;
+import org.openrdf.query.algebra.And;
+import org.openrdf.query.algebra.Compare;
+import org.openrdf.query.algebra.Distinct;
+import org.openrdf.query.algebra.Exists;
+import org.openrdf.query.algebra.Filter;
+import org.openrdf.query.algebra.Lang;
+import org.openrdf.query.algebra.Not;
+import org.openrdf.query.algebra.Order;
+import org.openrdf.query.algebra.OrderElem;
+import org.openrdf.query.algebra.Projection;
+import org.openrdf.query.algebra.ProjectionElem;
+import org.openrdf.query.algebra.ProjectionElemList;
+import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.ValueExpr;
+import org.openrdf.query.algebra.Var;
 import org.openrdf.query.parser.TupleQueryModel;
+import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.TupleResult;
 import org.openrdf.store.StoreException;
 import org.slf4j.Logger;
@@ -35,14 +62,16 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.ConverterRegistry;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.query.AbstractProjectingQuery;
 import com.mysema.rdfbean.query.VarNameIterator;
-import com.mysema.rdfbean.sesame.SesameSession;
+import com.mysema.rdfbean.sesame.SesameDialect;
 import com.mysema.rdfbean.sesame.query.SesameOps.Transformer;
 import com.mysema.rdfbean.sesame.query.serializer.QuerySerializer;
 
@@ -90,21 +119,24 @@ public class SesameQuery extends
     
     private final SesameOps sailOps = SesameOps.DEFAULT;
     
-    private final SesameSession sesameSession;
-    
     private JoinBuilder statementPatterns = new JoinBuilder();
     
     private boolean includeInferred = true;
+    
+    private RepositoryConnection connection;
+    
+    private Configuration conf;
         
-    public SesameQuery(SesameSession session, StatementPattern.Scope patternScope) {
-        super(session.getDialect(), session);
-        this.sesameSession = session; 
+    public SesameQuery(Session session, SesameDialect dialect, RepositoryConnection connection, StatementPattern.Scope patternScope) {
+        super(dialect, session);
+        this.connection = connection;
+        conf = session.getConfiguration();
         this.patternScope = patternScope;
     }
     
-    public SesameQuery(SesameSession session) {
-        this(session, StatementPattern.Scope.DEFAULT_CONTEXTS);    
-    }  
+//    public SesameQuery(SesameConnection session) {
+//        this(session, StatementPattern.Scope.DEFAULT_CONTEXTS);    
+//    }  
 
     @Override
     protected SesameQuery addToProjection(Expr<?>... o) {
@@ -160,7 +192,7 @@ public class SesameQuery extends
     }
         
     protected <RT> RT convert(Class<RT> rt, Literal literal) {
-        return sesameSession.getConverterRegistry().fromString(literal.getLabel(), null, rt);
+        return conf.getConverterRegistry().fromString(literal.getLabel(), null, rt);
     }
 
     private void addFilterCondition(ValueExpr filterCondition) {
@@ -215,7 +247,7 @@ public class SesameQuery extends
             
             // TODO : replace the following two lines with proper Sesame integration
             SesameQueryHolder.set(query);
-            TupleQuery tupleQuery = sesameSession.getConnection().prepareTupleQuery(SesameQueryHolder.QUERYDSL, "");                       
+            TupleQuery tupleQuery = connection.prepareTupleQuery(SesameQueryHolder.QUERYDSL, "");                       
             tupleQuery.setIncludeInferred(includeInferred);
             
             queryResult =  tupleQuery.evaluate();
@@ -261,7 +293,7 @@ public class SesameQuery extends
     @SuppressWarnings("unchecked")
     private ID getResourceForLID(Expr<?> arg) {
         String lid = ((EConstant<String>)arg).getConstant();
-        ID id = sesameSession.getIdentityService().getID(new LID(lid));
+        ID id = conf.getIdentityService().getID(new LID(lid));
         return id;
     }
 
@@ -332,7 +364,7 @@ public class SesameQuery extends
             return constToVar.get(javaValue);
         }else{
             Value rdfValue;
-            ConverterRegistry converter = sesameSession.getConverterRegistry();
+            ConverterRegistry converter = conf.getConverterRegistry();
             if (javaValue instanceof Class){
                 rdfValue = getTypeForJavaClass((Class<?>)javaValue);
             }else if (converter.supports(javaValue.getClass())){
@@ -340,7 +372,8 @@ public class SesameQuery extends
                 UID datatype = converter.getDatatype(javaValue);
                 rdfValue = dialect.getLiteral(label, dialect.getURI(datatype));
             }else{
-                rdfValue = sesameSession.getId(javaValue);
+                ID id = session.getId(javaValue);
+                rdfValue = id != null ? dialect.getResource(id) : null;
             }        
             Var var = new Var(varNames.next(), rdfValue);
             var.setAnonymous(true);
@@ -463,13 +496,13 @@ public class SesameQuery extends
             if (mappedPath.getMappedProperty().isLocalized()){
                 String value = operation.getArg(1).toString();
                 if (pathType.equals(PathType.PROPERTY)){
-                    locale = sesameSession.getCurrentLocale();
+                    locale = session.getCurrentLocale();
                 }else if (pathType.equals(PathType.MAPVALUE_CONSTANT)){
                     locale = ((EConstant<Locale>)path.getMetadata().getExpression()).getConstant();                        
                 }else{
                     throw new IllegalArgumentException("Unsupported path type " + pathType);
                 }
-                constValue = sesameSession.getDialect().getLiteral(value, locale);
+                constValue = dialect.getLiteral(value, locale);
                 
             }else{
                 constValue = ((Var) toValue(operation.getArg(1))).getValue();    

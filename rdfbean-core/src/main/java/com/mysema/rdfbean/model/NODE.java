@@ -45,11 +45,12 @@ public abstract class NODE implements Serializable {
         return Arrays.asList(objects).hashCode();
     }
 
-    public final boolean isResource() {
-        return this instanceof ID;
-    }
+    public abstract boolean isResource();
+    
+    public abstract boolean isURI();
+    
+    public abstract boolean isBNode();
 
-    public boolean isLiteral() {
-        return this instanceof LIT;
-    }
+    public abstract boolean isLiteral();
+    
 }

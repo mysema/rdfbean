@@ -13,8 +13,8 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Default;
 import com.mysema.rdfbean.annotations.Inject;
-import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.annotations.InjectProperty;
+import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.UID;
 
 /**
@@ -54,7 +54,7 @@ public class ConstructorParametersTest {
 
 	@Test
 	public void constructorInjection() {
-		Session session = new MiniSession(ChildType.class, ParentType.class, ParentServiceType.class);
+		Session session = SessionUtil.openSession(ChildType.class, ParentType.class, ParentServiceType.class);
 		session.addParent(TEST.NS, session);
 		ChildType child = session.getBean(ChildType.class, new UID(TEST.NS, "child"));
 		assertNotNull(child);

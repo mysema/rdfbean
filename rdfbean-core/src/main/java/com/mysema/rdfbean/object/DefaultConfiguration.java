@@ -22,6 +22,8 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.object.identity.IdentityService;
+import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 import com.mysema.rdfbean.owl.OWL;
 
 /**
@@ -43,6 +45,8 @@ public class DefaultConfiguration implements Configuration {
     private Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
 
     private ConverterRegistry converterRegistry = new ConverterRegistry();
+    
+    private IdentityService identityService = MemoryIdentityService.instance();
     
     private UID defaultContext;
     
@@ -150,6 +154,14 @@ public class DefaultConfiguration implements Configuration {
 
     public void setDefaultContext(String ctx) {
         this.defaultContext = new UID(ctx);
+    }
+
+    public void setIdentityService(IdentityService identityService) {
+        this.identityService = identityService;
+    }
+
+    public IdentityService getIdentityService() {
+        return identityService;
     }
     
 }

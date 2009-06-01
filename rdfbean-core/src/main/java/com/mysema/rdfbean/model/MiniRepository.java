@@ -11,6 +11,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.commons.lang.IteratorWrapper;
+
 /**
  * @author sasa
  *
@@ -34,28 +37,34 @@ public final class MiniRepository implements Repository<MiniDialect> {
         statements.addAll(Arrays.asList(stmts));
     }
 
-    public List<STMT> findStatements(ID subject, UID predicate, NODE object) {
+    public CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context) {
         List<STMT> stmts = new ArrayList<STMT>();
         for (STMT stmt : statements){
-            if (subject != null && !stmt.getSubject().equals(subject)){
+            if (subject != null && !stmt.getSubject().equals(subject)) {
                 continue;
-            }else if (predicate != null && !stmt.getPredicate().equals(predicate)){
+            } else if (predicate != null && !predicate.equals(stmt.getPredicate())) {
                 continue;
-            }else if (object != null && !stmt.getObject().equals(object)){
+            } else if (object != null && !object.equals(stmt.getObject())) {
                 continue;
-            }else{
+            } else if (context != null && !context.equals(stmt.getContext())) {
+                continue;
+            } else {
                 stmts.add(stmt);
             }
         }
-        return stmts;
+        return new IteratorWrapper<STMT>(stmts.iterator());
     }
     
     public MiniDialect getDialect() {
         return dialect;
     }
 
-    public void removeStatement(STMT statement) {
-        statements.remove(statement);
+    public void removeStatement(STMT... stmts) {
+        statements.removeAll(Arrays.asList(stmts));
     }
 
+    public MiniConnection openConnection() {
+        return new MiniConnection(this);
+    }
+    
 }
