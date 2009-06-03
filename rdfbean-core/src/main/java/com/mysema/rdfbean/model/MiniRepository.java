@@ -6,9 +6,12 @@
 package com.mysema.rdfbean.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -25,9 +28,9 @@ import com.mysema.commons.lang.CloseableIterator;
  */
 public final class MiniRepository implements Repository<MiniDialect> {
     
-    private Map<ID, Map<UID, Set<STMT>>> subjects = new HashMap<ID, Map<UID, Set<STMT>>>();
+    private Map<ID, STMTCache> subjects = new HashMap<ID, STMTCache>();
     
-    private Map<ID, Map<UID, Set<STMT>>> objects = new HashMap<ID, Map<UID, Set<STMT>>>();
+    private Map<ID, STMTCache> objects = new HashMap<ID, STMTCache>();
     
     private static final Iterator<STMT> EMPTY_ITERATOR = new Iterator<STMT>() {
 
@@ -47,8 +50,6 @@ public final class MiniRepository implements Repository<MiniDialect> {
         
     };
     
-    private Set<STMT> statements = new LinkedHashSet<STMT>();
-    
     private MiniDialect dialect;
     
     public MiniRepository() {
@@ -62,7 +63,6 @@ public final class MiniRepository implements Repository<MiniDialect> {
     
     public void add(STMT... stmts) {
         for (STMT stmt : stmts) {
-            statements.add(stmt);
             index(stmt.getSubject(), stmt, subjects);
             if (stmt.getObject().isResource()) {
                 index((ID) stmt.getObject(), stmt, objects);
@@ -70,55 +70,38 @@ public final class MiniRepository implements Repository<MiniDialect> {
         }
     }
     
-    public void index(ID key, STMT stmt, Map<ID, Map<UID, Set<STMT>>> map) {
-        Map<UID, Set<STMT>> stmtMap = map.get(key);
-        if (stmtMap == null) {
-            stmtMap = new HashMap<UID, Set<STMT>>();
-            map.put(key, stmtMap);
+    public void index(ID key, STMT stmt, Map<ID, STMTCache> index) {
+        STMTCache stmtCache = index.get(key);
+        if (stmtCache == null) {
+            stmtCache = new STMTCache();
+            index.put(key, stmtCache);
         } 
-        Set<STMT> stmts = stmtMap.get(stmt.getPredicate());
-        if (stmts == null) {
-            stmts = new LinkedHashSet<STMT>();
-            stmtMap.put(stmt.getPredicate(), stmts);
-        }
-        stmts.add(stmt);
+        stmtCache.add(stmt);
     }
 
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
         Iterator<STMT> iterator = null;
-        boolean optimized = false;
         if (subject != null) {
-            optimized = true;
             iterator = getIndexed(subject, predicate, subjects);
         } else if (object != null && object.isResource()) {
-            optimized = true;
             iterator = getIndexed((ID) object, predicate, objects);
-        }
-        if (!optimized) {
-            iterator = statements.iterator();
+        } else {
+            IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
+            for (STMTCache stmtCache : subjects.values()) {
+                iterChain.addIterator(stmtCache.iterator(predicate));
+            }
+            iterator = iterChain;
         }
         return new ResultIterator(iterator, subject, predicate, object, context, includeInferred);
     }
     
-    private Iterator<STMT> getIndexed(ID key, UID predicate, Map<ID, Map<UID, Set<STMT>>> index) {
-        Iterator<STMT> iterator;
-        Map<UID, Set<STMT>> stmtMap = index.get(key);
-        if (stmtMap == null) {
-            iterator = EMPTY_ITERATOR;
-        } else if (predicate != null) {
-            if (stmtMap.containsKey(predicate)) {
-                iterator = stmtMap.get(predicate).iterator();
-            } else {
-                iterator = EMPTY_ITERATOR;
-            }
+    private Iterator<STMT> getIndexed(ID key, UID predicate, Map<ID, STMTCache> index) {
+        STMTCache stmtCache = index.get(key);
+        if (stmtCache != null) {
+            return stmtCache.iterator(predicate);
         } else {
-            IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
-            for (Set<STMT> stmts : stmtMap.values()) {
-                iterChain.addIterator(stmts.iterator());
-            }
-            iterator = iterChain;
+            return EMPTY_ITERATOR;
         }
-        return iterator;
     }
     
     public static class ResultIterator implements CloseableIterator<STMT> {
@@ -182,8 +165,7 @@ public final class MiniRepository implements Repository<MiniDialect> {
 
     public void removeStatement(STMT... stmts) {
         for (STMT stmt : stmts) {
-            if (statements.remove(stmt)) {
-                removeIndexed(stmt.getSubject(), stmt, subjects);
+            if (removeIndexed(stmt.getSubject(), stmt, subjects)) {
                 if (stmt.getObject().isResource()) {
                     removeIndexed((ID) stmt.getObject(), stmt, objects);
                 }
@@ -191,13 +173,12 @@ public final class MiniRepository implements Repository<MiniDialect> {
         }
     }
     
-    private void removeIndexed(ID key, STMT stmt, Map<ID, Map<UID, Set<STMT>>> index) {
-        Map<UID, Set<STMT>> stmtMap = index.get(key);
+    private boolean removeIndexed(ID key, STMT stmt, Map<ID, STMTCache> index) {
+        STMTCache stmtMap = index.get(key);
         if (stmtMap != null) {
-            Set<STMT> stmts = stmtMap.get(stmt.getPredicate());
-            if (stmts != null) {
-                stmts.remove(stmt);
-            }
+            return stmtMap.remove(stmt);
+        } else {
+            return false;
         }
     }
 
@@ -216,6 +197,84 @@ public final class MiniRepository implements Repository<MiniDialect> {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+    
+    public static class STMTCache {
+    
+        private Map<UID, Set<STMT>> predicates;
+        
+        private List<STMT> containerProperties;
+        
+        public Iterator<STMT> iterator(UID predicate) {
+            if (predicate == null) {
+                IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
+                if (predicates != null) {
+                    for (Set<STMT> stmts : predicates.values()) {
+                        iterChain.addIterator(stmts.iterator());
+                    }
+                }
+                if (containerProperties != null) {
+                    iterChain.addIterator(containerProperties.iterator());
+                }
+                return iterChain;
+            } else if (RDF.isContainerMembershipProperty(predicate)) {
+                if (containerProperties != null) {
+                    return containerProperties.iterator();
+                } 
+            } else {
+                Set<STMT> stmts  = predicates.get(predicate);
+                if (stmts != null) {
+                    return stmts.iterator();
+                }
+            }
+            return EMPTY_ITERATOR;
+        }
+        
+        public void add(STMT stmt) {
+            if (RDF.isContainerMembershipProperty(stmt.getPredicate())) {
+                if (containerProperties == null) {
+                    containerProperties = new ArrayList<STMT>();
+                }
+                containerProperties.add(stmt);
+            } else {
+                if (predicates == null) {
+                    predicates = new LinkedHashMap<UID, Set<STMT>>();
+                }
+                Set<STMT> stmts = predicates.get(stmt.getPredicate());
+                if (stmts == null) {
+                    stmts = new LinkedHashSet<STMT>();
+                    predicates.put(stmt.getPredicate(), stmts);
+                }
+                stmts.add(stmt);
+            }
+        }
+        
+        public boolean remove(STMT stmt) {
+            if (RDF.isContainerMembershipProperty(stmt.getPredicate())) {
+                if (containerProperties != null) {
+                    return containerProperties.remove(stmt);
+                }
+            } else {
+                if (predicates != null) {
+                    Set<STMT> stmts = predicates.get(stmt.getPredicate());
+                    if (stmts != null) {
+                        return stmts.remove(stmt);
+                    }
+                }
+            }
+            return false;
+        }
+        
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            if (predicates != null) {
+                sb.append(predicates.toString());
+            } 
+            if (containerProperties != null) {
+                sb.append(containerProperties.toString());
+            }
+            return sb.toString();
         }
     }
 }

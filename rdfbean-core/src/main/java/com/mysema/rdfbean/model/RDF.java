@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.model;
 
+import java.util.regex.Pattern;
+
 
 /**
  * @author sasa
@@ -29,6 +31,19 @@ public final class RDF {
     public static final UID rest = new UID(NS, "rest");
     public static final UID nil = new UID(NS, "nil");
     public static final UID text = new UID(NS, "text");
+    public static final Pattern CONTAINER_INDEX = Pattern.compile("_[1-9]\\d*");
     
     private RDF() {}
+
+    public static UID getContainerMembershipProperty(int i) {
+        if (i < 1) {
+            throw new IllegalArgumentException("Negative index: " + i);
+        }
+        return new UID(NS, "_"+i);
+    }
+
+    public static boolean isContainerMembershipProperty(UID predicate) {
+        return NS.equals(predicate.ns()) && CONTAINER_INDEX.matcher(predicate.ln()).matches();
+    }
+
 }

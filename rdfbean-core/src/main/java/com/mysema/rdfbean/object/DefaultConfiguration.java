@@ -18,6 +18,7 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.MappedClasses;
+import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
@@ -47,6 +48,8 @@ public class DefaultConfiguration implements Configuration {
     private ConverterRegistry converterRegistry = new ConverterRegistry();
     
     private IdentityService identityService = MemoryIdentityService.instance();
+    
+    private List<FetchStrategy> fetchStrategies;
     
     private UID defaultContext;
     
@@ -162,6 +165,14 @@ public class DefaultConfiguration implements Configuration {
 
     public IdentityService getIdentityService() {
         return identityService;
+    }
+
+    public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
+        this.fetchStrategies = fetchStrategies;
+    }
+
+    public List<FetchStrategy> getFetchStrategies() {
+        return fetchStrategies;
     }
     
 }

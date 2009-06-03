@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
@@ -26,25 +27,17 @@ public class FetchOptimizer implements RDFConnection {
     
     private Set<Object> cacheKeys = new HashSet<Object>();
     
-    private boolean includeInferred = false;
-    
     private List<FetchStrategy> fetchStrategies = new ArrayList<FetchStrategy>();
 
     public FetchOptimizer() {}
     
     public FetchOptimizer(RDFConnection connection) {
-        this(connection, false);
+        this(connection, new ArrayList<FetchStrategy>());
     }
     
-    public FetchOptimizer(RDFConnection connection, boolean includeInferred) {
-        this(connection, includeInferred, new ArrayList<FetchStrategy>());
-    }
-    
-    public FetchOptimizer(RDFConnection connection,
-            boolean includeInferred, List<FetchStrategy> fetchStrategies) {
-        this.connection = connection;
-        this.includeInferred = includeInferred;
-        this.fetchStrategies = fetchStrategies;
+    public FetchOptimizer(RDFConnection connection, List<FetchStrategy> fetchStrategies) {
+        this.connection = Assert.notNull(connection);
+        this.fetchStrategies = Assert.notNull(fetchStrategies);
     }
 
     public RDFBeanTransaction beginTransaction(Session session,
@@ -78,7 +71,7 @@ public class FetchOptimizer implements RDFConnection {
                 break;
             }
         }
-        if (!cached && (this.includeInferred || !includeInferred)) {
+        if (!cached && !includeInferred) {
             cached = true;
             cache.addStatements(connection.findStatements(subject, predicate, object, context, includeInferred));
         }
@@ -106,12 +99,12 @@ public class FetchOptimizer implements RDFConnection {
         this.connection = connection;
     }
 
-    public void setIncludeInferred(boolean includeInferred) {
-        this.includeInferred = includeInferred;
-    }
-
     public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
         this.fetchStrategies = fetchStrategies;
+    }
+    
+    public void addFetchStrategies(List<FetchStrategy> fetchStrategies) {
+        this.fetchStrategies.addAll(fetchStrategies);
     }
     
 }

@@ -6,13 +6,39 @@
 package com.mysema.rdfbean.object;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.collections15.BeanMap;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.annotations.*;
+import com.mysema.rdfbean.annotations.ComponentType;
+import com.mysema.rdfbean.annotations.Container;
+import com.mysema.rdfbean.annotations.ContainerType;
+import com.mysema.rdfbean.annotations.Default;
+import com.mysema.rdfbean.annotations.Defaults;
+import com.mysema.rdfbean.annotations.Id;
+import com.mysema.rdfbean.annotations.Inject;
+import com.mysema.rdfbean.annotations.Localized;
+import com.mysema.rdfbean.annotations.MapElements;
+import com.mysema.rdfbean.annotations.Mixin;
+import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.annotations.Required;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniDialect;
 import com.mysema.rdfbean.model.UID;
@@ -239,7 +265,12 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
     }
     
     public boolean isList() {
-        return List.class.isAssignableFrom(getType());
+        Container container = (Container) getAnnotation(Container.class);
+        if (container != null) {
+            return ContainerType.LIST == container.value();
+        } else {
+            return List.class.isAssignableFrom(getType());
+        }
     }
     
     public boolean isLocalized() {
@@ -327,4 +358,19 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
     public boolean isURI() {
         return UID.class.isAssignableFrom(getTargetType());
     }
+
+    public boolean isContainer() {
+        Container container = this.getAnnotation(Container.class);
+        return container != null && container.value() != ContainerType.LIST;
+    }
+
+    public ContainerType getContainerType() {
+        Container container = this.getAnnotation(Container.class);
+        return container != null ? container.value() : null;
+    }
+
+    public boolean isIndexed() {
+        return isList() || ContainerType.SEQ.equals(getContainerType());
+    }
+    
 }

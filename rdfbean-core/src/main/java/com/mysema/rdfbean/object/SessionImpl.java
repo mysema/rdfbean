@@ -9,7 +9,20 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.collections15.Factory;
@@ -24,7 +37,21 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.annotations.ContainerType;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.FetchOptimizer;
+import com.mysema.rdfbean.model.FetchStrategy;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.model.Identifier;
+import com.mysema.rdfbean.model.LID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.identity.IdentityService;
 import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 
@@ -34,6 +61,12 @@ import com.mysema.rdfbean.object.identity.MemoryIdentityService;
  */
 public class SessionImpl implements Session {
   
+    public static final Set<UID> CONTAINER_TYPES = Collections.unmodifiableSet(
+            new HashSet<UID>(Arrays.<UID>asList(
+                    RDF.Alt, RDF.Seq, RDF.Bag, RDFS.Container
+            ))
+    );
+    
     private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
     
     private Configuration conf;
@@ -70,6 +103,15 @@ public class SessionImpl implements Session {
         this.locales = locales;
         
         this.identityService = conf.getIdentityService();
+        
+        List<FetchStrategy> fetchStrategies = conf.getFetchStrategies();
+        if (fetchStrategies != null) {
+            if (this.connection instanceof FetchOptimizer) {
+                ((FetchOptimizer) this.connection).addFetchStrategies(fetchStrategies);
+            } else {
+                this.connection = new FetchOptimizer(this.connection, fetchStrategies);
+            }
+        }
     }
 
     public SessionImpl(Configuration configuration, RDFConnection connection, Locale locale) {
@@ -237,18 +279,16 @@ public class SessionImpl implements Session {
         Object convertedValue;
         Class<?> targetType = mappedProperty.getComponentType();
         int size = values.size();
-        if (mappedProperty.isList() && size > 0) {
-            if (size == 1) {
-                NODE node = values.iterator().next();
-                if (node instanceof ID) {
-                    values = convertList((ID) node, context, targetType);
-                } 
-                // TODO log error?
-            } 
-            // TODO log error?
-        } else {
-            // TODO support containers?
-        }
+        if (size == 1) {
+            NODE node = values.iterator().next();
+            if (node instanceof ID) {
+                if (mappedProperty.isList()) {
+                    values = convertList((ID) node, context);
+                } else if (mappedProperty.isContainer()) {
+                    values = convertContainer((ID) node, context, mappedProperty.isIndexed());
+                }
+            } // TODO else log error?
+        } // TODO else log error?
         Class collectionType = mappedProperty.getCollectionType();
         Collection collection = (Collection) collectionType.newInstance();
         for (NODE value : values) {
@@ -258,6 +298,39 @@ public class SessionImpl implements Session {
         return convertedValue;
     }
     
+    private Collection<NODE> convertContainer(ID node, UID context, boolean indexed) {
+        List<STMT> stmts = findStatements(node, null, null, false, context);
+        Map<Integer, NODE> values = new LinkedHashMap<Integer, NODE>();
+        int maxIndex = 0;
+        int i = 0;
+        for (STMT stmt : stmts) {
+            i++;
+            UID predicate = stmt.getPredicate();
+            if (RDF.NS.equals(predicate.ns())) {
+                String ln = predicate.ln();
+                int index = 0;
+                if ("li".equals(ln)) {
+                    index = i;
+                } else if (RDF.CONTAINER_INDEX.matcher(ln).matches()) {
+                    index = new Integer(ln.substring(1));
+                }
+                if (index > 0) {
+                    maxIndex = Math.max(maxIndex, index);
+                    values.put(Integer.valueOf(index), stmt.getObject());
+                }
+            }
+        }
+        if (indexed) {
+            NODE[] nodes = new NODE[maxIndex];
+            for (Map.Entry<Integer, NODE> entry : values.entrySet()) {
+                nodes[entry.getKey()-1] = entry.getValue();
+            }
+            return Arrays.asList(nodes);
+        } else {
+            return values.values();
+        }
+    }
+
     private String convertLocalized(MappedPath propertyPath, Set<? extends NODE> values) {
         return LocaleUtil.getLocalized(convertLocalizedMap(propertyPath, values), 
                 locales, null);
@@ -421,10 +494,12 @@ public class SessionImpl implements Session {
     
     @SuppressWarnings("unchecked")
     private Object convertValue(NODE value, Class<?> targetType, MappedPath propertyPath) throws Exception {
-        Class targetClass = MappedProperty.getGenericClass(targetType, 0);
-        MappedProperty mappedProperty = propertyPath.getMappedProperty();
         Object convertedValue;
-        if (value != null) {
+        if (value == null) {
+            convertedValue = null;
+        } else {
+            Class targetClass = MappedProperty.getGenericClass(targetType, 0);
+            MappedProperty mappedProperty = propertyPath.getMappedProperty();
             try {
                 // "Wildcard" type
                 if (MappedPath.isWildcard(targetClass) && value.isResource()) {
@@ -488,8 +563,6 @@ public class SessionImpl implements Session {
                     throw new IllegalArgumentException("Error assigning " + propertyPath, e);
                 }
             }
-        } else {
-            convertedValue = null;
         }
         return convertedValue;
     }
@@ -522,7 +595,7 @@ public class SessionImpl implements Session {
         return false;
     }
     
-    private Collection<NODE> convertList(ID subject, UID context, Class<?> targetType) {
+    private Collection<NODE> convertList(ID subject, UID context) {
         List<NODE> list = new ArrayList<NODE>();
         while (subject != null && !subject.equals(RDF.nil)) {
             list.add(getFunctionalValue(subject, RDF.first, false, context));
@@ -1013,9 +1086,13 @@ public class SessionImpl implements Session {
                             }
                         } else {
                             recordRemoveStatement(statement);
-
-                            if (property.isList()) {
-                                removeList(statement.getObject(), context);
+                            NODE object = statement.getObject();
+                            if (object.isResource()) {
+                                if (property.isList()) {
+                                    removeList((ID) object, context);
+                                } else if (property.isContainer()) {
+                                    removeContainer((ID) object, context);
+                                }
                             }
                         }
                     }
@@ -1027,6 +1104,12 @@ public class SessionImpl implements Session {
                         ID first = toRDFList((List<?>) object, context);
                         if (first != null) {
                             recordAddStatement(subject, predicate, first, context);
+                        }
+                    } else if (property.isContainer()) {
+                        ID container = toRDFContainer((Collection<?>) object, context, 
+                                property.getContainerType());
+                        if (container != null) {
+                            recordAddStatement(subject, predicate, container, context);
                         }
                     } else if (property.isCollection()) {
                         for (Object o : (Collection<?>) object) {
@@ -1062,6 +1145,38 @@ public class SessionImpl implements Session {
                 }
             }
         }
+    }
+
+    private ID toRDFContainer(Collection<?> collection, UID context,
+            ContainerType containerType) {
+        int i=0;
+        ID container = connection.createBNode();
+        recordAddStatement(container, RDF.type, containerType.getUID(), context);
+        for (Object o : collection) {
+            i++;
+            NODE value = toRDFValue(o, context);
+            if (value != null) {
+                recordAddStatement(container, RDF.getContainerMembershipProperty(i), value, context);
+            }
+        }
+        return container;
+    }
+
+    private void removeContainer(ID node, UID context) {
+        if (isContainer(node, context)) {
+            for (STMT stmt : findStatements(node, null, null, false, context)) {
+                recordRemoveStatement(stmt);
+            }
+        }
+    }
+
+    private boolean isContainer(ID node, UID context) {
+        for (ID type : findTypes(node, context)) {
+            if (CONTAINER_TYPES.contains(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected Class<?> getClass(Object object) {
@@ -1100,16 +1215,14 @@ public class SessionImpl implements Session {
         return subject;
     }
 
-    private void removeList(NODE node, UID context) {
-        // XXX What if the same list is referred elsewhere? 
-        // Is blank node...
-        if (node.isBNode()) {
-            BID bnode = (BID) node;
-            // ...of type rdf:List
-            if (findStatements(bnode, RDF.type, RDF.List, true, context).size() > 0) {
-                for (STMT statement : findStatements(bnode, null, null, false, context)) {
-                    recordRemoveStatement(statement);
-                    removeList(statement.getObject(), context);
+    private void removeList(ID node, UID context) {
+        if (findStatements(node, RDF.type, RDF.List, true, context).size() > 0) {
+            for (STMT statement : findStatements(node, null, null, false, context)) {
+                recordRemoveStatement(statement);
+                NODE object = statement.getObject();
+                // Remove rdf:rest
+                if (RDF.rest.equals(statement.getPredicate()) && object.isResource()) {
+                    removeList((ID) object, context);
                 }
             }
         }
