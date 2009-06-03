@@ -29,62 +29,62 @@ import org.springframework.beans.factory.FactoryBean;
 //TODO : get rid of Spring dependency
 public class MemorySailRepositoryFactoryBean implements FactoryBean {
 
-	private List<RDFSource> sources;
-	
-	private File dataDir;
-	
-	private static Map<String, Repository> repositories = new HashMap<String, Repository>();
-	
-	public void setSources(List<RDFSource> sources) {
-		this.sources = sources;
-	}
+    private List<RDFSource> sources;
+    
+    private File dataDir;
+    
+    private static Map<String, Repository> repositories = new HashMap<String, Repository>();
+    
+    public void setSources(List<RDFSource> sources) {
+        this.sources = sources;
+    }
 
-	@Override
-	public Object getObject() throws Exception {
-	    Repository repository;
-	    if (dataDir != null) {
-	        repository = repositories.get(dataDir.getAbsoluteFile().getName());
-    	    if (repository == null) {
-        	    MemoryStore store = new MemoryStore(dataDir);
+    @Override
+    public Object getObject() throws Exception {
+        Repository repository;
+        if (dataDir != null) {
+            repository = repositories.get(dataDir.getAbsoluteFile().getName());
+            if (repository == null) {
+                MemoryStore store = new MemoryStore(dataDir);
                 repository = new SailRepository(new ForwardChainingRDFSInferencer(store));
                 initialize(repository);
                 repositories.put(dataDir.getAbsoluteFile().getName(), repository);
-    	    }
+            }
         } else {
             repository = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
             initialize(repository);
         }
-		return repository;
-	}
-	
-	private void initialize(Repository repository) throws StoreException, RDFParseException, IOException {
+        return repository;
+    }
+    
+    private void initialize(Repository repository) throws StoreException, RDFParseException, IOException {
         repository.initialize();
         RepositoryConnection connection = repository.getConnection();
         try {
             if (sources != null && connection.isEmpty()) {
-            	ValueFactory vf = connection.getValueFactory();
-            	for (RDFSource source : sources) {
-            		connection.add(source.getResource().getInputStream(), 
-            				source.getContext(),
-            				source.getFormat(), 
-            				vf.createURI(source.getContext()));
-            	}
+                ValueFactory vf = connection.getValueFactory();
+                for (RDFSource source : sources) {
+                    connection.add(source.getResource().getInputStream(), 
+                            source.getContext(),
+                            source.getFormat(), 
+                            vf.createURI(source.getContext()));
+                }
             }
         } finally {
             connection.close();
         }
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Class getObjectType() {
-		return Repository.class;
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class getObjectType() {
+        return Repository.class;
+    }
 
-	@Override
-	public boolean isSingleton() {
-		return true;
-	}
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
 
     public void setDataDir(File dataDir) {
         this.dataDir = dataDir;

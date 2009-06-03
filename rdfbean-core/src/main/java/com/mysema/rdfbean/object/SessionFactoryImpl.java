@@ -13,9 +13,10 @@ import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 
 /**
- * AbstractSessionFactory provides
+ * SessionFactoryImpl is the default implementation of the SessionFactory interface
  *
  * @author tiwe
+ * @author sasa
  * @version $Id$
  */
 public class SessionFactoryImpl implements SessionFactory{
