@@ -106,48 +106,42 @@ class SesameOps {
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                return new Regex(first, 
-                        ((Var)args.get(1)).getValue().stringValue(),false);
+                return new Regex(first, ((Var)args.get(1)).getValue().stringValue(),false);
             }            
         });
         byOp.put(STARTSWITH, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                return new Regex(first, 
-                        ((Var)args.get(1)).getValue().stringValue()+"*",true);
+                return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",true);
             }            
         });
         byOp.put(ENDSWITH, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                return new Regex(first,
-                        "*"+((Var)args.get(1)).getValue().stringValue(),true);
+                return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),true);
             }            
         });
-        byOp.put(CONTAINS, new Transformer(){
+        byOp.put(STRING_CONTAINS, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                return new Regex(first,
-                        "*"+((Var)args.get(1)).getValue().stringValue()+"*",true);
+                return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue()+"*",true);
             }            
         });
         byOp.put(STARTSWITH_IC, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                return new Regex(first, 
-                        ((Var)args.get(1)).getValue().stringValue()+"*",false);
+                return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",false);
             }            
         });
         byOp.put(ENDSWITH_IC, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                return new Regex(first, 
-                        "*"+((Var)args.get(1)).getValue().stringValue(),false);
+                return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),false);
             }            
         });
         byOp.put(MATCHES, new Transformer(){
@@ -159,7 +153,11 @@ class SesameOps {
         }); 
         
         // MATH        
-        Iterator<MathOp> mathOps = Arrays.asList(MathOp.PLUS, MathOp.MINUS, MathOp.MULTIPLY, MathOp.DIVIDE).iterator();
+        Iterator<MathOp> mathOps = Arrays.asList(
+                MathOp.PLUS, 
+                MathOp.MINUS, 
+                MathOp.MULTIPLY, 
+                MathOp.DIVIDE).iterator();
         for (Operator<?> op : Arrays.<Operator<?>>asList(ADD, SUB, MULT, DIV)){
             byOp.put(op, new MathExprTransformer(mathOps.next()));
         }
@@ -204,12 +202,6 @@ class SesameOps {
                 return new FunctionCall( ((Var)args.get(1)).getValue().stringValue(), args.get(0));
             }            
         });
-//        byOp.put(ISTYPEOF, new Transformer(){
-//            @Override
-//            public ValueExpr transform(List<ValueExpr> args) {
-//                return new Exists(new StatementPattern((Var)args.get(0), (Var)args.get(1), (Var)args.get(2)));
-//            }            
-//        });
         
         SesameFunctions.addTransformers(byOp);
         

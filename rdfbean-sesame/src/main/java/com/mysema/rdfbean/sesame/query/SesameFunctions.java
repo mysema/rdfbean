@@ -92,7 +92,7 @@ public class SesameFunctions {
             },
             
             // BOOLEAN FUNCTIONS
-            new BooleanFunction("contains", Ops.CONTAINS){
+            new BooleanFunction("contains", Ops.STRING_CONTAINS){
                 protected boolean convert(Value... args){
                     return args[0].stringValue().contains(args[1].stringValue());
                 }                        

@@ -12,6 +12,7 @@ import java.util.Set;
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 import org.openrdf.query.parser.TupleQueryModel;
@@ -21,6 +22,7 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
+import com.mysema.rdfbean.query.Constants;
 
 /**
  * QuerySerializer seriales ParsedTupleQuery instances to a syntax combining 
@@ -44,6 +46,10 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     private final Set<String> namespaces = new HashSet<String>();
     
     private boolean usingNsPrinted;
+    
+    static{
+        Namespaces.register("querydsl", Constants.NS);
+    }
     
     public QuerySerializer(TupleQueryModel query, boolean verbose){
         query.getTupleExpr().visit(this);
@@ -129,7 +135,10 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     @Override
     public void meet(FunctionCall node) throws RuntimeException{
-        append( "<" ).append(node.getURI()).append( ">" );
+//        append( "<" ).append(node.getURI()).append( ">" );        
+        URI uri = new URIImpl(node.getURI());
+        namespaces.add(uri.getNamespace());
+        append(Namespaces.getReadableURI(uri.getNamespace(), uri.getLocalName()));
         append( "( " );
         boolean first = true;
         for (ValueExpr v : node.getArgs()){
