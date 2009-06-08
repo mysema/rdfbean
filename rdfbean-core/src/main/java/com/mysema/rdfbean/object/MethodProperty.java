@@ -57,6 +57,7 @@ public class MethodProperty extends MappedProperty<Method> {
 		} else {
 			getter = true;
 		}
+        init();
 	}
 
 	@Override
@@ -65,7 +66,7 @@ public class MethodProperty extends MappedProperty<Method> {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Class<?> getTypeInternal() {
 		if (getter) {
 			return method.getReturnType();
 		} else {

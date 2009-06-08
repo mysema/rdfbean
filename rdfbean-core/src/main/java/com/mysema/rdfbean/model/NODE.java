@@ -39,14 +39,6 @@ public abstract class NODE implements Serializable {
     
     public abstract NodeType getNodeType();
 
-    static int hashCode(Object... objects) {
-        int hashCode = 1;
-        for (Object obj : objects) {
-            hashCode = 31*hashCode + (obj==null ? 0 : obj.hashCode());
-        }
-        return hashCode;
-    }
-
     public abstract boolean isResource();
     
     public abstract boolean isURI();

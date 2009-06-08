@@ -324,7 +324,7 @@ public class SessionImpl implements Session {
                 int index = 0;
                 if ("li".equals(ln)) {
                     index = i;
-                } else if (RDF.CONTAINER_INDEX.matcher(ln).matches()) {
+                } else if (RDF.isContainerMembershipPropertyLocalName(ln)) {
                     index = new Integer(ln.substring(1));
                 }
                 if (index > 0) {
@@ -391,8 +391,7 @@ public class SessionImpl implements Session {
     }
 
     @SuppressWarnings("unchecked")
-	private <T> T convertMappedObject(ID subject, Type requiredType, boolean polymorphic, boolean injection) {
-        Class<T> requiredClass = (Class<T>) MappedProperty.getGenericClass(requiredType, 0);
+	private <T> T convertMappedObject(ID subject, Class<?> requiredClass, boolean polymorphic, boolean injection) {
         // XXX defaultContext?
         UID context = getContext(requiredClass, subject, null);
         Object instance = get(subject, requiredClass);
@@ -503,12 +502,11 @@ public class SessionImpl implements Session {
     }
     
     @SuppressWarnings("unchecked")
-    private Object convertValue(NODE value, Class<?> targetType, MappedPath propertyPath) {
+    private Object convertValue(NODE value, Class<?> targetClass, MappedPath propertyPath) {
         Object convertedValue;
         if (value == null) {
             convertedValue = null;
         } else {
-            Class targetClass = MappedProperty.getGenericClass(targetType, 0);
             MappedProperty mappedProperty = propertyPath.getMappedProperty();
             try {
                 // "Wildcard" type
@@ -519,10 +517,10 @@ public class SessionImpl implements Session {
                 // Enumerations
                 else if (targetClass.isEnum()) {
                     if (value instanceof UID) {
-                        convertedValue = Enum.valueOf((Class<? extends Enum>) targetType, 
+                        convertedValue = Enum.valueOf((Class<? extends Enum>) targetClass, 
                                 ((UID) value).ln());
                     } else if (value instanceof LIT) {
-                        convertedValue = Enum.valueOf((Class<? extends Enum>) targetType, value.getValue());
+                        convertedValue = Enum.valueOf((Class<? extends Enum>) targetClass, value.getValue());
                     } else {
                         throw new IllegalArgumentException("Cannot bind BNode into enum");
                     }
@@ -531,7 +529,7 @@ public class SessionImpl implements Session {
                 else if (MappedPath.isClassReference(targetClass)) {
                     if (value instanceof UID) {
                         convertedValue =  convertClassReference((UID) value, 
-                                propertyPath.getMappedProperty().getParametrizedType());
+                                mappedProperty.getParametrizedType());
                     } else {
                         throw new IllegalArgumentException("Cannot assign bnode or literal " + value
                                 + " into " + propertyPath);
@@ -541,7 +539,7 @@ public class SessionImpl implements Session {
                 else if (MappedPath.isMappedClass(targetClass) || mappedProperty.isInjection()) {
                     if (value instanceof ID) {
                         convertedValue = convertMappedObject((ID) value,
-                                targetType, mappedProperty.isPolymorphic(), 
+                                targetClass, mappedProperty.isPolymorphic(), 
                                 mappedProperty.isInjection());
                     } else {
                         throw new IllegalArgumentException("Cannot assign " + value
@@ -549,7 +547,7 @@ public class SessionImpl implements Session {
                     }
                 }
                 // ID reference
-                else if (ID.class.isAssignableFrom(targetType)) {
+                else if (ID.class.isAssignableFrom(targetClass)) {
                     if (value instanceof ID) {
                         convertedValue = value;
                     } else {
@@ -571,7 +569,7 @@ public class SessionImpl implements Session {
                     convertedValue = null;
                 } else {
                     logger.error(e.getMessage(), e);
-                    convertedValue = errorHandler.conversionError(value, targetType, propertyPath, e);
+                    convertedValue = errorHandler.conversionError(value, targetClass, propertyPath, e);
                 }
             }
         }

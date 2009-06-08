@@ -16,15 +16,15 @@ import com.mysema.query.annotations.Entity;
 @Entity
 public final class STMT {
     
-    private ID subject;
+    private final ID subject;
     
-    private UID predicate;
+    private final UID predicate;
     
-    private NODE object;
+    private final NODE object;
     
-    private UID context;
+    private final UID context;
     
-    private Boolean asserted;
+    private final boolean asserted;
 
     public STMT(ID subject, UID predicate, NODE object) {
         this(subject, predicate, object, null);
@@ -39,7 +39,7 @@ public final class STMT {
         this.predicate = Assert.notNull(predicate);
         this.object = Assert.notNull(object);
         this.context = context;
-        this.asserted = Boolean.valueOf(asserted);
+        this.asserted = asserted;
     }
 
     public NODE getObject() {
@@ -52,25 +52,6 @@ public final class STMT {
 
     public ID getSubject() {
         return subject;
-    }
-    
-    public int hashCode() {
-        return NODE.hashCode(subject, predicate, object, context, asserted);
-    }
-
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        } else if (obj instanceof STMT) {
-            STMT other = (STMT) obj;
-            return NODE.nullSafeEquals(this.subject, other.subject)
-                && NODE.nullSafeEquals(this.predicate, other.predicate)
-                && NODE.nullSafeEquals(this.object, other.object)
-                && NODE.nullSafeEquals(this.context, other.context)
-                && NODE.nullSafeEquals(this.asserted, other.asserted);
-        } else {
-            return false;
-        }
     }
     
     public String toString() {
@@ -87,6 +68,49 @@ public final class STMT {
 
     public boolean isAsserted() {
         return asserted;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((subject == null) ? 0 : subject.hashCode());
+        result = prime * result + ((predicate == null) ? 0 : predicate.hashCode());
+        result = prime * result + ((object == null) ? 0 : object.hashCode());
+        result = prime * result + ((context == null) ? 0 : context.hashCode());
+        result = prime * result + (asserted ? 1231 : 1237);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof STMT) {
+            STMT other = (STMT) obj;
+            
+            if (!subject.equals(other.subject))
+                return false;
+
+            if (!predicate.equals(other.predicate))
+                return false;
+            
+            if (!object.equals(other.object))
+                return false;
+            
+            if (context == null) {
+                if (other.context != null)
+                    return false;
+            } else if (!context.equals(other.context))
+                return false;
+
+            if (asserted != other.asserted)
+                return false;
+
+            return true;
+        } else {
+            return false;
+        }
     }
     
 }

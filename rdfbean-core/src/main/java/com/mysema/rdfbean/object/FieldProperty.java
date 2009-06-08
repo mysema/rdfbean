@@ -22,6 +22,7 @@ public class FieldProperty extends MappedProperty<Field> {
 		super(field.getName(), field.getAnnotations());
 		this.field = field;
         this.field.setAccessible(true);
+        init();
 	}
 
 	@Override
@@ -30,7 +31,7 @@ public class FieldProperty extends MappedProperty<Field> {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Class<?> getTypeInternal() {
 		return field.getType();
 	}
 

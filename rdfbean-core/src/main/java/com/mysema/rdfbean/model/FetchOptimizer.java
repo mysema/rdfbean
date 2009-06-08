@@ -12,7 +12,6 @@ import java.util.Set;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.commons.lang.IteratorWrapper;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
@@ -88,7 +87,8 @@ public class FetchOptimizer implements RDFConnection {
         if (!cached && !includeInferred) {
             cached = true;
 //            System.out.print("A");
-            return cacheStatements(connection.findStatements(subject, predicate, object, context, includeInferred));
+            return cacheStatements(connection.findStatements(subject, predicate, object, context, includeInferred),
+                    subject, predicate, object, context, includeInferred);
         }
         if (cached) {
 //            System.out.print("C");
@@ -98,21 +98,18 @@ public class FetchOptimizer implements RDFConnection {
             return connection.findStatements(subject, predicate, object, context, includeInferred);
         }
     }
-
-    private CloseableIterator<STMT> cacheStatements(CloseableIterator<STMT> stmts) {
-        return cacheStatements(stmts, null, null, null, null, true);
-    }
             
     private CloseableIterator<STMT> cacheStatements(CloseableIterator<STMT> stmts, ID subject, UID predicate, NODE object,
             UID context, boolean includeInferred) {
-        List<STMT> result = new ArrayList<STMT>();
+//        List<STMT> result = new ArrayList<STMT>();
         try {
             while (stmts.hasNext()) {
-               STMT stmt = stmts.next();
-               if (STMTMatcher.matches(stmt, subject, predicate, object, context, includeInferred)) {
-                   result.add(stmt);
-               }
-               cache.addStatements(stmt);
+                cache.addStatements(stmts.next());
+//               STMT stmt = stmts.next();
+//               if (STMTMatcher.matches(stmt, subject, predicate, object, context, includeInferred)) {
+//                   result.add(stmt);
+//               }
+//               cache.addStatements(stmt);
             }
         } finally {
             try {
@@ -123,8 +120,12 @@ public class FetchOptimizer implements RDFConnection {
                 throw new RuntimeException(e);
             }
         }
-//        return cache.findStatements(subject, predicate, object, context, includeInferred);
-        return new IteratorWrapper<STMT>(result.iterator());
+        return cache.findStatements(subject, predicate, object, context, includeInferred);
+//        return new IteratorWrapper<STMT>(result.iterator());
+    }
+    
+    public MiniRepository getCache() {
+        return cache.getRepository();
     }
 
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {

@@ -26,6 +26,7 @@ public class ConstructorParameter extends MappedProperty<Constructor<?>> {
 		super(null, constructor.getParameterAnnotations()[parameterIndex]);
 		this.constructor = constructor;
 		this.parameterIndex = parameterIndex;
+		init();
 	}
 	
 	@Override
@@ -43,7 +44,7 @@ public class ConstructorParameter extends MappedProperty<Constructor<?>> {
 	}
 
 	@Override
-	public Class<?> getType() {
+	public Class<?> getTypeInternal() {
 		return constructor.getParameterTypes()[parameterIndex];
 	}
 

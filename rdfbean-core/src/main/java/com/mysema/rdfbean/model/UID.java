@@ -88,4 +88,20 @@ public final class UID extends ID {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof UID) {
+            return this.id.equals(((UID) obj).id);
+        } else {
+            return false;
+        }
+    }
+
 }

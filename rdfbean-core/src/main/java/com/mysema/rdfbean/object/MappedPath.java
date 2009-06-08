@@ -155,7 +155,7 @@ public class MappedPath {
     }
 
     public boolean isWildcard() {
-    	return isWildcard(getMappedProperty().getType());
+    	return isWildcard(mappedProperty.getType());
     }
     
     public static boolean isWildcard(Class<?> type) {
@@ -163,7 +163,7 @@ public class MappedPath {
     }
     
     public boolean isClassReference() {
-    	return isClassReference(getMappedProperty().getType());
+    	return isClassReference(mappedProperty.getType());
     }
     
     public static boolean isClassReference(Class<?> type) {
@@ -171,10 +171,9 @@ public class MappedPath {
     }
     
     public boolean isReference() {
-        MappedProperty<?> property = getMappedProperty();
-    	return isMappedClass(property.getType()) 
-    	    || property.isURI()
-    	    || property.isInjection();
+    	return isMappedClass(mappedProperty.getType()) 
+    	    || mappedProperty.isURI()
+    	    || mappedProperty.isInjection();
     }
 
     public static boolean isMappedClass(Class<?> type) {

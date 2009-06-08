@@ -43,24 +43,6 @@ public abstract class ID extends NODE implements Identifier {
         return new BID(bnodeId);
     }
     
-    @Override
-    public int hashCode() {
-        return 31*getClass().hashCode() + id.hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o == null) {
-        	return false;
-        } else if (getClass().equals(o.getClass())) {
-            return this.id.equals(((ID) o).id);
-        } else {
-            return false;
-        }
-    }
-    
     public String toString() {
         return id;
     }

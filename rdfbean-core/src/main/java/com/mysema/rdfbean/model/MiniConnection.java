@@ -70,4 +70,8 @@ public class MiniConnection implements RDFConnection {
     public void clear() {
     }
 
+    public MiniRepository getRepository() {
+        return repository;
+    }
+
 }

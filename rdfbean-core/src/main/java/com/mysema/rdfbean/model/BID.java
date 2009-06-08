@@ -56,4 +56,20 @@ public final class BID extends ID {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj instanceof BID) {
+            return this.id.equals(((BID) obj).id);
+        } else {
+            return false;
+        }
+    }
+
 }

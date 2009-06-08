@@ -58,22 +58,22 @@ public final class LIT extends NODE {
         return datatype;
     }
     
-    public int hashCode() {
-        return hashCode(value, datatype, lang);
-    }
-
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        } else if (obj instanceof LIT) {
-            LIT other = (LIT) obj;
-            return nullSafeEquals(this.value, other.value)
-                && nullSafeEquals(this.datatype, other.datatype)
-                && nullSafeEquals(this.lang, other.lang);
-        } else {
-            return false;
-        }
-    }
+//    public int hashCode() {
+//        return hashCode(value, datatype, lang);
+//    }
+//
+//    public boolean equals(Object obj) {
+//        if (obj == this) {
+//            return true;
+//        } else if (obj instanceof LIT) {
+//            LIT other = (LIT) obj;
+//            return nullSafeEquals(this.value, other.value)
+//                && nullSafeEquals(this.datatype, other.datatype)
+//                && nullSafeEquals(this.lang, other.lang);
+//        } else {
+//            return false;
+//        }
+//    }
 
     @Override
     public NodeType getNodeType() {
@@ -116,6 +116,44 @@ public final class LIT extends NODE {
     @Override
     public boolean isURI() {
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((datatype == null) ? 0 : datatype.hashCode());
+        result = prime * result + ((lang == null) ? 0 : lang.hashCode());
+        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LIT other = (LIT) obj;
+        if (datatype == null) {
+            if (other.datatype != null)
+                return false;
+        } else if (!datatype.equals(other.datatype))
+            return false;
+        if (lang == null) {
+            if (other.lang != null)
+                return false;
+        } else if (!lang.equals(other.lang))
+            return false;
+        if (value == null) {
+            if (other.value != null)
+                return false;
+        } else if (!value.equals(other.value))
+            return false;
+        return true;
     }
     
 }

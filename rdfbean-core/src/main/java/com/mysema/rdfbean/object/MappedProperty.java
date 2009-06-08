@@ -60,6 +60,12 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 
 	private String name;
 	
+	private Class<?> type;
+	
+	private Class<?> componentType;
+	
+	private boolean collection;
+	
 	private Map<Class<? extends Annotation>, Annotation> annotations =
 		new HashMap<Class<? extends Annotation>, Annotation>();
 
@@ -94,17 +100,24 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 			return null;
 		}
 	} 
-	
+
 	public Class<?> getComponentType() {
+	    return componentType;
+	}
+
+	protected void init() {
+	    this.type = getTypeInternal();
+        this.collection = Collection.class.isAssignableFrom(type);
+	    
 		ComponentType ctypeAnno = getAnnotation(ComponentType.class);
 		if (ctypeAnno != null) {
-			return ctypeAnno.value();
-		} else if (isCollection()) {
-			return getGenericClass(getParametrizedType(), 0);
+			this.componentType = ctypeAnno.value();
+		} else if (collection) {
+		    this.componentType = getGenericClass(getParametrizedType(), 0);
 		} else if (isMap()) {
-			return getGenericClass(getParametrizedType(), 1);
+		    this.componentType = getGenericClass(getParametrizedType(), 1);
 		} else {
-			return null;
+			this.componentType = null;
 		}
 	}
 	
@@ -227,8 +240,12 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 	public String getName() {
 		return name;
 	}
-	
-	public abstract Class<?> getType();
+    
+    public Class<?> getType() {
+        return type;
+    }
+    
+    protected abstract Class<?> getTypeInternal();
 	
 	public abstract Object getValue(BeanMap instance);
     
@@ -257,7 +274,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
     }
     
     public boolean isCollection() {
-        return Collection.class.isAssignableFrom(getType());
+        return collection;
     }
     
     public boolean isIdReference() {

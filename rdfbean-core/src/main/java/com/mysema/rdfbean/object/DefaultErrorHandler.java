@@ -31,8 +31,7 @@ public class DefaultErrorHandler {
 
     public void functionalValueError(ID subject, UID predicate,
             boolean includeInferred, UID context) {
-        throw new IllegalArgumentException(
-                "Found multiple values for a functional predicate: "
+        throw new IllegalArgumentException("Found multiple values for a functional predicate: "
                         + predicate + " of resource" + subject);
     }
 
