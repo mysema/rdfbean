@@ -197,15 +197,17 @@ public class SesameConnection implements RDFConnection {
     private ID convert(Resource resource) {
         if (resource == null) {
             return null; 
-        } else if (resource instanceof URI) {
-            return convert((URI) resource);
         } else {
-            return new BID(((BNode) resource).getID());
+            return dialect.getID(resource);
         }
     }
 
     private UID convert(URI uri) {
-        return new UID(uri.getNamespace(), uri.getLocalName());
+        if (uri == null) {
+            return null;
+        } else {
+            return dialect.getUID(uri);
+        }
     }
 
     private URI convert(UID uid) {

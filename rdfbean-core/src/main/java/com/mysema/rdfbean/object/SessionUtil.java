@@ -18,6 +18,10 @@ public final class SessionUtil {
     public static Session openSession(Repository<?> repository, Class<?>... classes) {
         return openSession(repository, (Locale) null, classes);
     }
+
+    public static Session openSession(RDFConnection connection, Package... packages) {
+        return openSession(connection, (Locale) null, packages);
+    }
     
     public static Session openSession(Repository<?> repository, Locale locale, Class<?>... classes) {
         return openSession(repository, locale != null ? Arrays.asList(locale) : null, classes);

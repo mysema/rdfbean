@@ -3,10 +3,7 @@
  */
 package com.mysema.rdfbean.model;
 
-import java.util.Arrays;
 import java.util.Set;
-
-import com.mysema.commons.lang.CloseableIterator;
 
 /**
  * @author sasa
@@ -17,18 +14,11 @@ public class FullContextFetch implements FetchStrategy {
     private Set<UID> contexts = null;
 
     @Override
-    public CloseableIterator<STMT> fetchStatements(RDFConnection connection,
-            ID subject, UID predicate, NODE object, UID context,
-            boolean includeInferred) {
-        return connection.findStatements(null, null, null, context, false);
-    }
-
-    @Override
-    public Object getCacheKey(ID subject, UID predicate, NODE object,
+    public STMTMatcher getCacheKey(ID subject, UID predicate, NODE object,
             UID context, boolean includeInferred) {
         // NOTE: Inferred statements don't have reliable context information
         if (!includeInferred && (contexts == null || contexts.contains(context))) {
-            return Arrays.asList(null, null, null, context, Boolean.FALSE);
+            return new STMTMatcher(null, null, null, context, Boolean.FALSE);
         } else {
             return null;
         }

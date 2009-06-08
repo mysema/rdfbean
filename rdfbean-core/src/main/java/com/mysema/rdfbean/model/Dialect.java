@@ -37,7 +37,7 @@ public abstract class Dialect
 //    public abstract UID getContext(S statement);
     
     public abstract ID getID(R resource);
-
+    
     public abstract LIT getLIT(L literal);
 
     public abstract L getLiteral(LIT lit);

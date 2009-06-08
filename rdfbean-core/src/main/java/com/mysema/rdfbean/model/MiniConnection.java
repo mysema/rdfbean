@@ -45,6 +45,10 @@ public class MiniConnection implements RDFConnection {
     public void addStatements(CloseableIterator<STMT> stmts) {
         this.repository.addStatements(stmts);
     }
+    
+    public void addStatements(STMT... stmts) {
+        this.repository.add(stmts);
+    }
 
     @Override
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {

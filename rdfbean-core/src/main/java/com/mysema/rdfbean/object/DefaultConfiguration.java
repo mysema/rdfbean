@@ -19,6 +19,7 @@ import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.MappedClasses;
 import com.mysema.rdfbean.model.FetchStrategy;
+import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
@@ -115,7 +116,7 @@ public class DefaultConfiguration implements Configuration {
 	@Override
     public UID createURI(Object instance) {
         Class<?> clazz = instance.getClass();
-        UID context = getContext(clazz);
+        UID context = getContext(clazz, null);
         if (context != null) {
             return new UID(context.getId() + "#", clazz.getSimpleName() + "-" + UUID.randomUUID().toString());
         }
@@ -123,7 +124,7 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public UID getContext(Class<?> javaClass) {
+    public UID getContext(Class<?> javaClass, ID subject) {
         Context ctxAnno = javaClass.getAnnotation(Context.class);
         if (ctxAnno == null) {
             Package pack = javaClass.getPackage();

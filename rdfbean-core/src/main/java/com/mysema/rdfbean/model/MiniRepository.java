@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.iterators.FilterIterator;
 import org.apache.commons.collections15.iterators.IteratorChain;
+import org.apache.commons.collections15.iterators.SingletonIterator;
 
 import com.mysema.commons.lang.CloseableIterator;
 
@@ -28,9 +29,9 @@ import com.mysema.commons.lang.CloseableIterator;
  */
 public final class MiniRepository implements Repository<MiniDialect> {
     
-    private Map<ID, STMTCache> subjects = new HashMap<ID, STMTCache>();
+    private Map<ID, PredicateCache> subjects;
     
-    private Map<ID, STMTCache> objects = new HashMap<ID, STMTCache>();
+    private Map<ID, PredicateCache> objects;
     
     private static final Iterator<STMT> EMPTY_ITERATOR = new Iterator<STMT>() {
 
@@ -50,15 +51,20 @@ public final class MiniRepository implements Repository<MiniDialect> {
         
     };
     
-    private MiniDialect dialect;
+    private MiniDialect dialect = new MiniDialect();
     
     public MiniRepository() {
-        dialect = new MiniDialect();
+        this(1024);
     }
 
     public MiniRepository(STMT... stmts) {
-        this();
+        this(stmts.length);
         add(stmts);
+    }
+    
+    public MiniRepository(int initialCapacity) {
+        objects = new HashMap<ID, PredicateCache>(initialCapacity);
+        subjects = new HashMap<ID, PredicateCache>(initialCapacity);
     }
     
     public void add(STMT... stmts) {
@@ -70,10 +76,10 @@ public final class MiniRepository implements Repository<MiniDialect> {
         }
     }
     
-    public void index(ID key, STMT stmt, Map<ID, STMTCache> index) {
-        STMTCache stmtCache = index.get(key);
+    public void index(ID key, STMT stmt, Map<ID, PredicateCache> index) {
+        PredicateCache stmtCache = index.get(key);
         if (stmtCache == null) {
-            stmtCache = new STMTCache();
+            stmtCache = new PredicateCache();
             index.put(key, stmtCache);
         } 
         stmtCache.add(stmt);
@@ -87,7 +93,7 @@ public final class MiniRepository implements Repository<MiniDialect> {
             iterator = getIndexed((ID) object, predicate, objects);
         } else {
             IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
-            for (STMTCache stmtCache : subjects.values()) {
+            for (PredicateCache stmtCache : subjects.values()) {
                 iterChain.addIterator(stmtCache.iterator(predicate));
             }
             iterator = iterChain;
@@ -95,8 +101,8 @@ public final class MiniRepository implements Repository<MiniDialect> {
         return new ResultIterator(iterator, subject, predicate, object, context, includeInferred);
     }
     
-    private Iterator<STMT> getIndexed(ID key, UID predicate, Map<ID, STMTCache> index) {
-        STMTCache stmtCache = index.get(key);
+    private Iterator<STMT> getIndexed(ID key, UID predicate, Map<ID, PredicateCache> index) {
+        PredicateCache stmtCache = index.get(key);
         if (stmtCache != null) {
             return stmtCache.iterator(predicate);
         } else {
@@ -119,21 +125,7 @@ public final class MiniRepository implements Repository<MiniDialect> {
 
                 @Override
                 public boolean evaluate(STMT stmt) {
-                    return 
-                    // Subject match
-                    (subject == null || stmt.getSubject().equals(subject)) &&
-
-                    // Predicate match
-                    (predicate == null || predicate.equals(stmt.getPredicate())) &&
-                    
-                    // Object match
-                    (object == null || object.equals(stmt.getObject())) &&
-                    
-                    // Context match
-                    (context == null || context.equals(stmt.getContext())) &&
-                    
-                    // Asserted or includeInferred statement
-                    (includeInferred || stmt.isAsserted());
+                    return STMTMatcher.matches(stmt, subject, predicate, object, context, includeInferred);
                 }
                 
             });
@@ -173,8 +165,8 @@ public final class MiniRepository implements Repository<MiniDialect> {
         }
     }
     
-    private boolean removeIndexed(ID key, STMT stmt, Map<ID, STMTCache> index) {
-        STMTCache stmtMap = index.get(key);
+    private boolean removeIndexed(ID key, STMT stmt, Map<ID, PredicateCache> index) {
+        PredicateCache stmtMap = index.get(key);
         if (stmtMap != null) {
             return stmtMap.remove(stmt);
         } else {
@@ -201,8 +193,58 @@ public final class MiniRepository implements Repository<MiniDialect> {
     }
     
     public static class STMTCache {
+        
+        private STMT single;
+        
+        private Set<STMT> multi;
+        
+        public STMTCache(STMT single) {
+            this.single = single;
+        }
+        
+        public void add(STMT stmt) {
+            if (multi == null) {
+                if (single == null) {
+                    single = stmt;
+                } else if (!stmt.equals(single)) {
+                    multi = new LinkedHashSet<STMT>();
+                    multi.add(single);
+                    multi.add(stmt);
+                }
+            } else {
+                multi.add(stmt);
+            }
+        }
+        
+        public boolean remove(STMT stmt) {
+            if (multi == null) {
+                if (stmt.equals(single)) {
+                    single = null;
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return multi.remove(stmt);
+            }
+        }
+        
+        public Iterator<STMT> iterator() {
+            if (multi == null) {
+                if (single == null) {
+                    return EMPTY_ITERATOR;
+                } else {
+                    return new SingletonIterator<STMT>(single);
+                }
+            } else {
+                return multi.iterator();
+            }
+        }
+    }
     
-        private Map<UID, Set<STMT>> predicates;
+    public static class PredicateCache {
+    
+        private Map<UID, STMTCache> predicates;
         
         private List<STMT> containerProperties;
         
@@ -210,7 +252,7 @@ public final class MiniRepository implements Repository<MiniDialect> {
             if (predicate == null) {
                 IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
                 if (predicates != null) {
-                    for (Set<STMT> stmts : predicates.values()) {
+                    for (STMTCache stmts : predicates.values()) {
                         iterChain.addIterator(stmts.iterator());
                     }
                 }
@@ -223,7 +265,7 @@ public final class MiniRepository implements Repository<MiniDialect> {
                     return containerProperties.iterator();
                 } 
             } else {
-                Set<STMT> stmts  = predicates.get(predicate);
+                STMTCache stmts  = predicates.get(predicate);
                 if (stmts != null) {
                     return stmts.iterator();
                 }
@@ -239,14 +281,15 @@ public final class MiniRepository implements Repository<MiniDialect> {
                 containerProperties.add(stmt);
             } else {
                 if (predicates == null) {
-                    predicates = new LinkedHashMap<UID, Set<STMT>>();
+                    predicates = new LinkedHashMap<UID, STMTCache>();
                 }
-                Set<STMT> stmts = predicates.get(stmt.getPredicate());
+                STMTCache stmts = predicates.get(stmt.getPredicate());
                 if (stmts == null) {
-                    stmts = new LinkedHashSet<STMT>();
+                    stmts = new STMTCache(stmt);
                     predicates.put(stmt.getPredicate(), stmts);
+                } else {
+                    stmts.add(stmt);
                 }
-                stmts.add(stmt);
             }
         }
         
@@ -257,7 +300,7 @@ public final class MiniRepository implements Repository<MiniDialect> {
                 }
             } else {
                 if (predicates != null) {
-                    Set<STMT> stmts = predicates.get(stmt.getPredicate());
+                    STMTCache stmts = predicates.get(stmt.getPredicate());
                     if (stmts != null) {
                         return stmts.remove(stmt);
                     }

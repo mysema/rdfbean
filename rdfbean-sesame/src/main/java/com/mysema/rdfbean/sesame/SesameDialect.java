@@ -5,7 +5,9 @@
  */
 package com.mysema.rdfbean.sesame;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.openrdf.model.*;
 
@@ -20,6 +22,12 @@ import com.mysema.rdfbean.model.*;
 public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal, Statement> {
     
     private ValueFactory vf;
+    
+    private Map<URI, UID> uriCache = new HashMap<URI, UID>(1024); 
+    
+    private Map<BNode, BID> bnodeCache = new HashMap<BNode, BID>(1024); 
+    
+    private Map<Literal, LIT> literalCache = new HashMap<Literal, LIT>(1024); 
 
     public SesameDialect(ValueFactory vf) {
         Assert.notNull(vf);
@@ -39,7 +47,13 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
 
     @Override
     public BID getBID(BNode bnode) {
-        return new BID(bnode.getID());
+        BID bid;
+        bid = bnodeCache.get(bnode);
+        if (bid == null) {
+            bid = new BID(bnode.getID());
+            bnodeCache.put(bnode, bid);
+        }
+        return bid;
     }
 
     @Override
@@ -50,8 +64,7 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     @Override
     public ID getID(Resource resource) {
         if (resource instanceof URI) {
-            URI uri = (URI) resource;
-            return new UID(uri.getNamespace(), uri.getLocalName());
+            return getUID((URI) resource);
         } else {
             return new BID(((BNode) resource).getID());
         }
@@ -59,13 +72,19 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
 
     @Override
     public LIT getLIT(Literal literal) {
-        if (literal.getLanguage() != null) {
-            return new LIT(literal.stringValue(), literal.getLanguage());
-        } else if (literal.getDatatype() != null) {
-            return new LIT(literal.stringValue(), getUID(literal.getDatatype()));
-        } else {
-            return new LIT(literal.stringValue());
+        LIT lit;
+        lit = literalCache.get(literal);
+        if (lit == null) {
+            if (literal.getLanguage() != null) {
+                lit = new LIT(literal.stringValue(), literal.getLanguage());
+            } else if (literal.getDatatype() != null) {
+                lit = new LIT(literal.stringValue(), getUID(literal.getDatatype()));
+            } else {
+                lit = new LIT(literal.stringValue());
+            }
+            literalCache.put(literal, lit);
         }
+        return lit;
     }
 
     @Override
@@ -142,8 +161,14 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     }
 
     @Override
-    public UID getUID(URI resource) {
-        return new UID(resource.getNamespace(), resource.getLocalName());
+    public UID getUID(URI uri) {
+        UID uid;
+        uid = uriCache.get(uri);
+        if (uid == null) {
+            uid = new UID(uri.getNamespace(), uri.getLocalName());
+            uriCache.put((URI) uri, uid);
+        }
+        return uid;
     }
 
     @Override

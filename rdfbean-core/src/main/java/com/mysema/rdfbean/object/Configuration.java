@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.mysema.rdfbean.model.FetchStrategy;
+import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.identity.IdentityService;
 
@@ -24,7 +25,7 @@ public interface Configuration {
     
     Set<Class<?>> getMappedClasses();
 
-    UID getContext(Class<?> javaClass);
+    UID getContext(Class<?> javaClass, ID subject);
 
     boolean isRestricted(UID uid);
 
