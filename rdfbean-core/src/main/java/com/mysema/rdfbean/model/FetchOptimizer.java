@@ -26,7 +26,9 @@ public class FetchOptimizer implements RDFConnection {
 
     private RDFConnection connection;
     
-    private MiniConnection cache = new MiniRepository(DEFAULT_INITIAL_CAPACITY).openConnection();
+    private MiniConnection cache;
+    
+    private boolean inverseCache;
     
     private Set<STMTMatcher> cacheKeys = new HashSet<STMTMatcher>(DEFAULT_INITIAL_CAPACITY);
     
@@ -39,12 +41,22 @@ public class FetchOptimizer implements RDFConnection {
     }
     
     public FetchOptimizer(RDFConnection connection, FetchStrategy fetchStrategy) {
-        this(connection, Arrays.asList(fetchStrategy));
+        this(connection, fetchStrategy, true);
+    }
+    
+    public FetchOptimizer(RDFConnection connection, FetchStrategy fetchStrategy, boolean inverseCache) {
+        this(connection, Arrays.asList(fetchStrategy), inverseCache);
     }
     
     public FetchOptimizer(RDFConnection connection, List<FetchStrategy> fetchStrategies) {
+        this(connection, fetchStrategies, true);
+    }
+    
+    public FetchOptimizer(RDFConnection connection, List<FetchStrategy> fetchStrategies, boolean inverseCache) {
         this.connection = Assert.notNull(connection);
         this.fetchStrategies = Assert.notNull(fetchStrategies);
+        this.inverseCache = inverseCache;
+        cache = new MiniRepository(DEFAULT_INITIAL_CAPACITY, this.inverseCache).openConnection();
     }
 
     public RDFBeanTransaction beginTransaction(Session session,
@@ -135,7 +147,7 @@ public class FetchOptimizer implements RDFConnection {
 
     @Override
     public void clear() {
-        cache = new MiniRepository(DEFAULT_INITIAL_CAPACITY).openConnection();
+        cache = new MiniRepository(DEFAULT_INITIAL_CAPACITY, this.inverseCache).openConnection();
         cacheKeys = new HashSet<STMTMatcher>(DEFAULT_INITIAL_CAPACITY);
         connection.clear();
     }

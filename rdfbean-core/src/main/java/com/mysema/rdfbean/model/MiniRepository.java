@@ -63,14 +63,20 @@ public final class MiniRepository implements Repository<MiniDialect> {
     }
     
     public MiniRepository(int initialCapacity) {
-        objects = new HashMap<ID, PredicateCache>(initialCapacity);
+        this(initialCapacity, true);
+    }
+    
+    public MiniRepository(int initialCapacity, boolean inverseIndex) {
         subjects = new HashMap<ID, PredicateCache>(initialCapacity);
+        if (inverseIndex) {
+            objects = new HashMap<ID, PredicateCache>(initialCapacity);
+        }
     }
     
     public void add(STMT... stmts) {
         for (STMT stmt : stmts) {
             index(stmt.getSubject(), stmt, subjects);
-            if (stmt.getObject().isResource()) {
+            if (objects != null && stmt.getObject().isResource()) {
                 index((ID) stmt.getObject(), stmt, objects);
             }
         }
@@ -89,7 +95,7 @@ public final class MiniRepository implements Repository<MiniDialect> {
         Iterator<STMT> iterator = null;
         if (subject != null) {
             iterator = getIndexed(subject, predicate, subjects);
-        } else if (object != null && object.isResource()) {
+        } else if (objects != null && object != null && object.isResource()) {
             iterator = getIndexed((ID) object, predicate, objects);
         } else {
             IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
@@ -158,7 +164,7 @@ public final class MiniRepository implements Repository<MiniDialect> {
     public void removeStatement(STMT... stmts) {
         for (STMT stmt : stmts) {
             if (removeIndexed(stmt.getSubject(), stmt, subjects)) {
-                if (stmt.getObject().isResource()) {
+                if (objects != null && stmt.getObject().isResource()) {
                     removeIndexed((ID) stmt.getObject(), stmt, objects);
                 }
             }
