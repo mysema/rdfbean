@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
+import static com.mysema.query.types.operation.Ops.*;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,7 +19,7 @@ import org.openrdf.query.algebra.MathExpr.MathOp;
 
 import com.mysema.query.types.operation.Operator;
 import com.mysema.query.types.operation.Ops;
-import static com.mysema.query.types.operation.Ops.*;
+import com.mysema.rdfbean.sesame.query.functions.SesameFunctions;
 
 /**
  * SailOps provides Op -> ValueExpr mappings for Sesame query creation
@@ -58,22 +60,6 @@ class SesameOps {
                 return new Not(args.get(0));
             }            
         });        
-        byOp.put(XOR, new Transformer(){
-            @Override
-            public ValueExpr transform(List<ValueExpr> args) {
-                return new And(
-                    new Or(args.get(0),args.get(1)), 
-                    new Not(new And(args.get(0),args.get(1))));
-            }            
-        });
-        byOp.put(XNOR, new Transformer(){
-            @Override
-            public ValueExpr transform(List<ValueExpr> args) {
-                return new Or(
-                    new And(args.get(0),args.get(1)), 
-                    new And(new Not(args.get(0)),new Not(args.get(1))));
-            }            
-        });
         
         // COMPARISON        
         Iterator<CompareOp> compareOps = Arrays.asList(
@@ -100,13 +86,6 @@ class SesameOps {
                 return new Or(
                     new Compare(args.get(0), args.get(1),CompareOp.LT),    
                     new Compare(args.get(0), args.get(2),CompareOp.GT));
-            }            
-        });
-        byOp.put(LIKE, new Transformer(){
-            @Override
-            public ValueExpr transform(List<ValueExpr> args) {
-                ValueExpr first = new Str(args.get(0));
-                return new Regex(first, ((Var)args.get(1)).getValue().stringValue(),false);
             }            
         });
         byOp.put(STARTSWITH, new Transformer(){
@@ -209,37 +188,5 @@ class SesameOps {
     
     public Transformer getTransformer(Operator<?> op){
         return byOp.get(op);
-    }
-    
-    private static class CompareTransformer implements Transformer{
-        private final CompareOp op;        
-        
-        CompareTransformer(CompareOp op){
-            this.op = op;
-        }       
-        
-        @Override
-        public ValueExpr transform(List<ValueExpr> args){
-            return new Compare(args.get(0), args.get(1), op);
-        }        
-    }
-    
-    private static class MathExprTransformer implements Transformer{
-        private final MathExpr.MathOp op;        
-        
-        MathExprTransformer(MathExpr.MathOp op){
-            this.op = op;
-        }       
-        
-        @Override
-        public ValueExpr transform(List<ValueExpr> args){
-            return new MathExpr(args.get(0), args.get(1), op);
-        }        
-    }
-
-    interface Transformer{
-
-        public ValueExpr transform(List<ValueExpr> args);
-        
     }
 }
