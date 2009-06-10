@@ -22,11 +22,10 @@ public class ConstructorParameter extends MappedProperty<Constructor<?>> {
 
 	private int parameterIndex;
 	
-	ConstructorParameter(Constructor<?> constructor, int parameterIndex) {
-		super(null, constructor.getParameterAnnotations()[parameterIndex]);
+	ConstructorParameter(Constructor<?> constructor, int parameterIndex, MappedClass declaringClass) {
+		super(null, constructor.getParameterAnnotations()[parameterIndex], declaringClass);
 		this.constructor = constructor;
 		this.parameterIndex = parameterIndex;
-		init();
 	}
 	
 	@Override
@@ -34,18 +33,18 @@ public class ConstructorParameter extends MappedProperty<Constructor<?>> {
 		return constructor;
 	}
 	
-	@Override
-	protected Type getParametrizedType() {
-		return constructor.getGenericParameterTypes()[parameterIndex];
-	}
-	
 	public String getReferencedProperty() {
 		return getAnnotation(InjectProperty.class).value();
 	}
 
+    @Override
+    protected Class<?> getTypeInternal() {
+        return constructor.getParameterTypes()[parameterIndex];
+    }
+
 	@Override
-	public Class<?> getTypeInternal() {
-		return constructor.getParameterTypes()[parameterIndex];
+	public Type getGenericType() {
+		return constructor.getGenericParameterTypes()[parameterIndex];
 	}
 
 	@Override

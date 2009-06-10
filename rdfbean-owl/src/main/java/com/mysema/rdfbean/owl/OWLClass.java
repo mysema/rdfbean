@@ -13,6 +13,7 @@ import java.util.Set;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.rdfs.RDFProperty;
 import com.mysema.rdfbean.rdfs.RDFSClass;
 import com.mysema.rdfbean.rdfs.RDFSResource;
 
@@ -57,6 +58,13 @@ public class OWLClass extends RDFSClass<RDFSResource> {
 
     public List<OWLClass> getUnionOf() {
         return unionOf;
+    }
+    
+    public void setAllValuesFrom(RDFProperty property, RDFSClass<?> allValuesFrom) {
+        Restriction restriction = new Restriction();
+        restriction.setOnProperty(property);
+        restriction.setAllValuesFrom(allValuesFrom);
+        addSuperClass(restriction);
     }
     
 }

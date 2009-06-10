@@ -9,6 +9,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,7 +80,7 @@ public class MappedClass {
             MappedPath path;
             String classNs = MappedClass.getClassNs(clazz);
             for (Field field : clazz.getDeclaredFields()) {
-                path = MappedPath.getPathMapping(classNs, field);
+                path = MappedPath.getPathMapping(classNs, field, mappedClass);
                 if (path != null) {
                     mappedClass.addMappedPath(path);
                 }
@@ -89,9 +92,9 @@ public class MappedClass {
         MappedPath path;
         String classNs = MappedClass.getClassNs(clazz);
         for (Method method : clazz.getDeclaredMethods()) {
-            path = MappedPath.getPathMapping(classNs, method);
+            path = MappedPath.getPathMapping(classNs, method, mappedClass);
             if (path != null) {
-                mappedClass.mergeMappedPath(path);
+                mappedClass.addMappedPath(path);
             }
         }
     }
@@ -129,6 +132,32 @@ public class MappedClass {
         return !Modifier.isFinal(clazz.getModifiers());
     }
     
+    public List<MappedClass> getMappedSuperClasses() {
+        Class<?> superClass = clazz.getSuperclass();
+        Class<?>[] ifaces = clazz.getInterfaces();
+        List<MappedClass> mappedSuperClasses = new ArrayList<MappedClass>(ifaces != null ? ifaces.length + 1 : 1);
+        if (superClass != null && !Object.class.equals(superClass)) {
+            if (isProcessedClass(superClass)) {
+                mappedSuperClasses.add(getMappedClass(superClass));
+            }
+        } else {
+            mappedSuperClasses.add(null);
+        }
+        if (ifaces != null) {
+            for (Class<?> iface : ifaces) {
+                if (isProcessedClass(iface)) {
+                    mappedSuperClasses.add(getMappedClass(iface));
+                }
+            }
+        }
+        return mappedSuperClasses;
+    }
+    
+    private static boolean isProcessedClass(Class<?> clazz) {
+        Package pack = clazz.getPackage();
+        return pack == null || !pack.getName().startsWith("java");
+    }
+    
     public static MappedClass getMappedClass(Class<?> clazz) {
         // NOTE: no need to further synchronize access to mappedPaths because
         // result is immutable and deterministic, i.e. it does't really matter
@@ -136,32 +165,27 @@ public class MappedClass {
         MappedClass mappedClass = mappedClasses.get(clazz);
         if (mappedClass == null) {
             mappedClass = new MappedClass(clazz);
-            
-            // Collect super class properties 
-            Class<?> superClass = clazz.getSuperclass();
-            if (superClass != null) {
-                MappedClass mappedSuperClass = getMappedClass(superClass);
-                for (MappedPath path : mappedSuperClass.getProperties()) {
-                    mappedClass.addMappedPath(new MappedPath(path.getMappedProperty(), 
-                            path.getPredicatePath(), true));
+            if (!clazz.isEnum()) {
+                for (MappedClass mappedSuperClass : mappedClass.getMappedSuperClasses()) {
+                    if (mappedSuperClass != null) {
+                        for (MappedPath path : mappedSuperClass.getProperties()) {
+                            MappedProperty<?> property = (MappedProperty<?>) path.getMappedProperty().clone();
+                            property.resolve(mappedClass);
+                            mappedClass.addMappedPath(
+                                    new MappedPath(property, 
+                                            path.getPredicatePath(), 
+                                            !mappedClass.equals(property.getDeclaringClass())));
+                        }
+                    }
                 }
+    
+                // Collect direct properties (merge with super properties)
+                collectFieldPaths(clazz, mappedClass);
+                collectMethodPaths(clazz, mappedClass);
+                assignConstructor(clazz, mappedClass);
+                mappedClass.close();
+                mappedClasses.put(clazz, mappedClass);
             }
-            
-            // Collect interface properties (me'rge with super class properties)
-            for (Class<?> iface : clazz.getInterfaces()) {
-                MappedClass mappedInterface = getMappedClass(iface);
-                for (MappedPath path : mappedInterface.getProperties()) {
-                    mappedClass.mergeMappedPath(new MappedPath(path.getMappedProperty(), 
-                            path.getPredicatePath(), true));
-                }
-            }
-
-            // Collect direct properties (merge with super properties)
-            collectFieldPaths(clazz, mappedClass);
-            collectMethodPaths(clazz, mappedClass);
-            assignConstructor(clazz, mappedClass);
-            mappedClass.close();
-            mappedClasses.put(clazz, mappedClass);
         }
         return mappedClass;
     }
@@ -181,19 +205,12 @@ public class MappedClass {
         uid = getUID(clazz);
     }
 
+    @SuppressWarnings("unchecked")
     private void addMappedPath(MappedPath path) {
-        addMappedPath(path, false);
-    }
-
-    private void addMappedPath(MappedPath path, boolean merge) {
-        MappedProperty<?> property = path.getMappedProperty();
+        MappedProperty property = path.getMappedProperty();
         MappedPath existingPath = properties.get(property.getName());
-
-        if (!merge && existingPath != null) {
-            throw new IllegalArgumentException("Duplicate property: " + path + " and ");
-        }
         
-        else if (path.getMappedProperty().isIdReference()) {
+        if (path.getMappedProperty().isIdReference()) {
             if (idProperty != null) {
                 throw new IllegalArgumentException("Duplicate ID property: " + 
                         idProperty + " and " + path.getMappedProperty());
@@ -203,16 +220,24 @@ public class MappedClass {
         } 
 
         else if (existingPath != null) {
-            existingPath.getMappedProperty().addAnnotations(property);
-        } 
+            MappedProperty existingProperty = existingPath.getMappedProperty();
+            if (property instanceof FieldProperty) {
+                if (existingProperty instanceof FieldProperty) {
+                    throw new IllegalArgumentException("Cannot merge field properties: " + 
+                            path + " into " + existingPath);
+                } else {
+                    // Field property overrides method and constructor properties
+                    properties.put(path.getName(), path);
+                    path.merge(existingPath);
+                }
+            } else {
+                existingPath.merge(path);
+            }
+        }
         
         else {
             properties.put(path.getName(), path);
         }
-    }
-    
-    private void mergeMappedPath(MappedPath path) {
-        addMappedPath(path, true);
     }
     
 	private void close() {
@@ -250,6 +275,20 @@ public class MappedClass {
         }
     }
     
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        } else if (obj instanceof MappedClass) {
+            return clazz.equals(((MappedClass) obj).clazz);
+        } else {
+            return false;
+        }
+    }
+    
+    public int hashCode() {
+        return clazz.hashCode();
+    }
+    
     public Class<?> getJavaClass() {
         return clazz;
     }
@@ -280,6 +319,37 @@ public class MappedClass {
 
     public boolean isEnum() {
         return clazz.isEnum();
+    }
+
+    Type resolveTypeVariable(String typeVariableName, MappedClass declaringClass) {
+        int i = 0;
+        for (TypeVariable<?> typeParameter : declaringClass.clazz.getTypeParameters()) {
+            if (typeParameter.getName().equals(typeVariableName)) {
+                break;
+            } else {
+                i++;
+            }
+        }
+        int j = 0;
+        boolean found = false;;
+        for (MappedClass superClass : getMappedSuperClasses()) {
+            if (declaringClass.equals(superClass)) {
+                found = true;
+                break;
+            } else {
+                j++;
+            }
+        }
+        if (!found) {
+            throw new RuntimeException("Super class declaration for " + declaringClass + " not found from " + this);
+        }
+        
+        Type type = (j == 0 ? clazz.getGenericSuperclass() : clazz.getGenericInterfaces()[j-1]);
+        if (type instanceof ParameterizedType) {
+            return ((ParameterizedType) type).getActualTypeArguments()[i];
+        } else {
+            throw new RuntimeException("Generic parameters not supplied from " + this + " to " + declaringClass);
+        }
     }
 
 }

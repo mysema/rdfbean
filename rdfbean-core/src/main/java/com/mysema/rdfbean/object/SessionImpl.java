@@ -268,9 +268,8 @@ public class SessionImpl implements Session {
         seen = null;
     }
     
-    private Class<?> convertClassReference(UID uid, Type targetType) {
+    private Class<?> convertClassReference(UID uid, Class<?> targetClass) {
         List<Class<?>> mappedClasses = conf.getMappedClasses(uid);
-        Class<?> targetClass = MappedProperty.getGenericClass(targetType, 0);
         boolean foundMatch = false;
         for (Class<?> mappedClass : mappedClasses) {
             if (targetClass.isAssignableFrom(mappedClass)) {
@@ -526,10 +525,9 @@ public class SessionImpl implements Session {
                     }
                 } 
                 // Class reference
-                else if (MappedPath.isClassReference(targetClass)) {
+                else if (mappedProperty.isClassReference()) {
                     if (value instanceof UID) {
-                        convertedValue =  convertClassReference((UID) value, 
-                                mappedProperty.getParametrizedType());
+                        convertedValue =  convertClassReference((UID) value, mappedProperty.getComponentType());
                     } else {
                         throw new IllegalArgumentException("Cannot assign bnode or literal " + value
                                 + " into " + propertyPath);

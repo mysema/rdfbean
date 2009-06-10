@@ -18,11 +18,10 @@ public class FieldProperty extends MappedProperty<Field> {
 
 	private Field field;
 
-	public FieldProperty(Field field) {
-		super(field.getName(), field.getAnnotations());
+	public FieldProperty(Field field, MappedClass declaringClass) {
+		super(field.getName(), field.getAnnotations(), declaringClass);
 		this.field = field;
         this.field.setAccessible(true);
-        init();
 	}
 
 	@Override
@@ -30,9 +29,14 @@ public class FieldProperty extends MappedProperty<Field> {
 		return field;
 	}
 
+    @Override
+    protected Class<?> getTypeInternal() {
+        return field.getType();
+    }
+
 	@Override
-	public Class<?> getTypeInternal() {
-		return field.getType();
+	public Type getGenericType() {
+		return field.getGenericType();
 	}
 
 	@Override
@@ -56,11 +60,6 @@ public class FieldProperty extends MappedProperty<Field> {
             throw new RuntimeException(e);
         }
     }
-
-	@Override
-	protected Type getParametrizedType() {
-		return field.getGenericType();
-	}
 
     @Override
     public boolean isVirtual() {

@@ -14,7 +14,9 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -48,7 +50,22 @@ import com.mysema.util.StringUtils;
  * @author sasa
  *
  */
-public abstract class MappedProperty<M extends Member & AnnotatedElement> {
+public abstract class MappedProperty<M extends Member & AnnotatedElement> implements Cloneable {
+    
+    @SuppressWarnings("unchecked")
+    public static final List<Class<? extends Annotation>> MAPPING_ANNOTATIONS = 
+        Collections.unmodifiableList(Arrays.<Class<? extends Annotation>>asList(
+            ComponentType.class,
+            Container.class,
+            Default.class, 
+            Defaults.class,
+            Id.class,
+            Inject.class, 
+            Localized.class,
+            MapElements.class,
+            Mixin.class,
+            Required.class
+        ));
 
 	private static String getParentNs(MapElements mapElements, Member member) {
         String ns = mapElements.ns();
@@ -64,19 +81,70 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 	
 	private Class<?> componentType;
 	
+	private Class<?> keyType;
+	
 	private boolean collection;
+	
+	private MappedClass declaringClass;
+	
+	private TypeVariable<?>[] typeVariables = new TypeVariable<?>[4];
 	
 	private Map<Class<? extends Annotation>, Annotation> annotations =
 		new HashMap<Class<? extends Annotation>, Annotation>();
 
 	@SuppressWarnings("unchecked")
-    MappedProperty(String name, Annotation[] annotations) {
+    MappedProperty(String name, Annotation[] annotations, MappedClass declaringClass) {
 		this.name = name;
+		this.declaringClass = declaringClass;
 		for (Annotation annotation : Assert.notNull(annotations)) {
 			Class<? extends Annotation> aclass = (Class<? extends Annotation>) annotation.getClass().getInterfaces()[0];
 			this.annotations.put(aclass, annotation);
 		}
 	}
+	
+	public MappedClass getDeclaringClass() {
+	    return declaringClass;
+	}
+	
+	static Class<?> getUpper(Class<?> clazz, Class<?> other) {
+	    if (clazz == null) {
+	        return other;
+	    } else if (other != null && !clazz.equals(other)) {
+	        if (clazz.isAssignableFrom(other)) {
+	            return other;
+	        }
+	    }
+	    return clazz;
+	}
+	
+    void resolve(MappedClass owner) {
+        if (this.type == null) {
+            this.type = getTypeInternal();
+        }
+        Type genericType = getGenericType();
+        if (genericType instanceof TypeVariable) {
+            this.type = getUpper(this.type, getGenericClass(genericType, 0, owner, 0));
+        }
+
+        this.collection = Collection.class.isAssignableFrom(type);
+        
+        ComponentType ctypeAnno = getAnnotation(ComponentType.class);
+        if (ctypeAnno != null) {
+            this.componentType = ctypeAnno.value();
+        } else if (collection || isClassReference()) {
+            this.componentType = getUpper(this.componentType, getGenericClass(genericType, 0, owner, 1));
+        } else if (isMap()) {
+            MapElements mapKey = getAnnotation(MapElements.class);
+            if (mapKey != null && !Void.class.equals(mapKey.keyType())) {
+                keyType = mapKey.keyType();
+            } else {
+                keyType = getUpper(keyType, getGenericClass(genericType, 0, owner, 2));
+            }
+            this.componentType = getUpper(componentType, getGenericClass(genericType, 1, owner, 3));
+        } else {
+            this.componentType = null;
+        }
+    }
 	
 	@SuppressWarnings("unchecked")
 	public Class<? extends Collection> getCollectionType() {
@@ -103,22 +171,6 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 
 	public Class<?> getComponentType() {
 	    return componentType;
-	}
-
-	protected void init() {
-	    this.type = getTypeInternal();
-        this.collection = Collection.class.isAssignableFrom(type);
-	    
-		ComponentType ctypeAnno = getAnnotation(ComponentType.class);
-		if (ctypeAnno != null) {
-			this.componentType = ctypeAnno.value();
-		} else if (collection) {
-		    this.componentType = getGenericClass(getParametrizedType(), 0);
-		} else if (isMap()) {
-		    this.componentType = getGenericClass(getParametrizedType(), 1);
-		} else {
-			this.componentType = null;
-		}
 	}
 	
 	public Class<?> getTargetType() {
@@ -154,48 +206,54 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 		return annotations.containsKey(atype);
 	}
 
-    static Type getGenericType(Type gtype, int index) {
-        if (gtype instanceof Class) {
-            return gtype;
-        } else if (gtype instanceof ParameterizedType) {
-            ParameterizedType ptype = (ParameterizedType) gtype;
-            return ptype.getActualTypeArguments()[index];
-        } else {
-            return null;
-        }
-    }
-
     @SuppressWarnings("unchecked")
-	static Class getGenericClass(Type gtype, int index) {
+	Class getGenericClass(Type type, int index, MappedClass owner, int typeVariableIndex) {
 //		Type gtype = getParametrizedType(member);
-		if (gtype != null) {
-		    if (gtype instanceof Class) {
-		        return (Class) gtype;
-		    } else if (gtype instanceof ParameterizedType) {
-		        Type type = getGenericType(gtype, index);
-    			if (type instanceof WildcardType) {
-    			    WildcardType wildcardType = (WildcardType) type; 
-    			    if (wildcardType.getUpperBounds()[0] instanceof ParameterizedType) {
-    			        return (Class) ((ParameterizedType) wildcardType.getUpperBounds()[0]).getRawType();
-    			    } else if (wildcardType.getUpperBounds()[0] instanceof Class) {
-    			        return (Class) wildcardType.getUpperBounds()[0];
-    			    } else {
-    			        //System.err.println("Unable to find out actual type of " + gtype);
-    			        return Object.class;
-    			    }
-                } else if (type instanceof TypeVariable) {
-                    return (Class) ((TypeVariable) type).getGenericDeclaration();
-                } else if (type instanceof ParameterizedType) {
-                    return (Class) ((ParameterizedType) type).getRawType();
-    			} else {
-    			    try {
-    			        return (Class) type;
-    			    } catch (Exception e) {
-    			        e.printStackTrace();
-    			    }
-    			}
+		if (type != null) {
+		    if (type instanceof Class) {
+		        return (Class) type;
+		    } else if (type instanceof ParameterizedType && index >= 0) {
+	            type = ((ParameterizedType) type).getActualTypeArguments()[index];
 		    }
-		}
+			if (type instanceof WildcardType) {
+			    WildcardType wildcardType = (WildcardType) type; 
+			    if (wildcardType.getUpperBounds()[0] instanceof ParameterizedType) {
+			        return (Class) ((ParameterizedType) wildcardType.getUpperBounds()[0]).getRawType();
+			    } else if (wildcardType.getUpperBounds()[0] instanceof Class) {
+			        return (Class) wildcardType.getUpperBounds()[0];
+			    } else {
+			        //System.err.println("Unable to find out actual type of " + gtype);
+			        return Object.class;
+			    }
+            } else if (type instanceof TypeVariable) {
+                Type upperBound = null;
+                if (owner == null || declaringClass.equals(owner)) {
+                    typeVariables[typeVariableIndex] = (TypeVariable) type;
+                    upperBound = typeVariables[typeVariableIndex].getBounds()[0]; 
+                } else if (typeVariables[typeVariableIndex] != null) {
+                    Type genericType = owner.resolveTypeVariable(typeVariables[typeVariableIndex].getName(), declaringClass);
+                    if (genericType instanceof TypeVariable) {
+                        // Nested TypeVariable in a sub class
+                        typeVariables[typeVariableIndex] = (TypeVariable<?>) genericType;
+                        upperBound = typeVariables[typeVariableIndex].getBounds()[0];
+                    } else {
+                        typeVariables[typeVariableIndex] = null;
+                        upperBound = genericType;
+                    } 
+                    declaringClass = owner;
+                }
+                return getGenericClass(upperBound, -1, owner, -1);
+//                return (Class) ((TypeVariable) type).getGenericDeclaration();
+            } else if (type instanceof ParameterizedType) {
+                return (Class) ((ParameterizedType) type).getRawType();
+			} else {
+			    try {
+			        return (Class) type;
+			    } catch (Exception e) {
+			        e.printStackTrace();
+			    }
+			}
+	    }
 		return null;
 	}
     
@@ -215,27 +273,11 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	public Class getKeyType() {
-		if (isMap()) {
-			MapElements mapKey = getAnnotation(MapElements.class);
-			if (mapKey != null) {
-				if (!Void.class.equals(mapKey.keyType())) {
-					return mapKey.keyType();
-				} else {
-					return getGenericClass(getParametrizedType(), 0);
-				}
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
+	public Class<?> getKeyType() {
+	    return keyType;
 	}
 	
 	protected abstract  M getMember();
-	
-	protected abstract Type getParametrizedType();
 	
 	public String getName() {
 		return name;
@@ -246,6 +288,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
     }
     
     protected abstract Class<?> getTypeInternal();
+    
+    protected abstract Type getGenericType();
 	
 	public abstract Object getValue(BeanMap instance);
     
@@ -271,6 +315,17 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
     		idType = annotation.value();
     	}
     	return idType;
+    }
+    
+    public boolean isAnnotatedProperty() {
+        if (!annotations.isEmpty()) {
+            for (Class<? extends Annotation> anno : MAPPING_ANNOTATIONS) {
+                if (annotations.containsKey(anno)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     public boolean isCollection() {
@@ -307,7 +362,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 	}
 
 	public boolean isPolymorphic() {
-        return MappedClass.isPolymorphic(getGenericClass(getTargetType(), 0));
+        return MappedClass.isPolymorphic(getTargetType());
     }
 	
 	public boolean isConstructorParameter() {
@@ -388,6 +443,22 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> {
 
     public boolean isIndexed() {
         return isList() || ContainerType.SEQ.equals(getContainerType());
+    }
+
+    public Object clone() {
+        try {
+            MappedProperty<?> clone = (MappedProperty<?>) super.clone();
+            clone.annotations = new HashMap<Class<? extends Annotation>, Annotation>(annotations);
+            clone.typeVariables = new TypeVariable<?>[4];
+            System.arraycopy(typeVariables, 0, clone.typeVariables, 0, 4);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isClassReference() {
+        return Class.class.isAssignableFrom(type);
     }
     
 }

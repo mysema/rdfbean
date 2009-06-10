@@ -16,9 +16,9 @@ import org.apache.commons.collections15.BeanMap;
  */
 public class MethodProperty extends MappedProperty<Method> {
 
-	public static MethodProperty getMethodPropertyOrNull(Method method) {
+	public static MethodProperty getMethodPropertyOrNull(Method method, MappedClass declaringClass) {
 	    try {
-	        return new MethodProperty(method);
+	        return new MethodProperty(method, declaringClass);
 	    } catch (IllegalArgumentException e) {
 	        return null;
 	    }
@@ -49,15 +49,14 @@ public class MethodProperty extends MappedProperty<Method> {
 	
 	private Method method;
 
-	private MethodProperty(Method method) {
-		super(getPropertyName(method), method.getAnnotations());
+	private MethodProperty(Method method, MappedClass declaringClass) {
+		super(getPropertyName(method), method.getAnnotations(), declaringClass);
 		this.method = method;
 		if (method.getName().startsWith("set")) {
 			getter = false;
 		} else {
 			getter = true;
 		}
-        init();
 	}
 
 	@Override
@@ -65,13 +64,25 @@ public class MethodProperty extends MappedProperty<Method> {
 		return method;
 	}
 
+    @Override
+    protected Class<?> getTypeInternal() {
+        if (getter) {
+            return method.getReturnType();
+        } else {
+            return method.getParameterTypes()[0];
+        }
+    }
+
 	@Override
-	public Class<?> getTypeInternal() {
-		if (getter) {
-			return method.getReturnType();
-		} else {
-			return method.getParameterTypes()[0];
-		}
+	public Type getGenericType() {
+        Type gtype = null;
+        if (getter) {
+            gtype = method.getGenericReturnType();
+        } else {
+            Type[] ptypes = method.getGenericParameterTypes();
+            gtype = ptypes[0];
+        }
+        return gtype;
 	}
 
 	@Override
@@ -84,21 +95,6 @@ public class MethodProperty extends MappedProperty<Method> {
     public Object getValue(BeanMap instance) {
         return instance.get(getName());
     }
-
-	@Override
-	protected Type getParametrizedType() {
-		Type gtype = null;
-		Class<?>[] parameterTypes = method.getParameterTypes();
-		if (parameterTypes.length == 1) {
-			Type[] ptypes = method.getGenericParameterTypes();
-			if (ptypes.length > 0) {
-				gtype = ptypes[0];
-			}
-		} else {
-			gtype = method.getGenericReturnType();
-		}
-		return gtype;
-	}
 
     @Override
     public boolean isVirtual() {
@@ -133,7 +129,7 @@ public class MethodProperty extends MappedProperty<Method> {
         }
         return setter;
     }
-
+    
     private String capitalize(String name) {
         return Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }
