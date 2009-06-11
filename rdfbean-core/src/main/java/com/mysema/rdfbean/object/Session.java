@@ -88,6 +88,20 @@ public interface Session extends ObjectRepository, Closeable {
     void clear();
     
     /**
+     * Deletes given object and all references to it.
+     * 
+     * @param object
+     */
+    void delete(Object object);
+    
+    /**
+     * Deletes given objects and all references to those.
+     * 
+     * @param objects
+     */
+    void deleteAll(Object... objects);
+    
+    /**
      * Finds instances of a given mapped class.
      * 
      * @param clazz     mapped class of instances to be returned.

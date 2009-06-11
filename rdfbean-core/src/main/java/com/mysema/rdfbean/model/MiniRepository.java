@@ -246,6 +246,16 @@ public final class MiniRepository implements Repository<MiniDialect> {
                 return multi.iterator();
             }
         }
+        
+        public String toString() {
+            if (multi != null) {
+                return multi.toString();
+            } else if (single != null) {
+                return single.toString();
+            } else {
+                return "";
+            }
+        }
     }
     
     public static class PredicateCache {

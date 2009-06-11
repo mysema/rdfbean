@@ -8,7 +8,6 @@ package com.mysema.rdfbean.object;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -267,6 +266,59 @@ public class SessionImpl implements Session {
         removedStatements = new LinkedHashSet<STMT>(DEFAULT_INITIAL_CAPACITY);
         seen = null;
     }
+
+    private void deleteInternal(Object instance) {
+        BeanMap beanMap = toBeanMap(instance);
+        ID subject = resourceCache.get(instance);
+        Class<?> clazz = getClass(instance);
+        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        UID context = getContext(instance, subject, null);
+        if (subject == null) {
+            subject = getId(mappedClass, beanMap);
+        }
+        if (subject != null) {
+            // Delete own properties
+            for (STMT statement : findStatements(subject, null, null, false, context)) {
+                recordRemoveStatement(statement);
+                NODE object = statement.getObject();
+                if (object.isResource()) {
+                    removeList((ID) object, context);
+                    removeContainer((ID) object, context);
+                }
+            }
+            // Delete references
+            for (STMT statement : findStatements(null, null, subject, false, context)) {
+                recordRemoveStatement(statement);
+            }
+            // Remove from primary cache
+            List<Object> instances = instanceCache.remove(subject);
+            if (instances != null) {
+                for (Object obj : instances) {
+                    resourceCache.remove(obj);
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void delete(Object instance) {
+        initialize();
+        deleteInternal(instance);
+        if (flushMode == FlushMode.ALWAYS) {
+            flush();
+        }
+    }
+    
+    @Override
+    public void deleteAll(Object... objects) {
+        initialize();
+        for (Object object : objects) {
+            deleteInternal(object);
+        }
+        if (flushMode == FlushMode.ALWAYS) {
+            flush();
+        }
+    }
     
     private Class<?> convertClassReference(UID uid, Class<?> targetClass) {
         List<Class<?>> mappedClasses = conf.getMappedClasses(uid);
@@ -411,9 +463,8 @@ public class SessionImpl implements Session {
                         findTypes(subject, context), 
                         requiredClass);
             } else {
-                Collection<ID> types = Collections.emptyList();
                 instance = createInstance(subject, 
-                        types, 
+                        null, 
                         requiredClass);
             }
             put(subject, instance);
@@ -424,30 +475,37 @@ public class SessionImpl implements Session {
 
     @SuppressWarnings("unchecked")
     protected <T> Class<? extends T> matchType(Collection<ID> types, Class<T> targetType) {
-        Class<? extends T> result = targetType;
-        boolean foundMatch = types.isEmpty();
-        for (ID type : types) {
-            if (type instanceof UID) {
-                UID uid = (UID) type;
-                List<Class<?>> classes = conf.getMappedClasses(uid);
-                if (classes != null) {
-                    for (Class<?> clazz : classes) {
-                        if ((result == null || result.isAssignableFrom(clazz)) && !clazz.isInterface()) {
-                            foundMatch = true;
-                            result = (Class<? extends T>) clazz;
+        if (types == null) {
+            return targetType;
+        } else {
+            Class<? extends T> result = targetType;
+            boolean foundMatch = false;
+            for (ID type : types) {
+                if (type instanceof UID) {
+                    UID uid = (UID) type;
+                    List<Class<?>> classes = conf.getMappedClasses(uid);
+                    if (classes != null) {
+                        for (Class<?> clazz : classes) {
+                            if ((result == null || result.isAssignableFrom(clazz)) && !clazz.isInterface()) {
+                                foundMatch = true;
+                                result = (Class<? extends T>) clazz;
+                            }
                         }
                     }
                 }
             }
-        }
-        if (foundMatch) {
-            return result;
-        } else {
-            return null;
-        }
+            if (foundMatch) {
+                return result;
+            } else {
+                return null;
+            }
+        } 
     }
     
     protected <T> T createInstance(ID subject, Collection<ID> types, Class<T> requiredType) {
+        if (types != null && types.isEmpty()) {
+            return null;
+        }
         T instance;
         Class<? extends T> actualType = matchType(types, requiredType);
         if (actualType != null) {
@@ -1214,13 +1272,17 @@ public class SessionImpl implements Session {
 
     private void removeList(ID node, UID context) {
         if (findStatements(node, RDF.type, RDF.List, true, context).size() > 0) {
-            for (STMT statement : findStatements(node, null, null, false, context)) {
-                recordRemoveStatement(statement);
-                NODE object = statement.getObject();
-                // Remove rdf:rest
-                if (RDF.rest.equals(statement.getPredicate()) && object.isResource()) {
-                    removeList((ID) object, context);
-                }
+            removeListInternal(node, context);
+        }
+    }
+    
+    private void removeListInternal(ID node, UID context) {
+        for (STMT statement : findStatements(node, null, null, false, context)) {
+            recordRemoveStatement(statement);
+            NODE object = statement.getObject();
+            // Remove rdf:rest
+            if (RDF.rest.equals(statement.getPredicate()) && object.isResource()) {
+                removeListInternal((ID) object, context);
             }
         }
     }
