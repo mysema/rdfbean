@@ -18,7 +18,6 @@ import org.openrdf.store.StoreException;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.object.SessionUtil;
 import com.mysema.rdfbean.owl.OWL;
