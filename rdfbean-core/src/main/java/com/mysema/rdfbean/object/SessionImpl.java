@@ -617,7 +617,7 @@ public class SessionImpl implements Session {
                     if (value instanceof LIT) {
                         datatype = ((LIT) value).getDatatype();
                     }
-                    convertedValue = conf.getConverterRegistry().fromString(value.getValue(), datatype, targetClass);
+                    convertedValue = conf.getConverterRegistry().fromString(value.getValue(), targetClass);
                 }
             } catch (IllegalArgumentException e) {
                 if (propertyPath.isIgnoreInvalid()) {
@@ -1308,7 +1308,7 @@ public class SessionImpl implements Session {
     }
 
     private LIT toRDFLiteral(Object o) {
-        UID dataType = conf.getConverterRegistry().getDatatype(o);
+        UID dataType = conf.getConverterRegistry().getDatatypeForObject(o);
         return new LIT(conf.getConverterRegistry().toString(o), dataType);
     }
 

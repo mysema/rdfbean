@@ -11,31 +11,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.openrdf.model.BNode;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
+import org.openrdf.model.*;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.ModelResult;
 import org.openrdf.store.StoreException;
 
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.Dialect;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.BeanQueryAdapter;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.sesame.query.SesameOps;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
 
 /**
@@ -44,7 +32,7 @@ import com.mysema.rdfbean.sesame.query.SesameQuery;
  */
 public class SesameConnection implements RDFConnection {
     
-//    private static final Logger logger = LoggerFactory.getLogger(SesameConnection.class);
+    private static SesameOps sesameOps = new SesameOps();
     
     private RepositoryConnection connection;
     
@@ -59,7 +47,7 @@ public class SesameConnection implements RDFConnection {
     public SesameConnection(RepositoryConnection connection) {
         this.connection = connection;
         this.vf = connection.getValueFactory();
-        this.dialect = new SesameDialect(vf);
+        this.dialect = new SesameDialect(vf);        
     }
 
     public void cleanUpAfterCommit(){
@@ -129,7 +117,12 @@ public class SesameConnection implements RDFConnection {
 
     @Override
     public BeanQuery createQuery(Session session) {
-        SesameQuery query = new SesameQuery(session, dialect, connection, StatementPattern.Scope.DEFAULT_CONTEXTS);
+        SesameQuery query = new SesameQuery(
+                session, 
+                dialect, 
+                connection, 
+                StatementPattern.Scope.DEFAULT_CONTEXTS,
+                sesameOps);
         query.getMetadata().setDistinct(true);
         return new BeanQueryAdapter(query,query);
     }

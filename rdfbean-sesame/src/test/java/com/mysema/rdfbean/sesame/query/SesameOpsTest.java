@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import com.mysema.query.types.operation.Operator;
 import com.mysema.query.types.operation.Ops;
+import com.mysema.rdfbean.object.ConverterRegistry;
 
 
 /**
@@ -29,7 +30,7 @@ public class SesameOpsTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testOps() throws IllegalArgumentException, IllegalAccessException{
-        SesameOps sailOps = SesameOps.DEFAULT;
+        SesameOps sesameOps = new SesameOps();
         Set<Field> opFields = new TreeSet<Field>(ComparatorUtils.chainedComparator(
                 new BeanComparator("declaringClass.simpleName"),
                 new BeanComparator("name")));
@@ -46,7 +47,7 @@ public class SesameOpsTest {
         
         int counter = 0;
         for (Field field : opFields){
-            if (sailOps.getTransformer((Operator<?>) field.get(null)) == null){
+            if (sesameOps.getTransformer((Operator<?>) field.get(null)) == null){
                 System.err.println(
                         field.getDeclaringClass().getSimpleName()+"."+
                         field.getName() + 

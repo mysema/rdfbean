@@ -211,7 +211,7 @@ public class SchemaGen {
                                     if (mappedProperty.isAnyResource()) {
                                         range = RDFS.Resource;
                                     } else {
-                                        range = converterRegistry.getDatatype(mappedProperty.getType());
+                                        range = converterRegistry.getDatatypeForClass(mappedProperty.getType());
                                     }
                                     if (range != null) {
                                         owlClass.setAllValuesFrom(property, getDatatype(range, resources));

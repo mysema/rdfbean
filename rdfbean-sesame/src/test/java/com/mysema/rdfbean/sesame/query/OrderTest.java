@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+
 /**
  * OrderTest provides
  *
@@ -21,10 +22,10 @@ public class OrderTest extends AbstractSesameQueryTest{
     
     @Test
     public void simpleOrder(){
-        List<TestType> asc = newQuery().from(var).orderBy(var.directProperty.asc()).list(var);
+        List<SimpleType> asc = newQuery().from(var).orderBy(var.directProperty.asc()).list(var);
         System.out.println();
         
-        List<TestType> desc = newQuery().from(var).orderBy(var.directProperty.desc()).list(var);
+        List<SimpleType> desc = newQuery().from(var).orderBy(var.directProperty.desc()).list(var);
         
         if (asc.equals(desc)){
             System.out.println("asc "+  asc);

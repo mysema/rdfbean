@@ -5,12 +5,10 @@
  */
 package com.mysema.rdfbean.sesame.query.functions;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.model.Literal;
@@ -23,6 +21,9 @@ import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
 import com.mysema.query.types.operation.Operator;
 import com.mysema.query.types.operation.Ops;
+import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.object.ConverterRegistry;
+import com.mysema.rdfbean.query.QD;
 import com.mysema.rdfbean.sesame.query.Transformer;
 
 /**
@@ -33,35 +34,36 @@ import com.mysema.rdfbean.sesame.query.Transformer;
  */
 public class SesameFunctions {
 
-    private static final DatatypeFactory datatypeFactory;
+    private final ConverterRegistry converter;
+    
+    private final Map<Operator<?>, String> opToFunctionURI = new HashMap<Operator<?>, String>();
 
-    private static final Map<Operator<?>, String> opToFunctionURI = new HashMap<Operator<?>, String>();
-
-    static {
-        try {
-            datatypeFactory = DatatypeFactory.newInstance();
-        } catch (DatatypeConfigurationException e) {
-            throw new RuntimeException(e.getMessage(), e);
-        }
-
+    public SesameFunctions(final ConverterRegistry converter) {
+        this.converter = converter;
+        
         // STRING FUNCTIONS
-        register(new StringFunction("trim", Ops.TRIM) {
+        register(new StringFunction(QD.trim, Ops.TRIM) {
             protected String convert(Value... args) {
                 return args[0].stringValue().trim();
             }
-        }, new StringFunction("upper", Ops.UPPER) {
+        });
+        register(new StringFunction(QD.upper, Ops.UPPER) {
             protected String convert(Value... args) {
                 return args[0].stringValue().toUpperCase();
             }
-        }, new StringFunction("lower", Ops.LOWER) {
+        });
+        register(new StringFunction(QD.lower, Ops.LOWER) {
             protected String convert(Value... args) {
                 return args[0].stringValue().toLowerCase();
             }
-        }, new StringFunction("concat", Ops.CONCAT) {
+        });
+        register(new StringFunction(QD.concat, Ops.CONCAT) {
             protected String convert(Value... args) {
                 return args[0].stringValue() + args[1].stringValue();
             }
-        }, new StringFunction("substring", Ops.SUBSTR1ARG, Ops.SUBSTR2ARGS) {
+        });
+        register(new StringFunction(QD.substring, Ops.SUBSTR1ARG,
+                Ops.SUBSTR2ARGS) {
             protected String convert(Value... args) {
                 if (args.length == 2) {
                     return args[0].stringValue().substring(
@@ -72,127 +74,162 @@ public class SesameFunctions {
                             Integer.valueOf(args[2].stringValue()));
                 }
             }
-        }, new StringFunction("space", Ops.StringOps.SPACE) {
+        });
+        register(new StringFunction(QD.space, Ops.StringOps.SPACE) {
             protected String convert(Value... args) {
                 return StringUtils.leftPad("", Integer.valueOf(args[1]
                         .stringValue()));
             }
-        },
+        });
+        register(new StringFunction(QD.charAt, Ops.CHAR_AT) {
+            @Override
+            protected String convert(Value... args) {
+                return String.valueOf(args[0].stringValue().charAt(
+                        Integer.valueOf(args[1].stringValue())));
+            }
+        });
+        register(new BooleanFunction(QD.startsWith) { 
+            protected boolean convert(Value... args) {
+                return args[0].stringValue().startsWith(args[1].stringValue());
+            }
+        });
+        register(new BooleanFunction(QD.endsWith) { 
+            protected boolean convert(Value... args) {
+                return args[0].stringValue().endsWith(args[1].stringValue());
+            }
+        });
+        register(new BooleanFunction(QD.startsWithIc) { 
+            protected boolean convert(Value... args) {
+                return args[0].stringValue().toLowerCase().startsWith(args[1].stringValue().toLowerCase());
+            }
+        });
+        register(new BooleanFunction(QD.endsWithIc) { 
+            protected boolean convert(Value... args) {
+                return args[0].stringValue().toLowerCase().endsWith(args[1].stringValue().toLowerCase());
+            }
+        });
+        register(new BooleanFunction(QD.stringContains, Ops.STRING_CONTAINS) {
+            protected boolean convert(Value... args) {
+                return args[0].stringValue().contains(args[1].stringValue());
+            }
+        });
+        register(new BooleanFunction(QD.equalsIgnoreCase, Ops.EQ_IGNORECASE) {
+            protected boolean convert(Value... args) {
+                return args[0].stringValue().equalsIgnoreCase(
+                        args[1].stringValue());
+            }
+        });
+        register(new IntegerFunction(QD.stringLength, Ops.STRING_LENGTH) {
+            protected int convert(Value... args) {
+                return args[0].stringValue().length();
+            }
+        });
+        register(new IntegerFunction(QD.indexOf, Ops.INDEXOF, Ops.INDEXOF_2ARGS) {
+            protected int convert(Value... args) {
+                if (args.length == 2) {
+                    return args[0].stringValue().indexOf(args[1].stringValue());
+                } else {
+                    return args[0].stringValue().indexOf(args[1].stringValue(),
+                            Integer.valueOf(args[2].stringValue()));
+                }
+            }
+        });
 
-        // CHAR FUNCTIONS
-                new StringFunction("charAt", Ops.CHAR_AT) {
-                    @Override
-                    protected String convert(Value... args) {
-                        return String.valueOf(args[0].stringValue().charAt(
-                                Integer.valueOf(args[1].stringValue())));
-                    }
-                },
+        // NUMERIC
 
-                // BOOLEAN FUNCTIONS
-                new BooleanFunction("contains", Ops.STRING_CONTAINS) {
-                    protected boolean convert(Value... args) {
-                        return args[0].stringValue().contains(
-                                args[1].stringValue());
-                    }
-                }, new BooleanFunction("equalsIgnoreCase", Ops.EQ_IGNORECASE) {
-                    protected boolean convert(Value... args) {
-                        return args[0].stringValue().equalsIgnoreCase(
-                                args[1].stringValue());
-                    }
-                }, new BooleanFunction("empty", Ops.COL_ISEMPTY) {
-                    protected boolean convert(Value... args) {
-                        return args[0].stringValue().length() == 0;
-                    }
-                },
-
-                // INTEGER FUNCTIONS
-                new IntegerFunction("length", Ops.STRING_LENGTH) {
-                    protected int convert(Value... args) {
-                        return args[0].stringValue().length();
-                    }
-                }, new IntegerFunction("indexOf", Ops.INDEXOF,
-                        Ops.INDEXOF_2ARGS) {
-                    protected int convert(Value... args) {
-                        if (args.length == 2) {
-                            return args[0].stringValue().indexOf(
-                                    args[1].stringValue());
-                        } else {
-                            return args[0].stringValue().indexOf(
-                                    args[1].stringValue(),
-                                    Integer.valueOf(args[2].stringValue()));
-                        }
-                    }
-                });
-
-        // OTHER NUMERIC
-
-        register(new BaseFunction("ceil", Ops.MathOps.CEIL) {
+        register(new BaseFunction(QD.ceil, Ops.MathOps.CEIL) {
             @Override
             public Value evaluate(ValueFactory valueFactory, Value... args)
                     throws ValueExprEvaluationException {
-                return valueFactory.createLiteral(Math.ceil(Double
-                        .valueOf(args[0].stringValue())));
+                return valueFactory.createLiteral(Math.ceil(Double.valueOf(args[0].stringValue())));
             }
-        }, new BaseFunction("floor", Ops.MathOps.FLOOR) {
+        });
+        register(new BaseFunction(QD.floor, Ops.MathOps.FLOOR) {
             @Override
             public Value evaluate(ValueFactory valueFactory, Value... args)
                     throws ValueExprEvaluationException {
-                return valueFactory.createLiteral(Math.ceil(Double
-                        .valueOf(args[0].stringValue())));
+                return valueFactory.createLiteral(Math.ceil(Double.valueOf(args[0].stringValue())));
             }
-        }, new BaseFunction("abs", Ops.MathOps.ABS) {
+        });
+        register(new BaseFunction(QD.sqrt, Ops.MathOps.SQRT) {
+            @Override
+            public Value evaluate(ValueFactory valueFactory, Value... args)
+                    throws ValueExprEvaluationException {
+                return valueFactory.createLiteral(Math.sqrt(Double.valueOf(args[0].stringValue())));
+            }
+        });
+        register(new BaseFunction(QD.abs, Ops.MathOps.ABS) {
             @Override
             public Value evaluate(ValueFactory valueFactory, Value... args)
                     throws ValueExprEvaluationException {
                 if (args[0].stringValue().startsWith("-")) {
                     Literal l = (Literal) args[0];
-                    return valueFactory.createLiteral(l.stringValue()
-                            .substring(1), l.getDatatype());
+                    return valueFactory.createLiteral(l.stringValue().substring(1), l.getDatatype());
                 } else {
                     return args[0];
                 }
             }
+        });
+        
+        // CASTS
+        
+        register(new BaseFunction(XSD.byteType) {
+            @Override
+            public Value evaluate(ValueFactory valueFactory, Value... args)
+                    throws ValueExprEvaluationException {
+                return valueFactory.createLiteral(Byte.valueOf(args[0].stringValue()));
+            }
+        });
+        register(new BaseFunction(XSD.longType) {
+            @Override
+            public Value evaluate(ValueFactory valueFactory, Value... args)
+                    throws ValueExprEvaluationException {
+                return valueFactory.createLiteral(Long.valueOf(args[0].stringValue()));
+            }
+        });
+        register(new BaseFunction(XSD.shortType) {
+            @Override
+            public Value evaluate(ValueFactory valueFactory, Value... args)
+                    throws ValueExprEvaluationException {
+                return valueFactory.createLiteral(Long.valueOf(args[0].stringValue()));
+            }
+        });
 
-        }
+        // DATE / TIME
 
-        );
-
-        // OTHER DATE / TIME
-
-        register(new IntegerFunction("year", Ops.DateTimeOps.YEAR) {
+        register(new IntegerFunction(QD.year, Ops.DateTimeOps.YEAR) {
             protected int convert(Value... args) {
-                return datatypeFactory.newXMLGregorianCalendar(
-                        args[0].stringValue()).getYear();
+                return converter.fromString(args[0].stringValue(), Date.class).getYear();
             }
-        }, new IntegerFunction("month", Ops.DateTimeOps.MONTH) {
+        });
+        register(new IntegerFunction(QD.month, Ops.DateTimeOps.MONTH) {
             protected int convert(Value... args) {
-                return datatypeFactory.newXMLGregorianCalendar(
-                        args[0].stringValue()).getMonth();
+                return converter.fromString(args[0].stringValue(), Date.class).getMonth();
             }
-        }, new IntegerFunction("day", Ops.DateTimeOps.DAY_OF_MONTH) {
+        });
+        register(new IntegerFunction(QD.dayOfMonth, Ops.DateTimeOps.DAY_OF_MONTH) {
             protected int convert(Value... args) {
-                return datatypeFactory.newXMLGregorianCalendar(
-                        args[0].stringValue()).getDay();
+                return converter.fromString(args[0].stringValue(), Date.class).getDay();
             }
-        }, new IntegerFunction("hour", Ops.DateTimeOps.HOUR) {
+        });
+        register(new IntegerFunction(QD.hour, Ops.DateTimeOps.HOUR) {
             protected int convert(Value... args) {
-                return datatypeFactory.newXMLGregorianCalendar(
-                        args[0].stringValue()).getHour();
+                return converter.fromString(args[0].stringValue(), Date.class).getHours();
             }
-        }, new IntegerFunction("minute", Ops.DateTimeOps.MINUTE) {
+        });
+        register(new IntegerFunction(QD.minute, Ops.DateTimeOps.MINUTE) {
             protected int convert(Value... args) {
-                return datatypeFactory.newXMLGregorianCalendar(
-                        args[0].stringValue()).getMinute();
+                return converter.fromString(args[0].stringValue(), Date.class).getMinutes();
             }
-        }, new IntegerFunction("second", Ops.DateTimeOps.SECOND) {
+        });
+        register(new IntegerFunction(QD.second, Ops.DateTimeOps.SECOND) {
             protected int convert(Value... args) {
-                return datatypeFactory.newXMLGregorianCalendar(
-                        args[0].stringValue()).getSecond();
+                return converter.fromString(args[0].stringValue(), Date.class).getSeconds();
             }
         });
     }
 
-    public static void addTransformers(Map<Operator<?>, Transformer> byOp) {
+    public void addTransformers(Map<Operator<?>, Transformer> byOp) {
         for (final Map.Entry<Operator<?>, String> e : opToFunctionURI
                 .entrySet()) {
             byOp.put(e.getKey(), new Transformer() {
@@ -205,12 +242,10 @@ public class SesameFunctions {
 
     }
 
-    private static void register(BaseFunction... functions) {
-        for (BaseFunction function : functions) {
-            FunctionRegistry.getInstance().add(function);
-            for (Operator<?> op : function.getOps()) {
-                opToFunctionURI.put(op, function.getURI());
-            }
+    private void register(BaseFunction function) {
+        FunctionRegistry.getInstance().add(function);
+        for (Operator<?> op : function.getOps()) {
+            opToFunctionURI.put(op, function.getURI());
         }
     }
 

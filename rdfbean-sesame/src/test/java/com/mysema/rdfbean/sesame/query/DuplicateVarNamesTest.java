@@ -19,7 +19,7 @@ public class DuplicateVarNamesTest extends AbstractSesameQueryTest{
 
     @Test
     public void test(){
-        QTestType v = new QTestType("va");
+        QSimpleType v = new QSimpleType("va");
         assertEquals(2, newQuery().from(v).list(v.directProperty).size());
     }
 }

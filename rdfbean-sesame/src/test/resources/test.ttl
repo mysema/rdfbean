@@ -26,6 +26,7 @@
     :directProperty1 "metaonto_elements" ;
     :localizedProperty "fi"@fi , "en"@en ;
     :numericProperty "10"^^xsd:int ;
+    :dateProperty "2005-07-14T03:18:56+0100"^^xsd:dateTime ;
     :listProperty (
         [
             rdf:type :TestType2 ;
@@ -53,6 +54,7 @@
     :directProperty1 "propertymap"^^xsd:string ;
     :localizedProperty "en"@fi , "fi"@en ;
     :numericProperty "20"^^xsd:int ;
+    :dateProperty "2005-07-14T03:18:56+0100"^^xsd:dateTime ;
     :listProperty (
         [
             rdf:type :TestType2 ;

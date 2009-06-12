@@ -7,38 +7,12 @@ package com.mysema.rdfbean.sesame.query;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
-import org.openrdf.model.BNode;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
+import org.openrdf.model.*;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.algebra.And;
-import org.openrdf.query.algebra.Compare;
-import org.openrdf.query.algebra.Distinct;
-import org.openrdf.query.algebra.Exists;
-import org.openrdf.query.algebra.Filter;
-import org.openrdf.query.algebra.Lang;
-import org.openrdf.query.algebra.Not;
-import org.openrdf.query.algebra.Order;
-import org.openrdf.query.algebra.OrderElem;
-import org.openrdf.query.algebra.Projection;
-import org.openrdf.query.algebra.ProjectionElem;
-import org.openrdf.query.algebra.ProjectionElemList;
-import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.algebra.TupleExpr;
-import org.openrdf.query.algebra.ValueExpr;
-import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.*;
 import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.TupleResult;
@@ -47,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
+import com.mysema.query.types.CascadingBoolean;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EConstant;
@@ -62,13 +37,7 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.ConverterRegistry;
-import com.mysema.rdfbean.object.MappedClass;
-import com.mysema.rdfbean.object.MappedPath;
-import com.mysema.rdfbean.object.MappedPredicate;
-import com.mysema.rdfbean.object.MappedProperty;
-import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.*;
 import com.mysema.rdfbean.query.AbstractProjectingQuery;
 import com.mysema.rdfbean.query.VarNameIterator;
 import com.mysema.rdfbean.sesame.SesameDialect;
@@ -90,6 +59,8 @@ public class SesameQuery extends
     
     private final StatementPattern.Scope patternScope;
     
+    private final SesameOps sesameOps;
+    
     static{
         SesameQueryHolder.init();
     }
@@ -106,6 +77,8 @@ public class SesameQuery extends
 
     private ProjectionElemList projection = new ProjectionElemList();
     
+    private List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
+    
     private List<OrderElem> orderElements = new ArrayList<OrderElem>(); 
 
     private TupleResult queryResult;
@@ -114,9 +87,9 @@ public class SesameQuery extends
     
     private final Map<Object,Var> constToVar = new HashMap<Object,Var>();
     
-    private VarNameIterator varNames = new VarNameIterator("v");
+    private VarNameIterator varNames = new VarNameIterator("_var");
     
-    private final SesameOps sailOps = SesameOps.DEFAULT;
+    private VarNameIterator extNames = new VarNameIterator("_ext");
     
     private JoinBuilder statementPatterns = new JoinBuilder();
     
@@ -126,17 +99,18 @@ public class SesameQuery extends
     
     private Configuration conf;
         
-    public SesameQuery(Session session, SesameDialect dialect, RepositoryConnection connection, StatementPattern.Scope patternScope) {
+    public SesameQuery(Session session, 
+            SesameDialect dialect, 
+            RepositoryConnection connection, 
+            StatementPattern.Scope patternScope,
+            SesameOps sesameOps) {
         super(dialect, session);
         this.connection = connection;
         conf = session.getConfiguration();
         this.patternScope = patternScope;
+        this.sesameOps = sesameOps;
     }
     
-//    public SesameQuery(SesameConnection session) {
-//        this(session, StatementPattern.Scope.DEFAULT_CONTEXTS);    
-//    }  
-
     @Override
     protected SesameQuery addToProjection(Expr<?>... o) {
         for (Expr<?> expr : o) {
@@ -148,7 +122,14 @@ public class SesameQuery extends
                     addToProjection(arg);
                 }
             }else{
-                throw new IllegalArgumentException("Unsupported projection element " + expr);
+                ValueExpr val = toValue(expr);
+                if (val instanceof Var){
+                    projection.addElement(new ProjectionElem(((Var)val).getName()));
+                }else{
+                    String extLabel = extNames.next();
+                    projection.addElement(new ProjectionElem(extLabel));
+                    extensions.add(new ExtensionElem(val, extLabel));
+                }
             }            
         }
         return this;
@@ -191,7 +172,7 @@ public class SesameQuery extends
     }
         
     protected <RT> RT convert(Class<RT> rt, Literal literal) {
-        return conf.getConverterRegistry().fromString(literal.getLabel(), null, rt);
+        return conf.getConverterRegistry().fromString(literal.getLabel(), rt);
     }
 
     private void addFilterCondition(ValueExpr filterCondition) {
@@ -231,6 +212,9 @@ public class SesameQuery extends
             tupleExpr = new Order(tupleExpr, orderElements); 
         }        
         // projection
+        if (!extensions.isEmpty()){
+            tupleExpr = new Extension(tupleExpr, extensions);
+        }        
         tupleExpr = new Projection(tupleExpr, projection);
         
         // evaluate it
@@ -309,7 +293,7 @@ public class SesameQuery extends
     }
     
     private boolean inOptionalPath(){
-        return operatorStack.contains(Ops.ISNULL);
+        return operatorStack.contains(Ops.ISNULL) || operatorStack.contains(Ops.OR);
     }
     
     private boolean inNegation(){
@@ -365,10 +349,15 @@ public class SesameQuery extends
             Value rdfValue;
             ConverterRegistry converter = conf.getConverterRegistry();
             if (javaValue instanceof Class){
-                rdfValue = getTypeForJavaClass((Class<?>)javaValue);
+                UID datatype = converter.getDatatypeForClass((Class<?>)javaValue);
+                if (datatype != null){
+                    return toVar(datatype);
+                }else{
+                    rdfValue = getTypeForDomainClass((Class<?>)javaValue);
+                }
             }else if (converter.supports(javaValue.getClass())){
                 String label = converter.toString(javaValue);
-                UID datatype = converter.getDatatype(javaValue);
+                UID datatype = converter.getDatatypeForObject(javaValue);
                 rdfValue = dialect.getLiteral(label, dialect.getURI(datatype));
             }else{
                 ID id = session.getId(javaValue);
@@ -381,21 +370,55 @@ public class SesameQuery extends
         }        
     }
     
+    @SuppressWarnings("unchecked")
     private ValueExpr transformOperation(Operation<?,?> operation) {
         Operator<?> op = operation.getOperator();
         Transformer transformer;
         
-        // path in path
-        if (isPathInPath(operation, op)){
-            // TODO : make path in path work for RDF sequences
-            Path<?> path = (Path<?>) operation.getArg(0);
-            if (path.getMetadata().getParent() == null){
-                Path<?> otherPath = (Path<?>) operation.getArg(1);
-                pathToMatchedVar.put(otherPath, transformPath(path));
-                transformPath(otherPath);
-                return null;
+        // in / not in
+        if (op.equals(Ops.IN) || op.equals(Ops.NOTIN)){
+            // path (not)in path
+            if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof Path){
+                // TODO : make path in path work for RDF sequences
+                Path<?> path = (Path<?>) operation.getArg(0);
+                if (op.equals(Ops.NOTIN)){
+                    transformer = sesameOps.getTransformer(Ops.NE_OBJECT);
+                }else if (path.getMetadata().getParent() == null){
+                    Path<?> otherPath = (Path<?>) operation.getArg(1);
+                    pathToMatchedVar.put(otherPath, transformPath(path));
+                    transformPath(otherPath);
+                    return null;
+                }else{
+                    transformer = sesameOps.getTransformer(Ops.EQ_OBJECT);    
+                }
+                
+            // const (not)in path    
+            }else if (operation.getArg(0) instanceof EConstant && operation.getArg(1) instanceof Path){
+                if (op.equals(Ops.NOTIN)){
+                    transformer = sesameOps.getTransformer(Ops.NE_OBJECT);
+                }else{
+                    transformer = sesameOps.getTransformer(Ops.EQ_OBJECT);    
+                }                
+                
+            // path (not)in collection    
+            }else if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof EConstant){
+                Expr<Object> expr = (Expr<Object>)operation.getArg(0);
+                EConstant<?> constant = (EConstant<?>)operation.getArg(1);
+                Collection<?> collection = (Collection<?>)constant.getConstant();
+                CascadingBoolean bo = new CascadingBoolean();
+                if (op.equals(Ops.NOTIN)){
+                    for (Object elem : collection){
+                        bo.and(expr.ne(elem));
+                    }
+                }else{
+                    for (Object elem : collection){
+                        bo.or(expr.eq(elem));
+                    }    
+                }                
+                return toValue(bo.create());
+                
             }else{
-                transformer = sailOps.getTransformer(Ops.EQ_OBJECT);    
+                throw new IllegalArgumentException("Unsupported operation " + operation);
             }
             
          // size(col)    
@@ -432,7 +455,7 @@ public class SesameQuery extends
                 transformPath(otherPath);
                 return null;
             }else{
-                transformer = sailOps.getTransformer(Ops.EQ_OBJECT);    
+                transformer = sesameOps.getTransformer(Ops.EQ_OBJECT);    
             }
             
         // path == const OR path != const
@@ -454,7 +477,7 @@ public class SesameQuery extends
             }                        
             
         }else{
-            transformer = sailOps.getTransformer(op);
+            transformer = sesameOps.getTransformer(op);
         }       
         
         // handle operation via transformer
@@ -512,9 +535,13 @@ public class SesameQuery extends
         }
         
         if (Ops.equalsOps.contains(operation.getOperator())){
-            pathVar.setValue(constValue);
-            return null;    
-            
+            if (!inOptionalPath()){
+                pathVar.setValue(constValue);
+                return null;    
+            }else{
+                return new Compare(pathVar, toVar(constValue), Compare.CompareOp.EQ);
+            }
+                            
         }else{
             Var constVar = toVar(constValue);
             Compare compare = new Compare(pathVar, constVar, Compare.CompareOp.NE);
@@ -571,12 +598,6 @@ public class SesameQuery extends
         
     }
 
-    private boolean isPathInPath(Operation<?, ?> operation, Operator<?> op) {
-        return op.equals(Ops.IN) 
-                && operation.getArg(0) instanceof Path 
-                && operation.getArg(1) instanceof Path;
-    }
-
     private boolean isPathEqPath(Operation<?, ?> operation, Operator<?> op) {
         return  Ops.equalsOps.contains(op)
                 && operation.getArg(0) instanceof Path 
@@ -596,8 +617,7 @@ public class SesameQuery extends
             return (arg1 instanceof Operation && ((Operation)arg1).getOperator().equals(Ops.COL_SIZE));
         }else{
             return false;
-        }
-        
+        }        
     }
     
     private Var transformPath(Path<?> path) {

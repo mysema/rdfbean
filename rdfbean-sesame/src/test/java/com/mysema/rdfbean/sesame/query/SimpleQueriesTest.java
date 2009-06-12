@@ -16,6 +16,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 
+
 /**
  * SailQueryTest provides
  *
@@ -37,7 +38,7 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
         System.out.println("allInstances");
         instances = newQuery().from(var).list(var);
         assertEquals(2, instances.size());
-        for (TestType i : instances){
+        for (SimpleType i : instances){
             System.out.println(i.id + ", " + i.directProperty);
         }        
     }
@@ -86,6 +87,7 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
         assertEquals(1, where(var.numericProperty.eq(10)).list(var).size());
         assertEquals(1, where(var.numericProperty.eq(20)).list(var).size());
         assertEquals(0, where(var.numericProperty.eq(30)).list(var).size());
+        
     }
     
     @Test
@@ -103,7 +105,7 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
     @Test
     public void typeOf(){
         System.out.println("typeOf");
-        assertEquals(2, where(var.instanceOf(TestType.class)).list(var).size());
+        assertEquals(2, where(var.instanceOf(SimpleType.class)).list(var).size());
     }
     
     @Test

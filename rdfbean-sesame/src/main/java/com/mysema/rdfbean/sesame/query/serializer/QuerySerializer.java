@@ -22,7 +22,7 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
-import com.mysema.rdfbean.query.Constants;
+import com.mysema.rdfbean.query.QD;
 
 /**
  * QuerySerializer seriales ParsedTupleQuery instances to a syntax combining 
@@ -48,7 +48,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     private boolean usingNsPrinted;
     
     static{
-        Namespaces.register("querydsl", Constants.NS);
+        Namespaces.register("querydsl", QD.NS);
     }
     
     public QuerySerializer(TupleQueryModel query, boolean verbose){
@@ -190,8 +190,9 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             fromPrinted = true;
         }
         node.getArg(0).visit(this);
-//        append( " .\n  " ); 
-        node.getArg(1).visit(this);
+        if (node.getArg(1) != null){
+            node.getArg(1).visit(this);    
+        }        
     }
     
     @Override

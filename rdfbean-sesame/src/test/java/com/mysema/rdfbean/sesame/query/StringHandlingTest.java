@@ -31,6 +31,12 @@ public class StringHandlingTest extends AbstractSesameQueryTest{
     }
     
     @Test
+    public void matches(){
+        assertEquals(1, where(var.directProperty.matches("propertym.*")).count());
+        assertEquals(1, where(var.directProperty.matches(".*opertym.*")).count());
+    }
+    
+    @Test
     public void typedLiterals(){
         assertEquals(1, where(var.directProperty.eq("propertymap")).count());
     }

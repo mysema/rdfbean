@@ -27,14 +27,13 @@ public class ConverterRegistry {
     
     private Map<Class<?>,UID> classToType = new HashMap<Class<?>,UID>();
 
-    private Map<UID,Class<?>> typeToClass = new HashMap<UID,Class<?>>();
-    
     public ConverterRegistry(){                
         register(XSD.anyURI, URI.class, new URIConverter());
         register(XSD.booleanType, Boolean.class, new BooleanConverter());
         register(XSD.byteType, Byte.class, new ByteConverter());
         register(XSD.date, LocalDate.class, new LocalDateConverter());
-        register(XSD.dateTime, DateTime.class, new DateTimeConverter());
+        register(XSD.dateTime, DateTime.class, new DateTimeConverter());        
+        register(XSD.dateTime, java.util.Date.class, new DateConverter());
         register(XSD.decimalType, BigDecimal.class, new BigDecimalConverter());
         register(XSD.doubleType, Double.class, new DoubleConverter());
         // duration
@@ -54,7 +53,7 @@ public class ConverterRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T fromString(String value, UID datatype, Class<T> requiredType){
+    public <T> T fromString(String value, Class<T> requiredType){
         if (requiredType.equals(String.class)){
             return (T)value;
         }
@@ -66,12 +65,12 @@ public class ConverterRegistry {
         }
     }
     
-    public UID getDatatype(Class<?> javaClass) {
+    public UID getDatatypeForClass(Class<?> javaClass) {
         return classToType.get(javaClass);
     }
 
-    public UID getDatatype(Object javaValue) {
-        return getDatatype(javaValue.getClass());
+    public UID getDatatypeForObject(Object javaValue) {
+        return getDatatypeForClass(javaValue.getClass());
     }
 
     private <T> void register(UID type, Class<T> clazz, Converter<T> converter) {        
@@ -83,11 +82,10 @@ public class ConverterRegistry {
                 classToConverter.put(primitiveType, converter);
             }
         }        
-        typeToClass.put(type, clazz);
     }
     
     public boolean supports(Class<?> cl) {
-        return typeToClass.containsValue(cl);
+        return classToType.containsKey(cl);
     }
     
     @SuppressWarnings("unchecked")
@@ -104,3 +102,4 @@ public class ConverterRegistry {
     }
        
 }
+

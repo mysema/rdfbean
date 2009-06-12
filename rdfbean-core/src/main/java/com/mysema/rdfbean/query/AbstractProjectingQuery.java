@@ -69,7 +69,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         return mc.getMappedPath(md.getExpression().toString());    
     }
         
-    protected R getTypeForJavaClass(Class<?> clazz){
+    protected R getTypeForDomainClass(Class<?> clazz){        
         MappedClass mc = MappedClass.getMappedClass(clazz);
         if (mc.getUID() != null){
             return dialect.getResource(mc.getUID());

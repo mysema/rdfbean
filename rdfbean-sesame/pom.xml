@@ -80,5 +80,26 @@
     </dependency>    
        
   </dependencies>
+  
+  <build>
+    <plugins>
+       <plugin>
+        <groupId>com.mysema.maven</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <version>0.1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-process</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/generated-sources/java</outputDirectory>
+              <processor>com.mysema.rdfbean.query.BeanAnnotationProcessor</processor>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>  
+    </plugins>
+  </build>
 
 </project>

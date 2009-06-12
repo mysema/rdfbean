@@ -10,6 +10,7 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.UnsupportedQueryLanguageException;
 import org.openrdf.query.parser.QueryParserUtil;
+import org.openrdf.query.parser.TupleQueryModel;
 
 /**
  * ParsingTest provides
@@ -25,10 +26,14 @@ public class ParsingTest {
         print("SELECT L, R FROM {R} rdfs:label {L}");
         print("SELECT R FROM {R} rdfs:label {\"Hello World\"}");
         print("SELECT R FROM {R} rdfs:label {\"Hello World\"^^xsd:string}");
+        print("SELECT label(L), lang(L) FROM {R} rdfs:label {L}");
+        print("SELECT xsd:integer(L) FROM {R} rdfs:label {L}");
     }
     
     private void print(String query) throws MalformedQueryException, UnsupportedQueryLanguageException {
-        System.out.println(QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL, query, null));
+        TupleQueryModel model = QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL, query, null);
+        System.out.println(model);
+//        System.out.println(new QuerySerializer(model, false).toString());
         
     }
 }
