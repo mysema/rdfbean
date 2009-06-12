@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import com.mysema.query.types.operation.Operator;
 import com.mysema.query.types.operation.Ops;
-import com.mysema.rdfbean.object.ConverterRegistry;
 
 
 /**

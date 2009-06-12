@@ -33,13 +33,10 @@ import com.mysema.rdfbean.sesame.query.Transformer;
  * @version $Id$
  */
 public class SesameFunctions {
-
-    private final ConverterRegistry converter;
     
     private final Map<Operator<?>, String> opToFunctionURI = new HashMap<Operator<?>, String>();
 
     public SesameFunctions(final ConverterRegistry converter) {
-        this.converter = converter;
         
         // STRING FUNCTIONS
         register(new StringFunction(QD.trim, Ops.TRIM) {
@@ -199,31 +196,37 @@ public class SesameFunctions {
 
         register(new IntegerFunction(QD.year, Ops.DateTimeOps.YEAR) {
             protected int convert(Value... args) {
+                // TODO : make sure this works also for xsd:date
                 return converter.fromString(args[0].stringValue(), Date.class).getYear();
             }
         });
         register(new IntegerFunction(QD.month, Ops.DateTimeOps.MONTH) {
             protected int convert(Value... args) {
+                // TODO : make sure this works also for xsd:date
                 return converter.fromString(args[0].stringValue(), Date.class).getMonth();
             }
         });
         register(new IntegerFunction(QD.dayOfMonth, Ops.DateTimeOps.DAY_OF_MONTH) {
             protected int convert(Value... args) {
+                // TODO : make sure this works also for xsd:date
                 return converter.fromString(args[0].stringValue(), Date.class).getDay();
             }
         });
         register(new IntegerFunction(QD.hour, Ops.DateTimeOps.HOUR) {
             protected int convert(Value... args) {
+                // TODO : make sure this works also for xsd:time
                 return converter.fromString(args[0].stringValue(), Date.class).getHours();
             }
         });
         register(new IntegerFunction(QD.minute, Ops.DateTimeOps.MINUTE) {
             protected int convert(Value... args) {
+                // TODO : make sure this works also for xsd:time
                 return converter.fromString(args[0].stringValue(), Date.class).getMinutes();
             }
         });
         register(new IntegerFunction(QD.second, Ops.DateTimeOps.SECOND) {
             protected int convert(Value... args) {
+                // TODO : make sure this works also for xsd:time
                 return converter.fromString(args[0].stringValue(), Date.class).getSeconds();
             }
         });
