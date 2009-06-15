@@ -22,7 +22,6 @@ import com.mysema.rdfbean.annotations.Inject;
 import com.mysema.rdfbean.annotations.Mixin;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.MiniConnection;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
