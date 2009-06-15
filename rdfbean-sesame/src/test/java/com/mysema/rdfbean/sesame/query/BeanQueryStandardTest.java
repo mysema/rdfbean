@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertTrue;
@@ -99,13 +104,25 @@ public class BeanQueryStandardTest extends AbstractSesameQueryTest implements St
     }
 
     @Test
+    @Ignore
     public void mapFilters() {
-        // TODO           
+        // FIXME : map size is not supported
+        SimpleType2 instance = newQuery().from(QSimpleType2.simpleType2).uniqueResult(QSimpleType2.simpleType2);
+        for (EBoolean f : StandardTestData.mapFilters(v1.mapProperty, v2.mapProperty, "", instance)){
+            System.err.println("\n" + f);
+            newQuery().from(v1).from(v2).where(f).list(v1.directProperty);
+        }             
     }
 
     @Test
+    @Ignore
     public void mapProjections() {
-        // TODO   
+        // FIXME : map size is not supported
+        SimpleType2 instance = newQuery().from(QSimpleType2.simpleType2).uniqueResult(QSimpleType2.simpleType2);
+        for (Expr<?> pr : StandardTestData.mapProjections(v1.mapProperty, v2.mapProperty, "", instance)){
+            System.err.println("\n" + pr);
+            newQuery().from(v1).from(v2).list(pr);
+        }    
     }
 
     @Test

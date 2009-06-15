@@ -7,7 +7,8 @@ package com.mysema.rdfbean.sesame;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
-import org.springframework.util.Assert;
+
+import com.mysema.commons.lang.Assert;
 
 /**
  * @author sasa
@@ -21,9 +22,8 @@ public class StatementAccessor {
     
     // TODO asserted/inferred status?
     
-    public StatementAccessor(Statement statement, boolean inverse) {
-        Assert.notNull(statement);
-        this.statement = statement;
+    public StatementAccessor(Statement statement, boolean inverse) {        
+        this.statement = Assert.notNull(statement);
         this.inverse = inverse;
     }
 

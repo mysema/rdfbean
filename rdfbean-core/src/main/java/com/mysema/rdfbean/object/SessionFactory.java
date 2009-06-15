@@ -7,7 +7,7 @@ package com.mysema.rdfbean.object;
 
 /**
  * @author sasa
- *
+ * 
  */
 public interface SessionFactory {
 
@@ -15,19 +15,19 @@ public interface SessionFactory {
      * 
      * @return
      */
-	public Session openSession();
-	
-	/**
-	 * 
-	 * @param configuration
-	 * @return
-	 */
-	public Session openSession(Configuration configuration);
+    public Session openSession();
 
-	/**
-	 * 
-	 * @return
-	 */
-	public Session getCurrentSession();
-		
+    /**
+     * 
+     * @param configuration
+     * @return
+     */
+    public Session openSession(Configuration configuration);
+
+    /**
+     * 
+     * @return
+     */
+    public Session getCurrentSession();
+
 }

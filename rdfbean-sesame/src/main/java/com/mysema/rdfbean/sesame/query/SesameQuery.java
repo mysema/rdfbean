@@ -161,7 +161,6 @@ public class SesameQuery extends
     }
         
     public void close() throws IOException {
-        session.close();
         if (queryResult != null){
             try {
                 queryResult.close();
@@ -349,7 +348,7 @@ public class SesameQuery extends
             Value rdfValue;
             ConverterRegistry converter = conf.getConverterRegistry();
             if (javaValue instanceof Class){
-                UID datatype = converter.getDatatypeForClass((Class<?>)javaValue);
+                UID datatype = converter.getDatatype((Class<?>)javaValue);
                 if (datatype != null){
                     return toVar(datatype);
                 }else{
@@ -357,7 +356,7 @@ public class SesameQuery extends
                 }
             }else if (converter.supports(javaValue.getClass())){
                 String label = converter.toString(javaValue);
-                UID datatype = converter.getDatatypeForObject(javaValue);
+                UID datatype = converter.getDatatype(javaValue.getClass());
                 rdfValue = dialect.getLiteral(label, dialect.getURI(datatype));
             }else{
                 ID id = session.getId(javaValue);
@@ -442,10 +441,40 @@ public class SesameQuery extends
                 return new Exists(builder.getJoins());
             }
             
+        // map is (not) empty    
         }else if (op.equals(Ops.MAP_ISEMPTY) || op.equals(Ops.MAP_ISNOTEMPTY)){
-            // TODO
-            return null;
+            Path<?> path = (Path<?>) operation.getArg(0);
+            Var pathVar = transformPath(path);            
+            MappedPath mappedPath = getMappedPathForPropertyPath(path); 
+            if (!mappedPath.getMappedProperty().isLocalized()){
+                Var valNode = new Var(varNames.next());
+                Var keyNode = new Var(varNames.next());
+                return transformMapAccess(pathVar, mappedPath, valNode, keyNode, op.equals(Ops.MAP_ISEMPTY));
+            }else{  
+                // TODO
+                return null;
+            }
             
+        // containsKey / containsValue
+        }else if (op.equals(Ops.CONTAINS_KEY) || op.equals(Ops.CONTAINS_VALUE)){
+            Path<?> path = (Path<?>) operation.getArg(0);
+            Var pathVar = transformPath(path);
+            MappedPath mappedPath = getMappedPathForPropertyPath(path); 
+            if (!mappedPath.getMappedProperty().isLocalized()){
+                Var valNode, keyNode;
+                if (op.equals(Ops.CONTAINS_KEY)){
+                    keyNode = (Var) toValue(operation.getArg(1));
+                    valNode = null;                        
+                }else{                    
+                    keyNode = new Var(varNames.next());
+                    valNode = null;
+                }                
+                return transformMapAccess(pathVar, mappedPath, valNode, keyNode, false);
+            }else{  
+                // TODO
+                return null;
+            }
+                        
         // path == path
         }else if (isPathEqPath(operation, op)){
             Path<?> path = (Path<?>) operation.getArg(0);
@@ -497,6 +526,23 @@ public class SesameQuery extends
             return transformer.transform(values);
         } else {
             throw new IllegalArgumentException("Unsupported operation instance : " + operation);
+        }
+    }
+
+    private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 
+            Var valNode, Var keyNode, boolean negative) {
+        MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
+        JoinBuilder builder = new JoinBuilder();
+        if (valNode != null){
+            match(builder, pathVar, mappedProperty.getValuePredicate(), valNode);    
+        }
+        if (keyNode != null){
+            match(builder, valNode, mappedProperty.getKeyPredicate(), keyNode);   
+        }                        
+        if (negative){
+            return new Not(new Exists(builder.getJoins()));
+        }else{
+            return new Exists(builder.getJoins());
         }
     }
 

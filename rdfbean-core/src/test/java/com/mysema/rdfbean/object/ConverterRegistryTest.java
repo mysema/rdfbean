@@ -21,7 +21,7 @@ import com.mysema.rdfbean.xsd.Year;
  */
 public class ConverterRegistryTest {
 
-    private ConverterRegistry converter = new ConverterRegistry();
+    private ConverterRegistry converter = new ConverterRegistryImpl();
     
     @Test
     public void testYear(){

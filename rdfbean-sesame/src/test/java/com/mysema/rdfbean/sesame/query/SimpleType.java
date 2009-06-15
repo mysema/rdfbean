@@ -1,4 +1,6 @@
-/**
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
  * 
  */
 package com.mysema.rdfbean.sesame.query;
@@ -13,6 +15,7 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Localized;
+import com.mysema.rdfbean.annotations.MapElements;
 import com.mysema.rdfbean.annotations.Predicate;
 
 /**
@@ -48,6 +51,10 @@ public class SimpleType{
     
     @Predicate(ln="setProperty") 
     Set<SimpleType2> setProperty;        
+    
+    @Predicate(ln="setProperty")
+    @MapElements(key=@Predicate(ln="directProperty2"))
+    Map<String,SimpleType2> mapProperty;
     
     @Predicate 
     Date dateProperty;
@@ -87,6 +94,12 @@ public class SimpleType{
     public Date getDateProperty() {
         return dateProperty;
     }
+
+    public Map<String, SimpleType2> getMapProperty() {
+        return mapProperty;
+    }
+    
+    
     
     
     

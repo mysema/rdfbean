@@ -19,18 +19,19 @@ import org.openrdf.query.algebra.MathExpr.MathOp;
 
 import com.mysema.query.types.operation.Operator;
 import com.mysema.rdfbean.object.ConverterRegistry;
-import com.mysema.rdfbean.query.QD;
+import com.mysema.rdfbean.object.ConverterRegistryImpl;
+import com.mysema.rdfbean.query.QDSL;
 import com.mysema.rdfbean.sesame.query.functions.SesameFunctions;
 
 /**
- * SesameOps provides Op -> ValueExpr mappings for Sesame query creation
+ * SesameOps provides Operator -> ValueExpr mappings for Sesame query creation
  *
  * @author tiwe
  * @version $Id$
  */
 public class SesameOps {
     
-    private ConverterRegistry converterRegistry = new ConverterRegistry();
+    private ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
     private SesameFunctions functions =  new SesameFunctions(converterRegistry);
     
@@ -67,7 +68,15 @@ public class SesameOps {
         Iterator<CompareOp> compareOps = Arrays.asList(
                 CompareOp.EQ, CompareOp.EQ, CompareOp.NE, CompareOp.NE, 
                 CompareOp.LT, CompareOp.LE, CompareOp.GT, CompareOp.GE).iterator();
-        for (Operator<?> op : Arrays.<Operator<?>>asList(EQ_OBJECT, EQ_PRIMITIVE, NE_OBJECT, NE_PRIMITIVE, LT, LOE, GT, GOE)){            
+        for (Operator<?> op : Arrays.<Operator<?>>asList(
+                EQ_OBJECT, 
+                EQ_PRIMITIVE, 
+                NE_OBJECT, 
+                NE_PRIMITIVE, 
+                LT, 
+                LOE, 
+                GT, 
+                GOE)){            
             opToTransformer.put(op, new CompareTransformer(compareOps.next()));
         }        
         opToTransformer.put(AFTER, new CompareTransformer(CompareOp.GT));
@@ -98,7 +107,7 @@ public class SesameOps {
                 if (arg2.getValue() != null){
                     return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",true);
                 }else{
-                    return new FunctionCall(QD.startsWith.getId(), args);
+                    return new FunctionCall(QDSL.startsWith.getId(), args);
                 }
             }            
         });
@@ -110,7 +119,7 @@ public class SesameOps {
                 if (arg2.getValue() != null){
                     return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),true); 
                 }else{
-                    return new FunctionCall(QD.endsWith.getId(), args);
+                    return new FunctionCall(QDSL.endsWith.getId(), args);
                 }                
             }            
         });
@@ -122,7 +131,7 @@ public class SesameOps {
                 if (arg2.getValue() != null){
                     return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue()+"*",true);    
                 }else{
-                    return new FunctionCall(QD.stringContains.getId(), args);
+                    return new FunctionCall(QDSL.stringContains.getId(), args);
                 }
                 
             }            
@@ -149,7 +158,7 @@ public class SesameOps {
                 if (arg2.getValue() != null){
                     return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",false);    
                 }else{
-                    return new FunctionCall(QD.startsWithIc.getId(), args);
+                    return new FunctionCall(QDSL.startsWithIc.getId(), args);
                 }
                 
             }            
@@ -162,7 +171,7 @@ public class SesameOps {
                 if (arg2.getValue() != null){
                     return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),false);
                 }else{
-                    return new FunctionCall(QD.endsWithIc.getId(), args);
+                    return new FunctionCall(QDSL.endsWithIc.getId(), args);
                 }
             }            
         });

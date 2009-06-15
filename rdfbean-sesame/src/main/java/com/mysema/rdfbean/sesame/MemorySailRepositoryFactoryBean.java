@@ -20,14 +20,12 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.store.StoreException;
-import org.springframework.beans.factory.FactoryBean;
 
 /**
  * @author sasa
  *
  */
-//TODO : get rid of Spring dependency
-public class MemorySailRepositoryFactoryBean implements FactoryBean {
+public class MemorySailRepositoryFactoryBean  {
 
     private List<RDFSource> sources;
     
@@ -39,7 +37,6 @@ public class MemorySailRepositoryFactoryBean implements FactoryBean {
         this.sources = sources;
     }
 
-    @Override
     public Object getObject() throws Exception {
         Repository repository;
         if (dataDir != null) {
@@ -64,7 +61,7 @@ public class MemorySailRepositoryFactoryBean implements FactoryBean {
             if (sources != null && connection.isEmpty()) {
                 ValueFactory vf = connection.getValueFactory();
                 for (RDFSource source : sources) {
-                    connection.add(source.getResource().getInputStream(), 
+                    connection.add(source.getResource().openStream(), 
                             source.getContext(),
                             source.getFormat(), 
                             vf.createURI(source.getContext()));
@@ -75,16 +72,16 @@ public class MemorySailRepositoryFactoryBean implements FactoryBean {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class getObjectType() {
-        return Repository.class;
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
-    }
+//    @SuppressWarnings("unchecked")
+//    @Override
+//    public Class getObjectType() {
+//        return Repository.class;
+//    }
+//
+//    @Override
+//    public boolean isSingleton() {
+//        return true;
+//    }
 
     public void setDataDir(File dataDir) {
         this.dataDir = dataDir;

@@ -13,7 +13,7 @@ import com.mysema.rdfbean.model.UID;
  * @author tiwe
  * @version $Id$
  */
-public final class QD {
+public final class QDSL {
     
     public static final String NS = "http://www.mysema.com/ontologies/querydsl#";
     

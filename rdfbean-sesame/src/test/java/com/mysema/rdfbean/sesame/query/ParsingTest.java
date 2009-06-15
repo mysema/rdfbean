@@ -12,6 +12,8 @@ import org.openrdf.query.UnsupportedQueryLanguageException;
 import org.openrdf.query.parser.QueryParserUtil;
 import org.openrdf.query.parser.TupleQueryModel;
 
+import com.mysema.rdfbean.sesame.query.serializer.QuerySerializer;
+
 /**
  * ParsingTest provides
  *
@@ -33,7 +35,8 @@ public class ParsingTest {
     private void print(String query) throws MalformedQueryException, UnsupportedQueryLanguageException {
         TupleQueryModel model = QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL, query, null);
         System.out.println(model);
-//        System.out.println(new QuerySerializer(model, false).toString());
+        System.out.println(new QuerySerializer(model, false).toString());
+        System.out.println();
         
     }
 }

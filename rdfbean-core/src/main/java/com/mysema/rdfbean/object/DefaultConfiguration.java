@@ -46,7 +46,7 @@ public class DefaultConfiguration implements Configuration {
 
     private Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
 
-    private ConverterRegistry converterRegistry = new ConverterRegistry();
+    private ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
     private IdentityService identityService = MemoryIdentityService.instance();
     
@@ -80,8 +80,8 @@ public class DefaultConfiguration implements Configuration {
 
     public void addClasses(Class<?>... classes) {
         for (Class<?> clazz : classes) {
-        	UID uid = MappedClass.getUID(clazz);
-        	if (uid != null) {
+            UID uid = MappedClass.getUID(clazz);
+            if (uid != null) {
                 String uri = uid.getId();
                 List<Class<?>> classList = type2classes.get(uri);
                 if (classList == null) {
@@ -104,16 +104,16 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
-	public boolean allowCreate(Class<?> clazz) {
-	    return true;
-	}
-	
-	public boolean allowRead(MappedPath path) {
+    public boolean allowCreate(Class<?> clazz) {
+        return true;
+    }
+    
+    public boolean allowRead(MappedPath path) {
         // TODO filter unmapped types?
         return true;
     }
-	
-	@Override
+    
+    @Override
     public UID createURI(Object instance) {
         Class<?> clazz = instance.getClass();
         UID context = getContext(clazz, null);
@@ -148,8 +148,8 @@ public class DefaultConfiguration implements Configuration {
     }
 
     public List<Class<?>> getMappedClasses(UID uid) {
-	    return type2classes.get(Assert.notNull(uid).getId());
-	}
+        return type2classes.get(Assert.notNull(uid).getId());
+    }
 
     @Override
     public boolean isRestricted(UID uid) {

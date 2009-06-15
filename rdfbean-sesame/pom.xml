@@ -18,12 +18,6 @@
       <artifactId>rdfbean-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-    <!-- TODO : get rid of Spring dependency -->
-    <dependency>
-      <groupId>com.mysema.rdf</groupId>
-      <artifactId>rdfbean-spring</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>    
     <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-owl</artifactId>
@@ -86,7 +80,7 @@
        <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>maven-apt-plugin</artifactId>
-        <version>0.1.0</version>
+        <version>0.3.0</version>
         <executions>
           <execution>
             <goals>

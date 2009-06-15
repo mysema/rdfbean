@@ -1308,7 +1308,7 @@ public class SessionImpl implements Session {
     }
 
     private LIT toRDFLiteral(Object o) {
-        UID dataType = conf.getConverterRegistry().getDatatypeForObject(o);
+        UID dataType = conf.getConverterRegistry().getDatatype(o.getClass());
         return new LIT(conf.getConverterRegistry().toString(o), dataType);
     }
 

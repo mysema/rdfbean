@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
@@ -23,11 +24,11 @@ import com.mysema.query.types.operation.Operator;
 import com.mysema.query.types.operation.Ops;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.ConverterRegistry;
-import com.mysema.rdfbean.query.QD;
+import com.mysema.rdfbean.query.QDSL;
 import com.mysema.rdfbean.sesame.query.Transformer;
 
 /**
- * SailFunctions provides Op -> Function mappings for Sesame query creation
+ * SesameFunctions provides Op -> Function mappings for Sesame query creation
  * 
  * @author tiwe
  * @version $Id$
@@ -39,27 +40,28 @@ public class SesameFunctions {
     public SesameFunctions(final ConverterRegistry converter) {
         
         // STRING FUNCTIONS
-        register(new StringFunction(QD.trim, Ops.TRIM) {
+        
+        register(new StringFunction(QDSL.trim, Ops.TRIM) {
             protected String convert(Value... args) {
                 return args[0].stringValue().trim();
             }
         });
-        register(new StringFunction(QD.upper, Ops.UPPER) {
+        register(new StringFunction(QDSL.upper, Ops.UPPER) {
             protected String convert(Value... args) {
                 return args[0].stringValue().toUpperCase();
             }
         });
-        register(new StringFunction(QD.lower, Ops.LOWER) {
+        register(new StringFunction(QDSL.lower, Ops.LOWER) {
             protected String convert(Value... args) {
                 return args[0].stringValue().toLowerCase();
             }
         });
-        register(new StringFunction(QD.concat, Ops.CONCAT) {
+        register(new StringFunction(QDSL.concat, Ops.CONCAT) {
             protected String convert(Value... args) {
                 return args[0].stringValue() + args[1].stringValue();
             }
         });
-        register(new StringFunction(QD.substring, Ops.SUBSTR1ARG,
+        register(new StringFunction(QDSL.substring, Ops.SUBSTR1ARG,
                 Ops.SUBSTR2ARGS) {
             protected String convert(Value... args) {
                 if (args.length == 2) {
@@ -72,56 +74,56 @@ public class SesameFunctions {
                 }
             }
         });
-        register(new StringFunction(QD.space, Ops.StringOps.SPACE) {
+        register(new StringFunction(QDSL.space, Ops.StringOps.SPACE) {
             protected String convert(Value... args) {
                 return StringUtils.leftPad("", Integer.valueOf(args[1]
                         .stringValue()));
             }
         });
-        register(new StringFunction(QD.charAt, Ops.CHAR_AT) {
+        register(new StringFunction(QDSL.charAt, Ops.CHAR_AT) {
             @Override
             protected String convert(Value... args) {
                 return String.valueOf(args[0].stringValue().charAt(
                         Integer.valueOf(args[1].stringValue())));
             }
         });
-        register(new BooleanFunction(QD.startsWith) { 
+        register(new BooleanFunction(QDSL.startsWith) { 
             protected boolean convert(Value... args) {
                 return args[0].stringValue().startsWith(args[1].stringValue());
             }
         });
-        register(new BooleanFunction(QD.endsWith) { 
+        register(new BooleanFunction(QDSL.endsWith) { 
             protected boolean convert(Value... args) {
                 return args[0].stringValue().endsWith(args[1].stringValue());
             }
         });
-        register(new BooleanFunction(QD.startsWithIc) { 
+        register(new BooleanFunction(QDSL.startsWithIc) { 
             protected boolean convert(Value... args) {
                 return args[0].stringValue().toLowerCase().startsWith(args[1].stringValue().toLowerCase());
             }
         });
-        register(new BooleanFunction(QD.endsWithIc) { 
+        register(new BooleanFunction(QDSL.endsWithIc) { 
             protected boolean convert(Value... args) {
                 return args[0].stringValue().toLowerCase().endsWith(args[1].stringValue().toLowerCase());
             }
         });
-        register(new BooleanFunction(QD.stringContains, Ops.STRING_CONTAINS) {
+        register(new BooleanFunction(QDSL.stringContains, Ops.STRING_CONTAINS) {
             protected boolean convert(Value... args) {
                 return args[0].stringValue().contains(args[1].stringValue());
             }
         });
-        register(new BooleanFunction(QD.equalsIgnoreCase, Ops.EQ_IGNORECASE) {
+        register(new BooleanFunction(QDSL.equalsIgnoreCase, Ops.EQ_IGNORECASE) {
             protected boolean convert(Value... args) {
                 return args[0].stringValue().equalsIgnoreCase(
                         args[1].stringValue());
             }
         });
-        register(new IntegerFunction(QD.stringLength, Ops.STRING_LENGTH) {
+        register(new IntegerFunction(QDSL.stringLength, Ops.STRING_LENGTH) {
             protected int convert(Value... args) {
                 return args[0].stringValue().length();
             }
         });
-        register(new IntegerFunction(QD.indexOf, Ops.INDEXOF, Ops.INDEXOF_2ARGS) {
+        register(new IntegerFunction(QDSL.indexOf, Ops.INDEXOF, Ops.INDEXOF_2ARGS) {
             protected int convert(Value... args) {
                 if (args.length == 2) {
                     return args[0].stringValue().indexOf(args[1].stringValue());
@@ -134,28 +136,28 @@ public class SesameFunctions {
 
         // NUMERIC
 
-        register(new BaseFunction(QD.ceil, Ops.MathOps.CEIL) {
+        register(new BaseFunction(QDSL.ceil, Ops.MathOps.CEIL) {
             @Override
             public Value evaluate(ValueFactory valueFactory, Value... args)
                     throws ValueExprEvaluationException {
                 return valueFactory.createLiteral(Math.ceil(Double.valueOf(args[0].stringValue())));
             }
         });
-        register(new BaseFunction(QD.floor, Ops.MathOps.FLOOR) {
+        register(new BaseFunction(QDSL.floor, Ops.MathOps.FLOOR) {
             @Override
             public Value evaluate(ValueFactory valueFactory, Value... args)
                     throws ValueExprEvaluationException {
                 return valueFactory.createLiteral(Math.ceil(Double.valueOf(args[0].stringValue())));
             }
         });
-        register(new BaseFunction(QD.sqrt, Ops.MathOps.SQRT) {
+        register(new BaseFunction(QDSL.sqrt, Ops.MathOps.SQRT) {
             @Override
             public Value evaluate(ValueFactory valueFactory, Value... args)
                     throws ValueExprEvaluationException {
                 return valueFactory.createLiteral(Math.sqrt(Double.valueOf(args[0].stringValue())));
             }
         });
-        register(new BaseFunction(QD.abs, Ops.MathOps.ABS) {
+        register(new BaseFunction(QDSL.abs, Ops.MathOps.ABS) {
             @Override
             public Value evaluate(ValueFactory valueFactory, Value... args)
                     throws ValueExprEvaluationException {
@@ -194,40 +196,34 @@ public class SesameFunctions {
 
         // DATE / TIME
 
-        register(new IntegerFunction(QD.year, Ops.DateTimeOps.YEAR) {
+        register(new IntegerFunction(QDSL.year, Ops.DateTimeOps.YEAR) {
             protected int convert(Value... args) {
-                // TODO : make sure this works also for xsd:date
-                return converter.fromString(args[0].stringValue(), Date.class).getYear();
+                return converter.fromString(args[0].stringValue(), DateTime.class).getYear();
             }
         });
-        register(new IntegerFunction(QD.month, Ops.DateTimeOps.MONTH) {
+        register(new IntegerFunction(QDSL.month, Ops.DateTimeOps.MONTH) {
             protected int convert(Value... args) {
-                // TODO : make sure this works also for xsd:date
-                return converter.fromString(args[0].stringValue(), Date.class).getMonth();
+                return converter.fromString(args[0].stringValue(), DateTime.class).getMonthOfYear();
             }
         });
-        register(new IntegerFunction(QD.dayOfMonth, Ops.DateTimeOps.DAY_OF_MONTH) {
+        register(new IntegerFunction(QDSL.dayOfMonth, Ops.DateTimeOps.DAY_OF_MONTH) {
             protected int convert(Value... args) {
-                // TODO : make sure this works also for xsd:date
-                return converter.fromString(args[0].stringValue(), Date.class).getDay();
+                return converter.fromString(args[0].stringValue(), DateTime.class).getDayOfMonth();
             }
         });
-        register(new IntegerFunction(QD.hour, Ops.DateTimeOps.HOUR) {
+        register(new IntegerFunction(QDSL.hour, Ops.DateTimeOps.HOUR) {
             protected int convert(Value... args) {
-                // TODO : make sure this works also for xsd:time
-                return converter.fromString(args[0].stringValue(), Date.class).getHours();
+                return converter.fromString(args[0].stringValue(), DateTime.class).getHourOfDay();
             }
         });
-        register(new IntegerFunction(QD.minute, Ops.DateTimeOps.MINUTE) {
+        register(new IntegerFunction(QDSL.minute, Ops.DateTimeOps.MINUTE) {
             protected int convert(Value... args) {
-                // TODO : make sure this works also for xsd:time
-                return converter.fromString(args[0].stringValue(), Date.class).getMinutes();
+                return converter.fromString(args[0].stringValue(), DateTime.class).getMinuteOfHour();
             }
         });
-        register(new IntegerFunction(QD.second, Ops.DateTimeOps.SECOND) {
+        register(new IntegerFunction(QDSL.second, Ops.DateTimeOps.SECOND) {
             protected int convert(Value... args) {
-                // TODO : make sure this works also for xsd:time
-                return converter.fromString(args[0].stringValue(), Date.class).getSeconds();
+                return converter.fromString(args[0].stringValue(), DateTime.class).getSecondOfMinute();
             }
         });
     }
