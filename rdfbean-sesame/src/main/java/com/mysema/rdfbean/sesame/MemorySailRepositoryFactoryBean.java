@@ -61,7 +61,7 @@ public class MemorySailRepositoryFactoryBean  {
             if (sources != null && connection.isEmpty()) {
                 ValueFactory vf = connection.getValueFactory();
                 for (RDFSource source : sources) {
-                    connection.add(source.getResource().openStream(), 
+                    connection.add(source.openStream(), 
                             source.getContext(),
                             source.getFormat(), 
                             vf.createURI(source.getContext()));

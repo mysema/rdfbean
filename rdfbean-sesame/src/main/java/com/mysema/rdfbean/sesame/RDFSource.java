@@ -6,6 +6,8 @@
 package com.mysema.rdfbean.sesame;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.openrdf.repository.RepositoryConnection;
@@ -17,7 +19,7 @@ import com.mysema.commons.lang.Assert;
 
 public class RDFSource {
 
-    private URL resource;
+    private String resource;
 
     private RDFFormat format;
 
@@ -26,11 +28,11 @@ public class RDFSource {
     public RDFSource() {
     }
 
-    public RDFSource(URL resource) {
+    public RDFSource(String resource) {
         this.resource = resource;
     }
 
-    public RDFSource(URL resource, RDFFormat format, String context) {
+    public RDFSource(String resource, RDFFormat format, String context) {
         this.resource = resource;
         this.format = format;
         this.context = context;
@@ -44,8 +46,16 @@ public class RDFSource {
         return format;
     }
 
-    public URL getResource() {
+    public String getURL() {
         return resource;
+    }
+    
+    public InputStream openStream() throws MalformedURLException, IOException {
+        if (resource.startsWith("classpath:")){
+            return getClass().getResourceAsStream(resource.substring(10)); 
+        }else{
+            return new URL(resource).openStream();
+        }
     }
 
     public void setContext(String context) {
@@ -56,16 +66,16 @@ public class RDFSource {
         this.format = Assert.notNull(format);
     }
 
-    public void setResource(URL resource) {
+    public void setResource(String resource) {
         this.resource = Assert.notNull(resource);
     }
 
     public void readInto(RepositoryConnection conn) throws RDFParseException,
             StoreException, IOException {
         if (format == null) {
-            format = RDFFormat.forFileName(resource.getPath());
+            format = RDFFormat.forFileName(getURL());
         }
-        conn.add(resource.openStream(), context, format);
+        conn.add(openStream(), context, format);
     }
 
 }
