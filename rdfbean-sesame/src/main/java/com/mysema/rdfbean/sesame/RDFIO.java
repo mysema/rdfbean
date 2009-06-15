@@ -65,7 +65,7 @@ public class RDFIO {
                 source.readInto(conn);
                 System.out.println(source.getFormat().getName() + " syntax validated OK.");
             } catch (RDFParseException e) {
-                System.err.println(source.getURL() + " failed " + source.getFormat().getName() +
+                System.err.println(source.getResource() + " failed " + source.getFormat().getName() +
                         " validation: " + e.getMessage());
                 return false;
             }

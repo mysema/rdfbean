@@ -46,7 +46,7 @@ public class RDFSource {
         return format;
     }
 
-    public String getURL() {
+    public String getResource() {
         return resource;
     }
     
@@ -73,7 +73,7 @@ public class RDFSource {
     public void readInto(RepositoryConnection conn) throws RDFParseException,
             StoreException, IOException {
         if (format == null) {
-            format = RDFFormat.forFileName(getURL());
+            format = RDFFormat.forFileName(getResource());
         }
         conn.add(openStream(), context, format);
     }
