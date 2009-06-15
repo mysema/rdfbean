@@ -613,10 +613,10 @@ public class SessionImpl implements Session {
                 }
                 // Use standard property editors for others
                 else {
-                    UID datatype = null;
-                    if (value instanceof LIT) {
-                        datatype = ((LIT) value).getDatatype();
-                    }
+//                    UID datatype = null;
+//                    if (value instanceof LIT) {
+//                        datatype = ((LIT) value).getDatatype();
+//                    }
                     convertedValue = conf.getConverterRegistry().fromString(value.getValue(), targetClass);
                 }
             } catch (IllegalArgumentException e) {
