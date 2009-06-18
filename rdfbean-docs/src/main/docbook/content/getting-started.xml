@@ -3,6 +3,13 @@
 <chapter id="getting-started" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Getting started with RDFBean</title>
     
+    <para>
+    In this chapter we develop a simple program using RDFBean, Maven, Eclipse, 
+    JUnit and Sesame's in memory RDF storage engine.
+    </para>
+    <sect1>
+        <title></title>
+    </sect1>
     <para>TODO</para>
     
 </chapter>    

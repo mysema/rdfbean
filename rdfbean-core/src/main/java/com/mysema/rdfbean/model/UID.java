@@ -17,21 +17,22 @@ public final class UID extends ID {
 
     private static final long serialVersionUID = -5243644990902193387L;
 
-    private int i;
+    private final int i;
     
     public UID(String uri) {
         super(uri);
-        i = uri.lastIndexOf('#');
-        if (i < 0) {
-            i = uri.lastIndexOf('/');
+        int tmp = uri.lastIndexOf('#');
+        if (tmp < 0) {
+            tmp = uri.lastIndexOf('/');
         }
-        if (i < 0) {
-            i = uri.lastIndexOf(':');
+        if (tmp < 0) {
+            tmp = uri.lastIndexOf(':');
         }
-        if (i < 0) {
+        if (tmp < 0) {
             throw new IllegalArgumentException("No separator character in URI: " + uri);
         }
-        i += 1;
+        tmp += 1;
+        this.i = tmp;
     }
     
     public UID(String ns, String ln) {
@@ -98,7 +99,8 @@ public final class UID extends ID {
         if (this == obj) {
             return true;
         } else if (obj instanceof UID) {
-            return this.id.equals(((UID) obj).id);
+            // id is interned!
+            return this.id == ((UID) obj).id;
         } else {
             return false;
         }

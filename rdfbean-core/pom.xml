@@ -18,8 +18,8 @@
       <artifactId>mysema-commons-lang</artifactId>
       <version>0.1.4</version>
     </dependency>
+    <!-- Mysema Source component -->
     <dependency>
-      <!-- Mysema Source component -->
       <groupId>com.mysema.querydsl</groupId>
       <artifactId>querydsl-collections</artifactId>
       <version>${querydsl.version}</version>

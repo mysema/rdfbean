@@ -20,14 +20,14 @@ public final class LIT extends NODE {
     
     private static final long serialVersionUID = 4279040868676951911L;
 
-    private final String value;
+    private final String value; // not null, interned
     
     private final Locale lang;
     
-    private final UID datatype;
+    private final UID datatype; // not null
 
     public LIT(String value, UID datatype) {
-        this.value = Assert.notNull(value);
+        this.value = Assert.notNull(value).intern();
         this.datatype = Assert.notNull(datatype);
         this.lang = null;
     }
@@ -37,7 +37,7 @@ public final class LIT extends NODE {
     }
 
     public LIT(String value, Locale lang) {
-        this.value = Assert.notNull(value);
+        this.value = Assert.notNull(value).intern();
         this.lang = Assert.notNull(lang);
         this.datatype = RDF.text;
     }
@@ -58,23 +58,6 @@ public final class LIT extends NODE {
         return datatype;
     }
     
-//    public int hashCode() {
-//        return hashCode(value, datatype, lang);
-//    }
-//
-//    public boolean equals(Object obj) {
-//        if (obj == this) {
-//            return true;
-//        } else if (obj instanceof LIT) {
-//            LIT other = (LIT) obj;
-//            return nullSafeEquals(this.value, other.value)
-//                && nullSafeEquals(this.datatype, other.datatype)
-//                && nullSafeEquals(this.lang, other.lang);
-//        } else {
-//            return false;
-//        }
-//    }
-
     @Override
     public NodeType getNodeType() {
         return NodeType.LITERAL;
@@ -122,37 +105,40 @@ public final class LIT extends NODE {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((datatype == null) ? 0 : datatype.hashCode());
+        result = prime * result + value.hashCode();
+        result = prime * result + datatype.hashCode();
         result = prime * result + ((lang == null) ? 0 : lang.hashCode());
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        } else if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        } else if (!(obj instanceof LIT)) {
             return false;
+        }
+
         LIT other = (LIT) obj;
-        if (datatype == null) {
-            if (other.datatype != null)
-                return false;
-        } else if (!datatype.equals(other.datatype))
+        
+        if (value != other.value) {
             return false;
+        }
+        
         if (lang == null) {
-            if (other.lang != null)
+            if (other.lang != null) {
                 return false;
-        } else if (!lang.equals(other.lang))
+            }
+        } else if (!lang.equals(other.lang)) {
             return false;
-        if (value == null) {
-            if (other.value != null)
-                return false;
-        } else if (!value.equals(other.value))
+        }
+
+        if (!datatype.equals(other.datatype)) {
             return false;
+        }
+
         return true;
     }
     

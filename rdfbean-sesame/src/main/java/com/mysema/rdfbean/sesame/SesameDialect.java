@@ -66,7 +66,7 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
         if (resource instanceof URI) {
             return getUID((URI) resource);
         } else {
-            return new BID(((BNode) resource).getID());
+            return getBID((BNode) resource);
         }
     }
 

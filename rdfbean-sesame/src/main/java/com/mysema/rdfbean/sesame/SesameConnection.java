@@ -83,16 +83,14 @@ public class SesameConnection implements RDFConnection {
     }
 
     private ModelResult findStatements(Resource subject, URI predicate, Value object, boolean includeInferred, URI context) {
-        ModelResult statements = null;
         try {
             if (context == null) {
-                statements = connection.match(subject, predicate, object, includeInferred);
+                return connection.match(subject, predicate, object, includeInferred);
             } else if (includeInferred) {
-                statements = connection.match(subject, predicate, object, includeInferred, context, null);
+                return connection.match(subject, predicate, object, includeInferred, context, null);
             } else {
-                statements = connection.match(subject, predicate, object, includeInferred, context);
+                return connection.match(subject, predicate, object, includeInferred, context);
             }
-            return statements;
         } catch (StoreException e) {
             throw new RuntimeException(e);
         }

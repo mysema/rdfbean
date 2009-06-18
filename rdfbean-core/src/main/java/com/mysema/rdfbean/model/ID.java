@@ -17,10 +17,10 @@ public abstract class ID extends NODE implements Identifier {
     
     private static final long serialVersionUID = 7020057962794085303L;
 
-    final String id;
+    protected final String id; // has text, interned
 
     ID(String id) {
-        this.id = Assert.hasText(id);
+        this.id = Assert.hasText(id).intern();
     }
 
     public String getId() {

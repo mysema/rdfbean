@@ -11,6 +11,10 @@
     <artifactId>rdfbean-root</artifactId>
     <version>0.7.2-SNAPSHOT</version>
   </parent>  
+
+  <properties>
+    <sesame.version>3.0-alpha1</sesame.version>
+  </properties>
   
   <dependencies>
     <dependency>
@@ -32,6 +36,11 @@
     <dependency>
       <groupId>org.openrdf.sesame</groupId>
       <artifactId>sesame-sail-memory</artifactId>
+      <version>${sesame.version}</version>
+    </dependency>      
+    <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-sail-nativerdf</artifactId>
       <version>${sesame.version}</version>
     </dependency>      
     <dependency>
@@ -95,5 +104,20 @@
       </plugin>  
     </plugins>
   </build>
+  
+  <repositories>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <id>adunaReleases</id>
+      <name>Aduna Software</name>
+      <url>http://repo.aduna-software.org/maven2/releases</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+  
 
 </project>

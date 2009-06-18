@@ -42,7 +42,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     public void setUp() throws StoreException, RDFParseException, IOException{
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setDefaultConfiguration(new DefaultConfiguration(OWL.class.getPackage()));
-        sessionFactory.setRepository(new SesameRepository(repository));
+        sessionFactory.setRepository(repository);
     }
     
     @Test
