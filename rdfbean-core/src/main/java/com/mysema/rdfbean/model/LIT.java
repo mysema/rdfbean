@@ -20,14 +20,14 @@ public final class LIT extends NODE {
     
     private static final long serialVersionUID = 4279040868676951911L;
 
-    private final String value; // not null, interned
+    private final String value; // not null
     
     private final Locale lang;
     
     private final UID datatype; // not null
 
     public LIT(String value, UID datatype) {
-        this.value = Assert.notNull(value).intern();
+        this.value = Assert.notNull(value);
         this.datatype = Assert.notNull(datatype);
         this.lang = null;
     }
@@ -37,7 +37,7 @@ public final class LIT extends NODE {
     }
 
     public LIT(String value, Locale lang) {
-        this.value = Assert.notNull(value).intern();
+        this.value = Assert.notNull(value);
         this.lang = Assert.notNull(lang);
         this.datatype = RDF.text;
     }
@@ -123,7 +123,7 @@ public final class LIT extends NODE {
 
         LIT other = (LIT) obj;
         
-        if (value != other.value) {
+        if (!value.equals(other.value)) {
             return false;
         }
         

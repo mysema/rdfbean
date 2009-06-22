@@ -66,8 +66,7 @@ public final class BID extends ID {
         if (this == obj) {
             return true;
         } else if (obj instanceof BID) {
-            // id is interned!
-            return this.id == ((BID) obj).id;
+            return this.id.equals(((BID) obj).id);
         } else {
             return false;
         }

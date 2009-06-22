@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.model;
 
-import com.mysema.commons.lang.Assert;
 import com.mysema.query.annotations.Entity;
 
 /**
@@ -17,10 +16,10 @@ public abstract class ID extends NODE implements Identifier {
     
     private static final long serialVersionUID = 7020057962794085303L;
 
-    protected final String id; // has text, interned
+    protected final String id; // has text, interned for URI
 
     ID(String id) {
-        this.id = Assert.hasText(id).intern();
+        this.id = id;
     }
 
     public String getId() {
