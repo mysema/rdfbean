@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.sesame;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
@@ -25,6 +26,8 @@ public abstract class AbstractSesameRepository implements Repository<SesameDiale
     
     private org.openrdf.repository.Repository repository;
 
+    private boolean initialized = false;
+    
     public AbstractSesameRepository() {}
     
     public AbstractSesameRepository(org.openrdf.repository.Repository repository) {
@@ -48,25 +51,47 @@ public abstract class AbstractSesameRepository implements Repository<SesameDiale
         this.sources = sources;
     }
 
-    public void initialize() throws StoreException, RDFParseException, IOException {
-        repository = createRepository();
-        repository.initialize();
-        RepositoryConnection connection = repository.getConnection();
-        try {
-            if (sources != null && connection.isEmpty()) {
-                ValueFactory vf = connection.getValueFactory();
-                for (RDFSource source : sources) {
-                    connection.add(source.openStream(), 
-                            source.getContext(),
-                            source.getFormat(), 
-                            vf.createURI(source.getContext()));
+    public void initialize() {
+        if (!initialized) {
+            try {
+                repository = createRepository();
+                repository.initialize();
+                RepositoryConnection connection = repository.getConnection();
+                try {
+                    if (sources != null && connection.isEmpty()) {
+                        ValueFactory vf = connection.getValueFactory();
+                        for (RDFSource source : sources) {
+                            connection.add(source.openStream(), 
+                                    source.getContext(),
+                                    source.getFormat(), 
+                                    vf.createURI(source.getContext()));
+                        }
+                    }
+                } finally {
+                    connection.close();
                 }
+            } catch (RDFParseException e) {
+                throw new RuntimeException(e);
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (StoreException e) {
+                throw new RuntimeException(e);
             }
-        } finally {
-            connection.close();
+            initialized = true;
         }
     }
     
-    public abstract org.openrdf.repository.Repository createRepository();
+    protected abstract org.openrdf.repository.Repository createRepository();
+
+    @Override
+    public void close() {
+        try {
+            repository.shutDown();
+        } catch (StoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

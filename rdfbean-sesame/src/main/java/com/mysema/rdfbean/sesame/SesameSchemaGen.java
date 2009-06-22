@@ -25,7 +25,6 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.schema.SchemaGen;
 
@@ -69,11 +68,9 @@ public class SesameSchemaGen extends SchemaGen {
 		MemoryRepository repository = new MemoryRepository();
         repository.initialize();
 		
-		SessionFactoryImpl sessionFactory = new SessionFactoryImpl(null);
-		sessionFactory.setRepository(repository);
+		setRepository(repository);
 		
 		setConfiguration(configuration);
-		setSessionFactory(sessionFactory);
 		exportConfiguration();
 		
 		RepositoryConnection conn = repository.getSesameRepository().getConnection();

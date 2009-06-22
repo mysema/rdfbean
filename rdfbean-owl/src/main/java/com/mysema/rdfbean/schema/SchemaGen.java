@@ -5,13 +5,35 @@
  */
 package com.mysema.rdfbean.schema;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.*;
-import com.mysema.rdfbean.owl.*;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.ConverterRegistry;
+import com.mysema.rdfbean.object.ConverterRegistryImpl;
+import com.mysema.rdfbean.object.DefaultConfiguration;
+import com.mysema.rdfbean.object.MappedClass;
+import com.mysema.rdfbean.object.MappedPath;
+import com.mysema.rdfbean.object.MappedPredicate;
+import com.mysema.rdfbean.object.MappedProperty;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionFactoryImpl;
+import com.mysema.rdfbean.owl.DatatypeProperty;
+import com.mysema.rdfbean.owl.OWL;
+import com.mysema.rdfbean.owl.OWLClass;
+import com.mysema.rdfbean.owl.ObjectProperty;
+import com.mysema.rdfbean.owl.Ontology;
+import com.mysema.rdfbean.owl.Restriction;
+import com.mysema.rdfbean.owl.TypedList;
 import com.mysema.rdfbean.rdfs.RDFProperty;
 import com.mysema.rdfbean.rdfs.RDFSClass;
 import com.mysema.rdfbean.rdfs.RDFSDatatype;
@@ -26,7 +48,7 @@ public class SchemaGen {
     
     private Configuration configuration;
     
-    private SessionFactory sessionFactory;
+    private Repository<?> repository;
     
     private ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
@@ -39,8 +61,10 @@ public class SchemaGen {
     private String[] ontologyImports;
     
     public void exportConfiguration() {
-        Configuration cnf = new DefaultConfiguration(RDFSClass.class.getPackage(), OWLClass.class.getPackage());
-        Session session = sessionFactory.openSession(cnf);
+        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
+        sessionFactory.setConfiguration(new DefaultConfiguration(RDFSClass.class.getPackage(), OWLClass.class.getPackage()));
+        sessionFactory.initialize();
+        Session session = sessionFactory.openSession();
         if (ontology != null) {
             Ontology ont = new Ontology(new UID(ontology));
             if (ontologyImports != null) {
@@ -255,11 +279,6 @@ public class SchemaGen {
         return this;
     }
 
-    public SchemaGen setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-        return this;
-    }
-
     public SchemaGen setOntology(String ontology) {
         this.ontology = ontology;
         return this;
@@ -277,6 +296,10 @@ public class SchemaGen {
 
     public String getOntology() {
         return ontology;
+    }
+
+    public void setRepository(Repository<?> repository) {
+        this.repository = repository;
     }
 
 }

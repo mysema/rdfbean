@@ -336,4 +336,12 @@ public final class MiniRepository implements Repository<MiniDialect> {
             return sb.toString();
         }
     }
+
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public void initialize() {
+    }
 }

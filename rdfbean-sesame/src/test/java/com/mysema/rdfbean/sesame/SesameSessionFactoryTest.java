@@ -34,8 +34,9 @@ public class SesameSessionFactoryTest {
         repository.initialize();
         
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
-        sessionFactory.setDefaultConfiguration(new DefaultConfiguration());
+        sessionFactory.setConfiguration(new DefaultConfiguration());
         sessionFactory.setRepository(repository);
+        sessionFactory.initialize();
         
 //        assertTrue(sessionFactory.getCurrentSession() == null);
 //        assertTrue(SessionFactoryUtils.createSession(sessionFactory));

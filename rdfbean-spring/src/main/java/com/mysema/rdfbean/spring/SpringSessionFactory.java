@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import com.mysema.commons.l10n.support.LocaleIterable;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 
 /**
@@ -17,8 +18,9 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
  */
 public class SpringSessionFactory extends SessionFactoryImpl {
 
-    public Locale getLocale() {
-        return LocaleContextHolder.getLocale();
+    @Override
+    public Iterable<Locale> getLocales() {
+        return new LocaleIterable(LocaleContextHolder.getLocale(), true);
     }
 
 }

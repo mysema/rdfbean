@@ -231,8 +231,12 @@ public class SesameConnection implements RDFConnection {
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
         if (!readonlyTnx){
             try {
-                connection.remove(convert(removedStatements));
-                connection.add(convert(addedStatements));
+                if (removedStatements != null) {
+                    connection.remove(convert(removedStatements));
+                }
+                if (addedStatements != null) {
+                    connection.add(convert(addedStatements));
+                }
             } catch (StoreException e) {
                 throw new RuntimeException(e);
             }    

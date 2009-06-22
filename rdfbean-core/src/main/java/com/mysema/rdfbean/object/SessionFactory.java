@@ -19,15 +19,18 @@ public interface SessionFactory {
 
     /**
      * 
-     * @param configuration
-     * @return
-     */
-    public Session openSession(Configuration configuration);
-
-    /**
-     * 
      * @return
      */
     public Session getCurrentSession();
 
+    /**
+     * 
+     */
+    public void initialize();
+
+    /**
+     * 
+     */
+    public void close();
+    
 }

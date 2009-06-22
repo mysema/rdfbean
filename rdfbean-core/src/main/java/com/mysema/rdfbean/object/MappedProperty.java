@@ -207,7 +207,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 	}
 
     @SuppressWarnings("unchecked")
-	Class getGenericClass(Type type, int index, MappedClass owner, int typeVariableIndex) {
+	Class getGenericClass(final Type gtype, int index, MappedClass owner, int typeVariableIndex) {
+        Type type = gtype;
 //		Type gtype = getParametrizedType(member);
 		if (type != null) {
 		    if (type instanceof Class) {
@@ -215,7 +216,9 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 		    } else if (type instanceof ParameterizedType && index >= 0) {
 	            type = ((ParameterizedType) type).getActualTypeArguments()[index];
 		    }
-			if (type instanceof WildcardType) {
+            if (type instanceof Class) {
+                return (Class) type;
+            } else if (type instanceof WildcardType) {
 			    WildcardType wildcardType = (WildcardType) type; 
 			    if (wildcardType.getUpperBounds()[0] instanceof ParameterizedType) {
 			        return (Class) ((ParameterizedType) wildcardType.getUpperBounds()[0]).getRawType();
@@ -247,11 +250,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             } else if (type instanceof ParameterizedType) {
                 return (Class) ((ParameterizedType) type).getRawType();
 			} else {
-			    try {
-			        return (Class) type;
-			    } catch (Exception e) {
-			        e.printStackTrace();
-			    }
+			    throw new RuntimeException("Unable to get generic type [" + index + "] of " + gtype
+			            + " from " + owner);
 			}
 	    }
 		return null;

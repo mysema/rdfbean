@@ -70,19 +70,17 @@ public class SessionImpl implements Session {
     
     private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
     
-    private Configuration conf;
+    private final Configuration conf;
 
-    private IdentityService identityService;
+    private final IdentityService identityService;
     
     private FlushMode flushMode = FlushMode.ALWAYS;
-
-    private boolean initialized = false;
     
     Map<ID, List<Object>> instanceCache;
 
     private Iterable<Locale> locales;
     
-    private BID model;
+    private final BID model;
     
     private Map<String,ObjectRepository> parentRepositories = new HashMap<String, ObjectRepository>();
     
@@ -100,9 +98,10 @@ public class SessionImpl implements Session {
     
     private DefaultErrorHandler errorHandler = new DefaultErrorHandler();
     
-    public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales) {
+    public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales, BID model) {
         this.conf = Assert.notNull(conf);
         this.connection = Assert.notNull(connection);
+        this.model = Assert.notNull(model);
         this.locales = locales;
         
         this.identityService = conf.getIdentityService();
@@ -115,15 +114,15 @@ public class SessionImpl implements Session {
                 this.connection = new FetchOptimizer(this.connection, fetchStrategies);
             }
         }
+        clear();
     }
 
-    public SessionImpl(Configuration configuration, RDFConnection connection, Locale locale) {
-        this(configuration, connection, locale != null ? Arrays.asList(locale) : null);
+    public SessionImpl(Configuration configuration, RDFConnection connection, Locale locale, BID model) {
+        this(configuration, connection, locale != null ? Arrays.asList(locale) : null, model);
     }
 
     @Override
     public LID save(Object instance) {
-        initialize();
         boolean flush = false;
         if (seen == null) {
             seen = new HashSet<Object>();
@@ -153,10 +152,10 @@ public class SessionImpl implements Session {
         return ids;
     }
 
-    private void addCheckNumber(BID model, BID bid) {
-        String lid = identityService.getLID(model, bid).getId();
-        recordAddStatement(bid, CORE.localId, new LIT(lid), null);
-    }
+//    private void addCheckNumber(BID model, BID bid) {
+//        String lid = identityService.getLID(model, bid).getId();
+//        recordAddStatement(bid, CORE.localId, new LIT(lid), null);
+//    }
 
     @Override
     public void addParent(String ns, ObjectRepository parent) {
@@ -171,36 +170,35 @@ public class SessionImpl implements Session {
         return subject;
     }
     
-	private void assignModel() {
-        CloseableIterator<STMT> statements = connection.findStatements(null, CORE.modelId, null, null, false);
-        if (statements.hasNext()) {
-            STMT statement = statements.next();
-            if (!statements.hasNext()) {
-                BID subject = (BID) statement.getSubject();
-                BID object = (BID) statement.getObject();
-                model = (BID) object;
-                
-                if (verifyLocalId((BID) model, subject) && verifyLocalId(model, object)) {
-                    // OK
-                    return;
-                }
-            }
-        }
-        cleanupModel();
-        if (model == null) {
-            // modelId
-            BID subject = connection.createBNode();
-            model = connection.createBNode();
-            recordAddStatement(subject, CORE.modelId, model, null);
-
-            addCheckNumber(model, subject);
-            addCheckNumber(model, model);
-        }
-    }
+//	private void assignModel() {
+//        CloseableIterator<STMT> statements = connection.findStatements(null, CORE.modelId, null, null, false);
+//        if (statements.hasNext()) {
+//            STMT statement = statements.next();
+//            if (!statements.hasNext()) {
+//                BID subject = (BID) statement.getSubject();
+//                BID object = (BID) statement.getObject();
+//                model = (BID) object;
+//                
+//                if (verifyLocalId((BID) model, subject) && verifyLocalId(model, object)) {
+//                    // OK
+//                    return;
+//                }
+//            }
+//        }
+//        cleanupModel();
+//        if (model == null) {
+//            // modelId
+//            BID subject = connection.createBNode();
+//            model = connection.createBNode();
+//            recordAddStatement(subject, CORE.modelId, model, null);
+//
+//            addCheckNumber(model, subject);
+//            addCheckNumber(model, model);
+//        }
+//    }
 
     @Override
     public void autowire(Object instance) {
-        initialize();
         Assert.notNull(instance);
         BeanMap beanMap = toBeanMap(instance);
         MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
@@ -245,10 +243,10 @@ public class SessionImpl implements Session {
         return instance;
     }
     
-    private void cleanupModel(){
-        removeStatements(null, CORE.modelId, null, null);
-        removeStatements(null, CORE.localId, null, null);
-    }
+//    private void cleanupModel(){
+//        removeStatements(null, CORE.modelId, null, null);
+//        removeStatements(null, CORE.localId, null, null);
+//    }
     
     @Override
     public void clear() {
@@ -302,7 +300,6 @@ public class SessionImpl implements Session {
     
     @Override
     public void delete(Object instance) {
-        initialize();
         deleteInternal(instance);
         if (flushMode == FlushMode.ALWAYS) {
             flush();
@@ -311,7 +308,6 @@ public class SessionImpl implements Session {
     
     @Override
     public void deleteAll(Object... objects) {
-        initialize();
         for (Object object : objects) {
             deleteInternal(object);
         }
@@ -730,7 +726,6 @@ public class SessionImpl implements Session {
     }
     
     private <T> void findInstances(Class<T> clazz, UID uri, final Set<T> instances) {
-        initialize();
         UID context = getContext(clazz, null, null);
 //        try {
         Set<ID> resources = new LinkedHashSet<ID>();
@@ -812,7 +807,6 @@ public class SessionImpl implements Session {
 
     @Override
     public <T> T get(Class<T> clazz, ID subject) {
-        initialize();
         Assert.notNull(subject, "subject was null");
         return getBean(clazz, subject);
     }
@@ -964,7 +958,6 @@ public class SessionImpl implements Session {
     }
 
     public LID getLID(ID id) {
-        initialize();
         return identityService.getLID(getModel(), id);
     }
         
@@ -1033,17 +1026,6 @@ public class SessionImpl implements Session {
         return convertedValue;
     }
 
-    protected void initialize() {
-        if (!initialized) {
-            clear();
-            if (identityService == null) {
-                identityService = MemoryIdentityService.instance();
-            }
-            assignModel();
-            initialized = true;
-        }
-    }
-
     private void put(ID resource, Object value) {
         if (resource != null) {
             instanceCache.get(resource).add(value);
@@ -1100,13 +1082,6 @@ public class SessionImpl implements Session {
 			}
             idProperty.setValue(instance, id);
         }
-    }
-
-    public void setIdentityService(IdentityService identityService) {
-        if (initialized) {
-            throw new IllegalStateException("Session already initialized");
-        }
-        this.identityService = identityService;
     }
 
     protected LID toLID(ID resource) {
@@ -1327,11 +1302,11 @@ public class SessionImpl implements Session {
         }
     }
 
-    private boolean verifyLocalId(BID model, BID bnode) {
-        String lid = identityService.getLID(model, bnode).getId();
-        List<STMT> statements = findStatements(bnode, CORE.localId, new LIT(lid), true, null);
-        return statements.size() == 1;
-    }
+//    private boolean verifyLocalId(BID model, BID bnode) {
+//        String lid = identityService.getLID(model, bnode).getId();
+//        List<STMT> statements = findStatements(bnode, CORE.localId, new LIT(lid), true, null);
+//        return statements.size() == 1;
+//    }
 
     public FlushMode getFlushMode() {
         return flushMode;

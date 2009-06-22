@@ -8,6 +8,7 @@ package com.mysema.rdfbean.sesame;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Locale;
 
 import org.junit.Before;
@@ -41,13 +42,15 @@ public class TransactionHandlingTest extends SessionTestBase{
     @Before
     public void setUp() throws StoreException, RDFParseException, IOException{
         sessionFactory = new SessionFactoryImpl();
-        sessionFactory.setDefaultConfiguration(new DefaultConfiguration(OWL.class.getPackage()));
+        sessionFactory.setConfiguration(new DefaultConfiguration(OWL.class.getPackage()));
         sessionFactory.setRepository(repository);
+        sessionFactory.setLocales(Collections.singleton(FI));
+        sessionFactory.initialize();
     }
     
     @Test
     public void commit() throws StoreException, ClassNotFoundException{
-        Session session = SessionUtil.openSession(newRDFConnection(), FI, OWL.class.getPackage());
+        Session session = sessionFactory.openSession();
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
         session.save(new Restriction());

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -27,7 +28,7 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.FetchOptimizer;
+import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
 
@@ -103,7 +104,11 @@ public class UpdateTest {
     private MiniRepository repository;
     
     private Session session;
+    
+    private SessionFactoryImpl sessionFactory;
 
+    private Locale locale;
+    
     @Before
     public void init() {
         Company company = new Company();
@@ -116,6 +121,19 @@ public class UpdateTest {
         employee.company = company;
         
         repository = new MiniRepository();
+        sessionFactory = new SessionFactoryImpl() {
+
+            @Override
+            public Iterable<Locale> getLocales() {
+                return new LocaleIterable(locale, false);
+            }
+            
+        };
+        sessionFactory.setRepository(repository);
+        DefaultConfiguration configuration = new DefaultConfiguration(Employee.class, Company.class, EmployeeInfo.class);
+        configuration.setFetchStrategies(Collections.<FetchStrategy>emptyList());
+        sessionFactory.setConfiguration(configuration);
+        sessionFactory.initialize();
         ids = newSession().saveAll(employee, company);
     }
 
@@ -124,9 +142,8 @@ public class UpdateTest {
     }
 
     private Session newSession(Locale locale) {
-        session = SessionUtil.openSession(
-                new FetchOptimizer(repository.openConnection()), new LocaleIterable(locale, false),
-                Employee.class, Company.class, EmployeeInfo.class);
+        this.locale = locale;
+        session = sessionFactory.openSession();
         return session;
     }
     

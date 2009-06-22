@@ -47,26 +47,19 @@ public class SessionTestBase {
     }
 
     protected static Session createSession(Package... packages) throws StoreException, ClassNotFoundException {
-        return SessionUtil.openSession(newRDFConnection(), locales, packages);
+        return SessionUtil.openSession(repository, locales, packages);
     }
 
     protected static Session createSession(Locale locale, Package... packages) throws StoreException, ClassNotFoundException {
-        return SessionUtil.openSession(newRDFConnection(), locale, packages);
+        return SessionUtil.openSession(repository, locale, packages);
     }
 
     protected static Session createSession(Class<?>... classes) throws StoreException {
-        return SessionUtil.openSession(newRDFConnection(), locales, classes);
+        return SessionUtil.openSession(repository, locales, classes);
     }
 
     protected static Session createSession(Locale locale, Class<?>... classes) throws StoreException {
-        return SessionUtil.openSession(newRDFConnection(), locale, classes);
+        return SessionUtil.openSession(repository, locale, classes);
     }
-    
-    protected static SesameConnection newRDFConnection() throws StoreException {
-        return (SesameConnection) repository.openConnection();
-    }
-    
-//    protected static RepositoryConnection newDefaultConnection() throws StoreException {
-//        return repository.getConnection();
-//    }
+
 }

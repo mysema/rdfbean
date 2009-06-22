@@ -8,7 +8,6 @@ import java.io.File;
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.nativerdf.NativeStore;
 
 /**
@@ -18,11 +17,18 @@ import org.openrdf.sail.nativerdf.NativeStore;
 public class NativeRepository extends AbstractSesameRepository {
     
     private File dataDir;
+    
+    public NativeRepository() {}
+    
+    public NativeRepository(File dataDir) {
+        this.dataDir = dataDir;
+    }
 
     @Override
-    public Repository createRepository() {
+    protected Repository createRepository() {
         NativeStore store = new NativeStore(dataDir);
-        return new SailRepository(new ForwardChainingRDFSInferencer(store));
+        return new SailRepository(store);
+//        return new SailRepository(new ForwardChainingRDFSInferencer(store));
     }
 
     public void setDataDir(File dataDir) {
