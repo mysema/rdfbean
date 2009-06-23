@@ -52,7 +52,11 @@ public class RDFSource {
     
     public InputStream openStream() throws MalformedURLException, IOException {
         if (resource.startsWith("classpath:")){
-            return getClass().getResourceAsStream(resource.substring(10)); 
+            String name = resource.substring(10);
+            if (name.startsWith("/")) {
+                name = name.substring(1);
+            }
+            return RDFSource.class.getClassLoader().getResourceAsStream(name); 
         }else{
             return new URL(resource).openStream();
         }
