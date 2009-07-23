@@ -13,6 +13,7 @@ import org.openrdf.model.*;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
+import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.TupleResult;
@@ -21,7 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
-import com.mysema.query.types.CascadingBoolean;
+import com.mysema.commons.lang.Assert;
+import com.mysema.query.support.CascadingBoolean;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EConstant;
@@ -193,7 +195,11 @@ public class SesameQuery extends
     }
     
     private SesameQuery match(JoinBuilder builder, Var sub, UID pred, Var obj){
-        StatementPattern pattern = new StatementPattern(patternScope, sub, toVar(pred), obj);
+        StatementPattern pattern = new StatementPattern(
+                patternScope, 
+                Assert.notNull(sub,"subject is null"), 
+                toVar(Assert.notNull(pred,"predicate is null")), 
+                Assert.notNull(obj,"object is null"));
         builder.join(pattern);
         return this;
     }
@@ -359,8 +365,8 @@ public class SesameQuery extends
                 UID datatype = converter.getDatatype(javaValue.getClass());
                 rdfValue = dialect.getLiteral(label, dialect.getURI(datatype));
             }else{
-                ID id = session.getId(javaValue);
-                rdfValue = id != null ? dialect.getResource(id) : null;
+                ID id = session.getId(javaValue);                
+                rdfValue =  dialect.getResource(Assert.notNull(id, "id is null"));
             }        
             Var var = new Var(varNames.next(), rdfValue);
             var.setAnonymous(true);
@@ -374,15 +380,12 @@ public class SesameQuery extends
         Operator<?> op = operation.getOperator();
         Transformer transformer;
         
-        // in / not in
-        if (op.equals(Ops.IN) || op.equals(Ops.NOTIN)){
-            // path (not)in path
+        if (op.equals(Ops.IN)){
+            // path in path
             if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof Path){
-                // TODO : make path in path work for RDF sequences
+                // TODO : make path in path work for RDF sequences and containers
                 Path<?> path = (Path<?>) operation.getArg(0);
-                if (op.equals(Ops.NOTIN)){
-                    transformer = sesameOps.getTransformer(Ops.NE_OBJECT);
-                }else if (path.getMetadata().getParent() == null){
+                if (path.getMetadata().getParent() == null && !inNegation()){
                     Path<?> otherPath = (Path<?>) operation.getArg(1);
                     pathToMatchedVar.put(otherPath, transformPath(path));
                     transformPath(otherPath);
@@ -391,29 +394,27 @@ public class SesameQuery extends
                     transformer = sesameOps.getTransformer(Ops.EQ_OBJECT);    
                 }
                 
-            // const (not)in path    
+            // const in path    
             }else if (operation.getArg(0) instanceof EConstant && operation.getArg(1) instanceof Path){
-                if (op.equals(Ops.NOTIN)){
-                    transformer = sesameOps.getTransformer(Ops.NE_OBJECT);
+                // TODO : make const in path work for RDF sequences and containers
+                if (!inNegation()){
+                    Var var = transformConstant((EConstant<?>) operation.getArg(0));
+                    Var path = transformPath((Path<?>) operation.getArg(1));
+                    path.setValue(var.getValue());
+                    return null;    
                 }else{
-                    transformer = sesameOps.getTransformer(Ops.EQ_OBJECT);    
-                }                
+                    transformer = sesameOps.getTransformer(Ops.EQ_OBJECT);
+                }
                 
-            // path (not)in collection    
+            // path in collection    
             }else if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof EConstant){
                 Expr<Object> expr = (Expr<Object>)operation.getArg(0);
                 EConstant<?> constant = (EConstant<?>)operation.getArg(1);
                 Collection<?> collection = (Collection<?>)constant.getConstant();
                 CascadingBoolean bo = new CascadingBoolean();
-                if (op.equals(Ops.NOTIN)){
-                    for (Object elem : collection){
-                        bo.and(expr.ne(elem));
-                    }
-                }else{
-                    for (Object elem : collection){
-                        bo.or(expr.eq(elem));
-                    }    
-                }                
+                for (Object elem : collection){
+                    bo.or(expr.eq(elem));
+                }               
                 return toValue(bo.create());
                 
             }else{
@@ -424,36 +425,17 @@ public class SesameQuery extends
         }else if (isSizeCompareConstant(operation, op)){            
             return transformSizeCompareConstant(operation, op);
             
-        // is empty / not is empty
-        }else if (op.equals(Ops.COL_ISEMPTY) || op.equals(Ops.COL_ISNOTEMPTY)){
+        }else if (op.equals(Ops.COL_ISEMPTY)){
             Var pathVar = transformPath((Path<?>)operation.getArg(0));            
-            if (op.equals(Ops.COL_ISEMPTY)){
-                if (inNegation()){
-                    return new Compare(pathVar, toVar(RDF.nil), Compare.CompareOp.EQ);    
-                }else{
-                    pathVar.setValue(dialect.getResource(RDF.nil));
-                    return null;    
-                }
+            if (inNegation()){
+                return new Compare(pathVar, toVar(RDF.nil), Compare.CompareOp.EQ);    
             }else{
-                Var rest = new Var(varNames.next());
-                JoinBuilder builder = new JoinBuilder();
-                match(builder, pathVar, RDF.rest, rest);
-                return new Exists(builder.getJoins());
+                pathVar.setValue(dialect.getResource(RDF.nil));
+                return null;    
             }
             
-        // map is (not) empty    
-        }else if (op.equals(Ops.MAP_ISEMPTY) || op.equals(Ops.MAP_ISNOTEMPTY)){
-            Path<?> path = (Path<?>) operation.getArg(0);
-            Var pathVar = transformPath(path);            
-            MappedPath mappedPath = getMappedPathForPropertyPath(path); 
-            if (!mappedPath.getMappedProperty().isLocalized()){
-                Var valNode = new Var(varNames.next());
-                Var keyNode = new Var(varNames.next());
-                return transformMapAccess(pathVar, mappedPath, valNode, keyNode, op.equals(Ops.MAP_ISEMPTY));
-            }else{  
-                // TODO
-                return null;
-            }
+        }else if (op.equals(Ops.MAP_ISEMPTY)){
+            transformer = sesameOps.getTransformer(Ops.ISNULL);
             
         // containsKey / containsValue
         }else if (op.equals(Ops.CONTAINS_KEY) || op.equals(Ops.CONTAINS_VALUE)){
@@ -466,10 +448,10 @@ public class SesameQuery extends
                     keyNode = (Var) toValue(operation.getArg(1));
                     valNode = null;                        
                 }else{                    
-                    keyNode = new Var(varNames.next());
-                    valNode = null;
+                    keyNode = null;
+                    valNode = (Var) toValue(operation.getArg(1));
                 }                
-                return transformMapAccess(pathVar, mappedPath, valNode, keyNode, false);
+                return transformMapAccess(pathVar, mappedPath, valNode, keyNode);
             }else{  
                 // TODO
                 return null;
@@ -478,7 +460,7 @@ public class SesameQuery extends
         // path == path
         }else if (isPathEqPath(operation, op)){
             Path<?> path = (Path<?>) operation.getArg(0);
-            if (path.getMetadata().getParent() == null){
+            if (path.getMetadata().getParent() == null && !inNegation()){
                 Path<?> otherPath = (Path<?>) operation.getArg(1);
                 pathToMatchedVar.put(otherPath, transformPath(path));
                 transformPath(otherPath);
@@ -513,15 +495,17 @@ public class SesameQuery extends
         if (transformer != null) {            
             List<ValueExpr> values = new ArrayList<ValueExpr>(operation.getArgs().size());
             for (Expr<?> arg : operation.getArgs()) {
+                ValueExpr value;
                 // transform LID strings to Resources
                 if (idPropertyInOperation 
                         && op.equals(Ops.NE_OBJECT) 
                         && arg instanceof EConstant){
                     ID id = getResourceForLID(arg);
-                    values.add(toVar(dialect.getResource(id)));
+                    value = toVar(dialect.getResource(id));
                 }else{
-                    values.add(toValue(arg));    
+                    value = toValue(arg);    
                 }
+                values.add(Assert.notNull(value));
             }    
             return transformer.transform(values);
         } else {
@@ -530,20 +514,27 @@ public class SesameQuery extends
     }
 
     private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 
-            Var valNode, Var keyNode, boolean negative) {
+            Var valNode, Var keyNode) {
         MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
         JoinBuilder builder = new JoinBuilder();
         if (valNode != null){
-            match(builder, pathVar, mappedProperty.getValuePredicate(), valNode);    
+            if (mappedProperty.getValuePredicate() != null){
+                match(builder, pathVar, mappedProperty.getValuePredicate(), valNode);
+            }else if (!inNegation()){    
+                pathVar.setValue(valNode.getValue());
+            }
         }
         if (keyNode != null){
-            match(builder, valNode, mappedProperty.getKeyPredicate(), keyNode);   
+            match(builder, pathVar, mappedProperty.getKeyPredicate(), keyNode);   
         }                        
-        if (negative){
-            return new Not(new Exists(builder.getJoins()));
+        
+        if (!builder.isEmpty()){
+            return new Exists(builder.getJoins()); 
+        }else if (inNegation()){
+            return new Compare(pathVar, valNode, CompareOp.EQ);
         }else{
-            return new Exists(builder.getJoins());
-        }
+            return null;
+        }        
     }
 
     @SuppressWarnings("unchecked")

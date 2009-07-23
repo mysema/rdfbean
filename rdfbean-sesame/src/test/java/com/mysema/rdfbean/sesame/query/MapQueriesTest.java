@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
@@ -38,11 +37,10 @@ public class MapQueriesTest extends AbstractSesameQueryTest{
     }
     
     @Test
-    @Ignore
     public void mapFilters() {
         for (EBoolean f : mapFilters(v1.mapProperty, v2.mapProperty, "", instance)){
             System.err.println("\n" + f);
-            newQuery().from(v1).from(v2).where(f).list(v1.directProperty);
+            newQuery().from(v1,v2).where(f).list(v1.directProperty);
         }             
     }
 
@@ -50,7 +48,7 @@ public class MapQueriesTest extends AbstractSesameQueryTest{
     public void mapProjections() {
         for (Expr<?> pr : mapProjections(v1.mapProperty, v2.mapProperty, "", instance)){
             System.err.println("\n" + pr);
-            newQuery().from(v1).from(v2).list(pr);
+            newQuery().from(v1,v2).list(pr);
         }    
     }
     

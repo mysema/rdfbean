@@ -25,6 +25,8 @@ import org.junit.Test;
  */
 public class SimpleQueriesTest extends AbstractSesameQueryTest{
          
+    private SimpleType instance;
+    
     @Test
     public void allIds(){
         System.out.println("allIds");

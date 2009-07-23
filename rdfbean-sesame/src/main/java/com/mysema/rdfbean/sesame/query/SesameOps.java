@@ -91,14 +91,14 @@ public class SesameOps {
                     new Compare(args.get(0), args.get(2),CompareOp.LE));
             }            
         });
-        opToTransformer.put(NOTBETWEEN, new Transformer(){
-            @Override
-            public ValueExpr transform(List<ValueExpr> args) {
-                return new Or(
-                    new Compare(args.get(0), args.get(1),CompareOp.LT),    
-                    new Compare(args.get(0), args.get(2),CompareOp.GT));
-            }            
-        });
+//        opToTransformer.put(NOTBETWEEN, new Transformer(){
+//            @Override
+//            public ValueExpr transform(List<ValueExpr> args) {
+//                return new Or(
+//                    new Compare(args.get(0), args.get(1),CompareOp.LT),    
+//                    new Compare(args.get(0), args.get(2),CompareOp.GT));
+//            }            
+//        });
         opToTransformer.put(STARTSWITH, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
@@ -143,13 +143,13 @@ public class SesameOps {
                 return new Regex(first, "", false);  // TODO : optimize          
             }            
         });
-        opToTransformer.put(STRING_ISNOTEMPTY, new Transformer(){
-            @Override
-            public ValueExpr transform(List<ValueExpr> args) {
-                ValueExpr first = new Str(args.get(0));
-                return new Not(new Regex(first, "", false)); // TODO : optimize           
-            }            
-        });
+//        opToTransformer.put(STRING_ISNOTEMPTY, new Transformer(){
+//            @Override
+//            public ValueExpr transform(List<ValueExpr> args) {
+//                ValueExpr first = new Str(args.get(0));
+//                return new Not(new Regex(first, "", false)); // TODO : optimize           
+//            }            
+//        });
         opToTransformer.put(STARTSWITH_IC, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {

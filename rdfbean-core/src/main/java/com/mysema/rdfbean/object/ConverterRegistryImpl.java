@@ -49,6 +49,7 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         register(XSD.longType, Long.class, new LongConverter());
         register(XSD.shortType, Short.class, new ShortConverter());
         register(XSD.stringType, String.class, null);
+        register(XSD.stringType, Character.class, new CharacterConverter());
         register(XSD.time, LocalTime.class, new LocalTimeConverter());        
     }
 

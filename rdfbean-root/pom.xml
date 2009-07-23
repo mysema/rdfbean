@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-root</artifactId>
-  <version>0.7.4</version>
+  <version>0.7.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>RDFBean</name>
   
@@ -14,7 +14,7 @@
   </parent>
   
   <properties>
-    <querydsl.version>0.4.4</querydsl.version>
+    <querydsl.version>0.4.7</querydsl.version>
     <spring.version>2.5.5</spring.version>
   </properties>
   

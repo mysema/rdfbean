@@ -19,7 +19,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.tools.Diagnostic;
 
-import com.mysema.query.annotations.DTO;
+import com.mysema.query.annotations.Projection;
 import com.mysema.query.apt.Processor;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
@@ -43,7 +43,7 @@ public class BeanAnnotationProcessor extends AbstractProcessor{
         Class<? extends Annotation> entity = ClassMapping.class;
         Class<? extends Annotation> superType = null; // undefined
         Class<? extends Annotation> embeddable = null; // undefined
-        Class<? extends Annotation> dtoAnnotation = DTO.class;
+        Class<? extends Annotation> dtoAnnotation = Projection.class;
         Processor p = new Processor(processingEnv, entity, superType, embeddable, dtoAnnotation, "Q"){
 
             @Override

@@ -44,7 +44,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     R extends N, 
     B extends R, 
     U extends R, 
-    L extends N, S> extends QueryBaseWithProjection<Object,SubType>{
+    L extends N, S> extends QueryBaseWithProjection<SubType>{
     
     protected final Dialect<N,R,B,U,L,S> dialect;
     
@@ -81,7 +81,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     @Override
     public long count() {
         // TODO : use aggregate function
-        for(JoinExpression<?> je : getMetadata().getJoins()){
+        for(JoinExpression je : getMetadata().getJoins()){
             if (je.getType() == JoinType.DEFAULT || je.getType() == JoinType.INNERJOIN){
                 addToProjection(je.getTarget());    
             }            

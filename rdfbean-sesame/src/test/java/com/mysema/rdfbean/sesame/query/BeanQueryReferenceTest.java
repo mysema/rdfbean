@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2009 Mysema Ltd.
- * All rights reserved.
- * 
- */
 package com.mysema.rdfbean.sesame.query;
 
 import com.mysema.rdfbean.object.BeanQuery;

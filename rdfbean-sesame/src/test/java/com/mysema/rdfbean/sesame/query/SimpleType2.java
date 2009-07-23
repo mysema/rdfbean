@@ -7,6 +7,7 @@ package com.mysema.rdfbean.sesame.query;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 
@@ -18,11 +19,18 @@ import com.mysema.rdfbean.annotations.Predicate;
  */
 @ClassMapping(ns = TEST.NS, ln="TestType2")
 public class SimpleType2{
+    @Id 
+    String id;        
+        
     @Path({@Predicate(ln="testType"), @Predicate(ln="directProperty")}) 
     String pathProperty;                       
     
     @Predicate(ln="directProperty2") 
     String directProperty;
+    
+    public String getId() {
+        return id;
+    }
 
     public String getPathProperty() {
         return pathProperty;

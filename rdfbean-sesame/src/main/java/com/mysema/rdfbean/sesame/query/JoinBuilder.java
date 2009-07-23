@@ -84,5 +84,9 @@ public class JoinBuilder{
             return optional;
         }        
     }
+
+    public boolean isEmpty() {
+        return patterns.isEmpty();
+    }
     
 }

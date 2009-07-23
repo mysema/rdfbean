@@ -43,7 +43,7 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
     
     protected List<SimpleType> instances;
     
-    protected SimpleType instance;
+//    protected SimpleType instance;
     
     @Before
     public void setUp() throws StoreException{
