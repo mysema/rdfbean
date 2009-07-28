@@ -75,7 +75,7 @@ public class IdReferenceTest {
         
         LID id = resource1.id;
         assertNotNull(id);
-        assertTrue(id instanceof LID);
+//        assertTrue(id instanceof LID);
         assertTrue(Integer.parseInt(id.getId()) > 0);
     }
 }

@@ -905,7 +905,7 @@ public class SessionImpl implements Session {
                     return identityService.getID(lid);
                 } else {
                     ID rid = null;
-                    if (rid instanceof UID) {
+                    if (id instanceof UID) {
                         rid = (UID) id;
                     } else if (idProperty.getIDType() == IDType.URI) {
                         rid = new UID(id.toString());

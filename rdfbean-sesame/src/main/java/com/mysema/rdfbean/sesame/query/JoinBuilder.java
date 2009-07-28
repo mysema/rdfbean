@@ -73,6 +73,12 @@ public class JoinBuilder{
                 return rv;
             }
         }
+        
+        @Override
+        public boolean equals(Object o){
+            return o instanceof Pattern && ((Pattern)o).pattern.equals(pattern);
+        }
+        
         private int compare(Var var1, Var var2){
             return var1.getName().compareTo(var2.getName());
         }
