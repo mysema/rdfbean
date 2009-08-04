@@ -8,7 +8,110 @@
     JUnit and Sesame's in memory RDF storage engine.
     </para>
     <sect1>
-        <title></title>
+        <title>Maven</title>
+
+        <programlisting>
+            <filename>pom.xml</filename>
+<![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+            http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mysema.rdf</groupId>
+    <artifactId>rdfbean-demo</artifactId>
+    <version>0.1.0</version>
+    <packaging>jar</packaging>
+    <name>RDFBean Demo</name>
+    <description>RDFBean Demo</description>
+
+    <properties>
+        <!-- versions of dependencies -->
+        <spring.version>2.5.5</spring.version>
+        <rdfbean.version>0.7.4-SNAPSHOT</rdfbean.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.mysema.rdf</groupId>
+            <artifactId>rdfbean-sesame</artifactId>
+            <version>${rdfbean.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mysema.rdf</groupId>
+            <artifactId>rdfbean-spring</artifactId>
+            <version>${rdfbean.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+
+        <!-- testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <ajdtVersion>none</ajdtVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.mysema.maven</groupId>
+                <artifactId>maven-apt-plugin</artifactId>
+                <version>0.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>target/generated-sources/java</outputDirectory>
+                            <processor>com.mysema.rdfbean.query.BeanAnnotationProcessor</processor>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+]]>
+        </programlisting>
+        
     </sect1>
     <para>TODO</para>
     

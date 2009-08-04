@@ -428,7 +428,7 @@ public class SessionImpl implements Session {
             }
             if (polymorphic) {
                 instance = createInstance(subject, 
-                        findTypes(subject, context), 
+                        findMappedTypes(subject, context), 
                         requiredClass);
             } else {
                 instance = createInstance(subject, 
@@ -703,7 +703,10 @@ public class SessionImpl implements Session {
         Set<ID> resources = new LinkedHashSet<ID>();
         resources.addAll(this.<ID>filterSubject(connection.findStatements(null, RDF.type, uri, context, true)));
         for (ID subject : resources) {
-            instances.add(getBean(clazz, subject));
+            T instance = getBean(clazz, subject);
+            if (instance != null) {
+                instances.add(instance);
+            }
         }
 //        } catch (Exception e) {
 //            throw new RuntimeException(e);
@@ -746,6 +749,18 @@ public class SessionImpl implements Session {
             }
         }
         return statements;
+    }
+    
+    private List<ID> findMappedTypes(ID subject, UID context) {
+        List<ID> types = new ArrayList<ID>();
+        List<STMT> statements = findStatements(subject, RDF.type, null, true, context);
+        for (STMT stmt : statements) {
+            NODE type = stmt.getObject();
+            if (type instanceof UID && conf.getMappedClasses((UID) type) != null) {
+                types.add((UID) type);
+            }
+        }
+        return types;
     }
     
     private List<ID> findTypes(ID subject, UID context) {
