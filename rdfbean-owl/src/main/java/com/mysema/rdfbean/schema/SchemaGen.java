@@ -63,6 +63,7 @@ public class SchemaGen {
     public void exportConfiguration() {
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(new DefaultConfiguration(RDFSClass.class.getPackage(), OWLClass.class.getPackage()));
+        sessionFactory.setRepository(repository);
         sessionFactory.initialize();
         Session session = sessionFactory.openSession();
         if (ontology != null) {
@@ -142,7 +143,9 @@ public class SchemaGen {
                         boolean seenProperty = resources.containsKey(puid);
                         if (seenProperty) {
                             property = (RDFProperty) resources.get(puid);
-                            if (mappedPath.isReference()) {
+                            if (mappedProperty.isAnyResource()) {
+                                // Should be RDFProperty in any case
+                            } else if (mappedPath.isReference()) {
                                 if (!(property instanceof ObjectProperty)) {
                                     throw new IllegalArgumentException("Expected ObjectProperty for: "
                                             + mappedPath);
