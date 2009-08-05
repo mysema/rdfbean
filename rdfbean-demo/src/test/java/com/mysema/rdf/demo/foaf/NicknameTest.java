@@ -5,7 +5,8 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.mysema.rdf.demo.foaf.domain.Person;
-import com.mysema.rdf.demo.generic.EntityAccess;
+import com.mysema.rdf.demo.generic.Resource;
+import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.UID;
 
 public class NicknameTest {
@@ -14,32 +15,61 @@ public class NicknameTest {
     
     private Person person = new Person();
     
-    // Entityn tietojen tulostus
-    
     @Test
     public void add(){    
-        EntityAccess<?> accessor = person.getGenericAccess();
-        accessor.addValue(nickProp, "New nickname");
+        Resource<?> entity = person.getGenericEntity();
+        LIT nickname = new LIT("New nickname");
+        entity.getProperty(nickProp).add(nickname);
+    }
+    
+    @Test
+    public void set() {
+        Resource<?> entity = person.getGenericEntity();
+        LIT nickname = new LIT("New nickname");
+        entity.getProperty(nickProp).setLiteral(nickname);
+    }
+    
+    @Test
+    public void remove() {
+        Resource<?> entity = person.getGenericEntity();
+        LIT nickname = new LIT("New nickname");
+        entity.getProperty(nickProp).remove(nickname);
+    }
+    
+    @Test
+    public void removeAll() {
+        person.getGenericEntity().getProperty(nickProp).removeAll();
     }
     
     @Test
     public void addLocalized(){        
-        EntityAccess<?> accessor = person.getGenericAccess();
-        accessor.addValue(nickProp, Locale.ENGLISH, "New nickname");
+        Resource<?> entity = person.getGenericEntity();
+        LIT nickname = new LIT("New nickname", Locale.ENGLISH);
+        entity.getProperty(nickProp).add(nickname);
     }
     
+    @Test
+    public void countNicknames(){        
+        System.out.println(person.getGenericEntity().getProperty(nickProp)
+                .getValueCount());
+    }
+
     @Test
     public void singleValueAccess(){
-        EntityAccess<?> accessor = person.getGenericAccess();
-        String nick = accessor.getValue(String.class, nickProp);
-        System.out.println(nick);
+        System.out.println(person.getGenericEntity()
+                .getProperty(nickProp).getLiteral().getValue());
     }
     
     @Test
-    public void localizedAccess(){
-        EntityAccess<?> accessor = person.getGenericAccess();
-//      String nick = person.getValueAccessor(nickProp).get(String.class, Locale.ENGLISH);
-        String nick = accessor.getValue(String.class, Locale.ENGLISH, nickProp);
-        System.out.println(nick);
+    public void localizedAccess(){        
+        System.out.println(person.getGenericEntity()
+                .getProperty(nickProp).getLiteral(Locale.ENGLISH));
+    }
+    
+    @Test
+    public void nonExistentTest() {
+        person.getGenericEntity().getProperty(nickProp).removeAll();
+        System.out.println(person.getGenericEntity().getProperty(nickProp)
+                .getValueCount());
     }
 }

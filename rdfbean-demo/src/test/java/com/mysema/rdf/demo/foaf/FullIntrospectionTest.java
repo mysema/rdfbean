@@ -2,40 +2,50 @@ package com.mysema.rdf.demo.foaf;
 
 import org.junit.Test;
 
+import com.mysema.rdf.demo.foaf.domain.Document;
 import com.mysema.rdf.demo.foaf.domain.Person;
-import com.mysema.rdf.demo.generic.EntityAccess;
-import com.mysema.rdf.demo.generic.PropertyAccess;
-import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdf.demo.generic.Resource;
+import com.mysema.rdf.demo.generic.Property;
+import com.mysema.rdf.demo.generic.Value;
+import com.mysema.rdfbean.model.LIT;
 
 public class FullIntrospectionTest {
     
     private Person person = new Person();
 
-    @Test
-    public void testToStatements(){
-        EntityAccess<?> accessor = person.getGenericAccess();
-        for (STMT stmt : accessor.getStatements()){
-            System.out.println(stmt.getPredicate() + " " + stmt.getObject());
-        }        
-    }
+//    @Test
+//    public void testToStatements(){
+//        
+//        Entity<?> accessor = person.getGenericEntity();
+//        
+//        for (STMT stmt : accessor.getStatements()){
+//            System.out.println(stmt.getPredicate() + " " + stmt.getObject());
+//        }        
+//    }
     
     @Test
     public void testWithPropertyAccessor(){
-        EntityAccess<?> accessor = person.getGenericAccess();
-        for (PropertyAccess<?> prop : accessor.getProperties()){
-            System.out.println(prop.getUID());
-            if (prop.isSingleValue()){
-                Labeled value = accessor.getValue(Labeled.class, prop.getUID());
-                if (value != null){
-                    System.out.println(value.getLabel());    
-                }                
-            }else if (prop.isLocalized()){
-                // ?!?
-            }else{
-                for (Labeled value : accessor.getValues(Labeled.class, prop.getUID())){
-                    System.out.println(value.getLabel());
+        Resource<Object> entity = person.getGenericEntity();
+        
+        for (Property<Object> prop : entity.getProperties()){
+            System.out.println(prop.getId());
+            for (Value<Object> value : prop.getValues()) {
+                if (value.isLiteral()) {
+                    LIT lit = value.getLiteral();
+                    System.out.println(lit.getLang() + ":" + lit.getValue());
                 }
-            }                        
+                
+                if (value.isReference()) {
+                    Object obj = value.getReference();
+                    if (obj instanceof Document) {
+                        System.out.println("Document:" + 
+                                ((Document) obj).getLabel());
+                    }
+                    else {
+                        System.out.println(obj.getClass().getCanonicalName());
+                    }
+                }
+            }            
         }
     }
 }

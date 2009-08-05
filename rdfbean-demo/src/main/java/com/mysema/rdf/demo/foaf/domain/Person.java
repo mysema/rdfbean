@@ -1,6 +1,6 @@
 package com.mysema.rdf.demo.foaf.domain;
 
-import com.mysema.rdf.demo.generic.EntityAccess;
+import com.mysema.rdf.demo.generic.Resource;
 
 /**
  *  foaf:geekCode
@@ -43,7 +43,7 @@ public class Person extends Agent {
 		return img;
 	}
 	
-	public EntityAccess getGenericAccess() {
+	public Resource getGenericEntity() {
 	    return null;
 	}
 }

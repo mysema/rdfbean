@@ -6,7 +6,7 @@ import org.springframework.beans.PropertyAccessor;
 
 import com.mysema.rdf.demo.foaf.domain.Document;
 import com.mysema.rdf.demo.foaf.domain.Person;
-import com.mysema.rdf.demo.generic.EntityAccess;
+import com.mysema.rdf.demo.generic.Resource;
 import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.rdfs.RDFProperty;
 
