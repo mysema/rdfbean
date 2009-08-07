@@ -33,13 +33,13 @@ import java.lang.annotation.Target;
 public @interface MapElements {
 
     // TODO: Refactor into Path
-	Predicate key();
+    Predicate key();
     
-	Class<?> keyType() default Void.class;
-	
-	String ns() default "";
+    Class<?> keyType() default Void.class;
+    
+    String ns() default "";
 
-	// TODO: Refactor into Path
-	Predicate value() default @Predicate(ns="");
-	
+    // TODO: Refactor into Path
+    Predicate value() default @Predicate(ns="");
+    
 }

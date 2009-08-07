@@ -67,56 +67,56 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             Required.class
         ));
 
-	private static String getParentNs(MapElements mapElements, Member member) {
+    private static String getParentNs(MapElements mapElements, Member member) {
         String ns = mapElements.ns();
         if (!StringUtils.hasLength(ns)) {
             ns = MappedClass.getClassNs(member.getDeclaringClass());
         }
         return ns;
-	}
+    }
 
-	private String name;
-	
-	private Class<?> type;
-	
-	private Class<?> componentType;
-	
-	private Class<?> keyType;
-	
-	private boolean collection;
-	
-	private MappedClass declaringClass;
-	
-	private TypeVariable<?>[] typeVariables = new TypeVariable<?>[4];
-	
-	private Map<Class<? extends Annotation>, Annotation> annotations =
-		new HashMap<Class<? extends Annotation>, Annotation>();
+    private String name;
+    
+    private Class<?> type;
+    
+    private Class<?> componentType;
+    
+    private Class<?> keyType;
+    
+    private boolean collection;
+    
+    private MappedClass declaringClass;
+    
+    private TypeVariable<?>[] typeVariables = new TypeVariable<?>[4];
+    
+    private Map<Class<? extends Annotation>, Annotation> annotations =
+        new HashMap<Class<? extends Annotation>, Annotation>();
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     MappedProperty(String name, Annotation[] annotations, MappedClass declaringClass) {
-		this.name = name;
-		this.declaringClass = declaringClass;
-		for (Annotation annotation : Assert.notNull(annotations)) {
-			Class<? extends Annotation> aclass = (Class<? extends Annotation>) annotation.getClass().getInterfaces()[0];
-			this.annotations.put(aclass, annotation);
-		}
-	}
-	
-	public MappedClass getDeclaringClass() {
-	    return declaringClass;
-	}
-	
-	static Class<?> getUpper(Class<?> clazz, Class<?> other) {
-	    if (clazz == null) {
-	        return other;
-	    } else if (other != null && !clazz.equals(other)) {
-	        if (clazz.isAssignableFrom(other)) {
-	            return other;
-	        }
-	    }
-	    return clazz;
-	}
-	
+        this.name = name;
+        this.declaringClass = declaringClass;
+        for (Annotation annotation : Assert.notNull(annotations)) {
+            Class<? extends Annotation> aclass = (Class<? extends Annotation>) annotation.getClass().getInterfaces()[0];
+            this.annotations.put(aclass, annotation);
+        }
+    }
+    
+    public MappedClass getDeclaringClass() {
+        return declaringClass;
+    }
+    
+    static Class<?> getUpper(Class<?> clazz, Class<?> other) {
+        if (clazz == null) {
+            return other;
+        } else if (other != null && !clazz.equals(other)) {
+            if (clazz.isAssignableFrom(other)) {
+                return other;
+            }
+        }
+        return clazz;
+    }
+    
     void resolve(MappedClass owner) {
         if (this.type == null) {
             this.type = getTypeInternal();
@@ -145,89 +145,89 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             this.componentType = null;
         }
     }
-	
-	@SuppressWarnings("unchecked")
-	public Class<? extends Collection> getCollectionType() {
-		if (isCollection()) {
-			Class collectionType = getType();
-			if (collectionType.isInterface()) {
-				if (List.class.isAssignableFrom(collectionType)) {
-					collectionType = ArrayList.class;
-				} else if (SortedSet.class.isAssignableFrom(collectionType)) {
-				    collectionType = TreeSet.class;
-				} else if (Set.class.isAssignableFrom(collectionType)) {
-					collectionType = LinkedHashSet.class;
-				} else if (Collection.class.equals(collectionType)) {
-					collectionType = HashSet.class;
-				} else {
-					throw new IllegalArgumentException("Unsupported Collection interface type: "+collectionType);
-				}
-			}
-			return collectionType;
-		} else {
-			return null;
-		}
-	} 
+    
+    @SuppressWarnings("unchecked")
+    public Class<? extends Collection> getCollectionType() {
+        if (isCollection()) {
+            Class collectionType = getType();
+            if (collectionType.isInterface()) {
+                if (List.class.isAssignableFrom(collectionType)) {
+                    collectionType = ArrayList.class;
+                } else if (SortedSet.class.isAssignableFrom(collectionType)) {
+                    collectionType = TreeSet.class;
+                } else if (Set.class.isAssignableFrom(collectionType)) {
+                    collectionType = LinkedHashSet.class;
+                } else if (Collection.class.equals(collectionType)) {
+                    collectionType = HashSet.class;
+                } else {
+                    throw new IllegalArgumentException("Unsupported Collection interface type: "+collectionType);
+                }
+            }
+            return collectionType;
+        } else {
+            return null;
+        }
+    } 
 
-	public Class<?> getComponentType() {
-	    return componentType;
-	}
-	
-	public Class<?> getTargetType() {
-	    Class<?> clazz = getComponentType();
-	    if (clazz == null) {
-	        clazz = getType();
-	    }
-	    return clazz;
-	}
+    public Class<?> getComponentType() {
+        return componentType;
+    }
+    
+    public Class<?> getTargetType() {
+        Class<?> clazz = getComponentType();
+        if (clazz == null) {
+            clazz = getType();
+        }
+        return clazz;
+    }
 
-	public List<UID> getDefaults() {
-	    Default[] defaults;
-	    Defaults defs = getAnnotation(Defaults.class);
-	    if (defs != null) {
-	        defaults = defs.value();
-	    } else {
-	        Default def = getAnnotation(Default.class);
-	        if (def != null) {
-	            defaults = new Default[] { def };
-	        } else {
-	            defaults = new Default[0];
-	        }
-	    }
-	    List<UID> rs = new ArrayList<UID>(defaults.length);
-	    for (Default def : defaults) {
-	    	// TODO: Use default ns and ln if there's only one default?
-	        rs.add(MiniDialect.UID(null, def.ns(), def.ln(), name));
-	    }
-	    return rs;
-	}
-	
-	public boolean isAnnotationPresent(Class<? extends Annotation> atype) {
-		return annotations.containsKey(atype);
-	}
+    public List<UID> getDefaults() {
+        Default[] defaults;
+        Defaults defs = getAnnotation(Defaults.class);
+        if (defs != null) {
+            defaults = defs.value();
+        } else {
+            Default def = getAnnotation(Default.class);
+            if (def != null) {
+                defaults = new Default[] { def };
+            } else {
+                defaults = new Default[0];
+            }
+        }
+        List<UID> rs = new ArrayList<UID>(defaults.length);
+        for (Default def : defaults) {
+            // TODO: Use default ns and ln if there's only one default?
+            rs.add(MiniDialect.UID(null, def.ns(), def.ln(), name));
+        }
+        return rs;
+    }
+    
+    public boolean isAnnotationPresent(Class<? extends Annotation> atype) {
+        return annotations.containsKey(atype);
+    }
 
     @SuppressWarnings("unchecked")
-	Class getGenericClass(final Type gtype, int index, MappedClass owner, int typeVariableIndex) {
+    Class getGenericClass(final Type gtype, int index, MappedClass owner, int typeVariableIndex) {
         Type type = gtype;
-//		Type gtype = getParametrizedType(member);
-		if (type != null) {
-		    if (type instanceof Class) {
-		        return (Class) type;
-		    } else if (type instanceof ParameterizedType && index >= 0) {
-	            type = ((ParameterizedType) type).getActualTypeArguments()[index];
-		    }
+//        Type gtype = getParametrizedType(member);
+        if (type != null) {
+            if (type instanceof Class) {
+                return (Class) type;
+            } else if (type instanceof ParameterizedType && index >= 0) {
+                type = ((ParameterizedType) type).getActualTypeArguments()[index];
+            }
             if (type instanceof Class) {
                 return (Class) type;
             } else if (type instanceof WildcardType) {
-			    WildcardType wildcardType = (WildcardType) type; 
-			    if (wildcardType.getUpperBounds()[0] instanceof ParameterizedType) {
-			        return (Class) ((ParameterizedType) wildcardType.getUpperBounds()[0]).getRawType();
-			    } else if (wildcardType.getUpperBounds()[0] instanceof Class) {
-			        return (Class) wildcardType.getUpperBounds()[0];
-			    } else {
-			        //System.err.println("Unable to find out actual type of " + gtype);
-			        return Object.class;
-			    }
+                WildcardType wildcardType = (WildcardType) type; 
+                if (wildcardType.getUpperBounds()[0] instanceof ParameterizedType) {
+                    return (Class) ((ParameterizedType) wildcardType.getUpperBounds()[0]).getRawType();
+                } else if (wildcardType.getUpperBounds()[0] instanceof Class) {
+                    return (Class) wildcardType.getUpperBounds()[0];
+                } else {
+                    //System.err.println("Unable to find out actual type of " + gtype);
+                    return Object.class;
+                }
             } else if (type instanceof TypeVariable) {
                 Type upperBound = null;
                 if (owner == null || declaringClass.equals(owner)) {
@@ -249,39 +249,39 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 //                return (Class) ((TypeVariable) type).getGenericDeclaration();
             } else if (type instanceof ParameterizedType) {
                 return (Class) ((ParameterizedType) type).getRawType();
-			} else {
-			    throw new RuntimeException("Unable to get generic type [" + index + "] of " + gtype
-			            + " from " + owner);
-			}
-	    }
-		return null;
-	}
-    
-	@SuppressWarnings("unchecked")
-    public <T extends Annotation> T getAnnotation(Class<T> atype) {
-    	return (T) annotations.get(atype);
+            } else {
+                throw new RuntimeException("Unable to get generic type [" + index + "] of " + gtype
+                        + " from " + owner);
+            }
+        }
+        return null;
     }
-	
-	public UID getKeyPredicate() {
-		MapElements mapKey = getAnnotation(MapElements.class);
-		String parentNs = getParentNs(mapKey, getMember());
-		if (mapKey != null) {
-			Predicate predicate = mapKey.key(); 
-			return MiniDialect.UID(parentNs, predicate.ns(), predicate.ln(), null);
-		} else {
-			return null;
-		}
-	}
-	
-	public Class<?> getKeyType() {
-	    return keyType;
-	}
-	
-	protected abstract  M getMember();
-	
-	public String getName() {
-		return name;
-	}
+    
+    @SuppressWarnings("unchecked")
+    public <T extends Annotation> T getAnnotation(Class<T> atype) {
+        return (T) annotations.get(atype);
+    }
+    
+    public UID getKeyPredicate() {
+        MapElements mapKey = getAnnotation(MapElements.class);
+        String parentNs = getParentNs(mapKey, getMember());
+        if (mapKey != null) {
+            Predicate predicate = mapKey.key(); 
+            return MiniDialect.UID(parentNs, predicate.ns(), predicate.ln(), null);
+        } else {
+            return null;
+        }
+    }
+    
+    public Class<?> getKeyType() {
+        return keyType;
+    }
+    
+    protected abstract  M getMember();
+    
+    public String getName() {
+        return name;
+    }
     
     public Class<?> getType() {
         return type;
@@ -290,11 +290,11 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     protected abstract Class<?> getTypeInternal();
     
     protected abstract Type getGenericType();
-	
-	public abstract Object getValue(BeanMap instance);
+    
+    public abstract Object getValue(BeanMap instance);
     
     public UID getValuePredicate() {
-		MapElements mapKey = getAnnotation(MapElements.class);
+        MapElements mapKey = getAnnotation(MapElements.class);
         String parentNs = getParentNs(mapKey, getMember());
         if (mapKey != null) {
             Predicate predicate = mapKey.value();
@@ -306,15 +306,15 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         } else {
             return null;
         }
-	}
+    }
     
     public IDType getIDType() {
-    	IDType idType = null;
-    	Id annotation = getAnnotation(Id.class);
-    	if (annotation != null) {
-    		idType = annotation.value();
-    	}
-    	return idType;
+        IDType idType = null;
+        Id annotation = getAnnotation(Id.class);
+        if (annotation != null) {
+            idType = annotation.value();
+        }
+        return idType;
     }
     
     public boolean isAnnotatedProperty() {
@@ -346,8 +346,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
     
     public boolean isLocalized() {
-	    return isAnnotationPresent(Localized.class);
-	}
+        return isAnnotationPresent(Localized.class);
+    }
     
     public boolean isInjection() {
         return isAnnotationPresent(Inject.class);
@@ -358,70 +358,70 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
     
     public boolean isMap() {
-		return Map.class.isAssignableFrom(getType());
-	}
+        return Map.class.isAssignableFrom(getType());
+    }
 
-	public boolean isPolymorphic() {
+    public boolean isPolymorphic() {
         return MappedClass.isPolymorphic(getTargetType());
     }
-	
-	public boolean isConstructorParameter() {
-		return getMember() instanceof Constructor<?>;
-	}
-	
-	public boolean isSet() {
+    
+    public boolean isConstructorParameter() {
+        return getMember() instanceof Constructor<?>;
+    }
+    
+    public boolean isSet() {
         return Set.class.isAssignableFrom(getType());
     }
-	
-	public boolean isSortedSet() {
+    
+    public boolean isSortedSet() {
         return SortedSet.class.isAssignableFrom(getType());
     }
-	
-	public boolean isRequired() {
-	    return isAnnotationPresent(Required.class);
-	}
-	
-	public abstract boolean isVirtual();
+    
+    public boolean isRequired() {
+        return isAnnotationPresent(Required.class);
+    }
+    
+    public abstract boolean isVirtual();
 
     public abstract void setValue(BeanMap beanWrapper, Object value);
 
-	public void validate(MappedPath path) {
-		if (isMixin()) {
-			Member member = getMember();
-			if (getType().isAssignableFrom(member.getDeclaringClass())) {
-				throw new IllegalArgumentException("Illegal mixin reference to oneself: " + 
-						toString());
-			}
-		}
-	}
+    public void validate(MappedPath path) {
+        if (isMixin()) {
+            Member member = getMember();
+            if (getType().isAssignableFrom(member.getDeclaringClass())) {
+                throw new IllegalArgumentException("Illegal mixin reference to oneself: " + 
+                        toString());
+            }
+        }
+    }
     
-	public String toString() {
-		return getMember().toString();
-	}
+    public String toString() {
+        return getMember().toString();
+    }
 
-	public boolean isAssignableFrom(MappedProperty<?> other) {
-		// Only methods may override...
-		if (MethodProperty.class.isInstance(other) && nullSafeEquals(name, other.name)) {
-			Class<?> domain = getMember().getDeclaringClass();
-			Class<?> otherDomain = other.getMember().getDeclaringClass();
-			return domain.isAssignableFrom(otherDomain);
-		} else {
-			return false;
-		}
-	}
+    public boolean isAssignableFrom(MappedProperty<?> other) {
+        // Only methods may override...
+        if (MethodProperty.class.isInstance(other) && nullSafeEquals(name, other.name)) {
+            Class<?> domain = getMember().getDeclaringClass();
+            Class<?> otherDomain = other.getMember().getDeclaringClass();
+            return domain.isAssignableFrom(otherDomain);
+        } else {
+            return false;
+        }
+    }
 
 
-	public static boolean nullSafeEquals(Object o1, Object o2) {
-		if (o1 == null || o2 == null) {
-			return false;
-		} else {
-			return o1.equals(o2);
-		}
-	}
+    public static boolean nullSafeEquals(Object o1, Object o2) {
+        if (o1 == null || o2 == null) {
+            return false;
+        } else {
+            return o1.equals(o2);
+        }
+    }
 
-	public void addAnnotations(MappedProperty<?> other) {
-		this.annotations.putAll(other.annotations);
-	}
+    public void addAnnotations(MappedProperty<?> other) {
+        this.annotations.putAll(other.annotations);
+    }
 
     public boolean isAnyResource() {
         return UID.class == getType();

@@ -42,5 +42,5 @@ import com.mysema.rdfbean.model.IDType;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Id {
-	IDType value() default IDType.LOCAL;
+    IDType value() default IDType.LOCAL;
 }

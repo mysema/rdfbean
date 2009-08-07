@@ -57,9 +57,9 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface InjectProperty {
 
-	/**
-	 * @return     name of the property mapped to this constructor parameter.
-	 */
-	String value();
-	
+    /**
+     * @return     name of the property mapped to this constructor parameter.
+     */
+    String value();
+    
 }

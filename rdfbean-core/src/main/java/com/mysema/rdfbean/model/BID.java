@@ -31,10 +31,10 @@ public final class BID extends ID {
         return "_:" + id;
     }
 
-	@Override
-	public NodeType getNodeType() {
-		return NodeType.BLANK;
-	}
+    @Override
+    public NodeType getNodeType() {
+        return NodeType.BLANK;
+    }
 
     @Override
     public boolean isBNode() {

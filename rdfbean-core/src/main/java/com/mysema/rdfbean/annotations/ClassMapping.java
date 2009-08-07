@@ -46,16 +46,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ClassMapping {
 
-	/**
-	 * @return The local name of the mapped resource. Defaults to class's simple name.
-	 *         If namespace (ns) is not given, this is should be the full URI. 
-	 */
-	String ln() default "";
+    /**
+     * @return The local name of the mapped resource. Defaults to class's simple name.
+     *         If namespace (ns) is not given, this is should be the full URI. 
+     */
+    String ln() default "";
 
-	/**
-	 * @return Namespace of the resource or empty, if localName contains
-	 *         the whole URI.
-	 */
-	String ns() default "";
+    /**
+     * @return Namespace of the resource or empty, if localName contains
+     *         the whole URI.
+     */
+    String ns() default "";
 
 }

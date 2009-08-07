@@ -23,19 +23,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Path {
 
-	/**
-	 * @return true if invalid values should be ignored. 
-	 */
-	boolean ignoreInvalid() default false;
-	
-	/**
-	 * @return Default namespace for predicates.
-	 */
-	String ns() default "";
+    /**
+     * @return true if invalid values should be ignored. 
+     */
+    boolean ignoreInvalid() default false;
+    
+    /**
+     * @return Default namespace for predicates.
+     */
+    String ns() default "";
 
-	/**
-	 * @return predicate path.
-	 */
-	Predicate[] value();
-	
+    /**
+     * @return predicate path.
+     */
+    Predicate[] value();
+    
 }

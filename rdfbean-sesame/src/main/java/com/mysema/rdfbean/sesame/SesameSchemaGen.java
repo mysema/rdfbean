@@ -29,15 +29,15 @@ import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.schema.SchemaGen;
 
 public class SesameSchemaGen extends SchemaGen {
-	
-	private final Map<String, String> namespaces = new LinkedHashMap<String, String>();
-	
-	{
-		namespaces.put("rdf", RDF.NS);
-		namespaces.put("rdfs", RDFS.NS);
-		namespaces.put("owl", OWL.NS);
-		namespaces.put("xsd", XSD.NS);
-	}
+    
+    private final Map<String, String> namespaces = new LinkedHashMap<String, String>();
+    
+    {
+        namespaces.put("rdf", RDF.NS);
+        namespaces.put("rdfs", RDFS.NS);
+        namespaces.put("owl", OWL.NS);
+        namespaces.put("xsd", XSD.NS);
+    }
 
     public void generateTurtle(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
         generateSchema(configuration, new TurtleWriter(out));
@@ -54,39 +54,39 @@ public class SesameSchemaGen extends SchemaGen {
     public void generateRDFXML(Configuration configuration, Writer out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
         generateSchema(configuration, new RDFXMLPrettyWriter(out));
     }
-	
-	public void generateSchema(Configuration configuration, RDFHandler handler) throws StoreException, RDFHandlerException, RDFParseException, IOException {
-		for (Map.Entry<String, String> entry : namespaces.entrySet()) {
-			handler.handleNamespace(entry.getKey(), entry.getValue());
-		}
+    
+    public void generateSchema(Configuration configuration, RDFHandler handler) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+        for (Map.Entry<String, String> entry : namespaces.entrySet()) {
+            handler.handleNamespace(entry.getKey(), entry.getValue());
+        }
         String ontology = getOntology();
-		if (ontology != null && handler instanceof RDFXMLWriter) {
-		    RDFXMLWriter writer = (RDFXMLWriter) handler;
-		    writer.setBaseURI(ontology);
-		}
-		handler = new RDFBeanHandler(handler);
-		MemoryRepository repository = new MemoryRepository();
+        if (ontology != null && handler instanceof RDFXMLWriter) {
+            RDFXMLWriter writer = (RDFXMLWriter) handler;
+            writer.setBaseURI(ontology);
+        }
+        handler = new RDFBeanHandler(handler);
+        MemoryRepository repository = new MemoryRepository();
         repository.initialize();
-		
-		setRepository(repository);
-		
-		setConfiguration(configuration);
-		exportConfiguration();
-		
-		RepositoryConnection conn = repository.getSesameRepository().getConnection();
-		conn.export(handler);
-		conn.close();
-	}
-	
-	public SesameSchemaGen setNamespaces(Map<String, String> namespaces) {
-		this.namespaces.putAll(namespaces);
-		return this;
-	}
-	
-	public SesameSchemaGen setNamespace(String prefix, String namespace) {
-		this.namespaces.put(prefix, namespace);
-		return this;
-	}
+        
+        setRepository(repository);
+        
+        setConfiguration(configuration);
+        exportConfiguration();
+        
+        RepositoryConnection conn = repository.getSesameRepository().getConnection();
+        conn.export(handler);
+        conn.close();
+    }
+    
+    public SesameSchemaGen setNamespaces(Map<String, String> namespaces) {
+        this.namespaces.putAll(namespaces);
+        return this;
+    }
+    
+    public SesameSchemaGen setNamespace(String prefix, String namespace) {
+        this.namespaces.put(prefix, namespace);
+        return this;
+    }
 
     @Override
     public SesameSchemaGen addExportNamespace(String ns) {
@@ -117,5 +117,5 @@ public class SesameSchemaGen extends SchemaGen {
         super.setOntologyImports(ontologyImports);
         return this;
     }
-	
+    
 }

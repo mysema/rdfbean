@@ -23,9 +23,9 @@ import org.joda.time.format.ISODateTimeFormat;
  */
 public class JodaTimeEditor extends PropertyEditorSupport {
 
-	private DateTimeFormatter getAsTextFmt;
-	private DateTimeFormatter setAsTextFmt;
-	 
+    private DateTimeFormatter getAsTextFmt;
+    private DateTimeFormatter setAsTextFmt;
+     
     public JodaTimeEditor() {
         this(ISODateTimeFormat.dateTimeNoMillis(), ISODateTimeFormat.dateTimeNoMillis() );
     }
@@ -38,9 +38,9 @@ public class JodaTimeEditor extends PropertyEditorSupport {
     }
     
     public static JodaTimeEditor forLocalDate(){
-    	//ISODateTimeFormat.dateTimeParser().withZone(DateTimeZone.getDefault()),
+        //ISODateTimeFormat.dateTimeParser().withZone(DateTimeZone.getDefault()),
         return new JodaTimeEditor(ISODateTimeFormat.dateTimeParser().withZone(DateTimeZone.getDefault())
-        		, DateTimeFormat.forPattern("yyyy-MM-ddZ").withZone(DateTimeZone.getDefault())) {
+                , DateTimeFormat.forPattern("yyyy-MM-ddZ").withZone(DateTimeZone.getDefault())) {
             @Override
             protected Object convert(DateTime dateTime) {
                 return new LocalDate(dateTime);
@@ -50,8 +50,8 @@ public class JodaTimeEditor extends PropertyEditorSupport {
     
     public static JodaTimeEditor forLocalTime(){
         return new JodaTimeEditor(
-        		ISODateTimeFormat.timeParser().withZone(DateTimeZone.getDefault()),
-        		ISODateTimeFormat.timeNoMillis()) {
+                ISODateTimeFormat.timeParser().withZone(DateTimeZone.getDefault()),
+                ISODateTimeFormat.timeNoMillis()) {
             @Override
             protected Object convert(DateTime dateTime) {
                 return new LocalTime(dateTime);

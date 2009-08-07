@@ -16,53 +16,53 @@ import org.apache.commons.collections15.BeanMap;
  */
 public class MethodProperty extends MappedProperty<Method> {
 
-	public static MethodProperty getMethodPropertyOrNull(Method method, MappedClass declaringClass) {
-	    try {
-	        return new MethodProperty(method, declaringClass);
-	    } catch (IllegalArgumentException e) {
-	        return null;
-	    }
-	}
+    public static MethodProperty getMethodPropertyOrNull(Method method, MappedClass declaringClass) {
+        try {
+            return new MethodProperty(method, declaringClass);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 
-	public static String getPropertyName(Method method) {
-		String name = method.getName();
-		Class<?> returnType = method.getReturnType();
-		Class<?>[] parameterTypes = method.getParameterTypes();
-		if (name.startsWith("is")
-				&& parameterTypes.length == 0 
-				&& ( returnType.equals(boolean.class) 
-						|| returnType.equals(Boolean.class) )) {
-			return Character.toString(Character.toLowerCase(name.charAt(2))) + name.substring(3); 
-		} else if (name.startsWith("get") 
-				&& parameterTypes.length == 0 
-				&& !returnType.equals(void.class)) {
-			return Character.toString(Character.toLowerCase(name.charAt(3))) + name.substring(4);
-		} else if (name.startsWith("set") // allow method chaining by returning "this"
-				&& parameterTypes.length == 1) {
-			return Character.toString(Character.toLowerCase(name.charAt(3))) + name.substring(4);
-		} else {
-			throw new IllegalArgumentException("Not getter or setter method: " + method);
-		}
-	}
-	
-	private boolean getter;
-	
-	private Method method;
+    public static String getPropertyName(Method method) {
+        String name = method.getName();
+        Class<?> returnType = method.getReturnType();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        if (name.startsWith("is")
+                && parameterTypes.length == 0 
+                && ( returnType.equals(boolean.class) 
+                        || returnType.equals(Boolean.class) )) {
+            return Character.toString(Character.toLowerCase(name.charAt(2))) + name.substring(3); 
+        } else if (name.startsWith("get") 
+                && parameterTypes.length == 0 
+                && !returnType.equals(void.class)) {
+            return Character.toString(Character.toLowerCase(name.charAt(3))) + name.substring(4);
+        } else if (name.startsWith("set") // allow method chaining by returning "this"
+                && parameterTypes.length == 1) {
+            return Character.toString(Character.toLowerCase(name.charAt(3))) + name.substring(4);
+        } else {
+            throw new IllegalArgumentException("Not getter or setter method: " + method);
+        }
+    }
+    
+    private boolean getter;
+    
+    private Method method;
 
-	private MethodProperty(Method method, MappedClass declaringClass) {
-		super(getPropertyName(method), method.getAnnotations(), declaringClass);
-		this.method = method;
-		if (method.getName().startsWith("set")) {
-			getter = false;
-		} else {
-			getter = true;
-		}
-	}
+    private MethodProperty(Method method, MappedClass declaringClass) {
+        super(getPropertyName(method), method.getAnnotations(), declaringClass);
+        this.method = method;
+        if (method.getName().startsWith("set")) {
+            getter = false;
+        } else {
+            getter = true;
+        }
+    }
 
-	@Override
-	public Method getMember() {
-		return method;
-	}
+    @Override
+    public Method getMember() {
+        return method;
+    }
 
     @Override
     protected Class<?> getTypeInternal() {
@@ -73,8 +73,8 @@ public class MethodProperty extends MappedProperty<Method> {
         }
     }
 
-	@Override
-	public Type getGenericType() {
+    @Override
+    public Type getGenericType() {
         Type gtype = null;
         if (getter) {
             gtype = method.getGenericReturnType();
@@ -83,13 +83,13 @@ public class MethodProperty extends MappedProperty<Method> {
             gtype = ptypes[0];
         }
         return gtype;
-	}
+    }
 
-	@Override
-	public void setValue(BeanMap beanMap, Object value) {
-//		beanWrapper.setPropertyValue(getName(), value);
-	    beanMap.put(getName(), value);
-	}
+    @Override
+    public void setValue(BeanMap beanMap, Object value) {
+//        beanWrapper.setPropertyValue(getName(), value);
+        beanMap.put(getName(), value);
+    }
 
     @Override
     public Object getValue(BeanMap instance) {

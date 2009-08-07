@@ -17,39 +17,39 @@ import com.mysema.commons.lang.Assert;
  */
 public class MappedConstructor {
 
-	private Constructor<?> constructor;
-	
-	private List<MappedPath> mappedArguments;
-	
-	public MappedConstructor(Constructor<?> constructor) {
-		this(constructor, Collections.<MappedPath>emptyList());
-	}
+    private Constructor<?> constructor;
+    
+    private List<MappedPath> mappedArguments;
+    
+    public MappedConstructor(Constructor<?> constructor) {
+        this(constructor, Collections.<MappedPath>emptyList());
+    }
 
-	public MappedConstructor(Constructor<?> constructor,
-			List<MappedPath> mappedArguments) {
-		this.constructor = Assert.notNull(constructor);
-		this.mappedArguments = Assert.notNull(mappedArguments);
-    	this.constructor.setAccessible(true);
-    	for (MappedPath path : mappedArguments) {
-    		path.setConstructorArgument(true);
-    	}
-	}
+    public MappedConstructor(Constructor<?> constructor,
+            List<MappedPath> mappedArguments) {
+        this.constructor = Assert.notNull(constructor);
+        this.mappedArguments = Assert.notNull(mappedArguments);
+        this.constructor.setAccessible(true);
+        for (MappedPath path : mappedArguments) {
+            path.setConstructorArgument(true);
+        }
+    }
 
-	public List<MappedPath> getMappedArguments() {
-		return mappedArguments;
-	}
+    public List<MappedPath> getMappedArguments() {
+        return mappedArguments;
+    }
 
-	public Constructor<?> getConstructor() {
-		return constructor;
-	}
+    public Constructor<?> getConstructor() {
+        return constructor;
+    }
 
-	public int getArgumentCount() {
-		return mappedArguments.size();
-	}
-	
-	public String toString() {
-		return constructor.toString();
-	}
+    public int getArgumentCount() {
+        return mappedArguments.size();
+    }
+    
+    public String toString() {
+        return constructor.toString();
+    }
 
     public Class<?> getDeclaringClass() {
         return constructor.getDeclaringClass();
