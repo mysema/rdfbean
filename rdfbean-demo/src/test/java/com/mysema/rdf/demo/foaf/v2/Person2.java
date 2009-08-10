@@ -21,40 +21,40 @@ public class Person2 extends Person {
     public void test() {
         Resource r = null;
         
-        for (UID uid : r.getValues().keySet()) {
-            System.out.println(uid + ":" + r.getValues().get(uid).getValue());
-        }
+//        for (UID uid : r.getValues().keySet()) {
+//            System.out.println(uid + ":" + r.getValues().get(uid).getValue());
+//        }
+//        
+//        for (UID uid : r.getLocalizedValues().keySet()) {
+//            for (Locale locale: r.getLocalizedValues().get(uid).keySet()) {
+//                System.out.println(uid + ": (" + locale + ") "+ r.getLocalizedValues().get(uid).getValue());
+//            }
+//        }
         
-        for (UID uid : r.getLocalizedValues().keySet()) {
-            for (Locale locale: r.getLocalizedValues().get(uid).keySet()) {
-                System.out.println(uid + ": (" + locale + ") "+ r.getLocalizedValues().get(uid).getValue());
-            }
-        }
-        
-        for (MProperty prop : r.getProperties()) {
-            for (Value<?> v : prop.getValues()) {
-                if (v instanceof Literal) {
-                    Literal<?> ml = (Literal<?>) v;
-                    System.out.println("Literal: " + ml.getType() + ":" + ml.getValue());
-                }
-                else if (v instanceof MLocalizedLiteral) {
-                    MLocalizedLiteral lv = (MLocalizedLiteral) v;
-                    System.out.println("Localized: " + lv.getLocale() + ":" + lv.getValue());
-                }
-                else if (v instanceof MPlainLiteral) {
-                    MPlainLiteral pv = (MPlainLiteral) v;
-                    System.out.println("Plain: " + pv.getValue());
-                }
-                else if (v instanceof Reference) {
-                    Reference<?> mv = (Reference<?>) v;
-                    System.out.println("Reference:" + mv.getType() + ":" + mv.getId());
-                }
-                else if (v instanceof MNotMappedReference) {
-                    MNotMappedReference mnv = (MNotMappedReference) v;
-                    System.out.println("Not mapped reference:" + mnv.getId());
-                }
-            }
-        }
+//        for (MProperty prop : r.getProperties()) {
+//            for (Value<?> v : prop.getValues()) {
+//                if (v instanceof Literal) {
+//                    Literal<?> ml = (Literal<?>) v;
+//                    System.out.println("Literal: " + ml.getType() + ":" + ml.getValue());
+//                }
+//                else if (v instanceof MLocalizedLiteral) {
+//                    MLocalizedLiteral lv = (MLocalizedLiteral) v;
+//                    System.out.println("Localized: " + lv.getLocale() + ":" + lv.getValue());
+//                }
+//                else if (v instanceof MPlainLiteral) {
+//                    MPlainLiteral pv = (MPlainLiteral) v;
+//                    System.out.println("Plain: " + pv.getValue());
+//                }
+//                else if (v instanceof Reference) {
+//                    Reference<?> mv = (Reference<?>) v;
+//                    System.out.println("Reference:" + mv.getType() + ":" + mv.getId());
+//                }
+//                else if (v instanceof MNotMappedReference) {
+//                    MNotMappedReference mnv = (MNotMappedReference) v;
+//                    System.out.println("Not mapped reference:" + mnv.getId());
+//                }
+//            }
+//        }
     }
 }
 /*
