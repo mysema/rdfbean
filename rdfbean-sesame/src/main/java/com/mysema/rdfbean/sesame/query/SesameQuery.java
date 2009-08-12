@@ -9,6 +9,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.*;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQuery;
@@ -376,6 +378,7 @@ public class SesameQuery extends
     }
     
     @SuppressWarnings("unchecked")
+    @Nullable
     private ValueExpr transformOperation(Operation<?,?> operation) {
         Operator<?> op = operation.getOperator();
         Transformer transformer;
@@ -513,8 +516,9 @@ public class SesameQuery extends
         }
     }
 
+    @Nullable
     private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 
-            Var valNode, Var keyNode) {
+            @Nullable Var valNode, @Nullable Var keyNode) {
         MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
         JoinBuilder builder = new JoinBuilder();
         if (valNode != null){
@@ -538,6 +542,7 @@ public class SesameQuery extends
     }
 
     @SuppressWarnings("unchecked")
+    @Nullable
     private ValueExpr transformPathEqNeConstant(Operation<?, ?> operation) {
         Path<?> path = (Path<?>) operation.getArg(0);
         Var pathVar = transformPath(path);
@@ -635,12 +640,14 @@ public class SesameQuery extends
         
     }
 
+    @SuppressWarnings("unchecked")
     private boolean isPathEqPath(Operation<?, ?> operation, Operator<?> op) {
         return  Ops.equalsOps.contains(op)
                 && operation.getArg(0) instanceof Path 
                 && operation.getArg(1) instanceof Path;
     }
     
+    @SuppressWarnings("unchecked")
     private boolean isPathEqNeConstant(Operation<?, ?> operation, Operator<?> op) {
         return (Ops.equalsOps.contains(op) || Ops.notEqualsOps.contains(op)) 
                 && operation.getArg(0) instanceof Path 

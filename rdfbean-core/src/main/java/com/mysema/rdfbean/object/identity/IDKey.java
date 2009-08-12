@@ -7,6 +7,8 @@ package com.mysema.rdfbean.object.identity;
 
 import java.io.Serializable;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
@@ -22,6 +24,7 @@ public final class IDKey implements Serializable {
     
     private static final long serialVersionUID = 2052361909789383871L;
 
+    @Nullable
     private final ID model;
     
     private final ID id;
@@ -34,7 +37,7 @@ public final class IDKey implements Serializable {
         this(Assert.notNull(model), (ID) bid);
     }
 
-    public IDKey(ID model, ID id) {
+    public IDKey(@Nullable ID model, ID id) {
         this.model = model;
         this.id = Assert.notNull(id);
     }

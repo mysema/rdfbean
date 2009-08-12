@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.model;
 
+import javax.annotation.Nullable;
+
 
 /**
  * @author sasa
@@ -12,6 +14,7 @@ package com.mysema.rdfbean.model;
  */
 public interface FetchStrategy {
 
+    @Nullable
     STMTMatcher getCacheKey(ID subject, UID predicate, NODE object, UID context,
             boolean includeInferred);
 

@@ -7,12 +7,15 @@ package com.mysema.rdfbean.model;
 
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 /**
  * @author sasa
  *
  */
 public class FullContextFetch implements FetchStrategy {
     
+    @Nullable
     private Set<UID> contexts = null;
 
     @Override

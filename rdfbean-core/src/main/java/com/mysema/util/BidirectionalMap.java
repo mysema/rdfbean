@@ -12,6 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.Factory;
 
 import com.mysema.commons.lang.Assert;
@@ -24,6 +26,7 @@ public class BidirectionalMap<K, V> implements Map<K, V>, Serializable {
 
     private static final long serialVersionUID = -5192883231277011164L;
 
+    @Nullable
     private Factory<V> factory;
     
     private Map<K, V> values; 
@@ -46,7 +49,7 @@ public class BidirectionalMap<K, V> implements Map<K, V>, Serializable {
         this(values, new HashMap<V, K>(), factory);
     }
     
-    private BidirectionalMap(Map<K, V> values, Map<V, K> keys, Factory<V> factory) {
+    private BidirectionalMap(Map<K, V> values, Map<V, K> keys, @Nullable Factory<V> factory) {
         this.values = Assert.notNull(values);
         this.keys = Assert.notNull(keys);
         this.factory = factory;

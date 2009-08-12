@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.object;
 
+import javax.annotation.Nullable;
+
 /**
  * SessionContext provides
  *
@@ -17,6 +19,7 @@ public interface SessionContext {
      * 
      * @return
      */
+    @Nullable
     Session getCurrentSession();
 
 }

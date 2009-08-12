@@ -46,6 +46,18 @@
       <artifactId>derby</artifactId>
       <version>10.4.2.0</version>
     </dependency>
+    
+    <!-- bug detection -->
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>1.3.8</version>
+    </dependency>
+    <dependency>
+      <groupId>findbugs</groupId>
+      <artifactId>annotations</artifactId>
+      <version>1.0.0</version>
+    </dependency>    
   </dependencies>
 
   <build>

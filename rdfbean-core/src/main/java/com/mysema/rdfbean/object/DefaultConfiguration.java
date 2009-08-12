@@ -5,25 +5,15 @@
  */
 package com.mysema.rdfbean.object;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+
+import javax.annotation.Nullable;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.MappedClasses;
-import com.mysema.rdfbean.model.FetchStrategy;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFS;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.identity.IdentityService;
 import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 import com.mysema.rdfbean.owl.OWL;
@@ -124,7 +114,7 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public UID getContext(Class<?> javaClass, ID subject) {
+    public UID getContext(Class<?> javaClass, @Nullable ID subject) {
         Context ctxAnno = javaClass.getAnnotation(Context.class);
         if (ctxAnno == null) {
             Package pack = javaClass.getPackage();

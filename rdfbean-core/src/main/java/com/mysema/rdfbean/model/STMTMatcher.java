@@ -5,17 +5,19 @@
  */
 package com.mysema.rdfbean.model;
 
+import javax.annotation.Nullable;
+
 /**
  * @author sasa
  *
  */
 public final class STMTMatcher {
-    private final ID subject; 
-    private final UID predicate; 
-    private final NODE object; 
+    @Nullable private final ID subject;
+    @Nullable private final UID predicate;
+    @Nullable private final NODE object;    
     private final UID context;
     private final boolean includeInferred;
-    public STMTMatcher(ID subject, UID predicate, NODE object, UID context,
+    public STMTMatcher(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, UID context,
             boolean includeInferred) {
         super();
         this.subject = subject;

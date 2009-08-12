@@ -6,7 +6,10 @@
 package com.mysema.rdfbean.object;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
+
+import javax.annotation.Nullable;
 
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.Repository;
@@ -23,8 +26,8 @@ public final class SessionUtil {
         return openSession(repository, (Locale) null, classes);
     }
     
-    public static Session openSession(Repository<?> repository, Locale locale, Class<?>... classes) {
-        return openSession(repository, locale != null ? Arrays.asList(locale) : null, classes);
+    public static Session openSession(Repository<?> repository, @Nullable Locale locale, Class<?>... classes) {
+        return openSession(repository, locale != null ? Arrays.asList(locale) : Collections.<Locale>emptyList(), classes);
     }
 
     public static Session openSession(Repository<?> repository, Iterable<Locale> locales, Class<?>... classes) {
@@ -39,8 +42,8 @@ public final class SessionUtil {
         return openSession(repository, (Locale) null, packages);
     }
     
-    public static Session openSession(Repository<?> repository, Locale locale, Package... packages) {
-        return openSession(repository, locale != null ? Arrays.asList(locale) : null, packages);
+    public static Session openSession(Repository<?> repository, @Nullable Locale locale, Package... packages) {
+        return openSession(repository, locale != null ? Arrays.asList(locale) : Collections.<Locale>emptyList(), packages);
     }
 
     public static Session openSession(Repository<?> repository, Iterable<Locale> locales, Package... packages) {

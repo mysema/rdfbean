@@ -57,11 +57,9 @@ public abstract class Dialect
     public abstract U getPredicate(S statement);
 
     public final R getResource(ID id) {
-        if (id == null) {
-            return null;
-        } else if (id instanceof UID) {
+        if (id instanceof UID) {
             return getURI((UID) id);
-        } else {
+        } else{
             return getBNode((BID) id);
         }
     }

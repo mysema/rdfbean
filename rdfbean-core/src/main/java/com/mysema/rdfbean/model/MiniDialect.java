@@ -10,6 +10,8 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 /**
  * @author sasa
  * 
@@ -44,8 +46,7 @@ public final class MiniDialect extends Dialect<NODE, ID, BID, UID, LIT, STMT> {
         return new UID(uri);
     }
     
-    public static UID UID(String parentNs, String ns, String ln,
-            String elementName) {
+    public static UID UID(@Nullable String parentNs, String ns, String ln, @Nullable String elementName) {
         if (isBlank(ns)) {
             if (isNotBlank(parentNs)) {
                 ns = parentNs;

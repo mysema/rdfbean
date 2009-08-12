@@ -6,41 +6,15 @@
 package com.mysema.rdfbean.object;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Member;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.lang.reflect.*;
+import java.util.*;
+
+import javax.annotation.Nullable;
 
 import org.apache.commons.collections15.BeanMap;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.annotations.ComponentType;
-import com.mysema.rdfbean.annotations.Container;
-import com.mysema.rdfbean.annotations.ContainerType;
-import com.mysema.rdfbean.annotations.Default;
-import com.mysema.rdfbean.annotations.Defaults;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Inject;
-import com.mysema.rdfbean.annotations.Localized;
-import com.mysema.rdfbean.annotations.MapElements;
-import com.mysema.rdfbean.annotations.Mixin;
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.annotations.Required;
+import com.mysema.rdfbean.annotations.*;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniDialect;
 import com.mysema.rdfbean.model.UID;
@@ -75,6 +49,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return ns;
     }
 
+    @Nullable
     private String name;
     
     private Class<?> type;
@@ -93,7 +68,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         new HashMap<Class<? extends Annotation>, Annotation>();
 
     @SuppressWarnings("unchecked")
-    MappedProperty(String name, Annotation[] annotations, MappedClass declaringClass) {
+    MappedProperty(@Nullable String name, Annotation[] annotations, MappedClass declaringClass) {
         this.name = name;
         this.declaringClass = declaringClass;
         for (Annotation annotation : Assert.notNull(annotations)) {
@@ -117,7 +92,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return clazz;
     }
     
-    void resolve(MappedClass owner) {
+    void resolve(@Nullable MappedClass owner) {
         if (this.type == null) {
             this.type = getTypeInternal();
         }
@@ -147,6 +122,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
     
     @SuppressWarnings("unchecked")
+    @Nullable
     public Class<? extends Collection> getCollectionType() {
         if (isCollection()) {
             Class collectionType = getType();
@@ -207,7 +183,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
 
     @SuppressWarnings("unchecked")
-    Class getGenericClass(final Type gtype, int index, MappedClass owner, int typeVariableIndex) {
+    @Nullable
+    Class getGenericClass(@Nullable final Type gtype, int index, MappedClass owner, int typeVariableIndex) {
         Type type = gtype;
 //        Type gtype = getParametrizedType(member);
         if (type != null) {
@@ -293,6 +270,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     
     public abstract Object getValue(BeanMap instance);
     
+    @Nullable
     public UID getValuePredicate() {
         MapElements mapKey = getAnnotation(MapElements.class);
         String parentNs = getParentNs(mapKey, getMember());
@@ -383,7 +361,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     
     public abstract boolean isVirtual();
 
-    public abstract void setValue(BeanMap beanWrapper, Object value);
+    public abstract void setValue(BeanMap beanWrapper, @Nullable Object value);
 
     public void validate(MappedPath path) {
         if (isMixin()) {

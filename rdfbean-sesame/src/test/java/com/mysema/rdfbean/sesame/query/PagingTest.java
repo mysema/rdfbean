@@ -7,6 +7,8 @@ package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertEquals;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Test;
 
@@ -34,7 +36,7 @@ public class PagingTest extends AbstractSesameQueryTest{
         assertResultSize(9, 0, new QueryModifiers(10l,9l));
     }
     
-    private void assertResultSize(int total, int size, QueryModifiers modifiers){        
+    private void assertResultSize(int total, int size, @Nullable QueryModifiers modifiers){        
         // via list
         assertEquals(size, createQuery(modifiers).list(var2).size());
         
@@ -50,7 +52,7 @@ public class PagingTest extends AbstractSesameQueryTest{
         assertEquals(size, IteratorUtils.toList(createQuery(modifiers).iterate(var2)).size());
     }
     
-    private BeanQuery createQuery(QueryModifiers modifiers){
+    private BeanQuery createQuery(@Nullable QueryModifiers modifiers){
         BeanQuery beanQuery = newQuery().from(var2);
         if (modifiers != null) beanQuery.restrict(modifiers);
         return beanQuery;

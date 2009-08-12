@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.model;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.annotations.Entity;
 
@@ -22,6 +24,7 @@ public final class STMT {
     
     private final NODE object;
     
+    @Nullable
     private final UID context;
     
     private final boolean asserted;
@@ -30,11 +33,11 @@ public final class STMT {
         this(subject, predicate, object, null);
     }
 
-    public STMT(ID subject, UID predicate, NODE object, UID context) {
+    public STMT(ID subject, UID predicate, NODE object, @Nullable UID context) {
         this(subject, predicate, object, context, true);
     }
 
-    public STMT(ID subject, UID predicate, NODE object, UID context, boolean asserted) {
+    public STMT(ID subject, UID predicate, NODE object, @Nullable UID context, boolean asserted) {
         this.subject = Assert.notNull(subject);
         this.predicate = Assert.notNull(predicate);
         this.object = Assert.notNull(object);

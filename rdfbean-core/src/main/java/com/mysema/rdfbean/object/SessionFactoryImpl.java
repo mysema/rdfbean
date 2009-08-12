@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.Required;
@@ -119,7 +121,7 @@ public class SessionFactoryImpl implements SessionFactory {
     }
     
     private void addStatement(RDFConnection connection, STMT stmt) {
-        connection.update(null, Collections.singleton(stmt));
+        connection.update(Collections.<STMT>emptySet(), Collections.singleton(stmt));
     }
 
     private void cleanupModel(RDFConnection connection){
@@ -127,7 +129,7 @@ public class SessionFactoryImpl implements SessionFactory {
         removeStatements(connection, null, CORE.localId, null, null);
     }
 
-    protected void removeStatements(RDFConnection connection, ID subject, UID predicate, NODE object, UID context) {
+    protected void removeStatements(RDFConnection connection,@Nullable ID subject, UID predicate, @Nullable NODE object, @Nullable UID context) {
         CloseableIterator<STMT> stmts = connection.findStatements(subject, predicate, object, context, false);
         try {
             while (stmts.hasNext()) {
@@ -143,7 +145,7 @@ public class SessionFactoryImpl implements SessionFactory {
     }
 
     private void removeStatement(RDFConnection connection, STMT stmt) {
-        connection.update(Collections.singleton(stmt), null);
+        connection.update(Collections.singleton(stmt), Collections.<STMT>emptySet());
     }
 
     private boolean verifyLocalId(RDFConnection connection, BID model, BID bnode) {

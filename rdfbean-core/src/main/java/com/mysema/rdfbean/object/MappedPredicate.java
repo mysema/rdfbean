@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.object;
 
+import javax.annotation.Nullable;
+
 import com.mysema.rdfbean.annotations.Predicate;
 
 /**
@@ -19,9 +21,10 @@ public class MappedPredicate extends URIMapping {
     
     private boolean includeInferred;
     
+    @Nullable
     private String context;
     
-    public MappedPredicate(String parentNs, Predicate predicate, String elementName) {
+    public MappedPredicate(String parentNs, Predicate predicate, @Nullable String elementName) {
         super(parentNs, predicate.ns(), predicate.ln(), elementName);
         this.inv = predicate.inv();
         this.ignoreInvalid = predicate.ignoreInvalid();

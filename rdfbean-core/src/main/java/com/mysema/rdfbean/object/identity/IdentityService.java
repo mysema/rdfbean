@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.object.identity;
 
+import javax.annotation.Nullable;
+
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.UID;
@@ -21,6 +23,7 @@ public interface IdentityService {
     
     LID getLID(ID model, ID id);
 
+    @Nullable
     ID getID(LID lid);
     
 }

@@ -8,6 +8,8 @@ package com.mysema.rdfbean.model;
 import java.io.Closeable;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
@@ -15,7 +17,11 @@ import com.mysema.rdfbean.object.Session;
 
 public interface RDFConnection extends Closeable {
 
-    CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context, boolean includeInferred);
+    CloseableIterator<STMT> findStatements(
+            @Nullable ID subject, 
+            @Nullable UID predicate, 
+            @Nullable NODE object, 
+            @Nullable UID context, boolean includeInferred);
 
     void update(Set<STMT> removedStatements, Set<STMT> addedStatements);
     

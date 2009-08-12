@@ -48,7 +48,7 @@ public class JoinBuilder{
         return this;
     }
     
-    private class Pattern implements Comparable<Pattern>{
+    private static class Pattern implements Comparable<Pattern>{
         private StatementPattern pattern;
         private boolean optional;
         public Pattern(StatementPattern pattern){
@@ -77,6 +77,11 @@ public class JoinBuilder{
         @Override
         public boolean equals(Object o){
             return o instanceof Pattern && ((Pattern)o).pattern.equals(pattern);
+        }
+        
+        @Override
+        public int hashCode(){
+            return pattern.hashCode();
         }
         
         private int compare(Var var1, Var var2){

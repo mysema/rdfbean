@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.object;
 
+import javax.annotation.Nullable;
+
 /**
  * @author sasa
  * 
@@ -21,6 +23,7 @@ public interface SessionFactory {
      * 
      * @return
      */
+    @Nullable
     public Session getCurrentSession();
 
     /**

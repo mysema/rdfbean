@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.Assert;
 
 /**
@@ -23,6 +25,7 @@ public class VarNameIterator implements Iterator<String>{
     private Set<String> disallowed = new HashSet<String>();
     private char firstChar = 'a';
     
+    @Nullable
     private String prefix = null;
     
     public VarNameIterator(){}

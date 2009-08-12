@@ -5,20 +5,10 @@
  */
 package com.mysema.rdfbean.object;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.*;
+import java.util.*;
+
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -112,6 +102,7 @@ public class MappedClass {
     	return getClassNs(clazz);
     }
     
+    @Nullable
     public static UID getUID(Class<?> clazz) {
     	ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
         if (cmap != null) {

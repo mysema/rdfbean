@@ -30,7 +30,7 @@ public class DerbyIdentityService extends JDBCIdentityService {
     
     private String connectionUrl, username, password;
     
-    private final String checkCall = "{ call getlid('a','b',1) }" ;
+    private static final String checkCall = "{ call getlid('a','b',1) }" ;
 
     public DerbyIdentityService(String connectionUrl) throws IOException {
         this(connectionUrl, "", "");

@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.object;
 
+import javax.annotation.Nullable;
+
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.MiniDialect;
 import com.mysema.rdfbean.model.UID;
@@ -21,7 +23,7 @@ public class URIMapping {
         this(null, namespace, localName, null);
     }
 
-    public URIMapping(String parentNs, String ns, String ln, String elementName) {
+    public URIMapping(@Nullable String parentNs, String ns, String ln, @Nullable String elementName) {
         uid = MiniDialect.UID(parentNs, ns, ln, elementName);
     }
 

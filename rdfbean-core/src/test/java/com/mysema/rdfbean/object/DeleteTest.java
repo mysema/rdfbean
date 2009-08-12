@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,6 +45,7 @@ public class DeleteTest {
     @Container(ContainerType.SEQ)
     private List<DeleteDTO> seqReference = new ArrayList<DeleteDTO>();
 
+    @Nullable
     private Session session;
     
     private MiniRepository repository = new MiniRepository();

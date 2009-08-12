@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.iterators.FilterIterator;
 import org.apache.commons.collections15.iterators.IteratorChain;
@@ -91,7 +93,7 @@ public final class MiniRepository implements Repository<MiniDialect> {
         stmtCache.add(stmt);
     }
 
-    public CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+    public CloseableIterator<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context, boolean includeInferred) {
         Iterator<STMT> iterator = null;
         if (subject != null) {
             iterator = getIndexed(subject, predicate, subjects);
@@ -120,13 +122,13 @@ public final class MiniRepository implements Repository<MiniDialect> {
         
         private Iterator<STMT> iter;
         
-        private ResultIterator(Iterable<STMT> iterable, final ID subject, final UID predicate, 
-                final NODE object, final UID context, final boolean includeInferred) {
+        private ResultIterator(Iterable<STMT> iterable, @Nullable final ID subject, @Nullable final UID predicate, 
+                @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
             this(iterable.iterator(), subject, predicate, object, context, includeInferred);
         }
         
-        private ResultIterator(Iterator<STMT> iterator, final ID subject, final UID predicate, 
-                final NODE object, final UID context, final boolean includeInferred) {
+        private ResultIterator(Iterator<STMT> iterator, @Nullable final ID subject, @Nullable final UID predicate, 
+                @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
             this.iter = new FilterIterator<STMT>(iterator, new Predicate<STMT>() {
 
                 @Override

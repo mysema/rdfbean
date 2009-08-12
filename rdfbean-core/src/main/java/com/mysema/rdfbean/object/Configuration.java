@@ -8,6 +8,8 @@ package com.mysema.rdfbean.object;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
@@ -25,7 +27,7 @@ public interface Configuration {
     
     Set<Class<?>> getMappedClasses();
 
-    UID getContext(Class<?> javaClass, ID subject);
+    UID getContext(Class<?> javaClass, @Nullable ID subject);
 
     boolean isRestricted(UID uid);
 

@@ -6,6 +6,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -72,7 +74,7 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         return classToType.get(javaClass);
     }
 
-    private <T> void register(UID type, Class<T> clazz, Converter<T> converter) {        
+    private <T> void register(UID type, Class<T> clazz, @Nullable Converter<T> converter) {        
         classToType.put(clazz, type);
         if (converter != null){
             classToConverter.put(clazz, converter);    

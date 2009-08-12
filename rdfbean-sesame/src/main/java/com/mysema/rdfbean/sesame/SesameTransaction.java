@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.store.Isolation;
 import org.openrdf.store.StoreException;
 import org.slf4j.Logger;
@@ -45,6 +47,7 @@ public class SesameTransaction implements RDFBeanTransaction{
     
     private boolean active = false;
     
+    @Nullable
     private Isolation isolationLevel;
     
     public SesameTransaction(SesameConnection connection, int isolationLevel) {

@@ -9,6 +9,8 @@ import java.io.Closeable;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
@@ -147,6 +149,7 @@ public interface Session extends ObjectRepository, Closeable {
      * @param subject   ID of queried object.
      * @return          object with given id or null if not found.
      */
+    @Nullable
     <T> T get(Class<T> clazz, ID subject);
 
     /**
@@ -156,6 +159,7 @@ public interface Session extends ObjectRepository, Closeable {
      * @param subject   locla id of queried object.
      * @return          object with given id or null if not found.
      */
+    @Nullable
     <T> T get(Class<T> clazz, LID subject);
     
     /**
@@ -183,6 +187,7 @@ public interface Session extends ObjectRepository, Closeable {
      * @param clazz
      * @return
      */
+    @Nullable
     <T> T getById(String id, Class<T> clazz);
     
     /**
@@ -190,6 +195,7 @@ public interface Session extends ObjectRepository, Closeable {
      */
     Configuration getConfiguration();
 
+    @Nullable
     ID getId(Object instance);
     
     /**

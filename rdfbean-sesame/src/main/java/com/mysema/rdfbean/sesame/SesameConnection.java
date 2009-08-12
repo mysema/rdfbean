@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.*;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.repository.RepositoryConnection;
@@ -38,6 +40,7 @@ public class SesameConnection implements RDFConnection {
     
     private SesameDialect dialect;
     
+    @Nullable
     private SesameTransaction localTxn = null;
     
     private boolean readonlyTnx = false;
@@ -185,6 +188,7 @@ public class SesameConnection implements RDFConnection {
         }
     }
 
+    @Nullable
     private ID convert(Resource resource) {
         if (resource == null) {
             return null; 
@@ -193,6 +197,7 @@ public class SesameConnection implements RDFConnection {
         }
     }
 
+    @Nullable
     private UID convert(URI uri) {
         if (uri == null) {
             return null;
@@ -201,10 +206,12 @@ public class SesameConnection implements RDFConnection {
         }
     }
 
+    @Nullable
     private URI convert(UID uid) {
         return uid != null ? vf.createURI(uid.getId()) : null;
     }
     
+    @Nullable
     private Resource convert(ID id) {
         if (id == null) {
             return null;
@@ -215,6 +222,7 @@ public class SesameConnection implements RDFConnection {
         }
     }
 
+    @Nullable
     private Value convert(NODE node) {
         Value value = null;
         if (node != null) {

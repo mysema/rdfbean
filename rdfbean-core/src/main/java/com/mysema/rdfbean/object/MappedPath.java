@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Path;
@@ -25,6 +27,7 @@ import com.mysema.util.StringUtils;
  */
 public class MappedPath {
 
+    @Nullable
     static MappedPath getMappedPath(MappedProperty<?> property, List<MappedPredicate> path) {
         property.resolve(null);
         if (path != null) {
@@ -54,6 +57,7 @@ public class MappedPath {
     	}
     }
     
+    @Nullable
     static MappedPath getPathMapping(String classNs, Method method, MappedClass declaringClass) {
         MethodProperty property = MethodProperty.getMethodPropertyOrNull(method, declaringClass);
         if (property != null) {
@@ -64,6 +68,7 @@ public class MappedPath {
         }
     }
 
+    @Nullable
     private static List<MappedPredicate> getPredicatePath(String classNs, 
             MappedProperty<?> property) {
         String parentNs = classNs;

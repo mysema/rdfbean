@@ -7,6 +7,8 @@ package com.mysema.rdfbean.model;
 
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.annotations.Entity;
@@ -20,11 +22,12 @@ public final class LIT extends NODE {
     
     private static final long serialVersionUID = 4279040868676951911L;
 
-    private final String value; // not null
+    private final String value; 
     
+    @Nullable
     private final Locale lang;
     
-    private final UID datatype; // not null
+    private final UID datatype; 
 
     public LIT(String value, UID datatype) {
         this.value = Assert.notNull(value);

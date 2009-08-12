@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
@@ -82,7 +84,7 @@ public abstract class JDBCIdentityService implements IdentityService{
     
     
     @Override
-    public LID getLID(ID model, ID id) {
+    public LID getLID(@Nullable ID model, ID id) {
         if (id instanceof UID){
             model = null;
         }

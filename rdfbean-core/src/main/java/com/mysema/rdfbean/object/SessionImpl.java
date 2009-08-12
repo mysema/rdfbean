@@ -10,6 +10,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
@@ -62,6 +64,7 @@ public class SessionImpl implements Session {
     
     private Set<STMT> removedStatements;
     
+    @Nullable
     private Set<Object> seen;
     
     private RDFBeanTransaction transaction;
@@ -100,14 +103,14 @@ public class SessionImpl implements Session {
             seen = new HashSet<Object>();
             flush = true;
         }
-    	ID subject = toRDF(instance, null);
-    	if (flush) {
-    	    seen = null;
-    	    if (flushMode == FlushMode.ALWAYS) {
-    	        flush();
-    	    }
-    	}
-    	return toLID(subject);
+        ID subject = toRDF(instance, null);
+        if (flush) {
+            seen = null;
+            if (flushMode == FlushMode.ALWAYS) {
+                flush();
+            }
+        }
+        return toLID(subject);
     }
     
     @Override
@@ -142,7 +145,7 @@ public class SessionImpl implements Session {
         return subject;
     }
     
-//	private void assignModel() {
+//    private void assignModel() {
 //        CloseableIterator<STMT> statements = connection.findStatements(null, CORE.modelId, null, null, false);
 //        if (statements.hasNext()) {
 //            STMT statement = statements.next();
@@ -177,7 +180,8 @@ public class SessionImpl implements Session {
         bind(getId(mappedClass, beanMap), beanMap);
     }
         
-    protected <T> T bind(ID subject, T instance) {
+    @Nullable
+    protected <T> T bind(ID subject, @Nullable T instance) {
         if (instance != null) {
             if (instance instanceof LifeCycleAware) {
                 ((LifeCycleAware) instance).beforeBinding();
@@ -288,6 +292,7 @@ public class SessionImpl implements Session {
         }
     }
     
+    @Nullable
     private Class<?> convertClassReference(UID uid, Class<?> targetClass) {
         List<Class<?>> mappedClasses = conf.getMappedClasses(uid);
         boolean foundMatch = false;
@@ -368,14 +373,14 @@ public class SessionImpl implements Session {
                 locales, null);
     }
 
-	private Map<Locale, String> convertLocalizedMap(MappedPath propertyPath, Set<? extends NODE> values) {
+    private Map<Locale, String> convertLocalizedMap(MappedPath propertyPath, Set<? extends NODE> values) {
         Map<Locale, String> result = new HashMap<Locale, String>();
         for (NODE value : values) {
             // XXX what if node is a resource?
             LIT literal = (LIT) value;
             Locale lang = literal.getLang();
             if (lang == null) {
-            	lang = Locale.ROOT;
+                lang = Locale.ROOT;
             }
             result.put(lang, literal.getValue());
         }
@@ -410,7 +415,8 @@ public class SessionImpl implements Session {
     }
 
     @SuppressWarnings("unchecked")
-	private <T> T convertMappedObject(ID subject, Class<?> requiredClass, boolean polymorphic, boolean injection) {
+    @Nullable
+    private <T> T convertMappedObject(ID subject, Class<?> requiredClass, boolean polymorphic, boolean injection) {
         // XXX defaultContext?
         UID context = getContext(requiredClass, subject, null);
         Object instance = get(subject, requiredClass);
@@ -427,13 +433,17 @@ public class SessionImpl implements Session {
                 }
             }
             if (polymorphic) {
-                instance = createInstance(subject, 
-                        findMappedTypes(subject, context), 
-                        requiredClass);
+                Collection mappedTypes = findMappedTypes(subject, context);
+                if (!mappedTypes.isEmpty()){
+                    instance = createInstance(subject, 
+                            requiredClass, 
+                            mappedTypes);    
+                }
+                
             } else {
                 instance = createInstance(subject, 
-                        null, 
-                        requiredClass);
+                        requiredClass, 
+                        Collections.<ID>emptyList());
             }
             put(subject, instance);
             bind(subject, instance);
@@ -441,9 +451,10 @@ public class SessionImpl implements Session {
         return (T) instance;
     }
 
+    @Nullable
     @SuppressWarnings("unchecked")
     protected <T> Class<? extends T> matchType(Collection<ID> types, Class<T> targetType) {
-        if (types == null) {
+        if (types.isEmpty()) {
             return targetType;
         } else {
             Class<? extends T> result = targetType;
@@ -470,12 +481,10 @@ public class SessionImpl implements Session {
         } 
     }
     
-    protected <T> T createInstance(ID subject, Collection<ID> types, Class<T> requiredType) {
-        if (types != null && types.isEmpty()) {
-            return null;
-        }
+    @Nullable
+    protected <T> T createInstance(ID subject, Class<T> requiredType, Collection<ID> mappedTypes) {
         T instance;
-        Class<? extends T> actualType = matchType(types, requiredType);
+        Class<? extends T> actualType = matchType(mappedTypes, requiredType);
         if (actualType != null) {
             if (!conf.allowCreate(actualType)) {
                 instance = null;
@@ -495,23 +504,23 @@ public class SessionImpl implements Session {
                     }
                 } catch (InstantiationException e) {
                     logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, types, requiredType, e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
                 } catch (IllegalAccessException e) {
                     logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, types, requiredType, e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
                 } catch (SecurityException e) {
                     logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, types, requiredType, e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
                 } catch (IllegalArgumentException e) {
                     logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, types, requiredType, e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
                 } catch (InvocationTargetException e) {
                     logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, types, requiredType, e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
                 }
             }
         } else {
-            instance = errorHandler.typeMismatchError(subject, types, requiredType);
+            instance = errorHandler.typeMismatchError(subject, mappedTypes, requiredType);
         }
         return instance;
     }
@@ -527,7 +536,8 @@ public class SessionImpl implements Session {
     }
     
     @SuppressWarnings("unchecked")
-    private Object convertValue(NODE value, Class<?> targetClass, MappedPath propertyPath) {
+    @Nullable
+    private Object convertValue(@Nullable NODE value, Class<?> targetClass, MappedPath propertyPath) {
         Object convertedValue;
         if (value == null) {
             convertedValue = null;
@@ -733,8 +743,8 @@ public class SessionImpl implements Session {
     }
 
     // FIXME: This should return a closable iterator
-    protected List<STMT> findStatements(ID subject, UID predicate, NODE object, 
-            boolean includeInferred, UID context) {
+    protected List<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, 
+            boolean includeInferred, @Nullable UID context) {
         List<STMT> statements = new ArrayList<STMT>();
         CloseableIterator<STMT> iter = connection.findStatements(subject, predicate, object, context, includeInferred);
         try {
@@ -808,7 +818,7 @@ public class SessionImpl implements Session {
         return get(clazz, identityService.getID(subject));
     }
 
-    
+    @Nullable
     private Object get(ID resource, Class<?> clazz) {
         for (Object instance : instanceCache.get(resource)) {
             if (clazz == null || clazz.isInstance(instance)) {
@@ -852,23 +862,23 @@ public class SessionImpl implements Session {
         return (T) get(clazz, subject);
     }
 
-	private List<Object> getConstructorArguments(MappedClass mappedClass, ID subject, MappedConstructor mappedConstructor) throws InstantiationException, IllegalAccessException {
+    private List<Object> getConstructorArguments(MappedClass mappedClass, ID subject, MappedConstructor mappedConstructor) throws InstantiationException, IllegalAccessException {
         List<Object> constructorArguments = new ArrayList<Object>(mappedConstructor.getArgumentCount());
         // TODO parentContext?
         UID context = getContext(mappedConstructor.getDeclaringClass(), subject, null);
         for (MappedPath path : mappedConstructor.getMappedArguments()) {
-        	constructorArguments.add(getValue(path, 
+            constructorArguments.add(getValue(path, 
                     getPathValue(mappedClass, path, subject, context), 
                     context));
         }
         return constructorArguments;
-	}
+    }
     
-    public UID getContext(Object instance, ID subject, UID defaultContext) {
+    public UID getContext(Object instance, @Nullable ID subject, @Nullable UID defaultContext) {
         return getContext(instance.getClass(), subject, defaultContext);
     }
     
-    public UID getContext(Class<?> clazz, ID subject, UID defaultContext) {
+    public UID getContext(Class<?> clazz, @Nullable ID subject, @Nullable UID defaultContext) {
         UID contextUID = conf.getContext(clazz, subject);
         if (contextUID != null) {
             return contextUID;
@@ -891,7 +901,8 @@ public class SessionImpl implements Session {
         return conf.getConverterRegistry();
     }
 
-    private NODE getFunctionalValue(ID subject, UID predicate, boolean includeInferred, UID context) {
+    @Nullable
+    private NODE getFunctionalValue(ID subject, UID predicate, boolean includeInferred, @Nullable UID context) {
         List<STMT> statements = findStatements(subject, predicate, null, includeInferred, context);
         if (statements.size() > 1) {
             errorHandler.functionalValueError(subject, predicate, includeInferred, context);
@@ -904,6 +915,7 @@ public class SessionImpl implements Session {
         }
     }
     
+    @Nullable
     private ID getId(MappedClass mappedClass, Object instance) {
         MappedProperty<?> idProperty = mappedClass.getIdProperty();
         if (idProperty != null) {
@@ -953,25 +965,25 @@ public class SessionImpl implements Session {
     }
 
     private Set<NODE> getPathValue(MappedClass mappedClass, MappedPath path, ID subject, UID context) {
-		if (conf.allowRead(path)) {
-	        Set<NODE> values;
+        if (conf.allowRead(path)) {
+            Set<NODE> values;
             MappedProperty<?> property = path.getMappedProperty();
             if (property.isMixin()) {
                 values = Collections.<NODE>singleton(subject);
             } else if (path.size() > 0) {
-	            values = findPathValues(subject, path, 0, context);
-	        } else {
-	            values = new LinkedHashSet<NODE>();
-	        }
-	        if (values.isEmpty()) {
+                values = findPathValues(subject, path, 0, context);
+            } else {
+                values = new LinkedHashSet<NODE>();
+            }
+            if (values.isEmpty()) {
                 for (UID uri : property.getDefaults()) {
                     values.add(uri);
                 }
-	        }
-	        return values;
-		}
-		return Collections.emptySet();
-	}
+            }
+            return values;
+        }
+        return Collections.emptySet();
+    }
     
     @Override
     public RDFBeanTransaction getTransaction() {
@@ -1013,7 +1025,7 @@ public class SessionImpl implements Session {
         return convertedValue;
     }
 
-    private void put(ID resource, Object value) {
+    private void put(ID resource, @Nullable Object value) {
         if (resource != null) {
             instanceCache.get(resource).add(value);
             resourceCache.put(value, resource);
@@ -1042,22 +1054,22 @@ public class SessionImpl implements Session {
     private <T> void setId(MappedClass mappedClass, ID subject, BeanMap instance) {
         MappedProperty<?> idProperty = mappedClass.getIdProperty();
         if (idProperty != null && !mappedClass.isEnum() && !idProperty.isVirtual()) {
-        	Object id = null;
-        	Identifier identifier;
+            Object id = null;
+            Identifier identifier;
             Class<?> type = idProperty.getType();
             IDType idType = idProperty.getIDType();
-			if (idType == IDType.LOCAL) {
-			    identifier = toLID(subject);
-			} else if (idType == IDType.URI) {
+            if (idType == IDType.LOCAL) {
+                identifier = toLID(subject);
+            } else if (idType == IDType.URI) {
                 if (subject.isURI()) {
                     identifier = subject;
                 } else {
                     identifier = null;
                 }
-			} else {
-			    identifier = subject;
-			}
-			if (identifier != null) {
+            } else {
+                identifier = subject;
+            }
+            if (identifier != null) {
                 if (String.class.isAssignableFrom(type)) {
                     id = identifier.getId();
                 } else if (Identifier.class.isAssignableFrom(type)) {
@@ -1066,7 +1078,7 @@ public class SessionImpl implements Session {
                     throw new RuntimeException(
                             "Cannot assign id of " + mappedClass + " into " + type);
                 }
-			}
+            }
             idProperty.setValue(instance, id);
         }
     }
@@ -1199,7 +1211,7 @@ public class SessionImpl implements Session {
         return object instanceof BeanMap ? ((BeanMap) object).getBean().getClass() : object.getClass();
     }
     
-    private ID toRDF(Object instance, UID parentContext) {
+    private ID toRDF(Object instance, @Nullable UID parentContext) {
         BeanMap beanMap = toBeanMap(Assert.notNull(instance));
         Class<?> clazz = getClass(instance);
         MappedClass mappedClass = MappedClass.getMappedClass(clazz);

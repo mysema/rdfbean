@@ -21,6 +21,8 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.sail.memory.MemoryStore;
 import org.openrdf.store.StoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
 
@@ -29,6 +31,8 @@ import com.mysema.commons.lang.Assert;
  *
  */
 public class RDFIO {
+    
+    private static final Logger logger = LoggerFactory.getLogger(RDFIO.class);
     
     private RDFSource[] sources;
     
@@ -77,7 +81,9 @@ public class RDFIO {
             target = target.getAbsoluteFile();
             File dir = target.getParentFile();
             if (!dir.exists()) {
-                dir.mkdirs();
+                if (!dir.mkdirs()){
+                    logger.error(dir.getPath() + " was not created successfully");
+                }
             } else {
             }
             System.out.println("EXPORTING as " + targetFormat + " into " + target);

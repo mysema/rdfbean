@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -45,6 +47,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     private boolean fromPrinted;
     
+    @Nullable
     private StatementPattern lastPattern;
     
     private final Set<String> namespaces = new HashSet<String>();

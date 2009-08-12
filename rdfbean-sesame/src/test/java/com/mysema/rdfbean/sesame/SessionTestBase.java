@@ -26,25 +26,34 @@ import com.mysema.rdfbean.object.SessionUtil;
  */
 public class SessionTestBase {
     
-    protected static Locale FI = new Locale("fi");
+    protected static final Locale FI = new Locale("fi");
 
-    protected static Locale EN = new Locale("en");
+    protected static final Locale EN = new Locale("en");
     
-    protected static List<Locale> locales = Arrays.asList(FI, EN);
+    protected static final List<Locale> locales = Arrays.asList(FI, EN);
     
-    protected static MemoryRepository repository;
-
-    @BeforeClass
-    public static void setup() throws StoreException, RDFParseException, IOException, ClassNotFoundException {
-        if (repository == null) {
-            repository = new MemoryRepository();
-            repository.setSources(
-                    new RDFSource("classpath:/test.ttl", RDFFormat.TURTLE, TEST.NS),
-                    new RDFSource("classpath:/foaf.rdf", RDFFormat.RDFXML, FOAF.NS)
-            );
-            repository.initialize();
-        }
+    protected static final MemoryRepository repository;
+    
+    static{
+        repository = new MemoryRepository();
+        repository.setSources(
+                new RDFSource("classpath:/test.ttl", RDFFormat.TURTLE, TEST.NS),
+                new RDFSource("classpath:/foaf.rdf", RDFFormat.RDFXML, FOAF.NS)
+        );
+        repository.initialize();
     }
+
+//    @BeforeClass
+//    public static void setup() throws StoreException, RDFParseException, IOException, ClassNotFoundException {
+//        if (repository == null) {
+//            repository = new MemoryRepository();
+//            repository.setSources(
+//                    new RDFSource("classpath:/test.ttl", RDFFormat.TURTLE, TEST.NS),
+//                    new RDFSource("classpath:/foaf.rdf", RDFFormat.RDFXML, FOAF.NS)
+//            );
+//            repository.initialize();
+//        }
+//    }
 
     protected static Session createSession(Package... packages) throws StoreException, ClassNotFoundException {
         return SessionUtil.openSession(repository, locales, packages);

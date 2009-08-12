@@ -8,6 +8,8 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.BeanMap;
 
 /**
@@ -16,6 +18,7 @@ import org.apache.commons.collections15.BeanMap;
  */
 public class MethodProperty extends MappedProperty<Method> {
 
+    @Nullable
     public static MethodProperty getMethodPropertyOrNull(Method method, MappedClass declaringClass) {
         try {
             return new MethodProperty(method, declaringClass);
@@ -101,6 +104,7 @@ public class MethodProperty extends MappedProperty<Method> {
         return getSetter() == null;
     }
     
+    @Nullable
     private Method getSetter() {
         Method setter = null;
         if (!getter) {
