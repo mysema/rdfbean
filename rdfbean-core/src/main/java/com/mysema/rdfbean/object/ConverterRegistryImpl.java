@@ -6,8 +6,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang.ClassUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -50,7 +48,7 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         register(XSD.intType, Integer.class, new IntegerConverter());
         register(XSD.longType, Long.class, new LongConverter());
         register(XSD.shortType, Short.class, new ShortConverter());
-        register(XSD.stringType, String.class, null);
+        register(XSD.stringType, String.class);
         register(XSD.stringType, Character.class, new CharacterConverter());
         register(XSD.time, LocalTime.class, new LocalTimeConverter());        
     }
@@ -73,16 +71,18 @@ public class ConverterRegistryImpl implements ConverterRegistry{
     public UID getDatatype(Class<?> javaClass) {
         return classToType.get(javaClass);
     }
+    
+    private <T> void register(UID type, Class<T> clazz) {        
+        classToType.put(clazz, type);     
+    }
 
-    private <T> void register(UID type, Class<T> clazz, @Nullable Converter<T> converter) {        
-        classToType.put(clazz, type);
-        if (converter != null){
-            classToConverter.put(clazz, converter);    
-            Class<?> primitiveType = ClassUtils.wrapperToPrimitive(clazz);
-            if (primitiveType != null){
-                classToConverter.put(primitiveType, converter);
-            }
-        }        
+    private <T> void register(UID type, Class<T> clazz, Converter<T> converter) {        
+        register(type, clazz);
+        classToConverter.put(clazz, converter);    
+        Class<?> primitiveType = ClassUtils.wrapperToPrimitive(clazz);
+        if (primitiveType != null){
+            classToConverter.put(primitiveType, converter);
+        }    
     }
     
     @Override
