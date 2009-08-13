@@ -7,6 +7,8 @@ package com.mysema.rdfbean.model;
 
 import java.util.Locale;
 
+import com.mysema.util.NotEmpty;
+
 /**
  * Dialect provides a generic model of RDF APIs
  * 
@@ -70,7 +72,7 @@ public abstract class Dialect
 
     public abstract U getURI(UID uid);
     
-    public abstract U getURI(String uri);
+    public abstract U getURI(@NotEmpty String uri);
 
     public final boolean isResource(N node) {
         NodeType type = getNodeType(node);

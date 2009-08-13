@@ -8,6 +8,7 @@ package com.mysema.rdfbean.annotations;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -38,6 +39,7 @@ import com.mysema.rdfbean.model.IDType;
  * @see IDType
  * @author sasa
  */
+@Documented
 @Target( { METHOD, FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

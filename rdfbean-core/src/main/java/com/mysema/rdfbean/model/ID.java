@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.model;
 
 import com.mysema.query.annotations.Entity;
+import com.mysema.util.NotEmpty;
 
 /**
  * @author sasa
@@ -21,7 +22,7 @@ public abstract class ID extends NODE implements Identifier {
     ID(String id) {
         this.id = id;
     }
-
+    
     public String getId() {
         return id;
     }
@@ -34,7 +35,7 @@ public abstract class ID extends NODE implements Identifier {
         return new UID(ns, ln);
     }
     
-    public static LID localIdRef(String localId) {
+    public static LID localIdRef(@NotEmpty String localId) {
         return new LID(localId);
     }
     

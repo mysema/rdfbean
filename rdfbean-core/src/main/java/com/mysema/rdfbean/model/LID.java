@@ -25,7 +25,7 @@ public final class LID implements Identifier {
     }
 
     public LID(long id) {
-        this(""+id);
+        this(Long.toString(id, 10));
     }
 
     public String toString() {

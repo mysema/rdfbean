@@ -20,6 +20,8 @@ import com.mysema.rdfbean.model.UID;
  * 
  */
 public class MappedClass {
+    
+    public String test = "";
 
     private static Map<Class<?>, MappedClass> mappedClasses = Collections
             .synchronizedMap(new LinkedHashMap<Class<?>, MappedClass>());

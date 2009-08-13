@@ -7,10 +7,13 @@ package com.mysema.rdfbean.annotations;
 
 import static java.lang.annotation.ElementType.PARAMETER;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import com.mysema.util.NotEmpty;
 
 /**
  * InjectProperty maps constructor parameters into mapped properties. This is very 
@@ -52,6 +55,7 @@ import java.lang.annotation.Target;
  * 
  * @author sasa
  */
+@Documented
 @Target( PARAMETER )
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
@@ -60,6 +64,6 @@ public @interface InjectProperty {
     /**
      * @return     name of the property mapped to this constructor parameter.
      */
-    String value();
+    @NotEmpty String value();
     
 }
