@@ -136,6 +136,7 @@ public class SchemaGen {
                         MappedPredicate mappedPredicate = mappedPath.get(0);
                         UID puid = mappedPredicate.uid();
                         String predicateNs = puid.ns();
+                        // No restrictions on predicates from built-in namespaces
                         if (RDF.NS.equals(predicateNs) || RDFS.NS.equals(predicateNs) || OWL.NS.equals(predicateNs)) {
                             continue;
                         }
@@ -209,10 +210,8 @@ public class SchemaGen {
                                         owlClass.setAllValuesFrom(property, (RDFSClass<?>) resources.get(RDFS.Resource));
                                     }
                                 }
-                                if (!RDF.type.equals(puid.ns())) {
-                                    restriction.setMaxCardinality(1);
-                                }
-                            } else if (!RDF.type.equals(puid.ns())) {
+                                restriction.setMaxCardinality(1);
+                            } else {
                                 if (property.getRange().isEmpty()) {
                                     UID range;
                                     if (mappedProperty.isAnyResource()) {

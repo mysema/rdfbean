@@ -7,6 +7,8 @@ package com.mysema.rdfbean.owl;
 
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
@@ -34,7 +36,7 @@ public class TypedList extends OWLClass {
         this(null, componentType);
     }
     
-    public TypedList(String ns, RDFSClass<?> componentType) {
+    public TypedList(@Nullable String ns, RDFSClass<?> componentType) {
         super(getUID(ns, componentType));
         ID id = getId();
         if (id != null) {
@@ -45,7 +47,8 @@ public class TypedList extends OWLClass {
         allValuesFrom(rest, this);
     }
     
-    private static UID getUID(String ns, RDFSClass<?> componentType) {
+    @Nullable
+    private static UID getUID(@Nullable String ns, RDFSClass<?> componentType) {
         ID id = componentType.getId();
         if (id instanceof UID) {
             UID uid = (UID) id;
