@@ -22,7 +22,7 @@ public abstract class Dialect
      U extends R, 
      L extends N, 
      S> {
-
+    
     public abstract B createBNode();
 
     public R createResource() {
