@@ -41,7 +41,7 @@ public class SesameTransaction implements RDFBeanTransaction{
         isolationLevels = Collections.unmodifiableMap(levels);
     }
     
-    private SesameConnection connection;
+    private final SesameConnection connection;
     
     private boolean rollBackOnly;
     

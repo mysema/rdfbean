@@ -9,17 +9,20 @@ import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.List;
 
+import net.jcip.annotations.Immutable;
+
 import com.mysema.commons.lang.Assert;
 
 /**
  * @author sasa
  *
  */
+@Immutable
 public class MappedConstructor {
 
-    private Constructor<?> constructor;
+    private final Constructor<?> constructor;
     
-    private List<MappedPath> mappedArguments;
+    private final List<MappedPath> mappedArguments;
     
     public MappedConstructor(Constructor<?> constructor) {
         this(constructor, Collections.<MappedPath>emptyList());

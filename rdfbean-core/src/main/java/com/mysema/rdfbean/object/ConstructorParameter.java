@@ -8,6 +8,8 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
+import net.jcip.annotations.Immutable;
+
 import org.apache.commons.collections15.BeanMap;
 
 import com.mysema.rdfbean.annotations.InjectProperty;
@@ -16,11 +18,12 @@ import com.mysema.rdfbean.annotations.InjectProperty;
  * @author sasa
  * 
  */
+@Immutable
 public class ConstructorParameter extends MappedProperty<Constructor<?>> {
 
-    private Constructor<?> constructor;
+    private final Constructor<?> constructor;
 
-    private int parameterIndex;
+    private final int parameterIndex;
 
     ConstructorParameter(Constructor<?> constructor, int parameterIndex,
             MappedClass declaringClass) {

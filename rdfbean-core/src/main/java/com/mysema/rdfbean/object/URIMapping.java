@@ -17,7 +17,7 @@ import com.mysema.rdfbean.model.UID;
  */
 public class URIMapping {
 
-    private UID uid;
+    private final UID uid;
 
     public URIMapping(String namespace, String localName) {
         this(null, namespace, localName, null);

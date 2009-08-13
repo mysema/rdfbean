@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.object;
 
+import javax.annotation.Nullable;
+
 import com.mysema.rdfbean.model.UID;
 
 /**
@@ -27,6 +29,7 @@ public interface ConverterRegistry {
      * @param javaClass
      * @return
      */
+    @Nullable
     UID getDatatype(Class<?> javaClass);
 
     /**

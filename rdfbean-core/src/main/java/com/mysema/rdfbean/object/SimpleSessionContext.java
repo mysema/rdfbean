@@ -14,9 +14,9 @@ package com.mysema.rdfbean.object;
  */
 public class SimpleSessionContext implements SessionContext{
 
-    private ThreadLocal<Session> sessionHolder = new ThreadLocal<Session>();
+    private final ThreadLocal<Session> sessionHolder = new ThreadLocal<Session>();
     
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
     
     public SimpleSessionContext(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;

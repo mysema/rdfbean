@@ -34,19 +34,21 @@ public class DefaultConfiguration implements Configuration {
         buildinNamespaces.add(CORE.NS);
     }
 
-    private Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+    private final Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
 
-    private ConverterRegistry converterRegistry = new ConverterRegistryImpl();
+    private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
     private IdentityService identityService = MemoryIdentityService.instance();
     
+    @Nullable
     private List<FetchStrategy> fetchStrategies;
     
+    @Nullable
     private UID defaultContext;
     
-    private Set<String> restrictedResources = new HashSet<String>(buildinNamespaces);
+    private final Set<String> restrictedResources = new HashSet<String>(buildinNamespaces);
     
-    private Map<String, List<Class<?>>> type2classes = new HashMap<String, List<Class<?>>>();
+    private final Map<String, List<Class<?>>> type2classes = new HashMap<String, List<Class<?>>>();
     
     public DefaultConfiguration() {}
     

@@ -21,13 +21,13 @@ import com.mysema.rdfbean.model.*;
  */
 public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal, Statement> {
     
-    private ValueFactory vf;
+    private final ValueFactory vf;
     
-    private Map<URI, UID> uriCache = new HashMap<URI, UID>(1024); 
+    private final Map<URI, UID> uriCache = new HashMap<URI, UID>(1024); 
     
-    private Map<BNode, BID> bnodeCache = new HashMap<BNode, BID>(1024); 
+    private final Map<BNode, BID> bnodeCache = new HashMap<BNode, BID>(1024); 
     
-    private Map<Literal, LIT> literalCache = new HashMap<Literal, LIT>(1024); 
+    private final Map<Literal, LIT> literalCache = new HashMap<Literal, LIT>(1024); 
 
     public SesameDialect(ValueFactory vf) {
         Assert.notNull(vf);

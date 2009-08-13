@@ -181,9 +181,9 @@ public class MappedClass {
         return mappedClass;
     }
 
-	private Class<?> clazz;
+    private final Class<?> clazz;
     
-    private UID uid;
+    private final UID uid;
     
     private MappedProperty<?> idProperty;
     

@@ -22,7 +22,7 @@ import org.openrdf.query.algebra.Var;
  */
 public class JoinBuilder{
     
-    private SortedSet<Pattern> patterns = new TreeSet<Pattern>();
+    private final SortedSet<Pattern> patterns = new TreeSet<Pattern>();
 
     public TupleExpr getJoins() {
         TupleExpr rv = null;

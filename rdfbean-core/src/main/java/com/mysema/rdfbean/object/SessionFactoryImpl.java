@@ -14,15 +14,7 @@ import javax.annotation.Nullable;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.annotations.Required;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 
 /**
  * SessionFactoryImpl is the default implementation of the SessionFactory interface
@@ -170,7 +162,6 @@ public class SessionFactoryImpl implements SessionFactory {
         this.objectRepositories = objectRepositories;
     }
 
-    @Required
     public void setRepository(Repository<?> repository) {
         this.repository = repository;
     }

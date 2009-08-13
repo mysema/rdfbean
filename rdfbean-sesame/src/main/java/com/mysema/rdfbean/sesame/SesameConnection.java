@@ -34,18 +34,18 @@ import com.mysema.rdfbean.sesame.query.SesameQuery;
  */
 public class SesameConnection implements RDFConnection {
     
-    private static SesameOps sesameOps = new SesameOps();
+    private static final SesameOps sesameOps = new SesameOps();
     
-    private RepositoryConnection connection;
+    private final RepositoryConnection connection;
     
-    private SesameDialect dialect;
+    private final SesameDialect dialect;
     
     @Nullable
     private SesameTransaction localTxn = null;
     
     private boolean readonlyTnx = false;
 
-    private ValueFactory vf;
+    private final ValueFactory vf;
     
     public SesameConnection(RepositoryConnection connection) {
         this.connection = connection;

@@ -107,7 +107,7 @@ public class MappedPath {
 
     private List<MappedPredicate> predicatePath;
     
-    private MappedProperty<?> mappedProperty;
+    private final MappedProperty<?> mappedProperty;
     
     private boolean constructorArgument;
     

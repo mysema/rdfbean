@@ -23,9 +23,9 @@ import com.mysema.rdfbean.xsd.*;
  */
 public class ConverterRegistryImpl implements ConverterRegistry{
 
-    private Map<Class<?>,Converter<?>> classToConverter = new HashMap<Class<?>,Converter<?>>();
+    private final Map<Class<?>,Converter<?>> classToConverter = new HashMap<Class<?>,Converter<?>>();
     
-    private Map<Class<?>,UID> classToType = new HashMap<Class<?>,UID>();
+    private final Map<Class<?>,UID> classToType = new HashMap<Class<?>,UID>();
 
     public ConverterRegistryImpl(){                
         register(XSD.anyURI, URI.class, new URIConverter());

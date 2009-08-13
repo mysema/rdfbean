@@ -18,7 +18,7 @@ public final class LID implements Identifier {
 
     private static final long serialVersionUID = -5865603861883838644L;
 
-    final String id;
+    private final String id;
 
     public LID(String id) {
         this.id = Assert.hasText(id);

@@ -7,6 +7,8 @@ package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
+import net.jcip.annotations.Immutable;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.annotations.Entity;
 
@@ -16,10 +18,11 @@ import com.mysema.query.annotations.Entity;
  *
  */
 @Entity
+@Immutable
 public final class STMT {
     
     private final ID subject;
-    
+        
     private final UID predicate;
     
     private final NODE object;

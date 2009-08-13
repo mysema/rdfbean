@@ -10,12 +10,15 @@ import java.lang.reflect.Type;
 
 import javax.annotation.Nullable;
 
+import net.jcip.annotations.Immutable;
+
 import org.apache.commons.collections15.BeanMap;
 
 /**
  * @author sasa
  *
  */
+@Immutable
 public class MethodProperty extends MappedProperty<Method> {
 
     @Nullable
@@ -48,9 +51,9 @@ public class MethodProperty extends MappedProperty<Method> {
         }
     }
     
-    private boolean getter;
+    private final boolean getter;
     
-    private Method method;
+    private final Method method;
 
     private MethodProperty(Method method, MappedClass declaringClass) {
         super(getPropertyName(method), method.getAnnotations(), declaringClass);

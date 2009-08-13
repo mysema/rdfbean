@@ -9,6 +9,8 @@ import java.io.Serializable;
 
 import javax.annotation.Nullable;
 
+import net.jcip.annotations.Immutable;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
@@ -20,6 +22,7 @@ import com.mysema.rdfbean.model.ID;
  * @version $Id$
  *
  */
+@Immutable
 public final class IDKey implements Serializable {
     
     private static final long serialVersionUID = 2052361909789383871L;

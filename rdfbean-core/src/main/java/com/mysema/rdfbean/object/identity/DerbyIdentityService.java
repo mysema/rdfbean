@@ -28,7 +28,7 @@ import com.mysema.util.JDBCUtil;
  */
 public class DerbyIdentityService extends JDBCIdentityService {
     
-    private String connectionUrl, username, password;
+    private final String connectionUrl, username, password;
     
     private static final String checkCall = "{ call getlid('a','b',1) }" ;
 

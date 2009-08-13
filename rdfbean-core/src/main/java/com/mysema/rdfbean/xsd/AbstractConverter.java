@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.xsd;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * 
  * AbstractConverter provides
@@ -14,6 +16,7 @@ package com.mysema.rdfbean.xsd;
  *
  * @param <T>
  */
+@Immutable
 public abstract class AbstractConverter<T> implements Converter<T> {
     @Override
     public final String toString(T object) {

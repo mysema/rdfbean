@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.sesame.query.functions;
 
+import net.jcip.annotations.Immutable;
+
 import org.openrdf.query.algebra.evaluation.function.Function;
 
 import com.mysema.query.types.operation.Operator;
@@ -17,6 +19,7 @@ import com.mysema.rdfbean.model.UID;
  * @version $Id$
  * 
  */
+@Immutable
 abstract class BaseFunction implements Function {
     private final String uri;
 

@@ -8,15 +8,18 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
+import net.jcip.annotations.Immutable;
+
 import org.apache.commons.collections15.BeanMap;
 
 /**
  * @author sasa
  *
  */
+@Immutable
 public class FieldProperty extends MappedProperty<Field> {
 
-    private Field field;
+    private final Field field;
 
     public FieldProperty(Field field, MappedClass declaringClass) {
         super(field.getName(), field.getAnnotations(), declaringClass);

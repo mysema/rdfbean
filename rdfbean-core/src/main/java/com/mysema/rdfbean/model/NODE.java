@@ -7,6 +7,8 @@ package com.mysema.rdfbean.model;
 
 import java.io.Serializable;
 
+import net.jcip.annotations.Immutable;
+
 import com.mysema.query.annotations.Entity;
 
 /**
@@ -14,6 +16,7 @@ import com.mysema.query.annotations.Entity;
  *
  */
 @Entity
+@Immutable
 public abstract class NODE implements Serializable {
 
     private static final long serialVersionUID = -6921484648846884179L;

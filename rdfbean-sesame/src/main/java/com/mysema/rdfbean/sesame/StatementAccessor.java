@@ -16,9 +16,9 @@ import com.mysema.commons.lang.Assert;
  */
 public class StatementAccessor {
 
-    private Statement statement;
+    private final Statement statement;
     
-    private boolean inverse;
+    private final boolean inverse;
     
     // TODO asserted/inferred status?
     

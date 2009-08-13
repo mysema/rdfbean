@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.xsd;
 
+import net.jcip.annotations.Immutable;
+
 
 /**
  * Converter provides Literal to/from Object conversion functionality
@@ -12,6 +14,7 @@ package com.mysema.rdfbean.xsd;
  * @author tiwe
  * @version $Id$
  */
+@Immutable
 public interface Converter<T>{
     
     T fromString(String str);

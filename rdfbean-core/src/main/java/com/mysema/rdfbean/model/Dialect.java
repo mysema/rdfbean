@@ -7,6 +7,8 @@ package com.mysema.rdfbean.model;
 
 import java.util.Locale;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * Dialect provides a generic model of RDF APIs
  * 

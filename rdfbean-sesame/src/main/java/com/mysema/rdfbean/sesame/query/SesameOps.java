@@ -31,9 +31,9 @@ import com.mysema.rdfbean.sesame.query.functions.SesameFunctions;
  */
 public class SesameOps {
     
-    private ConverterRegistry converterRegistry = new ConverterRegistryImpl();
+    private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
-    private SesameFunctions functions =  new SesameFunctions(converterRegistry);
+    private final SesameFunctions functions =  new SesameFunctions(converterRegistry);
     
     private final Map<Operator<?>,Transformer> opToTransformer = new HashMap<Operator<?>,Transformer>();
     

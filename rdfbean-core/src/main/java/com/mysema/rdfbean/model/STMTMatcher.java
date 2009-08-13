@@ -7,10 +7,13 @@ package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
+import net.jcip.annotations.Immutable;
+
 /**
  * @author sasa
  *
  */
+@Immutable
 public final class STMTMatcher {
     @Nullable private final ID subject;
     @Nullable private final UID predicate;
