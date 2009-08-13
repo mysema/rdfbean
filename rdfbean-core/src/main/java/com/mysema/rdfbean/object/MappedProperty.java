@@ -92,6 +92,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return clazz;
     }
     
+    @SuppressWarnings("unchecked")
     void resolve(@Nullable MappedClass owner) {
         if (this.type == null) {
             this.type = getTypeInternal();
