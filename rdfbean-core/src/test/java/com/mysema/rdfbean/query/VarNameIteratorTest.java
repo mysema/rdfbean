@@ -9,8 +9,6 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import com.mysema.rdfbean.query.VarNameIterator;
-
 /**
  * VarNameIteratorTest provides
  *
