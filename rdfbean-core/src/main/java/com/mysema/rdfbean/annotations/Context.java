@@ -14,8 +14,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.mysema.util.NotEmpty;
-
 /**
  * Target context (URI) for given class or classes of annotated package. 
  * <p>
@@ -31,6 +29,6 @@ import com.mysema.util.NotEmpty;
 @Inherited
 public @interface Context {
 
-    @NotEmpty String value();
+    String value();
     
 }

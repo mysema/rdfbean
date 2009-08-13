@@ -13,8 +13,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.mysema.util.NotEmpty;
-
 /**
  * InjectProperty maps constructor parameters into mapped properties. This is very 
  * usable for strict modeling of immutable classes. There's no need for default constructor
@@ -64,6 +62,6 @@ public @interface InjectProperty {
     /**
      * @return     name of the property mapped to this constructor parameter.
      */
-    @NotEmpty String value();
+    String value();
     
 }
