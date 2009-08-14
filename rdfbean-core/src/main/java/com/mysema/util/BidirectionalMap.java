@@ -85,7 +85,7 @@ public class BidirectionalMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public V get(Object key) {
+    public @Nullable V get(Object key) {
         if (!values.containsKey(key)) {
             if (factory != null) {
                 V value = factory.create();
@@ -100,7 +100,7 @@ public class BidirectionalMap<K, V> implements Map<K, V>, Serializable {
         }
     }
 
-    public K getKey(V value) {
+    public @Nullable K getKey(V value) {
         return keys.get(value);
     }
 
@@ -117,7 +117,7 @@ public class BidirectionalMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public V put(K key, V value) {
+    public @Nullable V put(K key, V value) {
         keys.put(value, key);
         return values.put(key, value);
     }

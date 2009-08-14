@@ -21,7 +21,7 @@ public interface IdentityService {
     
     LID getLID(UID id);
     
-    LID getLID(ID model, ID id);
+    LID getLID(@Nullable ID model, ID id);
 
     @Nullable
     ID getID(LID lid);
