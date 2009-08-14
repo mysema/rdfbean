@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.object;
 
 import java.math.BigDecimal;
@@ -16,7 +21,7 @@ import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.xsd.*;
 
 /**
- * IConverterRegistry provides
+ * ConverterRegistryImpl provides
  *
  * @author tiwe
  * @version $Id$
