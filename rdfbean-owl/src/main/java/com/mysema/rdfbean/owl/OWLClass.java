@@ -27,22 +27,22 @@ public class OWLClass extends RDFSClass<RDFSResource> {
     @Predicate
     private Set<OWLClass> complementOf = new LinkedHashSet<OWLClass>();
 
-	@Predicate
+    @Predicate
     private Set<OWLClass> disjointWith = new LinkedHashSet<OWLClass>();
 
-	@Predicate
+    @Predicate
     private List<OWLClass> intersectionOf = new ArrayList<OWLClass>();
 
     @Predicate
     private List<OWLClass> unionOf = new ArrayList<OWLClass>();
 
     public OWLClass() {
-		super();
-	}
+        super();
+    }
 
     public OWLClass(ID id) {
-		super(id);
-	}
+        super(id);
+    }
 
     public Set<OWLClass> getComplementOf() {
         return complementOf;

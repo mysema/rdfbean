@@ -22,7 +22,6 @@ import com.mysema.rdfbean.object.SessionImpl;
 import com.mysema.rdfbean.sesame.SesameConnection;
 import com.mysema.rdfbean.sesame.SesameDialect;
 import com.mysema.rdfbean.sesame.SessionTestBase;
-import com.mysema.rdfbean.sesame.query.serializer.QuerySerializer;
 
 
 /**

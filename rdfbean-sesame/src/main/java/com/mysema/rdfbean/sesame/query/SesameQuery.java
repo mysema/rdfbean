@@ -45,7 +45,6 @@ import com.mysema.rdfbean.object.*;
 import com.mysema.rdfbean.query.AbstractProjectingQuery;
 import com.mysema.rdfbean.query.VarNameIterator;
 import com.mysema.rdfbean.sesame.SesameDialect;
-import com.mysema.rdfbean.sesame.query.serializer.QuerySerializer;
 
 
 /**

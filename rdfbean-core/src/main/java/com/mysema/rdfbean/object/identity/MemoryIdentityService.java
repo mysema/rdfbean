@@ -139,13 +139,6 @@ public class MemoryIdentityService implements IdentityService {
         }
     }
 
-
-//    @Override
-//    public synchronized UID createID(UID namespace, String localNamePrefix) {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-
     @Override
     public synchronized ID getID(LID lid) {
         IDKey rid = ids.getKey(lid);

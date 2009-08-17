@@ -12,7 +12,6 @@ import org.openrdf.query.UnsupportedQueryLanguageException;
 import org.openrdf.query.parser.QueryParserUtil;
 import org.openrdf.query.parser.TupleQueryModel;
 
-import com.mysema.rdfbean.sesame.query.serializer.QuerySerializer;
 
 /**
  * ParsingTest provides

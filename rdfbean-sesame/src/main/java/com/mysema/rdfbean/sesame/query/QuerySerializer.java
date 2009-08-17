@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.sesame.query.serializer;
+package com.mysema.rdfbean.sesame.query;
 
 import java.util.Arrays;
 import java.util.HashSet;

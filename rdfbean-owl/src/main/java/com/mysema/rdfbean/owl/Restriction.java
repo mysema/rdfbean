@@ -22,7 +22,7 @@ public class Restriction extends OWLClass {
     @Predicate
     private RDFSClass<?> allValuesFrom;
 
-	@Predicate
+    @Predicate
     private Integer cardinality;
 
     @Predicate
@@ -47,68 +47,68 @@ public class Restriction extends OWLClass {
     private RDFSClass<?> someValuesFrom;
 
     public Restriction() {
-		super();
-	}
+        super();
+    }
 
     public RDFSClass<?> getAllValuesFrom() {
         return allValuesFrom;
     }
 
-	public Integer getCardinality() {
+    public Integer getCardinality() {
         return cardinality;
     }
 
-	public Object getHasValue() {
+    public Object getHasValue() {
         return hasValue;
     }
 
-	public Integer getMaxCardinality() {
+    public Integer getMaxCardinality() {
         return maxCardinality;
     }
 
-	public Integer getMinCardinality() {
+    public Integer getMinCardinality() {
         return minCardinality;
     }
 
-	public List<RDFProperty> getOnProperties() {
+    public List<RDFProperty> getOnProperties() {
         return onProperties;
     }
 
-	public RDFProperty getOnProperty() {
+    public RDFProperty getOnProperty() {
         return onProperty;
     }
 
-	public RDFSClass<?> getSomeValuesFrom() {
+    public RDFSClass<?> getSomeValuesFrom() {
         return someValuesFrom;
     }
 
     public void setAllValuesFrom(RDFSClass<?> allValuesFrom) {
-		this.allValuesFrom = allValuesFrom;
-	}
+        this.allValuesFrom = allValuesFrom;
+    }
 
     public void setCardinality(Integer cardinality) {
-		this.cardinality = cardinality;
-	}
+        this.cardinality = cardinality;
+    }
     
     public void setHasValue(Object hasValue) {
-		this.hasValue = hasValue;
-	}
+        this.hasValue = hasValue;
+    }
     
     public void setMaxCardinality(Integer maxCardinality) {
-		this.maxCardinality = maxCardinality;
-	}
+        this.maxCardinality = maxCardinality;
+    }
     
     public void setMinCardinality(Integer minCardinality) {
-		this.minCardinality = minCardinality;
-	}
+        this.minCardinality = minCardinality;
+    }
     
     public void setOnProperty(RDFProperty onProperty) {
-		this.onProperty = onProperty;
-	}
+        this.onProperty = onProperty;
+    }
     
     public void setSomeValuesFrom(RDFSClass<?> someValuesFrom) {
-		this.someValuesFrom = someValuesFrom;
-	}
+        this.someValuesFrom = someValuesFrom;
+    }
     
     public boolean isDefined() {
         return onProperty != null && 

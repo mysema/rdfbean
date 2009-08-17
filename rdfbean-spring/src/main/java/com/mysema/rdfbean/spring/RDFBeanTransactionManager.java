@@ -28,7 +28,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
 
     private static final long serialVersionUID = -4060513400839374983L;
 
-    private final SimpleSessionContext sessionContext;
+    private transient final SimpleSessionContext sessionContext;
         
     private boolean clearSessionOnRB = false;
 
@@ -255,7 +255,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
     /**
      * Implement SmartTransactionObject so spring can do proper rollback-only handling.
      */
-    private class TransactionObject implements SmartTransactionObject {
+    private static class TransactionObject implements SmartTransactionObject {
         private final Session session;
 
         private FlushMode flushMode;
