@@ -115,6 +115,7 @@ public class SesameQuery extends
         this.sesameOps = sesameOps;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     protected SesameQuery addToProjection(Expr<?>... o) {
         for (Expr<?> expr : o) {
@@ -329,6 +330,8 @@ public class SesameQuery extends
         }
     }
         
+    @SuppressWarnings("unchecked")
+    @Nullable
     private ValueExpr toValue(Expr<?> expr) {
         if (expr instanceof Path) {
             return transformPath((Path<?>) expr);
