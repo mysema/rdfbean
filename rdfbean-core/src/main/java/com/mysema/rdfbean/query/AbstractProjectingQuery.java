@@ -19,7 +19,7 @@ import com.mysema.query.JoinExpression;
 import com.mysema.query.JoinType;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
-import com.mysema.query.collections.iterators.LimitingIterator;
+import com.mysema.query.collections.impl.LimitingIterator;
 import com.mysema.query.support.QueryBaseWithProjection;
 import com.mysema.query.types.expr.EConstant;
 import com.mysema.query.types.expr.EConstructor;

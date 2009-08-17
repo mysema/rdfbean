@@ -57,14 +57,14 @@ public class BeanQueryStandardTest extends AbstractSesameQueryTest {
         
         standardTest.booleanTests(v1.directProperty.isNull(), v2.numericProperty.isNotNull());
         standardTest.collectionTests(v1.setProperty, v2.setProperty, inSet, other);
-        standardTest.dateTests(null, null, null);
+//        standardTest.dateTests(null, null, null);
         standardTest.dateTimeTests(v1.dateProperty, v2.dateProperty, new Date());
         standardTest.listTests(v1.listProperty, v2.listProperty, inList, other);
         standardTest.mapTests(v1.mapProperty, v2.mapProperty, "target_idspace", inMap, "xxx", other);
         standardTest.numericCasts(v1.numericProperty, v2.numericProperty, 1);
         standardTest.numericTests(v1.numericProperty, v2.numericProperty, 10);
         standardTest.stringTests(v1.directProperty, v2.directProperty, knownStringValue);
-        standardTest.timeTests(null, null, null);
+//        standardTest.timeTests(null, null, null);
         
         // delay the report slightly
         Thread.sleep(10);

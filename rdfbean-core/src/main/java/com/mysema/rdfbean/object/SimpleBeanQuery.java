@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.collections.IteratorSource;
-import com.mysema.query.collections.support.CustomQueryable;
+import com.mysema.query.collections.impl.CustomQueryable;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.path.PEntity;
 
@@ -55,13 +55,17 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
 
     @Override
     public BeanQuery limit(long limit) {
-        getMetadata().getModifiers().setLimit(limit);
+     // TODO : provide convenience methods for this
+        QueryModifiers mod = getMetadata().getModifiers();
+        getMetadata().setModifiers(new QueryModifiers(limit, mod.getOffset()));
         return this;
     }
 
     @Override
     public BeanQuery offset(long offset) {
-        getMetadata().getModifiers().setOffset(offset);
+        // TODO : provide convenience methods for this
+        QueryModifiers mod = getMetadata().getModifiers();
+        getMetadata().setModifiers(new QueryModifiers(mod.getLimit(), offset));
         return this;
     }
 

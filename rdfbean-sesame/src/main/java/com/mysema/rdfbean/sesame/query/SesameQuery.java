@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.support.CascadingBoolean;
+import com.mysema.query.CascadingBoolean;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EConstant;
@@ -351,6 +351,7 @@ public class SesameQuery extends
         }
     }
     
+    @SuppressWarnings("unchecked")
     private Var transformConstant(EConstant<?> constant) {
         Object javaValue = constant.getConstant();
         if (constToVar.containsKey(javaValue)){

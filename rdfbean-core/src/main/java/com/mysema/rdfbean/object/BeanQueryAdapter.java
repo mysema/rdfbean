@@ -64,13 +64,15 @@ public class BeanQueryAdapter extends ProjectableAdapter implements BeanQuery{
 
     @Override
     public BeanQuery limit(long limit) {
-        query.getMetadata().getModifiers().setLimit(limit);
+        QueryModifiers mod = query.getMetadata().getModifiers();
+        query.getMetadata().setModifiers(new QueryModifiers(limit, mod.getOffset()));
         return this;
     }
 
     @Override
     public BeanQuery offset(long offset) {
-        query.getMetadata().getModifiers().setOffset(offset);
+        QueryModifiers mod = query.getMetadata().getModifiers();
+        query.getMetadata().setModifiers(new QueryModifiers(mod.getLimit(), offset));
         return this;
     }
 
