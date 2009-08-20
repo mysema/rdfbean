@@ -3,6 +3,7 @@ package com.mysema.rdf.demo.foaf.v2;
 import java.util.Locale;
 
 import com.mysema.rdf.demo.foaf.domain.Person;
+import com.mysema.rdf.demo.foaf.v2.Value.Type;
 import com.mysema.rdfbean.model.UID;
 
 public class Person2 extends Person {
@@ -17,9 +18,43 @@ public class Person2 extends Person {
         return resource;
     }
     
-    @SuppressWarnings("null")
-    public void test() {
-        Resource r = null;
+    public void handleLiteral(Literal lit) {
+        System.out.println(
+                lit.getLocale() == null ? lit.getType() : lit.getLocale()
+                        + ":" + lit.getValue());
+    }
+
+    public void handleUID(Value<UID> value) {
+        System.out.println("UID:" + value.getValue());
+    }
+    
+    public void handleCollection(TypedCollection collection) {
+        for (Value<?> subValue : collection.getValue()) {
+            handleValue(subValue);
+        }   
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void handleValue(Value<?> value) {
+        if (value.getType() == Type.LITERAL) {
+            handleLiteral((Literal) value); 
+        }
+        else if (value.getType() == Type.UID) {
+            handleUID((Value<UID>) value);
+        }
+        else if (value.getType() == Type.RESOURCE) {
+            handleResource((Resource)value.getValue());
+        }
+        else if (value.getType() == Type.COLLECTION) {
+            handleCollection((TypedCollection) value);
+        }
+    }
+    
+    public void handleResource(Resource r) {
+        
+        for (Value<?> value : r.getValues()) {
+            handleValue(value);
+        }
         
 //        for (UID uid : r.getValues().keySet()) {
 //            System.out.println(uid + ":" + r.getValues().get(uid).getValue());
