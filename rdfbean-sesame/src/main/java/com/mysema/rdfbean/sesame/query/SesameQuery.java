@@ -7,41 +7,14 @@ package com.mysema.rdfbean.sesame.query;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
-import org.openrdf.model.BNode;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
+import javax.annotation.Nullable;
+
+import org.openrdf.model.*;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.algebra.And;
-import org.openrdf.query.algebra.Compare;
-import org.openrdf.query.algebra.Distinct;
-import org.openrdf.query.algebra.Exists;
-import org.openrdf.query.algebra.Extension;
-import org.openrdf.query.algebra.ExtensionElem;
-import org.openrdf.query.algebra.Filter;
-import org.openrdf.query.algebra.Lang;
-import org.openrdf.query.algebra.Not;
-import org.openrdf.query.algebra.Order;
-import org.openrdf.query.algebra.OrderElem;
-import org.openrdf.query.algebra.Projection;
-import org.openrdf.query.algebra.ProjectionElem;
-import org.openrdf.query.algebra.ProjectionElemList;
-import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.algebra.TupleExpr;
-import org.openrdf.query.algebra.ValueExpr;
-import org.openrdf.query.algebra.Var;
+import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
@@ -68,17 +41,10 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.ConverterRegistry;
-import com.mysema.rdfbean.object.MappedClass;
-import com.mysema.rdfbean.object.MappedPath;
-import com.mysema.rdfbean.object.MappedPredicate;
-import com.mysema.rdfbean.object.MappedProperty;
-import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.*;
 import com.mysema.rdfbean.query.AbstractProjectingQuery;
 import com.mysema.rdfbean.query.VarNameIterator;
 import com.mysema.rdfbean.sesame.SesameDialect;
-import com.sun.istack.internal.Nullable;
 
 
 /**

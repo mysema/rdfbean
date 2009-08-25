@@ -4,10 +4,7 @@ import org.junit.Test;
 
 import com.mysema.rdf.demo.foaf.domain.Document;
 import com.mysema.rdf.demo.foaf.domain.Person;
-import com.mysema.rdf.demo.generic.Resource;
-import com.mysema.rdf.demo.generic.Property;
 import com.mysema.rdfbean.model.UID;
-import com.sun.xml.internal.bind.v2.runtime.reflect.Accessor;
 
 public class HomepageTest {
     
