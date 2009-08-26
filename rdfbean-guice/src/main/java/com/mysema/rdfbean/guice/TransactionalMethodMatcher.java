@@ -10,11 +10,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.transaction.annoation.NotTransactional;
+import org.springframework.transaction.annoation.Propagation;
+import org.springframework.transaction.annoation.Transactional;
+
 import com.google.inject.Provider;
 import com.google.inject.matcher.AbstractMatcher;
-import com.mysema.rdfbean.guice.tx.NotTransactional;
-import com.mysema.rdfbean.guice.tx.Propagation;
-import com.mysema.rdfbean.guice.tx.Transactional;
 
 /**
  * TransactionalMethodMatcher provides

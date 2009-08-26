@@ -7,9 +7,10 @@ package com.mysema.rdfbean.guice;
 
 import static org.junit.Assert.assertTrue;
 
+import org.springframework.transaction.annoation.Propagation;
+import org.springframework.transaction.annoation.Transactional;
+
 import com.google.inject.Inject;
-import com.mysema.rdfbean.guice.tx.Propagation;
-import com.mysema.rdfbean.guice.tx.Transactional;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.mysema.rdfbean.guice.tx;
+package org.springframework.transaction.annoation;
 
 import java.sql.Connection;
 

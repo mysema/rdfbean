@@ -2,9 +2,10 @@ package com.mysema.rdfbean.guice;
 
 import static org.junit.Assert.assertTrue;
 
+import org.springframework.transaction.annoation.NotTransactional;
+import org.springframework.transaction.annoation.Transactional;
+
 import com.google.inject.Inject;
-import com.mysema.rdfbean.guice.tx.NotTransactional;
-import com.mysema.rdfbean.guice.tx.Transactional;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**

@@ -12,10 +12,10 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.transaction.annoation.Transactional;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.mysema.rdfbean.guice.tx.Transactional;
 import com.mysema.rdfbean.object.*;
 
 
