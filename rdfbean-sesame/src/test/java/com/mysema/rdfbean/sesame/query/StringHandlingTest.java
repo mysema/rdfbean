@@ -66,5 +66,11 @@ public class StringHandlingTest extends AbstractSesameQueryTest{
         assertEquals(2, where(stringPath.contains("i")).count());
     }
     
+    @Test
+    @Ignore
+    public void in(){
+     // Sesame doesn't support RDFS Datatype inferencing rules properly
+        assertEquals(1, where(stringPath.in("metaonto_elements","B","C")).count());
+    }
     
 }

@@ -29,7 +29,7 @@ public class SesameOpsTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testOps() throws IllegalArgumentException, IllegalAccessException{
-        SesameOps sesameOps = new SesameOps();
+        OperationMappings sesameOps = new OperationMappings();
         Set<Field> opFields = new TreeSet<Field>(ComparatorUtils.chainedComparator(
                 new BeanComparator("declaringClass.simpleName"),
                 new BeanComparator("name")));

@@ -20,6 +20,7 @@ import javax.lang.model.element.VariableElement;
 import javax.tools.Diagnostic;
 
 import com.mysema.query.annotations.Projection;
+import com.mysema.query.annotations.Transient;
 import com.mysema.query.apt.Processor;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
@@ -37,14 +38,17 @@ import com.mysema.rdfbean.annotations.Predicate;
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class BeanAnnotationProcessor extends AbstractProcessor{
     
+    private Class<? extends Annotation> entity, superType, embeddable, dto, skip;
+    
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Running " + getClass().getSimpleName());
-        Class<? extends Annotation> entity = ClassMapping.class;
-        Class<? extends Annotation> superType = null; // undefined
-        Class<? extends Annotation> embeddable = null; // undefined
-        Class<? extends Annotation> dtoAnnotation = Projection.class;
-        Processor p = new Processor(processingEnv, entity, superType, embeddable, dtoAnnotation, "Q"){
+        entity = ClassMapping.class;
+        superType = null; // undefined
+        embeddable = null; // undefined
+        dto = Projection.class;
+        skip = Transient.class;
+        Processor p = new Processor(processingEnv, entity, superType, embeddable, dto, skip){
 
             @Override
             protected boolean isValidField(VariableElement field) {

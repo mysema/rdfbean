@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.collections.IteratorSource;
+import com.mysema.query.collections.eval.ColQueryTemplates;
 import com.mysema.query.collections.impl.CustomQueryable;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.path.PEntity;
@@ -22,6 +23,8 @@ import com.mysema.query.types.path.PEntity;
  */
 public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements Closeable, BeanQuery {
 
+    private static final ColQueryTemplates templates = new ColQueryTemplates();
+    
 //    private Session session;
     
     public SimpleBeanQuery(final Session session) {
@@ -36,7 +39,7 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
                 return getIterator(expr);
             }
             
-        });
+        }, templates);
 //        this.session = session;
     }
         

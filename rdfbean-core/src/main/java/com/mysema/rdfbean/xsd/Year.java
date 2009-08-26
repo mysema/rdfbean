@@ -5,13 +5,11 @@
  */
 package com.mysema.rdfbean.xsd;
 
-import com.mysema.query.annotations.Literal;
 
 /**
  * @author sasa
  *
  */
-@Literal
 public final class Year implements Comparable<Year> {
 
     private int year;

@@ -25,7 +25,7 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.BeanQueryAdapter;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.sesame.query.SesameOps;
+import com.mysema.rdfbean.sesame.query.OperationMappings;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
 
 /**
@@ -34,7 +34,7 @@ import com.mysema.rdfbean.sesame.query.SesameQuery;
  */
 public class SesameConnection implements RDFConnection {
     
-    private static final SesameOps sesameOps = new SesameOps();
+    private static final OperationMappings sesameOps = new OperationMappings();
     
     private final RepositoryConnection connection;
     

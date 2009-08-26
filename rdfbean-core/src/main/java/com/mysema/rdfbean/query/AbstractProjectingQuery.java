@@ -15,13 +15,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.mutable.MutableInt;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.JoinType;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
 import com.mysema.query.collections.impl.LimitingIterator;
 import com.mysema.query.support.QueryBaseWithProjection;
-import com.mysema.query.types.expr.EConstant;
+import com.mysema.query.types.expr.Constant;
 import com.mysema.query.types.expr.EConstructor;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.path.Path;
@@ -51,6 +52,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     protected final Session session;
     
     public AbstractProjectingQuery(Dialect<N,R,B,U,L,S> dialect, Session session) {
+        super(new DefaultQueryMetadata());
         this.dialect = Assert.notNull(dialect);
         this.session = Assert.notNull(session);
     }
@@ -59,7 +61,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     
     protected abstract Iterator<N[]> getInnerResults();
     
-    protected int getIntValue(EConstant<Integer> constant){
+    protected int getIntValue(Constant<Integer> constant){
         return constant.getConstant().intValue();
     }
     

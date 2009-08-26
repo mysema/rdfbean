@@ -14,7 +14,7 @@
   </parent>
   
   <properties>
-    <querydsl.version>0.5.0</querydsl.version>
+    <querydsl.version>0.5.1</querydsl.version>
     <spring.version>2.5.5</spring.version>
   </properties>
   

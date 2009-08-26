@@ -27,8 +27,8 @@ import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.CascadingBoolean;
 import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.Constant;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.expr.EConstant;
 import com.mysema.query.types.expr.EConstructor;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.operation.Operation;
@@ -48,7 +48,7 @@ import com.mysema.rdfbean.sesame.SesameDialect;
 
 
 /**
- * SesameQuery provides a query implementation for Sesame Sail
+ * SesameQuery provides a query implementation for Sesame Repository
  * 
  * @author tiwe
  * @version $Id$
@@ -62,7 +62,7 @@ public class SesameQuery extends
     
     private final StatementPattern.Scope patternScope;
     
-    private final SesameOps sesameOps;
+    private final OperationMappings sesameOps;
     
     static{
         SesameQueryHolder.init();
@@ -106,12 +106,12 @@ public class SesameQuery extends
             SesameDialect dialect, 
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,
-            SesameOps sesameOps) {
+            OperationMappings sesameOps) {
         super(dialect, session);
-        this.connection = connection;
+        this.connection = Assert.notNull(connection);
         conf = session.getConfiguration();
         this.patternScope = patternScope;
-        this.sesameOps = sesameOps;
+        this.sesameOps = Assert.notNull(sesameOps);
     }
     
     @SuppressWarnings("unchecked")
@@ -282,7 +282,7 @@ public class SesameQuery extends
 
     @SuppressWarnings("unchecked")
     private ID getResourceForLID(Expr<?> arg) {
-        String lid = ((EConstant<String>)arg).getConstant();
+        String lid = ((Constant<String>)arg).getConstant();
         ID id = conf.getIdentityService().getID(new LID(lid));
         return id;
     }
@@ -300,7 +300,7 @@ public class SesameQuery extends
     }
     
     private boolean inOptionalPath(){
-        return operatorStack.contains(Ops.ISNULL) || operatorStack.contains(Ops.OR);
+        return operatorStack.contains(Ops.IS_NULL) || operatorStack.contains(Ops.OR);
     }
     
     private boolean inNegation(){
@@ -342,8 +342,8 @@ public class SesameQuery extends
             operatorStack.pop();
             return rv;
             
-        } else if (expr instanceof EConstant) {
-            return transformConstant((EConstant<?>)expr);
+        } else if (expr instanceof Constant) {
+            return transformConstant((Constant<?>)expr);
             
         } else {
             throw new IllegalArgumentException("Unsupported expr instance : " + expr);
@@ -351,7 +351,7 @@ public class SesameQuery extends
     }
     
     @SuppressWarnings("unchecked")
-    private Var transformConstant(EConstant<?> constant) {
+    private Var transformConstant(Constant<?> constant) {
         Object javaValue = constant.getConstant();
         if (constToVar.containsKey(javaValue)){
             return constToVar.get(javaValue);
@@ -401,10 +401,10 @@ public class SesameQuery extends
                 }
                 
             // const in path    
-            }else if (operation.getArg(0) instanceof EConstant && operation.getArg(1) instanceof Path){
+            }else if (operation.getArg(0) instanceof Constant && operation.getArg(1) instanceof Path){
                 // TODO : make const in path work for RDF sequences and containers
                 if (!inNegation()){
-                    Var var = transformConstant((EConstant<?>) operation.getArg(0));
+                    Var var = transformConstant((Constant<?>) operation.getArg(0));
                     Var path = transformPath((Path<?>) operation.getArg(1));
                     path.setValue(var.getValue());
                     return null;    
@@ -413,9 +413,9 @@ public class SesameQuery extends
                 }
                 
             // path in collection    
-            }else if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof EConstant){
+            }else if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof Constant){
                 Expr<Object> expr = (Expr<Object>)operation.getArg(0);
-                EConstant<?> constant = (EConstant<?>)operation.getArg(1);
+                Constant<?> constant = (Constant<?>)operation.getArg(1);
                 Collection<?> collection = (Collection<?>)constant.getConstant();
                 CascadingBoolean bo = new CascadingBoolean();
                 for (Object elem : collection){
@@ -431,7 +431,7 @@ public class SesameQuery extends
         }else if (isSizeCompareConstant(operation, op)){            
             return transformSizeCompareConstant(operation, op);
             
-        }else if (op.equals(Ops.COL_ISEMPTY)){
+        }else if (op.equals(Ops.COL_IS_EMPTY)){
             Var pathVar = transformPath((Path<?>)operation.getArg(0));            
             if (inNegation()){
                 return new Compare(pathVar, toVar(RDF.nil), Compare.CompareOp.EQ);    
@@ -441,7 +441,7 @@ public class SesameQuery extends
             }
             
         }else if (op.equals(Ops.MAP_ISEMPTY)){
-            transformer = sesameOps.getTransformer(Ops.ISNULL);
+            transformer = sesameOps.getTransformer(Ops.IS_NULL);
             
         // containsKey / containsValue
         }else if (op.equals(Ops.CONTAINS_KEY) || op.equals(Ops.CONTAINS_VALUE)){
@@ -480,7 +480,7 @@ public class SesameQuery extends
             return transformPathEqNeConstant(operation);
             
         // expr typeOf expr
-        }else if (op.equals(Ops.INSTANCEOF)){    
+        }else if (op.equals(Ops.INSTANCE_OF)){    
             StatementPattern pattern = new StatementPattern(
                     patternScope,
                     (Var)toValue(operation.getArg(0)),
@@ -505,7 +505,7 @@ public class SesameQuery extends
                 // transform LID strings to Resources
                 if (idPropertyInOperation 
                         && op.equals(Ops.NE_OBJECT) 
-                        && arg instanceof EConstant){
+                        && arg instanceof Constant){
                     ID id = getResourceForLID(arg);
                     value = toVar(dialect.getResource(id));
                 }else{
@@ -565,7 +565,7 @@ public class SesameQuery extends
                 if (pathType.equals(PathType.PROPERTY)){
                     locale = session.getCurrentLocale();
                 }else if (pathType.equals(PathType.MAPVALUE_CONSTANT)){
-                    locale = ((EConstant<Locale>)path.getMetadata().getExpression()).getConstant();                        
+                    locale = ((Constant<Locale>)path.getMetadata().getExpression()).getConstant();                        
                 }else{
                     throw new IllegalArgumentException("Unsupported path type " + pathType);
                 }
@@ -603,7 +603,7 @@ public class SesameQuery extends
         
     private ValueExpr transformSizeCompareConstant(Operation<?, ?> operation, Operator<?> op) {        
         @SuppressWarnings("unchecked")
-        int size = getIntValue((EConstant<Integer>) operation.getArg(1));
+        int size = getIntValue((Constant<Integer>) operation.getArg(1));
         if (op == Ops.GOE){
             op = Ops.GT;
             size--;
@@ -654,7 +654,7 @@ public class SesameQuery extends
     private boolean isPathEqNeConstant(Operation<?, ?> operation, Operator<?> op) {
         return (Ops.equalsOps.contains(op) || Ops.notEqualsOps.contains(op)) 
                 && operation.getArg(0) instanceof Path 
-                && operation.getArg(1) instanceof EConstant;
+                && operation.getArg(1) instanceof Constant;
     }
     
     @SuppressWarnings("unchecked")
@@ -709,7 +709,7 @@ public class SesameQuery extends
                 
             } else if (pathType.equals(PathType.ARRAYVALUE_CONSTANT) || pathType.equals(PathType.LISTVALUE_CONSTANT)) {
                 @SuppressWarnings("unchecked")
-                int index = getIntValue((EConstant<Integer>)md.getExpression());                
+                int index = getIntValue((Constant<Integer>)md.getExpression());                
                 for (int i = 0; i < index; i++){
                     pathNode = new Var(varNames.next());
                     match(parentNode, RDF.rest, pathNode);

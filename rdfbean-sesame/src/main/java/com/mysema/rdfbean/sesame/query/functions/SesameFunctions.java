@@ -60,8 +60,7 @@ public class SesameFunctions {
                 return args[0].stringValue() + args[1].stringValue();
             }
         });
-        register(new StringFunction(QDSL.substring, Ops.SUBSTR1ARG,
-                Ops.SUBSTR2ARGS) {
+        register(new StringFunction(QDSL.substring, Ops.SUBSTR_1ARG, Ops.SUBSTR_2ARGS) {
             protected String convert(Value... args) {
                 if (args.length == 2) {
                     return args[0].stringValue().substring(
@@ -111,7 +110,7 @@ public class SesameFunctions {
                 return args[0].stringValue().contains(args[1].stringValue());
             }
         });
-        register(new BooleanFunction(QDSL.equalsIgnoreCase, Ops.EQ_IGNORECASE) {
+        register(new BooleanFunction(QDSL.equalsIgnoreCase, Ops.EQ_IGNORE_CASE) {
             protected boolean convert(Value... args) {
                 return args[0].stringValue().equalsIgnoreCase(
                         args[1].stringValue());
@@ -122,7 +121,7 @@ public class SesameFunctions {
                 return args[0].stringValue().length();
             }
         });
-        register(new IntegerFunction(QDSL.indexOf, Ops.INDEXOF, Ops.INDEXOF_2ARGS) {
+        register(new IntegerFunction(QDSL.indexOf, Ops.INDEX_OF, Ops.INDEX_OF_2ARGS) {
             protected int convert(Value... args) {
                 if (args.length == 2) {
                     return args[0].stringValue().indexOf(args[1].stringValue());

@@ -29,7 +29,7 @@ import com.mysema.rdfbean.sesame.query.functions.SesameFunctions;
  * @author tiwe
  * @version $Id$
  */
-public class SesameOps {
+public class OperationMappings {
     
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
@@ -37,7 +37,7 @@ public class SesameOps {
     
     private final Map<Operator<?>,Transformer> opToTransformer = new HashMap<Operator<?>,Transformer>();
     
-    public SesameOps(){        
+    public OperationMappings(){        
         // BOOLEAN
         opToTransformer.put(AND, new Transformer(){
             @Override
@@ -99,7 +99,7 @@ public class SesameOps {
 //                    new Compare(args.get(0), args.get(2),CompareOp.GT));
 //            }            
 //        });
-        opToTransformer.put(STARTSWITH, new Transformer(){
+        opToTransformer.put(STARTS_WITH, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
@@ -111,7 +111,7 @@ public class SesameOps {
                 }
             }            
         });
-        opToTransformer.put(ENDSWITH, new Transformer(){
+        opToTransformer.put(ENDS_WITH, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
@@ -136,7 +136,7 @@ public class SesameOps {
                 
             }            
         });
-        opToTransformer.put(STRING_ISEMPTY, new Transformer(){
+        opToTransformer.put(STRING_IS_EMPTY, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
@@ -150,7 +150,7 @@ public class SesameOps {
 //                return new Not(new Regex(first, "", false)); // TODO : optimize           
 //            }            
 //        });
-        opToTransformer.put(STARTSWITH_IC, new Transformer(){
+        opToTransformer.put(STARTS_WITH_IC, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
@@ -163,7 +163,7 @@ public class SesameOps {
                 
             }            
         });
-        opToTransformer.put(ENDSWITH_IC, new Transformer(){
+        opToTransformer.put(ENDS_WITH_IC, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
@@ -216,13 +216,13 @@ public class SesameOps {
                return new Str(args.get(0));
             }            
         });
-        opToTransformer.put(ISNULL, new Transformer(){
+        opToTransformer.put(IS_NULL, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 return new Not(new Bound((Var) args.get(0)));
             }            
         });
-        opToTransformer.put(ISNOTNULL, new Transformer(){
+        opToTransformer.put(IS_NOT_NULL, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 return new Bound((Var) args.get(0));
