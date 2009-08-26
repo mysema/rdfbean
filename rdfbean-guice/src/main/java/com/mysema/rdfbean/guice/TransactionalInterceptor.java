@@ -12,7 +12,7 @@ import net.jcip.annotations.ThreadSafe;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.transaction.annoation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;

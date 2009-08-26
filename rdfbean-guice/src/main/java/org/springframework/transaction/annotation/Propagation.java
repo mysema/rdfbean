@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.transaction.annoation;
+package org.springframework.transaction.annotation;
 
 
 /**

@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.guice;
 
-import org.springframework.transaction.annoation.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * ServiceB provides

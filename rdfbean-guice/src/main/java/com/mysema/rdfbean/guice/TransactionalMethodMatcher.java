@@ -10,9 +10,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.transaction.annoation.NotTransactional;
-import org.springframework.transaction.annoation.Propagation;
-import org.springframework.transaction.annoation.Transactional;
+import org.springframework.transaction.annotation.NotTransactional;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.inject.Provider;
 import com.google.inject.matcher.AbstractMatcher;
