@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.guice;
 
+import com.mysema.rdfbean.guice.tx.Transactional;
+
 /**
  * ServiceB provides
  *
@@ -16,7 +18,7 @@ public interface ServiceB {
     @Transactional
     void txMethod();
 
-    @Transactional(type=TransactionType.READ_ONLY)
+    @Transactional(readOnly=true)
     void txReadonly();
     
     void nonTxMethod();

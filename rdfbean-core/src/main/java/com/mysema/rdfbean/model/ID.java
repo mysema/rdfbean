@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.model;
 
+import net.jcip.annotations.Immutable;
+
 import com.mysema.query.annotations.Entity;
 
 /**
@@ -12,6 +14,7 @@ import com.mysema.query.annotations.Entity;
  *
  */
 @Entity
+@Immutable
 public abstract class ID extends NODE implements Identifier {
     
     private static final long serialVersionUID = 7020057962794085303L;

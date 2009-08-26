@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.model;
 
+import net.jcip.annotations.Immutable;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.annotations.Entity;
 
@@ -13,6 +15,7 @@ import com.mysema.query.annotations.Entity;
  *
  */
 @Entity
+@Immutable
 public final class UID extends ID {
 
     private static final long serialVersionUID = -5243644990902193387L;

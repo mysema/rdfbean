@@ -8,6 +8,8 @@ package com.mysema.rdfbean.guice;
 import static org.junit.Assert.assertTrue;
 
 import com.google.inject.Inject;
+import com.mysema.rdfbean.guice.tx.Propagation;
+import com.mysema.rdfbean.guice.tx.Transactional;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**
@@ -21,17 +23,35 @@ public class ServiceA{
     @Inject 
     private SessionFactory sessionFactory;
     
+    public void nonTxMethod(){
+        assertTrue(sessionFactory.getCurrentSession() == null);
+    }
+    
+    @Transactional(propagation=Propagation.SUPPORTS) 
+    public void nonTxMethod2(){
+        // not intercepted
+        assertTrue(sessionFactory.getCurrentSession() == null);
+    }
+    
     @Transactional
     public void txMethod(){
         assertTrue(sessionFactory.getCurrentSession() != null);
+        assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
     }
     
-    @Transactional(type=TransactionType.READ_ONLY)
+    @Transactional(propagation=Propagation.NEVER)
+    public void txMethod2(){
+        assertTrue(sessionFactory.getCurrentSession() == null);
+    }
+    
+    @Transactional(propagation=Propagation.NOT_SUPPORTED)
+    public void txMethod3(){
+        assertTrue(sessionFactory.getCurrentSession() == null);
+    }
+    
+    @Transactional(readOnly=true)
     public void txReadonly(){
         assertTrue(sessionFactory.getCurrentSession() != null);
-    }
-    
-    public void nonTxMethod(){
-        assertTrue(sessionFactory.getCurrentSession() == null);
+        assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
     }
 }

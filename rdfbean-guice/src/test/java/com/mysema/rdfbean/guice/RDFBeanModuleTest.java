@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Scopes;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
@@ -31,8 +30,9 @@ public class RDFBeanModuleTest {
             @Override
             protected void configure() {
                 super.configure();
-                bind(ServiceA.class).in(Scopes.SINGLETON);
-                bind(ServiceB.class).to(ServiceBImpl.class).in(Scopes.SINGLETON);
+                bind(ServiceA.class);
+                bind(ServiceB.class).to(ServiceBImpl.class);
+                bind(ServiceC.class);
             }
             @Override
             public Repository repository() {
@@ -43,20 +43,28 @@ public class RDFBeanModuleTest {
     
     @Test
     public void tx1(){
-        ServiceA serviceA = injector.getInstance(ServiceA.class);
-        serviceA.txMethod();
-        serviceA.txReadonly();
-        serviceA.nonTxMethod();
+        ServiceA service = injector.getInstance(ServiceA.class);
+        service.nonTxMethod();
+        service.nonTxMethod2();
+        service.txMethod();
+        service.txMethod2();
+        service.txMethod3();        
+        service.txReadonly();        
     }
     
-
     @Test
     public void tx2(){
-        ServiceB serviceB = injector.getInstance(ServiceB.class); 
-        serviceB.txMethod();
-        serviceB.txReadonly();
-        serviceB.nonTxMethod();
+        ServiceB service = injector.getInstance(ServiceB.class); 
+        service.txMethod();
+        service.txReadonly();
+        service.nonTxMethod();
     }
     
+    @Test
+    public void tx3(){
+        ServiceC service = injector.getInstance(ServiceC.class); 
+        service.txMethod();
+        service.nonTxMethod();
+    }
     
 }

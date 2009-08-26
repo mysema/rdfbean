@@ -12,6 +12,9 @@ import java.util.Map;
 
 import com.google.inject.Provider;
 import com.google.inject.matcher.AbstractMatcher;
+import com.mysema.rdfbean.guice.tx.NotTransactional;
+import com.mysema.rdfbean.guice.tx.Propagation;
+import com.mysema.rdfbean.guice.tx.Transactional;
 
 /**
  * TransactionalMethodMatcher provides
@@ -19,11 +22,46 @@ import com.google.inject.matcher.AbstractMatcher;
  * @author tiwe
  * @version $Id$
  */
-class TransactionalMethodMatcher extends AbstractMatcher<Method> 
-    implements Provider<Map<Method,Transactional>>{
+class TransactionalMethodMatcher extends AbstractMatcher<Method> implements Provider<Map<Method,Transactional>>{
 
     private final Map<Method,Transactional> configuration = new HashMap<Method,Transactional>();
     
+    @Override
+    public boolean matches(Method method) {
+        // annotated method
+        if (method.getAnnotation(Transactional.class) != null){
+            return handle(method, method.getAnnotation(Transactional.class));
+            
+        // annotated class
+        }else if (method.getDeclaringClass().getAnnotation(Transactional.class) != null){
+            if (method.getAnnotation(NotTransactional.class) == null){
+                return handle(method, method.getDeclaringClass().getAnnotation(Transactional.class));   
+            }else{
+                return false;
+            }
+        }
+        
+        for (Class<?> iface : method.getDeclaringClass().getInterfaces()){            
+            for (Method m : iface.getMethods()){
+                // annotated interface method
+                if (m.getName().equals(method.getName())
+                  && m.getAnnotation(Transactional.class) != null
+                  && equals(m.getParameterTypes(), method.getParameterTypes())){
+                    return handle(method, m.getAnnotation(Transactional.class));
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean handle(Method method, Transactional annotation) {
+        boolean intercepted = annotation.propagation() != Propagation.SUPPORTS;        
+        if (intercepted){
+            configuration.put(method, annotation);
+        }
+        return intercepted;
+    }
+
     private boolean equals(Object[] a, Object[] b) {
         if (a.length == b.length){
             return Arrays.asList(a).equals(Arrays.asList(b));
@@ -36,37 +74,4 @@ class TransactionalMethodMatcher extends AbstractMatcher<Method>
         return configuration;
     }
 
-    @Override
-    public boolean matches(Method method) {
-        // annotated method
-        if (method.getAnnotation(Transactional.class) != null){
-            configuration.put(method, method.getAnnotation(Transactional.class));
-            return true;
-            
-        // annotated class
-        }else if (method.getDeclaringClass().getAnnotation(Transactional.class) != null){
-            configuration.put(method, method.getDeclaringClass().getAnnotation(Transactional.class));
-            return true;
-        }
-        
-        for (Class<?> iface : method.getDeclaringClass().getInterfaces()){
-            // annotated iface
-            if (iface.getAnnotation(Transactional.class) != null){
-                configuration.put(method, iface.getAnnotation(Transactional.class));
-                return true;
-            }
-            
-            for (Method m : iface.getMethods()){
-                // annotated interface method
-                if (m.getName().equals(method.getName())
-                  && m.getAnnotation(Transactional.class) != null
-                  && equals(m.getParameterTypes(), method.getParameterTypes())){
-                    configuration.put(method, m.getAnnotation(Transactional.class));
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
 }

@@ -9,6 +9,8 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
+import net.jcip.annotations.Immutable;
+
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.annotations.Entity;
@@ -18,6 +20,7 @@ import com.mysema.query.annotations.Entity;
  *
  */
 @Entity
+@Immutable
 public final class LIT extends NODE {
     
     private static final long serialVersionUID = 4279040868676951911L;
@@ -106,12 +109,13 @@ public final class LIT extends NODE {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + value.hashCode();
-        result = prime * result + datatype.hashCode();
-        result = prime * result + ((lang == null) ? 0 : lang.hashCode());
-        return result;
+//        final int prime = 31;
+//        int result = 1;
+//        result = prime * result + value.hashCode();
+//        result = prime * result + datatype.hashCode();
+//        result = prime * result + ((lang == null) ? 0 : lang.hashCode());
+//        return result;
+        return value.hashCode();
     }
 
     @Override

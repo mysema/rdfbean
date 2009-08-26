@@ -7,15 +7,15 @@ package com.mysema.rdfbean.object;
 
 
 /**
- * RDFBeanTransaction provides
+ * RDFBeanTransaction defines a common interface for RDFBean transaction implementations
  *
  * @author tiwe
  * @version $Id$
  */
 public interface RDFBeanTransaction {
-
+    
     /**
-     * Flush the session, commit and close the connection.
+     * Commit and close the connection.
      *
      * @throws RDFBeanException on an error in commit
      */

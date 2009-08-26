@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.guice;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ public class TransactionalMethodMatcherTest {
     @Test
     public void test(){
         TransactionalMethodMatcher matcher = new TransactionalMethodMatcher();
-        for (Class<?> cl : Arrays.asList(ServiceA.class, ServiceB.class, ServiceBImpl.class)){
+        for (Class<?> cl : Arrays.asList(ServiceA.class, ServiceB.class, ServiceBImpl.class, ServiceC.class)){
             System.out.println(cl.getSimpleName());
             for (Method m : cl.getMethods()){
                 if (m.getName().toLowerCase().contains("tx")){

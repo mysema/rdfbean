@@ -43,6 +43,7 @@ public abstract class RDFBeanModule extends AbstractModule{
     
     @Override
     protected void configure() {               
+        // inject properties
         try {
             Properties properties = new Properties();
             for (String res : getConfiguration()){
@@ -59,8 +60,9 @@ public abstract class RDFBeanModule extends AbstractModule{
             throw new RuntimeException(error, e);
         }
        
+        // AOP tx handling
         TransactionalMethodMatcher methodMatcher = new TransactionalMethodMatcher();
-        RDFBeanTxnInterceptor interceptor = new RDFBeanTxnInterceptor(methodMatcher);
+        TransactionalInterceptor interceptor = new TransactionalInterceptor(methodMatcher);
         requestInjection(interceptor);
         bindInterceptor(Matchers.any(), methodMatcher, interceptor);
     }

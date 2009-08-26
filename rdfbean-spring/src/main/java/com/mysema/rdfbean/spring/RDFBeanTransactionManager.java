@@ -24,22 +24,20 @@ import com.mysema.rdfbean.object.*;
  * @version $Id$
  *
  */
-public class RDFBeanTransactionManager extends AbstractPlatformTransactionManager implements SessionContext{
+public class RDFBeanTransactionManager extends AbstractPlatformTransactionManager{
 
     private static final long serialVersionUID = -4060513400839374983L;
 
     private transient final SimpleSessionContext sessionContext;
         
-    private boolean clearSessionOnRB = false;
-
-    private boolean skipFlushForRoTx = false;
+    private boolean clearSessionOnRollback = false;
 
     /**
      * Create a new RDFBeanTransactionManager instance.
      */
     public RDFBeanTransactionManager(SessionFactoryImpl sessionFactory) {
         this.sessionContext = new SimpleSessionContext(sessionFactory);
-        sessionFactory.setSessionContext(this);
+        sessionFactory.setSessionContext(sessionContext);
         setRollbackOnCommitFailure(false);
     }
 
@@ -125,11 +123,8 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
             throw new TransactionUsageException("no transaction active");
         }
         
-        if (!skipFlushForRoTx || !txObj.isRollbackOnly()){
-            txObj.getSession().flush();    
-        }        
-        
-        try {            
+        try {     
+            txObj.getSession().flush();            
             tx.commit();
         } catch (RuntimeException oe) {
             throw new TransactionSystemException("error committing transaction", oe);
@@ -167,7 +162,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
                 txObj.getSession().setFlushMode(txObj.getOriginalFlushMode());    
             }            
             sessionContext.releaseSession();
-            if (clearSessionOnRB) {
+            if (clearSessionOnRollback) {
                 txObj.getSession().clear();
             }            
         }
@@ -214,15 +209,6 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
     }
 
     /**
-     * Return the Session associated to the active transaction or <code>null</code> 
-     * if no transaction is active
-     */
-    @Override
-    public Session getCurrentSession() {        
-        return sessionContext.getCurrentSession();
-    }
-
-    /**
      * Set the clear-session-on-rollback flag. Because after a rollback the state of the objects in
      * the session does not match the state of the database, it's usually prudent to clear the
      * session after a rollback to prevent the application from continuing with stale objects.
@@ -233,23 +219,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
      *                         rollback
      */
     public void setClearSessionOnRollback(boolean clearSessionOnRB) {
-        this.clearSessionOnRB = clearSessionOnRB;
-    }
-
-    /**
-     * Set the skip-flush-on-readonly-transaction flag. If there are a large number of objects in
-     * the session, a {@link Session#flush flush()} can take significant time. Since no modifications
-     * should be done in a read-only transaction, this check can be skipped when in one. However,
-     * disabling this check does mean that inadvertant modifications will be silently dropped (as
-     * opposed to having an exception thrown). For this reason this flag currently sets the
-     * flush-mode to <var>commit</var>, i.e. it just skips the flushes done before queries.
-     *
-     * <p>Changing this flag does not affect any current transaction, only new ones.
-     *
-     * @param skipFlushForRoTx true if Session.flush's should skipped in read-only transactions
-     */
-    public void setSkipFlushOnReadonlyTx(boolean skipFlushForRoTx) {
-        this.skipFlushForRoTx = skipFlushForRoTx;
+        this.clearSessionOnRollback = clearSessionOnRB;
     }
 
     /**

@@ -7,6 +7,8 @@ package com.mysema.rdfbean.model;
 
 import java.util.UUID;
 
+import net.jcip.annotations.Immutable;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.annotations.Entity;
 
@@ -15,6 +17,7 @@ import com.mysema.query.annotations.Entity;
  *
  */
 @Entity
+@Immutable
 public final class BID extends ID {
 
     private static final long serialVersionUID = 4477657161877734394L;

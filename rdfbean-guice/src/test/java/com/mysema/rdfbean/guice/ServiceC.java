@@ -1,41 +1,32 @@
-/*
- * Copyright (c) 2009 Mysema Ltd.
- * All rights reserved.
- * 
- */
 package com.mysema.rdfbean.guice;
 
 import static org.junit.Assert.assertTrue;
 
 import com.google.inject.Inject;
+import com.mysema.rdfbean.guice.tx.NotTransactional;
+import com.mysema.rdfbean.guice.tx.Transactional;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**
- * ServiceBImpl provides
+ * ServiceC provides
  *
  * @author tiwe
  * @version $Id$
  */
-public class ServiceBImpl implements ServiceB {
+@Transactional
+public class ServiceC {
 
     @Inject 
     private SessionFactory sessionFactory;
     
-    @Override
     public void txMethod(){
         assertTrue(sessionFactory.getCurrentSession() != null);
         assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
     }
     
-    @Override
+    @NotTransactional
     public void nonTxMethod(){
-        assertTrue(sessionFactory.getCurrentSession() == null);        
-    }
-
-    @Override
-    public void txReadonly() {
-        assertTrue(sessionFactory.getCurrentSession() != null);
-        assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
+        assertTrue(sessionFactory.getCurrentSession() == null);
     }
 
 }
