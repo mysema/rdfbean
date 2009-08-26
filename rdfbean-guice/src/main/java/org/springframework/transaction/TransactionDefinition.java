@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.transaction.annotation;
+package org.springframework.transaction;
 
 import java.sql.Connection;
 

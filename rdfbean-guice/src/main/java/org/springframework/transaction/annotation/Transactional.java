@@ -23,6 +23,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.transaction.TransactionDefinition;
+
 
 /**
  * Describes transaction attributes on a method or class.

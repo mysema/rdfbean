@@ -16,6 +16,8 @@
 
 package org.springframework.transaction.annotation;
 
+import org.springframework.transaction.TransactionDefinition;
+
 
 /**
  * Enumeration that represents transaction propagation behaviors

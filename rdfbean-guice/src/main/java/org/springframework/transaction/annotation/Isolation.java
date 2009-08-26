@@ -16,6 +16,8 @@
 
 package org.springframework.transaction.annotation;
 
+import org.springframework.transaction.TransactionDefinition;
+
 /**
  * Enumeration that represents transaction isolation levels
  * for use with the JDK 1.5+ transaction annotation, corresponding
