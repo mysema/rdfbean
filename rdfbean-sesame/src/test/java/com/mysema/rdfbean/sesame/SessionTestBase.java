@@ -6,14 +6,11 @@
 package com.mysema.rdfbean.sesame;
 
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.BeforeClass;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParseException;
 import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.TEST;

@@ -1,6 +1,8 @@
 package com.mysema.rdfbean.guice;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -21,7 +23,7 @@ import com.mysema.rdfbean.object.identity.DerbyIdentityService;
 import com.mysema.rdfbean.object.identity.IdentityService;
 
 /**
- * RDFBeanModule provides
+ * RDFBeanModule provides an abstract base class for RDFBean based Guice modules
  *
  * @author tiwe
  * @version $Id$
@@ -31,11 +33,17 @@ public abstract class RDFBeanModule extends AbstractModule{
 
     private static final Logger logger = LoggerFactory.getLogger(RDFBeanModule.class);
     
+    public List<String> getConfiguration(){
+        return Collections.singletonList("/persistence.properties");
+    }
+    
     @Override
     protected void configure() {               
         try {
             Properties properties = new Properties();
-            properties.load(getClass().getResourceAsStream("/persistence.properties"));
+            for (String res : getConfiguration()){
+                properties.load(getClass().getResourceAsStream(res));
+            }            
             for (Object key : properties.keySet()){
                 bind(String.class)
                     .annotatedWith(Names.named(key.toString()))
@@ -57,7 +65,8 @@ public abstract class RDFBeanModule extends AbstractModule{
     
     @Provides
     @Singleton
-    public IdentityService identityService(@Named("identityService.derby.url") String url) throws IOException{
+    public IdentityService identityService(@Named("identityService.derby.url") String url) 
+        throws IOException{
         return new DerbyIdentityService(url);
     }
     

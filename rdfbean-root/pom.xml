@@ -31,6 +31,7 @@
     <module>../rdfbean-owl</module>
     <module>../rdfbean-spring</module>
     <module>../rdfbean-sesame</module>
+    <module>../rdfbean-guice</module>
 <!--         
     <module>../rdfbean-docs</module>
  -->
