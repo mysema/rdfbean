@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.guice;
 
 import java.lang.reflect.Method;
@@ -21,7 +26,7 @@ import com.mysema.rdfbean.object.*;
  *
  */
 @ThreadSafe
-public class RDFBeanTxnInterceptor implements MethodInterceptor, SessionContext{ 
+class RDFBeanTxnInterceptor implements MethodInterceptor, SessionContext{ 
     
     private final Provider<Map<Method,Transactional>> configuration;
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.guice;
 
 import java.io.IOException;
@@ -54,7 +59,7 @@ public abstract class RDFBeanModule extends AbstractModule{
             throw new RuntimeException(error, e);
         }
        
-        TxMethodMatcher methodMatcher = new TxMethodMatcher();
+        TransactionalMethodMatcher methodMatcher = new TransactionalMethodMatcher();
         RDFBeanTxnInterceptor interceptor = new RDFBeanTxnInterceptor(methodMatcher);
         requestInjection(interceptor);
         bindInterceptor(Matchers.any(), methodMatcher, interceptor);
@@ -75,10 +80,20 @@ public abstract class RDFBeanModule extends AbstractModule{
     @Singleton
     public Configuration configuration(IdentityService identityService){
         DefaultConfiguration configuration = new DefaultConfiguration();
+        configuration.addClasses(getAnnotatedClasses());
+        configuration.addPackages(getAnnotatedPackages());
         configuration.setIdentityService(identityService);
         return configuration;
     }
     
+    protected Package[] getAnnotatedPackages() {
+        return new Package[0];
+    }
+
+    protected Class<?>[] getAnnotatedClasses() {
+        return new Class<?>[0];
+    }
+
     @Provides
     @Singleton
     public SessionFactory sessionFactory(Configuration configuration, Repository repository){        

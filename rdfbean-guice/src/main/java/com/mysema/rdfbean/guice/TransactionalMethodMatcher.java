@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.guice;
 
 import java.lang.reflect.Method;
@@ -9,12 +14,12 @@ import com.google.inject.Provider;
 import com.google.inject.matcher.AbstractMatcher;
 
 /**
- * TxMethodMatcher provides
+ * TransactionalMethodMatcher provides
  *
  * @author tiwe
  * @version $Id$
  */
-public class TxMethodMatcher extends AbstractMatcher<Method> 
+class TransactionalMethodMatcher extends AbstractMatcher<Method> 
     implements Provider<Map<Method,Transactional>>{
 
     private final Map<Method,Transactional> configuration = new HashMap<Method,Transactional>();

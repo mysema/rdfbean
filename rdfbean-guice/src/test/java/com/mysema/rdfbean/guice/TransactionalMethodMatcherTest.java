@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.guice;
 
 import static org.junit.Assert.*;
@@ -14,12 +19,12 @@ import org.junit.Test;
  * @author tiwe
  * @version $Id$
  */
-public class TxMethodMatcherTest {
+public class TransactionalMethodMatcherTest {
     
     @SuppressWarnings("unchecked")
     @Test
     public void test(){
-        TxMethodMatcher matcher = new TxMethodMatcher();
+        TransactionalMethodMatcher matcher = new TransactionalMethodMatcher();
         for (Class<?> cl : Arrays.asList(ServiceA.class, ServiceB.class, ServiceBImpl.class)){
             System.out.println(cl.getSimpleName());
             for (Method m : cl.getMethods()){
