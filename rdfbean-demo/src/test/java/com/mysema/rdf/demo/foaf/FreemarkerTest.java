@@ -49,6 +49,6 @@ public class FreemarkerTest {
         
         Writer writer = new PrintWriter(System.out);
         configuration.getTemplate("freemarker_test.ftl").process(model, writer);
-        writer.close();
+        //writer.close();
     }
 }

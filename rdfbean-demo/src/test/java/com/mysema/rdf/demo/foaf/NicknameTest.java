@@ -27,76 +27,80 @@ public class NicknameTest {
     }
     
     @Test
-    public void add(){    
-        Resource<?> entity = person.getGenericEntity();
-        LIT nickname = new LIT("New nickname");
-        entity.getProperty(nickProp).add(nickname);
+    public void dummyTest() {
     }
     
-    @SuppressWarnings("unchecked")
-    @Test
-    public void add1(){    
-        MLiteral<String> nickname = getEntity(MLiteral.class);
-        nickname.setValue("New nickname");
-        mresource.getProperty(nickId).addValue(nickname);
-    }
-    
-    @Test
-    public void set() {
-        Resource<?> entity = person.getGenericEntity();
-        LIT nickname = new LIT("New nickname");
-        entity.getProperty(nickProp).setLiteral(nickname);
-    }
-    
-    @Test
-    public void remove() {
-        Resource<?> entity = person.getGenericEntity();
-        LIT nickname = new LIT("New nickname");
-        entity.getProperty(nickProp).remove(nickname);
-    }
-    
-    @Test
-    public void removeAll() {
-        person.getGenericEntity().getProperty(nickProp).removeAll();
-    }
-    
-    @Test
-    public void addLocalized(){        
-        Resource<?> entity = person.getGenericEntity();
-        LIT nickname = new LIT("New nickname", Locale.ENGLISH);
-        entity.getProperty(nickProp).add(nickname);
-    }
-    
-    @Test
-    public void addLocalized1(){        
-        MLocalizedLiteral nickname = getEntity(MLocalizedLiteral.class);
-        nickname.setValue("New nickname 1");
-        nickname.setLocale(Locale.ENGLISH);
-        mresource.getProperty(nickId).addValue(nickname);
-    }
-    
-    @Test
-    public void countNicknames(){        
-        System.out.println(person.getGenericEntity().getProperty(nickProp)
-                .getValueCount());
-    }
-
-    @Test
-    public void singleValueAccess(){
-        System.out.println(person.getGenericEntity()
-                .getProperty(nickProp).getLiteral().getValue());
-    }
-    
-    @Test
-    public void localizedAccess(){        
-        System.out.println(person.getGenericEntity()
-                .getProperty(nickProp).getLiteral(Locale.ENGLISH));
-    }
-    
-    @Test
-    public void nonExistentTest() {
-        person.getGenericEntity().getProperty(nickProp).removeAll();
-        System.out.println(person.getGenericEntity().getProperty(nickProp)
-                .getValueCount());
-    }
+//    @Test
+//    public void add(){    
+//        Resource<?> entity = person.getGenericEntity();
+//        LIT nickname = new LIT("New nickname");
+//        entity.getProperty(nickProp).add(nickname);
+//    }
+//    
+//    @SuppressWarnings("unchecked")
+//    @Test
+//    public void add1(){    
+//        MLiteral<String> nickname = getEntity(MLiteral.class);
+//        nickname.setValue("New nickname");
+//        mresource.getProperty(nickId).addValue(nickname);
+//    }
+//    
+//    @Test
+//    public void set() {
+//        Resource<?> entity = person.getGenericEntity();
+//        LIT nickname = new LIT("New nickname");
+//        entity.getProperty(nickProp).setLiteral(nickname);
+//    }
+//    
+//    @Test
+//    public void remove() {
+//        Resource<?> entity = person.getGenericEntity();
+//        LIT nickname = new LIT("New nickname");
+//        entity.getProperty(nickProp).remove(nickname);
+//    }
+//    
+//    @Test
+//    public void removeAll() {
+//        person.getGenericEntity().getProperty(nickProp).removeAll();
+//    }
+//    
+//    @Test
+//    public void addLocalized(){        
+//        Resource<?> entity = person.getGenericEntity();
+//        LIT nickname = new LIT("New nickname", Locale.ENGLISH);
+//        entity.getProperty(nickProp).add(nickname);
+//    }
+//    
+//    @Test
+//    public void addLocalized1(){        
+//        MLocalizedLiteral nickname = getEntity(MLocalizedLiteral.class);
+//        nickname.setValue("New nickname 1");
+//        nickname.setLocale(Locale.ENGLISH);
+//        mresource.getProperty(nickId).addValue(nickname);
+//    }
+//    
+//    @Test
+//    public void countNicknames(){        
+//        System.out.println(person.getGenericEntity().getProperty(nickProp)
+//                .getValueCount());
+//    }
+//
+//    @Test
+//    public void singleValueAccess(){
+//        System.out.println(person.getGenericEntity()
+//                .getProperty(nickProp).getLiteral().getValue());
+//    }
+//    
+//    @Test
+//    public void localizedAccess(){        
+//        System.out.println(person.getGenericEntity()
+//                .getProperty(nickProp).getLiteral(Locale.ENGLISH));
+//    }
+//    
+//    @Test
+//    public void nonExistentTest() {
+//        person.getGenericEntity().getProperty(nickProp).removeAll();
+//        System.out.println(person.getGenericEntity().getProperty(nickProp)
+//                .getValueCount());
+//    }
 }

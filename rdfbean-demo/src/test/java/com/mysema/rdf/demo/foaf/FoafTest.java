@@ -2,17 +2,17 @@ package com.mysema.rdf.demo.foaf;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Test;
 import org.springframework.beans.PropertyAccessor;
 
-import com.mysema.rdf.demo.foaf.domain.Document;
-import com.mysema.rdf.demo.foaf.domain.Person;
 import com.mysema.rdf.demo.generic.Resource;
 import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.rdfs.RDFProperty;
 
 public class FoafTest {
-
+    @Test
     public void dummyTest() {
+    }
 
 //        Document workInfo = new Document();
 //
@@ -54,5 +54,5 @@ public class FoafTest {
 //        
 //        assertEquals("geek", accessor.get(person,
 //            "foaf:geekCode"));
-    }
+//    }
 }

@@ -2,7 +2,6 @@ package com.mysema.rdf.demo.foaf;
 
 import org.junit.Test;
 
-import com.mysema.rdf.demo.foaf.domain.Document;
 import com.mysema.rdf.demo.foaf.domain.Person;
 import com.mysema.rdfbean.model.UID;
 
@@ -48,33 +47,33 @@ public class HomepageTest {
     
     @Test
     public void addNewHomepage(){
-        Document homepage = new Document();
-        homepage.setLabel("new homepage");
-        person.getGenericEntity().getProperty(workInfoHomepage).add(homepage);
+//        Document homepage = new Document();
+//        homepage.setLabel("new homepage");
+//        person.getGenericEntity().getProperty(workInfoHomepage).add(homepage);
     }
     
-    @Test
-    public void setHomepage(){
-        Document homepage = new Document();
-        homepage.setLabel("new homepage");
-        person.getGenericEntity().getProperty(workInfoHomepage).setReference(homepage);
-    }
-    
-    @Test
-    public void removeHomepage(){
-        Document homepage = new Document();
-        person.getGenericEntity().getProperty(workInfoHomepage).remove(homepage);
-    }
-    
-    @Test
-    public void removeAllHomepages(){
-        person.getGenericEntity().getProperty(workInfoHomepage).removeAll();
-    }
-    
-    @Test
-    public void nonExistentTest() {
-        person.getGenericEntity().getProperty(workInfoHomepage).removeAll();
-        System.out.println(person.getGenericEntity()
-                .getProperty(workInfoHomepage).getValueCount());
-    }
+//    @Test
+//    public void setHomepage(){
+//        Document homepage = new Document();
+//        homepage.setLabel("new homepage");
+//        person.getGenericEntity().getProperty(workInfoHomepage).setReference(homepage);
+//    }
+//    
+//    @Test
+//    public void removeHomepage(){
+//        Document homepage = new Document();
+//        person.getGenericEntity().getProperty(workInfoHomepage).remove(homepage);
+//    }
+//    
+//    @Test
+//    public void removeAllHomepages(){
+//        person.getGenericEntity().getProperty(workInfoHomepage).removeAll();
+//    }
+//    
+//    @Test
+//    public void nonExistentTest() {
+//        person.getGenericEntity().getProperty(workInfoHomepage).removeAll();
+//        System.out.println(person.getGenericEntity()
+//                .getProperty(workInfoHomepage).getValueCount());
+//    }
 }

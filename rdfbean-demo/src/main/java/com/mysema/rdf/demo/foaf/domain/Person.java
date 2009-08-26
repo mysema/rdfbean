@@ -3,47 +3,45 @@ package com.mysema.rdf.demo.foaf.domain;
 import com.mysema.rdf.demo.generic.Resource;
 
 /**
- *  foaf:geekCode
- *  foaf:plan
- *  foaf:img
+ * foaf:geekCode foaf:plan foaf:img
  * 
  * 
  * @author mala
- *
+ * 
  */
 public class Person extends Agent {
 
-	private String firstName;
-	
-	private String surname;
+    private String firstName;
 
-	private Image img;
+    private String surname;
 
-	public String getFirstName() {
-		return firstName;
-	}
+    private Image img;
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public String getSurname() {
-		return surname;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
+    public String getSurname() {
+        return surname;
+    }
 
-	public void setImg(Image img) {
-		this.img = img;
-	}
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
 
-	public Image getImg() {
-		return img;
-	}
-	
-	public Resource getGenericEntity() {
-	    return null;
-	}
+    public void setImg(Image img) {
+        this.img = img;
+    }
+
+    public Image getImg() {
+        return img;
+    }
+
+    public Resource getGenericEntity() {
+        return null;
+    }
 }
