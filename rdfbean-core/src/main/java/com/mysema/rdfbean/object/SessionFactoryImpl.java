@@ -31,7 +31,7 @@ public class SessionFactoryImpl implements SessionFactory {
     
     private BID model;
     
-    private Repository<?> repository;
+    private Repository repository;
     
     private Iterable<Locale> locales;
     
@@ -162,7 +162,7 @@ public class SessionFactoryImpl implements SessionFactory {
         this.objectRepositories = objectRepositories;
     }
 
-    public void setRepository(Repository<?> repository) {
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 

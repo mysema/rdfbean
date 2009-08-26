@@ -21,7 +21,7 @@ import com.mysema.commons.lang.CloseableIterator;
  * @author sasa
  *
  */
-public final class MiniRepository implements Repository<MiniDialect> {
+public final class MiniRepository implements Repository{
     
     private Map<ID, PredicateCache> subjects;
     

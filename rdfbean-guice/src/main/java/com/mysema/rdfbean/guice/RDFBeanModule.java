@@ -28,7 +28,6 @@ import com.mysema.rdfbean.object.identity.IdentityService;
  * @author tiwe
  * @version $Id$
  */
-@SuppressWarnings("unchecked")
 public abstract class RDFBeanModule extends AbstractModule{
 
     private static final Logger logger = LoggerFactory.getLogger(RDFBeanModule.class);
@@ -42,7 +41,7 @@ public abstract class RDFBeanModule extends AbstractModule{
         try {
             Properties properties = new Properties();
             for (String res : getConfiguration()){
-                properties.load(getClass().getResourceAsStream(res));
+                properties.load(RDFBeanModule.class.getResourceAsStream(res));
             }            
             for (Object key : properties.keySet()){
                 bind(String.class)
@@ -55,12 +54,10 @@ public abstract class RDFBeanModule extends AbstractModule{
             throw new RuntimeException(error, e);
         }
        
-        RDFBeanTxnInterceptor interceptor = new RDFBeanTxnInterceptor();
+        TxMethodMatcher methodMatcher = new TxMethodMatcher();
+        RDFBeanTxnInterceptor interceptor = new RDFBeanTxnInterceptor(methodMatcher);
         requestInjection(interceptor);
-        bindInterceptor(
-                Matchers.any(), 
-                Matchers.annotatedWith(Transactional.class),
-                interceptor);
+        bindInterceptor(Matchers.any(), methodMatcher, interceptor);
     }
     
     @Provides

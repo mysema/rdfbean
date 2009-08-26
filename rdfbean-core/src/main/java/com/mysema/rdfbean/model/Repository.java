@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.model;
 
-public interface Repository<T extends Dialect<?, ?, ?, ?, ?, ?>> {
+public interface Repository {
 
     void initialize();
     

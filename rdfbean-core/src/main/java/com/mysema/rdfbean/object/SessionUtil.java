@@ -22,15 +22,15 @@ public final class SessionUtil {
         return openSession(new MiniRepository(), classes);
     }
 
-    public static Session openSession(Repository<?> repository, Class<?>... classes) {
+    public static Session openSession(Repository repository, Class<?>... classes) {
         return openSession(repository, (Locale) null, classes);
     }
     
-    public static Session openSession(Repository<?> repository, @Nullable Locale locale, Class<?>... classes) {
+    public static Session openSession(Repository repository, @Nullable Locale locale, Class<?>... classes) {
         return openSession(repository, locale != null ? Arrays.asList(locale) : Collections.<Locale>emptyList(), classes);
     }
 
-    public static Session openSession(Repository<?> repository, Iterable<Locale> locales, Class<?>... classes) {
+    public static Session openSession(Repository repository, Iterable<Locale> locales, Class<?>... classes) {
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl(locales);
         sessionFactory.setConfiguration(new DefaultConfiguration(classes));
         sessionFactory.setRepository(repository);
@@ -38,15 +38,15 @@ public final class SessionUtil {
         return sessionFactory.openSession();
     }
 
-    public static Session openSession(Repository<?> repository, Package... packages) {
+    public static Session openSession(Repository repository, Package... packages) {
         return openSession(repository, (Locale) null, packages);
     }
     
-    public static Session openSession(Repository<?> repository, @Nullable Locale locale, Package... packages) {
+    public static Session openSession(Repository repository, @Nullable Locale locale, Package... packages) {
         return openSession(repository, locale != null ? Arrays.asList(locale) : Collections.<Locale>emptyList(), packages);
     }
 
-    public static Session openSession(Repository<?> repository, Iterable<Locale> locales, Package... packages) {
+    public static Session openSession(Repository repository, Iterable<Locale> locales, Package... packages) {
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl(locales);
         sessionFactory.setConfiguration(new DefaultConfiguration(packages));
         sessionFactory.setRepository(repository);

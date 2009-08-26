@@ -48,7 +48,7 @@ public class SchemaGen {
     
     private Configuration configuration;
     
-    private Repository<?> repository;
+    private Repository repository;
     
     private ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
@@ -300,7 +300,7 @@ public class SchemaGen {
         return ontology;
     }
 
-    public void setRepository(Repository<?> repository) {
+    public void setRepository(Repository repository) {
         this.repository = repository;
     }
 

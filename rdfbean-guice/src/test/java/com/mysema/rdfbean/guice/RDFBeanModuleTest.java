@@ -1,7 +1,6 @@
 package com.mysema.rdfbean.guice;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.inject.Guice;
@@ -47,9 +46,7 @@ public class RDFBeanModuleTest {
     
 
     @Test
-    @Ignore
     public void tx2(){
-        // FIXME
         ServiceB serviceB = injector.getInstance(ServiceB.class); 
         serviceB.txMethod();
         serviceB.txReadonly();

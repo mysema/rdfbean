@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.guice;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import net.jcip.annotations.ThreadSafe;
 
@@ -8,6 +9,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.mysema.rdfbean.object.*;
 
 
@@ -21,8 +23,23 @@ import com.mysema.rdfbean.object.*;
 @ThreadSafe
 public class RDFBeanTxnInterceptor implements MethodInterceptor, SessionContext{ 
     
+    private final Provider<Map<Method,Transactional>> configuration;
+
     private SimpleSessionContext sessionContext;
 
+    public RDFBeanTxnInterceptor(Provider<Map<Method,Transactional>> configuration) {
+        this.configuration = configuration;
+    }
+    
+    /**
+     * Return the Session associated to the active transaction or <code>null</code> 
+     * if no transaction is active
+     */
+    @Override
+    public Session getCurrentSession() {        
+        return sessionContext.getCurrentSession();
+    }
+    
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         Session session = sessionContext.getOrCreateSession();
 
@@ -33,7 +50,7 @@ public class RDFBeanTxnInterceptor implements MethodInterceptor, SessionContext{
         }            
 
         // read out transaction settings
-        Transactional transactional = readTransactionMetadata(methodInvocation);
+        Transactional transactional = configuration.get().get(methodInvocation.getMethod());
 
         // read-only txn?
         FlushMode savedFlushMode = session.getFlushMode();
@@ -90,25 +107,6 @@ public class RDFBeanTxnInterceptor implements MethodInterceptor, SessionContext{
                 
         }
     }
-
-    private Transactional readTransactionMetadata(MethodInvocation methodInvocation) {
-        Transactional transactional;
-        Method method = methodInvocation.getMethod();
-
-        // try the class if there's nothing on the method 
-        // (only go up one level in the hierarchy, to skip the proxy)
-        Class<?> targetClass = methodInvocation.getThis().getClass().getSuperclass();
-
-        if (method.isAnnotationPresent(Transactional.class)){
-            transactional = method.getAnnotation(Transactional.class);
-        }else if (targetClass.isAnnotationPresent(Transactional.class)){
-            transactional = targetClass.getAnnotation(Transactional.class);
-        }else{
-            //if there is no transactional annotation of Warp's present, use the default
-            transactional = Internal.class.getAnnotation(Transactional.class);   
-        }   
-        return transactional;
-    }
     
     private boolean rollbackIfNecessary(Transactional transactional, Exception e, 
             RDFBeanTransaction txn) {
@@ -140,15 +138,6 @@ public class RDFBeanTxnInterceptor implements MethodInterceptor, SessionContext{
 
         return commit;
     }
-    
-    /**
-     * Return the Session associated to the active transaction or <code>null</code> 
-     * if no transaction is active
-     */
-    @Override
-    public Session getCurrentSession() {        
-        return sessionContext.getCurrentSession();
-    }
 
     @Inject
     public void setSessionFactory(SessionFactory sessionFactory){
@@ -156,7 +145,5 @@ public class RDFBeanTxnInterceptor implements MethodInterceptor, SessionContext{
         ((SessionFactoryImpl)sessionFactory).setSessionContext(this);
     }
 
-    @Transactional
-    private static class Internal { }
 
 }

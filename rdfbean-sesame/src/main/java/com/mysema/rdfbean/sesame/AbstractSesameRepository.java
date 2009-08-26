@@ -20,7 +20,7 @@ import com.mysema.rdfbean.model.Repository;
  * @author sasa
  *
  */
-public abstract class AbstractSesameRepository implements Repository<SesameDialect> {
+public abstract class AbstractSesameRepository implements Repository{
 
     private RDFSource[] sources;
     
