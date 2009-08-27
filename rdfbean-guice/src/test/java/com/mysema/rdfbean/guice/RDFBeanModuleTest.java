@@ -33,6 +33,7 @@ public class RDFBeanModuleTest {
                 bind(ServiceA.class);
                 bind(ServiceB.class).to(ServiceBImpl.class);
                 bind(ServiceC.class);
+                bind(ServiceD.class).to(ServiceDImpl.class);
             }
             @Override
             public Repository repository() {
@@ -67,4 +68,9 @@ public class RDFBeanModuleTest {
         service.nonTxMethod();
     }
     
+    @Test
+    public void tx4(){
+        ServiceD service = injector.getInstance(ServiceD.class); 
+        service.txMethod();
+    }
 }

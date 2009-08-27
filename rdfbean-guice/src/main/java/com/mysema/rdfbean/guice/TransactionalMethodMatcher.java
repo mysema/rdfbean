@@ -29,28 +29,32 @@ class TransactionalMethodMatcher extends AbstractMatcher<Method> implements Prov
     
     @Override
     public boolean matches(Method method) {
+        if (method.getAnnotation(NotTransactional.class) != null){
+            return false;
+        
         // annotated method
-        if (method.getAnnotation(Transactional.class) != null){
+        }else if (method.getAnnotation(Transactional.class) != null){
             return handle(method, method.getAnnotation(Transactional.class));
             
         // annotated class
         }else if (method.getDeclaringClass().getAnnotation(Transactional.class) != null){
-            if (method.getAnnotation(NotTransactional.class) == null){
-                return handle(method, method.getDeclaringClass().getAnnotation(Transactional.class));   
-            }else{
-                return false;
-            }
+            return handle(method, method.getDeclaringClass().getAnnotation(Transactional.class));
         }
         
-        for (Class<?> iface : method.getDeclaringClass().getInterfaces()){            
-            for (Method m : iface.getMethods()){
-                // annotated interface method
-                if (m.getName().equals(method.getName())
-                  && m.getAnnotation(Transactional.class) != null
-                  && equals(m.getParameterTypes(), method.getParameterTypes())){
-                    return handle(method, m.getAnnotation(Transactional.class));
+        for (Class<?> iface : method.getDeclaringClass().getInterfaces()){       
+            // annotated interface
+            if (iface.getAnnotation(Transactional.class) != null){
+                return handle(method, iface.getAnnotation(Transactional.class));
+            }else{
+                for (Method m : iface.getMethods()){
+                    // annotated interface method
+                    if (m.getName().equals(method.getName())
+                      && m.getAnnotation(Transactional.class) != null
+                      && equals(m.getParameterTypes(), method.getParameterTypes())){
+                        return handle(method, m.getAnnotation(Transactional.class));
+                    }
                 }
-            }
+            }            
         }
         return false;
     }
