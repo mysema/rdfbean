@@ -69,18 +69,18 @@ public abstract class RDFBeanModule extends AbstractModule{
     
     @Provides
     @Singleton
-    public IdentityService identityService(@Named("identityService.derby.url") String url) 
+    public IdentityService createIdentityService(@Named("identityService.derby.url") String url) 
         throws IOException{
         return new DerbyIdentityService(url);
     }
     
     @Provides 
     @Singleton
-    public abstract Repository repository();
+    public abstract Repository createRepository(Configuration configuration);
     
     @Provides
     @Singleton
-    public Configuration configuration(IdentityService identityService){
+    public Configuration createConfiguration(IdentityService identityService){
         DefaultConfiguration configuration = new DefaultConfiguration();
         configuration.addClasses(getAnnotatedClasses());
         configuration.addPackages(getAnnotatedPackages());
@@ -98,7 +98,7 @@ public abstract class RDFBeanModule extends AbstractModule{
 
     @Provides
     @Singleton
-    public SessionFactory sessionFactory(Configuration configuration, Repository repository){        
+    public SessionFactory createSessionFactory(Configuration configuration, Repository repository){        
         // TODO : locale handling
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(configuration);
