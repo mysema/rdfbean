@@ -26,8 +26,7 @@ public class RDFProperty extends RDFSResource {
      * FunctionalProperty or AnnotationProperty
      */
     @Predicate(ns = RDF.NS, ln = "type", ignoreInvalid = true)
-    private Set<RDFPropertyFeature> basicPropertyFeatures = EnumSet
-            .noneOf(RDFPropertyFeature.class);
+    private Set<RDFPropertyFeature> basicPropertyFeatures = EnumSet.noneOf(RDFPropertyFeature.class);
 
     @Predicate(ns = RDFS.NS)
     private Set<RDFSClass<?>> domain = new LinkedHashSet<RDFSClass<?>>();
@@ -70,13 +69,11 @@ public class RDFProperty extends RDFSResource {
     }
 
     public boolean isAnnotationProperty() {
-        return basicPropertyFeatures
-                .contains(RDFPropertyFeature.AnnotationProperty);
+        return basicPropertyFeatures.contains(RDFPropertyFeature.AnnotationProperty);
     }
 
     public boolean isFunctionalProperty() {
-        return basicPropertyFeatures
-                .contains(RDFPropertyFeature.FunctionalProperty);
+        return basicPropertyFeatures.contains(RDFPropertyFeature.FunctionalProperty);
     }
 
     public void addRange(RDFSClass<?> range) {

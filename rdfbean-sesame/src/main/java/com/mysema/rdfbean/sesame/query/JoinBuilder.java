@@ -29,11 +29,14 @@ public class JoinBuilder{
     
     private final SesameDialect dialect;
     
+    private final boolean datatypeInference;
+    
     private final URI xsdString;
     
-    public JoinBuilder(SesameDialect dialect){
+    public JoinBuilder(SesameDialect dialect, boolean datatypeInference){
         this.dialect = dialect;
-        xsdString = dialect.getURI(XSD.stringType);
+        this.datatypeInference = datatypeInference;
+        this.xsdString = dialect.getURI(XSD.stringType);
     }
 
     public TupleExpr getJoins() {
@@ -51,20 +54,22 @@ public class JoinBuilder{
     }
     
     private TupleExpr convert(StatementPattern pattern){
-        Var objVar = pattern.getObjectVar();
-        if (objVar.getValue() != null && objVar.getValue() instanceof Literal){
-            Literal lit = (Literal) pattern.getObjectVar().getValue();
-            if (lit.getDatatype() != null && lit.getDatatype().equals(xsdString)){
-                Var obj2 = new Var(objVar.getName()+"_untyped", dialect.getLiteral(lit.getLabel()));
-                StatementPattern pattern2 = new StatementPattern(
-                        pattern.getScope(), 
-                        pattern.getSubjectVar(), 
-                        pattern.getPredicateVar(),
-                        obj2,
-                        pattern.getContextVar());
-                return new Union(pattern, pattern2);
-            }
-        }
+        if (datatypeInference){
+            Var objVar = pattern.getObjectVar();
+            if (objVar.getValue() != null && objVar.getValue() instanceof Literal){
+                Literal lit = (Literal) pattern.getObjectVar().getValue();
+                if (lit.getDatatype() != null && lit.getDatatype().equals(xsdString)){
+                    Var obj2 = new Var(objVar.getName()+"_untyped", dialect.getLiteral(lit.getLabel()));
+                    StatementPattern pattern2 = new StatementPattern(
+                            pattern.getScope(), 
+                            pattern.getSubjectVar(), 
+                            pattern.getPredicateVar(),
+                            obj2,
+                            pattern.getContextVar());
+                    return new Union(pattern, pattern2);
+                }
+            }            
+        }        
         return pattern;
     }
     

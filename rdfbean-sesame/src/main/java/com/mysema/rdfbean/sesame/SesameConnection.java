@@ -45,6 +45,8 @@ public class SesameConnection implements RDFConnection {
     
     private boolean readonlyTnx = false;
 
+    private final boolean datatypeInference = true;
+    
     private final ValueFactory vf;
     
     public SesameConnection(RepositoryConnection connection, Operations operations) {
@@ -124,7 +126,8 @@ public class SesameConnection implements RDFConnection {
                 dialect, 
                 connection, 
                 StatementPattern.Scope.DEFAULT_CONTEXTS,
-                operations);
+                operations,
+                datatypeInference);
         query.getMetadata().setDistinct(true);
         return new BeanQueryAdapter(query,query);
     }

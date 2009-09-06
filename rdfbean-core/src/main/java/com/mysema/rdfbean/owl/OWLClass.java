@@ -60,8 +60,7 @@ public class OWLClass extends RDFSClass<RDFSResource> {
         return unionOf;
     }
 
-    public void setAllValuesFrom(RDFProperty property,
-            RDFSClass<?> allValuesFrom) {
+    public void setAllValuesFrom(RDFProperty property, RDFSClass<?> allValuesFrom) {
         Restriction restriction = new Restriction();
         restriction.setOnProperty(property);
         restriction.setAllValuesFrom(allValuesFrom);

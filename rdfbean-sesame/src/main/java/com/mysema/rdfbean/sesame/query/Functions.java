@@ -238,8 +238,7 @@ public class Functions {
     }
 
     public void addTransformers(Map<Operator<?>, Transformer> byOp) {
-        for (final Map.Entry<Operator<?>, String> e : opToFunctionURI
-                .entrySet()) {
+        for (final Map.Entry<Operator<?>, String> e : opToFunctionURI.entrySet()) {
             byOp.put(e.getKey(), new Transformer() {
                 @Override
                 public ValueExpr transform(List<ValueExpr> args) {

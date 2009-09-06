@@ -28,8 +28,7 @@ public class ObjectProperty extends RDFProperty {
      * TransitiveProperty, SymmetricProperty or InverseFunctionalProperty
      */
     @Predicate(ns = RDF.NS, ln = "type", ignoreInvalid = true)
-    private Set<ObjectPropertyFeature> objectPropertyFeatures = EnumSet
-            .noneOf(ObjectPropertyFeature.class);
+    private Set<ObjectPropertyFeature> objectPropertyFeatures = EnumSet.noneOf(ObjectPropertyFeature.class);
 
     public ObjectProperty() {
     }

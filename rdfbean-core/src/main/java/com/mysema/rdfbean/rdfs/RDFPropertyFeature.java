@@ -17,7 +17,8 @@ import com.mysema.rdfbean.owl.OWL;
  */
 @ClassMapping(ns = OWL.NS)
 public enum RDFPropertyFeature {
-    AnnotationProperty, FunctionalProperty;
+    AnnotationProperty, 
+    FunctionalProperty;
 
     @Id
     public ID getId() {

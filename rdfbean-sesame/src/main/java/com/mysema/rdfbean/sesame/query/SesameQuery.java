@@ -41,7 +41,6 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.*;
 import com.mysema.rdfbean.query.AbstractProjectingQuery;
 import com.mysema.rdfbean.query.VarNameIterator;
@@ -61,14 +60,14 @@ public class SesameQuery extends
     
     private static final Logger queryTreeLogger = LoggerFactory.getLogger("com.mysema.rdfbean.sesame.queryTree");
     
+    static{
+        SesameQueryHolder.init();
+    }
+    
     private final StatementPattern.Scope patternScope;
     
     private final Operations sesameOps;
     
-    static{
-        SesameQueryHolder.init();
-    }
-
     private ValueExpr filterConditions;
 
     private boolean idPropertyInOperation = false;
@@ -97,23 +96,27 @@ public class SesameQuery extends
     
     private final JoinBuilder joinBuilder;
     
-    private boolean includeInferred = true;
+    private final boolean includeInferred = true;
     
-    private RepositoryConnection connection;
+    private final RepositoryConnection connection;
     
-    private Configuration conf;
+    private final Configuration conf;
+    
+    private final boolean datatypeInference;
         
     public SesameQuery(Session session, 
             SesameDialect dialect, 
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,
-            Operations sesameOps) {
+            Operations sesameOps,
+            boolean datatypeInference) {
         super(dialect, session);
         this.connection = Assert.notNull(connection);
         this.conf = session.getConfiguration();
+        this.datatypeInference = datatypeInference;
         this.patternScope = patternScope;
         this.sesameOps = Assert.notNull(sesameOps);
-        this.joinBuilder = new JoinBuilder(dialect);
+        this.joinBuilder = new JoinBuilder(dialect, datatypeInference);
     }
     
     @SuppressWarnings("unchecked")
@@ -519,7 +522,7 @@ public class SesameQuery extends
     private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 
             @Nullable Var valNode, @Nullable Var keyNode) {
         MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
-        JoinBuilder builder = new JoinBuilder((SesameDialect)dialect);
+        JoinBuilder builder = new JoinBuilder((SesameDialect)dialect, datatypeInference);
         if (valNode != null){
             if (mappedProperty.getValuePredicate() != null){
                 match(builder, pathVar, mappedProperty.getValuePredicate(), valNode);
@@ -608,7 +611,7 @@ public class SesameQuery extends
             size++;
         }
         
-        JoinBuilder builder = new JoinBuilder((SesameDialect)dialect);
+        JoinBuilder builder = new JoinBuilder((SesameDialect)dialect, datatypeInference);
         // path from size operation
         Path<?> path = (Path<?>)((Operation<?,?>)operation.getArg(0)).getArg(0); 
         Var pathVar = transformPath(path);                                

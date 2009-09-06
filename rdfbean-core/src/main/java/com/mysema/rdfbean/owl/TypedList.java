@@ -26,8 +26,7 @@ import com.mysema.rdfbean.rdfs.RDFSResource;
 @ClassMapping
 public class TypedList extends OWLClass {
 
-    private static final RDFSClass<RDFSResource> List = new RDFSClass<RDFSResource>(
-            RDF.List);
+    private static final RDFSClass<RDFSResource> List = new RDFSClass<RDFSResource>(RDF.List);
 
     private static final RDFProperty first = new RDFProperty(RDF.first);
 

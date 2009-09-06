@@ -56,24 +56,29 @@ public class Operations {
             }            
         });        
         
-        Iterator<CompareOp> compareOps = Arrays.asList(
-                CompareOp.EQ, CompareOp.EQ, CompareOp.NE, CompareOp.NE, 
-                CompareOp.LT, CompareOp.LE, CompareOp.GT, CompareOp.GE).iterator();
-        for (Operator<?> op : Arrays.<Operator<?>>asList(
-                EQ_OBJECT, 
-                EQ_PRIMITIVE, 
-                NE_OBJECT, 
-                NE_PRIMITIVE, 
-                LT, 
-                LOE, 
-                GT, 
-                GOE)){            
-            opToTransformer.put(op, new CompareTransformer(compareOps.next()));
-        }        
-        opToTransformer.put(AFTER, new CompareTransformer(CompareOp.GT));
-        opToTransformer.put(BEFORE, new CompareTransformer(CompareOp.LT));
-        opToTransformer.put(AOE, new CompareTransformer(CompareOp.GE));
-        opToTransformer.put(BOE, new CompareTransformer(CompareOp.LE));
+        Map<Operator<?>, CompareOp> compareOps = new HashMap<Operator<?>, CompareOp>();
+        compareOps.put(EQ_OBJECT, CompareOp.EQ); // TODO : datatype inference 
+        compareOps.put(EQ_PRIMITIVE, CompareOp.EQ); // TODO : datatype inference
+        compareOps.put(NE_OBJECT,  CompareOp.NE); // TODO : datatype inference
+        compareOps.put(NE_PRIMITIVE, CompareOp.NE); // TODO : datatype inference
+        
+        compareOps.put(LT, CompareOp.LT);
+        compareOps.put(BEFORE, CompareOp.LT);
+        compareOps.put(LOE, CompareOp.LE);
+        compareOps.put(BOE, CompareOp.LE);
+        compareOps.put(GT, CompareOp.GT);
+        compareOps.put(AFTER, CompareOp.GT);
+        compareOps.put(GOE, CompareOp.GE);
+        compareOps.put(AOE, CompareOp.GE);
+        for (final Map.Entry<Operator<?>, CompareOp> entry : compareOps.entrySet()){
+            opToTransformer.put(entry.getKey(), new Transformer(){
+                @Override
+                public ValueExpr transform(List<ValueExpr> args) {
+                    return new Compare(args.get(0), args.get(1), entry.getValue());
+                }                
+            });
+        }      
+        
         opToTransformer.put(BETWEEN, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
@@ -162,13 +167,19 @@ public class Operations {
             }            
         }); 
         
-        Iterator<MathOp> mathOps = Arrays.asList(
+        final Iterator<MathOp> mathOps = Arrays.asList(
                 MathOp.PLUS, 
                 MathOp.MINUS, 
                 MathOp.MULTIPLY, 
                 MathOp.DIVIDE).iterator();
         for (Operator<?> op : Arrays.<Operator<?>>asList(ADD, SUB, MULT, DIV)){
-            opToTransformer.put(op, new MathExprTransformer(mathOps.next()));
+            opToTransformer.put(op, new Transformer(){
+                @Override
+                public ValueExpr transform(List<ValueExpr> args) {
+                    return new MathExpr(args.get(0), args.get(1), mathOps.next());
+                }
+                
+            });
         }
         
         opToTransformer.put(STRING_CAST, new Transformer(){
