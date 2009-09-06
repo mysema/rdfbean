@@ -15,11 +15,17 @@ import net.jcip.annotations.Immutable;
  */
 @Immutable
 public final class STMTMatcher {
+    
     @Nullable private final ID subject;
+    
     @Nullable private final UID predicate;
+    
     @Nullable private final NODE object;    
+    
     private final UID context;
+    
     private final boolean includeInferred;
+    
     public STMTMatcher(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, UID context,
             boolean includeInferred) {
         super();

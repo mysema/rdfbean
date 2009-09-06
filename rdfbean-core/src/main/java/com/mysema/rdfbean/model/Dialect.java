@@ -63,7 +63,7 @@ public abstract class Dialect
             return getBNode((BID) id);
         }
     }
-    
+        
     public abstract R getSubject(S statement);
     
     public abstract UID getUID(U resource);

@@ -29,22 +29,6 @@ public abstract class ID extends NODE implements Identifier {
         return id;
     }
     
-    public static UID uriRef(String uri) {
-        return new UID(uri);
-    }
-    
-    public static UID uriRef(String ns, String ln) {
-        return new UID(ns, ln);
-    }
-    
-    public static LID localIdRef(String localId) {
-        return new LID(localId);
-    }
-    
-    public static ID bnodeRef(String bnodeId) {
-        return new BID(bnodeId);
-    }
-    
     public String toString() {
         return id;
     }

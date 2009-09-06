@@ -132,8 +132,12 @@ public class SesameConnection implements RDFConnection {
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, final boolean includeInferred) {
         final ModelResult statements = 
-            findStatements(convert(subject), convert(predicate), convert(object), 
-                    includeInferred, convert(context));
+            findStatements(
+                    convert(subject), 
+                    convert(predicate), 
+                    convert(object), 
+                    includeInferred,
+                    convert(context));
         return new CloseableIterator<STMT>() {
 
             @Override
@@ -171,44 +175,22 @@ public class SesameConnection implements RDFConnection {
     }
 
     private STMT convert(Statement statement, boolean asserted) {
+        UID context = statement.getContext() != null ? 
+                (UID)dialect.getID(statement.getContext()) : null;
         return new STMT(
-                convert(statement.getSubject()), 
-                convert(statement.getPredicate()), 
-                convert(statement.getObject()), 
-                (UID) convert(statement.getContext()),
-                asserted
-            );
+                dialect.getID(statement.getSubject()), 
+                dialect.getUID(statement.getPredicate()), 
+                dialect.getNode(statement.getObject()), 
+                context, asserted);
     }
     
-    private NODE convert(Value value) {
-        if (value instanceof Literal) {
-            return dialect.getLIT((Literal) value);
-        } else {
-            return convert((Resource) value);
-        }
-    }
-
-    @Nullable
-    private ID convert(Resource resource) {
-        if (resource == null) {
-            return null; 
-        } else {
-            return dialect.getID(resource);
-        }
-    }
-
-    @Nullable
-    private UID convert(URI uri) {
-        if (uri == null) {
-            return null;
-        } else {
-            return dialect.getUID(uri);
-        }
-    }
-
     @Nullable
     private URI convert(UID uid) {
-        return uid != null ? vf.createURI(uid.getId()) : null;
+        if (uid == null){
+            return null;
+        }else{
+            return vf.createURI(uid.getId());
+        }
     }
     
     @Nullable
@@ -224,15 +206,13 @@ public class SesameConnection implements RDFConnection {
 
     @Nullable
     private Value convert(NODE node) {
-        Value value = null;
-        if (node != null) {
-            if (node.isLiteral()) {
-                value = dialect.getLiteral((LIT) node);
-            } else {
-                value = convert((ID) node);
-            }
+        if (node == null){
+            return null;
+        }else if (node.isLiteral()) {
+            return dialect.getLiteral((LIT) node);
+        } else {
+            return dialect.getResource((ID)node);
         }
-        return value;
     }
 
     @Override

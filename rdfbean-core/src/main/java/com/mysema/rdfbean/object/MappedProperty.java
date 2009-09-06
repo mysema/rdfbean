@@ -16,7 +16,6 @@ import org.apache.commons.collections15.BeanMap;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.*;
 import com.mysema.rdfbean.model.IDType;
-import com.mysema.rdfbean.model.MiniDialect;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.util.StringUtils;
 
@@ -174,7 +173,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         List<UID> rs = new ArrayList<UID>(defaults.length);
         for (Default def : defaults) {
             // TODO: Use default ns and ln if there's only one default?
-            rs.add(MiniDialect.UID(null, def.ns(), def.ln(), name));
+            rs.add(UID.create(null, def.ns(), def.ln(), name));
         }
         return rs;
     }
@@ -245,7 +244,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         String parentNs = getParentNs(mapKey, getMember());
         if (mapKey != null) {
             Predicate predicate = mapKey.key(); 
-            return MiniDialect.UID(parentNs, predicate.ns(), predicate.ln(), null);
+            return UID.create(parentNs, predicate.ns(), predicate.ln(), null);
         } else {
             return null;
         }
@@ -278,7 +277,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         if (mapKey != null) {
             Predicate predicate = mapKey.value();
             try {
-                return MiniDialect.UID(parentNs, predicate.ns(), predicate.ln(), null);
+                return UID.create(parentNs, predicate.ns(), predicate.ln(), null);
             } catch (IllegalArgumentException e) {
                 return null;
             }

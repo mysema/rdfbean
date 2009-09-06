@@ -39,16 +39,16 @@ public class IdReferenceTest {
     @Test
     public void uri() {
         Session session = SessionUtil.openSession(IDResource.class);
-        IDResource resource1 = session.getBean(IDResource.class, ID.uriRef(TEST.NS, "localResource"));
+        IDResource resource1 = session.getBean(IDResource.class, new UID(TEST.NS, "localResource"));
         assertNotNull(resource1);
         
         ID id = resource1.id;
         assertNotNull(id);
         assertTrue(id instanceof UID);
-        assertEquals(ID.uriRef(TEST.NS, "localResource"), id);
+        assertEquals(new UID(TEST.NS, "localResource"), id);
         
         session.clear();
-        IDResource resource2 = session.getBean(IDResource.class, ID.uriRef(TEST.NS, "localResource"));
+        IDResource resource2 = session.getBean(IDResource.class, new UID(TEST.NS, "localResource"));
         assertTrue(resource1 != resource2);
         assertEquals(id, resource2.id);
     }
@@ -63,7 +63,7 @@ public class IdReferenceTest {
         ID id = resource1.id;
         assertNotNull(id);
         assertTrue(id instanceof BID);
-        assertEquals(ID.bnodeRef("foobar"), id);
+        assertEquals(new BID("foobar"), id);
     }
     
     @Test

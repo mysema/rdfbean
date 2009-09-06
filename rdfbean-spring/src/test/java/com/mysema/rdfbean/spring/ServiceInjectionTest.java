@@ -5,9 +5,6 @@
  */
 package com.mysema.rdfbean.spring;
 
-import static com.mysema.rdfbean.model.MiniDialect.LIT;
-import static com.mysema.rdfbean.model.MiniDialect.STMT;
-import static com.mysema.rdfbean.model.MiniDialect.UID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -21,11 +18,7 @@ import com.mysema.rdfbean.annotations.Default;
 import com.mysema.rdfbean.annotations.Inject;
 import com.mysema.rdfbean.annotations.Mixin;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.MiniRepository;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFS;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 
@@ -87,8 +80,8 @@ public class ServiceInjectionTest {
     public void injectSpringServices() throws ClassNotFoundException {
         BID subject = new BID("foobar");
         MiniRepository repository = new MiniRepository(
-                STMT(subject, RDF.type, UID(TEST.NS, "RichBean")),
-                STMT(subject, RDFS.label, LIT("RichBean"))
+                new STMT(subject, RDF.type, new UID(TEST.NS, "RichBean")),
+                new STMT(subject, RDFS.label, new LIT("RichBean"))
         );
 
         Session session = SessionUtil.openSession(repository, RichBean.class);
@@ -99,7 +92,7 @@ public class ServiceInjectionTest {
         session.clear();
         
         // Override default value
-        repository.add(STMT(subject, UID(TEST.NS, "service"), UID(SRV.NS, "helloUnderWorld")));
+        repository.add(new STMT(subject, new UID(TEST.NS, "service"), new UID(SRV.NS, "helloUnderWorld")));
         rbean = session.findInstances(RichBean.class).get(0);
         assertEquals("Welcome to the Underworld, RichBean!", rbean.executeService());
     }

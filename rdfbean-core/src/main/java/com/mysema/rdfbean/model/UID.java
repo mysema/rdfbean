@@ -5,6 +5,11 @@
  */
 package com.mysema.rdfbean.model;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
+import javax.annotation.Nullable;
+
 import net.jcip.annotations.Immutable;
 
 import com.mysema.commons.lang.Assert;
@@ -21,6 +26,23 @@ public final class UID extends ID {
     private static final long serialVersionUID = -5243644990902193387L;
 
     private final int i;
+    
+    public static UID create(@Nullable String parentNs, String ns, String ln, @Nullable String elementName) {
+        if (isBlank(ns)) {
+            if (isNotBlank(parentNs)) {
+                ns = parentNs;
+            } else {
+                ns = "";
+            }
+        }
+        if (isBlank(ln)) {
+            ln = elementName;
+        }
+        if (isBlank(ln)) {
+            throw new IllegalArgumentException("Cannot resolve");
+        }
+        return new UID(ns, ln);
+    }
     
     public UID(String uri) {
         super(Assert.hasText(uri).intern());

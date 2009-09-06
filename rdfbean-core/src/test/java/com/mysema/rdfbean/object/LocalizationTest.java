@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.object;
 
-import static com.mysema.rdfbean.model.MiniDialect.LIT;
-import static com.mysema.rdfbean.model.MiniDialect.STMT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -21,8 +19,10 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 /**
  * @author sasa
@@ -50,8 +50,8 @@ public class LocalizationTest {
     public void localizedMap() {
         UID subject = new UID(TEST.NS, "LocalizedMapTest");
         MiniRepository repository = new MiniRepository(
-                STMT(subject, RDFS.label, LIT("suomeksi", FI)),
-                STMT(subject, RDFS.label, LIT("in english", EN))
+                new STMT(subject, RDFS.label, new LIT("suomeksi", FI)),
+                new STMT(subject, RDFS.label, new LIT("in english", EN))
         );
         
         Session session = SessionUtil.openSession(repository, locales, LocalizedMapTest.class);
