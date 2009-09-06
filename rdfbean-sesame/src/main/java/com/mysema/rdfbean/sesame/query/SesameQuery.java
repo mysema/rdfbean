@@ -41,6 +41,7 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.*;
 import com.mysema.rdfbean.query.AbstractProjectingQuery;
 import com.mysema.rdfbean.query.VarNameIterator;
@@ -62,7 +63,7 @@ public class SesameQuery extends
     
     private final StatementPattern.Scope patternScope;
     
-    private final OperationMappings sesameOps;
+    private final Operations sesameOps;
     
     static{
         SesameQueryHolder.init();
@@ -72,17 +73,17 @@ public class SesameQuery extends
 
     private boolean idPropertyInOperation = false;
     
-    private Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
+    private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
 
     private final Map<Path<?>, Var> pathToVar = new HashMap<Path<?>, Var>();
     
     private final Map<Path<?>, Var> pathToMatchedVar = new HashMap<Path<?>,Var>();
 
-    private ProjectionElemList projection = new ProjectionElemList();
+    private final ProjectionElemList projection = new ProjectionElemList();
     
-    private List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
+    private final List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
     
-    private List<OrderElem> orderElements = new ArrayList<OrderElem>(); 
+    private final List<OrderElem> orderElements = new ArrayList<OrderElem>(); 
 
     private TupleResult queryResult;
 
@@ -90,11 +91,11 @@ public class SesameQuery extends
     
     private final Map<Object,Var> constToVar = new HashMap<Object,Var>();
     
-    private VarNameIterator varNames = new VarNameIterator("_var");
+    private final VarNameIterator varNames = new VarNameIterator("_var");
     
-    private VarNameIterator extNames = new VarNameIterator("_ext");
+    private final VarNameIterator extNames = new VarNameIterator("_ext");
     
-    private JoinBuilder statementPatterns = new JoinBuilder();
+    private final JoinBuilder joinBuilder;
     
     private boolean includeInferred = true;
     
@@ -106,12 +107,13 @@ public class SesameQuery extends
             SesameDialect dialect, 
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,
-            OperationMappings sesameOps) {
+            Operations sesameOps) {
         super(dialect, session);
         this.connection = Assert.notNull(connection);
-        conf = session.getConfiguration();
+        this.conf = session.getConfiguration();
         this.patternScope = patternScope;
         this.sesameOps = Assert.notNull(sesameOps);
+        this.joinBuilder = new JoinBuilder(dialect);
     }
     
     @SuppressWarnings("unchecked")
@@ -187,29 +189,23 @@ public class SesameQuery extends
     }
     
     private SesameQuery match(Var sub, UID pred, Var obj) {
-        StatementPattern pattern = new StatementPattern(patternScope, sub, toVar(pred), obj);
-        if (inOptionalPath()){
-            statementPatterns.leftJoin(pattern);
-        }else{
-            statementPatterns.join(pattern);
-        }    
+        joinBuilder.add(createPattern(sub, pred, obj), inOptionalPath());
         return this;
     }
     
     private SesameQuery match(JoinBuilder builder, Var sub, UID pred, Var obj){
-        StatementPattern pattern = new StatementPattern(
-                patternScope, 
-                Assert.notNull(sub,"subject is null"), 
-                toVar(Assert.notNull(pred,"predicate is null")), 
-                Assert.notNull(obj,"object is null"));
-        builder.join(pattern);
+        builder.add(createPattern(sub, pred, obj), false);
         return this;
+    }
+    
+    private StatementPattern createPattern(Var s, UID p, Var o){
+        return new StatementPattern(patternScope, Assert.notNull(s), toVar(Assert.notNull(p)), Assert.notNull(o));
     }
         
     @Override
     protected Iterator<Value[]> getInnerResults() {
         // from 
-        TupleExpr tupleExpr = statementPatterns.getJoins();        
+        TupleExpr tupleExpr = joinBuilder.getJoins();        
         // where
         if (filterConditions != null){
             tupleExpr = new Filter(tupleExpr, filterConditions);
@@ -489,7 +485,7 @@ public class SesameQuery extends
             if (inNegation()){
                 return new Exists(pattern);    
             }else{
-                statementPatterns.join(pattern);
+                joinBuilder.add(pattern, true);
                 return null;
             }                        
             
@@ -523,7 +519,7 @@ public class SesameQuery extends
     private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 
             @Nullable Var valNode, @Nullable Var keyNode) {
         MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
-        JoinBuilder builder = new JoinBuilder();
+        JoinBuilder builder = new JoinBuilder((SesameDialect)dialect);
         if (valNode != null){
             if (mappedProperty.getValuePredicate() != null){
                 match(builder, pathVar, mappedProperty.getValuePredicate(), valNode);
@@ -612,7 +608,7 @@ public class SesameQuery extends
             size++;
         }
         
-        JoinBuilder builder = new JoinBuilder();
+        JoinBuilder builder = new JoinBuilder((SesameDialect)dialect);
         // path from size operation
         Path<?> path = (Path<?>)((Operation<?,?>)operation.getArg(0)).getArg(0); 
         Var pathVar = transformPath(path);                                

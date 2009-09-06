@@ -25,7 +25,7 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.BeanQueryAdapter;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.sesame.query.OperationMappings;
+import com.mysema.rdfbean.sesame.query.Operations;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
 
 /**
@@ -34,7 +34,7 @@ import com.mysema.rdfbean.sesame.query.SesameQuery;
  */
 public class SesameConnection implements RDFConnection {
     
-    private static final OperationMappings sesameOps = new OperationMappings();
+    private final Operations operations;
     
     private final RepositoryConnection connection;
     
@@ -47,10 +47,11 @@ public class SesameConnection implements RDFConnection {
 
     private final ValueFactory vf;
     
-    public SesameConnection(RepositoryConnection connection) {
+    public SesameConnection(RepositoryConnection connection, Operations operations) {
         this.connection = connection;
         this.vf = connection.getValueFactory();
-        this.dialect = new SesameDialect(vf);        
+        this.dialect = new SesameDialect(vf);
+        this.operations = operations;
     }
 
     public void cleanUpAfterCommit(){
@@ -123,7 +124,7 @@ public class SesameConnection implements RDFConnection {
                 dialect, 
                 connection, 
                 StatementPattern.Scope.DEFAULT_CONTEXTS,
-                sesameOps);
+                operations);
         query.getMetadata().setDistinct(true);
         return new BeanQueryAdapter(query,query);
     }

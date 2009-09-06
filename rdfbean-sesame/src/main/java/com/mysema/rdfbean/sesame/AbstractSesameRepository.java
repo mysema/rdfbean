@@ -15,6 +15,9 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.object.ConverterRegistryImpl;
+import com.mysema.rdfbean.sesame.query.Functions;
+import com.mysema.rdfbean.sesame.query.Operations;
 
 /**
  * @author sasa
@@ -25,6 +28,8 @@ public abstract class AbstractSesameRepository implements Repository{
     private RDFSource[] sources;
     
     private org.openrdf.repository.Repository repository;
+    
+    private Operations operations = new Operations(new Functions(new ConverterRegistryImpl()));
 
     private boolean initialized = false;
     
@@ -37,7 +42,7 @@ public abstract class AbstractSesameRepository implements Repository{
     @Override
     public RDFConnection openConnection() {
         try {
-            return new SesameConnection(repository.getConnection());
+            return new SesameConnection(repository.getConnection(),operations);
         } catch (StoreException e) {
             throw new RuntimeException(e);
         }

@@ -36,8 +36,7 @@ import com.mysema.rdfbean.query.QDSL;
  */
 public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
-    private static final Set<String> knownNamespaces = new HashSet<String>(
-            Arrays.asList(RDF.NS, RDFS.NS, XSD.NS, OWL.NS));
+    private static final Set<String> knownNamespaces = new HashSet<String>(Arrays.asList(RDF.NS, RDFS.NS, XSD.NS, OWL.NS));
     
     static{
         Namespaces.register("querydsl", QDSL.NS);
@@ -286,6 +285,18 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             append(elem.isAscending() ? " ASC" : " DESC");
             first = false;
         }
+    }
+    
+    @Override
+    public void meet(Union node) throws RuntimeException{
+        for (int i = 0; i < node.getNumberOfArguments(); i++){            
+            if (i > 0){
+                lastPattern = null;
+                append(" OR ");
+            }
+            visit(node.getArg(i));
+        }        
+//        lastPattern = null;
     }
     
     @Override

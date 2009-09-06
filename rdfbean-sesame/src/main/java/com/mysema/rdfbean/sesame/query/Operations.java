@@ -18,27 +18,19 @@ import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
 import com.mysema.query.types.operation.Operator;
-import com.mysema.rdfbean.object.ConverterRegistry;
-import com.mysema.rdfbean.object.ConverterRegistryImpl;
 import com.mysema.rdfbean.query.QDSL;
-import com.mysema.rdfbean.sesame.query.functions.SesameFunctions;
 
 /**
- * SesameOps provides Operator -> ValueExpr mappings for Sesame query creation
+ * Operations provides Operator -> ValueExpr mappings for Sesame query creation
  *
  * @author tiwe
  * @version $Id$
  */
-public class OperationMappings {
-    
-    private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
-    
-    private final SesameFunctions functions =  new SesameFunctions(converterRegistry);
+public class Operations {
     
     private final Map<Operator<?>,Transformer> opToTransformer = new HashMap<Operator<?>,Transformer>();
     
-    public OperationMappings(){        
-        // BOOLEAN
+    public Operations(Functions functions){        
         opToTransformer.put(AND, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args){
@@ -64,7 +56,6 @@ public class OperationMappings {
             }            
         });        
         
-        // COMPARISON        
         Iterator<CompareOp> compareOps = Arrays.asList(
                 CompareOp.EQ, CompareOp.EQ, CompareOp.NE, CompareOp.NE, 
                 CompareOp.LT, CompareOp.LE, CompareOp.GT, CompareOp.GE).iterator();
@@ -91,14 +82,7 @@ public class OperationMappings {
                     new Compare(args.get(0), args.get(2),CompareOp.LE));
             }            
         });
-//        opToTransformer.put(NOTBETWEEN, new Transformer(){
-//            @Override
-//            public ValueExpr transform(List<ValueExpr> args) {
-//                return new Or(
-//                    new Compare(args.get(0), args.get(1),CompareOp.LT),    
-//                    new Compare(args.get(0), args.get(2),CompareOp.GT));
-//            }            
-//        });
+
         opToTransformer.put(STARTS_WITH, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
@@ -143,13 +127,7 @@ public class OperationMappings {
                 return new Regex(first, "", false);  // TODO : optimize          
             }            
         });
-//        opToTransformer.put(STRING_ISNOTEMPTY, new Transformer(){
-//            @Override
-//            public ValueExpr transform(List<ValueExpr> args) {
-//                ValueExpr first = new Str(args.get(0));
-//                return new Not(new Regex(first, "", false)); // TODO : optimize           
-//            }            
-//        });
+
         opToTransformer.put(STARTS_WITH_IC, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
@@ -184,7 +162,6 @@ public class OperationMappings {
             }            
         }); 
         
-        // MATH        
         Iterator<MathOp> mathOps = Arrays.asList(
                 MathOp.PLUS, 
                 MathOp.MINUS, 
@@ -193,22 +170,6 @@ public class OperationMappings {
         for (Operator<?> op : Arrays.<Operator<?>>asList(ADD, SUB, MULT, DIV)){
             opToTransformer.put(op, new MathExprTransformer(mathOps.next()));
         }
-        
-        // VARIOUS
-        // TODO : aggreate function or something else ?!?
-//        opToTransformer.put(Ops.MathOps.MAX, new Transformer(){
-//            @Override
-//            public ValueExpr transform(List<ValueExpr> args) {
-//                return new Max(args.get(0));
-//            }            
-//        });
-//        // TODO : aggreate function or something else ?!?
-//        opToTransformer.put(Ops.MathOps.MIN, new Transformer(){
-//            @Override
-//            public ValueExpr transform(List<ValueExpr> args) {
-//                return new Min(args.get(0));
-//            }            
-//        });
         
         opToTransformer.put(STRING_CAST, new Transformer(){
             @Override

@@ -24,9 +24,7 @@ public class StringHandlingTest extends AbstractSesameQueryTest{
     private PString stringPath = var.listProperty(1).directProperty;
 
     @Test
-    @Ignore
     public void untypedLiterals(){
-        // Sesame doesn't support RDFS Datatype inferencing rules properly        
         assertEquals(1, where(var.directProperty.eq("metaonto_elements")).count());
     }
     
