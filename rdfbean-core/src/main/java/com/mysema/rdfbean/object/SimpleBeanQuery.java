@@ -6,14 +6,14 @@
 package com.mysema.rdfbean.object;
 
 import java.io.Closeable;
-import java.util.Iterator;
 
+import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.collections.IteratorSource;
-import com.mysema.query.collections.eval.ColQueryTemplates;
-import com.mysema.query.collections.impl.CustomQueryable;
-import com.mysema.query.types.expr.Expr;
+import com.mysema.query.collections.ColQueryTemplates;
+import com.mysema.query.collections.CustomQueryable;
+import com.mysema.query.collections.impl.EvaluatorFactory;
 import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.Path;
 
 /**
  * ColQuery based BeanQuery implementation
@@ -25,27 +25,13 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
 
     private static final ColQueryTemplates templates = new ColQueryTemplates();
     
-//    private Session session;
+    private Session session;
     
     public SimpleBeanQuery(final Session session) {
-        super(new IteratorSource(){
-            @SuppressWarnings("unchecked")
-            @Override
-            public <A> Iterator<A> getIterator(Expr<A> expr) {
-                return (Iterator<A>)session.findInstances(expr.getType()).iterator();
-            }
-            @Override
-            public <A> Iterator<A> getIterator(Expr<A> expr, Object[] bindings) {
-                return getIterator(expr);
-            }
-            
-        }, templates);
-//        this.session = session;
+        super(new DefaultQueryMetadata(), new EvaluatorFactory(templates));
+        this.session = session;
     }
-        
-    /* (non-Javadoc)
-     * @see com.mysema.rdfbean.object.BeanQuery#close()
-     */
+       
     @Override
     public void close(){
 //        session.close();
@@ -58,17 +44,13 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
 
     @Override
     public BeanQuery limit(long limit) {
-     // TODO : provide convenience methods for this
-        QueryModifiers mod = getMetadata().getModifiers();
-        getMetadata().setModifiers(new QueryModifiers(limit, mod.getOffset()));
+        getMetadata().setLimit(limit);
         return this;
     }
 
     @Override
     public BeanQuery offset(long offset) {
-        // TODO : provide convenience methods for this
-        QueryModifiers mod = getMetadata().getModifiers();
-        getMetadata().setModifiers(new QueryModifiers(mod.getLimit(), offset));
+        getMetadata().setOffset(offset);
         return this;
     }
 
@@ -76,6 +58,12 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
     public BeanQuery restrict(QueryModifiers mod) {
         getMetadata().setModifiers(mod);
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected <T> Iterable<T> getContent(Path<T> expr) {
+        return (Iterable<T>)session.findInstances(expr.getType());
     }
     
 }

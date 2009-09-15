@@ -21,6 +21,7 @@ import javax.tools.Diagnostic;
 
 import com.mysema.query.annotations.Projection;
 import com.mysema.query.annotations.Transient;
+import com.mysema.query.apt.Configuration;
 import com.mysema.query.apt.Processor;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
@@ -48,15 +49,15 @@ public class BeanAnnotationProcessor extends AbstractProcessor{
         embeddable = null; // undefined
         dto = Projection.class;
         skip = Transient.class;
-        Processor p = new Processor(processingEnv, entity, superType, embeddable, dto, skip){
-
+        
+        Configuration configuration = new Configuration(entity, superType, embeddable, dto, skip){
             @Override
-            protected boolean isValidField(VariableElement field) {
+            public boolean isValidField(VariableElement field) {
                 return super.isValidField(field) && isValid(field);
             }
 
             @Override
-            protected boolean isValidGetter(ExecutableElement getter){
+            public boolean isValidGetter(ExecutableElement getter){
                 return super.isValidGetter(getter) && isValid(getter);
             }
             
@@ -66,8 +67,9 @@ public class BeanAnnotationProcessor extends AbstractProcessor{
                     || d.getAnnotation(Mixin.class) != null 
                     || d.getAnnotation(Id.class) != null);
             }
-            
         };
+        
+        Processor p = new Processor(processingEnv, configuration);
         p.process(roundEnv);
         return true;
     }       

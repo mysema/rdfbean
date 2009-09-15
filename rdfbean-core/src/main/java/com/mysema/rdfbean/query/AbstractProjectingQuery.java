@@ -132,7 +132,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
 
     private Iterator<N[]> getPagedResults(Iterator<N[]> iterator, QueryModifiers modifiers) {
-        return LimitingIterator.transform(iterator, modifiers);
+        return LimitingIterator.create(iterator, modifiers);
     }
     
     @Override
