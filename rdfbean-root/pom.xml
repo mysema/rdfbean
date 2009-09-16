@@ -29,7 +29,6 @@
     <module>../rdfbean-core</module>
     <module>../rdfbean-spring</module>
     <module>../rdfbean-sesame</module>
-    <module>../rdfbean-jena</module>
     <module>../rdfbean-guice</module>
 <!--         
     <module>../rdfbean-docs</module>
