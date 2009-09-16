@@ -38,6 +38,32 @@ public class SesameSchemaGen extends SchemaGen {
         namespaces.put("owl", OWL.NS);
         namespaces.put("xsd", XSD.NS);
     }
+    
+    private OutputStream outputStream = System.out;
+    
+    private Writer writer;
+
+    public SesameSchemaGen setOutputStream(OutputStream outputStream) {
+        writer = null;
+        this.outputStream = outputStream;
+        return this;
+    }
+
+    public SesameSchemaGen setWriter(Writer writer) {
+        outputStream = null;
+        this.writer = writer;
+        return this;
+    }
+
+    public void generateTurtle(Configuration configuration) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+        if (outputStream != null) {
+            generateTurtle(configuration, outputStream);
+        } else if (writer != null) {
+            generateTurtle(configuration, writer);
+        } else {
+            throw new IllegalArgumentException("both writer and outputStream were null");
+        }
+    }
 
     public void generateTurtle(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
         generateSchema(configuration, new TurtleWriter(out));
@@ -45,6 +71,16 @@ public class SesameSchemaGen extends SchemaGen {
 
     public void generateTurtle(Configuration configuration, Writer out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
         generateSchema(configuration, new TurtleWriter(out));
+    }
+
+    public void generateRDFXML(Configuration configuration) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+        if (outputStream != null) {
+            generateRDFXML(configuration, outputStream);
+        } else if (writer != null) {
+            generateRDFXML(configuration, writer);
+        } else {
+            throw new IllegalArgumentException("both writer and outputStream were null");
+        }
     }
 
     public void generateRDFXML(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException, RDFParseException, IOException {

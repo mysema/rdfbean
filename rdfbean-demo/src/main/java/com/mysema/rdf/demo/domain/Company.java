@@ -16,7 +16,7 @@ public class Company extends Party {
     
     @Predicate(ln="company", inv=true)
     private Set<Person> employees = new LinkedHashSet<Person>();
-
+    
     public Company() {
         // Java Bean constructor
     }

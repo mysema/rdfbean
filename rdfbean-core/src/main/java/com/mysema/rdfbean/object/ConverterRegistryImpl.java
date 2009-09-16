@@ -86,6 +86,7 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         classToConverter.put(clazz, converter);    
         Class<?> primitiveType = ClassUtils.wrapperToPrimitive(clazz);
         if (primitiveType != null){
+            register(type, primitiveType);
             classToConverter.put(primitiveType, converter);
         }    
     }

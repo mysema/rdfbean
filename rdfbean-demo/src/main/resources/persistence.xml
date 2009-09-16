@@ -18,7 +18,6 @@
   </bean>  
   
   <bean id="sesameRepository" class="com.mysema.rdfbean.sesame.MemoryRepository">
-    <!-- 
     <property name="sources">
         <list>
             <bean parent="owlSource">
@@ -31,14 +30,19 @@
             </bean>
         </list>
     </property>
-     -->
+    <!-- 
     <property name="dataDirName" value="${persistence.sesame.mem.dir}"/>
+     -->
   </bean>
  
   <bean id="identityService" class="com.mysema.rdfbean.object.identity.DerbyIdentityService">
       <constructor-arg value="${identityService.derby.url}"/>
   </bean>
  
+  <bean id="owlSource" class="com.mysema.rdfbean.sesame.RDFSource" abstract="true">
+      <property name="format" value="RDFXML" />
+  </bean>
+
   <bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">
       <constructor-arg value="true"/>
       <constructor-arg>

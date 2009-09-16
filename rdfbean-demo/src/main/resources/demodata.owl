@@ -14,6 +14,12 @@
   <owl:Ontology rdf:about="">
     <owl:imports rdf:resource="http://www.mysema.com/rdfbean/demo"/>
   </owl:Ontology>
+  <demo:Company rdf:ID="Mysema">
+    <demo:displayName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mysema</demo:displayName>
+    <demo:officialName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mysema Oy</demo:officialName>
+  </demo:Company>
 </rdf:RDF>
 
 <!-- Created with Protege (with OWL Plugin 3.4, Build 533)  http://protege.stanford.edu -->

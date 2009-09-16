@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2009 Mysema Ltd & Ostajanmarkkinat.com
+ * Copyright (c) 2009 Mysema Ltd
  * All rights reserved.
  * 
  */
-@Context(DEMO.CONTEXT)
+@Context(DEMO.DATA_CONTEXT)
 @MappedClasses({
     Party.class,
     Person.class,
