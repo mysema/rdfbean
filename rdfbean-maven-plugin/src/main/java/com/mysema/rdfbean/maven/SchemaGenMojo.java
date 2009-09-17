@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.maven;
 
 import java.io.DataInputStream;
@@ -25,7 +30,7 @@ import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 import com.mysema.rdfbean.sesame.SesameSchemaGen;
 
 /**
- * SchemaGenMojo provides
+ * SchemaGenMojo provides a Maven plugin for Sesame based schema generation
  *
  * @author tiwe
  * @version $Id$

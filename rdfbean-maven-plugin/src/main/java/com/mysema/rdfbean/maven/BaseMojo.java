@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.maven;
 
 import java.io.File;
@@ -12,7 +17,7 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.project.MavenProject;
 
 /**
- * BaseMojo provides
+ * BaseMojo provides common functionality
  *
  * @author tiwe
  * @version $Id$
