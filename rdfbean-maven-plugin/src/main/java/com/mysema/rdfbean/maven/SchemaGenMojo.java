@@ -47,7 +47,7 @@ public class SchemaGenMojo extends BaseMojo{
     /** @parameter required=true */
     private String prefix;
     
-    /** @parameter required=true */
+    /** @parameter */
     private String ontology;
     
     /** @parameter required=true */
@@ -68,6 +68,14 @@ public class SchemaGenMojo extends BaseMojo{
             DefaultConfiguration configuration = new DefaultConfiguration();
             configuration.addClasses(entityClasses.toArray(new Class[entityClasses.size()]));
             configuration.setIdentityService(MemoryIdentityService.instance());
+            
+            if (ontology == null){
+                if (namespace.endsWith("#")){
+                    ontology = namespace.substring(0, namespace.length()-1);
+                }else{
+                    ontology = namespace;
+                }
+            }
             
             new SesameSchemaGen()
             .setNamespace(prefix, namespace)
