@@ -68,6 +68,24 @@
 
 	<build>
 		<plugins>
+            <plugin>
+              <groupId>com.mysema.rdf</groupId>
+              <artifactId>rdfbean-maven-plugin</artifactId>
+              <version>${project.parent.version}</version>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>schemagen</goal>
+                  </goals>  
+                  <configuration>
+                    <targetFile>src/main/resources/demo.owl</targetFile>
+                    <prefix>demo</prefix>
+                    <namespace>http://www.mysema.com/rdfbean/demo#</namespace>                
+                    <ontology>http://www.mysema.com/rdfbean/demo</ontology>                  
+                  </configuration>                
+                </execution>
+              </executions>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>

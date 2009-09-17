@@ -26,19 +26,19 @@ public abstract class NODE implements Serializable {
     
     public abstract String getValue();
     
-    static boolean nullSafeEquals(Object n1, Object n2) {
-        if (n1 == null) {
-            if (n2 == null) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (n2 == null) {
-            return false;
-        } else {
-            return n1.equals(n2);
-        }
-    }
+//    static boolean nullSafeEquals(Object n1, Object n2) {
+//        if (n1 == null) {
+//            if (n2 == null) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else if (n2 == null) {
+//            return false;
+//        } else {
+//            return n1.equals(n2);
+//        }
+//    }
     
     public abstract NodeType getNodeType();
 

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.mysema.rdf</groupId>
+    <artifactId>rdfbean-root</artifactId>
+    <version>0.7.5-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>rdfbean-maven-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <name>RDFBean - Maven plugin</name>
+  
+  <properties>
+    <mvn.version>2.0.6</mvn.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-sesame</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.5.2</version>
+    </dependency>     
+  
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>${mvn.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>${mvn.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-project</artifactId>
+      <version>${mvn.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>1.5.9</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-common</artifactId>
+      <version>4.0.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xercesImpl</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>javassist</artifactId>
+      <version>3.4.ga</version>
+    </dependency>    
+  </dependencies>
+  
+</project>  

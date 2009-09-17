@@ -30,6 +30,7 @@
     <module>../rdfbean-spring</module>
     <module>../rdfbean-sesame</module>
     <module>../rdfbean-guice</module>
+    <module>../rdfbean-maven-plugin</module>
 <!--         
     <module>../rdfbean-docs</module>
  -->
