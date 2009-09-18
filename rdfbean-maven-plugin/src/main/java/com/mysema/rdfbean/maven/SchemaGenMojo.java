@@ -59,12 +59,9 @@ public class SchemaGenMojo extends BaseMojo{
     /** @parameter */
     private File classListFile;
     
-    private final ArchiveBrowser.Filter filter = new ArchiveBrowser.Filter() {
-        private final Pattern pattern = Pattern.compile(".*\\.class");
-        public boolean accept(String name) {
-            return pattern.matcher(name).matches();
-        }
-    };
+    /** @parameter */
+    private String classes;
+    
     
     private final Comparator<Class<?>> fileComparator = new Comparator<Class<?>>(){
         public int compare(Class<?> o1, Class<?> o2) {
@@ -74,8 +71,14 @@ public class SchemaGenMojo extends BaseMojo{
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            URLClassLoader classLoader = getProjectClassLoader();
-            List<Class<?>> entityClasses = getEntityClasses(classLoader);
+            URLClassLoader classLoader = getProjectClassLoader();            
+            final Pattern pattern = Pattern.compile(".*"+toRegex(classes)+"\\.class"); 
+            ArchiveBrowser.Filter filter = new ArchiveBrowser.Filter() {
+                public boolean accept(String name) {
+                    return pattern.matcher(name).matches();
+                }
+            };
+            List<Class<?>> entityClasses = getEntityClasses(classLoader, filter);
             Collections.sort(entityClasses, fileComparator);
             DefaultConfiguration configuration = new DefaultConfiguration();
             configuration.addClasses(entityClasses.toArray(new Class[entityClasses.size()]));
@@ -118,7 +121,15 @@ public class SchemaGenMojo extends BaseMojo{
         }               
     }
 
-    private List<Class<?>> getEntityClasses(URLClassLoader classLoader) throws IOException, 
+    private String toRegex(String classes) {
+        if (classes != null){
+            return classes.replace("**", ".*").replace("*", "\\w+");
+        }else{
+            return "";
+        }
+    }
+
+    private List<Class<?>> getEntityClasses(URLClassLoader classLoader, ArchiveBrowser.Filter filter) throws IOException, 
         ClassNotFoundException {
 
         List<Class<?>> entityClasses = new ArrayList<Class<?>>();

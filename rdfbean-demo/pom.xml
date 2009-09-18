@@ -79,6 +79,7 @@
                   </goals>  
                   <configuration>                    
                     <prefix>demo</prefix>
+                    <classes>com.mysema.rdf.demo.domain.*</classes>
                     <namespace>http://www.mysema.com/rdfbean/demo#</namespace>
                     <schemaFile>src/main/resources/demo.owl</schemaFile>                                  
                   </configuration>                
