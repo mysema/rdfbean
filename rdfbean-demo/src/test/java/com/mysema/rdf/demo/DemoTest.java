@@ -14,7 +14,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.mysema.rdf.demo.domain.Company;
 import com.mysema.rdf.demo.domain.Person;
-import com.mysema.rdf.demo.domain.QCompany;
 import com.mysema.rdf.demo.domain.QPerson;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Session;

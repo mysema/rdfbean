@@ -77,11 +77,10 @@
                   <goals>
                     <goal>schemagen</goal>
                   </goals>  
-                  <configuration>
-                    <targetFile>src/main/resources/demo.owl</targetFile>
+                  <configuration>                    
                     <prefix>demo</prefix>
-                    <namespace>http://www.mysema.com/rdfbean/demo#</namespace>                
-                    <ontology>http://www.mysema.com/rdfbean/demo</ontology>                  
+                    <namespace>http://www.mysema.com/rdfbean/demo#</namespace>
+                    <schemaFile>src/main/resources/demo.owl</schemaFile>                                  
                   </configuration>                
                 </execution>
               </executions>

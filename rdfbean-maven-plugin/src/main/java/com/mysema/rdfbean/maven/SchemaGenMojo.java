@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -20,6 +22,7 @@ import java.util.regex.Pattern;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.jboss.util.file.ArchiveBrowser;
@@ -50,39 +53,61 @@ public class SchemaGenMojo extends BaseMojo{
     /** @parameter */
     private String ontology;
     
-    /** @parameter required=true */
-    private File targetFile;
+    /** @parameter  */
+    private File schemaFile;
     
-    private ArchiveBrowser.Filter filter = new ArchiveBrowser.Filter() {
+    /** @parameter */
+    private File classListFile;
+    
+    private final ArchiveBrowser.Filter filter = new ArchiveBrowser.Filter() {
         private final Pattern pattern = Pattern.compile(".*\\.class");
         public boolean accept(String name) {
             return pattern.matcher(name).matches();
         }
     };
     
+    private final Comparator<Class<?>> fileComparator = new Comparator<Class<?>>(){
+        public int compare(Class<?> o1, Class<?> o2) {
+            return o1.getName().compareTo(o2.getName());
+        }                
+    };
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             URLClassLoader classLoader = getProjectClassLoader();
             List<Class<?>> entityClasses = getEntityClasses(classLoader);
+            Collections.sort(entityClasses, fileComparator);
             DefaultConfiguration configuration = new DefaultConfiguration();
             configuration.addClasses(entityClasses.toArray(new Class[entityClasses.size()]));
             configuration.setIdentityService(MemoryIdentityService.instance());
             
             if (ontology == null){
-                if (namespace.endsWith("#")){
+                if (namespace.endsWith("#") || namespace.endsWith("/")){
                     ontology = namespace.substring(0, namespace.length()-1);
                 }else{
                     ontology = namespace;
                 }
             }
             
-            new SesameSchemaGen()
-            .setNamespace(prefix, namespace)
-            .setOntology(ontology)
-            .setOutputStream(new FileOutputStream(targetFile))
-            .addExportNamespace(namespace)
-            .generateRDFXML(configuration);
+            if (schemaFile != null){
+                new SesameSchemaGen()
+                    .setNamespace(prefix, namespace)
+                    .setOntology(ontology)
+                    .setOutputStream(new FileOutputStream(schemaFile))
+                    .addExportNamespace(namespace)
+                    .generateRDFXML(configuration);    
+            }            
+            
+            if (classListFile != null){
+                StringBuilder builder = new StringBuilder();
+                for (Class<?> clazz : entityClasses){
+                    if (builder.length() > 0){
+                        builder.append("\n");
+                    }
+                    builder.append(clazz.getName());
+                }
+                FileUtils.writeStringToFile(classListFile, builder.toString(), "UTF-8");
+            }
             
         } catch (Exception e) {
             if (e instanceof RuntimeException){
