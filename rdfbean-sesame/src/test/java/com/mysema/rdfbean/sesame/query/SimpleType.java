@@ -98,6 +98,42 @@ public class SimpleType{
     public Map<String, SimpleType2> getMapProperty() {
         return mapProperty;
     }
+
+    public void setDirectProperty(String directProperty) {
+        this.directProperty = directProperty;
+    }
+
+    public void setLocalizedProperty(String localizedProperty) {
+        this.localizedProperty = localizedProperty;
+    }
+
+    public void setLocalizedAsMap(Map<Locale, String> localizedAsMap) {
+        this.localizedAsMap = localizedAsMap;
+    }
+
+    public void setNotExistantProperty(String notExistantProperty) {
+        this.notExistantProperty = notExistantProperty;
+    }
+
+    public void setNumericProperty(int numericProperty) {
+        this.numericProperty = numericProperty;
+    }
+
+    public void setListProperty(List<SimpleType2> listProperty) {
+        this.listProperty = listProperty;
+    }
+
+    public void setSetProperty(Set<SimpleType2> setProperty) {
+        this.setProperty = setProperty;
+    }
+
+    public void setMapProperty(Map<String, SimpleType2> mapProperty) {
+        this.mapProperty = mapProperty;
+    }
+
+    public void setDateProperty(Date dateProperty) {
+        this.dateProperty = dateProperty;
+    }
     
     
     

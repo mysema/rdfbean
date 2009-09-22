@@ -19,6 +19,7 @@ import com.mysema.rdfbean.annotations.Predicate;
  */
 @ClassMapping(ns = TEST.NS, ln="TestType2")
 public class SimpleType2{
+
     @Id 
     String id;        
         
@@ -38,8 +39,15 @@ public class SimpleType2{
 
     public String getDirectProperty() {
         return directProperty;
-    }        
-    
-    
+    }            
+
+    public void setPathProperty(String pathProperty) {
+        this.pathProperty = pathProperty;
+    }
+
+    public void setDirectProperty(String directProperty) {
+        this.directProperty = directProperty;
+    }
+
     
 }

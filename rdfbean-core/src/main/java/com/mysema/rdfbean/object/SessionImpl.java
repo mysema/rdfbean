@@ -1158,7 +1158,7 @@ public class SessionImpl implements Session {
                             LIT literal = new LIT(object.toString(), getCurrentLocale());
                             recordAddStatement(subject, predicate, literal, context);
                         }
-                    } else {
+                    } else if (!property.isMap()){
                         NODE value = toRDFValue(object, context);
                         if (value != null) {
                             recordAddStatement(subject, predicate, value, context);

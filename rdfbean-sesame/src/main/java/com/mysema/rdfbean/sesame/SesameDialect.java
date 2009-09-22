@@ -80,7 +80,7 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
             } else if (literal.getDatatype() != null) {
                 lit = new LIT(literal.stringValue(), getUID(literal.getDatatype()));
             } else {
-                lit = new LIT(literal.stringValue());
+                lit = new LIT(literal.stringValue(), RDF.text);
             }
             literalCache.put(literal, lit);
         }
@@ -98,6 +98,8 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
             }
         } else if (lit.isString()) {
             return vf.createLiteral(lit.getValue(), getURI(XSD.stringType));
+        } else if (lit.getDatatype().equals(RDF.text)){    
+            return vf.createLiteral(lit.getValue());
         } else {
             return vf.createLiteral(lit.getValue(), getURI(lit.getDatatype()));
         }
