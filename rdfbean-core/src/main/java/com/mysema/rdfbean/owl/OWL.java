@@ -92,6 +92,8 @@ public final class OWL {
     public static final UID unionOf = new UID(NS, "unionOf");
 
     public static final UID complementOf = new UID(NS, "complementOf");
+    
+    public static final UID Thing = new UID(NS, "Thing");
 
     private OWL() {
     }
