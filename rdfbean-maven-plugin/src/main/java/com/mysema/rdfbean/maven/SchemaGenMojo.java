@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -23,8 +24,11 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 import org.jboss.util.file.ArchiveBrowser;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
@@ -42,27 +46,43 @@ import com.mysema.rdfbean.sesame.SesameSchemaGen;
  * @phase process-classes
  * @requiresDependencyResolution compile
  */
-public class SchemaGenMojo extends BaseMojo{
+public class SchemaGenMojo extends AbstractMojo{
         
-    /** @parameter required=true */
+    /** 
+     * @parameter required=true 
+     */
     private String namespace;
     
-    /** @parameter required=true */
+    /** 
+     * @parameter required=true 
+     */
     private String prefix;
     
-    /** @parameter */
+    /** 
+     * @parameter 
+     */
     private String ontology;
     
-    /** @parameter  */
+    /** 
+     * @parameter  
+     */
     private File schemaFile;
     
-    /** @parameter */
+    /** 
+     * @parameter 
+     */
     private File classListFile;
     
-    /** @parameter */
+    /** 
+     * @parameter 
+     */
     private String classes;
     
-    
+    /** 
+     * @parameter expression="${project}" readonly=true required=true 
+     */
+    private MavenProject project;
+        
     private final Comparator<Class<?>> fileComparator = new Comparator<Class<?>>(){
         public int compare(Class<?> o1, Class<?> o2) {
             return o1.getName().compareTo(o2.getName());
@@ -121,6 +141,18 @@ public class SchemaGenMojo extends BaseMojo{
         }               
     }
 
+    protected URLClassLoader getProjectClassLoader() throws DependencyResolutionRequiredException, MalformedURLException {
+        List<String> classpathElements = project.getCompileClasspathElements();
+        List<URL> urls = new ArrayList<URL>(classpathElements.size());
+        for (String element : classpathElements){
+            File file = new File(element);
+            if (file.exists()){
+                urls.add(file.toURL());
+            }
+        }
+        return new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());       
+    }
+    
     private String toRegex(String classes) {
         if (classes != null){
             return classes.replace("**", ".*").replace("*", "\\w+");
@@ -131,9 +163,7 @@ public class SchemaGenMojo extends BaseMojo{
 
     private List<Class<?>> getEntityClasses(URLClassLoader classLoader, ArchiveBrowser.Filter filter) throws IOException, 
         ClassNotFoundException {
-
-        List<Class<?>> entityClasses = new ArrayList<Class<?>>();
-        
+        List<Class<?>> entityClasses = new ArrayList<Class<?>>();        
         for (URL url : classLoader.getURLs()){
             Iterator<?> classes = ArchiveBrowser.getBrowser(url, filter);
             while (classes.hasNext()){

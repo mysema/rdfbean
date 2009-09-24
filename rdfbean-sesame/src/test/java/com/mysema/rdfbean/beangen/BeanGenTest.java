@@ -34,11 +34,12 @@ public class BeanGenTest{
         
         BeanGen beanGen = new BeanGen(repository);
         beanGen.addExportNamespace(FOAF.NS);
-        beanGen.addNamespace(FOAF.NS, "foaf");
-        beanGen.addNamespace(OWL.NS, "owl");
-        beanGen.addNamespace("http://xmlns.com/wordnet/1.6/", "wordnet");
-        beanGen.addNamespace("http://www.w3.org/2000/10/swap/pim/contact#", "swap");
-        beanGen.addNamespace("http://www.w3.org/2003/01/geo/wgs84_pos#", "geo");
+        beanGen.addPrefix(FOAF.NS, "foaf");
+        beanGen.addPackage(FOAF.NS, "foaf");
+        beanGen.addPackage(OWL.NS, "owl");
+        beanGen.addPackage("http://xmlns.com/wordnet/1.6/", "wordnet");
+        beanGen.addPackage("http://www.w3.org/2000/10/swap/pim/contact#", "swap");
+        beanGen.addPackage("http://www.w3.org/2003/01/geo/wgs84_pos#", "geo");
         beanGen.handleRDFSchema(targetFolder);
     }
     
@@ -50,9 +51,9 @@ public class BeanGenTest{
         
         BeanGen beanGen = new BeanGen(repository);
         beanGen.addExportNamespace(WINE_NS);
-        beanGen.addNamespace(WINE_NS, "wine");
-        beanGen.addNamespace("http://www.w3.org/TR/2003/PR-owl-guide-20031209/food#", "food");
-        beanGen.addNamespace("http://www.w3.org/2001/XMLSchema#", "xsd");
+        beanGen.addPackage(WINE_NS, "wine");
+        beanGen.addPackage("http://www.w3.org/TR/2003/PR-owl-guide-20031209/food#", "food");
+        beanGen.addPackage("http://www.w3.org/2001/XMLSchema#", "xsd");
         beanGen.handleOWL(targetFolder);
     }
     
@@ -65,8 +66,10 @@ public class BeanGenTest{
         
         BeanGen beanGen = new BeanGen(repository);
         beanGen.addExportNamespace(BLOG_NS);
-        beanGen.addNamespace(BLOG_NS, "blog");
+        beanGen.addPackage(BLOG_NS, "blog");
         beanGen.handleOWL(targetFolder);
     }
+    
+  
 
 }

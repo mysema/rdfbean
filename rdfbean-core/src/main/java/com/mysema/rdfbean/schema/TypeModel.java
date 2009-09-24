@@ -1,5 +1,7 @@
 package com.mysema.rdfbean.schema;
 
+import net.jcip.annotations.Immutable;
+
 import com.mysema.rdfbean.model.UID;
 
 /**
@@ -8,6 +10,7 @@ import com.mysema.rdfbean.model.UID;
  * @author tiwe
  * @version $Id$
  */
+@Immutable
 public class TypeModel {
     
     private final UID rdfType;
