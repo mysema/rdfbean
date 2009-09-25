@@ -1,4 +1,4 @@
-package com.mysema.rdfbean.schema;
+package com.mysema.rdfbean.beangen;
 
 import java.io.File;
 import java.io.IOException;

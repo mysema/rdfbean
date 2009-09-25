@@ -9,8 +9,6 @@ import org.openrdf.store.StoreException;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
-import com.mysema.rdfbean.schema.BeanGen;
-import com.mysema.rdfbean.schema.TypeModel;
 import com.mysema.rdfbean.sesame.FOAF;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 import com.mysema.rdfbean.sesame.RDFSource;

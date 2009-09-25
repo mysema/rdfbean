@@ -1,4 +1,4 @@
-package com.mysema.rdfbean.schema;
+package com.mysema.rdfbean.beangen;
 
 import java.util.ArrayList;
 import java.util.List;

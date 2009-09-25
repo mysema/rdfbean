@@ -8,7 +8,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.openrdf.rio.RDFFormat;
 
-import com.mysema.rdfbean.schema.BeanGen;
+import com.mysema.rdfbean.beangen.BeanGen;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 import com.mysema.rdfbean.sesame.RDFSource;
 
