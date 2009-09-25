@@ -7,7 +7,17 @@
       <title>Background</title>
       
       <para>
-      TODO
+      RDFBean was born out of the need for a flexible Object/RDF mapping tool.
+      With the rise of ORM mapping tools such as Hibernate and Toplink JavaBean based
+      domain model usage became popular in Java application development.
+      JavaBean tool support is excellent for property binding and visualization in popular
+      template frameworks for Web applications.
+      </para>
+      
+      <para>       
+      RDFBean aims to provide a transparent mapping between JavaBean domain models and RDF
+      based schemas and ontologies to make Java based RDF usage as easy as in ORM tools
+      and even easier.
       </para>
     
     </sect1>
@@ -16,7 +26,32 @@
     
       <title>Principles</title>
       
-      <para>TODO</para>
+      <para>
+      RDFBean is an Object/RDF persistence framework for Java. It provides a simple, yet highly 
+      expressive annotation based mapping language and a type-safe query language based on Querydsl. 
+      The combination of a generic data persistence model (RDF) and a type-safe access layer for entities
+       and queries makes it an ideal tool for rapid application development.
+      </para>
+      
+    </sect1>  
+    
+    <sect1>
+    
+      <title>Usage strategies</title>
+      
+      <para>RDFBean supports two development strategies : JavaBean driven and Schema driven 
+      development. JavaBean driven development is the primary model of RDFBean usage. In this case
+      you maintain your JavaBean domain models and create a mapping to RDF data through annotations on
+      class, method and field level. Your JavaBean model is the primary model and the RDF model
+      is derived from your annotated domain model.</para>
+      
+      <para>
+      In the Schema driven approach your RDF Schema or OWL ontology is your primary model and your JavaBean
+      model is derived from it. 
+      The Java driven approach fits to scenarios where your application comes first and you want to maintain 
+      full control of your JavaBean model the schema serves the application. The Schema driven approach fits
+      better if the RDF schema is given to you and you want your Java model to adapt to it automatically.
+      </para>
     
     </sect1>
     
