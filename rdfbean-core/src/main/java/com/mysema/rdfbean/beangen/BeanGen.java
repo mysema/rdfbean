@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.beangen;
 
 import java.io.File;
@@ -34,7 +39,7 @@ import com.mysema.rdfbean.xsd.Year;
 
 
 /**
- * BeanGen provides
+ * BeanGen provides JavaBean domain generation functionality
  *
  * @author tiwe
  * @version $Id$
