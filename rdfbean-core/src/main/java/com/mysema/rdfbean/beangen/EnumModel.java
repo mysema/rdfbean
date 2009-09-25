@@ -6,7 +6,7 @@ import java.util.List;
 import com.mysema.rdfbean.model.UID;
 
 /**
- * EnumType provides
+ * EnumModel provides
  *
  * @author tiwe
  * @version $Id$

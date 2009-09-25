@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.beangen;
+package com.mysema.rdfbean.schema;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.ID;

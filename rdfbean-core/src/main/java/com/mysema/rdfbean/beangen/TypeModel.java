@@ -5,7 +5,7 @@ import net.jcip.annotations.Immutable;
 import com.mysema.rdfbean.model.UID;
 
 /**
- * Type provides
+ * TypeModel provides
  *
  * @author tiwe
  * @version $Id$

@@ -8,7 +8,7 @@ import java.util.TreeSet;
 import com.mysema.rdfbean.model.UID;
 
 /**
- * BeanType provides
+ * BeanModel provides
  *
  * @author tiwe
  * @version $Id$
