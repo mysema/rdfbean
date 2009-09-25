@@ -43,9 +43,9 @@ public class BeanGen {
     
     // TODO : single-value / multi-value
     
-    // TODO : localized
-    
     // TODO : filter duplicates
+    
+    // TODO : rdf:text for Localized
     
     private static final Logger logger = LoggerFactory.getLogger(BeanGen.class);
 
@@ -60,6 +60,8 @@ public class BeanGen {
     private Map<String,String> nsToClassPrefix = new HashMap<String,String>();
     
     private Map<String,String> nsToPropertyPrefix = new HashMap<String,String>();
+    
+    private Set<UID> localizedProperties = new HashSet<UID>();
     
     private boolean oneOfAsEnum = true;
     
@@ -82,8 +84,8 @@ public class BeanGen {
         register(XSD.anyURI, URI.class);
         register(XSD.booleanType, Boolean.class);
         register(XSD.byteType, Byte.class);
-        register(XSD.date, LocalDate.class);
-        register(XSD.dateTime, DateTime.class);        
+        register(XSD.date, LocalDate.class); // joda-time
+        register(XSD.dateTime, DateTime.class); // joda-time       
         register(XSD.decimalType, BigDecimal.class);
         register(XSD.doubleType, Double.class);
         // duration
@@ -99,7 +101,7 @@ public class BeanGen {
         register(XSD.longType, Long.class);
         register(XSD.shortType, Short.class);
         register(XSD.stringType, String.class);
-        register(XSD.time, LocalTime.class);        
+        register(XSD.time, LocalTime.class); // joda-time       
         register(RDFS.Literal, String.class);
         
         defaultType = datatypeToType.get(XSD.stringType);
@@ -111,6 +113,11 @@ public class BeanGen {
             property = property.merge(properties.get(id), defaultType);
         }
         properties.put(id, property);
+    }
+    
+    public BeanGen addLocalizedProperty(UID property){
+        localizedProperties.add(property);
+        return this;
     }
 
     public BeanGen addExportNamespace(String ns) {
