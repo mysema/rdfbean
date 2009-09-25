@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.beangen;
 
+import javax.annotation.Nullable;
+
 import net.jcip.annotations.Immutable;
 
 import com.mysema.rdfbean.model.UID;
@@ -24,15 +26,15 @@ public class PropertyModel implements Comparable<PropertyModel>{
     
     private final TypeModel type;
     
-    private final TypeModel keyType;
-    
-    private final TypeModel valueType;
+    @Nullable
+    private final TypeModel keyType, valueType;
     
     public PropertyModel(UID rdfProperty, String name, TypeModel type){
         this(rdfProperty, name, type, null, null);
     }
     
-    public PropertyModel(UID rdfProperty, String name, TypeModel type, TypeModel keyType, TypeModel valueType){
+    public PropertyModel(UID rdfProperty, String name, TypeModel type, 
+            @Nullable TypeModel keyType, @Nullable TypeModel valueType){
         this.rdfProperty = rdfProperty;
         this.name = name;
         this.type = type;

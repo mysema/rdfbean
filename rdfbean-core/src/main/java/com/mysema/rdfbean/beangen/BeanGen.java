@@ -13,6 +13,8 @@ import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -281,7 +283,7 @@ public class BeanGen {
         }        
     }
 
-    private PropertyModel handleProperty(RDFProperty rdfProperty, RDFSClass<?> range) {
+    private PropertyModel handleProperty(RDFProperty rdfProperty, @Nullable RDFSClass<?> range) {
         UID propertyId = (UID)rdfProperty.getId();
         TypeModel propertyType = defaultType;
         // handle range

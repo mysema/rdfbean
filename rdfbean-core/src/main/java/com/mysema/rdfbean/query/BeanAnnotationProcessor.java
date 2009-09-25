@@ -8,6 +8,7 @@ package com.mysema.rdfbean.query;
 import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -39,7 +40,10 @@ import com.mysema.rdfbean.annotations.Predicate;
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class BeanAnnotationProcessor extends AbstractProcessor{
     
-    private Class<? extends Annotation> entity, superType, embeddable, dto, skip;
+    private Class<? extends Annotation> entity, dto, skip;
+    
+    @Nullable 
+    private Class<? extends Annotation> superType, embeddable;
     
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
