@@ -39,7 +39,7 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
            propertySetter(model, property, writer);
            nl(writer);
        }
-       close(writer);
+       closeBlock(writer);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
                 nl(writer);
             }
         }
-        close(writer);
+        closeBlock(writer);
     }
 
     private void printImports(Writer writer) throws IOException {

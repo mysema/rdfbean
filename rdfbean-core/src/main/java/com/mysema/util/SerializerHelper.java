@@ -17,7 +17,7 @@ public abstract class SerializerHelper {
         return indent;
     }
 
-    protected void close(Writer writer) throws IOException {
+    protected void closeBlock(Writer writer) throws IOException {
         writer.append("}\n");        
     }
 

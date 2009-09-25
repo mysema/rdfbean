@@ -57,7 +57,9 @@ public class BeanGen {
     
     private Map<String,String> nsToPackage = new HashMap<String,String>();
     
-    private Map<String,String> nsToPrefix = new HashMap<String,String>();
+    private Map<String,String> nsToClassPrefix = new HashMap<String,String>();
+    
+    private Map<String,String> nsToPropertyPrefix = new HashMap<String,String>();
     
     private boolean oneOfAsEnum = true;
     
@@ -65,12 +67,18 @@ public class BeanGen {
     
     private Repository repository;
     
-    private Serializer serializer = new DefaultSerializer();
+    private final Serializer serializer;
     
     private List<UID> skippedSupertypes = Arrays.asList(OWL.Thing, RDFS.Resource);
     
     public BeanGen(Repository repository){
+        this(repository, new DefaultSerializer());
+    }
+    
+    public BeanGen(Repository repository, Serializer serializer){
         this.repository = repository;
+        this.serializer = serializer;
+        
         register(XSD.anyURI, URI.class);
         register(XSD.booleanType, Boolean.class);
         register(XSD.byteType, Byte.class);
@@ -115,19 +123,16 @@ public class BeanGen {
         return this;
     }
     
-    public BeanGen addPrefix(String ns, String prefix){
-        nsToPrefix.put(ns, prefix);
+    public BeanGen addPropertyPrefix(String ns, String prefix){
+        nsToPropertyPrefix.put(ns, prefix);
         return this;
-    }        
-    
-    private String getPackage(String ns){
-        if (nsToPackage.containsKey(ns)){
-            return nsToPackage.get(ns);
-        }else{
-            throw new IllegalArgumentException("No package declared for " + ns);
-        }
     }
     
+    public BeanGen addClassPrefix(String ns, String prefix){
+        nsToClassPrefix.put(ns, prefix);
+        return this;
+    }        
+
     private Writer getWriter(TypeModel type, String targetDir){
         String path = type.getPackageName().replace('.', File.separatorChar) 
             + File.separator 
@@ -135,9 +140,21 @@ public class BeanGen {
             + ".java";
         return FileUtils.writerFor(new File(targetDir, path));
     }
+    
+    private void handleEnum(RDFSClass<?> rdfType, String targetDir, UID classId) {
+        EnumModel enumType = new EnumModel(classId, getPackage(classId), getLocalName(classId));        
+        for (Object object : rdfType.getOneOf()){
+            if (object instanceof MappedResourceBase  && ((MappedResourceBase)object).getId().isURI()){
+                UID id = (UID) ((MappedResourceBase)object).getId();
+                enumType.addEnum(id.getLocalName());
+            }
+        }        
+        print(enumType, targetDir);
+    }
 
+    // TODO : simplify
     private void handleBean(RDFSClass<?> rdfType, String targetDir, UID classId) {
-        BeanModel beanType = new BeanModel(classId, getPackage(classId.getNamespace()), classId.getLocalName());        
+        BeanModel beanType = new BeanModel(classId, getPackage(classId), getLocalName(classId));        
         Map<ID,PropertyModel> properties = new HashMap<ID,PropertyModel>();
         
         // iterate over supertypes
@@ -147,8 +164,12 @@ public class BeanGen {
                 // handle restriction
                 if (superType instanceof Restriction){
                     Restriction restriction = (Restriction)superType;
-                    if (restriction.getOnProperty() != null){
-                        if (restriction.getAllValuesFrom() != null){
+                    if (restriction.getHasValue() != null){
+                        // can be skipped, since the value is static
+                        continue;
+                        
+                    }else if (restriction.getOnProperty() != null){
+                        if (restriction.getAllValuesFrom() != null && restriction.getAllValuesFrom().getId().isURI()){                            
                             add(handleProperty(
                                     restriction.getOnProperty(), 
                                     restriction.getAllValuesFrom()), properties);
@@ -166,8 +187,8 @@ public class BeanGen {
                     UID superTypeId = (UID)superType.getId();
                     beanType.addSuperType(new TypeModel(
                             superTypeId,
-                            getPackage(superTypeId.getNamespace()),
-                            superTypeId.getLocalName()
+                            getPackage(superTypeId),
+                            getLocalName(superTypeId)
                     ));    
                 }                    
             }
@@ -187,6 +208,22 @@ public class BeanGen {
         
         print(beanType, targetDir);
     }
+    
+    private String getPackage(UID id){
+        if (nsToPackage.containsKey(id.getNamespace())){
+            return nsToPackage.get(id.getNamespace());
+        }else{
+            throw new IllegalArgumentException("No package declared for " + id.getNamespace());
+        }
+    }
+
+    private String getLocalName(UID classId) {
+        String localName = classId.getLocalName();
+        if (nsToClassPrefix.containsKey(classId.getNamespace())){
+            localName = nsToClassPrefix.get(classId.getNamespace()) + localName;
+        }
+        return localName;
+    }
 
     private void handleClass(RDFSClass<?> rdfType, String targetDir) {
         UID classId = (UID)rdfType.getId();
@@ -199,17 +236,6 @@ public class BeanGen {
         }        
     }
     
-    private void handleEnum(RDFSClass<?> rdfType, String targetDir, UID classId) {
-        EnumModel enumType = new EnumModel(classId, getPackage(classId.getNamespace()),classId.getLocalName());        
-        for (Object object : rdfType.getOneOf()){
-            if (object instanceof MappedResourceBase  && ((MappedResourceBase)object).getId().isURI()){
-                UID id = (UID) ((MappedResourceBase)object).getId();
-                enumType.addEnum(id.getLocalName());
-            }
-        }        
-        print(enumType, targetDir);
-    }
-
     public void handleOWL(String targetDir){
         Session session = SessionUtil.openSession(repository, 
                 RDFSClass.class.getPackage(), 
@@ -239,15 +265,12 @@ public class BeanGen {
                 propertyType = datatypeToType.get(range.getId());
             }else if (range.getId().isURI()){
                 UID id = (UID)range.getId();
-                propertyType = new TypeModel(
-                        id,
-                        getPackage(id.getNamespace()), 
-                        id.getLocalName());
+                propertyType = new TypeModel(id, getPackage(id),  getLocalName(id));
             }
         }
         String propertyName = propertyId.getLocalName();
-        if (nsToPrefix.containsKey(propertyId.getNamespace())){
-            propertyName = nsToPrefix.get(propertyId.getNamespace()) + StringUtils.capitalize(propertyName);
+        if (nsToPropertyPrefix.containsKey(propertyId.getNamespace())){
+            propertyName = nsToPropertyPrefix.get(propertyId.getNamespace()) + StringUtils.capitalize(propertyName);
         }else if (stripHasOff && propertyName.startsWith("has") && propertyName.length() > 3){
             propertyName = StringUtils.uncapitalize(propertyName.substring(3));
         }        
@@ -265,10 +288,17 @@ public class BeanGen {
         }
     }
 
-    private void print(BeanModel beanType, String targetDir) {
-        Writer w = getWriter(beanType, targetDir);
+    private void print(TypeModel type, String targetDir) {
+        Writer w = getWriter(type, targetDir);
         try {
-            serializer.serialize(beanType, w);
+            if (type instanceof BeanModel){
+                serializer.serialize(((BeanModel)type), w);    
+            }else if (type instanceof EnumModel){
+                serializer.serialize(((EnumModel)type), w);
+            }else{
+                throw new IllegalArgumentException("Illegal type " + type); 
+            }
+            
         } catch (IOException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
@@ -282,23 +312,6 @@ public class BeanGen {
         }
     }
     
-    private void print(EnumModel enumType, String targetDir) {        
-        Writer w = getWriter(enumType, targetDir);
-        try {
-            serializer.serialize(enumType, w);
-        } catch (IOException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        }finally{
-            try {
-                w.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     private void register(UID type, Class<?> clazz) {
         Class<?> primitive = ClassUtils.wrapperToPrimitive(clazz);
         if (primitive != null){
