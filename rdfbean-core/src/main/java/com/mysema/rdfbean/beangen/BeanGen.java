@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -47,6 +48,8 @@ import com.mysema.rdfbean.xsd.Year;
  * @version $Id$
  */
 public class BeanGen {
+    
+    private static final Pattern normalizePattern = Pattern.compile("[\\-]");
     
     // TODO : normalize class and property localNames
     
@@ -169,7 +172,7 @@ public class BeanGen {
     }
     
     private void handleEnum(RDFSClass<?> rdfType, String targetDir, UID classId) {
-        EnumModel enumType = new EnumModel(classId, getPackage(classId), getLocalName(classId));        
+        EnumModel enumType = new EnumModel(classId, getPackage(classId), getClassName(classId));        
         for (Object object : rdfType.getOneOf()){
             if (object instanceof MappedResourceBase  && ((MappedResourceBase)object).getId().isURI()){
                 UID id = (UID) ((MappedResourceBase)object).getId();
@@ -181,7 +184,7 @@ public class BeanGen {
 
     // TODO : simplify
     private void handleBean(RDFSClass<?> rdfType, String targetDir, UID classId) {
-        BeanModel beanType = new BeanModel(classId, getPackage(classId), getLocalName(classId));        
+        BeanModel beanType = new BeanModel(classId, getPackage(classId), getClassName(classId));        
         Map<ID,PropertyModel> properties = new HashMap<ID,PropertyModel>();
         
         // iterate over supertypes
@@ -215,7 +218,7 @@ public class BeanGen {
                     beanType.addSuperType(new TypeModel(
                             superTypeId,
                             getPackage(superTypeId),
-                            getLocalName(superTypeId)
+                            getClassName(superTypeId)
                     ));    
                 }                    
             }
@@ -244,13 +247,28 @@ public class BeanGen {
         }
     }
 
-    private String getLocalName(UID classId) {
-        String localName = classId.getLocalName();
+    private String getClassName(UID classId) {
+        String localName = normalize(classId.getLocalName());
         if (nsToClassPrefix.containsKey(classId.getNamespace())){
             localName = nsToClassPrefix.get(classId.getNamespace()) + localName;
         }
         return localName;
     }
+
+    private static String normalize(String str) {
+        return normalizePattern.matcher(str).replaceAll("_");
+    }
+    
+    private String getPropertyName(UID propertyId) {
+        String propertyName = normalize(propertyId.getLocalName());
+        if (nsToPropertyPrefix.containsKey(propertyId.getNamespace())){
+            propertyName = nsToPropertyPrefix.get(propertyId.getNamespace()) + StringUtils.capitalize(propertyName);
+        }else if (stripHasOff && propertyName.startsWith("has") && propertyName.length() > 3){
+            propertyName = StringUtils.uncapitalize(propertyName.substring(3));
+        }
+        return propertyName;
+    }
+    
 
     private void handleClass(RDFSClass<?> rdfType, String targetDir) {
         UID classId = (UID)rdfType.getId();
@@ -292,19 +310,15 @@ public class BeanGen {
                 propertyType = datatypeToType.get(range.getId());
             }else if (range.getId().isURI()){
                 UID id = (UID)range.getId();
-                propertyType = new TypeModel(id, getPackage(id),  getLocalName(id));
+                propertyType = new TypeModel(id, getPackage(id),  getClassName(id));
             }
         }
-        String propertyName = propertyId.getLocalName();
-        if (nsToPropertyPrefix.containsKey(propertyId.getNamespace())){
-            propertyName = nsToPropertyPrefix.get(propertyId.getNamespace()) + StringUtils.capitalize(propertyName);
-        }else if (stripHasOff && propertyName.startsWith("has") && propertyName.length() > 3){
-            propertyName = StringUtils.uncapitalize(propertyName.substring(3));
-        }        
+        String propertyName = getPropertyName(propertyId);        
         PropertyModel beanProperty = new PropertyModel(propertyId, propertyName, propertyType);
         return beanProperty;
     }
-    
+
+
     public void handleRDFSchema(String targetDir){
         Session session = SessionUtil.openSession(repository, RDFSClass.class.getPackage());        
         // iterate over classes

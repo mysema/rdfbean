@@ -1,8 +1,4 @@
 package foaf;
-
-import com.mysema.rdfbean.annotations.*;
-
 @ClassMapping(ns="http://xmlns.com/foaf/0.1/")
 public class Organization extends wordnet.Organization {
-
 }

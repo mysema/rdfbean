@@ -1,5 +1,11 @@
 package com.mysema.rdfbean.beangen;
 
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,7 +40,7 @@ public class BeanGenTest{
     
     private MemoryRepository repository = new MemoryRepository();
     
-    private BeanGen beanGen = new BeanGen(repository, true);
+    private BeanGen beanGen = new BeanGen(repository, new MiniSerializer(),true);
     
     @Before
     public void setUp(){
@@ -44,7 +50,7 @@ public class BeanGenTest{
     }
     
     @Test
-    public void foaf() throws StoreException, ClassNotFoundException{
+    public void foaf() throws StoreException, ClassNotFoundException, IOException{
         repository.setSources(new RDFSource("classpath:/foaf.rdf", RDFFormat.RDFXML, FOAF.NS));
         repository.initialize();
         
@@ -57,11 +63,12 @@ public class BeanGenTest{
         beanGen.addPackage("http://www.w3.org/2003/01/geo/wgs84_pos#", "geo");
         beanGen.handleRDFSchema(targetFolder);
         
-        // TODO : validate results
+        assertContentEquals("src/test/resources/results/foaf", "target/foaf");
     }
     
+    
     @Test
-    public void wine(){
+    public void wine() throws IOException{
         repository.setSources(new RDFSource("classpath:/wine.owl", RDFFormat.RDFXML, WINE_NS));
         repository.initialize();
         
@@ -70,11 +77,11 @@ public class BeanGenTest{
         beanGen.addPackage("http://www.w3.org/TR/2003/PR-owl-guide-20031209/food#", "food");
         beanGen.handleOWL(targetFolder);
         
-        // TODO : validate results
+        assertContentEquals("src/test/resources/results/wine", "target/wine");
     }
     
     @Test
-    public void dc(){
+    public void dc() throws IOException{
         repository.setSources(new RDFSource("classpath:/dc.rdf", RDFFormat.RDFXML, DC_NS));
         repository.initialize();
         
@@ -89,20 +96,32 @@ public class BeanGenTest{
         beanGen.addClassPrefix("http://purl.org/dc/terms/", "DC");
         beanGen.handleOWL(targetFolder);
         
-        // TODO : validate results
+        assertContentEquals("src/test/resources/results/terms", "target/terms");
     }
     
     @Test
     @Ignore
-    public void blog(){
+    public void blog() throws IOException{
         repository.setSources(new RDFSource("classpath:/blog.owl", RDFFormat.RDFXML, BLOG_NS));
         repository.initialize();
         
         beanGen.addExportNamespace(BLOG_NS);
         beanGen.addPackage(BLOG_NS, "blog");
         beanGen.handleOWL(targetFolder);
-        
-        // TODO : validate results
+                
+        assertContentEquals("src/test/resources/results/blog", "target/blog");
     }
     
+    private static void assertContentEquals(String folder1, String folder2) throws IOException {
+        for (File file : new File(folder1).listFiles()){
+            if (file.isFile()){
+                File other = new File(folder2, file.getName());
+                assertTrue(other + " doesn't exist", other.isFile());
+                String contents1 = FileUtils.readFileToString(file);
+                String contents2 = FileUtils.readFileToString(other);
+                assertEquals("Mismatch for " + file, contents1, contents2);    
+            }            
+        }        
+    }
+
 }
