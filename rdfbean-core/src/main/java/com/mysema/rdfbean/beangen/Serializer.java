@@ -25,9 +25,4 @@ public interface Serializer {
      */
     void serialize(EnumModel model, Writer writer) throws IOException;
 
-    /**
-     * @param usePrimitives
-     */
-    void setUsePrimitives(boolean usePrimitives);
-
 }

@@ -41,6 +41,8 @@ import com.mysema.rdfbean.xsd.Year;
  */
 public class BeanGen {
     
+    // TODO : normalize class and property localNames
+    
     // TODO : single-value / multi-value
     
     // TODO : filter duplicates
@@ -67,6 +69,8 @@ public class BeanGen {
     
     private boolean stripHasOff = true;
     
+    private final boolean usePrimitives;
+    
     private Repository repository;
     
     private final Serializer serializer;
@@ -74,12 +78,21 @@ public class BeanGen {
     private List<UID> skippedSupertypes = Arrays.asList(OWL.Thing, RDFS.Resource);
     
     public BeanGen(Repository repository){
-        this(repository, new DefaultSerializer());
+        this(repository, new DefaultSerializer(), true);
     }
     
+    public BeanGen(Repository repository, boolean usePrimitives){
+        this(repository, new DefaultSerializer());
+    }
+        
     public BeanGen(Repository repository, Serializer serializer){
+        this(repository, serializer, true);
+    }
+        
+    public BeanGen(Repository repository, Serializer serializer, boolean usePrimitives){
         this.repository = repository;
         this.serializer = serializer;
+        this.usePrimitives = usePrimitives;
         
         register(XSD.anyURI, URI.class);
         register(XSD.booleanType, Boolean.class);
@@ -320,11 +333,12 @@ public class BeanGen {
     }
     
     private void register(UID type, Class<?> clazz) {
-        Class<?> primitive = ClassUtils.wrapperToPrimitive(clazz);
-        if (primitive != null){
-            // TODO
-        }
-        datatypeToType.put(type, new TypeModel(type, clazz));
+        Class<?> primitive = null;
+        if (usePrimitives && (primitive = ClassUtils.wrapperToPrimitive(clazz)) != null){
+            datatypeToType.put(type, new TypeModel(type, "java.lang", primitive.getSimpleName()));
+        }else{
+            datatypeToType.put(type, new TypeModel(type, clazz));
+        }        
     }
 
     public BeanGen setDefaultType(TypeModel type){
@@ -339,11 +353,6 @@ public class BeanGen {
     
     public BeanGen setStripHasOff(boolean b) {
         this.stripHasOff = b;
-        return this;
-    }
-    
-    public BeanGen setUsePrimitives(boolean usePrimitives) {
-        serializer.setUsePrimitives(usePrimitives);
         return this;
     }
     

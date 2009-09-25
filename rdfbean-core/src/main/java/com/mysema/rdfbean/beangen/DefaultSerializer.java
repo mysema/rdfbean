@@ -16,8 +16,6 @@ import com.mysema.util.SerializerHelper;
  * @version $Id$
  */
 public class DefaultSerializer extends SerializerHelper implements Serializer {
-
-    private boolean usePrimitives;
     
     @Override
     public void serialize(BeanModel model, Writer writer) throws IOException {
@@ -65,17 +63,27 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
     private void printImports(Writer writer) throws IOException {
         importPackage(Predicate.class.getPackage().getName(), writer);                
     }
-
-    protected void openEnum(EnumModel model, Writer writer) throws IOException {
+    
+    protected void classMapping(TypeModel type, Writer writer) throws IOException{
         StringBuilder builder = new StringBuilder();
-        builder.append("@ClassMapping(ns=\"").append(model.getRdfType().getNamespace()).append("\")\n");
-        builder.append("public enum ").append(model.getSimpleName()).append(" {\n");
+        builder.append("@ClassMapping(ns=\"").append(type.getRdfType().getNamespace());
+        if (!type.getSimpleName().equals(type.getRdfType().getLocalName())){
+            builder.append("\",ln=\"").append(type.getRdfType().getLocalName());
+        }
+        builder.append("\")\n");
+        writer.append(builder.toString());
+    }
+
+    protected void openEnum(EnumModel type, Writer writer) throws IOException {
+        classMapping(type, writer);
+        StringBuilder builder = new StringBuilder();
+        builder.append("public enum ").append(type.getSimpleName()).append(" {\n");
         writer.append(builder.toString());
     }
     
     protected void openClass(TypeModel type, List<TypeModel> superTypes, Writer writer) throws IOException {
-        StringBuilder builder = new StringBuilder();
-        builder.append("@ClassMapping(ns=\"").append(type.getRdfType().getNamespace()).append("\")\n");
+        classMapping(type, writer);
+        StringBuilder builder = new StringBuilder();        
         builder.append("public class ").append(type.getSimpleName());
         if (!superTypes.isEmpty()){
             TypeModel superType = superTypes.get(0);
@@ -142,9 +150,4 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
         writer.append(builder.toString());
     }
     
-    @Override
-    public void setUsePrimitives(boolean usePrimitives) {
-        this.usePrimitives = usePrimitives;        
-    }
-
 }

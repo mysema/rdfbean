@@ -34,7 +34,7 @@ public class BeanGenTest{
     
     private MemoryRepository repository = new MemoryRepository();
     
-    private BeanGen beanGen = new BeanGen(repository);
+    private BeanGen beanGen = new BeanGen(repository, true);
     
     @Before
     public void setUp(){

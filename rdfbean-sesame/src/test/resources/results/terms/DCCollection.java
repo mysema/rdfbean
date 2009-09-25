@@ -2,7 +2,7 @@ package terms;
 
 import com.mysema.rdfbean.annotations.*;
 
-@ClassMapping(ns="http://purl.org/dc/terms/")
+@ClassMapping(ns="http://purl.org/dc/terms/",ln="Collection")
 public class DCCollection {
 
     @Predicate
