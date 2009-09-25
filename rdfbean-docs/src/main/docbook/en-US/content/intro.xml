@@ -21,20 +21,7 @@
       </para>
     
     </sect1>
-    
-    <sect1>
-    
-      <title>Principles</title>
-      
-      <para>
-      RDFBean is an Object/RDF persistence framework for Java. It provides a simple, yet highly 
-      expressive annotation based mapping language and a type-safe query language based on Querydsl. 
-      The combination of a generic data persistence model (RDF) and a type-safe access layer for entities
-       and queries makes it an ideal tool for rapid application development.
-      </para>
-      
-    </sect1>  
-    
+        
     <sect1>
     
       <title>Usage strategies</title>

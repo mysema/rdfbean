@@ -5,8 +5,16 @@
     
     <para>
     In this chapter we develop a simple program using RDFBean, Maven, Eclipse, 
-    JUnit and Sesame's in memory RDF storage engine.
+    JUnit and Sesame's using an in-memory RDF storage engine.
+    
+    The steps are 
+    * Maven configuration
+    * Creating a holder class 
+    * Creating the domain classes
+    * Testing via JUnit, that 
     </para>
+    
+    
     <sect1>
         <title>Maven</title>
 
