@@ -1,13 +1,13 @@
 package com.mysema.rdfbean.beangen;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.store.StoreException;
@@ -75,7 +75,7 @@ public class BeanGenTest{
         beanGen.addExportNamespace(WINE_NS);
         beanGen.addPackage(WINE_NS, "wine");
         beanGen.addPackage("http://www.w3.org/TR/2003/PR-owl-guide-20031209/food#", "food");
-        beanGen.handleOWL(targetFolder);
+        beanGen.handleOWLSchema(targetFolder);
         
         assertContentEquals("src/test/resources/results/wine", "target/wine");
     }
@@ -94,20 +94,19 @@ public class BeanGenTest{
         beanGen.addPackage("http://purl.org/dc/dcmitype/", "dcmitype");
         beanGen.addPackage("http://www.w3.org/2004/02/skos/core#", "skos");
         beanGen.addClassPrefix("http://purl.org/dc/terms/", "DC");
-        beanGen.handleOWL(targetFolder);
+        beanGen.handleOWLSchema(targetFolder);
         
         assertContentEquals("src/test/resources/results/terms", "target/terms");
     }
     
     @Test
-    @Ignore
     public void blog() throws IOException{
         repository.setSources(new RDFSource("classpath:/blog.owl", RDFFormat.RDFXML, BLOG_NS));
         repository.initialize();
         
         beanGen.addExportNamespace(BLOG_NS);
         beanGen.addPackage(BLOG_NS, "blog");
-        beanGen.handleOWL(targetFolder);
+        beanGen.handleOWLSchema(targetFolder);
                 
         assertContentEquals("src/test/resources/results/blog", "target/blog");
     }

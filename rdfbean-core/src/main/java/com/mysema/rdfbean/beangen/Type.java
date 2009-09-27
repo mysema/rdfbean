@@ -46,14 +46,21 @@ public class Type {
         return simpleName;
     }
 
-    public String toString(){
-        return packageName + "." + simpleName;
+    public String getLocalName(){
+        return simpleName;
     }
     
+    @Override
+    public String toString(){
+        return getPackageName() + "." + getLocalName();
+    }
+    
+    @Override
     public int hashCode(){
         return simpleName.hashCode();
     }
     
+    @Override
     public boolean equals(Object o){
         if (o == this){
             return true;

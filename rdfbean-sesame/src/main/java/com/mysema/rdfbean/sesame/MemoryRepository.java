@@ -8,7 +8,6 @@ import java.io.File;
 import org.apache.commons.lang.StringUtils;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 
 /**
@@ -24,9 +23,9 @@ public class MemoryRepository extends AbstractSesameRepository {
         Repository repository;
         if (dataDir != null) {
             MemoryStore store = new MemoryStore(dataDir);
-            repository = new SailRepository(new ForwardChainingRDFSInferencer(store));
+            repository = new SailRepository(new ExtendedRDFSInferencer(store));
         } else {
-            repository = new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
+            repository = new SailRepository(new ExtendedRDFSInferencer(new MemoryStore()));
         }
         return repository;
     }

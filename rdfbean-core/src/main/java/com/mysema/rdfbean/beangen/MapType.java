@@ -29,8 +29,8 @@ public class MapType extends Type{
     }
 
     @Override
-    public String toString(){
-        return super.toString() + "<" + keyType + "," + valueType + ">";
+    public String getLocalName(){
+        return getSimpleName() + "<" + keyType + "," + valueType + ">";
     }
-
+    
 }

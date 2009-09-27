@@ -22,6 +22,8 @@ public class Property implements Comparable<Property>{
     
     private final String name;
     
+    private boolean multipleValues;
+    
     private Type type;
     
     public Property(UID rdfProperty, String name, Type type){
@@ -54,6 +56,15 @@ public class Property implements Comparable<Property>{
     @Override
     public int compareTo(Property o) {
         return name.compareTo(o.name);
+    }
+    
+    public boolean isMultipleValues() {
+        return multipleValues;
+    }
+
+    public void setMultipleValues(boolean b) {
+        this.multipleValues = b;
+        
     }
     
 }

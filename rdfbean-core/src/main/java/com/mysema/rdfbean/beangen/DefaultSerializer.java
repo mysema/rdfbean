@@ -105,9 +105,9 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
     
     private String getType(Type type, Type context){
         if (type.getPackageName().equals("java.lang") || type.getPackageName().equals(context.getPackageName())){
-            return type.getSimpleName();
+            return type.getLocalName();
         }else{
-            return type.getPackageName() + "." + type.getSimpleName();
+            return type.toString();
         }
     }
     

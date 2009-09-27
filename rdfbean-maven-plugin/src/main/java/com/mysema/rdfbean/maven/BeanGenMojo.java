@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.maven;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -52,6 +53,10 @@ public class BeanGenMojo extends AbstractMojo{
             // TODO : more
             beanGen.handleRDFSchema(targetFolder.getAbsolutePath());
         } catch (MalformedURLException e) {
+            String error = "Caught " + e.getClass().getName();
+            getLog().error(error);
+            throw new MojoExecutionException(error, e);
+        } catch (IOException e) {
             String error = "Caught " + e.getClass().getName();
             getLog().error(error);
             throw new MojoExecutionException(error, e);

@@ -14,16 +14,15 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.mysema.query.util.FileUtils;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionUtil;
+import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.OWLClass;
 import com.mysema.rdfbean.owl.Restriction;
@@ -40,13 +39,11 @@ import com.mysema.rdfbean.rdfs.RDFSClass;
  */
 public class BeanGen {
     
-    // TODO : single-value / multi-value
-    
     // TODO : filter duplicates
     
-    private static final Pattern normalizePattern = Pattern.compile("[\\-]");
+//    private static final Logger logger = LoggerFactory.getLogger(BeanGen.class);
     
-    private static final Logger logger = LoggerFactory.getLogger(BeanGen.class);
+    private static final Pattern normalizePattern = Pattern.compile("[\\-]");
     
     private final Set<String> exportNamespaces = new HashSet<String>();
     
@@ -73,7 +70,7 @@ public class BeanGen {
     private List<UID> skippedSupertypes = Arrays.asList(OWL.Thing, RDFS.Resource);
     
     private final TypeMapping typeMapping;
-    
+        
     public BeanGen(Repository repository){
         this(repository, new DefaultSerializer(), true);
     }
@@ -204,42 +201,50 @@ public class BeanGen {
     }
 
     private void handleRestriction(Restriction restriction, Map<RDFProperty, Property> properties) {
-        Collection<RDFProperty> rdfProperties = Collections.emptySet();        
-        if (restriction.getHasValue() == null){
-            if (restriction.getOnProperty() != null){
-                rdfProperties = Collections.singleton(restriction.getOnProperty());
-            }else if (!restriction.getOnProperties().isEmpty()){
-                rdfProperties = restriction.getOnProperties();
-                                            
-            }   
-            
-            for (RDFProperty rdfProperty : rdfProperties){
-                // allValueForm
-                Property property;
-                if (restriction.getAllValuesFrom() != null && restriction.getAllValuesFrom().getId().isURI()){
-                    if (properties.containsKey(rdfProperty)){
-                        property = properties.get(rdfProperty);
-                        property.setType(getPropertyType(rdfProperty, restriction.getAllValuesFrom()));
-                    }else{
-                        property = createProperty(rdfProperty, restriction.getAllValuesFrom());
-                        properties.put(rdfProperty, property);
-                    }
-                }else{
-                    if (properties.containsKey(rdfProperty)){
-                        property = properties.get(rdfProperty);
-                    }else{    
-                        RDFSClass<?> range = null;
-                        if (!rdfProperty.getRange().isEmpty()){
-                            range = rdfProperty.getRange().iterator().next();
-                        }
-                        property = createProperty(rdfProperty, range);
-                        properties.put(rdfProperty, property);
-                    }
-                }
-                
-                // TODO : handle cardinality, minCardinality and maxCardinality
-            }
+        if (restriction.getHasValue() != null){
+            return;
         }        
+        Collection<RDFProperty> rdfProperties = Collections.emptySet();        
+        if (restriction.getOnProperty() != null){
+            rdfProperties = Collections.singleton(restriction.getOnProperty());
+        }else if (!restriction.getOnProperties().isEmpty()){
+            rdfProperties = restriction.getOnProperties();                                        
+        }   
+        
+        for (RDFProperty rdfProperty : rdfProperties){
+            // allValueForm
+            Property property;
+            if (restriction.getAllValuesFrom() != null && restriction.getAllValuesFrom().getId().isURI()){
+                RDFSClass<?> range = restriction.getAllValuesFrom();
+                if (properties.containsKey(rdfProperty)){
+                    property = properties.get(rdfProperty);
+                    property.setType(getPropertyType(rdfProperty, range));
+                }else{
+                    property = createProperty(rdfProperty, range);
+                    properties.put(rdfProperty, property);
+                }
+            }else{
+                if (properties.containsKey(rdfProperty)){
+                    property = properties.get(rdfProperty);
+                }else{    
+                    RDFSClass<?> range = null;
+                    if (!rdfProperty.getRange().isEmpty()){
+                        range = rdfProperty.getRange().iterator().next();
+                    }
+                    property = createProperty(rdfProperty, range);
+                    properties.put(rdfProperty, property);
+                }
+            }
+            
+            for (Integer cardinality : Arrays.asList(
+                    restriction.getCardinality(), 
+                    restriction.getMinCardinality(), 
+                    restriction.getMaxCardinality())){
+                if (cardinality != null){
+                    property.setMultipleValues(true);
+                }
+            }
+        }
     }
     
     private String getPackage(UID id){
@@ -273,7 +278,7 @@ public class BeanGen {
     }
     
 
-    private void handleClass(RDFSClass<?> rdfType, String targetDir) {
+    private void handleClass(RDFSClass<?> rdfType, String targetDir) throws IOException {
         UID classId = (UID)rdfType.getId();
         if (exportNamespaces.contains(classId.getNamespace())){
             Type type;
@@ -286,23 +291,13 @@ public class BeanGen {
         }        
     }
     
-    public void handleOWL(String targetDir){
-        Session session = SessionUtil.openSession(repository, 
-                RDFSClass.class.getPackage(), 
-                OWLClass.class.getPackage());
-        // iterate over classes
-        for (RDFSClass<?> rdfType : session.findInstances(RDFSClass.class)){
-            if (rdfType.getId().isURI()){                
-                handleClass(rdfType, targetDir);
-            }
-        }
-    }
+
     
     private Property createProperty(RDFProperty rdfProperty, @Nullable RDFSClass<?> range) {
         UID propertyId = (UID)rdfProperty.getId();
         Type propertyType = getPropertyType(rdfProperty, range);
         String propertyName = getPropertyName(propertyId);        
-        return  new Property(propertyId, propertyName, propertyType);
+        return new Property(propertyId, propertyName, propertyType);
     }
 
     private Type getPropertyType(RDFProperty rdfProperty, @Nullable RDFSClass<?> range) {
@@ -316,22 +311,42 @@ public class BeanGen {
                 UID id = (UID)range.getId();
                 propertyType = new Type(id, getPackage(id),  getClassName(id));
             }
-        }
+        }        
+        if (propertyAsList.contains(rdfProperty.getId())){
+            propertyType = new ListType(propertyType);
+        }else if (propertyAsSet.contains(rdfProperty.getId())){
+            propertyType = new SetType(propertyType);
+        }        
         return propertyType;
     }
 
-
-    public void handleRDFSchema(String targetDir){
-        Session session = SessionUtil.openSession(repository, RDFSClass.class.getPackage());        
+    public void handleOWLSchema(String targetDir) throws IOException{
+        handleSchema(targetDir, RDFSClass.class.getPackage(), OWLClass.class.getPackage());
+    }
+    
+    public void handleRDFSchema(String targetDir) throws IOException{
+        handleSchema(targetDir, RDFSClass.class.getPackage());
+    }
+    
+    private void handleSchema(String targetDir, Package...packages) throws IOException{
+        SessionFactoryImpl sessionFactory = new SessionFactoryImpl(Locale.ENGLISH);
+        sessionFactory.setConfiguration(new DefaultConfiguration(packages));
+        sessionFactory.setRepository(repository);
+        sessionFactory.initialize();
+        Session session =  sessionFactory.openSession();
+        
         // iterate over classes
         for (RDFSClass<?> rdfType : session.findInstances(RDFSClass.class)){
             if (rdfType.getId().isURI()){                
                 handleClass(rdfType, targetDir);
             }
         }
+        
+        session.close();
+        sessionFactory.close();
     }
 
-    private void print(Type type, String targetDir) {
+    private void print(Type type, String targetDir) throws IOException {
         Writer w = getWriter(type, targetDir);
         try {
             if (type instanceof BeanType){
@@ -342,16 +357,8 @@ public class BeanGen {
                 throw new IllegalArgumentException("Illegal type " + type); 
             }
             
-        } catch (IOException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
         }finally{
-            try {
-                w.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            w.close();
         }
     }
 

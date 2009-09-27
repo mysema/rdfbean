@@ -24,7 +24,8 @@ public class ListType extends Type{
     }
 
     @Override
-    public String toString(){
-        return super.toString() + "<" + componentType + ">";
+    public String getLocalName(){
+        return getSimpleName() + "<" + componentType + ">";
     }
+    
 }

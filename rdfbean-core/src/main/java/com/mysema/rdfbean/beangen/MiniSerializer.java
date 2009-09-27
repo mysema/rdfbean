@@ -7,12 +7,6 @@ package com.mysema.rdfbean.beangen;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.util.SerializerHelper;
 
 /**
  * DefaultSerializer provides
