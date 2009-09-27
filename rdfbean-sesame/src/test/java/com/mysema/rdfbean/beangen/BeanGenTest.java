@@ -36,7 +36,7 @@ public class BeanGenTest{
 //    private String targetFolder = "target/generated-test-sources/java";
     private String targetFolder = "target";
     
-    private TypeModel defaultType = new TypeModel(XSD.stringType, Object.class);
+    private Type defaultType = new Type(XSD.stringType, Object.class);
     
     private MemoryRepository repository = new MemoryRepository();
     

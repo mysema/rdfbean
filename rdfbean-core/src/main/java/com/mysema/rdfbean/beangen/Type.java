@@ -16,7 +16,7 @@ import com.mysema.rdfbean.model.UID;
  * @version $Id$
  */
 @Immutable
-public class TypeModel {
+public class Type {
     
     private final UID rdfType;
     
@@ -24,13 +24,13 @@ public class TypeModel {
     
     private final String simpleName;
     
-    public TypeModel(UID rdfType, String packageName, String simpleName){
+    public Type(UID rdfType, String packageName, String simpleName){
         this.rdfType = rdfType;
         this.packageName = packageName;
         this.simpleName = simpleName;
     }
     
-    public TypeModel(UID rdfType, Class<?> clazz) {
+    public Type(UID rdfType, Class<?> clazz) {
         this(rdfType, clazz.getPackage().getName(), clazz.getSimpleName());
     }
 
@@ -57,9 +57,9 @@ public class TypeModel {
     public boolean equals(Object o){
         if (o == this){
             return true;
-        }else if (o instanceof TypeModel){
-            return ((TypeModel)o).packageName.equals(packageName) 
-                && ((TypeModel)o).simpleName.equals(simpleName);
+        }else if (o instanceof Type){
+            return ((Type)o).packageName.equals(packageName) 
+                && ((Type)o).simpleName.equals(simpleName);
         }else{
             return false;
         }

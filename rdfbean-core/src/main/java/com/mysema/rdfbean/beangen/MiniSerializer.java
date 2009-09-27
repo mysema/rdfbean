@@ -23,17 +23,17 @@ import com.mysema.util.SerializerHelper;
 public class MiniSerializer extends DefaultSerializer{
     
     @Override
-    public void serialize(BeanModel model, Writer writer) throws IOException {
+    public void serialize(BeanType model, Writer writer) throws IOException {
        printPackage(model.getPackageName(), writer);
        openClass(model, model.getSuperTypes(), writer);
-       for (PropertyModel property : model.getProperties()){
+       for (Property property : model.getProperties()){
            propertyField(model, property, writer);
        }
        closeBlock(writer);
     }
 
     @Override
-    public void serialize(EnumModel model, Writer writer) throws IOException {
+    public void serialize(EnumType model, Writer writer) throws IOException {
         printPackage(model.getPackageName(), writer);
         openEnum(model, writer);
         for (int i = 0; i < model.getEnums().size(); i++){

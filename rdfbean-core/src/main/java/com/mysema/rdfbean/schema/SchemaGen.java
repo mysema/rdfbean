@@ -92,9 +92,9 @@ public class SchemaGen {
     @SuppressWarnings("unchecked")
     private RDFSClass<RDFSResource> processClass(Class<?> clazz, Session session, 
             Map<UID, RDFSResource> resources) {
-        if (clazz == null) {
-            return null;
-        }
+//        if (clazz == null) {
+//            return null;
+//        }
         MappedClass mappedClass = MappedClass.getMappedClass(clazz);
         OWLClass owlClass = null;
         UID cuid = mappedClass.getUID();
@@ -258,11 +258,9 @@ public class SchemaGen {
 
     private void addParent(Class<?> clazz, OWLClass owlClass, Session session, 
             Map<UID, RDFSResource> resources) {
-        if (clazz != null) {
-            RDFSClass<RDFSResource> parent = processClass(clazz, session, resources);
-            if (parent != null) {
-                owlClass.addSuperClass(parent);
-            }
+        RDFSClass<RDFSResource> parent = processClass(clazz, session, resources);
+        if (parent != null) {
+            owlClass.addSuperClass(parent);
         }
     }
     

@@ -221,7 +221,10 @@ public class SesameQuery extends
         if (!extensions.isEmpty()){
             tupleExpr = new Extension(tupleExpr, extensions);
         }        
-        tupleExpr = new Projection(tupleExpr, projection);
+        
+        if (!projection.getElements().isEmpty()){
+            tupleExpr = new Projection(tupleExpr, projection);    
+        }        
         
         // evaluate it
         try {
@@ -287,6 +290,7 @@ public class SesameQuery extends
     }
 
     private void handleRootPath(Path<?> path) {
+//        getMetadata().addFrom(path.asExpr());
         Var var = new Var(path.getMetadata().getExpression().toString());
         varNames.disallow(var.getName());
         pathToVar.put(path, var);

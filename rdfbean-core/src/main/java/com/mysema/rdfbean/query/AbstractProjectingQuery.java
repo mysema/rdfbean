@@ -16,8 +16,6 @@ import org.apache.commons.lang.mutable.MutableInt;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.DefaultQueryMetadata;
-import com.mysema.query.JoinExpression;
-import com.mysema.query.JoinType;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
 import com.mysema.query.collections.impl.LimitingIterator;
@@ -83,11 +81,11 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     @Override
     public long count() {
         // TODO : use aggregate function
-        for(JoinExpression je : getMetadata().getJoins()){
-            if (je.getType() == JoinType.DEFAULT || je.getType() == JoinType.INNERJOIN){
-                addToProjection(je.getTarget());    
-            }            
-        }
+//        for(JoinExpression je : getMetadata().getJoins()){
+//            if (je.getType() == JoinType.DEFAULT || je.getType() == JoinType.INNERJOIN){
+//                addToProjection(je.getTarget());    
+//            }            
+//        }
         long total = 0l;
         Iterator<?> it = getInnerResults();
         while (it.hasNext()){

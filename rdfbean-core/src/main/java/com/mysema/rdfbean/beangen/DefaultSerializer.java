@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.util.SerializerHelper;
 
 /**
@@ -23,7 +24,7 @@ import com.mysema.util.SerializerHelper;
 public class DefaultSerializer extends SerializerHelper implements Serializer {
     
     @Override
-    public void serialize(BeanModel model, Writer writer) throws IOException {
+    public void serialize(BeanType model, Writer writer) throws IOException {
        printPackage(model.getPackageName(), writer);
        nl(writer);
        
@@ -32,11 +33,11 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
        
        openClass(model, model.getSuperTypes(), writer);
        nl(writer);
-       for (PropertyModel property : model.getProperties()){
+       for (Property property : model.getProperties()){
            propertyField(model, property, writer);
            nl(writer);
        }
-       for (PropertyModel property : model.getProperties()){
+       for (Property property : model.getProperties()){
            propertyGetter(model, property, writer);
            nl(writer);
            propertySetter(model, property, writer);
@@ -46,7 +47,7 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
     }
 
     @Override
-    public void serialize(EnumModel model, Writer writer) throws IOException {
+    public void serialize(EnumType model, Writer writer) throws IOException {
         printPackage(model.getPackageName(), writer);
         nl(writer);
         
@@ -69,7 +70,7 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
         importPackage(Predicate.class.getPackage().getName(), writer);                
     }
     
-    protected void classMapping(TypeModel type, Writer writer) throws IOException{
+    protected void classMapping(Type type, Writer writer) throws IOException{
         StringBuilder builder = new StringBuilder();
         builder.append("@ClassMapping(ns=\"").append(type.getRdfType().getNamespace());
         if (!type.getSimpleName().equals(type.getRdfType().getLocalName())){
@@ -79,19 +80,19 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
         writer.append(builder.toString());
     }
 
-    protected void openEnum(EnumModel type, Writer writer) throws IOException {
+    protected void openEnum(EnumType type, Writer writer) throws IOException {
         classMapping(type, writer);
         StringBuilder builder = new StringBuilder();
         builder.append("public enum ").append(type.getSimpleName()).append(" {\n");
         writer.append(builder.toString());
     }
     
-    protected void openClass(TypeModel type, List<TypeModel> superTypes, Writer writer) throws IOException {
+    protected void openClass(Type type, List<Type> superTypes, Writer writer) throws IOException {
         classMapping(type, writer);
         StringBuilder builder = new StringBuilder();        
         builder.append("public class ").append(type.getSimpleName());
         if (!superTypes.isEmpty()){
-            TypeModel superType = superTypes.get(0);
+            Type superType = superTypes.get(0);
             builder.append(" extends ");
             if (!superType.getPackageName().equals(type.getPackageName())){
                 builder.append(superType.getPackageName()).append(".");
@@ -99,15 +100,18 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
             builder.append(superType.getSimpleName());
         }
         builder.append(" {\n");
-        writer.append(builder.toString());
-        
+        writer.append(builder.toString());        
     }
     
-    private String getType(TypeModel type, TypeModel context){
-        return getType(type.getPackageName(), type.getSimpleName(), context.getPackageName());
+    private String getType(Type type, Type context){
+        if (type.getPackageName().equals("java.lang") || type.getPackageName().equals(context.getPackageName())){
+            return type.getSimpleName();
+        }else{
+            return type.getPackageName() + "." + type.getSimpleName();
+        }
     }
     
-    protected void propertyField(TypeModel model, PropertyModel property, Writer writer) throws IOException {
+    protected void propertyField(Type model, Property property, Writer writer) throws IOException {
         StringBuilder builder = new StringBuilder();
         String ns = null; String ln = null;
         if (!property.getRdfProperty().getNamespace().equals(model.getRdfType().getNamespace())){
@@ -129,13 +133,17 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
             builder.append(")");
         }
         builder.append("\n");
+        if (property.getRdfProperty().equals(RDF.text)){
+            // TODO : handle Map<Locale,String> type localization
+            builder.append("@Localized\n");
+        }
         builder.append(getIndent() + "private ");
         builder.append(getType(property.getType(),model)).append(" ");
         builder.append(property.getName()).append(";\n");
         writer.append(builder.toString());
     }
     
-    protected void propertyGetter(TypeModel model, PropertyModel property, Writer writer) throws IOException {
+    protected void propertyGetter(Type model, Property property, Writer writer) throws IOException {
         StringBuilder builder = new StringBuilder();
         String type = getType(property.getType(), model);
         builder.append(getIndent() + "public ").append(type).append(" ");
@@ -145,7 +153,7 @@ public class DefaultSerializer extends SerializerHelper implements Serializer {
         writer.append(builder.toString());
     }
     
-    protected void propertySetter(TypeModel model, PropertyModel property, Writer writer) throws IOException {
+    protected void propertySetter(Type model, Property property, Writer writer) throws IOException {
         StringBuilder builder = new StringBuilder();
         String type = getType(property.getType(), model);
         builder.append(getIndent() + "public void set" + StringUtils.capitalize(property.getName()));

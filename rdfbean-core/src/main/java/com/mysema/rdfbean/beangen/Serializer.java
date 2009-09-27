@@ -21,13 +21,13 @@ public interface Serializer {
      * @param writer
      * @throws IOException 
      */
-    void serialize(BeanModel model, Writer writer) throws IOException;
+    void serialize(BeanType model, Writer writer) throws IOException;
     
     /**
      * @param model
      * @param writer
      * @throws IOException 
      */
-    void serialize(EnumModel model, Writer writer) throws IOException;
+    void serialize(EnumType model, Writer writer) throws IOException;
 
 }

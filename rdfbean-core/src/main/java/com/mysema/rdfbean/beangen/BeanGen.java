@@ -8,28 +8,20 @@ package com.mysema.rdfbean.beangen;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URI;
 import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.query.util.FileUtils;
-import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 import com.mysema.rdfbean.owl.OWL;
@@ -38,7 +30,6 @@ import com.mysema.rdfbean.owl.Restriction;
 import com.mysema.rdfbean.rdfs.MappedResourceBase;
 import com.mysema.rdfbean.rdfs.RDFProperty;
 import com.mysema.rdfbean.rdfs.RDFSClass;
-import com.mysema.rdfbean.xsd.Year;
 
 
 /**
@@ -49,43 +40,39 @@ import com.mysema.rdfbean.xsd.Year;
  */
 public class BeanGen {
     
-    private static final Pattern normalizePattern = Pattern.compile("[\\-]");
-    
-    // TODO : normalize class and property localNames
-    
     // TODO : single-value / multi-value
     
     // TODO : filter duplicates
     
-    // TODO : rdf:text for Localized
+    private static final Pattern normalizePattern = Pattern.compile("[\\-]");
     
     private static final Logger logger = LoggerFactory.getLogger(BeanGen.class);
-
-    private Map<UID,TypeModel> datatypeToType = new HashMap<UID,TypeModel>();
     
-    private TypeModel defaultType;
+    private final Set<String> exportNamespaces = new HashSet<String>();
     
-    private Set<String> exportNamespaces = new HashSet<String>();
+    private final Map<String,String> nsToPackage = new HashMap<String,String>();
     
-    private Map<String,String> nsToPackage = new HashMap<String,String>();
+    private final Map<String,String> nsToClassPrefix = new HashMap<String,String>();
     
-    private Map<String,String> nsToClassPrefix = new HashMap<String,String>();
+    private final Map<String,String> nsToPropertyPrefix = new HashMap<String,String>();
     
-    private Map<String,String> nsToPropertyPrefix = new HashMap<String,String>();
+    private final Set<UID> localizedProperties = new HashSet<UID>();
     
-    private Set<UID> localizedProperties = new HashSet<UID>();
+    private final Set<UID> propertyAsSet = new HashSet<UID>();
+    
+    private final Set<UID> propertyAsList = new HashSet<UID>();
     
     private boolean oneOfAsEnum = true;
     
     private boolean stripHasOff = true;
     
-    private final boolean usePrimitives;
-    
-    private Repository repository;
+    private final Repository repository;
     
     private final Serializer serializer;
     
     private List<UID> skippedSupertypes = Arrays.asList(OWL.Thing, RDFS.Resource);
+    
+    private final TypeMapping typeMapping;
     
     public BeanGen(Repository repository){
         this(repository, new DefaultSerializer(), true);
@@ -102,49 +89,34 @@ public class BeanGen {
     public BeanGen(Repository repository, Serializer serializer, boolean usePrimitives){
         this.repository = repository;
         this.serializer = serializer;
-        this.usePrimitives = usePrimitives;
-        
-        register(XSD.anyURI, URI.class);
-        register(XSD.booleanType, Boolean.class);
-        register(XSD.byteType, Byte.class);
-        register(XSD.date, LocalDate.class); // joda-time
-        register(XSD.dateTime, DateTime.class); // joda-time       
-        register(XSD.decimalType, BigDecimal.class);
-        register(XSD.doubleType, Double.class);
-        // duration
-        register(XSD.floatType, Float.class);
-        // gDay
-        // gMonth
-        // gMonthDay
-        // gYear
-        register(XSD.gYear, Year.class);
-        // gYearMonth
-        register(XSD.integerType, BigInteger.class);
-        register(XSD.intType, Integer.class);
-        register(XSD.longType, Long.class);
-        register(XSD.shortType, Short.class);
-        register(XSD.stringType, String.class);
-        register(XSD.time, LocalTime.class); // joda-time       
-        register(RDFS.Literal, String.class);
-        
-        defaultType = datatypeToType.get(XSD.stringType);
+        this.typeMapping = new TypeMapping(usePrimitives);
     }
     
-    private void add(PropertyModel property, Map<ID, PropertyModel> properties) {
-        ID id = property.getRdfProperty();
-        if (properties.containsKey(id)){
-            property = property.merge(properties.get(id), defaultType);
-        }
-        properties.put(id, property);
+    public BeanGen addLocalizedProperty(UID... properties){
+        for (UID property : properties){
+            localizedProperties.add(property);    
+        }        
+        return this;
     }
     
-    public BeanGen addLocalizedProperty(UID property){
-        localizedProperties.add(property);
+    public BeanGen addPropertyAsSet(UID... properties){
+        for (UID property : properties){
+            propertyAsList.add(property);    
+        }        
+        return this;
+    }
+    
+    public BeanGen addPropertyAsList(UID... properties){
+        for (UID property : properties){
+            propertyAsSet.add(property);    
+        }        
         return this;
     }
 
-    public BeanGen addExportNamespace(String ns) {
-        exportNamespaces.add(ns);
+    public BeanGen addExportNamespace(String... namespaces) {
+        for (String ns : namespaces){
+            exportNamespaces.add(ns);    
+        }        
         return this;
     }    
 
@@ -163,7 +135,7 @@ public class BeanGen {
         return this;
     }        
 
-    private Writer getWriter(TypeModel type, String targetDir){
+    private Writer getWriter(Type type, String targetDir){
         String path = type.getPackageName().replace('.', File.separatorChar) 
             + File.separator 
             + type.getSimpleName() 
@@ -171,21 +143,36 @@ public class BeanGen {
         return FileUtils.writerFor(new File(targetDir, path));
     }
     
-    private void handleEnum(RDFSClass<?> rdfType, String targetDir, UID classId) {
-        EnumModel enumType = new EnumModel(classId, getPackage(classId), getClassName(classId));        
+    private EnumType createEnumType(RDFSClass<?> rdfType, String targetDir, UID classId) {
+        EnumType enumType = new EnumType(classId, getPackage(classId), getClassName(classId));        
         for (Object object : rdfType.getOneOf()){
             if (object instanceof MappedResourceBase  && ((MappedResourceBase)object).getId().isURI()){
                 UID id = (UID) ((MappedResourceBase)object).getId();
                 enumType.addEnum(id.getLocalName());
             }
         }        
-        print(enumType, targetDir);
+//        print(enumType, targetDir);
+        return enumType;
     }
 
-    // TODO : simplify
-    private void handleBean(RDFSClass<?> rdfType, String targetDir, UID classId) {
-        BeanModel beanType = new BeanModel(classId, getPackage(classId), getClassName(classId));        
-        Map<ID,PropertyModel> properties = new HashMap<ID,PropertyModel>();
+    private BeanType createBeanType(RDFSClass<?> rdfType, String targetDir, UID classId) {
+        BeanType beanType = new BeanType(classId, getPackage(classId), getClassName(classId));        
+        Map<RDFProperty,Property> properties = new HashMap<RDFProperty,Property>();
+        
+        // iterate over properties
+        for (RDFProperty rdfProperty : rdfType.getProperties()){
+            if (rdfProperty.getId().isURI()){
+                if (!properties.containsKey(rdfProperty)){
+                    RDFSClass<?> range = null;
+                    if (!rdfProperty.getRange().isEmpty()){
+                        range = rdfProperty.getRange().iterator().next();
+                    }
+                    properties.put(rdfProperty, createProperty(rdfProperty, range));
+                }else{
+                    // ?!?
+                }
+            }                    
+        }
         
         // iterate over supertypes
         for (RDFSClass<?> superType : rdfType.getSuperClasses()){
@@ -193,29 +180,12 @@ public class BeanGen {
                 
                 // handle restriction
                 if (superType instanceof Restriction){
-                    Restriction restriction = (Restriction)superType;
-                    if (restriction.getHasValue() != null){
-                        // can be skipped, since the value is static
-                        continue;
-                        
-                    }else if (restriction.getOnProperty() != null){
-                        if (restriction.getAllValuesFrom() != null && restriction.getAllValuesFrom().getId().isURI()){                            
-                            add(handleProperty(
-                                    restriction.getOnProperty(), 
-                                    restriction.getAllValuesFrom()), properties);
-                        }else{
-                            add(handleProperty(restriction.getOnProperty()), properties);    
-                        }                        
-                        
-                    }else if (!restriction.getOnProperties().isEmpty()){
-                        for (RDFProperty prop : restriction.getOnProperties()){
-                            add(handleProperty(prop), properties);
-                        }                            
-                    }                
+                    handleRestriction((Restriction)superType, properties);
+                                    
                 // handle other supertypes
                 }else if (superType.getId().isURI()){
                     UID superTypeId = (UID)superType.getId();
-                    beanType.addSuperType(new TypeModel(
+                    beanType.addSuperType(new Type(
                             superTypeId,
                             getPackage(superTypeId),
                             getClassName(superTypeId)
@@ -223,20 +193,53 @@ public class BeanGen {
                 }                    
             }
         }
-        
-        // iterate over properties
-        for (RDFProperty rdfProperty : rdfType.getProperties()){
-            if (rdfProperty.getId().isURI()){
-                add(handleProperty(rdfProperty), properties);
-            }                    
-        }
-        
+                
         // add properties to bean model
-        for (PropertyModel property : properties.values()){
+        for (Property property : properties.values()){
             beanType.addProperty(property);
         }
         
-        print(beanType, targetDir);
+//        print(beanType, targetDir);
+        return beanType;
+    }
+
+    private void handleRestriction(Restriction restriction, Map<RDFProperty, Property> properties) {
+        Collection<RDFProperty> rdfProperties = Collections.emptySet();        
+        if (restriction.getHasValue() == null){
+            if (restriction.getOnProperty() != null){
+                rdfProperties = Collections.singleton(restriction.getOnProperty());
+            }else if (!restriction.getOnProperties().isEmpty()){
+                rdfProperties = restriction.getOnProperties();
+                                            
+            }   
+            
+            for (RDFProperty rdfProperty : rdfProperties){
+                // allValueForm
+                Property property;
+                if (restriction.getAllValuesFrom() != null && restriction.getAllValuesFrom().getId().isURI()){
+                    if (properties.containsKey(rdfProperty)){
+                        property = properties.get(rdfProperty);
+                        property.setType(getPropertyType(rdfProperty, restriction.getAllValuesFrom()));
+                    }else{
+                        property = createProperty(rdfProperty, restriction.getAllValuesFrom());
+                        properties.put(rdfProperty, property);
+                    }
+                }else{
+                    if (properties.containsKey(rdfProperty)){
+                        property = properties.get(rdfProperty);
+                    }else{    
+                        RDFSClass<?> range = null;
+                        if (!rdfProperty.getRange().isEmpty()){
+                            range = rdfProperty.getRange().iterator().next();
+                        }
+                        property = createProperty(rdfProperty, range);
+                        properties.put(rdfProperty, property);
+                    }
+                }
+                
+                // TODO : handle cardinality, minCardinality and maxCardinality
+            }
+        }        
     }
     
     private String getPackage(UID id){
@@ -272,12 +275,14 @@ public class BeanGen {
 
     private void handleClass(RDFSClass<?> rdfType, String targetDir) {
         UID classId = (UID)rdfType.getId();
-        if (exportNamespaces.contains(classId.getNamespace())){            
+        if (exportNamespaces.contains(classId.getNamespace())){
+            Type type;
             if (oneOfAsEnum && !rdfType.getOneOf().isEmpty()){
-                handleEnum(rdfType, targetDir, classId);                
+                type = createEnumType(rdfType, targetDir, classId);                
             }else{
-                handleBean(rdfType, targetDir, classId); 
-            }            
+                type = createBeanType(rdfType, targetDir, classId); 
+            }       
+            print(type, targetDir);
         }        
     }
     
@@ -293,29 +298,26 @@ public class BeanGen {
         }
     }
     
-    private PropertyModel handleProperty(RDFProperty rdfProperty) {
-        if (!rdfProperty.getRange().isEmpty()){
-            return handleProperty(rdfProperty, rdfProperty.getRange().iterator().next());
-        }else{
-            return handleProperty(rdfProperty, null);    
-        }        
+    private Property createProperty(RDFProperty rdfProperty, @Nullable RDFSClass<?> range) {
+        UID propertyId = (UID)rdfProperty.getId();
+        Type propertyType = getPropertyType(rdfProperty, range);
+        String propertyName = getPropertyName(propertyId);        
+        return  new Property(propertyId, propertyName, propertyType);
     }
 
-    private PropertyModel handleProperty(RDFProperty rdfProperty, @Nullable RDFSClass<?> range) {
-        UID propertyId = (UID)rdfProperty.getId();
-        TypeModel propertyType = defaultType;
-        // handle range
-        if (range != null){
-            if (datatypeToType.containsKey(range.getId())){
-                propertyType = datatypeToType.get(range.getId());
+    private Type getPropertyType(RDFProperty rdfProperty, @Nullable RDFSClass<?> range) {
+        Type propertyType = typeMapping.getDefaultType();
+        if (localizedProperties.contains(rdfProperty.getId())){
+            propertyType = typeMapping.get(RDF.text);
+        }else if (range != null){
+            if (typeMapping.containsKey(range.getId())){
+                propertyType = typeMapping.get(range.getId());
             }else if (range.getId().isURI()){
                 UID id = (UID)range.getId();
-                propertyType = new TypeModel(id, getPackage(id),  getClassName(id));
+                propertyType = new Type(id, getPackage(id),  getClassName(id));
             }
         }
-        String propertyName = getPropertyName(propertyId);        
-        PropertyModel beanProperty = new PropertyModel(propertyId, propertyName, propertyType);
-        return beanProperty;
+        return propertyType;
     }
 
 
@@ -329,13 +331,13 @@ public class BeanGen {
         }
     }
 
-    private void print(TypeModel type, String targetDir) {
+    private void print(Type type, String targetDir) {
         Writer w = getWriter(type, targetDir);
         try {
-            if (type instanceof BeanModel){
-                serializer.serialize(((BeanModel)type), w);    
-            }else if (type instanceof EnumModel){
-                serializer.serialize(((EnumModel)type), w);
+            if (type instanceof BeanType){
+                serializer.serialize(((BeanType)type), w);    
+            }else if (type instanceof EnumType){
+                serializer.serialize(((EnumType)type), w);
             }else{
                 throw new IllegalArgumentException("Illegal type " + type); 
             }
@@ -352,18 +354,9 @@ public class BeanGen {
             }
         }
     }
-    
-    private void register(UID type, Class<?> clazz) {
-        Class<?> primitive = null;
-        if (usePrimitives && (primitive = ClassUtils.wrapperToPrimitive(clazz)) != null){
-            datatypeToType.put(type, new TypeModel(type, "java.lang", primitive.getSimpleName()));
-        }else{
-            datatypeToType.put(type, new TypeModel(type, clazz));
-        }        
-    }
 
-    public BeanGen setDefaultType(TypeModel type){
-        defaultType = type;
+    public BeanGen setDefaultType(Type type){
+        typeMapping.setDefaultType(type);
         return this;
     }
 

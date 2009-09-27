@@ -16,15 +16,15 @@ import com.mysema.rdfbean.model.UID;
  * @author tiwe
  * @version $Id$
  */
-public class EnumModel extends TypeModel{
+public class EnumType extends Type{
     
     private final List<String> enums = new ArrayList<String>();
     
-    public EnumModel(UID rdfType, String packageName, String simpleName){
+    public EnumType(UID rdfType, String packageName, String simpleName){
         super(rdfType, packageName, simpleName);
     }
     
-    public EnumModel addEnum(String name){
+    public EnumType addEnum(String name){
         enums.add(name);
         return this;
     }

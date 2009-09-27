@@ -18,29 +18,29 @@ import com.mysema.rdfbean.model.UID;
  * @author tiwe
  * @version $Id$
  */
-public class BeanModel extends TypeModel{
+public class BeanType extends Type{
     
-    private final Set<PropertyModel> properties = new TreeSet<PropertyModel>();
+    private final Set<Property> properties = new TreeSet<Property>();
 
-    private final List<TypeModel> superTypes = new ArrayList<TypeModel>();
+    private final List<Type> superTypes = new ArrayList<Type>();
     
-    public BeanModel(UID rdfType, String packageName, String simpleName){
+    public BeanType(UID rdfType, String packageName, String simpleName){
         super(rdfType, packageName, simpleName);
     }
 
-    public Set<PropertyModel> getProperties() {
+    public Set<Property> getProperties() {
         return properties;
     }
     
-    public void addProperty(PropertyModel property){
+    public void addProperty(Property property){
         properties.add(property);
     }
     
-    public List<TypeModel> getSuperTypes() {
+    public List<Type> getSuperTypes() {
         return superTypes;
     }
 
-    public void addSuperType(TypeModel type) {
+    public void addSuperType(Type type) {
         superTypes.add(type);
         
     }
