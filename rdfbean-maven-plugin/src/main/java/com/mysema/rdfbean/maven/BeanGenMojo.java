@@ -49,7 +49,7 @@ public class BeanGenMojo extends AbstractMojo{
             repository.initialize();
             
             BeanGen beanGen = new BeanGen(repository);
-            beanGen.addExportNamespace(schemaNamespace);
+            beanGen.addExportNamespaces(schemaNamespace);
             // TODO : more
             beanGen.handleRDFSchema(targetFolder.getAbsolutePath());
         } catch (MalformedURLException e) {

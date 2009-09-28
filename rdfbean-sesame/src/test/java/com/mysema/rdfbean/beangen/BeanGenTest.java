@@ -54,7 +54,7 @@ public class BeanGenTest{
         repository.setSources(new RDFSource("classpath:/foaf.rdf", RDFFormat.RDFXML, FOAF.NS));
         repository.initialize();
         
-        beanGen.addExportNamespace(FOAF.NS);
+        beanGen.addExportNamespaces(FOAF.NS);
         beanGen.addPropertyPrefix(FOAF.NS, "foaf");
         beanGen.addPackage(FOAF.NS, "foaf");
         beanGen.addPackage(OWL.NS, "owl");
@@ -72,7 +72,7 @@ public class BeanGenTest{
         repository.setSources(new RDFSource("classpath:/wine.owl", RDFFormat.RDFXML, WINE_NS));
         repository.initialize();
         
-        beanGen.addExportNamespace(WINE_NS);
+        beanGen.addExportNamespaces(WINE_NS);
         beanGen.addPackage(WINE_NS, "wine");
         beanGen.addPackage("http://www.w3.org/TR/2003/PR-owl-guide-20031209/food#", "food");
         beanGen.handleOWLSchema(targetFolder);
@@ -85,10 +85,10 @@ public class BeanGenTest{
         repository.setSources(new RDFSource("classpath:/dc.rdf", RDFFormat.RDFXML, DC_NS));
         repository.initialize();
         
-        beanGen.addExportNamespace(DC_NS);
-        beanGen.addExportNamespace("http://purl.org/dc/terms/");
-        beanGen.addExportNamespace("http://purl.org/dc/dcmitype/");
-        beanGen.addExportNamespace("http://www.w3.org/2004/02/skos/core#");
+        beanGen.addExportNamespaces(DC_NS,
+            "http://purl.org/dc/terms/",
+            "http://purl.org/dc/dcmitype/",
+            "http://www.w3.org/2004/02/skos/core#");
         beanGen.addPackage(DC_NS, "dc");                
         beanGen.addPackage("http://purl.org/dc/terms/", "terms");
         beanGen.addPackage("http://purl.org/dc/dcmitype/", "dcmitype");
@@ -104,7 +104,7 @@ public class BeanGenTest{
         repository.setSources(new RDFSource("classpath:/blog.owl", RDFFormat.RDFXML, BLOG_NS));
         repository.initialize();
         
-        beanGen.addExportNamespace(BLOG_NS);
+        beanGen.addExportNamespaces(BLOG_NS);
         beanGen.addPackage(BLOG_NS, "blog");
         beanGen.handleOWLSchema(targetFolder);
                 

@@ -39,10 +39,6 @@ import com.mysema.rdfbean.rdfs.RDFSClass;
  */
 public class BeanGen {
     
-    // TODO : filter duplicates
-    
-//    private static final Logger logger = LoggerFactory.getLogger(BeanGen.class);
-    
     private static final Pattern normalizePattern = Pattern.compile("[\\-]");
     
     private final Set<String> exportNamespaces = new HashSet<String>();
@@ -110,7 +106,7 @@ public class BeanGen {
         return this;
     }
 
-    public BeanGen addExportNamespace(String... namespaces) {
+    public BeanGen addExportNamespaces(String... namespaces) {
         for (String ns : namespaces){
             exportNamespaces.add(ns);    
         }        
@@ -148,7 +144,6 @@ public class BeanGen {
                 enumType.addEnum(id.getLocalName());
             }
         }        
-//        print(enumType, targetDir);
         return enumType;
     }
 
@@ -196,7 +191,6 @@ public class BeanGen {
             beanType.addProperty(property);
         }
         
-//        print(beanType, targetDir);
         return beanType;
     }
 
