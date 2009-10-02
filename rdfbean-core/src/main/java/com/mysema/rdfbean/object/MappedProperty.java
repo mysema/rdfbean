@@ -33,7 +33,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             Default.class, 
             Defaults.class,
             Id.class,
-            Inject.class, 
+            InjectService.class, 
             Localized.class,
             MapElements.class,
             Mixin.class,
@@ -328,7 +328,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
     
     public boolean isInjection() {
-        return isAnnotationPresent(Inject.class);
+        return isAnnotationPresent(InjectService.class);
     }
         
     public boolean isMixin() {

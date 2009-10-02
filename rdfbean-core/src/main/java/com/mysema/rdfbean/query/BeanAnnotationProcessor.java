@@ -26,7 +26,7 @@ import com.mysema.query.apt.Configuration;
 import com.mysema.query.apt.Processor;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Inject;
+import com.mysema.rdfbean.annotations.InjectService;
 import com.mysema.rdfbean.annotations.Mixin;
 import com.mysema.rdfbean.annotations.Predicate;
 
@@ -66,7 +66,7 @@ public class BeanAnnotationProcessor extends AbstractProcessor{
             }
             
             private boolean isValid(Element d){
-                return d.getAnnotation(Inject.class) == null && 
+                return d.getAnnotation(InjectService.class) == null && 
                     (d.getAnnotation(Predicate.class) != null 
                     || d.getAnnotation(Mixin.class) != null 
                     || d.getAnnotation(Id.class) != null);

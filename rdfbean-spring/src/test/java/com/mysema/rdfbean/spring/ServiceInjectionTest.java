@@ -15,7 +15,7 @@ import com.mysema.rdfbean.SRV;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Default;
-import com.mysema.rdfbean.annotations.Inject;
+import com.mysema.rdfbean.annotations.InjectService;
 import com.mysema.rdfbean.annotations.Mixin;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.*;
@@ -51,7 +51,7 @@ public class ServiceInjectionTest {
 
         @Predicate // Optional for Default mapped property - allows overriding default
         @Default(ns=SRV.NS, ln="helloWorld")
-        @Inject
+        @InjectService
         private ServiceInterface service;
         
         public String executeService() {
@@ -65,7 +65,7 @@ public class ServiceInjectionTest {
     @ClassMapping(ns=TEST.NS)
     public final static class MixinInjection {
         @Mixin
-        @Inject
+        @InjectService
         ServiceInterface mixinService;
     }
 

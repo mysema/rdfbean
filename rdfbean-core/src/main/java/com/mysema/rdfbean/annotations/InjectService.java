@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
  * Injection can be used for example for 
  * <ul>
  * <li>Pluggable authorization service used in bean's methods 
- *     to check access rights manually usign {@link Inject} and {@link Default}.</li>
+ *     to check access rights manually usign {@link InjectService} and {@link Default}.</li>
  * <li>Data dependent UI handlers (e.g. Spring MVC Controllers) with some generic 
- *     default controller that is overridable in data using {@link Inject}, {@link Default} 
+ *     default controller that is overridable in data using {@link InjectService}, {@link Default} 
  *     and {@link Predicate}.</li>
  * <li>Manual - and thus well controlled - lazy loading.<li>
  * </ul>
@@ -38,6 +38,6 @@ import java.lang.annotation.Target;
 @Target( { METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-public @interface Inject {
+public @interface InjectService {
     
 }

@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Default;
-import com.mysema.rdfbean.annotations.Inject;
+import com.mysema.rdfbean.annotations.InjectService;
 import com.mysema.rdfbean.annotations.InjectProperty;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.UID;
@@ -39,7 +39,7 @@ public class ConstructorParametersTest {
 	@ClassMapping(ns=TEST.NS)
 	public static final class ParentType {
 		public ParentType(
-				@Inject
+				@InjectService
 				@Default(ns=TEST.NS, ln="parentService")
 				ParentServiceType service
 		) {
