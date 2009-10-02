@@ -36,4 +36,10 @@ public interface SessionFactory {
      */
     public void close();
     
+    /**
+     * 
+     * @param sessionContext
+     */
+    public void setSessionContext(SessionContext sessionContext);
+    
 }

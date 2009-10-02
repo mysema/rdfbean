@@ -156,7 +156,7 @@ class TransactionalInterceptor implements MethodInterceptor{
     @Inject
     public void setSessionFactory(SessionFactory sessionFactory){
         this.sessionContext = new SimpleSessionContext(sessionFactory);
-        ((SessionFactoryImpl)sessionFactory).setSessionContext(sessionContext);
+        sessionFactory.setSessionContext(sessionContext);
     }
 
 }
