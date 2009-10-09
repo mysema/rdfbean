@@ -42,11 +42,4 @@ public abstract class SerializerHelper {
         writer.append("import " + className +";\n");
     }
 
-//    protected String getType(String packageName, String localName, String packageContext){
-//        if (packageName.equals("java.lang") || packageName.equals(packageContext)){
-//            return localName;
-//        }else{
-//            return packageName+"."+localName;
-//        }
-//    }
 }
