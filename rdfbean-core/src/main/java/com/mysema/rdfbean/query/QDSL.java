@@ -27,6 +27,10 @@ public final class QDSL {
     
     public static final UID dayOfMonth = new UID(NS, "dayOfMonth");
     
+    public static final UID dayOfWeek = new UID(NS, "dayOfWeek");
+    
+    public static final UID dayOfYear = new UID(NS, "dayOfYear");
+    
     public static final UID endsWith = new UID(NS, "endsWith");
     
     public static final UID endsWithIc = new UID(NS, "endsWithIc");
@@ -39,7 +43,11 @@ public final class QDSL {
     
     public static final UID indexOf = new UID(NS, "indexOf");
     
+    public static final UID like = new UID(NS, "like");
+    
     public static final UID lower = new UID(NS, "lower");
+    
+    public static final UID millisecond = new UID(NS, "millisecond");
     
     public static final UID minute = new UID(NS, "minute");
     
@@ -64,6 +72,8 @@ public final class QDSL {
     public static final UID trim = new UID(NS, "trim");
     
     public static final UID upper = new UID(NS, "upper");
+    
+    public static final UID week = new UID(NS, "week");
     
     public static final UID year = new UID(NS, "year");
     

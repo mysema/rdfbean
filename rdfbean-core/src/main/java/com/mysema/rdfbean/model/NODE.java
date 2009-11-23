@@ -9,13 +9,13 @@ import java.io.Serializable;
 
 import net.jcip.annotations.Immutable;
 
-import com.mysema.query.annotations.Entity;
+import com.mysema.query.annotations.QueryEntity;
 
 /**
  * @author sasa
  *
  */
-@Entity
+@QueryEntity
 @Immutable
 public abstract class NODE implements Serializable {
 

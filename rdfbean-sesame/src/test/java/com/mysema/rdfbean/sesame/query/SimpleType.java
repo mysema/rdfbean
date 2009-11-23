@@ -27,37 +27,37 @@ import com.mysema.rdfbean.annotations.Predicate;
 @ClassMapping(ns =TEST.NS, ln="TestType1")
 public class SimpleType{        
     @Id 
-    String id;        
+    private String id;        
     
     @Predicate(ln="directProperty1")  
-    String directProperty;
+    private String directProperty;
     
     @Predicate
     @Localized
-    String localizedProperty;
+    private String localizedProperty;
     
     @Predicate(ln="localizedProperty")
     @Localized
-    Map<Locale,String> localizedAsMap;
+    private Map<Locale,String> localizedAsMap;
     
     @Predicate 
-    String notExistantProperty;
+    private String notExistantProperty;
     
     @Predicate
-    int numericProperty;
+    private int numericProperty;
     
     @Predicate(ln="listProperty") 
-    List<SimpleType2> listProperty;
+    private List<SimpleType2> listProperty;
     
     @Predicate(ln="setProperty") 
-    Set<SimpleType2> setProperty;        
+    private Set<SimpleType2> setProperty;        
     
     @Predicate(ln="setProperty")
     @MapElements(key=@Predicate(ln="directProperty2"))
-    Map<String,SimpleType2> mapProperty;
+    private Map<String,SimpleType2> mapProperty;
     
     @Predicate 
-    Date dateProperty;
+    private Date dateProperty;
 
     public String getId() {
         return id;

@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.CascadingBoolean;
+import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.Constant;
 import com.mysema.query.types.expr.EBoolean;
@@ -331,11 +331,14 @@ public class SesameQuery extends
             return var;
         }
     }
-        
+            
     @SuppressWarnings("unchecked")
     @Nullable
     private ValueExpr toValue(Expr<?> expr) {
-        if (expr instanceof Path) {
+        if (expr instanceof BooleanBuilder){
+            return toValue(((BooleanBuilder)expr).getValue());
+            
+        }else if (expr instanceof Path) {
             return transformPath((Path<?>) expr);
             
         } else if (expr instanceof Operation) {
@@ -349,7 +352,7 @@ public class SesameQuery extends
             return transformConstant((Constant<?>)expr);
             
         } else {
-            throw new IllegalArgumentException("Unsupported expr instance : " + expr);
+            throw new IllegalArgumentException("Unsupported expr instance : " + expr + " (" + expr.getClass().getSimpleName()+ ")");
         }
     }
     
@@ -420,11 +423,11 @@ public class SesameQuery extends
                 Expr<Object> expr = (Expr<Object>)operation.getArg(0);
                 Constant<?> constant = (Constant<?>)operation.getArg(1);
                 Collection<?> collection = (Collection<?>)constant.getConstant();
-                CascadingBoolean bo = new CascadingBoolean();
+                BooleanBuilder bo = new BooleanBuilder();
                 for (Object elem : collection){
                     bo.or(expr.eq(elem));
                 }               
-                return toValue(bo.create());
+                return toValue(bo);
                 
             }else{
                 throw new IllegalArgumentException("Unsupported operation " + operation);

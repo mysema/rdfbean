@@ -92,36 +92,39 @@ public class Operations {
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                Var arg2 = ((Var)args.get(1));
-                if (arg2.getValue() != null){
-                    return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",true);
-                }else{
-                    return new FunctionCall(QDSL.startsWith.getId(), args);
+                if (args.get(1) instanceof Var){
+                    Var arg2 = ((Var)args.get(1));
+                    if (arg2.getValue() != null){
+                        return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",true);
+                    }    
                 }
+                return new FunctionCall(QDSL.startsWith.getId(), args);
             }            
         });
         opToTransformer.put(ENDS_WITH, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                Var arg2 = ((Var)args.get(1));
-                if (arg2.getValue() != null){
-                    return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),true); 
-                }else{
-                    return new FunctionCall(QDSL.endsWith.getId(), args);
-                }                
+                if (args.get(1) instanceof Var){
+                    Var arg2 = ((Var)args.get(1));
+                    if (arg2.getValue() != null){
+                        return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),true); 
+                    }    
+                }
+                return new FunctionCall(QDSL.endsWith.getId(), args);                
             }            
         });
         opToTransformer.put(STRING_CONTAINS, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                Var arg2 = ((Var)args.get(1));
-                if (arg2.getValue() != null){
-                    return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue()+"*",true);    
-                }else{
-                    return new FunctionCall(QDSL.stringContains.getId(), args);
+                if (args.get(1) instanceof Var){
+                    Var arg2 = ((Var)args.get(1));
+                    if (arg2.getValue() != null){
+                        return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue()+"*",true);    
+                    }    
                 }
+                return new FunctionCall(QDSL.stringContains.getId(), args);
                 
             }            
         });
@@ -137,12 +140,13 @@ public class Operations {
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                Var arg2 = ((Var)args.get(1));
-                if (arg2.getValue() != null){
-                    return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",false);    
-                }else{
-                    return new FunctionCall(QDSL.startsWithIc.getId(), args);
-                }
+                if (args.get(1) instanceof Var){
+                    Var arg2 = ((Var)args.get(1));
+                    if (arg2.getValue() != null){
+                        return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",false);    
+                    }    
+                }                
+                return new FunctionCall(QDSL.startsWithIc.getId(), args);
                 
             }            
         });
@@ -150,12 +154,14 @@ public class Operations {
             @Override
             public ValueExpr transform(List<ValueExpr> args) {
                 ValueExpr first = new Str(args.get(0));
-                Var arg2 = ((Var)args.get(1));
-                if (arg2.getValue() != null){
-                    return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),false);
-                }else{
-                    return new FunctionCall(QDSL.endsWithIc.getId(), args);
+                if(args.get(1) instanceof Var){
+                    Var arg2 = ((Var)args.get(1));
+                    if (arg2.getValue() != null){
+                        return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),false);
+                    }
                 }
+                return new FunctionCall(QDSL.endsWithIc.getId(), args);
+                
             }            
         });
         opToTransformer.put(MATCHES, new Transformer(){
@@ -177,8 +183,7 @@ public class Operations {
                 @Override
                 public ValueExpr transform(List<ValueExpr> args) {
                     return new MathExpr(args.get(0), args.get(1), mathOps.next());
-                }
-                
+                }                
             });
         }
         

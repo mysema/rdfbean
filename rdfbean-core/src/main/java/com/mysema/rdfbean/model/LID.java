@@ -6,14 +6,14 @@
 package com.mysema.rdfbean.model;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.annotations.Entity;
+import com.mysema.query.annotations.QueryEntity;
 
 
 /**
  * @author sasa
  *
  */
-@Entity
+@QueryEntity
 public final class LID implements Identifier {
 
     private static final long serialVersionUID = -5865603861883838644L;

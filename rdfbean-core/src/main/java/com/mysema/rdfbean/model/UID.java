@@ -13,13 +13,13 @@ import javax.annotation.Nullable;
 import net.jcip.annotations.Immutable;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.annotations.Entity;
+import com.mysema.query.annotations.QueryEntity;
 
 /**
  * @author sasa
  *
  */
-@Entity
+@QueryEntity
 @Immutable
 public final class UID extends ID {
 

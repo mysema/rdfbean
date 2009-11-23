@@ -31,7 +31,7 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
     public void allIds(){
         System.out.println("allIds");
         instances = newQuery().from(var).list(var);
-        List<String> ids = Arrays.asList(instances.get(0).id, instances.get(1).id);        
+        List<String> ids = Arrays.asList(instances.get(0).getId(), instances.get(1).getId());        
         assertEquals(ids, newQuery().from(var).list(var.id)); 
     }
     
@@ -41,7 +41,7 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
         instances = newQuery().from(var).list(var);
         assertEquals(2, instances.size());
         for (SimpleType i : instances){
-            System.out.println(i.id + ", " + i.directProperty);
+            System.out.println(i.getId() + ", " + i.getDirectProperty());
         }        
     }
     
@@ -57,16 +57,16 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
         String id = newQuery().from(var).list(var.id).get(0);
         instance = where(var.id.eq(id)).uniqueResult(var);
         assertNotNull(instance);
-        assertEquals(id, instance.id);
+        assertEquals(id, instance.getId());
     }
     
     @Test
     public void byIdNegated(){
         System.out.println("byIdNegated");
         instances = newQuery().from(var).list(var);
-        instance = where(var.id.ne(instances.get(0).id)).uniqueResult(var);
+        instance = where(var.id.ne(instances.get(0).getId())).uniqueResult(var);
         assertNotNull(instance);
-        assertEquals(instances.get(1).id, instance.id);
+        assertEquals(instances.get(1).getId(), instance.getId());
     }
     
     @Test
@@ -74,7 +74,7 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
         System.out.println("byLiteralProperty");
         instance = where(var.directProperty.eq("propertymap")).uniqueResult(var);
         assertNotNull(instance);
-        assertEquals("propertymap", instance.directProperty);
+        assertEquals("propertymap", instance.getDirectProperty());
     }
     
     @Test

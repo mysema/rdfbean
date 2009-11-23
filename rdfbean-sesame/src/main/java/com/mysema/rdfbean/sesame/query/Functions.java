@@ -211,10 +211,29 @@ public class Functions {
                 return vf.createLiteral(converter.fromString(args[0].stringValue(), DateTime.class).getMonthOfYear());
             }
         });
+        register(new BaseFunction(QDSL.week, Ops.DateTimeOps.WEEK) {
+            @Override
+            public Value evaluate(ValueFactory vf, Value... args) throws ValueExprEvaluationException {
+                return vf.createLiteral(converter.fromString(args[0].stringValue(), DateTime.class).getWeekOfWeekyear());
+            }
+        });
+        register(new BaseFunction(QDSL.dayOfWeek, Ops.DateTimeOps.DAY_OF_WEEK) {
+            @Override
+            public Value evaluate(ValueFactory vf, Value... args) throws ValueExprEvaluationException {
+                int dow = converter.fromString(args[0].stringValue(), DateTime.class).getDayOfWeek();
+                return vf.createLiteral(dow == 7 ? 1 : dow + 1);
+            }
+        });
         register(new BaseFunction(QDSL.dayOfMonth, Ops.DateTimeOps.DAY_OF_MONTH) {
             @Override
             public Value evaluate(ValueFactory vf, Value... args) throws ValueExprEvaluationException {
                 return vf.createLiteral(converter.fromString(args[0].stringValue(), DateTime.class).getDayOfMonth());
+            }
+        });
+        register(new BaseFunction(QDSL.dayOfYear, Ops.DateTimeOps.DAY_OF_YEAR) {
+            @Override
+            public Value evaluate(ValueFactory vf, Value... args) throws ValueExprEvaluationException {
+                return vf.createLiteral(converter.fromString(args[0].stringValue(), DateTime.class).getDayOfYear());
             }
         });
         register(new BaseFunction(QDSL.hour, Ops.DateTimeOps.HOUR) {
@@ -233,6 +252,21 @@ public class Functions {
             @Override
             public Value evaluate(ValueFactory vf, Value... args) throws ValueExprEvaluationException {
                 return vf.createLiteral(converter.fromString(args[0].stringValue(), DateTime.class).getSecondOfMinute());
+            }
+        });
+        register(new BaseFunction(QDSL.millisecond, Ops.DateTimeOps.MILLISECOND) {
+            @Override
+            public Value evaluate(ValueFactory vf, Value... args) throws ValueExprEvaluationException {
+                return vf.createLiteral(converter.fromString(args[0].stringValue(), DateTime.class).getMillisOfSecond());
+            }
+        });
+        
+        register(new BaseFunction(QDSL.like, Ops.LIKE){
+            @Override
+            public Value evaluate(ValueFactory vf, Value... args) throws ValueExprEvaluationException {
+                String str = args[0].stringValue();
+                String match = args[0].stringValue().replace("%", ".*").replaceAll("_", ".");
+                return vf.createLiteral(str.matches(match));
             }
         });
     }

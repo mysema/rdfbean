@@ -10,13 +10,13 @@ import java.util.UUID;
 import net.jcip.annotations.Immutable;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.annotations.Entity;
+import com.mysema.query.annotations.QueryEntity;
 
 /**
  * @author sasa
  *
  */
-@Entity
+@QueryEntity
 @Immutable
 public final class BID extends ID {
 

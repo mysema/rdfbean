@@ -11,6 +11,7 @@ import com.mysema.rdfbean.object.SimpleBeanQuery;
  */
 // FIXME
 public abstract class BeanQueryReferenceTest extends BeanQueryStandardTest{
+    
     protected BeanQuery newQuery(){
         return new SimpleBeanQuery(session);
     } 

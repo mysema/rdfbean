@@ -5,11 +5,11 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import java.util.Date;
-
 import org.junit.Test;
 
+import com.mysema.query.Module;
 import com.mysema.query.StandardTest;
+import com.mysema.query.Target;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.Expr;
 
@@ -29,7 +29,7 @@ public class BeanQueryStandardTest extends AbstractSesameQueryTest {
     
     private SimpleType2 other;
     
-    private StandardTest standardTest = new StandardTest(){
+    private StandardTest standardTest = new StandardTest(Module.RDFBEAN, Target.MEM){
         @Override
         public int executeFilter(EBoolean f) {
             if (f.toString().equals("size(v1.mapProperty) > 0") || // map size is not supported
@@ -49,16 +49,16 @@ public class BeanQueryStandardTest extends AbstractSesameQueryTest {
     @Test
     public void test() throws InterruptedException{
         SimpleType st = newQuery().from(v1).uniqueResult(v1);
-        SimpleType2 inMap = st.mapProperty.values().iterator().next();
-        SimpleType2 inList = st.listProperty.iterator().next();
-        SimpleType2 inSet = st.setProperty.iterator().next();
+        SimpleType2 inMap = st.getMapProperty().values().iterator().next();
+        SimpleType2 inList = st.getListProperty().iterator().next();
+        SimpleType2 inSet = st.getSetProperty().iterator().next();
         other = new SimpleType2();        
         session.save(other);
         
         standardTest.booleanTests(v1.directProperty.isNull(), v2.numericProperty.isNotNull());
         standardTest.collectionTests(v1.setProperty, v2.setProperty, inSet, other);
 //        standardTest.dateTests(null, null, null);
-        standardTest.dateTimeTests(v1.dateProperty, v2.dateProperty, new Date());
+        standardTest.dateTimeTests(v1.dateProperty, v2.dateProperty, st.getDateProperty());
         standardTest.listTests(v1.listProperty, v2.listProperty, inList, other);
         standardTest.mapTests(v1.mapProperty, v2.mapProperty, "target_idspace", inMap, "xxx", other);
         standardTest.numericCasts(v1.numericProperty, v2.numericProperty, 1);
