@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mysema.rdf</groupId>
+  <artifactId>rdfbean-tapestry</artifactId>
+  <packaging>jar</packaging>
+  <name>RDFBean - Tapestry</name>
+  
+  <parent>
+    <groupId>com.mysema.rdf</groupId>
+    <artifactId>rdfbean-root</artifactId>
+    <version>0.7.7-SNAPSHOT</version>
+  </parent>  
+  
+  <properties>
+    <tapestry.version>5.1.0.5</tapestry.version>
+  </properties>
+  
+  <dependencies>
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  
+    <dependency>
+      <groupId>org.apache.tapestry</groupId>
+      <artifactId>tapestry-core</artifactId>
+      <version>${tapestry.version}</version>
+      <scope>provided</scope>
+    </dependency>   
+    <dependency>
+      <groupId>org.apache.tapestry</groupId>
+      <artifactId>tapestry-test</artifactId>
+      <version>${tapestry.version}</version>
+      <scope>test</scope>
+    </dependency>   
+    
+  </dependencies>
+  
+</project>
