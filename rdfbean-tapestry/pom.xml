@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
-    <version>0.7.8-SNAPSHOT</version>
+    <version>0.7.9</version>
   </parent>  
   
   <properties>
@@ -21,14 +21,22 @@
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-core</artifactId>
       <version>${project.version}</version>
-    </dependency>
-  
+    </dependency>  
     <dependency>
       <groupId>org.apache.tapestry</groupId>
       <artifactId>tapestry-core</artifactId>
       <version>${tapestry.version}</version>
       <scope>provided</scope>
     </dependency>   
+    
+    <!-- tx annotations -->
+    <dependency>
+      <groupId>com.mysema.spring</groupId>
+      <artifactId>spring-tx-annotations</artifactId>
+      <version>0.1.0</version>
+    </dependency>
+    
+    <!-- test -->
     <dependency>
       <groupId>org.apache.tapestry</groupId>
       <artifactId>tapestry-test</artifactId>
@@ -38,7 +46,7 @@
     
   </dependencies>
   
-    <build>
+  <build>
     <plugins>
       <plugin>
            <groupId>org.apache.maven.plugins</groupId>

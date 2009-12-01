@@ -22,43 +22,43 @@
 <owl:Class rdf:about="#Party">
 	<rdfs:label>Party</rdfs:label>
 </owl:Class>
-<owl:Restriction rdf:nodeID="node1qh8hh7x3">
+<owl:Restriction rdf:nodeID="node-1eu7brex3">
 	<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
 	<owl:onProperty rdf:resource="#displayName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Party">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x3"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex3"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x4">
+<owl:Restriction rdf:nodeID="node-1eu7brex4">
 	<owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:maxCardinality>
 	<owl:onProperty rdf:resource="#displayName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Party">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x4"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex4"/>
 </rdf:Description>
 <rdf:Description rdf:about="#Company">
 	<rdfs:subClassOf rdf:resource="#Party"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x5">
+<owl:Restriction rdf:nodeID="node-1eu7brex5">
 	<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
 	<owl:onProperty rdf:resource="#officialName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Company">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x5"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex5"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x6">
+<owl:Restriction rdf:nodeID="node-1eu7brex6">
 	<owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:maxCardinality>
 	<owl:onProperty rdf:resource="#officialName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Company">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x6"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex6"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x7">
+<owl:Restriction rdf:nodeID="node-1eu7brex7">
 	<owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:minCardinality>
 	<owl:onProperty rdf:resource="#officialName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Company">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x7"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex7"/>
 </rdf:Description>
 <owl:DatatypeProperty rdf:about="#firstName">
 	<rdfs:label>firstName</rdfs:label>
@@ -70,80 +70,80 @@
 	<rdfs:label>Person</rdfs:label>
 	<rdfs:subClassOf rdf:resource="#Party"/>
 </owl:Class>
-<owl:Restriction rdf:nodeID="node1qh8hh7x8">
+<owl:Restriction rdf:nodeID="node-1eu7brex8">
 	<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
 	<owl:onProperty rdf:resource="#firstName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x8"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex8"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x9">
+<owl:Restriction rdf:nodeID="node-1eu7brex9">
 	<owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:maxCardinality>
 	<owl:onProperty rdf:resource="#firstName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x9"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex9"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x10">
+<owl:Restriction rdf:nodeID="node-1eu7brex10">
 	<owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:minCardinality>
 	<owl:onProperty rdf:resource="#firstName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x10"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex10"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x11">
+<owl:Restriction rdf:nodeID="node-1eu7brex11">
 	<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
 	<owl:onProperty rdf:resource="#lastName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x11"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex11"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x12">
+<owl:Restriction rdf:nodeID="node-1eu7brex12">
 	<owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:maxCardinality>
 	<owl:onProperty rdf:resource="#lastName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x12"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex12"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x13">
+<owl:Restriction rdf:nodeID="node-1eu7brex13">
 	<owl:minCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:minCardinality>
 	<owl:onProperty rdf:resource="#lastName"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x13"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex13"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x14">
+<owl:Restriction rdf:nodeID="node-1eu7brex14">
 	<owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
 	<owl:onProperty rdf:resource="#age"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x14"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex14"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x15">
+<owl:Restriction rdf:nodeID="node-1eu7brex15">
 	<owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:maxCardinality>
 	<owl:onProperty rdf:resource="#age"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x15"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex15"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x16">
+<owl:Restriction rdf:nodeID="node-1eu7brex16">
 	<owl:allValuesFrom rdf:resource="#Company"/>
 </owl:Restriction>
 <owl:ObjectProperty rdf:about="#company">
 	<rdfs:label>company</rdfs:label>
 </owl:ObjectProperty>
-<rdf:Description rdf:nodeID="node1qh8hh7x16">
+<rdf:Description rdf:nodeID="node-1eu7brex16">
 	<owl:onProperty rdf:resource="#company"/>
 </rdf:Description>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x16"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex16"/>
 </rdf:Description>
-<owl:Restriction rdf:nodeID="node1qh8hh7x17">
+<owl:Restriction rdf:nodeID="node-1eu7brex17">
 	<owl:maxCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</owl:maxCardinality>
 	<owl:onProperty rdf:resource="#company"/>
 </owl:Restriction>
 <rdf:Description rdf:about="#Person">
-	<rdfs:subClassOf rdf:nodeID="node1qh8hh7x17"/>
+	<rdfs:subClassOf rdf:nodeID="node-1eu7brex17"/>
 </rdf:Description>
 
 </rdf:RDF>

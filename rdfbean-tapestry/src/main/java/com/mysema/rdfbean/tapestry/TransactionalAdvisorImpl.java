@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import org.apache.tapestry5.ioc.Invocation;
 import org.apache.tapestry5.ioc.MethodAdvice;
 import org.apache.tapestry5.ioc.MethodAdviceReceiver;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
@@ -97,9 +98,6 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
         sessionFactory.setSessionContext(sessionContext);
     }
 
-    /* (non-Javadoc)
-     * @see com.mysema.rdfbean.tapestry.TransactionalAdvisor#addTransactionCommitAdvice(org.apache.tapestry5.ioc.MethodAdviceReceiver)
-     */
     @SuppressWarnings("unchecked")
     public void addTransactionCommitAdvice(MethodAdviceReceiver receiver) {
         if (receiver.getInterface().getAnnotation(Transactional.class) != null){
