@@ -23,6 +23,13 @@ public class ListQueriesTest extends AbstractSesameQueryTest{
     private ENumber<Integer> size = var.listProperty.size();
     
     @Test
+    public void in(){
+        where(var.listProperty.contains(var.listProperty(0))).count();
+        where(var.listProperty.contains(var.listProperty(0)),
+              var.listProperty.isNotEmpty()).count();
+    }
+    
+    @Test
     @Ignore
     public void inList(){
         // TODO

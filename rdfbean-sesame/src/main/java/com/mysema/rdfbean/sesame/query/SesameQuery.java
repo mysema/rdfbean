@@ -111,11 +111,11 @@ public class SesameQuery extends
             Operations sesameOps,
             boolean datatypeInference) {
         super(dialect, session);
-        this.connection = Assert.notNull(connection);
+        this.connection = Assert.notNull(connection, "connection was null");
         this.conf = session.getConfiguration();
         this.datatypeInference = datatypeInference;
         this.patternScope = patternScope;
-        this.sesameOps = Assert.notNull(sesameOps);
+        this.sesameOps = Assert.notNull(sesameOps, "sesameOps was null");
         this.joinBuilder = new JoinBuilder(dialect, datatypeInference);
     }
     
@@ -202,7 +202,10 @@ public class SesameQuery extends
     }
     
     private StatementPattern createPattern(Var s, UID p, Var o){
-        return new StatementPattern(patternScope, Assert.notNull(s), toVar(Assert.notNull(p)), Assert.notNull(o));
+        return new StatementPattern(patternScope, 
+                Assert.notNull(s, "subject is null"), 
+                toVar(Assert.notNull(p, "predicate is null")), 
+                Assert.notNull(o, "object is null"));
     }
         
     @Override
@@ -517,7 +520,11 @@ public class SesameQuery extends
                 }else{
                     value = toValue(arg);    
                 }
-                values.add(Assert.notNull(value));
+                
+                if (op != Ops.AND && op != Ops.OR){
+                    Assert.notNull(value, arg + " resolved to null");
+                }
+                values.add(value);
             }    
             return transformer.transform(values);
         } else {
