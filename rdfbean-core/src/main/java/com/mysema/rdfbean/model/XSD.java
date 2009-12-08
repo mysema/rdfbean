@@ -5,6 +5,9 @@
  */
 package com.mysema.rdfbean.model;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 
 /**
  * @author sasa
@@ -32,6 +35,27 @@ public final class XSD {
     public static final UID shortType = new UID(NS, "short");
     public static final UID stringType = new UID(NS, "string");
     public static final UID time = new UID(NS, "time");    
+    
+    public static final Collection<UID> allTypes = Arrays.asList(
+            anyURI,
+            booleanType,
+            byteType,
+            date,
+            dateTime,
+            decimalType,
+            duration,
+            floatType,
+            gDay,
+            gMonth,
+            gMonthDay,
+            gYear,
+            gYearMonth,
+            integerType,
+            intType,
+            longType,
+            shortType,
+            stringType,
+            time);
     
     private XSD() {}
 }

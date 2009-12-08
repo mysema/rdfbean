@@ -20,6 +20,7 @@ import org.joda.time.format.ISODateTimeFormat;
 public class LocalTimeConverter implements Converter<LocalTime> {
 
     private final DateTimeFormatter fromStringFmt = ISODateTimeFormat.timeParser().withZone(DateTimeZone.getDefault());
+    
     private final DateTimeFormatter toStringFmt = ISODateTimeFormat.timeNoMillis();
         
     @Override

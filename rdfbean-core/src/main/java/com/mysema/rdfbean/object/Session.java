@@ -243,6 +243,9 @@ public interface Session extends ObjectRepository, Closeable {
      */
     void setFlushMode(FlushMode flushMode);
 
+    /**
+     * @return
+     */
     Locale getCurrentLocale();
 
 }

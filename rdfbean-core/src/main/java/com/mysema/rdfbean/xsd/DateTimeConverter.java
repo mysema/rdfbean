@@ -19,17 +19,26 @@ import org.joda.time.format.ISODateTimeFormat;
  */
 public class DateTimeConverter implements Converter<DateTime> {
 
-    private final DateTimeFormatter fromStringFmt = ISODateTimeFormat.dateTimeNoMillis();
-    private final DateTimeFormatter toStringFmt = ISODateTimeFormat.dateTimeNoMillis();
+    private static final DateTimeFormatter DEFAULT_FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
+    
+    private final DateTimeFormatter formatter;
+    
+    public DateTimeConverter(DateTimeFormatter formatter){
+        this.formatter = formatter;
+    }
+    
+    public DateTimeConverter(){
+        this(DEFAULT_FORMATTER);
+    }
         
     @Override
     public DateTime fromString(String str) {
-        return fromStringFmt.parseDateTime(str);
+        return formatter.parseDateTime(str);
     }
 
     @Override
     public String toString(DateTime object) {
-        return toStringFmt.print(object);
+        return formatter.print(object);
     }
 
 }

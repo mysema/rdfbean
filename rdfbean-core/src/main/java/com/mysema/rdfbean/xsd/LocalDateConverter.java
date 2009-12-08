@@ -21,6 +21,7 @@ import org.joda.time.format.ISODateTimeFormat;
 public class LocalDateConverter implements Converter<LocalDate> {
 
     private final DateTimeFormatter fromStringFmt = ISODateTimeFormat.dateTimeParser().withZone(DateTimeZone.getDefault());
+    
     private final DateTimeFormatter toStringFmt = DateTimeFormat.forPattern("yyyy-MM-ddZ").withZone(DateTimeZone.getDefault());
     
     @Override

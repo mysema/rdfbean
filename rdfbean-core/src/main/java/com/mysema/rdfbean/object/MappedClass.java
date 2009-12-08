@@ -27,45 +27,45 @@ public class MappedClass {
             .synchronizedMap(new LinkedHashMap<Class<?>, MappedClass>());
 
     private static void assignConstructor(Class<?> clazz, MappedClass mappedClass) {
-    	Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-    	if (constructors.length == 0) {
-    	    return;
-    	}
-    	MappedConstructor defaultConstructor = null;
-    	MappedConstructor mappedConstructor = null;
-    	nextConstructor:
-    	for (Constructor<?> constructor : constructors) {
-    		if (constructor.getParameterTypes().length == 0) {
-    			defaultConstructor = new MappedConstructor(constructor);
-    		} else {
-    			List<MappedPath> mappedArguments = new ArrayList<MappedPath>();
-    			for (int i=0; i < constructor.getParameterTypes().length; i++) {
-					MappedPath mappedPath = MappedPath.getPathMapping(mappedClass, constructor, i);
-					if (mappedPath != null) {
-						mappedArguments.add(mappedPath);
-					} else if (mappedArguments.size() > 0) {
-						throw new IllegalArgumentException("Constructor has unmapped parameters: " + constructor);
-					} else {
-						continue nextConstructor;
-					}
-    			}
-    			if (!mappedArguments.isEmpty()) {
-    				if (mappedConstructor != null) {
-    					throw new IllegalArgumentException("Ambiguous mapped constructor: " + constructor);
-    				} else {
-    					mappedConstructor = new MappedConstructor(constructor, mappedArguments);
-    				}
-    			}
-    		}
-    	}
-    	if (mappedConstructor != null) {
-    		mappedClass.setMappedConstructor(mappedConstructor);
-    	} else if (defaultConstructor != null) {
-    		mappedClass.setMappedConstructor(defaultConstructor);
-    	} else {
-    	    // TODO return false? 
-    	}
-	}
+        Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+        if (constructors.length == 0) {
+            return;
+        }
+        MappedConstructor defaultConstructor = null;
+        MappedConstructor mappedConstructor = null;
+        nextConstructor:
+        for (Constructor<?> constructor : constructors) {
+            if (constructor.getParameterTypes().length == 0) {
+                defaultConstructor = new MappedConstructor(constructor);
+            } else {
+                List<MappedPath> mappedArguments = new ArrayList<MappedPath>();
+                for (int i=0; i < constructor.getParameterTypes().length; i++) {
+                    MappedPath mappedPath = MappedPath.getPathMapping(mappedClass, constructor, i);
+                    if (mappedPath != null) {
+                        mappedArguments.add(mappedPath);
+                    } else if (mappedArguments.size() > 0) {
+                        throw new IllegalArgumentException("Constructor has unmapped parameters: " + constructor);
+                    } else {
+                        continue nextConstructor;
+                    }
+                }
+                if (!mappedArguments.isEmpty()) {
+                    if (mappedConstructor != null) {
+                        throw new IllegalArgumentException("Ambiguous mapped constructor: " + constructor);
+                    } else {
+                        mappedConstructor = new MappedConstructor(constructor, mappedArguments);
+                    }
+                }
+            }
+        }
+        if (mappedConstructor != null) {
+            mappedClass.setMappedConstructor(mappedConstructor);
+        } else if (defaultConstructor != null) {
+            mappedClass.setMappedConstructor(defaultConstructor);
+        } else {
+            // TODO return false? 
+        }
+    }
 
     private static void collectFieldPaths(Class<?> clazz, MappedClass mappedClass) {
         if (!clazz.isInterface()) {
@@ -101,12 +101,12 @@ public class MappedClass {
     }
     
     public String getClassNs() {
-    	return getClassNs(clazz);
+        return getClassNs(clazz);
     }
     
     @Nullable
     public static UID getUID(Class<?> clazz) {
-    	ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
+        ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
         if (cmap != null) {
             if (StringUtils.isNotEmpty(cmap.ln())) {
                 return new UID(cmap.ns(), cmap.ln());
@@ -233,16 +233,16 @@ public class MappedClass {
         }
     }
     
-	private void close() {
-	    MappedPath[] paths = properties.values().toArray(new MappedPath[properties.size()]);
-	    // Sort properties into bind order
-	    Arrays.sort(paths, new Comparator<MappedPath>() {
+    private void close() {
+        MappedPath[] paths = properties.values().toArray(new MappedPath[properties.size()]);
+        // Sort properties into bind order
+        Arrays.sort(paths, new Comparator<MappedPath>() {
             @Override
             public int compare(MappedPath o1, MappedPath o2) {
                 return o1.getOrder() - o2.getOrder();
             }
         });
-	    // Rebuild properties map using bind ordering
+        // Rebuild properties map using bind ordering
         properties = new LinkedHashMap<String, MappedPath>();
         for (MappedPath path : paths) {
             properties.put(path.getName(), path);
@@ -252,8 +252,8 @@ public class MappedClass {
     }
     
     public MappedConstructor getConstructor() {
-		return constructor;
-	}
+        return constructor;
+    }
 
     public MappedProperty<?> getIdProperty() {
         return idProperty;
@@ -299,15 +299,15 @@ public class MappedClass {
     }
 
     private void setMappedConstructor(MappedConstructor constructor) {
-		if (constructor == null && !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
-			throw new IllegalArgumentException("Default or mapped constructor required for " + clazz);
-		} else {
-			this.constructor = constructor;
-		}
+        if (constructor == null && !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
+            throw new IllegalArgumentException("Default or mapped constructor required for " + clazz);
+        } else {
+            this.constructor = constructor;
+        }
     }
     
     public String toString() {
-    	return clazz.toString();
+        return clazz.toString();
     }
 
     public boolean isEnum() {

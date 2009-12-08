@@ -11,7 +11,7 @@ import java.util.List;
 import com.mysema.rdfbean.model.UID;
 
 /**
- * EnumModel provides
+ * EnumType provides
  *
  * @author tiwe
  * @version $Id$

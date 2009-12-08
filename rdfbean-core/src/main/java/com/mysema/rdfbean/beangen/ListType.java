@@ -5,7 +5,7 @@ import java.util.List;
 import com.mysema.rdfbean.model.UID;
 
 /**
- * SetType provides
+ * ListType provides
  *
  * @author tiwe
  * @version $Id$

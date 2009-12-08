@@ -26,13 +26,16 @@
   </licenses>  
   
   <modules>
+    <!-- core modules -->
     <module>../rdfbean-core</module>
     <module>../rdfbean-spring</module>
     <module>../rdfbean-sesame</module>
-    
-    <module>../rdfbean-guice</module>
-    <module>../rdfbean-tapestry</module>
     <module>../rdfbean-maven-plugin</module>
+    <module>../rdfbean-lucene</module>
+    
+    <!-- various support modules -->
+    <module>../rdfbean-guice</module>
+    <module>../rdfbean-tapestry</module>    
     <module>../rdfbean-demo</module>
 <!--         
     <module>../rdfbean-docs</module>

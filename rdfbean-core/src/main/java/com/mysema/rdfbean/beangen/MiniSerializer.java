@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * DefaultSerializer provides
+ * MiniSerializer provides
  *
  * @author tiwe
  * @version $Id$

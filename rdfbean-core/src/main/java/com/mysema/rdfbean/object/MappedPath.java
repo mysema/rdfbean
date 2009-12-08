@@ -36,7 +36,7 @@ public class MappedPath {
             if (property.isAnnotatedProperty()) {
                 return new MappedPath(property, Collections.<MappedPredicate>emptyList(), false);
             } else {
-            	return null;
+                return null;
             }
         }
     }
@@ -48,13 +48,13 @@ public class MappedPath {
     }
 
     static MappedPath getPathMapping(MappedClass mappedClass, Constructor<?> constructor, int parameterIndex) {
-    	ConstructorParameter constructorParameter = new ConstructorParameter(constructor, parameterIndex, mappedClass);
-    	if (constructorParameter.isPropertyReference()) {
-    		return mappedClass.getMappedPath(constructorParameter.getReferencedProperty());
-    	} else {
-	        List<MappedPredicate> path = getPredicatePath(mappedClass.getClassNs(), constructorParameter);
-	        return getMappedPath(constructorParameter, path);
-    	}
+        ConstructorParameter constructorParameter = new ConstructorParameter(constructor, parameterIndex, mappedClass);
+        if (constructorParameter.isPropertyReference()) {
+            return mappedClass.getMappedPath(constructorParameter.getReferencedProperty());
+        } else {
+            List<MappedPredicate> path = getPredicatePath(mappedClass.getClassNs(), constructorParameter);
+            return getMappedPath(constructorParameter, path);
+        }
     }
     
     @Nullable
@@ -134,13 +134,13 @@ public class MappedPath {
         return predicatePath.get(i);
     }
 
-	public MappedProperty<?> getMappedProperty() {
+    public MappedProperty<?> getMappedProperty() {
         return mappedProperty;
     }
-	
-	public String getName() {
-	    return mappedProperty.getName();
-	}
+    
+    public String getName() {
+        return mappedProperty.getName();
+    }
 
     public List<MappedPredicate> getPredicatePath() {
         return predicatePath;
@@ -151,33 +151,33 @@ public class MappedPath {
     }
 
     public boolean isConstructorParameter() {
-		return constructorArgument;
-	}
+        return constructorArgument;
+    }
     
     public boolean isIgnoreInvalid() {
         return ignoreInvalid;
     }
 
     public boolean isWildcard() {
-    	return isWildcard(mappedProperty.getType());
+        return isWildcard(mappedProperty.getType());
     }
     
     public static boolean isWildcard(Class<?> type) {
-    	return type == null || Object.class.equals(type);
+        return type == null || Object.class.equals(type);
     }
     
     public boolean isClassReference() {
-    	return mappedProperty.isClassReference();
+        return mappedProperty.isClassReference();
     }
     
     public boolean isReference() {
-    	return isMappedClass(mappedProperty.getTargetType()) 
-    	    || mappedProperty.isURI()
-    	    || mappedProperty.isInjection();
+        return isMappedClass(mappedProperty.getTargetType()) 
+            || mappedProperty.isURI()
+            || mappedProperty.isInjection();
     }
 
     public static boolean isMappedClass(Class<?> type) {
-    	return type != null && type.isAnnotationPresent(ClassMapping.class);
+        return type != null && type.isAnnotationPresent(ClassMapping.class);
     }
     
     public boolean isInverse(int index) {
@@ -190,11 +190,11 @@ public class MappedPath {
     }
 
     void setConstructorArgument(boolean constructorArgument) {
-		this.constructorArgument = constructorArgument;
-	}
+        this.constructorArgument = constructorArgument;
+    }
 
-	
-	void merge(MappedPath other) {
+    
+    void merge(MappedPath other) {
         mappedProperty.addAnnotations(other.mappedProperty);
         if (other.predicatePath != null && !other.predicatePath.isEmpty()) {
             if (this.predicatePath != null && !this.predicatePath.isEmpty()) {
@@ -204,13 +204,13 @@ public class MappedPath {
             this.predicatePath = other.predicatePath;
         }
         this.inherited = this.inherited || other.inherited;
-	}
-	
+    }
+    
     public int size() {
         return predicatePath.size();
     }
 
-	public String toString() {
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(mappedProperty.toString());
         sb.append(" {");
@@ -229,27 +229,27 @@ public class MappedPath {
         return sb.toString();
     }
 
-	public void validate() {
-    	Assert.notNull(mappedProperty);
-    	mappedProperty.validate(this);
-	}
+    public void validate() {
+        Assert.notNull(mappedProperty);
+        mappedProperty.validate(this);
+    }
 
-	public int getOrder() {
-		if (isSimpleProperty()) {
-			if (!isReference()) {
-				return 1;
-			} else {
-				return 2;
-			}
-		} else if (size() == 1) {
-			return 3;
-		} else {
-			return 4;
-		}
-	}
+    public int getOrder() {
+        if (isSimpleProperty()) {
+            if (!isReference()) {
+                return 1;
+            } else {
+                return 2;
+            }
+        } else if (size() == 1) {
+            return 3;
+        } else {
+            return 4;
+        }
+    }
 
-	public boolean isInherited() {
-		return inherited;
-	}
+    public boolean isInherited() {
+        return inherited;
+    }
 
 }
