@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mysema.rdf</groupId>
+  <artifactId>rdfbean-search</artifactId>
+  <packaging>jar</packaging>
+  <name>RDFBean - Search</name>
+
+  <parent>
+    <groupId>com.mysema.rdf</groupId>
+    <artifactId>rdfbean-root</artifactId>
+    <version>0.7.9-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <luceneVersion>3.0.0</luceneVersion>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>${luceneVersion}</version>
+    </dependency>
+    
+    <!-- test deps -->
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-core</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>    
+<!-- 
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-sesame</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>    
+ -->
+  </dependencies>
+  
+  <build>
+    <plugins>
+       <plugin>
+        <groupId>com.mysema.maven</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <version>0.3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-process</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/generated-test-sources/java</outputDirectory>
+              <processor>com.mysema.rdfbean.query.BeanAnnotationProcessor</processor>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>  
+    </plugins>
+  </build>  
+ 
+</project>
