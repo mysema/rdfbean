@@ -5,6 +5,9 @@
  */
 package com.mysema.rdfbean.owl;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import com.mysema.rdfbean.model.UID;
 
 /**
@@ -94,6 +97,46 @@ public final class OWL {
     public static final UID complementOf = new UID(NS, "complementOf");
     
     public static final UID Thing = new UID(NS, "Thing");
+    
+    public static final Collection<UID> all = Arrays.asList(
+            AllDifferent,
+            allValuesFrom,
+            AnnotationProperty,
+            backwardCompatibleWith,
+            cardinality,
+            Class,
+            complementOf,
+            DatatypeProperty,
+            DeprecatedClass,
+            DeprecatedProperty,
+            differentFrom,
+            disjointWith,
+            distinctMembers,
+            equivalentClass,
+            equivalentProperty,
+            FunctionalProperty,
+            hasValue,
+            imports,
+            incompatibleWith,
+            Individual,
+            intersectionOf,
+            InverseFunctionalProperty,
+            inverseOf,
+            maxCardinality,
+            minCardinality,
+            ObjectProperty,
+            oneOf,
+            onProperty,
+            Ontology,
+            OntologyProperty,
+            priorVersion,
+            Restriction,
+            sameAs,
+            someValuesFrom,
+            SymmetricProperty,
+            Thing,
+            TransitiveProperty
+    );
 
     private OWL() {
     }
