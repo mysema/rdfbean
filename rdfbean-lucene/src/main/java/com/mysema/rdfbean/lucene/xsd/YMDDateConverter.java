@@ -14,7 +14,7 @@ import com.mysema.rdfbean.xsd.DateConverter;
 
 
 /**
- * LuceneDateConverter provides
+ * YMDDateConverter provides
  *
  * @author tiwe
  * @version $Id$

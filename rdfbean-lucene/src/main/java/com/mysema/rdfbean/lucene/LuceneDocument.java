@@ -26,16 +26,16 @@ import com.mysema.rdfbean.model.STMT;
  */
 class LuceneDocument {
     
-    private final NodeConverter nodeConverter;
+    private final LuceneConfiguration conf;
     
     private final Document document;
     
-    public LuceneDocument(NodeConverter nodeConverter){
-        this(nodeConverter, new Document());
+    public LuceneDocument(LuceneConfiguration conf){
+        this(conf, new Document());
     }
     
-    public LuceneDocument(NodeConverter nodeConverter, Document document){
-        this.nodeConverter = Assert.notNull(nodeConverter);
+    public LuceneDocument(LuceneConfiguration conf, Document document){
+        this.conf = Assert.notNull(conf);
         this.document = Assert.notNull(document);
     }
     
@@ -44,7 +44,9 @@ class LuceneDocument {
     }
 
     public void addContext(String context) {
-        document.add(new Field(CONTEXT_FIELD_NAME, context, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        if (conf.isContextsStored()){
+            document.add(new Field(CONTEXT_FIELD_NAME, context, Field.Store.YES, Field.Index.NOT_ANALYZED));    
+        }        
     }
 
     public void addId(String id) {
@@ -53,11 +55,15 @@ class LuceneDocument {
 
     public void addProperty(STMT statement) {
         String predicateField = statement.getPredicate().getValue();
-        String object = nodeConverter.toString(statement.getObject());
-        document.add(new Field(predicateField, object, Field.Store.YES, Field.Index.ANALYZED));
-        if (statement.getObject().isLiteral()){
+        String object = conf.getConverter().toString(statement.getObject());
+        
+        if (conf.isStored()){
+            document.add(new Field(predicateField, object, Field.Store.YES, Field.Index.NOT_ANALYZED));    
+        }        
+        
+        if (conf.isFullTextIndexed() && statement.getObject().isLiteral()){
             String text = statement.getObject().getValue();
-            document.add(new Field(TEXT_FIELD_NAME, text, Field.Store.YES, Field.Index.ANALYZED));    
+            document.add(new Field(TEXT_FIELD_NAME, text, Field.Store.NO, Field.Index.ANALYZED));   
         }        
     }
 

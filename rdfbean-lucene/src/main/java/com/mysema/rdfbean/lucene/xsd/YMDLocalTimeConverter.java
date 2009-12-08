@@ -12,7 +12,7 @@ import org.joda.time.format.DateTimeFormatter;
 import com.mysema.rdfbean.xsd.Converter;
 
 /**
- * LuceneLocalDateConverter provides
+ * YMDLocalTimeConverter provides
  *
  * @author tiwe
  * @version $Id$

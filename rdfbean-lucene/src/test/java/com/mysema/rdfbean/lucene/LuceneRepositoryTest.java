@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -56,8 +56,9 @@ public class LuceneRepositoryTest {
     
     @Before
     public void setUp(){
-        luceneRepository = new LuceneRepository();
-        luceneRepository.setDirectory(new RAMDirectory());
+        LuceneConfiguration configuration = new LuceneConfiguration();
+        configuration.setDirectory(new RAMDirectory());
+        luceneRepository = new LuceneRepository(configuration);
     }
     
     @Test

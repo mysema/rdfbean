@@ -13,7 +13,7 @@ import com.mysema.rdfbean.xsd.CalendarConverter;
 import com.mysema.rdfbean.xsd.Converter;
 
 /**
- * LuceneCalendarConverter provides
+ * YMDCalendarConverter provides
  *
  * @author tiwe
  * @version $Id$

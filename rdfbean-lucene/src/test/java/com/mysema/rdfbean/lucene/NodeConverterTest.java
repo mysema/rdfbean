@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.lucene;
 
 import static org.junit.Assert.assertEquals;
@@ -11,8 +16,10 @@ import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.owl.OWL;
 
 
 /**
@@ -38,6 +45,8 @@ public class NodeConverterTest {
                 new UID("http://www.test.com"),
                 XSD.stringType,
                 RDF.Property,
+                RDFS.comment,
+                OWL.allValuesFrom,
                 new BID("nodeA"),
                 new BID()
         );

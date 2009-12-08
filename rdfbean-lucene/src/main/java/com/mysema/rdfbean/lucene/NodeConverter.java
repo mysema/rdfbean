@@ -12,8 +12,11 @@ import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.xsd.Converter;
 
 /**
@@ -44,12 +47,16 @@ public class NodeConverter implements Converter<NODE>{
     
     private final Map<String,UID> strToUid = new HashMap<String,UID>();
     
-    public NodeConverter(){
-        for (UID uid : XSD.allTypes){
-            String str = "xsd:" + uid.getLocalName();
-            uidToStr.put(uid, str);
-            strToUid.put(str, uid);
-        }
+    protected NodeConverter(){
+        for (UID uid : XSD.all) register(uid, "xsd:" + uid.getLocalName());
+        for (UID uid : RDF.all) register(uid, "rdf:" + uid.getLocalName());
+        for (UID uid : RDFS.all) register(uid, "rdfs:" + uid.getLocalName());
+        for (UID uid : OWL.all) register(uid, "owl:" + uid.getLocalName());
+    }
+    
+    private void register(UID uid, String str){
+        uidToStr.put(uid, str);
+        strToUid.put(str, uid);
     }
 
     @Override

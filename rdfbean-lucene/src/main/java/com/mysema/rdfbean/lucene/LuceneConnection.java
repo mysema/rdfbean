@@ -49,14 +49,14 @@ public class LuceneConnection implements RDFConnection{
     
     private static final Logger logger = LoggerFactory.getLogger(LuceneConnection.class);
     
-    private final NodeConverter nodeConverter;
+    private final LuceneConfiguration conf;
     
     private final IndexSearcher searcher;
     
     private final IndexWriter writer;
     
-    public LuceneConnection(NodeConverter nodeConverter, IndexWriter writer, IndexSearcher searcher) {
-        this.nodeConverter = Assert.notNull(nodeConverter);
+    public LuceneConnection(LuceneConfiguration configuration, IndexWriter writer, IndexSearcher searcher) {
+        this.conf = Assert.notNull(configuration);
         this.writer = Assert.notNull(writer);
         this.searcher = Assert.notNull(searcher);
     }
@@ -93,6 +93,32 @@ public class LuceneConnection implements RDFConnection{
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, boolean includeInferred) {
+        if (subject != null || predicate != null || object != null || context != null){
+            BooleanQueryBuilder query = new BooleanQueryBuilder();
+            if (subject != null){
+                query.and(new Term(Constants.ID_FIELD_NAME, getID(subject)));
+            }   
+            if (predicate != null){
+                if (object != null){
+                    query.and(new Term(predicate.getValue(), conf.getConverter().toString(object)));
+                }else{
+                    
+                }
+            }else if (object != null){
+                
+            }
+            
+            if (context != null){
+                query.and(new Term(Constants.CONTEXT_FIELD_NAME, getContextID(context)));
+            }
+            
+            
+            
+        }else{
+            // wildcard
+        }
+        
+        
         // TODO : lucene find
         return null;
     }
@@ -104,7 +130,7 @@ public class LuceneConnection implements RDFConnection{
     private LuceneDocument getDocument(Term term) throws IOException {
         TopDocs docs = searcher.search(new TermQuery(term), 1);
         if (docs.scoreDocs.length > 0){
-            return new LuceneDocument(nodeConverter, searcher.doc(docs.scoreDocs[0].doc));
+            return new LuceneDocument(conf, searcher.doc(docs.scoreDocs[0].doc));
         }else{
             return null;
         }
@@ -136,19 +162,23 @@ public class LuceneConnection implements RDFConnection{
 
             if (document == null) {
                 // there is no such Document: create one now
-                document = new LuceneDocument(nodeConverter);
+                document = new LuceneDocument(conf);
                 document.addId(id);
                 // add all statements, remember the contexts
                 HashSet<ID> contextsToAdd = new HashSet<ID>();
                 List<STMT> list = rsAdded.get(resource);
-                if (list != null)
+                if (list != null){
                     for (STMT s : list) {
                         document.addProperty(s);
                         contextsToAdd.add(s.getContext());
                     }
-                // add all contexts
-                for (ID c : contextsToAdd) {
-                    document.addContext(getContextID(c));
+                }
+                    
+                if (conf.isContextsStored()){
+                    // add all contexts
+                    for (ID c : contextsToAdd) {
+                        document.addContext(getContextID(c));
+                    }                    
                 }
                 
                 // add it to the index
@@ -164,10 +194,9 @@ public class LuceneConnection implements RDFConnection{
                 // update the Document
 
                 // create a copy of the old document; updating the retrieved
-                // Document instance works ok for stored properties but indexed
-                // data
+                // Document instance works ok for stored properties but indexed data
                 // gets lots when doing an IndexWriter.updateDocument with it
-                LuceneDocument newDocument = new LuceneDocument(nodeConverter);
+                LuceneDocument newDocument = new LuceneDocument(conf);
 
                 // buffer the removed literal statements
                 ListMap<String, String> removedOfResource = null;
@@ -177,7 +206,7 @@ public class LuceneConnection implements RDFConnection{
                         removedOfResource = new ListMap<String, String>();
                         for (STMT r : removedStatements) {
                             removedOfResource.put(r.getPredicate().getValue(), 
-                                    nodeConverter.toString(r.getObject()));
+                                    conf.getConverter().toString(r.getObject()));
                         }
                     }
                 }
