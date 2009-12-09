@@ -5,10 +5,14 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.util.Version;
+import static org.compass.core.mapping.rsem.builder.RSEM.id;
+import static org.compass.core.mapping.rsem.builder.RSEM.property;
+import static org.compass.core.mapping.rsem.builder.RSEM.resource;
+
+import org.compass.core.Property.Index;
+import org.compass.core.Property.Store;
+import org.compass.core.config.CompassConfiguration;
+
 
 /**
  * LuceneConfiguration provides
@@ -17,14 +21,12 @@ import org.apache.lucene.util.Version;
  * @version $Id$
  */
 public class LuceneConfiguration {
-    
-    private static final Analyzer DEFAULT_ANALYZER = new StandardAnalyzer(Version.LUCENE_30);
-    
+
     private NodeConverter converter = NodeConverter.DEFAULT;
     
-    private Analyzer analyzer = DEFAULT_ANALYZER;
+    private CompassConfiguration compassConfig;
     
-    private Directory directory;
+    private boolean allIndexed = true;
     
     private boolean fullTextIndexed = true;
     
@@ -48,22 +50,6 @@ public class LuceneConfiguration {
         this.stored = stored;
     }
 
-    public Analyzer getAnalyzer() {
-        return analyzer;
-    }
-
-    public void setAnalyzer(Analyzer analyzer) {
-        this.analyzer = analyzer;
-    }
-
-    public Directory getDirectory() {
-        return directory;
-    }
-
-    public void setDirectory(Directory directory) {
-        this.directory = directory;
-    }
-
     public boolean isFullTextIndexed() {
         return fullTextIndexed;
     }
@@ -79,7 +65,37 @@ public class LuceneConfiguration {
     public void setContextsStored(boolean contextsStored) {
         this.contextsStored = contextsStored;
     }
-    
-    
+
+    public CompassConfiguration getCompassConfig() {
+        return compassConfig;
+    }
+
+    public void setCompassConfig(CompassConfiguration compassConfig) {
+        this.compassConfig = compassConfig;
+    }
+
+    public boolean isAllIndexed() {
+        return allIndexed;
+    }
+
+    public void setAllIndexed(boolean allIndexed) {
+        this.allIndexed = allIndexed;
+    }
+
+    public void initialize() {
+        // mapping for general resources        
+        compassConfig.addMapping(
+                resource("resource")
+                    // if field
+                    .add(id(Constants.ID_FIELD_NAME))
+                    // context data
+                    .add(property(Constants.CONTEXT_FIELD_NAME).store(Store.YES).index(Index.NOT_ANALYZED))
+                    // all field for Object data
+                    .add(property(Constants.ALL_FIELD_NAME).store(Store.NO).index(Index.NOT_ANALYZED))
+                    // full text for String literals
+                    .add(property(Constants.TEXT_FIELD_NAME).store(Store.NO).index(Index.ANALYZED)));
+        
+        // TODO : rdf:type
+    }
     
 }

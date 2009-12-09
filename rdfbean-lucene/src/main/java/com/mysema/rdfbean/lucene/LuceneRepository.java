@@ -5,12 +5,8 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import java.io.IOException;
-
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.compass.core.Compass;
+import org.compass.core.CompassSession;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.Repository;
@@ -23,9 +19,11 @@ import com.mysema.rdfbean.model.Repository;
  */
 public class LuceneRepository implements Repository{
 
-    private static final Logger logger = LoggerFactory.getLogger(LuceneRepository.class);
+//    private static final Logger logger = LoggerFactory.getLogger(LuceneRepository.class);
     
     private LuceneConfiguration configuration;
+    
+    private Compass compass;
     
     public LuceneRepository(){}
     
@@ -34,35 +32,34 @@ public class LuceneRepository implements Repository{
     }
     
     @Override
-    public void close() {        
-        try {
-            configuration.getDirectory().close();
-        } catch (IOException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        }        
+    public void close() {
+        if (compass != null){
+            compass.close();    
+        }else{
+            throw new IllegalStateException("Compass has not yet been initialized!");
+        }
     }
 
     @Override
     public void initialize() {
-        // TODO        
+        if (compass == null){
+            Assert.notNull(configuration, "configuration has not been set");
+            configuration.initialize();
+            compass = configuration.getCompassConfig().buildCompass();    
+        }else{
+            throw new IllegalStateException("Compass has already been initialized!");
+        }                
     }
 
     @Override
     public LuceneConnection openConnection() {
-        try {
-            IndexWriter writer = new IndexWriter(
-                    configuration.getDirectory(), 
-                    configuration.getAnalyzer(),
-                    IndexWriter.MaxFieldLength.UNLIMITED);
-            IndexSearcher searcher = new IndexSearcher(configuration.getDirectory());
-            return new LuceneConnection(configuration, writer, searcher);
-        } catch (Exception e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
+        if (compass != null){
+            CompassSession compassSession = compass.openSession();
+            return new LuceneConnection(configuration, compass, compassSession);    
+        }else{
+            throw new IllegalStateException("Compass has not yet been initialized!");
         }
+        
     }
 
     public void setConfiguration(LuceneConfiguration configuration) {

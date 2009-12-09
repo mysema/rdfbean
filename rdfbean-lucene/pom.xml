@@ -15,7 +15,8 @@
   </parent>
 
   <properties>
-    <luceneVersion>3.0.0</luceneVersion>
+  <!--  <luceneVersion>3.0.0</luceneVersion> -->
+    <compass.version>2.2.0</compass.version>      
   </properties>
 
   <dependencies>
@@ -25,11 +26,11 @@
       <version>${project.parent.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-      <version>${luceneVersion}</version>
-    </dependency>
+  <dependency>
+    <groupId>org.compass-project</groupId>
+    <artifactId>compass</artifactId>
+    <version>2.2.0</version>
+  </dependency>   
     
     <!-- test deps -->
     <dependency>
@@ -39,14 +40,7 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>    
-<!-- 
-    <dependency>
-      <groupId>com.mysema.rdf</groupId>
-      <artifactId>rdfbean-sesame</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>    
- -->
+
   </dependencies>
   
   <build>

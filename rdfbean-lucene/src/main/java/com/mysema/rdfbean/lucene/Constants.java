@@ -23,4 +23,5 @@ public interface Constants {
     
     String TEXT_FIELD_NAME = "text";
 
+    String ALL_FIELD_NAME = "all";
 }

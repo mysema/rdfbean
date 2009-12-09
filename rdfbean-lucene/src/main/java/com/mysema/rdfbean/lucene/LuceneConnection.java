@@ -5,24 +5,25 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import static com.mysema.rdfbean.lucene.Constants.BNODE_ID_PREFIX;
-import static com.mysema.rdfbean.lucene.Constants.CONTEXT_NULL;
-import static com.mysema.rdfbean.lucene.Constants.ID_FIELD_NAME;
+import static com.mysema.rdfbean.lucene.Constants.*;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
+import org.compass.core.Compass;
+import org.compass.core.CompassHits;
+import org.compass.core.CompassQuery;
+import org.compass.core.CompassQueryBuilder;
+import org.compass.core.CompassSession;
+import org.compass.core.CompassTransaction;
+import org.compass.core.Property;
+import org.compass.core.Resource;
+import org.compass.core.CompassQueryBuilder.CompassBooleanQueryBuilder;
+import org.compass.core.Property.Index;
+import org.compass.core.Property.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,94 +50,126 @@ public class LuceneConnection implements RDFConnection{
     
     private static final Logger logger = LoggerFactory.getLogger(LuceneConnection.class);
     
+    private final Compass compass;
+    
+    private final CompassSession compassSession;
+    
     private final LuceneConfiguration conf;
     
-    private final IndexSearcher searcher;
-    
-    private final IndexWriter writer;
-    
-    public LuceneConnection(LuceneConfiguration configuration, IndexWriter writer, IndexSearcher searcher) {
+    public LuceneConnection(LuceneConfiguration configuration, Compass compass, CompassSession session) {
         this.conf = Assert.notNull(configuration);
-        this.writer = Assert.notNull(writer);
-        this.searcher = Assert.notNull(searcher);
+        this.compass = Assert.notNull(compass);
+        this.compassSession = Assert.notNull(session);
+    }
+
+    public void addStatement(Resource resource, STMT statement) {
+        String predicateField = statement.getPredicate().getValue();
+        String objectValue = conf.getConverter().toString(statement.getObject());
+        
+        if (conf.isStored()){
+            Property property = compass.getResourceFactory()
+                .createProperty(predicateField, objectValue, Store.YES, Index.NOT_ANALYZED);
+            resource.addProperty(property);
+        }        
+        
+        if (conf.isAllIndexed()){
+            resource.addProperty(ALL_FIELD_NAME, objectValue);    
+        }        
+        
+        if (conf.isFullTextIndexed() && statement.getObject().isLiteral()){
+            resource.addProperty(TEXT_FIELD_NAME, statement.getObject().getValue());   
+        }        
     }
 
     @Override
     public RDFBeanTransaction beginTransaction(Session session,
             boolean readOnly, int txTimeout, int isolationLevel) {
-        return new LuceneTransaction(writer);
+        CompassTransaction tx = compassSession.beginTransaction();
+        return new LuceneTransaction(tx);
     }
-
+    
     @Override
     public void clear() {
-        // TODO
+        
         
     }
     
     @Override
     public void close() throws IOException {
-        writer.close();
-        searcher.close();
+        compassSession.close();
     }
-    
+
     @Override
     public BID createBNode() {
         return new BID();
     }
-
+    
     @Override
     public BeanQuery createQuery(Session session) {
         // TODO
         return null;
     }
     
+    private Resource createResource(){
+        return compass.getResourceFactory().createResource("resource");
+    }
+    
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, boolean includeInferred) {
-        if (subject != null || predicate != null || object != null || context != null){
-            BooleanQueryBuilder query = new BooleanQueryBuilder();
-            if (subject != null){
-                query.and(new Term(Constants.ID_FIELD_NAME, getID(subject)));
-            }   
-            if (predicate != null){
-                if (object != null){
-                    query.and(new Term(predicate.getValue(), conf.getConverter().toString(object)));
-                }else{
-                    
-                }
-            }else if (object != null){
-                
-            }
-            
-            if (context != null){
-                query.and(new Term(Constants.CONTEXT_FIELD_NAME, getContextID(context)));
-            }
-            
-            
-            
-        }else{
-            // wildcard
+        
+        CompassQuery query = createQuery(subject, predicate, object, context);
+        
+        CompassHits hits = query.hits();
+        
+        if (hits.getLength() > 0){
+            // TODO
         }
         
-        
-        // TODO : lucene find
         return null;
     }
     
-    private String getContextID(ID resource) {
-        return resource == null ? CONTEXT_NULL : getID(resource);        
+    long countDocuments(ID subject, UID predicate, NODE object, UID context){
+        CompassQuery query = createQuery(subject, predicate, object, context);
+        return query.count();
     }
     
-    private LuceneDocument getDocument(Term term) throws IOException {
-        TopDocs docs = searcher.search(new TermQuery(term), 1);
-        if (docs.scoreDocs.length > 0){
-            return new LuceneDocument(conf, searcher.doc(docs.scoreDocs[0].doc));
+    private CompassQuery createQuery(ID subject, UID predicate, NODE object, UID context){
+        CompassQueryBuilder queryBuilder = compassSession.queryBuilder();
+        if (subject != null || predicate != null || object != null || context != null){            
+            CompassBooleanQueryBuilder boolBuilder = queryBuilder.bool();
+            if (subject != null){
+                boolBuilder.addMust(queryBuilder.term(ID_FIELD_NAME, getId(subject)));
+            }   
+            if (predicate != null){
+                if (object != null){
+                    String value = conf.getConverter().toString(object);
+                    boolBuilder.addMust(queryBuilder.term(predicate.getValue(), value));    
+                }else{
+                    boolBuilder.addMust(queryBuilder.wildcard(predicate.getValue(), "*"));
+                }
+                
+            }else if (object != null){
+                String value = conf.getConverter().toString(object);
+                boolBuilder.addMust(queryBuilder.term(ALL_FIELD_NAME, value));
+            }
+            
+            if (context != null){
+                String value = getContextId(context);
+                boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, value));
+            }                       
+            return boolBuilder.toQuery();
+            
         }else{
-            return null;
+            return queryBuilder.matchAll();
         }
     }
     
-    private String getID(ID resource) {
+    private String getContextId(ID resource) {
+        return resource == null ? CONTEXT_NULL : getId(resource);        
+    }
+        
+    private String getId(ID resource) {
         Assert.notNull(resource);
         if (resource.isBNode()){
             return BNODE_ID_PREFIX + resource.getId();
@@ -145,8 +178,9 @@ public class LuceneConnection implements RDFConnection{
         }
     }
     
-    public void search(Query query, Collector results) throws IOException{
-        searcher.search(query, results);
+    private Resource getResource(String field, Object value) throws IOException {
+        CompassHits hits = compassSession.queryBuilder().term(field, value).hits();
+        return hits.getLength() > 0 ? hits.resource(0) : null;
     }
     
     private void update(ListMap<ID, STMT> rsAdded, ListMap<ID, STMT> rsRemoved,
@@ -156,20 +190,20 @@ public class LuceneConnection implements RDFConnection{
             // is the resource in the store?
 
             // fetch the Document representing this Resource
-            String id = getID(resource);
-            Term idTerm = new Term(ID_FIELD_NAME, id);
-            LuceneDocument document = getDocument(idTerm);
+            String id = getId(resource);
+//            Term idTerm = new Term(ID_FIELD_NAME, id);
+            Resource luceneResource = getResource(ID_FIELD_NAME, id);
 
-            if (document == null) {
+            if (luceneResource == null) {
                 // there is no such Document: create one now
-                document = new LuceneDocument(conf);
-                document.addId(id);
+                luceneResource = createResource();
+                luceneResource.addProperty(ID_FIELD_NAME, id);
                 // add all statements, remember the contexts
                 HashSet<ID> contextsToAdd = new HashSet<ID>();
                 List<STMT> list = rsAdded.get(resource);
                 if (list != null){
                     for (STMT s : list) {
-                        document.addProperty(s);
+                        addStatement(luceneResource, s);
                         contextsToAdd.add(s.getContext());
                     }
                 }
@@ -177,12 +211,13 @@ public class LuceneConnection implements RDFConnection{
                 if (conf.isContextsStored()){
                     // add all contexts
                     for (ID c : contextsToAdd) {
-                        document.addContext(getContextID(c));
+                        luceneResource.addProperty(CONTEXT_FIELD_NAME, getContextId(c));
                     }                    
                 }
                 
                 // add it to the index
-                writer.addDocument(document.getDocument());
+//                writer.addDocument(resource.getDocument());
+                compassSession.save(luceneResource);
 
                 if (rsRemoved.containsKey(resource)){
                     logger.warn(rsRemoved.get(resource).size() +
@@ -196,7 +231,7 @@ public class LuceneConnection implements RDFConnection{
                 // create a copy of the old document; updating the retrieved
                 // Document instance works ok for stored properties but indexed data
                 // gets lots when doing an IndexWriter.updateDocument with it
-                LuceneDocument newDocument = new LuceneDocument(conf);
+                Resource newResource = createResource();
 
                 // buffer the removed literal statements
                 ListMap<String, String> removedOfResource = null;
@@ -213,19 +248,18 @@ public class LuceneConnection implements RDFConnection{
 
                 // add all existing fields (including id, context, and text)
                 // but without adding the removed ones
-                for (Object oldFieldObject : document.getFields()) {
-                    Field oldField = (Field) oldFieldObject;
+                for (Property oldProperty : luceneResource.getProperties()) {
                     // do not copy removed statements to the new version of the
                     // document
                     if (removedOfResource != null) {
                         // which fields were removed?
-                        List<String> objectsRemoved = removedOfResource.get(oldField.name());
-                        if ((objectsRemoved != null) && (objectsRemoved.contains(oldField.stringValue()))) {
+                        List<String> objectsRemoved = removedOfResource.get(oldProperty.getName());
+                        if ((objectsRemoved != null) && (objectsRemoved.contains(oldProperty.getStringValue()))) {
                             continue;
                         }
 
                     }
-                    newDocument.add(oldField);
+                    newResource.addProperty(oldProperty);
                 }
 
                 // add all statements to this document, remember the contexts
@@ -234,18 +268,19 @@ public class LuceneConnection implements RDFConnection{
                     if (addedToResource != null) {
                         HashSet<ID> contextsToAdd = new HashSet<ID>();
                         for (STMT s : addedToResource) {
-                            newDocument.addProperty(s);
+                            addStatement(newResource, s);
                             contextsToAdd.add(s.getContext());
                         }
                         // add all contexts
                         for (ID c : contextsToAdd) {
-                            newDocument.addContext(getContextID(c));
+                            newResource.addProperty(CONTEXT_FIELD_NAME, getContextId(c));
                         }
                     }
                 }
 
                 // update the index with the cloned document
-                writer.updateDocument(idTerm, newDocument.getDocument());
+//                writer.updateDocument(idTerm, newResource);
+                compassSession.save(newResource);
             }
         }        
     }

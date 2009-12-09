@@ -5,12 +5,7 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import java.io.IOException;
-
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexWriter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.compass.core.CompassTransaction;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
@@ -23,30 +18,20 @@ import com.mysema.rdfbean.object.RDFBeanTransaction;
  */
 public class LuceneTransaction implements RDFBeanTransaction{
     
-    private static final Logger logger = LoggerFactory.getLogger(LuceneTransaction.class);
-    
-    private final IndexWriter writer;
+    private final CompassTransaction tx;
     
     private boolean rollBackOnly;
     
     private boolean active = true;
     
-    public LuceneTransaction(IndexWriter writer) {
-        this.writer = Assert.notNull(writer);
+    public LuceneTransaction(CompassTransaction tx) {
+        this.tx = Assert.notNull(tx);
     }
 
     @Override
     public void commit() {
         try {
-            writer.commit();
-        } catch (CorruptIndexException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        } catch (IOException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
+            tx.commit();
         }finally{
             active = false;
         }    
@@ -65,11 +50,7 @@ public class LuceneTransaction implements RDFBeanTransaction{
     @Override
     public void rollback() {
         try {
-            writer.rollback();
-        } catch (IOException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
+            tx.rollback();
         }finally{
             active = false;
         }
