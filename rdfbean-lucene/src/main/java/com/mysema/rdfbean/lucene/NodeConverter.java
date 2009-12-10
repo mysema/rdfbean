@@ -27,17 +27,23 @@ import com.mysema.rdfbean.xsd.Converter;
  */
 public class NodeConverter implements Converter<NODE>{
     
-//  uri = <uri>|u
+//  full uri = <uri>|U
+//  short uri = <prefix>:<local>|u    
 //  bnode = <bnode>|b
-//  typed literal = <value>|l^^<datatype>
+//  typed literal = <value>|lt<prefix>:<local>
+//  typed literal2 = <value>|lT<uri>     
 //  untyped literal : <value>|l
 //  localized string : <value>|l@<lang>
     
-    public static final NodeConverter DEFAULT = new NodeConverter();
+    private final Map<String,String> prefixToNs;
+    
+    private final Map<String,String> nsToPrefix;
     
     private static final char SEPARATOR_CHAR = '|';
     
-    private static final char URI = 'u';
+    private static final char SHORT_URI = 'u';
+    
+    private static final char FULL_URI = 'U';
     
     private static final char BNODE = 'b';
     
@@ -47,11 +53,13 @@ public class NodeConverter implements Converter<NODE>{
     
     private final Map<String,UID> strToUid = new HashMap<String,UID>();
     
-    protected NodeConverter(){
-        for (UID uid : XSD.all) register(uid, "xsd:" + uid.getLocalName());
-        for (UID uid : RDF.all) register(uid, "rdf:" + uid.getLocalName());
-        for (UID uid : RDFS.all) register(uid, "rdfs:" + uid.getLocalName());
+    public NodeConverter(Map<String,String> prefixToNs, Map<String,String> nsToPrefix){
+        this.prefixToNs = prefixToNs;
+        this.nsToPrefix = nsToPrefix;        
         for (UID uid : OWL.all) register(uid, "owl:" + uid.getLocalName());
+        for (UID uid : RDF.all) register(uid, "rdf:" + uid.getLocalName());
+        for (UID uid : RDFS.all)register(uid, "rdfs:" + uid.getLocalName());
+        for (UID uid : XSD.all) register(uid, "xsd:" + uid.getLocalName());
     }
     
     private void register(UID uid, String str){
@@ -65,17 +73,24 @@ public class NodeConverter implements Converter<NODE>{
         if (i > -1){
             String value = str.substring(0, i);
             String md = str.substring(i+1);    
-            if (md.charAt(0) == URI){
-                return uidFromString(value);
+            if (md.charAt(0) == SHORT_URI){
+                return uidFromShortString(value);
+                
+            }else if (md.charAt(0) == FULL_URI){
+                return new UID(value);
+                
             }else if (md.charAt(0) == BNODE){
                 return new BID(value);
+                
             }else if (md.charAt(0) == LITERAL){
                 if (md.length() == 1){
                     return new LIT(value);
                 }else if (md.charAt(1) == '@'){
                     return new LIT(value, md.substring(2));
-                }else if (md.charAt(1) == '^'){
-                    return new LIT(value, uidFromString(md.substring(3)));
+                }else if (md.charAt(1) == 't'){
+                    return new LIT(value, uidFromShortString(md.substring(2)));
+                }else if (md.charAt(1) == 'T'){
+                    return new LIT(value, new UID(md.substring(2)));
                 }
             }                
         }
@@ -86,11 +101,18 @@ public class NodeConverter implements Converter<NODE>{
     public String toString(NODE node) {
         StringBuilder builder = new StringBuilder();
         if (node.isURI()){
-            builder.append(uidToString((UID)node)).append(SEPARATOR_CHAR);
-            return builder.append(URI).toString();
+            if (nsToPrefix.containsKey(((UID)node).getNamespace())){
+                builder.append(uidToShortString((UID)node)).append(SEPARATOR_CHAR);
+                return builder.append(SHORT_URI).toString();    
+            }else{
+                builder.append(node.getValue()).append(SEPARATOR_CHAR);
+                return builder.append(FULL_URI).toString();
+            }
+            
         }else if (node.isBNode()){
             builder.append(node.getValue()).append(SEPARATOR_CHAR);
             return builder.append(BNODE).toString();                       
+            
         }else if (node.isLiteral()){
             LIT lit = (LIT)node;
             builder.append(node.getValue()).append(SEPARATOR_CHAR);
@@ -99,8 +121,14 @@ public class NodeConverter implements Converter<NODE>{
                 builder.append("@");
                 return builder.append(LocaleUtil.toLang(lit.getLang())).toString();
             }else if (lit.getDatatype() != null){
-                builder.append("^^");
-                return builder.append(uidToString(lit.getDatatype())).toString();
+                if (nsToPrefix.containsKey(lit.getDatatype().getNamespace())){
+                    builder.append("t");
+                    builder.append(uidToShortString(lit.getDatatype()));    
+                }else{
+                    builder.append("T");
+                    builder.append(lit.getDatatype().getValue());
+                }                
+                return builder.toString();
             }else{
                 return builder.toString();
             }
@@ -108,19 +136,20 @@ public class NodeConverter implements Converter<NODE>{
         throw new IllegalArgumentException("Invalid Node " + node); 
     }
 
-    private String uidToString(UID uid) {
+    public String uidToShortString(UID uid) {
         if (uidToStr.containsKey(uid)){
             return uidToStr.get(uid);
         }else{
-            return uid.getValue();
+            return nsToPrefix.get(uid.getNamespace()) + ":" + uid.getLocalName();
         }
     }    
 
-    private UID uidFromString(String str) {
+    public UID uidFromShortString(String str) {
         if (strToUid.containsKey(str)){
             return strToUid.get(str);
         }else{
-            return new UID(str);
+            int index = str.indexOf(':');
+            return new UID(prefixToNs.get(str.substring(0, index)), str.substring(index+1));            
         }
     }
 

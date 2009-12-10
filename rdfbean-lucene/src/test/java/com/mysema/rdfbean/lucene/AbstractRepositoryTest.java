@@ -7,6 +7,8 @@ import org.compass.core.config.CompassConfiguration;
 import org.junit.After;
 import org.junit.Before;
 
+import com.mysema.rdfbean.TEST;
+
 /**
  * AbstractRepositoryTest provides
  *
@@ -26,6 +28,7 @@ public abstract class AbstractRepositoryTest {
         
         LuceneConfiguration configuration = new LuceneConfiguration();
         configuration.setCompassConfig(compassConfig);
+        configuration.addPrefix("test", TEST.NS);
         luceneRepository = new LuceneRepository(configuration);
         luceneRepository.initialize();
     }

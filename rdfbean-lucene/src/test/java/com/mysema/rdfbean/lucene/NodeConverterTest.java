@@ -10,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
+import org.compass.core.config.CompassConfiguration;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.BID;
@@ -30,7 +32,15 @@ import com.mysema.rdfbean.owl.OWL;
  */
 public class NodeConverterTest {
     
-    private final NodeConverter converter = NodeConverter.DEFAULT;
+    private NodeConverter converter;
+    
+    @Before
+    public void setUp(){
+        LuceneConfiguration configuration = new LuceneConfiguration();
+        configuration.setCompassConfig(new CompassConfiguration());
+        configuration.initialize();
+        converter = configuration.getConverter();
+    }
     
     @Test
     public void test(){

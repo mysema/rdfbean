@@ -63,7 +63,7 @@ public class LuceneConnection implements RDFConnection{
     }
 
     public void addStatement(Resource resource, STMT statement) {
-        String predicateField = statement.getPredicate().getValue();
+        String predicateField = conf.getConverter().uidToShortString(statement.getPredicate());
         String objectValue = conf.getConverter().toString(statement.getObject());
         
         if (conf.isStored()){
@@ -142,11 +142,12 @@ public class LuceneConnection implements RDFConnection{
                 boolBuilder.addMust(queryBuilder.term(ID_FIELD_NAME, getId(subject)));
             }   
             if (predicate != null){
+                String predicateField = conf.getConverter().uidToShortString(predicate);
                 if (object != null){
                     String value = conf.getConverter().toString(object);
-                    boolBuilder.addMust(queryBuilder.term(predicate.getValue(), value));    
+                    boolBuilder.addMust(queryBuilder.term(predicateField, value));    
                 }else{
-                    boolBuilder.addMust(queryBuilder.wildcard(predicate.getValue(), "*"));
+                    boolBuilder.addMust(queryBuilder.wildcard(predicateField, "*"));
                 }
                 
             }else if (object != null){

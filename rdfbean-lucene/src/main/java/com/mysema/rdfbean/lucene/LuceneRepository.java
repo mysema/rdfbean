@@ -19,8 +19,6 @@ import com.mysema.rdfbean.model.Repository;
  */
 public class LuceneRepository implements Repository{
 
-//    private static final Logger logger = LoggerFactory.getLogger(LuceneRepository.class);
-    
     private LuceneConfiguration configuration;
     
     private Compass compass;
