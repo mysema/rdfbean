@@ -57,7 +57,6 @@ public class LuceneRepositoryTest extends AbstractRepositoryTest{
     static final List<LIT> literals = Arrays.asList(
             new LIT("test"),
             new LIT("test", "en"),
-            new LIT("test", XSD.stringType),
             new LIT("test2", "en"),
             new LIT("test3", "fi"),
             new LIT("test4", new UID(TEST.NS, "custType")),
@@ -90,27 +89,40 @@ public class LuceneRepositoryTest extends AbstractRepositoryTest{
         
         // tx #2
         tx = connection.beginTransaction(null, true, 0, 0);
+        assertEquals(subjects.size(), connection.countDocuments(null, null, null, null));        
+        
+        // documents counts
         for (UID subject : subjects){
+            assertEquals(1, connection.countDocuments(subject, null, null, null));
+            
             for (UID predicate : predicates){
+                assertEquals(1, connection.countDocuments(subject, predicate, null,   null));
+                
                 for (NODE object : objects){
-                    // subject set
                     assertEquals(1, connection.countDocuments(subject, predicate, object, null));
-                    assertEquals(1, connection.countDocuments(subject, predicate, null,   null));
-                    assertEquals(1, connection.countDocuments(subject, null,      null,   null));                   
-                    
-                    // object set
-                    assertEquals(subjects.size(), connection.countDocuments(null, predicate, object, null));
-                    assertEquals(subjects.size(), connection.countDocuments(null, null,      object, null));
-                    
-                    // predicate set
-                    assertEquals(subjects.size(), connection.countDocuments(null, predicate, object, null));
-                    
-                    // wildcard
-                    assertEquals(subjects.size(), connection.countDocuments(null, null, null, null));
-                    
+                    assertEquals(subjects.size(), connection.countDocuments(null,    predicate, object, null));                                        
+                    assertEquals(subjects.size(), connection.countDocuments(null,    null,      object, null));
                 }
             }
         }
+        
+        // statement counts
+        
+        for (UID subject : subjects){
+            assertEquals(predicates.size() * objects.size(), connection.countStatements(subject, null, null, null));
+            
+            for (UID predicate : predicates){
+                assertEquals(objects.size(), connection.countStatements(subject, predicate, null, null));
+                
+                for (NODE object : objects){
+                    assertEquals(1, connection.countStatements(subject, predicate, object, null));
+                    assertEquals(subjects.size(), connection.countStatements(null, predicate, object, null));                                        
+                    assertEquals(subjects.size() * predicates.size(), connection.countStatements(null, null, object, null));
+                }
+            }
+        }
+        
+        
         tx.commit();
         connection.close();
     }

@@ -5,9 +5,16 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import static com.mysema.rdfbean.lucene.Constants.*;
+import static com.mysema.rdfbean.lucene.Constants.ALL_FIELD_NAME;
+import static com.mysema.rdfbean.lucene.Constants.BNODE_ID_PREFIX;
+import static com.mysema.rdfbean.lucene.Constants.CONTEXT_FIELD_NAME;
+import static com.mysema.rdfbean.lucene.Constants.CONTEXT_NULL;
+import static com.mysema.rdfbean.lucene.Constants.ID_FIELD_NAME;
+import static com.mysema.rdfbean.lucene.Constants.TEXT_FIELD_NAME;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,6 +45,7 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.util.EmptyCloseableIterator;
 import com.mysema.util.ListMap;
 
 /**
@@ -49,6 +57,14 @@ import com.mysema.util.ListMap;
 public class LuceneConnection implements RDFConnection{
     
     private static final Logger logger = LoggerFactory.getLogger(LuceneConnection.class);
+
+    private static final List<String> INTERNAL_FIELDS = Arrays.asList(
+            "alias",
+            "$/uid",
+            ALL_FIELD_NAME, 
+            CONTEXT_FIELD_NAME,
+            ID_FIELD_NAME,
+            TEXT_FIELD_NAME);
     
     private final Compass compass;
     
@@ -62,8 +78,12 @@ public class LuceneConnection implements RDFConnection{
         this.compassSession = Assert.notNull(session);
     }
 
+    private String getPredicateField(UID predicate){
+        return conf.getConverter().uidToShortString(predicate);
+    }
+    
     public void addStatement(Resource resource, STMT statement) {
-        String predicateField = conf.getConverter().uidToShortString(statement.getPredicate());
+        String predicateField = getPredicateField(statement.getPredicate());
         String objectValue = conf.getConverter().toString(statement.getObject());
         
         if (conf.isStored()){
@@ -114,24 +134,85 @@ public class LuceneConnection implements RDFConnection{
         return compass.getResourceFactory().createResource("resource");
     }
     
-    @Override
-    public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
-            NODE object, UID context, boolean includeInferred) {
-        
-        CompassQuery query = createQuery(subject, predicate, object, context);
-        
-        CompassHits hits = query.hits();
-        
-        if (hits.getLength() > 0){
-            // TODO
+    private List<STMT> findStatements(Resource resource, ID subject, UID predicate, NODE object, UID context){
+        List<STMT> stmts = new ArrayList<STMT>();
+        ID sub = subject;
+        UID pre = predicate;
+        NODE obj = object;                    
+        if (sub == null){
+            sub = getId(resource.getId());
+        }                    
+        if (pre != null){
+            if (obj != null){
+                stmts.add(new STMT(sub, pre, obj));
+            }else{
+                for (Property property : resource.getProperties(getPredicateField(pre))){
+                    obj = conf.getConverter().fromString(property.getStringValue());
+                    stmts.add(new STMT(sub, pre, obj));
+                }
+            }
+            
+        }else if (obj != null){
+            String objString = conf.getConverter().toString(obj);
+            for (Property property : resource.getProperties()){
+                if (!INTERNAL_FIELDS.contains(property.getName()) // better filtering 
+                        && objString.equals(property.getStringValue())){
+                    pre = conf.getConverter().uidFromShortString(property.getName());
+                    stmts.add(new STMT(sub, pre, obj));
+                }
+            }
+            
+        }else{
+            for (Property property : resource.getProperties()){
+                if (!INTERNAL_FIELDS.contains(property.getName())){ // better filtering
+                    pre = conf.getConverter().uidFromShortString(property.getName());
+                    obj = conf.getConverter().fromString(property.getStringValue());
+                    stmts.add(new STMT(sub, pre, obj));
+                }    
+            }            
         }
-        
-        return null;
+        return stmts;
+    }
+    
+    @Override
+    public CloseableIterator<STMT> findStatements(final ID subject, final UID predicate, final NODE object, 
+            final UID context, boolean includeInferred) {        
+        CompassQuery query = createQuery(subject, predicate, object, context);        
+        CompassHits hits = query.hits();        
+        if (hits.getLength() > 0){
+            return new ResultIterator(hits){
+                @Override
+                protected List<STMT> getStatements(Resource resource) {
+                    return findStatements(resource, subject, predicate, object, context);
+                }                
+            };
+        }else{
+            hits.close();
+            return new EmptyCloseableIterator<STMT>();
+        }
     }
     
     long countDocuments(ID subject, UID predicate, NODE object, UID context){
         CompassQuery query = createQuery(subject, predicate, object, context);
         return query.count();
+    }
+    
+    long countStatements(ID subject, UID predicate, NODE object, UID context){        
+        try {
+            CloseableIterator<STMT> stmts = findStatements(subject, predicate, object, context, false);
+            long rv = 0;
+            while (stmts.hasNext()){
+                stmts.next();
+                rv++;
+            }
+            stmts.close();
+            return rv;
+        } catch (IOException e) {
+            String error = "Caught " + e.getClass().getName();
+            logger.error(error, e);
+            throw new RuntimeException(error, e);
+        }
+        
     }
     
     private CompassQuery createQuery(ID subject, UID predicate, NODE object, UID context){
@@ -176,6 +257,15 @@ public class LuceneConnection implements RDFConnection{
             return BNODE_ID_PREFIX + resource.getId();
         }else{
             return resource.getId();
+        }
+    }
+    
+    private ID getId(String id){
+        Assert.notNull(id);
+        if (id.startsWith(BNODE_ID_PREFIX)){
+            return new BID(id.substring(1));
+        }else{
+            return new UID(id);
         }
     }
     
