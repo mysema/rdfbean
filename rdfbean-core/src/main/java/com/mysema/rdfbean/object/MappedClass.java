@@ -134,8 +134,6 @@ public class MappedClass {
             if (isProcessedClass(superClass)) {
                 mappedSuperClasses.add(getMappedClass(superClass));
             }
-        } else {
-            mappedSuperClasses.add(null);
         }
         if (ifaces != null) {
             for (Class<?> iface : ifaces) {
