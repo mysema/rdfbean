@@ -21,42 +21,17 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Searchable {
-
+    
     /**
-     * The alias that is associated with the class. Can be used to refernce
-     * the searchable class when performing search operations, or for other
-     * mappings to extend it.
-     * <p/>
-     * Default value is the short name of the class.
+     * @return
      */
-    String alias() default "";
-
-    /**
-     * The sub index the searchable class will be saved to. A sub index is
-     * a fully functional index.
-     *
-     * <p>When joining several searchalbe classes into the same index,
-     * the search will be much faster, but updates perform locks on the sub index
-     * level, so it might slow it down.
-     *
-     * <p>Defaults to the searchable class {@link #alias()} value.
-     *
-     * <p>More fine grained control can be used with {@link org.compass.annotations.SearchableSubIndexHash}.
-     */
-    String subIndex() default "";
-
+    boolean storeAll() default false;
+    
     /**
      * Boost level for the searchable class. Controls the ranking of hits
      * when performing searches.
      */
     float boost() default 1.0f;
-
-    /**
-     * Defines if the searchable class is a root class. A root class is a top
-     * level searchable class. You should define the searchable class with <code>false</code>
-     * if it only acts as mapping definitions for a {@link SearchableComponent}.
-     */
-    boolean root() default true;
 
     /**
      * A specialized analyzer (different from the default one) associated with the

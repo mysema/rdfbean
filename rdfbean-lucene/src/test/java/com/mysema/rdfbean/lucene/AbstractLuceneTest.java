@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.object.Configuration;
 
 /**
  * AbstractRepositoryTest provides
@@ -32,11 +33,19 @@ public abstract class AbstractLuceneTest {
         compassConfig.configure("/compass.xml");
         
         LuceneConfiguration configuration = new LuceneConfiguration();
+        configuration.setCoreConfiguration(getCoreConfiguration());
+        configuration.setDefaultPropertyConfig(getDefaultPropertyConfig());
         configuration.setCompassConfig(compassConfig);
         configuration.addPrefix("test", TEST.NS);
         luceneRepository = new LuceneRepository(configuration);
     }
     
+    protected abstract Configuration getCoreConfiguration();
+    
+    protected PropertyConfig getDefaultPropertyConfig(){
+        return null;
+    }
+
     @After
     public void tearDown(){
         luceneRepository.close();

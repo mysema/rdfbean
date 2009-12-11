@@ -26,12 +26,20 @@ import org.compass.core.Property.Store;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SearchablePredicate {
-
+    
     /**
-     * If there is already an existing id with the same field/property name defined,
-     * will override it.
+     * Index value in analyzed form into 'text' field
+     * 
+     * @return
      */
-    boolean override() default true;
+    boolean textIndexed() default false;
+    
+    /**
+     * Index value in not analyzed form int 'all' field 
+     * 
+     * @return
+     */
+    boolean allIndexed() default false;
 
     /**
      * The boost of the auto generated {@link SearchableMetaData}. Maps to
@@ -84,12 +92,4 @@ public @interface SearchablePredicate {
      */
     String format() default "";
 
-    /**
-     * A null value to use to store in the index when the property has a <code>null</code>
-     * value. Defaults to not storing null values if the globabl setting of
-     * <code>compass.mapping.nullvalue</code> is not set. If it set, disabling the null
-     * value can be done by setting it to {@link org.compass.core.config.CompassEnvironment.NullValue#DISABLE_NULL_VALUE_FOR_MAPPING}
-     * value (<code>$disable$</code>).
-     */
-    String nullValue() default "";
 }

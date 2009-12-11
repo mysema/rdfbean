@@ -15,11 +15,17 @@ import java.util.Map;
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 import org.compass.core.config.CompassConfiguration;
+import org.compass.core.util.Assert;
 
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.MappedClass;
+import com.mysema.rdfbean.object.MappedPath;
+import com.mysema.rdfbean.object.MappedPredicate;
+import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.owl.OWL;
 
 
@@ -31,36 +37,23 @@ import com.mysema.rdfbean.owl.OWL;
  */
 public class LuceneConfiguration {
 
-    private final Map<String,String> prefixToNs = new HashMap<String,String>();
+    private CompassConfiguration compassConfig;
     
-    private final Map<String,String> nsToPrefix = new HashMap<String,String>();
-    
-    private Configuration coreConfig;
+    private boolean contextsStored = true;
     
     private NodeConverter converter;
     
-    private CompassConfiguration compassConfig;
+    private Configuration coreConfig;
     
-    /**
-     * Index all statements into 'all' field
-     */
-    private boolean allIndexed = true;
+    private PropertyConfig rdfTypeConfig = new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, false);
     
-    /**
-     * Index literal statements into 'text' field for full text search
-     */
-    private boolean fullTextIndexed = true;
+    private PropertyConfig defaultPropertyConfig = null;
     
-    // TODO : replace this with type/predicate storage
-    /**
-     * Store statements into predicate fields
-     */
-    private boolean stored = true;
-    
-    /**
-     * Store contexts
-     */
-    private boolean contextsStored = true;
+    private final Map<UID, PropertyConfig> propertyConfigs = new HashMap<UID, PropertyConfig>();
+
+    private final Map<String,String> nsToPrefix = new HashMap<String,String>();
+
+    private final Map<String,String> prefixToNs = new HashMap<String,String>();
     
     public LuceneConfiguration(){
         addPrefix("rdf", RDF.NS);
@@ -68,70 +61,13 @@ public class LuceneConfiguration {
         addPrefix("owl", OWL.NS);
         addPrefix("xsd", XSD.NS);
     }
-        
-    public NodeConverter getConverter() {
-        return converter;
-    }
-
-    public boolean isStored() {
-        return stored;
-    }
-
-    public void setConverter(NodeConverter converter) {
-        this.converter = converter;
-    }
-
-    public void setStored(boolean stored) {
-        this.stored = stored;
-    }
-
-    public boolean isFullTextIndexed() {
-        return fullTextIndexed;
-    }
-
-    public void setFullTextIndexed(boolean fullTextIndexed) {
-        this.fullTextIndexed = fullTextIndexed;
-    }
-
-    public boolean isContextsStored() {
-        return contextsStored;
-    }
-
-    public void setContextsStored(boolean contextsStored) {
-        this.contextsStored = contextsStored;
-    }
-
-    public CompassConfiguration getCompassConfig() {
-        return compassConfig;
-    }
-
-    public void setCompassConfig(CompassConfiguration compassConfig) {
-        this.compassConfig = compassConfig;
-    }
-
-    public boolean isAllIndexed() {
-        return allIndexed;
-    }
-
-    public void setAllIndexed(boolean allIndexed) {
-        this.allIndexed = allIndexed;
-    }
-    
-    public Configuration getCoreConfiguration() {
-        return coreConfig;
-    }
-
-    public void setCoreConfiguration(Configuration coreConfig) {
-        this.coreConfig = coreConfig;
-    }
-
-    public LuceneConfiguration addPrefix(String prefix, String ns){
-        prefixToNs.put(prefix, ns);
-        nsToPrefix.put(ns, prefix);
-        return this;
-    }    
-
+     
     public void initialize() {
+        Assert.notNull(coreConfig, "coreConfig is null");
+        Assert.notNull(compassConfig, "compassConfig is null");
+        
+        initializePropertyConfigs();
+        
         converter = new NodeConverter(prefixToNs, nsToPrefix);
         
         // mapping for general resources        
@@ -146,7 +82,95 @@ public class LuceneConfiguration {
                 // full text for String literals
                 .add(property(Constants.TEXT_FIELD_NAME).store(Store.NO).index(Index.ANALYZED)));
         
-        // TODO : rdf:type
     }
+
+    private void initializePropertyConfigs() {
+        // rdf:type is always stored
+        propertyConfigs.put(RDF.type, rdfTypeConfig);
+        
+        for (Class<?> javaClass : coreConfig.getMappedClasses()){
+            MappedClass clazz = MappedClass.getMappedClass(javaClass);
+            Searchable searchable = clazz.getAnnotation(Searchable.class);
+            if (searchable != null){
+                for (MappedPath mappedPath : clazz.getProperties()){
+                    MappedProperty<?> property = mappedPath.getMappedProperty();
+                    SearchablePredicate searchablePred = property.getAnnotation(SearchablePredicate.class);
+                    Index index = searchablePred != null ? searchablePred.index() : null;
+                    Store store = null;
+                    if (searchable.storeAll()){
+                        store = Store.YES;
+                    }else if (searchablePred != null){
+                        store = searchablePred.store();
+                    }
+                    if (index != null || store != null){
+                        if (index == null) index = Index.NO;
+                        // TODO : handle longer predicate paths
+                        MappedPredicate predicate = mappedPath.getPredicatePath().get(0);
+                        boolean textIndexed = searchablePred != null ? searchablePred.textIndexed() : false;
+                        boolean allIndexed = searchablePred != null ? searchablePred.allIndexed() : false;                        
+                        PropertyConfig propertyConfig = new PropertyConfig(store, index, textIndexed, allIndexed);
+                        propertyConfigs.put(predicate.getUID(), propertyConfig);
+                    }
+                    
+                }
+            }
+        }
+    }
+
+    
+    public LuceneConfiguration addPrefix(String prefix, String ns){
+        prefixToNs.put(prefix, ns);
+        nsToPrefix.put(ns, prefix);
+        return this;
+    }
+
+    public PropertyConfig getPropertyConfig(UID predicate){
+        if (propertyConfigs.containsKey(predicate)){
+            return propertyConfigs.get(predicate);    
+        }else{
+            return defaultPropertyConfig;
+        }        
+    }
+    
+    public CompassConfiguration getCompassConfig() {
+        return compassConfig;
+    }
+
+    public NodeConverter getConverter() {
+        return converter;
+    }
+
+    public Configuration getCoreConfiguration() {
+        return coreConfig;
+    }
+
+    public boolean isContextsStored() {
+        return contextsStored;
+    }
+
+    public void setCompassConfig(CompassConfiguration compassConfig) {
+        this.compassConfig = compassConfig;
+    }
+    
+    public void setContextsStored(boolean contextsStored) {
+        this.contextsStored = contextsStored;
+    }
+
+    public void setConverter(NodeConverter converter) {
+        this.converter = converter;
+    }
+
+    public void setCoreConfiguration(Configuration coreConfig) {
+        this.coreConfig = coreConfig;
+    }
+
+    public void setRdfTypeConfig(PropertyConfig rdfTypeConfig) {
+        this.rdfTypeConfig = rdfTypeConfig;
+    }
+
+    public void setDefaultPropertyConfig(PropertyConfig defaultConfig) {
+        this.defaultPropertyConfig = defaultConfig;
+    }
+
     
 }

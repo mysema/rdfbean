@@ -703,9 +703,9 @@ public class SesameQuery extends
                             pathNode = new Var(varNames.next());    
                         }                        
                         if (!pred.inv()) {
-                            match(parentNode, pred.uid(), pathNode);
+                            match(parentNode, pred.getUID(), pathNode);
                         } else {
-                            match(pathNode, pred.uid(), parentNode);
+                            match(pathNode, pred.getUID(), parentNode);
                         }
                         parentNode = pathNode;
                     }

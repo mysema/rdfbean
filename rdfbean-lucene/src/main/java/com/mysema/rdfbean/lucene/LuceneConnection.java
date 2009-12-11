@@ -82,23 +82,27 @@ public class LuceneConnection implements RDFConnection{
         return conf.getConverter().uidToShortString(predicate);
     }
     
-    public void addStatement(Resource resource, STMT statement) {
-        String predicateField = getPredicateField(statement.getPredicate());
-        String objectValue = conf.getConverter().toString(statement.getObject());
+    public void addStatement(Resource resource, STMT statement) {        
+        String objectValue = conf.getConverter().toString(statement.getObject());        
+        PropertyConfig propertyConfig = conf.getPropertyConfig(statement.getPredicate());
         
-        if (conf.isStored()){
-            Property property = compass.getResourceFactory()
-                .createProperty(predicateField, objectValue, Store.YES, Index.NOT_ANALYZED);
-            resource.addProperty(property);
-        }        
+        if (propertyConfig != null){            
+            if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
+                String predicateField = getPredicateField(statement.getPredicate());
+                Property property = compass.getResourceFactory().createProperty(predicateField, objectValue, 
+                        propertyConfig.getStore(), propertyConfig.getIndex());
+                resource.addProperty(property);
+            }     
+            
+            if (propertyConfig.isAllIndexed()){
+                resource.addProperty(ALL_FIELD_NAME, objectValue);
+            }            
+            
+            if (propertyConfig.isTextIndexed()){
+                resource.addProperty(TEXT_FIELD_NAME, statement.getObject().getValue());
+            }            
+        }
         
-        if (conf.isAllIndexed()){
-            resource.addProperty(ALL_FIELD_NAME, objectValue);    
-        }        
-        
-        if (conf.isFullTextIndexed() && statement.getObject().isLiteral()){
-            resource.addProperty(TEXT_FIELD_NAME, statement.getObject().getValue());   
-        }        
     }
 
     @Override

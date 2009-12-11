@@ -31,7 +31,7 @@ public class PropertyOverrideTest {
     public void overrideWithinClass() {
         MappedClass mappedClass = MappedClass.getMappedClass(WithinClass.class);
         MappedPath path = mappedClass.getMappedPath("reference");
-        assertEquals(new UID(TEST.NS, "reference"), path.get(0).uid());
+        assertEquals(new UID(TEST.NS, "reference"), path.get(0).getUID());
         MappedProperty<?> property = path.getMappedProperty();
         assertTrue(property.isInjection());
     }

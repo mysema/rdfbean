@@ -728,7 +728,7 @@ public class SessionImpl implements Session {
         if (predicate.context() != null) {
             context = new UID(predicate.context());
         }
-        Set<NODE> values = findValues(resource, predicate.uid(), 
+        Set<NODE> values = findValues(resource, predicate.getUID(), 
                 predicate.inv(), predicate.includeInferred(), context);
         if (path.size() > index + 1) {
             Set<NODE> nestedValues = new LinkedHashSet<NODE>();
@@ -1103,7 +1103,7 @@ public class SessionImpl implements Session {
             property = path.getMappedProperty();
             if (path.isSimpleProperty()) {
                 MappedPredicate mappedPredicate = path.get(0);
-                UID predicate = mappedPredicate.uid();
+                UID predicate = mappedPredicate.getUID();
 
                 if (update) {
                     for (STMT statement : findStatements(subject, predicate, null, false, context)) {

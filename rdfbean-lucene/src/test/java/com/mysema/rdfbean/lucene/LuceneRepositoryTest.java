@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.compass.core.Property.Index;
+import org.compass.core.Property.Store;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -25,6 +27,8 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.owl.OWL;
 
@@ -35,7 +39,7 @@ import com.mysema.rdfbean.owl.OWL;
  * @version $Id$
  */
 public class LuceneRepositoryTest extends AbstractLuceneTest{
-        
+    
     static final List<UID> subjects = Arrays.asList(
             XSD.stringType,
             OWL.Class,
@@ -90,19 +94,25 @@ public class LuceneRepositoryTest extends AbstractLuceneTest{
         
         // tx #2
         tx = connection.beginTransaction(null, true, 0, 0);
+        String msg = "wildcard failed";
         assertEquals(subjects.size(), connection.countDocuments(null, null, null, null));        
         
         // documents counts
         for (UID subject : subjects){
-            assertEquals(1, connection.countDocuments(subject, null, null, null));
+            msg = "subject graph for "+ subject + " failed";
+            assertEquals(msg, 1, connection.countDocuments(subject, null, null, null));
             
             for (UID predicate : predicates){
-                assertEquals(1, connection.countDocuments(subject, predicate, null,   null));
+                msg = subject + " " + predicate + " ? failed";
+                assertEquals(msg, 1, connection.countDocuments(subject, predicate, null,   null));
                 
                 for (NODE object : objects){
-                    assertEquals(1, connection.countDocuments(subject, predicate, object, null));
-                    assertEquals(subjects.size(), connection.countDocuments(null,    predicate, object, null));                                        
-                    assertEquals(subjects.size(), connection.countDocuments(null,    null,      object, null));
+                    msg = subject + " " + predicate + " " + object + " failed";
+                    assertEquals(msg, 1, connection.countDocuments(subject, predicate,    object, null));
+                    msg = "? " + predicate + " " + object + " failed";
+                    assertEquals(msg, subjects.size(), connection.countDocuments(null,    predicate, object, null));
+                    msg = "? ? " + object + " failed";
+                    assertEquals(msg, subjects.size(), connection.countDocuments(null,    null,      object, null));
                 }
             }
         }
@@ -126,6 +136,16 @@ public class LuceneRepositoryTest extends AbstractLuceneTest{
         
         tx.commit();
         connection.close();
+    }
+
+    @Override
+    protected Configuration getCoreConfiguration() {
+        return new DefaultConfiguration();
+    }
+    
+    @Override
+    protected PropertyConfig getDefaultPropertyConfig(){
+        return new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true);
     }
 
 }

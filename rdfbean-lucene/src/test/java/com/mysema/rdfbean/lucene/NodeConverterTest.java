@@ -21,6 +21,7 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.owl.OWL;
 
 
@@ -36,10 +37,17 @@ public class NodeConverterTest {
     
     @Before
     public void setUp(){
-        LuceneConfiguration configuration = new LuceneConfiguration();
+        LuceneConfiguration configuration = new LuceneConfiguration();        
         configuration.setCompassConfig(new CompassConfiguration());
+        configuration.setCoreConfiguration(new DefaultConfiguration());
         configuration.initialize();
         converter = configuration.getConverter();
+    }
+    
+    @Test
+    public void testStringLiteral(){
+        assertEquals("Test|l", converter.toString(new LIT("Test")));
+        assertEquals("Test|l", converter.toString(new LIT("Test", XSD.stringType)));
     }
     
     @Test
@@ -48,10 +56,9 @@ public class NodeConverterTest {
                 new LIT("lit"),
                 new LIT("lit", "fi"),
                 new LIT("lit", "f.i"),
-//                new LIT("lit", "f|i"),
+                new LIT("1.0", XSD.doubleType),
                 new LIT("lit", XSD.stringType),
                 new LIT("lit", new UID("http://www.test.com")),
-//                new LIT("lit", new UID("http://www.test|com")),
                 new UID("http://www.test.com"),
                 XSD.stringType,
                 RDF.Property,

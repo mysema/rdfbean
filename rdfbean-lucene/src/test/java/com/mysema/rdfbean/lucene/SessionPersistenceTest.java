@@ -16,6 +16,8 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 
@@ -92,5 +94,10 @@ public class SessionPersistenceTest extends AbstractLuceneTest{
         assertNotNull(session.get(Company.class, company.id));
         assertNotNull(session.get(Department.class, department.id));
         assertNotNull(session.get(Employee.class, employee.id));
+    }
+
+    @Override
+    protected Configuration getCoreConfiguration() {
+        return new DefaultConfiguration(Employee.class, Department.class, Company.class);
     }
 }

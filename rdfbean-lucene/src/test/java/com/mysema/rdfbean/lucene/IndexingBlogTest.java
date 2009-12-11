@@ -13,6 +13,8 @@ import org.junit.Test;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 
@@ -62,6 +64,11 @@ public class IndexingBlogTest extends AbstractLuceneTest{
     @Test
     public void test(){
         Session session = SessionUtil.openSession(luceneRepository, Article.class, User.class, Tag.class);
+    }
+
+    @Override
+    protected Configuration getCoreConfiguration() {
+        return new DefaultConfiguration(Article.class, User.class, Tag.class);
     }
 
 }

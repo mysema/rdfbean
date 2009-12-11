@@ -30,10 +30,10 @@ public class NodeConverter implements Converter<NODE>{
 //  full uri = <uri>|U
 //  short uri = <prefix>:<local>|u    
 //  bnode = <bnode>|b
+//  string literal : <value>|l
+//  localized literal : <value>|l@<lang>    
 //  typed literal = <value>|lt<prefix>:<local>
 //  typed literal2 = <value>|lT<uri>     
-//  untyped literal : <value>|l
-//  localized string : <value>|l@<lang>
     
     private final Map<String,String> prefixToNs;
     
@@ -83,7 +83,7 @@ public class NodeConverter implements Converter<NODE>{
                 return new BID(value);
                 
             }else if (md.charAt(0) == LITERAL){
-                if (md.length() == 1){
+                if (md.length() == 1){ // xsd:string typed
                     return new LIT(value);
                 }else if (md.charAt(1) == '@'){
                     return new LIT(value, md.substring(2));
@@ -120,7 +120,7 @@ public class NodeConverter implements Converter<NODE>{
             if (lit.getLang() != null){
                 builder.append("@");
                 return builder.append(LocaleUtil.toLang(lit.getLang())).toString();
-            }else if (lit.getDatatype() != null){
+            }else if (!lit.getDatatype().equals(XSD.stringType)){
                 if (nsToPrefix.containsKey(lit.getDatatype().getNamespace())){
                     builder.append("t");
                     builder.append(uidToShortString(lit.getDatatype()));    

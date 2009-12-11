@@ -147,7 +147,7 @@ public class MappedPath {
     }
 
     public UID getPropertyUri(int index) {
-        return predicatePath.get(index).uid();
+        return predicatePath.get(index).getUID();
     }
 
     public boolean isConstructorParameter() {

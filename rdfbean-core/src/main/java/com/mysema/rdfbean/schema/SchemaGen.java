@@ -134,7 +134,7 @@ public class SchemaGen {
                     if (!mappedPath.isInherited() && mappedPath.isSimpleProperty()) {
                         MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
                         MappedPredicate mappedPredicate = mappedPath.get(0);
-                        UID puid = mappedPredicate.uid();
+                        UID puid = mappedPredicate.getUID();
                         String predicateNs = puid.ns();
                         // No restrictions on predicates from built-in namespaces
                         if (RDF.NS.equals(predicateNs) || RDFS.NS.equals(predicateNs) || OWL.NS.equals(predicateNs)) {

@@ -33,7 +33,7 @@ public class URIMapping {
         return Namespaces.getReadableURI(uid.ns(), uid.ln());
     }
 
-    public UID uid() {
+    public UID getUID() {
         return uid;
     }
     
