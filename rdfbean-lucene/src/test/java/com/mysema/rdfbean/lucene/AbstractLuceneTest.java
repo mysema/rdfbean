@@ -6,8 +6,9 @@
 package com.mysema.rdfbean.lucene;
 
 import java.io.File;
-import java.util.UUID;
+import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.compass.core.config.CompassConfiguration;
 import org.junit.After;
 import org.junit.Before;
@@ -25,14 +26,15 @@ public abstract class AbstractLuceneTest {
 
     protected LuceneRepository luceneRepository;
     
+    private File indexDir = new File("target/test-index");
+    
     @Before
-    public void setUp(){
-        new File("target/test-index").renameTo(new File("target/" + UUID.randomUUID()));
-        
+    public void setUp() throws IOException, InterruptedException{
+        FileUtils.deleteDirectory(indexDir);
         CompassConfiguration compassConfig = new CompassConfiguration();
         compassConfig.configure("/compass.xml");
         
-        LuceneConfiguration configuration = new LuceneConfiguration();
+        DefaultLuceneConfiguration configuration = new DefaultLuceneConfiguration();
         configuration.setCoreConfiguration(getCoreConfiguration());
         configuration.setDefaultPropertyConfig(getDefaultPropertyConfig());
         configuration.setCompassConfig(compassConfig);
@@ -47,7 +49,9 @@ public abstract class AbstractLuceneTest {
     }
 
     @After
-    public void tearDown(){
-        luceneRepository.close();
+    public void tearDown() throws IOException{        
+        if (luceneRepository != null){
+            luceneRepository.close();    
+        }
     }
 }

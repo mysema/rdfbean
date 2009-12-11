@@ -32,14 +32,14 @@ public @interface SearchablePredicate {
      * 
      * @return
      */
-    boolean textIndexed() default false;
+    boolean text() default false;
     
     /**
      * Index value in not analyzed form int 'all' field 
      * 
      * @return
      */
-    boolean allIndexed() default false;
+    boolean all() default false;
 
     /**
      * The boost of the auto generated {@link SearchableMetaData}. Maps to

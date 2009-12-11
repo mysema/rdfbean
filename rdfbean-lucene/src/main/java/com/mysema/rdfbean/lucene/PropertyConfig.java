@@ -16,19 +16,39 @@ import com.mysema.commons.lang.Assert;
 @Immutable
 public class PropertyConfig {
 
+    /**
+     * 
+     */
     private final Store store;
     
+    /**
+     * 
+     */
     private final Index index;
     
+    /**
+     * Index value in analyzed form into 'text' field
+     * 
+     */
     private final boolean textIndexed;
     
+    /**
+     * Index value in not analyzed form int 'all' field 
+     * 
+     */
     private final boolean allIndexed;
     
-    public PropertyConfig(Store store, Index index, boolean textIndexed, boolean allIndexed) {
+    /**
+     * 
+     */
+    private final float boost;
+    
+    public PropertyConfig(Store store, Index index, boolean textIndexed, boolean allIndexed, float boost) {
         this.store = Assert.notNull(store);
         this.index = Assert.notNull(index);
         this.textIndexed = textIndexed;
         this.allIndexed = allIndexed;
+        this.boost = boost;
     }
 
     public Store getStore() {
@@ -47,4 +67,8 @@ public class PropertyConfig {
         return allIndexed;
     }
 
+    public float getBoost() {
+        return boost;
+    }
+    
 }

@@ -5,18 +5,18 @@
  */
 package com.mysema.rdfbean.lucene;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.compass.core.util.Assert;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.xsd.Converter;
 
 /**
@@ -37,7 +37,7 @@ public class NodeConverter implements Converter<NODE>{
     
     private final Map<String,String> prefixToNs;
     
-    private final Map<String,String> nsToPrefix;
+    private final Map<String,String> nsToPrefix = new HashMap<String,String>();
     
     private static final char SEPARATOR_CHAR = '|';
     
@@ -53,20 +53,20 @@ public class NodeConverter implements Converter<NODE>{
     
     private final Map<String,UID> strToUid = new HashMap<String,UID>();
     
-    public NodeConverter(Map<String,String> prefixToNs, Map<String,String> nsToPrefix){
+    public NodeConverter(Collection<UID> knownResources, Map<String,String> prefixToNs){
         this.prefixToNs = prefixToNs;
-        this.nsToPrefix = nsToPrefix;        
-        for (UID uid : OWL.all) register(uid, "owl:" + uid.getLocalName());
-        for (UID uid : RDF.all) register(uid, "rdf:" + uid.getLocalName());
-        for (UID uid : RDFS.all)register(uid, "rdfs:" + uid.getLocalName());
-        for (UID uid : XSD.all) register(uid, "xsd:" + uid.getLocalName());
+        for (Map.Entry<String, String> entry : prefixToNs.entrySet()){
+            nsToPrefix.put(entry.getValue(), entry.getKey());
+        }
+        for (UID uid : knownResources){
+            String prefix = nsToPrefix.get(uid.getNamespace());
+            Assert.notNull(prefix, "Got no prefix for " + uid.getNamespace());
+            String shortName = prefix + ":" + uid.getLocalName();
+            uidToStr.put(uid, shortName);
+            strToUid.put(shortName, uid);
+        }
     }
     
-    private void register(UID uid, String str){
-        uidToStr.put(uid, str);
-        strToUid.put(str, uid);
-    }
-
     @Override
     public NODE fromString(String str) {
         int i = str.lastIndexOf(SEPARATOR_CHAR);
@@ -98,42 +98,51 @@ public class NodeConverter implements Converter<NODE>{
     }
 
     @Override
-    public String toString(NODE node) {
+    public String toString(NODE node) {        
+        switch(node.getNodeType()){
+        case BLANK : return toString((BID)node);
+        case URI :   return toString((UID)node);
+        case LITERAL:return toString((LIT)node);
+        default: throw new IllegalArgumentException("Invalid Node " + node); 
+        }         
+    }
+    
+    public String toString(UID uid){
         StringBuilder builder = new StringBuilder();
-        if (node.isURI()){
-            if (nsToPrefix.containsKey(((UID)node).getNamespace())){
-                builder.append(uidToShortString((UID)node)).append(SEPARATOR_CHAR);
-                return builder.append(SHORT_URI).toString();    
-            }else{
-                builder.append(node.getValue()).append(SEPARATOR_CHAR);
-                return builder.append(FULL_URI).toString();
-            }
-            
-        }else if (node.isBNode()){
-            builder.append(node.getValue()).append(SEPARATOR_CHAR);
-            return builder.append(BNODE).toString();                       
-            
-        }else if (node.isLiteral()){
-            LIT lit = (LIT)node;
-            builder.append(node.getValue()).append(SEPARATOR_CHAR);
-            builder.append(LITERAL);
-            if (lit.getLang() != null){
-                builder.append("@");
-                return builder.append(LocaleUtil.toLang(lit.getLang())).toString();
-            }else if (!lit.getDatatype().equals(XSD.stringType)){
-                if (nsToPrefix.containsKey(lit.getDatatype().getNamespace())){
-                    builder.append("t");
-                    builder.append(uidToShortString(lit.getDatatype()));    
-                }else{
-                    builder.append("T");
-                    builder.append(lit.getDatatype().getValue());
-                }                
-                return builder.toString();
-            }else{
-                return builder.toString();
-            }
+        if (nsToPrefix.containsKey(((UID)uid).getNamespace())){
+            builder.append(uidToShortString((UID)uid)).append(SEPARATOR_CHAR);
+            return builder.append(SHORT_URI).toString();    
+        }else{
+            builder.append(uid.getValue()).append(SEPARATOR_CHAR);
+            return builder.append(FULL_URI).toString();
         }
-        throw new IllegalArgumentException("Invalid Node " + node); 
+    }
+    
+    public String toString(BID bid){
+        StringBuilder builder = new StringBuilder();
+        builder.append(bid.getValue()).append(SEPARATOR_CHAR);
+        return builder.append(BNODE).toString();  
+    }
+    
+    public String toString(LIT lit){
+        StringBuilder builder = new StringBuilder();
+        builder.append(lit.getValue()).append(SEPARATOR_CHAR);
+        builder.append(LITERAL);
+        if (lit.getLang() != null){
+            builder.append("@");
+            return builder.append(LocaleUtil.toLang(lit.getLang())).toString();
+        }else if (!lit.getDatatype().equals(XSD.stringType)){
+            if (nsToPrefix.containsKey(lit.getDatatype().getNamespace())){
+                builder.append("t");
+                builder.append(uidToShortString(lit.getDatatype()));    
+            }else{
+                builder.append("T");
+                builder.append(lit.getDatatype().getValue());
+            }                
+            return builder.toString();
+        }else{
+            return builder.toString();
+        }
     }
 
     public String uidToShortString(UID uid) {

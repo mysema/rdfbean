@@ -14,6 +14,8 @@ import org.compass.core.config.CompassConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.mysema.rdfbean.lucene.DefaultLuceneConfiguration;
+import com.mysema.rdfbean.lucene.NodeConverter;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
@@ -37,7 +39,7 @@ public class NodeConverterTest {
     
     @Before
     public void setUp(){
-        LuceneConfiguration configuration = new LuceneConfiguration();        
+        DefaultLuceneConfiguration configuration = new DefaultLuceneConfiguration();        
         configuration.setCompassConfig(new CompassConfiguration());
         configuration.setCoreConfiguration(new DefaultConfiguration());
         configuration.initialize();

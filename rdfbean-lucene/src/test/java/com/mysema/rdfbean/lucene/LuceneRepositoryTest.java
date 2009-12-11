@@ -104,15 +104,15 @@ public class LuceneRepositoryTest extends AbstractLuceneTest{
             
             for (UID predicate : predicates){
                 msg = subject + " " + predicate + " ? failed";
-                assertEquals(msg, 1, connection.countDocuments(subject, predicate, null,   null));
+                assertEquals(msg, 1, connection.countDocuments(subject, predicate, null, null));
                 
                 for (NODE object : objects){
                     msg = subject + " " + predicate + " " + object + " failed";
-                    assertEquals(msg, 1, connection.countDocuments(subject, predicate,    object, null));
+                    assertEquals(msg, 1, connection.countDocuments(subject, predicate, object, null));
                     msg = "? " + predicate + " " + object + " failed";
-                    assertEquals(msg, subjects.size(), connection.countDocuments(null,    predicate, object, null));
+                    assertEquals(msg, subjects.size(), connection.countDocuments(null, predicate, object, null));
                     msg = "? ? " + object + " failed";
-                    assertEquals(msg, subjects.size(), connection.countDocuments(null,    null,      object, null));
+                    assertEquals(msg, subjects.size(), connection.countDocuments(null, null, object, null));
                 }
             }
         }
@@ -145,7 +145,7 @@ public class LuceneRepositoryTest extends AbstractLuceneTest{
     
     @Override
     protected PropertyConfig getDefaultPropertyConfig(){
-        return new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true);
+        return new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true, 1.0f);
     }
 
 }

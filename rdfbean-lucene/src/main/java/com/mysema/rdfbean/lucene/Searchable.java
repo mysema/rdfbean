@@ -23,6 +23,9 @@ import java.lang.annotation.Target;
 public @interface Searchable {
     
     /**
+     * Store all predicates defined in this projection, 
+     * doesn't cover predicate mappings of subtypes
+     * 
      * @return
      */
     boolean storeAll() default false;

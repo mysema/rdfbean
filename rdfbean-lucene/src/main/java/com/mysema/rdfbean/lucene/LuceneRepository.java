@@ -25,7 +25,7 @@ public class LuceneRepository implements Repository{
     
     public LuceneRepository(){}
     
-    public LuceneRepository(LuceneConfiguration configuration){
+    public LuceneRepository(DefaultLuceneConfiguration configuration){
         this.configuration = Assert.notNull(configuration);
     }
     
@@ -43,7 +43,7 @@ public class LuceneRepository implements Repository{
         if (compass == null){
             Assert.notNull(configuration, "configuration has not been set");
             configuration.initialize();
-            compass = configuration.getCompassConfig().buildCompass();    
+            compass = configuration.getCompassConfiguration().buildCompass();    
         }else{
             throw new IllegalStateException("Compass has already been initialized!");
         }                

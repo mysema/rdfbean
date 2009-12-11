@@ -14,9 +14,6 @@
       </processors>
     </transaction>
 
-    <!--
-      <mappings> <class name="test.Author" /> </mappings>
-    -->
-
   </compass>
+  
 </compass-core-config>  

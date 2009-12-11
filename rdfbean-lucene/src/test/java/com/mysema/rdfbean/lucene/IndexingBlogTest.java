@@ -8,6 +8,7 @@ package com.mysema.rdfbean.lucene;
 import java.util.Date;
 import java.util.Set;
 
+import org.compass.core.Property.Store;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -31,14 +32,15 @@ public class IndexingBlogTest extends AbstractLuceneTest{
     public static class Article{
         
         @Predicate
-        @SearchablePredicate
+        @SearchablePredicate(text=true, store=Store.YES)
         String title;
         
         @Predicate
-        @SearchablePredicate
+        @SearchablePredicate(text=true)
         String text;
         
         @Predicate
+        @SearchablePredicate
         Date created;
         
         @Predicate(ln="tagged")
@@ -59,11 +61,33 @@ public class IndexingBlogTest extends AbstractLuceneTest{
     public static class Tag{
         @Predicate
         String name;
+        
+        public Tag(){}
+        
+        public Tag(String name){
+            this.name = name;
+        }
     }
     
     @Test
     public void test(){
         Session session = SessionUtil.openSession(luceneRepository, Article.class, User.class, Tag.class);
+        
+        Tag java = new Tag("java");
+        Tag web = new Tag("web");
+        Tag dev = new Tag("dev");
+        session.saveAll(java, web, dev);
+        
+        User user = new User();
+        user.firstName = "John";
+        user.lastName = "Smith";
+        user.userName = "johnsmith";
+        session.save(user);
+        
+        Article article = new Article();
+        article.title = "Title";
+        article.text = "Text";
+        article.created = new Date();
     }
 
     @Override

@@ -15,6 +15,7 @@ import static com.mysema.rdfbean.lucene.Constants.TEXT_FIELD_NAME;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +40,7 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
@@ -82,9 +84,9 @@ public class LuceneConnection implements RDFConnection{
         return conf.getConverter().uidToShortString(predicate);
     }
     
-    public void addStatement(Resource resource, STMT statement) {        
+    public void addStatement(Resource resource, STMT statement, List<ID> subjectTypes) {        
         String objectValue = conf.getConverter().toString(statement.getObject());        
-        PropertyConfig propertyConfig = conf.getPropertyConfig(statement.getPredicate());
+        PropertyConfig propertyConfig = conf.getPropertyConfig(statement.getPredicate(), subjectTypes);
         
         if (propertyConfig != null){            
             if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
@@ -277,7 +279,7 @@ public class LuceneConnection implements RDFConnection{
         return hits.getLength() > 0 ? hits.resource(0) : null;
     }
     
-    private void update(ListMap<ID, STMT> rsAdded, ListMap<ID, STMT> rsRemoved,
+    private void update(ListMap<ID,ID> types, ListMap<ID, STMT> rsAdded, ListMap<ID, STMT> rsRemoved,
             Set<ID> resources) throws IOException, CorruptIndexException {
         // for each resource, add/remove
         for (ID resource : resources) {
@@ -297,7 +299,11 @@ public class LuceneConnection implements RDFConnection{
                 List<STMT> list = rsAdded.get(resource);
                 if (list != null){
                     for (STMT s : list) {
-                        addStatement(luceneResource, s);
+                        List<ID> subjectTypes = types.get(s.getSubject());
+                        if (subjectTypes == null){
+                            subjectTypes = Collections.emptyList();
+                        }
+                        addStatement(luceneResource, s, subjectTypes);
                         contextsToAdd.add(s.getContext());
                     }
                 }
@@ -362,7 +368,15 @@ public class LuceneConnection implements RDFConnection{
                     if (addedToResource != null) {
                         HashSet<ID> contextsToAdd = new HashSet<ID>();
                         for (STMT s : addedToResource) {
-                            addStatement(newResource, s);
+                            List<ID> subjectTypes = types.get(s.getSubject());
+                            if (subjectTypes == null){
+                                List<STMT> typeStmts = findStatements(luceneResource, s.getSubject(), RDF.type, null, null); 
+                                subjectTypes = new ArrayList<ID>(typeStmts.size());
+                                for (STMT stmt : typeStmts){
+                                    subjectTypes.add((ID) stmt.getObject());
+                                }
+                            }
+                            addStatement(newResource, s, subjectTypes);
                             contextsToAdd.add(s.getContext());
                         }
                         // add all contexts
@@ -384,18 +398,25 @@ public class LuceneConnection implements RDFConnection{
         // Buffer per resource
         ListMap<ID, STMT> rsAdded = new ListMap<ID, STMT>();
         ListMap<ID, STMT> rsRemoved = new ListMap<ID, STMT>();
+        ListMap<ID, ID> types = new ListMap<ID, ID>();
         HashSet<ID> resources = new HashSet<ID>();
         for (STMT s : added) {
             rsAdded.put(s.getSubject(), s);
             resources.add(s.getSubject());
+            if (s.getPredicate().equals(RDF.type)){
+                types.put(s.getSubject(), (ID)s.getObject());
+            }
         }
         for (STMT s : removed) {
             rsRemoved.put(s.getSubject(), s);
             resources.add(s.getSubject());
+            if (s.getPredicate().equals(RDF.type)){
+                types.put(s.getSubject(), (ID)s.getObject());
+            }
         }
 
         try {
-            update(rsAdded, rsRemoved, resources);
+            update(types, rsAdded, rsRemoved, resources);
         } catch (CorruptIndexException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
