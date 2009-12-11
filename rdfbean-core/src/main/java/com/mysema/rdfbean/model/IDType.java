@@ -11,7 +11,16 @@ package com.mysema.rdfbean.model;
  *
  */
 public enum IDType {
+    /**
+     * 
+     */
     LOCAL,
+    /**
+     * 
+     */
     URI,
+    /**
+     * 
+     */
     RESOURCE;
 }

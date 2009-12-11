@@ -34,7 +34,7 @@ import com.mysema.rdfbean.owl.OWL;
  * @author tiwe
  * @version $Id$
  */
-public class LuceneRepositoryTest extends AbstractRepositoryTest{
+public class LuceneRepositoryTest extends AbstractLuceneTest{
         
     static final List<UID> subjects = Arrays.asList(
             XSD.stringType,
@@ -72,6 +72,7 @@ public class LuceneRepositoryTest extends AbstractRepositoryTest{
     
     @Test
     public void test() throws IOException{
+        luceneRepository.initialize();
         LuceneConnection connection = luceneRepository.openConnection();
         
         // tx #1

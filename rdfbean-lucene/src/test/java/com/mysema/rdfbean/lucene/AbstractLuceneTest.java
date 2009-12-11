@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.lucene;
 
 import java.io.File;
@@ -15,7 +20,7 @@ import com.mysema.rdfbean.TEST;
  * @author tiwe
  * @version $Id$
  */
-public abstract class AbstractRepositoryTest {
+public abstract class AbstractLuceneTest {
 
     protected LuceneRepository luceneRepository;
     
@@ -30,11 +35,10 @@ public abstract class AbstractRepositoryTest {
         configuration.setCompassConfig(compassConfig);
         configuration.addPrefix("test", TEST.NS);
         luceneRepository = new LuceneRepository(configuration);
-        luceneRepository.initialize();
     }
     
     @After
     public void tearDown(){
-//        luceneRepository.close();
+        luceneRepository.close();
     }
 }

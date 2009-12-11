@@ -126,8 +126,7 @@ public class LuceneConnection implements RDFConnection{
     
     @Override
     public BeanQuery createQuery(Session session) {
-        // TODO
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     private Resource createResource(){

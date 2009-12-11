@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.object;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -249,6 +250,10 @@ public class MappedClass {
         }
         // Close properties map from further changes
         properties = Collections.unmodifiableMap(properties);
+    }
+    
+    public <T extends Annotation> T getAnnotation(Class<T> atype) {
+        return clazz.getAnnotation(atype);
     }
     
     public MappedConstructor getConstructor() {

@@ -15,7 +15,6 @@ import javax.annotation.Nullable;
 public interface FetchStrategy {
 
     @Nullable
-    STMTMatcher getCacheKey(ID subject, UID predicate, NODE object, UID context,
-            boolean includeInferred);
+    STMTMatcher getCacheKey(ID subject, UID predicate, NODE object, UID context, boolean includeInferred);
 
 }

@@ -19,6 +19,7 @@ import org.compass.core.config.CompassConfiguration;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.owl.OWL;
 
 
@@ -34,6 +35,8 @@ public class LuceneConfiguration {
     
     private final Map<String,String> nsToPrefix = new HashMap<String,String>();
     
+    private Configuration coreConfig;
+    
     private NodeConverter converter;
     
     private CompassConfiguration compassConfig;
@@ -48,6 +51,7 @@ public class LuceneConfiguration {
      */
     private boolean fullTextIndexed = true;
     
+    // TODO : replace this with type/predicate storage
     /**
      * Store statements into predicate fields
      */
@@ -113,6 +117,14 @@ public class LuceneConfiguration {
         this.allIndexed = allIndexed;
     }
     
+    public Configuration getCoreConfiguration() {
+        return coreConfig;
+    }
+
+    public void setCoreConfiguration(Configuration coreConfig) {
+        this.coreConfig = coreConfig;
+    }
+
     public LuceneConfiguration addPrefix(String prefix, String ns){
         prefixToNs.put(prefix, ns);
         nsToPrefix.put(ns, prefix);
