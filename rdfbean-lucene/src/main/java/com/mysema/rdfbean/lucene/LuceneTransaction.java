@@ -18,21 +18,28 @@ import com.mysema.rdfbean.object.RDFBeanTransaction;
  */
 public class LuceneTransaction implements RDFBeanTransaction{
     
-    private final CompassTransaction tx;
-    
-    private boolean rollBackOnly;
-    
     private boolean active = true;
     
-    public LuceneTransaction(CompassTransaction tx) {
+    private final AbstractLuceneConnection conn;
+    
+    private boolean rollbackOnly;
+    
+    private final CompassTransaction tx;
+    
+    public LuceneTransaction(AbstractLuceneConnection conn, CompassTransaction tx) {
+        this.conn = Assert.notNull(conn);
         this.tx = Assert.notNull(tx);
     }
 
     @Override
     public void commit() {
+        if (rollbackOnly){
+            throw new RuntimeException("Transaction is rollBackOnly");
+        }   
         try {
             tx.commit();
         }finally{
+            conn.cleanUpAfterCommit();
             active = false;
         }    
     }
@@ -44,7 +51,13 @@ public class LuceneTransaction implements RDFBeanTransaction{
 
     @Override
     public boolean isRollbackOnly() {
-        return rollBackOnly;
+        return rollbackOnly;
+    }
+
+    @Override
+    public void prepare() {
+        tx.getSession().flush();
+        
     }
 
     @Override
@@ -52,13 +65,14 @@ public class LuceneTransaction implements RDFBeanTransaction{
         try {
             tx.rollback();
         }finally{
+            conn.cleanUpAfterRollback();
             active = false;
         }
     }
 
     @Override
     public void setRollbackOnly() {
-        this.rollBackOnly = true;
+        this.rollbackOnly = true;
         
     }
 

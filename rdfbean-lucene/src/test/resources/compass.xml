@@ -10,10 +10,14 @@
 
     <transaction>
       <processors>
-        <lucene/>
+        <lucene />
       </processors>
     </transaction>
 
+    <searchEngine>
+      <optimizer scheduleInterval="90" schedule="true" maxNumberOfSegments="20" />
+    </searchEngine>
+
   </compass>
-  
+
 </compass-core-config>  

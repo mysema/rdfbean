@@ -1,4 +1,9 @@
-package com.mysema.rdfbean.lucene;
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
+package com.mysema.rdfbean.lucene.index;
 
 import org.junit.Test;
 

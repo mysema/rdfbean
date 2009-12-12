@@ -1,4 +1,9 @@
-package com.mysema.rdfbean.lucene.conf;
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
+package com.mysema.rdfbean.lucene;
 
 import static org.junit.Assert.assertEquals;
 

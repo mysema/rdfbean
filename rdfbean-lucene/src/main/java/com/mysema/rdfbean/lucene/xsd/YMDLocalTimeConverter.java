@@ -21,11 +21,11 @@ public enum YMDLocalTimeConverter implements Converter<LocalTime>{
     
     HOUR("HH"),
 
+    MILLISECOND("HHmmssSSS"),
+
     MINUTE("HHmm"),
 
-    SECOND("HHmmss"),
-
-    MILLISECOND("HHmmssSSS");
+    SECOND("HHmmss");
 
     private final DateTimeFormatter formatter;
     

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2009 Mysema Ltd.
- * All rights reserved.
- * 
- */
 package com.mysema.rdfbean.lucene;
 
 import java.io.File;
@@ -14,19 +9,32 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
 
 /**
- * AbstractRepositoryTest provides
+ * AbstractLuceneTest provides
  *
  * @author tiwe
  * @version $Id$
  */
-public abstract class AbstractLuceneTest {
-
-    protected LuceneRepository luceneRepository;
+public abstract class AbstractRepositoryTest {
     
     private File indexDir = new File("target/test-index");
+    
+    protected Repository repository;
+    
+    protected Repository createRepository(LuceneConfiguration configuration){
+        return new LuceneRepository(configuration);
+    }
+    
+    protected abstract Configuration getCoreConfiguration();
+    
+    protected PropertyConfig getDefaultPropertyConfig(){
+        return null;
+    }
+    
+    protected abstract RepositoryMode getMode();
     
     @Before
     public void setUp() throws IOException, InterruptedException{
@@ -39,19 +47,15 @@ public abstract class AbstractLuceneTest {
         configuration.setDefaultPropertyConfig(getDefaultPropertyConfig());
         configuration.setCompassConfig(compassConfig);
         configuration.addPrefix("test", TEST.NS);
-        luceneRepository = new LuceneRepository(configuration);
-    }
-    
-    protected abstract Configuration getCoreConfiguration();
-    
-    protected PropertyConfig getDefaultPropertyConfig(){
-        return null;
+        configuration.setMode(getMode());
+        repository = createRepository(configuration);
     }
 
     @After
     public void tearDown() throws IOException{        
-        if (luceneRepository != null){
-            luceneRepository.close();    
+        if (repository != null){
+            repository.close();    
         }
     }
+
 }

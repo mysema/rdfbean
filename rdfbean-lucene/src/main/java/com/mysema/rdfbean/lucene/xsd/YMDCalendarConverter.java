@@ -21,19 +21,19 @@ import com.mysema.rdfbean.xsd.Converter;
  */
 public enum YMDCalendarConverter implements Converter<Calendar>{
     
-    YEAR("yyyy"),
-
-    MONTH("yyyyMM"),
-
     DAY("yyyyMMdd"),
 
     HOUR("yyMMddHH"),
 
+    MILLISECOND("yyMMddHHmmssSSS"),
+
     MINUTE("yyMMddHHmm"),
+
+    MONTH("yyyyMM"),
 
     SECOND("yyMMddHHmmss"),
 
-    MILLISECOND("yyMMddHHmmssSSS");
+    YEAR("yyyy");
     
     private final CalendarConverter converter;
     

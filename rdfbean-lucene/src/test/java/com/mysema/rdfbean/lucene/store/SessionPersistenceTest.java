@@ -3,9 +3,11 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.lucene;
+package com.mysema.rdfbean.lucene.store;
 
 import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -27,7 +29,7 @@ import com.mysema.rdfbean.object.SessionUtil;
  * @author tiwe
  * @version $Id$
  */
-public class SessionPersistenceTest extends AbstractLuceneTest{
+public class SessionPersistenceTest extends AbstractStore{
 
     @ClassMapping(ns=TEST.NS)
     public static class Employee{
@@ -66,8 +68,8 @@ public class SessionPersistenceTest extends AbstractLuceneTest{
     }
     
     @Test
-    public void test(){
-        Session session = SessionUtil.openSession(luceneRepository, 
+    public void test() throws IOException{
+        Session session = SessionUtil.openSession(repository, 
                 Employee.class, Department.class, Company.class);
         Company company = new Company();
         company.name = "Big Company";
@@ -94,6 +96,8 @@ public class SessionPersistenceTest extends AbstractLuceneTest{
         assertNotNull(session.get(Company.class, company.id));
         assertNotNull(session.get(Department.class, department.id));
         assertNotNull(session.get(Employee.class, employee.id));
+        
+        session.close();
     }
 
     @Override

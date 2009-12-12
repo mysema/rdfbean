@@ -35,23 +35,23 @@ public class NodeConverter implements Converter<NODE>{
 //  typed literal = <value>|lt<prefix>:<local>
 //  typed literal2 = <value>|lT<uri>     
     
-    private final Map<String,String> prefixToNs;
+    private static final char BNODE = 'b';
     
-    private final Map<String,String> nsToPrefix = new HashMap<String,String>();
+    private static final char FULL_URI = 'U';
+    
+    private static final char LITERAL = 'l';
     
     private static final char SEPARATOR_CHAR = '|';
     
     private static final char SHORT_URI = 'u';
     
-    private static final char FULL_URI = 'U';
+    private final Map<String,String> nsToPrefix = new HashMap<String,String>();
     
-    private static final char BNODE = 'b';
-    
-    private static final char LITERAL = 'l';
-    
-    private final Map<UID,String> uidToStr = new HashMap<UID,String>();
+    private final Map<String,String> prefixToNs;
     
     private final Map<String,UID> strToUid = new HashMap<String,UID>();
+    
+    private final Map<UID,String> uidToStr = new HashMap<UID,String>();
     
     public NodeConverter(Collection<UID> knownResources, Map<String,String> prefixToNs){
         this.prefixToNs = prefixToNs;
@@ -97,27 +97,6 @@ public class NodeConverter implements Converter<NODE>{
         throw new IllegalArgumentException("Invalid Node string : '" + str + "'");
     }
 
-    @Override
-    public String toString(NODE node) {        
-        switch(node.getNodeType()){
-        case BLANK : return toString((BID)node);
-        case URI :   return toString((UID)node);
-        case LITERAL:return toString((LIT)node);
-        default: throw new IllegalArgumentException("Invalid Node " + node); 
-        }         
-    }
-    
-    public String toString(UID uid){
-        StringBuilder builder = new StringBuilder();
-        if (nsToPrefix.containsKey(((UID)uid).getNamespace())){
-            builder.append(uidToShortString((UID)uid)).append(SEPARATOR_CHAR);
-            return builder.append(SHORT_URI).toString();    
-        }else{
-            builder.append(uid.getValue()).append(SEPARATOR_CHAR);
-            return builder.append(FULL_URI).toString();
-        }
-    }
-    
     public String toString(BID bid){
         StringBuilder builder = new StringBuilder();
         builder.append(bid.getValue()).append(SEPARATOR_CHAR);
@@ -144,14 +123,27 @@ public class NodeConverter implements Converter<NODE>{
             return builder.toString();
         }
     }
-
-    public String uidToShortString(UID uid) {
-        if (uidToStr.containsKey(uid)){
-            return uidToStr.get(uid);
+    
+    @Override
+    public String toString(NODE node) {        
+        switch(node.getNodeType()){
+        case BLANK : return toString((BID)node);
+        case URI :   return toString((UID)node);
+        case LITERAL:return toString((LIT)node);
+        default: throw new IllegalArgumentException("Invalid Node " + node); 
+        }         
+    }
+    
+    public String toString(UID uid){
+        StringBuilder builder = new StringBuilder();
+        if (nsToPrefix.containsKey(((UID)uid).getNamespace())){
+            builder.append(uidToShortString((UID)uid)).append(SEPARATOR_CHAR);
+            return builder.append(SHORT_URI).toString();    
         }else{
-            return nsToPrefix.get(uid.getNamespace()) + ":" + uid.getLocalName();
+            builder.append(uid.getValue()).append(SEPARATOR_CHAR);
+            return builder.append(FULL_URI).toString();
         }
-    }    
+    }
 
     public UID uidFromShortString(String str) {
         if (strToUid.containsKey(str)){
@@ -160,6 +152,14 @@ public class NodeConverter implements Converter<NODE>{
             int index = str.indexOf(':');
             if (index == -1) throw new IllegalArgumentException("Illegal prefixed URI : '" + str + "'");
             return new UID(prefixToNs.get(str.substring(0, index)), str.substring(index+1));                           
+        }
+    }    
+
+    public String uidToShortString(UID uid) {
+        if (uidToStr.containsKey(uid)){
+            return uidToStr.get(uid);
+        }else{
+            return nsToPrefix.get(uid.getNamespace()) + ":" + uid.getLocalName();
         }
     }
 

@@ -1,4 +1,9 @@
-package com.mysema.rdfbean.lucene.conf;
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
+package com.mysema.rdfbean.lucene;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -41,15 +46,15 @@ public class AllStoredTest extends AbstractConfigurationTest{
         String text;
     }
 
-    @ClassMapping(ns=TEST.NS)
-    @Searchable
-    public static class Explicit{
-        
-        @Predicate
-        @SearchablePredicate
-        String account;
-        
-    }
+//    @ClassMapping(ns=TEST.NS)
+//    @Searchable
+//    public static class Explicit{
+//        
+//        @Predicate
+//        @SearchablePredicate
+//        String account;
+//        
+//    }
     
     @Test
     public void allStored(){        

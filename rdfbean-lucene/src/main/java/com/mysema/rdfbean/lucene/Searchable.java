@@ -23,20 +23,6 @@ import java.lang.annotation.Target;
 public @interface Searchable {
     
     /**
-     * Store all predicates defined in this projection, 
-     * doesn't cover predicate mappings of subtypes
-     * 
-     * @return
-     */
-    boolean storeAll() default false;
-    
-    /**
-     * Boost level for the searchable class. Controls the ranking of hits
-     * when performing searches.
-     */
-    float boost() default 1.0f;
-
-    /**
      * A specialized analyzer (different from the default one) associated with the
      * searchable class. Note, that this will associate the class statically with
      * an analyzer. Dynamically associating the class with an analyzer can be done
@@ -44,5 +30,26 @@ public @interface Searchable {
      * to dynamically lookup the value for the analyzer to use.
      */
     String analyzer() default "";
+    
+    /**
+     * Boost level for the searchable class. Controls the ranking of hits
+     * when performing searches.
+     */
+    float boost() default 1.0f;
+    
+    /**
+     * Store only in embedded context
+     * 
+     * @return
+     */
+    boolean embeddedOnly() default false;
+
+    /**
+     * Store all predicates defined in this projection, 
+     * doesn't cover predicate mappings of subtypes
+     * 
+     * @return
+     */
+    boolean storeAll() default false;
 
 }

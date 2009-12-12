@@ -1,7 +1,12 @@
-package com.mysema.rdfbean.lucene.conf;
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
+package com.mysema.rdfbean.lucene;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Collections;
 
@@ -57,11 +62,17 @@ public class InheritanceTest extends AbstractConfigurationTest{
         assertNotNull(configuration.getPropertyConfig(namePred, Collections.singleton(new UID(TEST.NS, Cat.class.getSimpleName()))));
         assertNotNull(configuration.getPropertyConfig(namePred, Collections.singleton(new UID(TEST.NS, Dog.class.getSimpleName()))));
         
+        // mate is also processed
         UID matePred = new UID(TEST.NS, "mate");
         assertNotNull(configuration.getPropertyConfig(matePred, Collections.singleton(new UID(TEST.NS, Cat.class.getSimpleName()))));
         
+        // age in the Dog context is not processed
         UID agePred = new UID(TEST.NS, "age");
         assertNull(configuration.getPropertyConfig(agePred, Collections.singleton(new UID(TEST.NS, Dog.class.getSimpleName()))));
+        
+        // age in Animal context is also not processed
+        assertNull(configuration.getPropertyConfig(agePred, Collections.singleton(new UID(TEST.NS, Animal.class.getSimpleName()))));
+        
     }
 
 }

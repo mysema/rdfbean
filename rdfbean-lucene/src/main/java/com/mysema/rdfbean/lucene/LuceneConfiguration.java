@@ -1,8 +1,14 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.lucene;
 
 import java.util.Collection;
+import java.util.Set;
 
-import org.compass.core.config.CompassConfiguration;
+import org.compass.core.Compass;
 
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
@@ -16,11 +22,17 @@ import com.mysema.rdfbean.object.Configuration;
  */
 public interface LuceneConfiguration {
 
-    CompassConfiguration getCompassConfiguration();
+    Compass getCompass();
+    
+    Set<UID> getComponentProperties();
+
+    Set<ID> getComponentTypes();
 
     NodeConverter getConverter();
-
+    
     Configuration getCoreConfiguration();
+    
+    RepositoryMode getMode();
 
     PropertyConfig getPropertyConfig(UID predicate, Collection<? extends ID> subjectTypes);
 

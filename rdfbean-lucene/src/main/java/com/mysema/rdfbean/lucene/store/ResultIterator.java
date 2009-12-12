@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.lucene;
+package com.mysema.rdfbean.lucene.store;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -35,20 +35,25 @@ public abstract class ResultIterator implements CloseableIterator<STMT>{
         this.hits = Assert.notNull(hits);
     }
 
-    protected abstract List<STMT> getStatements(Resource resource);
-    
     @Override
-    public boolean hasNext() {
-        getNextResults();
-        return results.hasNext();
+    public void close() throws IOException {
+        hits.close();        
     }
-
+    
     private void getNextResults() {
         if (results == null || !results.hasNext()){
             if (++index < hits.length()){
                 results = getStatements(hits.resource(index)).iterator(); 
             }
         }
+    }
+
+    protected abstract List<STMT> getStatements(Resource resource);
+
+    @Override
+    public boolean hasNext() {
+        getNextResults();
+        return results.hasNext();
     }
 
     @Override
@@ -65,12 +70,6 @@ public abstract class ResultIterator implements CloseableIterator<STMT>{
     @Override
     public void remove() {
         throw new UnsupportedOperationException();        
-    }
-
-    @Override
-    public void close() throws IOException {
-        hits.close();
-        
     }
     
 }

@@ -28,18 +28,21 @@ import org.compass.core.Property.Store;
 public @interface SearchablePredicate {
     
     /**
-     * Index value in analyzed form into 'text' field
-     * 
-     * @return
-     */
-    boolean text() default false;
-    
-    /**
      * Index value in not analyzed form int 'all' field 
      * 
      * @return
      */
     boolean all() default false;
+    
+    /**
+     * The analyzer of the auto generated {@link SearchableMetaData}. Maps to
+     * {@link org.compass.annotations.SearchableMetaData#analyzer()}.
+     *
+     * <p>The meta-data will NOT be auto generated if the field/property have
+     * {@link SearchableMetaData}/{@link SearchableMetaDatas} AND the
+     * {@link #name()} is not set.
+     */
+    String analyzer() default "";
 
     /**
      * The boost of the auto generated {@link SearchableMetaData}. Maps to
@@ -52,14 +55,14 @@ public @interface SearchablePredicate {
     float boost() default 1.0f;
 
     /**
-     * The store of the auto generated {@link SearchableMetaData}. Maps to
-     * {@link org.compass.annotations.SearchableMetaData#store()}.
+     * The format of the auto generated {@link SearchableMetaData}. Maps to
+     * {@link org.compass.annotations.SearchableMetaData#format()}.
+     * The meta-data will be auto generated only if the name has a value.
      *
-     * <p>The meta-data will NOT be auto generated if the field/property have
-     * {@link SearchableMetaData}/{@link SearchableMetaDatas} AND the
-     * {@link #name()} is not set.
+     * <p>This format will also be used for an internal meta-data id (if required to be
+     * generated).
      */
-    Store store() default Store.NO;
+    String format() default "";
 
     /**
      * The index of the auto generated {@link SearchableMetaData}. Maps to
@@ -72,24 +75,21 @@ public @interface SearchablePredicate {
     Index index() default Index.ANALYZED;
 
     /**
-     * The analyzer of the auto generated {@link SearchableMetaData}. Maps to
-     * {@link org.compass.annotations.SearchableMetaData#analyzer()}.
+     * The store of the auto generated {@link SearchableMetaData}. Maps to
+     * {@link org.compass.annotations.SearchableMetaData#store()}.
      *
      * <p>The meta-data will NOT be auto generated if the field/property have
      * {@link SearchableMetaData}/{@link SearchableMetaDatas} AND the
      * {@link #name()} is not set.
      */
-    String analyzer() default "";
+    Store store() default Store.NO;
 
 
     /**
-     * The format of the auto generated {@link SearchableMetaData}. Maps to
-     * {@link org.compass.annotations.SearchableMetaData#format()}.
-     * The meta-data will be auto generated only if the name has a value.
-     *
-     * <p>This format will also be used for an internal meta-data id (if required to be
-     * generated).
+     * Index value in analyzed form into 'text' field
+     * 
+     * @return
      */
-    String format() default "";
+    boolean text() default false;
 
 }

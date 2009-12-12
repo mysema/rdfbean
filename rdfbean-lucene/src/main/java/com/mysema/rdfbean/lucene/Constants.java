@@ -13,15 +13,15 @@ package com.mysema.rdfbean.lucene;
  */
 public interface Constants {
     
-    String CONTEXT_NULL = "null";
-    
-    String CONTEXT_FIELD_NAME = "context";
+    String ALL_FIELD_NAME = "all";
     
     String BNODE_ID_PREFIX = "!";
     
-    String ID_FIELD_NAME = "id";
+    String CONTEXT_FIELD_NAME = "context";
     
-    String TEXT_FIELD_NAME = "text";
+    String CONTEXT_NULL = "null";
+    
+    String ID_FIELD_NAME = "id";
 
-    String ALL_FIELD_NAME = "all";
+    String TEXT_FIELD_NAME = "text";
 }

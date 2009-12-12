@@ -19,11 +19,11 @@ import com.mysema.rdfbean.xsd.Converter;
  */
 public enum YMDLocalDateConverter implements Converter<LocalDate>{
     
-    YEAR("yyyy"),
+    DAY("yyyyMMdd"),
 
     MONTH("yyyyMM"),
 
-    DAY("yyyyMMdd");
+    YEAR("yyyy");
 
     private final DateTimeFormatter formatter;
     
