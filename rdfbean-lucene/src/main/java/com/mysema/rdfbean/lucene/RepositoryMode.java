@@ -1,7 +1,7 @@
 package com.mysema.rdfbean.lucene;
 
 /**
- * Mode provides
+ * RepositoryMode provides
  *
  * @author tiwe
  * @version $Id$

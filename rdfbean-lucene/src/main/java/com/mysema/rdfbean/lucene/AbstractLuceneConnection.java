@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import org.apache.lucene.index.CorruptIndexException;
 import org.compass.core.Compass;
 import org.compass.core.CompassHits;
+import org.compass.core.CompassQueryBuilder;
 import org.compass.core.CompassSession;
 import org.compass.core.CompassTransaction;
 import org.compass.core.Property;
@@ -76,8 +77,7 @@ public abstract class AbstractLuceneConnection implements RDFConnection{
     private LuceneTransaction localTxn = null;
     
     private boolean readonlyTnx = false;
-    
-    
+        
     public AbstractLuceneConnection(LuceneConfiguration configuration, CompassSession session) {
         this.conf = Assert.notNull(configuration);        
         this.compassSession = Assert.notNull(session);
@@ -156,6 +156,8 @@ public abstract class AbstractLuceneConnection implements RDFConnection{
     public <Q> Q createQuery(Session session, Class<Q> queryType) {
         if (queryType.equals(LuceneQuery.class)){
             return (Q)new LuceneQuery(conf, session, compassSession);
+        }else if (queryType.equals(CompassQueryBuilder.class)){    
+            return (Q) compass.queryBuilder();
         }else{
             throw new IllegalArgumentException("Unsupported query type : " + queryType.getSimpleName());
         }
@@ -209,7 +211,6 @@ public abstract class AbstractLuceneConnection implements RDFConnection{
     private String getPredicateField(UID predicate){
         return conf.getConverter().uidToShortString(predicate);
     }
-
 
     private Resource getResource(String field, Object value) throws IOException {
         CompassHits hits = compassSession.queryBuilder().term(field, value).hits();

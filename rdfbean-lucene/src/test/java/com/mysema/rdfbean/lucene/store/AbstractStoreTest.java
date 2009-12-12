@@ -18,7 +18,7 @@ import com.mysema.rdfbean.lucene.RepositoryMode;
  * @author tiwe
  * @version $Id$
  */
-public abstract class AbstractStore extends AbstractRepositoryTest{
+public abstract class AbstractStoreTest extends AbstractRepositoryTest{
 
     @Override
     public RepositoryMode getMode(){

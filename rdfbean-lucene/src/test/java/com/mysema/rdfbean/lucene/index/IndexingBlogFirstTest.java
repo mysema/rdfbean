@@ -37,7 +37,7 @@ import com.mysema.rdfbean.object.SessionUtil;
  * @author tiwe
  * @version $Id$
  */
-public class IndexingBlogTest extends AbstractIndexTest{
+public class IndexingBlogFirstTest extends AbstractIndexTest{
     
     @Searchable
     @ClassMapping(ns=TEST.NS)

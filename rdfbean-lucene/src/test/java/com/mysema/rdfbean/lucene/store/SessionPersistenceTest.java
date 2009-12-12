@@ -29,7 +29,7 @@ import com.mysema.rdfbean.object.SessionUtil;
  * @author tiwe
  * @version $Id$
  */
-public class SessionPersistenceTest extends AbstractStore{
+public class SessionPersistenceTest extends AbstractStoreTest{
 
     @ClassMapping(ns=TEST.NS)
     public static class Employee{

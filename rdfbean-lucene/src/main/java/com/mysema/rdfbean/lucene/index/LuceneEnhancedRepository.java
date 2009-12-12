@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.lucene.index;
 
+import org.compass.core.CompassQueryBuilder;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.lucene.AbstractLuceneConnection;
 import com.mysema.rdfbean.lucene.LuceneConfiguration;
@@ -57,7 +59,7 @@ public class LuceneEnhancedRepository implements Repository{
         return new MultiConnection(connection, luceneConnection){
             @Override
             public <Q> Q createQuery(Session session, Class<Q> queryType) {
-                if (queryType.equals(LuceneQuery.class)){
+                if (queryType.equals(LuceneQuery.class) || queryType.equals(CompassQueryBuilder.class)){
                     return luceneConnection.createQuery(session, queryType);
                 }else{
                     return connection.createQuery(session, queryType);

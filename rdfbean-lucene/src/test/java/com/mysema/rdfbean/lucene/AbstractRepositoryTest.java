@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.compass.core.CompassHits;
+import org.compass.core.Property;
+import org.compass.core.Resource;
 import org.compass.core.config.CompassConfiguration;
 import org.junit.After;
 import org.junit.Before;
@@ -28,6 +31,19 @@ public abstract class AbstractRepositoryTest {
         return new LuceneRepository(configuration);
     }
     
+    protected void displayAndClose(CompassHits hits) {
+        try{
+            for (int i = 0; i < hits.length(); i++){
+                Resource resource = hits.resource(i);
+                for (Property property : resource.getProperties()){
+                    System.out.println(property.getName() + " = " + property.getStringValue());
+                }
+            }                
+        }finally{
+            hits.close();
+        }               
+    }
+    
     protected abstract Configuration getCoreConfiguration();
     
     protected PropertyConfig getDefaultPropertyConfig(){
@@ -35,7 +51,7 @@ public abstract class AbstractRepositoryTest {
     }
     
     protected abstract RepositoryMode getMode();
-    
+
     @Before
     public void setUp() throws IOException, InterruptedException{
         FileUtils.deleteDirectory(indexDir);
@@ -46,7 +62,7 @@ public abstract class AbstractRepositoryTest {
         configuration.setCoreConfiguration(getCoreConfiguration());
         configuration.setDefaultPropertyConfig(getDefaultPropertyConfig());
         configuration.setCompassConfig(compassConfig);
-        configuration.addPrefix("test", TEST.NS);
+        configuration.addPrefix("", TEST.NS);
         configuration.setMode(getMode());
         repository = createRepository(configuration);
     }

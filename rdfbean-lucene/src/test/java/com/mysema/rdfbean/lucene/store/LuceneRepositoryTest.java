@@ -32,7 +32,7 @@ import com.mysema.rdfbean.object.RDFBeanTransaction;
  * @author tiwe
  * @version $Id$
  */
-public class LuceneRepositoryTest extends AbstractStore{
+public class LuceneRepositoryTest extends AbstractStoreTest{
     
     @Test
     public void test() throws IOException{
