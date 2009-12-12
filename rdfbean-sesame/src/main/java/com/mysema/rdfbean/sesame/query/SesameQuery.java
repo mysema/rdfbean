@@ -66,8 +66,6 @@ public class SesameQuery extends
     
     private final StatementPattern.Scope patternScope;
     
-    private final Operations sesameOps;
-    
     private ValueExpr filterConditions;
 
     private boolean idPropertyInOperation = false;
@@ -108,14 +106,12 @@ public class SesameQuery extends
             SesameDialect dialect, 
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,
-            Operations sesameOps,
             boolean datatypeInference) {
         super(dialect, session);
         this.connection = Assert.notNull(connection, "connection was null");
         this.conf = session.getConfiguration();
         this.datatypeInference = datatypeInference;
         this.patternScope = patternScope;
-        this.sesameOps = Assert.notNull(sesameOps, "sesameOps was null");
         this.joinBuilder = new JoinBuilder(dialect, datatypeInference);
     }
     
@@ -406,7 +402,7 @@ public class SesameQuery extends
                     transformPath(otherPath);
                     return null;
                 }else{
-                    transformer = sesameOps.getTransformer(Ops.EQ_OBJECT);    
+                    transformer = SesameTransformers.getTransformer(Ops.EQ_OBJECT);    
                 }
                 
             // const in path    
@@ -418,7 +414,7 @@ public class SesameQuery extends
                     path.setValue(var.getValue());
                     return null;    
                 }else{
-                    transformer = sesameOps.getTransformer(Ops.EQ_OBJECT);
+                    transformer = SesameTransformers.getTransformer(Ops.EQ_OBJECT);
                 }
                 
             // path in collection    
@@ -450,7 +446,7 @@ public class SesameQuery extends
             }
             
         }else if (op.equals(Ops.MAP_ISEMPTY)){
-            transformer = sesameOps.getTransformer(Ops.IS_NULL);
+            transformer = SesameTransformers.getTransformer(Ops.IS_NULL);
             
         // containsKey / containsValue
         }else if (op.equals(Ops.CONTAINS_KEY) || op.equals(Ops.CONTAINS_VALUE)){
@@ -481,7 +477,7 @@ public class SesameQuery extends
                 transformPath(otherPath);
                 return null;
             }else{
-                transformer = sesameOps.getTransformer(Ops.EQ_OBJECT);    
+                transformer = SesameTransformers.getTransformer(Ops.EQ_OBJECT);    
             }
             
         // path == const OR path != const
@@ -503,7 +499,7 @@ public class SesameQuery extends
             }                        
             
         }else{
-            transformer = sesameOps.getTransformer(op);
+            transformer = SesameTransformers.getTransformer(op);
         }       
         
         // handle operation via transformer

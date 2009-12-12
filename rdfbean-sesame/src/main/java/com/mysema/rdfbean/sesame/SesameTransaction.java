@@ -28,9 +28,9 @@ import com.mysema.rdfbean.object.RDFBeanTransaction;
  */
 public class SesameTransaction implements RDFBeanTransaction{
 
-    private static final Logger logger = LoggerFactory.getLogger(SesameTransaction.class);
-    
     private static final Map<Integer,Isolation> isolationLevels;
+    
+    private static final Logger logger = LoggerFactory.getLogger(SesameTransaction.class);
     
     static{
         Map<Integer,Isolation> levels = new HashMap<Integer,Isolation>();
@@ -41,14 +41,14 @@ public class SesameTransaction implements RDFBeanTransaction{
         isolationLevels = Collections.unmodifiableMap(levels);
     }
     
-    private final SesameConnection connection;
-    
-    private boolean rollBackOnly;
-    
     private boolean active = false;
+    
+    private final SesameConnection connection;
     
     @Nullable
     private Isolation isolationLevel;
+    
+    private boolean rollbackOnly;
     
     public SesameTransaction(SesameConnection connection, int isolationLevel) {
         this.connection = Assert.notNull(connection);
@@ -56,9 +56,21 @@ public class SesameTransaction implements RDFBeanTransaction{
             ? isolationLevels.get(isolationLevel) : null;
     }
 
+    public void begin() {
+        try {
+            connection.getConnection().setTransactionIsolation(isolationLevel);
+            connection.getConnection().begin();            
+        } catch (StoreException e) {
+            String error = "Caught " + e.getClass().getName();
+            logger.error(error, e);
+            throw new RuntimeException(error, e);
+        }
+        active = true;
+    }
+
     @Override
     public void commit() {
-        if (rollBackOnly){
+        if (rollbackOnly){
             throw new RuntimeException("Transaction is rollBackOnly");
         }        
         try {
@@ -73,11 +85,20 @@ public class SesameTransaction implements RDFBeanTransaction{
         
     }
 
-    @Override
-    public boolean isRollbackOnly() {
-        return rollBackOnly;
+    public boolean isActive(){
+        return active;
     }
 
+    @Override
+    public boolean isRollbackOnly() {
+        return rollbackOnly;
+    }
+
+    @Override
+    public void prepare() {
+        // TODO        
+    }
+    
     @Override
     public void rollback() {
        try {
@@ -93,24 +114,8 @@ public class SesameTransaction implements RDFBeanTransaction{
 
     @Override
     public void setRollbackOnly() {
-        this.rollBackOnly = true;
+        this.rollbackOnly = true;
         
-    }
-
-    public void begin() {
-        try {
-            connection.getConnection().setTransactionIsolation(isolationLevel);
-            connection.getConnection().begin();            
-        } catch (StoreException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        }
-        active = true;
-    }
-    
-    public boolean isActive(){
-        return active;
     }
 
 }

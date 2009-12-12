@@ -24,7 +24,6 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
-import com.mysema.rdfbean.query.QDSL;
 
 /**
  * QuerySerializer seriales ParsedTupleQuery instances to a syntax combining 
@@ -37,10 +36,6 @@ import com.mysema.rdfbean.query.QDSL;
 public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     private static final Set<String> knownNamespaces = new HashSet<String>(Arrays.asList(RDF.NS, RDFS.NS, XSD.NS, OWL.NS));
-    
-    static{
-        Namespaces.register("querydsl", QDSL.NS);
-    }
     
     private final StringBuilder builder = new StringBuilder();
     

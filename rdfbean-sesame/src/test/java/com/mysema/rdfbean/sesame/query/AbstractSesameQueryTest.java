@@ -61,7 +61,6 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
                 (SesameDialect) connection.getDialect(),
                 connection.getConnection(),
                 StatementPattern.Scope.NAMED_CONTEXTS,
-                new Operations(new Functions(new ConverterRegistryImpl())),
                 true){
             @Override
             protected void logQuery(TupleQueryModel query) {

@@ -18,19 +18,20 @@ import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
 import com.mysema.query.types.operation.Operator;
-import com.mysema.rdfbean.query.QDSL;
 
 /**
- * Operations provides Operator -> ValueExpr mappings for Sesame query creation
+ * SesameTransformers provides Operator -> ValueExpr mappings for Sesame query creation
  *
  * @author tiwe
  * @version $Id$
  */
-public class Operations {
+public final class SesameTransformers {
     
-    private final Map<Operator<?>,Transformer> opToTransformer = new HashMap<Operator<?>,Transformer>();
+    private SesameTransformers(){}
     
-    public Operations(Functions functions){        
+    private static final Map<Operator<?>,Transformer> opToTransformer = new HashMap<Operator<?>,Transformer>();
+    
+    static{        
         opToTransformer.put(AND, new Transformer(){
             @Override
             public ValueExpr transform(List<ValueExpr> args){
@@ -98,7 +99,7 @@ public class Operations {
                         return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",true);
                     }    
                 }
-                return new FunctionCall(QDSL.startsWith.getId(), args);
+                return new FunctionCall("functions:startsWith", args);
             }            
         });
         opToTransformer.put(ENDS_WITH, new Transformer(){
@@ -111,7 +112,7 @@ public class Operations {
                         return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),true); 
                     }    
                 }
-                return new FunctionCall(QDSL.endsWith.getId(), args);                
+                return new FunctionCall("functions:endsWith", args);                
             }            
         });
         opToTransformer.put(STRING_CONTAINS, new Transformer(){
@@ -124,7 +125,7 @@ public class Operations {
                         return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue()+"*",true);    
                     }    
                 }
-                return new FunctionCall(QDSL.stringContains.getId(), args);
+                return new FunctionCall("functions:stringContains", args);
                 
             }            
         });
@@ -146,7 +147,7 @@ public class Operations {
                         return new Regex(first, ((Var)args.get(1)).getValue().stringValue()+"*",false);    
                     }    
                 }                
-                return new FunctionCall(QDSL.startsWithIc.getId(), args);
+                return new FunctionCall("functions:startsWithIc", args);
                 
             }            
         });
@@ -160,7 +161,7 @@ public class Operations {
                         return new Regex(first, "*"+((Var)args.get(1)).getValue().stringValue(),false);
                     }
                 }
-                return new FunctionCall(QDSL.endsWithIc.getId(), args);
+                return new FunctionCall("functions:endsWithIc", args);
                 
             }            
         });
@@ -173,16 +174,17 @@ public class Operations {
             }            
         }); 
         
-        final Iterator<MathOp> mathOps = Arrays.asList(
+        Iterator<MathOp> mathOps = Arrays.asList(
                 MathOp.PLUS, 
                 MathOp.MINUS, 
                 MathOp.MULTIPLY, 
                 MathOp.DIVIDE).iterator();
         for (Operator<?> op : Arrays.<Operator<?>>asList(ADD, SUB, MULT, DIV)){
+            final MathOp mathOp = mathOps.next();
             opToTransformer.put(op, new Transformer(){
                 @Override
                 public ValueExpr transform(List<ValueExpr> args) {
-                    return new MathExpr(args.get(0), args.get(1), mathOps.next());
+                    return new MathExpr(args.get(0), args.get(1), mathOp);
                 }                
             });
         }
@@ -212,11 +214,11 @@ public class Operations {
             }            
         });
         
-        functions.addTransformers(opToTransformer);
+        SesameFunctions.addTransformers(opToTransformer);
         
     }
     
-    public Transformer getTransformer(Operator<?> op){
+    public static final Transformer getTransformer(Operator<?> op){
         return opToTransformer.get(op);
     }
 }
