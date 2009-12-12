@@ -10,6 +10,8 @@ import java.util.Collection;
 
 
 /**
+ * Namespace file for the RDF Schema namespace
+ * 
  * @author sasa
  *
  */

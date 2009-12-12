@@ -15,6 +15,11 @@ package com.mysema.rdfbean.object;
 public interface RDFBeanTransaction {
     
     /**
+     * Prepare the transaction for commit
+     */
+    public void prepare();
+    
+    /**
      * Commit and close the connection.
      *
      * @throws RDFBeanException on an error in commit

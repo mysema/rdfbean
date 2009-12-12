@@ -65,9 +65,9 @@ public class MiniConnection implements RDFConnection {
     }
 
     @Override
-    public RDFBeanTransaction beginTransaction(Session session,
-            boolean readOnly, int txTimeout, int isolationLevel) {
-        throw new UnsupportedOperationException("createTransaction");
+    public RDFBeanTransaction beginTransaction(boolean readOnly,
+            int txTimeout, int isolationLevel) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -76,6 +76,11 @@ public class MiniConnection implements RDFConnection {
 
     public MiniRepository getRepository() {
         return repository;
+    }
+
+    @Override
+    public <Q> Q createQuery(Session session, Class<Q> queryType) {
+        throw new UnsupportedOperationException();
     }
 
 }

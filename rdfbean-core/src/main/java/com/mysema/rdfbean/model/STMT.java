@@ -14,6 +14,8 @@ import com.mysema.query.annotations.QueryEntity;
 
 
 /**
+ * STMT represents an RDF statement
+ * 
  * @author sasa
  *
  */

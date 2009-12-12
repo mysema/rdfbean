@@ -6,12 +6,21 @@
 package com.mysema.rdfbean.model;
 
 /**
- * NodeType provides
+ * NodeType defines the three node types of RDF : blank nodes, URIs and literals
  * 
  * @author Timo
  */
 public enum NodeType {
+    /**
+     * blank node
+     */
     BLANK, 
+    /**
+     * URI
+     */
     URI, 
+    /**
+     * literal
+     */
     LITERAL
 }

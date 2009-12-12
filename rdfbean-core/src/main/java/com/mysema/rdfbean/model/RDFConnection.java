@@ -15,6 +15,13 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 
+/**
+ * RDFConnection defines a session interface to the Repository
+ *
+ * @author tiwe
+ * @version $Id$
+ *
+ */
 public interface RDFConnection extends Closeable {
 
     CloseableIterator<STMT> findStatements(
@@ -28,9 +35,11 @@ public interface RDFConnection extends Closeable {
     void clear();
 
     BeanQuery createQuery(Session session);
+    
+    <Q> Q createQuery(Session session, Class<Q> queryType);
 
     BID createBNode();
 
-    RDFBeanTransaction beginTransaction(Session session, boolean readOnly, int txTimeout, int isolationLevel);
+    RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel);
 
 }

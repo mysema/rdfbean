@@ -16,6 +16,8 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.query.annotations.QueryEntity;
 
 /**
+ * UID represents an URI resource
+ * 
  * @author sasa
  *
  */

@@ -141,6 +141,15 @@ public interface Session extends ObjectRepository, Closeable {
      * @return
      */
     BeanQuery from(PEntity<?>... exprs);
+    
+    /**
+     * Creates a query instance of the given type
+     * 
+     * @param <Q>
+     * @param queryClass
+     * @return
+     */
+    <Q> Q createQuery(Class<Q> queryClass);
 
     /**
      * Returns a bean of type clazz with the given natural id (URI or blank node) or null if not found.

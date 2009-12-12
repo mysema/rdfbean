@@ -10,6 +10,8 @@ import com.mysema.query.annotations.QueryEntity;
 
 
 /**
+ * Local id
+ * 
  * @author sasa
  *
  */

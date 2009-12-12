@@ -12,6 +12,8 @@ import net.jcip.annotations.Immutable;
 import com.mysema.query.annotations.QueryEntity;
 
 /**
+ * NODE represents a general RDF node
+ * 
  * @author sasa
  *
  */
@@ -25,20 +27,6 @@ public abstract class NODE implements Serializable {
     NODE() {}
     
     public abstract String getValue();
-    
-//    static boolean nullSafeEquals(Object n1, Object n2) {
-//        if (n1 == null) {
-//            if (n2 == null) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        } else if (n2 == null) {
-//            return false;
-//        } else {
-//            return n1.equals(n2);
-//        }
-//    }
     
     public abstract NodeType getNodeType();
 

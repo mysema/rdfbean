@@ -10,6 +10,8 @@ import net.jcip.annotations.Immutable;
 import com.mysema.query.annotations.QueryEntity;
 
 /**
+ * ID represents a general RDF resource
+ * 
  * @author sasa
  *
  */

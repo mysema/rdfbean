@@ -13,6 +13,8 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.query.annotations.QueryEntity;
 
 /**
+ * BID represents a blank node
+ * 
  * @author sasa
  *
  */

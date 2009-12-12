@@ -61,10 +61,9 @@ public class FetchOptimizer implements RDFConnection {
         cache = new MiniRepository(DEFAULT_INITIAL_CAPACITY, this.inverseCache).openConnection();
     }
 
-    public RDFBeanTransaction beginTransaction(Session session,
-            boolean readOnly, int txTimeout, int isolationLevel) {
-        return connection.beginTransaction(session, readOnly, txTimeout,
-                isolationLevel);
+    public RDFBeanTransaction beginTransaction(boolean readOnly,
+            int txTimeout, int isolationLevel) {
+        return connection.beginTransaction(readOnly, txTimeout, isolationLevel);
     }
 
     public void close() throws IOException {
@@ -79,6 +78,10 @@ public class FetchOptimizer implements RDFConnection {
         return connection.createQuery(session);
     }
 
+    public <Q> Q createQuery(Session session, Class<Q> queryType) {
+        return connection.createQuery(session, queryType);
+    }
+    
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, boolean includeInferred) {
         boolean cached = false;
@@ -165,5 +168,6 @@ public class FetchOptimizer implements RDFConnection {
     public void addFetchStrategies(List<FetchStrategy> fetchStrategies) {
         this.fetchStrategies.addAll(fetchStrategies);
     }
+
     
 }

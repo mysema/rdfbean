@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
+ * Namespace file for XML Schema namespace
+ * 
  * @author sasa
  * 
  */

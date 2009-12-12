@@ -34,44 +34,44 @@ import com.mysema.rdfbean.object.identity.IdentityService;
  */
 public class SessionImpl implements Session {
   
-    static final int DEFAULT_INITIAL_CAPACITY = 1024;
-    
     public static final Set<UID> CONTAINER_TYPES = Collections.unmodifiableSet(
             new HashSet<UID>(Arrays.<UID>asList(
                     RDF.Alt, RDF.Seq, RDF.Bag, RDFS.Container
             ))
     );
     
+    static final int DEFAULT_INITIAL_CAPACITY = 1024;
+    
     private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
     
-    private final Configuration conf;
+    private Set<STMT> addedStatements;
 
-    private final IdentityService identityService;
+    private final Configuration conf;
     
+    private RDFConnection connection;
+    
+    private DefaultErrorHandler errorHandler = new DefaultErrorHandler();
+
     private FlushMode flushMode = FlushMode.ALWAYS;
     
+    private final IdentityService identityService;
+    
     Map<ID, List<Object>> instanceCache;
-
+    
     private Iterable<Locale> locales;
     
     private final BID model;
     
     private Map<String,ObjectRepository> parentRepositories = new HashMap<String, ObjectRepository>();
     
-    private Map<Object, ID> resourceCache;
-    
-    private Set<STMT> addedStatements;
-    
     private Set<STMT> removedStatements;
+    
+    private Map<Object, ID> resourceCache;
     
     @Nullable
     private Set<Object> seen;
     
     private RDFBeanTransaction transaction;
-    
-    private RDFConnection connection;
-    
-    private DefaultErrorHandler errorHandler = new DefaultErrorHandler();
     
     public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales, BID model) {
         this.conf = Assert.notNull(conf);
@@ -97,80 +97,17 @@ public class SessionImpl implements Session {
     }
 
     @Override
-    public LID save(Object instance) {
-        boolean flush = false;
-        if (seen == null) {
-            seen = new HashSet<Object>();
-            flush = true;
-        }
-        ID subject = toRDF(instance, null);
-        if (flush) {
-            seen = null;
-            if (flushMode == FlushMode.ALWAYS) {
-                flush();
-            }
-        }
-        return toLID(subject);
-    }
-    
-    @Override
-    public List<LID> saveAll(Object... instances) {
-        List<LID> ids = new ArrayList<LID>(instances.length);
-        seen = new HashSet<Object>(instances.length*3);
-        for (Object instance : instances) {
-            ids.add(save(instance));
-        }
-        seen = null;
-        if (flushMode == FlushMode.ALWAYS) {
-            flush();
-        }
-        return ids;
-    }
-
-//    private void addCheckNumber(BID model, BID bid) {
-//        String lid = identityService.getLID(model, bid).getId();
-//        recordAddStatement(bid, CORE.localId, new LIT(lid), null);
-//    }
-
-    @Override
     public void addParent(String ns, ObjectRepository parent) {
         Assert.hasText(ns);
         Assert.notNull(parent);
         parentRepositories.put(ns, parent);
     }
-
+    
     private ID assignId(MappedClass mappedClass, BeanMap instance) {
         ID subject = createResource(instance);
         setId(mappedClass, subject, instance);
         return subject;
     }
-    
-//    private void assignModel() {
-//        CloseableIterator<STMT> statements = connection.findStatements(null, CORE.modelId, null, null, false);
-//        if (statements.hasNext()) {
-//            STMT statement = statements.next();
-//            if (!statements.hasNext()) {
-//                BID subject = (BID) statement.getSubject();
-//                BID object = (BID) statement.getObject();
-//                model = (BID) object;
-//                
-//                if (verifyLocalId((BID) model, subject) && verifyLocalId(model, object)) {
-//                    // OK
-//                    return;
-//                }
-//            }
-//        }
-//        cleanupModel();
-//        if (model == null) {
-//            // modelId
-//            BID subject = connection.createBNode();
-//            model = connection.createBNode();
-//            recordAddStatement(subject, CORE.modelId, model, null);
-//
-//            addCheckNumber(model, subject);
-//            addCheckNumber(model, model);
-//        }
-//    }
 
     @Override
     public void autowire(Object instance) {
@@ -178,6 +115,21 @@ public class SessionImpl implements Session {
         BeanMap beanMap = toBeanMap(instance);
         MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
         bind(getId(mappedClass, beanMap), beanMap);
+    }
+
+    @Override
+    public RDFBeanTransaction beginTransaction() {
+        return beginTransaction(false, -1, java.sql.Connection.TRANSACTION_READ_COMMITTED);
+    }
+    
+
+    @Override
+    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
+        if (transaction != null) {
+            throw new IllegalStateException("Transaction exists already");
+        }
+        transaction = connection.beginTransaction(readOnly, txTimeout, isolationLevel);
+        return transaction;
     }
         
     @Nullable
@@ -219,11 +171,6 @@ public class SessionImpl implements Session {
         return instance;
     }
     
-//    private void cleanupModel(){
-//        removeStatements(null, CORE.modelId, null, null);
-//        removeStatements(null, CORE.localId, null, null);
-//    }
-    
     @Override
     public void clear() {
         instanceCache = LazyMap.decorate(
@@ -241,55 +188,9 @@ public class SessionImpl implements Session {
         seen = null;
     }
 
-    private void deleteInternal(Object instance) {
-        BeanMap beanMap = toBeanMap(instance);
-        ID subject = resourceCache.get(instance);
-        Class<?> clazz = getClass(instance);
-        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
-        UID context = getContext(instance, subject, null);
-        if (subject == null) {
-            subject = getId(mappedClass, beanMap);
-        }
-        if (subject != null) {
-            // Delete own properties
-            for (STMT statement : findStatements(subject, null, null, false, context)) {
-                recordRemoveStatement(statement);
-                NODE object = statement.getObject();
-                if (object.isResource()) {
-                    removeList((ID) object, context);
-                    removeContainer((ID) object, context);
-                }
-            }
-            // Delete references
-            for (STMT statement : findStatements(null, null, subject, false, context)) {
-                recordRemoveStatement(statement);
-            }
-            // Remove from primary cache
-            List<Object> instances = instanceCache.remove(subject);
-            if (instances != null) {
-                for (Object obj : instances) {
-                    resourceCache.remove(obj);
-                }
-            }
-        }
-    }
-    
     @Override
-    public void delete(Object instance) {
-        deleteInternal(instance);
-        if (flushMode == FlushMode.ALWAYS) {
-            flush();
-        }
-    }
-    
-    @Override
-    public void deleteAll(Object... objects) {
-        for (Object object : objects) {
-            deleteInternal(object);
-        }
-        if (flushMode == FlushMode.ALWAYS) {
-            flush();
-        }
+    public void close() throws IOException {
+        connection.close();
     }
     
     @Nullable
@@ -308,7 +209,7 @@ public class SessionImpl implements Session {
             return null;
         }
     }
-
+    
     @SuppressWarnings("unchecked")
     private Object convertCollection(MappedPath propertyPath, Collection<? extends NODE> values, UID context)
             throws InstantiationException, IllegalAccessException {
@@ -368,6 +269,15 @@ public class SessionImpl implements Session {
         }
     }
 
+    private Collection<NODE> convertList(ID subject, UID context) {
+        List<NODE> list = new ArrayList<NODE>();
+        while (subject != null && !subject.equals(RDF.nil)) {
+            list.add(getFunctionalValue(subject, RDF.first, false, context));
+            subject = (ID) getFunctionalValue(subject, RDF.rest, false, context);
+        }
+        return list;
+    }
+    
     private String convertLocalized(MappedPath propertyPath, Set<? extends NODE> values) {
         return LocaleUtil.getLocalized(convertLocalizedMap(propertyPath, values), 
                 locales, null);
@@ -449,80 +359,6 @@ public class SessionImpl implements Session {
             bind(subject, instance);
         }
         return (T) instance;
-    }
-
-    @Nullable
-    @SuppressWarnings("unchecked")
-    protected <T> Class<? extends T> matchType(Collection<ID> types, Class<T> targetType) {
-        if (types.isEmpty()) {
-            return targetType;
-        } else {
-            Class<? extends T> result = targetType;
-            boolean foundMatch = false;
-            for (ID type : types) {
-                if (type instanceof UID) {
-                    UID uid = (UID) type;
-                    List<Class<?>> classes = conf.getMappedClasses(uid);
-                    if (classes != null) {
-                        for (Class<?> clazz : classes) {
-                            if ((result == null || result.isAssignableFrom(clazz)) && !clazz.isInterface()) {
-                                foundMatch = true;
-                                result = (Class<? extends T>) clazz;
-                            }
-                        }
-                    }
-                }
-            }
-            if (foundMatch) {
-                return result;
-            } else {
-                return null;
-            }
-        } 
-    }
-    
-    @Nullable
-    protected <T> T createInstance(ID subject, Class<T> requiredType, Collection<ID> mappedTypes) {
-        T instance;
-        Class<? extends T> actualType = matchType(mappedTypes, requiredType);
-        if (actualType != null) {
-            if (!conf.allowCreate(actualType)) {
-                instance = null;
-            } else {
-                try {
-                    MappedClass mappedClass = MappedClass.getMappedClass(actualType);
-                    MappedConstructor mappedConstructor = 
-                        mappedClass.getConstructor();
-                    if (mappedConstructor == null) {
-                        instance = actualType.newInstance();
-                    } else {
-                        List<Object> constructorArguments = 
-                            getConstructorArguments(mappedClass, subject, mappedConstructor);
-                        @SuppressWarnings("unchecked")
-                        Constructor<T> constructor = (Constructor<T>) mappedConstructor.getConstructor(); 
-                        instance = constructor.newInstance(constructorArguments.toArray());
-                    }
-                } catch (InstantiationException e) {
-                    logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
-                } catch (IllegalAccessException e) {
-                    logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
-                } catch (SecurityException e) {
-                    logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
-                } catch (IllegalArgumentException e) {
-                    logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
-                } catch (InvocationTargetException e) {
-                    logger.error(e.getMessage(), e);
-                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
-                }
-            }
-        } else {
-            instance = errorHandler.typeMismatchError(subject, mappedTypes, requiredType);
-        }
-        return instance;
     }
 
     @SuppressWarnings("unchecked")
@@ -609,13 +445,112 @@ public class SessionImpl implements Session {
         }
         return convertedValue;
     }
+
+    @Nullable
+    protected <T> T createInstance(ID subject, Class<T> requiredType, Collection<ID> mappedTypes) {
+        T instance;
+        Class<? extends T> actualType = matchType(mappedTypes, requiredType);
+        if (actualType != null) {
+            if (!conf.allowCreate(actualType)) {
+                instance = null;
+            } else {
+                try {
+                    MappedClass mappedClass = MappedClass.getMappedClass(actualType);
+                    MappedConstructor mappedConstructor = 
+                        mappedClass.getConstructor();
+                    if (mappedConstructor == null) {
+                        instance = actualType.newInstance();
+                    } else {
+                        List<Object> constructorArguments = 
+                            getConstructorArguments(mappedClass, subject, mappedConstructor);
+                        @SuppressWarnings("unchecked")
+                        Constructor<T> constructor = (Constructor<T>) mappedConstructor.getConstructor(); 
+                        instance = constructor.newInstance(constructorArguments.toArray());
+                    }
+                } catch (InstantiationException e) {
+                    logger.error(e.getMessage(), e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
+                } catch (IllegalAccessException e) {
+                    logger.error(e.getMessage(), e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
+                } catch (SecurityException e) {
+                    logger.error(e.getMessage(), e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
+                } catch (IllegalArgumentException e) {
+                    logger.error(e.getMessage(), e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
+                } catch (InvocationTargetException e) {
+                    logger.error(e.getMessage(), e);
+                    instance = errorHandler.createInstanceError(subject, mappedTypes, requiredType, e);
+                }
+            }
+        } else {
+            instance = errorHandler.typeMismatchError(subject, mappedTypes, requiredType);
+        }
+        return instance;
+    }
     
+    public <Q> Q createQuery(Class<Q> queryClass){
+        return connection.createQuery(this, queryClass);
+    }
+
     protected ID createResource(BeanMap instance) {
         ID id = conf.createURI(instance.getBean());
         if (id == null) {
             id = connection.createBNode();
         }
         return id;
+    }
+    
+    @Override
+    public void delete(Object instance) {
+        deleteInternal(instance);
+        if (flushMode == FlushMode.ALWAYS) {
+            flush();
+        }
+    }
+    
+    @Override
+    public void deleteAll(Object... objects) {
+        for (Object object : objects) {
+            deleteInternal(object);
+        }
+        if (flushMode == FlushMode.ALWAYS) {
+            flush();
+        }
+    }
+    
+    private void deleteInternal(Object instance) {
+        BeanMap beanMap = toBeanMap(instance);
+        ID subject = resourceCache.get(instance);
+        Class<?> clazz = getClass(instance);
+        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        UID context = getContext(instance, subject, null);
+        if (subject == null) {
+            subject = getId(mappedClass, beanMap);
+        }
+        if (subject != null) {
+            // Delete own properties
+            for (STMT statement : findStatements(subject, null, null, false, context)) {
+                recordRemoveStatement(statement);
+                NODE object = statement.getObject();
+                if (object.isResource()) {
+                    removeList((ID) object, context);
+                    removeContainer((ID) object, context);
+                }
+            }
+            // Delete references
+            for (STMT statement : findStatements(null, null, subject, false, context)) {
+                recordRemoveStatement(statement);
+            }
+            // Remove from primary cache
+            List<Object> instances = instanceCache.remove(subject);
+            if (instances != null) {
+                for (Object obj : instances) {
+                    resourceCache.remove(obj);
+                }
+            }
+        }
     }
     
     private boolean exists(ID subject, MappedClass mappedClass, UID context) {
@@ -636,15 +571,6 @@ public class SessionImpl implements Session {
             }
         }
         return false;
-    }
-    
-    private Collection<NODE> convertList(ID subject, UID context) {
-        List<NODE> list = new ArrayList<NODE>();
-        while (subject != null && !subject.equals(RDF.nil)) {
-            list.add(getFunctionalValue(subject, RDF.first, false, context));
-            subject = (ID) getFunctionalValue(subject, RDF.rest, false, context);
-        }
-        return list;
     }
     
     private Set<NODE> filterObjects(CloseableIterator<STMT> statements) {
@@ -723,6 +649,18 @@ public class SessionImpl implements Session {
 //        }
     }
 
+    private List<ID> findMappedTypes(ID subject, UID context) {
+        List<ID> types = new ArrayList<ID>();
+        List<STMT> statements = findStatements(subject, RDF.type, null, true, context);
+        for (STMT stmt : statements) {
+            NODE type = stmt.getObject();
+            if (type instanceof UID && conf.getMappedClasses((UID) type) != null) {
+                types.add((UID) type);
+            }
+        }
+        return types;
+    }
+
     private Set<NODE> findPathValues(ID resource, MappedPath path, int index, UID context) {
         MappedPredicate predicate = path.get(index);
         if (predicate.context() != null) {
@@ -741,7 +679,7 @@ public class SessionImpl implements Session {
         }
         return values;
     }
-
+    
     // FIXME: This should return a closable iterator
     protected List<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, 
             boolean includeInferred, @Nullable UID context) {
@@ -759,18 +697,6 @@ public class SessionImpl implements Session {
             }
         }
         return statements;
-    }
-    
-    private List<ID> findMappedTypes(ID subject, UID context) {
-        List<ID> types = new ArrayList<ID>();
-        List<STMT> statements = findStatements(subject, RDF.type, null, true, context);
-        for (STMT stmt : statements) {
-            NODE type = stmt.getObject();
-            if (type instanceof UID && conf.getMappedClasses((UID) type) != null) {
-                types.add((UID) type);
-            }
-        }
-        return types;
     }
     
     private List<ID> findTypes(ID subject, UID context) {
@@ -809,15 +735,10 @@ public class SessionImpl implements Session {
     }
     
     @Override
-    public <T> T getById(String id, Class<T> clazz) {
-        return get(clazz, new LID(id));
-    }
-    
-    @Override
     public <T> T get(Class<T> clazz, LID subject) {
         return get(clazz, identityService.getID(subject));
     }
-
+    
     @Nullable
     private Object get(ID resource, Class<?> clazz) {
         for (Object instance : instanceCache.get(resource)) {
@@ -827,7 +748,7 @@ public class SessionImpl implements Session {
         }
         return null;
     }
-    
+
     @Override
     public <T> List<T> getAll(Class<T> clazz, ID... subjects) {
         List<T> instances = new ArrayList<T>(subjects.length);
@@ -836,7 +757,7 @@ public class SessionImpl implements Session {
         }
         return instances;
     }
-
+    
     @Override
     public <T> List<T> getAll(Class<T> clazz, LID... subjects) {
         List<T> instances = new ArrayList<T>(subjects.length);
@@ -862,6 +783,24 @@ public class SessionImpl implements Session {
         return (T) get(clazz, subject);
     }
 
+    @Override
+    public <T> T getById(String id, Class<T> clazz) {
+        return get(clazz, new LID(id));
+    }
+
+    protected Class<?> getClass(Object object) {
+        return object instanceof BeanMap ? ((BeanMap) object).getBean().getClass() : object.getClass();
+    }
+    
+    @Override
+    public Configuration getConfiguration() {
+        return conf;
+    }
+    
+    public RDFConnection getConnection() {
+        return connection;
+    }
+    
     private List<Object> getConstructorArguments(MappedClass mappedClass, ID subject, MappedConstructor mappedConstructor) throws InstantiationException, IllegalAccessException {
         List<Object> constructorArguments = new ArrayList<Object>(mappedConstructor.getArgumentCount());
         // TODO parentContext?
@@ -874,10 +813,6 @@ public class SessionImpl implements Session {
         return constructorArguments;
     }
     
-    public UID getContext(Object instance, @Nullable ID subject, @Nullable UID defaultContext) {
-        return getContext(instance.getClass(), subject, defaultContext);
-    }
-    
     public UID getContext(Class<?> clazz, @Nullable ID subject, @Nullable UID defaultContext) {
         UID contextUID = conf.getContext(clazz, subject);
         if (contextUID != null) {
@@ -885,6 +820,14 @@ public class SessionImpl implements Session {
         } else {
             return defaultContext;
         }
+    }
+
+    public UID getContext(Object instance, @Nullable ID subject, @Nullable UID defaultContext) {
+        return getContext(instance.getClass(), subject, defaultContext);
+    }
+    
+    public ConverterRegistry getConverterRegistry(){
+        return conf.getConverterRegistry();
     }
     
     public Locale getCurrentLocale() {
@@ -897,8 +840,8 @@ public class SessionImpl implements Session {
         return Locale.ROOT;
     }
     
-    public ConverterRegistry getConverterRegistry(){
-        return conf.getConverterRegistry();
+    public FlushMode getFlushMode() {
+        return flushMode;
     }
 
     @Nullable
@@ -914,7 +857,7 @@ public class SessionImpl implements Session {
             return null;
         }
     }
-    
+        
     @Nullable
     private ID getId(MappedClass mappedClass, Object instance) {
         MappedProperty<?> idProperty = mappedClass.getIdProperty();
@@ -945,7 +888,7 @@ public class SessionImpl implements Session {
         }
         return null;
     }
-    
+
     public ID getId(Object instance){
         BeanMap beanMap = toBeanMap(instance);
         MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
@@ -955,15 +898,15 @@ public class SessionImpl implements Session {
     public IdentityService getIdentityService() {
         return identityService;
     }
-
+    
     public LID getLID(ID id) {
         return identityService.getLID(getModel(), id);
     }
-        
+
     protected BID getModel() {
         return model;
     }
-
+    
     private Set<NODE> getPathValue(MappedClass mappedClass, MappedPath path, ID subject, UID context) {
         if (conf.allowRead(path)) {
             Set<NODE> values;
@@ -989,7 +932,7 @@ public class SessionImpl implements Session {
     public RDFBeanTransaction getTransaction() {
         return transaction;
     }
-    
+
     private Object getValue(MappedPath propertyPath, Set<? extends NODE> values, UID context) throws InstantiationException, IllegalAccessException {
         MappedProperty<?> mappedProperty = propertyPath.getMappedProperty();
         Object convertedValue;
@@ -1024,17 +967,50 @@ public class SessionImpl implements Session {
         }
         return convertedValue;
     }
+    
+    private boolean isContainer(ID node, UID context) {
+        for (ID type : findTypes(node, context)) {
+            if (CONTAINER_TYPES.contains(type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    protected <T> Class<? extends T> matchType(Collection<ID> types, Class<T> targetType) {
+        if (types.isEmpty()) {
+            return targetType;
+        } else {
+            Class<? extends T> result = targetType;
+            boolean foundMatch = false;
+            for (ID type : types) {
+                if (type instanceof UID) {
+                    UID uid = (UID) type;
+                    List<Class<?>> classes = conf.getMappedClasses(uid);
+                    if (classes != null) {
+                        for (Class<?> clazz : classes) {
+                            if ((result == null || result.isAssignableFrom(clazz)) && !clazz.isInterface()) {
+                                foundMatch = true;
+                                result = (Class<? extends T>) clazz;
+                            }
+                        }
+                    }
+                }
+            }
+            if (foundMatch) {
+                return result;
+            } else {
+                return null;
+            }
+        } 
+    }
 
     private void put(ID resource, @Nullable Object value) {
         if (resource != null) {
             instanceCache.get(resource).add(value);
             resourceCache.put(value, resource);
-        }
-    }
-    
-    private void recordRemoveStatement(STMT statement) {
-        if (!addedStatements.remove(statement)) {
-            removedStatements.add(statement);
         }
     }
     
@@ -1045,12 +1021,78 @@ public class SessionImpl implements Session {
         }
     }
 
+    private void recordRemoveStatement(STMT statement) {
+        if (!addedStatements.remove(statement)) {
+            removedStatements.add(statement);
+        }
+    }
+
+    private void removeContainer(ID node, UID context) {
+        if (isContainer(node, context)) {
+            for (STMT stmt : findStatements(node, null, null, false, context)) {
+                recordRemoveStatement(stmt);
+            }
+        }
+    }
+
+    private void removeList(ID node, UID context) {
+        if (findStatements(node, RDF.type, RDF.List, true, context).size() > 0) {
+            removeListInternal(node, context);
+        }
+    }
+
+    private void removeListInternal(ID node, UID context) {
+        for (STMT statement : findStatements(node, null, null, false, context)) {
+            recordRemoveStatement(statement);
+            NODE object = statement.getObject();
+            // Remove rdf:rest
+            if (RDF.rest.equals(statement.getPredicate()) && object.isResource()) {
+                removeListInternal((ID) object, context);
+            }
+        }
+    }
+    
     protected void removeStatements(ID subject, UID predicate, NODE object, UID context) {
         for (STMT statement : findStatements(subject, predicate, object, false, context)) {
             recordRemoveStatement(statement);
         }
     }
+
+    @Override
+    public LID save(Object instance) {
+        boolean flush = false;
+        if (seen == null) {
+            seen = new HashSet<Object>();
+            flush = true;
+        }
+        ID subject = toRDF(instance, null);
+        if (flush) {
+            seen = null;
+            if (flushMode == FlushMode.ALWAYS) {
+                flush();
+            }
+        }
+        return toLID(subject);
+    }
     
+    @Override
+    public List<LID> saveAll(Object... instances) {
+        List<LID> ids = new ArrayList<LID>(instances.length);
+        seen = new HashSet<Object>(instances.length*3);
+        for (Object instance : instances) {
+            ids.add(save(instance));
+        }
+        seen = null;
+        if (flushMode == FlushMode.ALWAYS) {
+            flush();
+        }
+        return ids;
+    }
+
+    public void setFlushMode(FlushMode flushMode) {
+        this.flushMode = flushMode;
+    }
+
     private <T> void setId(MappedClass mappedClass, ID subject, BeanMap instance) {
         MappedProperty<?> idProperty = mappedClass.getIdProperty();
         if (idProperty != null && !mappedClass.isEnum() && !idProperty.isVirtual()) {
@@ -1083,14 +1125,14 @@ public class SessionImpl implements Session {
         }
     }
 
+    protected BeanMap toBeanMap(Object instance) {
+        return instance instanceof BeanMap ? (BeanMap) instance : new BeanMap(instance);
+    }
+
     protected LID toLID(ID resource) {
         return identityService.getLID(getModel(), resource);
     }
 
-    protected BeanMap toBeanMap(Object instance) {
-        return instance instanceof BeanMap ? (BeanMap) instance : new BeanMap(instance);
-    }
-    
     @SuppressWarnings("unchecked")
     private void toRDF(Object instance, ID subject, UID context, MappedClass mappedClass, boolean update) {
         UID uri = mappedClass.getUID();
@@ -1175,42 +1217,6 @@ public class SessionImpl implements Session {
         }
     }
 
-    private ID toRDFContainer(Collection<?> collection, UID context,
-            ContainerType containerType) {
-        int i=0;
-        ID container = connection.createBNode();
-        recordAddStatement(container, RDF.type, containerType.getUID(), context);
-        for (Object o : collection) {
-            i++;
-            NODE value = toRDFValue(o, context);
-            if (value != null) {
-                recordAddStatement(container, RDF.getContainerMembershipProperty(i), value, context);
-            }
-        }
-        return container;
-    }
-
-    private void removeContainer(ID node, UID context) {
-        if (isContainer(node, context)) {
-            for (STMT stmt : findStatements(node, null, null, false, context)) {
-                recordRemoveStatement(stmt);
-            }
-        }
-    }
-
-    private boolean isContainer(ID node, UID context) {
-        for (ID type : findTypes(node, context)) {
-            if (CONTAINER_TYPES.contains(type)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected Class<?> getClass(Object object) {
-        return object instanceof BeanMap ? ((BeanMap) object).getBean().getClass() : object.getClass();
-    }
-    
     private ID toRDF(Object instance, @Nullable UID parentContext) {
         BeanMap beanMap = toBeanMap(Assert.notNull(instance));
         Class<?> clazz = getClass(instance);
@@ -1244,21 +1250,19 @@ public class SessionImpl implements Session {
         return subject;
     }
 
-    private void removeList(ID node, UID context) {
-        if (findStatements(node, RDF.type, RDF.List, true, context).size() > 0) {
-            removeListInternal(node, context);
-        }
-    }
-    
-    private void removeListInternal(ID node, UID context) {
-        for (STMT statement : findStatements(node, null, null, false, context)) {
-            recordRemoveStatement(statement);
-            NODE object = statement.getObject();
-            // Remove rdf:rest
-            if (RDF.rest.equals(statement.getPredicate()) && object.isResource()) {
-                removeListInternal((ID) object, context);
+    private ID toRDFContainer(Collection<?> collection, UID context,
+            ContainerType containerType) {
+        int i=0;
+        ID container = connection.createBNode();
+        recordAddStatement(container, RDF.type, containerType.getUID(), context);
+        for (Object o : collection) {
+            i++;
+            NODE value = toRDFValue(o, context);
+            if (value != null) {
+                recordAddStatement(container, RDF.getContainerMembershipProperty(i), value, context);
             }
         }
+        return container;
     }
 
     private ID toRDFList(List<?> list, UID context) {
@@ -1299,48 +1303,6 @@ public class SessionImpl implements Session {
                 return toRDFLiteral(object);
             }
         }
-    }
-
-//    private boolean verifyLocalId(BID model, BID bnode) {
-//        String lid = identityService.getLID(model, bnode).getId();
-//        List<STMT> statements = findStatements(bnode, CORE.localId, new LIT(lid), true, null);
-//        return statements.size() == 1;
-//    }
-
-    public FlushMode getFlushMode() {
-        return flushMode;
-    }
-
-    public void setFlushMode(FlushMode flushMode) {
-        this.flushMode = flushMode;
-    }
-
-    @Override
-    public RDFBeanTransaction beginTransaction() {
-        return beginTransaction(false, -1, java.sql.Connection.TRANSACTION_READ_COMMITTED);
-    }
-
-    @Override
-    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
-        if (transaction != null) {
-            throw new IllegalStateException("Transaction exists already");
-        }
-        transaction = connection.beginTransaction(this, readOnly, txTimeout, isolationLevel);
-        return transaction;
-    }
-
-    @Override
-    public void close() throws IOException {
-        connection.close();
-    }
-
-    @Override
-    public Configuration getConfiguration() {
-        return conf;
-    }
-
-    public RDFConnection getConnection() {
-        return connection;
     }
 
 }
