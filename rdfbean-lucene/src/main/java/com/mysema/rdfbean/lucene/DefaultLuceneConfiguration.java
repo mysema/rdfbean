@@ -62,7 +62,7 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
     
     private PropertyConfig defaultPropertyConfig = null;
     
-    private RepositoryMode mode = RepositoryMode.INDEX;
+    private boolean online = true;
     
     private final Map<String,String> prefixToNs = new HashMap<String,String>();
     
@@ -96,10 +96,6 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
     
     public Configuration getCoreConfiguration() {
         return coreConfig;
-    }
-
-    public RepositoryMode getMode() {
-        return mode;
     }
 
     public PropertyConfig getPropertyConfig(UID predicate, Collection<? extends ID> subjectTypes){
@@ -143,7 +139,7 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
         prefixToNs.put("xsd", XSD.NS);
         converter = new NodeConverter(uids, prefixToNs);
         
-        if (mode != RepositoryMode.OFFLINE){
+        if (online){
             // mapping for general resources        
             compassConfig.addMapping(
                 resource("resource")
@@ -244,8 +240,12 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
         this.defaultPropertyConfig = defaultConfig;
     }
 
-    public void setMode(RepositoryMode mode) {
-        this.mode = mode;
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 
     public void setRdfTypeConfig(PropertyConfig rdfTypeConfig) {

@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.lucene.DefaultLuceneConfiguration;
+import com.mysema.rdfbean.lucene.LuceneEnhancedRepository;
 import com.mysema.rdfbean.lucene.PropertyConfig;
-import com.mysema.rdfbean.lucene.index.LuceneEnhancedRepository;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDFConnection;

@@ -20,7 +20,7 @@ import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.xsd.Converter;
 
 /**
- * NodeConverter provides
+ * NodeConverter provides compact Node to/from String conversions
  *
  * @author tiwe
  * @version $Id$

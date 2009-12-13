@@ -20,13 +20,13 @@ public class LuceneTransaction implements RDFBeanTransaction{
     
     private boolean active = true;
     
-    private final AbstractLuceneConnection conn;
+    private final LuceneConnection conn;
     
     private boolean rollbackOnly;
     
     private final CompassTransaction tx;
     
-    public LuceneTransaction(AbstractLuceneConnection conn, CompassTransaction tx) {
+    public LuceneTransaction(LuceneConnection conn, CompassTransaction tx) {
         this.conn = Assert.notNull(conn);
         this.tx = Assert.notNull(tx);
     }

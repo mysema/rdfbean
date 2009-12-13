@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.lucene;
 
 import java.io.File;
@@ -50,8 +55,6 @@ public abstract class AbstractRepositoryTest {
         return null;
     }
     
-    protected abstract RepositoryMode getMode();
-
     @Before
     public void setUp() throws IOException, InterruptedException{
         FileUtils.deleteDirectory(indexDir);
@@ -63,7 +66,6 @@ public abstract class AbstractRepositoryTest {
         configuration.setDefaultPropertyConfig(getDefaultPropertyConfig());
         configuration.setCompassConfig(compassConfig);
         configuration.addPrefix("", TEST.NS);
-        configuration.setMode(getMode());
         repository = createRepository(configuration);
     }
 

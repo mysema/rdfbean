@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.lucene.store;
+package com.mysema.rdfbean.lucene;
 
 import java.io.IOException;
 import java.util.Iterator;

@@ -26,7 +26,7 @@ public abstract class AbstractConfigurationTest {
         configuration = new DefaultLuceneConfiguration();        
         configuration.setCompassConfig(new CompassConfiguration());
         configuration.addPrefix("test", TEST.NS);
-        configuration.setMode(RepositoryMode.OFFLINE);
+        configuration.setOnline(false);
     }
     
 }

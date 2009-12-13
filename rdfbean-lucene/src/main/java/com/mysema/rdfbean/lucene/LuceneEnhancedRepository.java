@@ -3,15 +3,11 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.lucene.index;
+package com.mysema.rdfbean.lucene;
 
 import org.compass.core.CompassQueryBuilder;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.lucene.AbstractLuceneConnection;
-import com.mysema.rdfbean.lucene.LuceneConfiguration;
-import com.mysema.rdfbean.lucene.LuceneQuery;
-import com.mysema.rdfbean.lucene.LuceneRepository;
 import com.mysema.rdfbean.model.MultiConnection;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
@@ -54,7 +50,7 @@ public class LuceneEnhancedRepository implements Repository{
 
     @Override
     public RDFConnection openConnection() {
-        final AbstractLuceneConnection luceneConnection = luceneRepository.openConnection();
+        final LuceneConnection luceneConnection = luceneRepository.openConnection();
         final RDFConnection connection = repository.openConnection();
         return new MultiConnection(connection, luceneConnection){
             @Override

@@ -10,7 +10,6 @@ import org.compass.core.Property.Store;
 
 import com.mysema.rdfbean.lucene.AbstractRepositoryTest;
 import com.mysema.rdfbean.lucene.PropertyConfig;
-import com.mysema.rdfbean.lucene.RepositoryMode;
 
 /**
  * AbstractRepositoryTest provides
@@ -19,11 +18,6 @@ import com.mysema.rdfbean.lucene.RepositoryMode;
  * @version $Id$
  */
 public abstract class AbstractStoreTest extends AbstractRepositoryTest{
-
-    @Override
-    public RepositoryMode getMode(){
-        return RepositoryMode.STORE;
-    }
     
     @Override
     protected PropertyConfig getDefaultPropertyConfig(){

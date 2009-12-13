@@ -31,8 +31,6 @@ public interface LuceneConfiguration {
     NodeConverter getConverter();
     
     Configuration getCoreConfiguration();
-    
-    RepositoryMode getMode();
 
     PropertyConfig getPropertyConfig(UID predicate, Collection<? extends ID> subjectTypes);
 

@@ -22,6 +22,6 @@ public interface Constants {
     String CONTEXT_NULL = "null";
     
     String ID_FIELD_NAME = "id";
-
+    
     String TEXT_FIELD_NAME = "text";
 }

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.lucene.index;
 
 import static org.junit.Assert.assertFalse;
@@ -9,8 +14,6 @@ import java.util.Collection;
 
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQueryBuilder;
-import org.compass.core.Property;
-import org.compass.core.Resource;
 import org.compass.core.Property.Store;
 import org.junit.Test;
 

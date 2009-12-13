@@ -9,8 +9,6 @@ import org.compass.core.Compass;
 import org.compass.core.CompassSession;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.lucene.index.LuceneIndexConnection;
-import com.mysema.rdfbean.lucene.store.LuceneStoreConnection;
 import com.mysema.rdfbean.model.Repository;
 
 /**
@@ -52,14 +50,10 @@ public class LuceneRepository implements Repository{
     }
 
     @Override
-    public AbstractLuceneConnection openConnection() {
+    public LuceneConnection openConnection() {
         if (compass != null){
             CompassSession compassSession = compass.openSession();
-            switch(configuration.getMode()){
-            case INDEX : return new LuceneIndexConnection(configuration, compassSession);
-            case STORE : return new LuceneStoreConnection(configuration, compassSession);
-            default :    throw new IllegalStateException("Illegal mode : " + configuration.getMode());
-            }    
+            return new LuceneConnection(configuration, compassSession);
         }else{
             throw new IllegalStateException("Compass has not yet been initialized!");
         }

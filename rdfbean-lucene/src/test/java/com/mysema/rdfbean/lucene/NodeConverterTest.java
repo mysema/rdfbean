@@ -42,7 +42,7 @@ public class NodeConverterTest {
         DefaultLuceneConfiguration configuration = new DefaultLuceneConfiguration();        
         configuration.setCompassConfig(new CompassConfiguration());
         configuration.setCoreConfiguration(new DefaultConfiguration());
-        configuration.setMode(RepositoryMode.OFFLINE);
+        configuration.setOnline(false);
         configuration.initialize();
         converter = configuration.getConverter();
     }

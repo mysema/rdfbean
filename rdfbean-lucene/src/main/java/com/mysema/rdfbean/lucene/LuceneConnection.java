@@ -26,17 +26,20 @@ import javax.annotation.Nullable;
 import org.apache.lucene.index.CorruptIndexException;
 import org.compass.core.Compass;
 import org.compass.core.CompassHits;
+import org.compass.core.CompassQuery;
 import org.compass.core.CompassQueryBuilder;
 import org.compass.core.CompassSession;
 import org.compass.core.CompassTransaction;
 import org.compass.core.Property;
 import org.compass.core.Resource;
+import org.compass.core.CompassQueryBuilder.CompassBooleanQueryBuilder;
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
@@ -47,6 +50,7 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.util.EmptyCloseableIterator;
 import com.mysema.util.ListMap;
 
 /**
@@ -55,7 +59,8 @@ import com.mysema.util.ListMap;
  * @author tiwe
  * @version $Id$
  */
-public abstract class AbstractLuceneConnection implements RDFConnection{
+// TODO : clean this up!
+public class LuceneConnection implements RDFConnection{
     
     private static final List<String> INTERNAL_FIELDS = Arrays.asList(
             "alias",
@@ -65,7 +70,7 @@ public abstract class AbstractLuceneConnection implements RDFConnection{
             ID_FIELD_NAME,
             TEXT_FIELD_NAME);
     
-    private static final Logger logger = LoggerFactory.getLogger(AbstractLuceneConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(LuceneConnection.class);
     
     protected final Compass compass;
     
@@ -78,7 +83,7 @@ public abstract class AbstractLuceneConnection implements RDFConnection{
     
     private boolean readonlyTnx = false;
         
-    public AbstractLuceneConnection(LuceneConfiguration configuration, CompassSession session) {
+    public LuceneConnection(LuceneConfiguration configuration, CompassSession session) {
         this.conf = Assert.notNull(configuration);        
         this.compassSession = Assert.notNull(session);
         this.compass = conf.getCompass();
@@ -375,5 +380,60 @@ public abstract class AbstractLuceneConnection implements RDFConnection{
         }                
     }
 
-
+    private CompassQuery createQuery(ID subject, UID predicate, NODE object, UID context){
+        CompassQueryBuilder queryBuilder = compassSession.queryBuilder();
+        if (subject != null || predicate != null || object != null || context != null){            
+            CompassBooleanQueryBuilder boolBuilder = queryBuilder.bool();
+            if (subject != null){
+                boolBuilder.addMust(queryBuilder.term(ID_FIELD_NAME, conf.getConverter().toString(subject)));
+                // TODO : component id matches need to be handled here as well
+            }   
+            if (predicate != null){
+                String predicateField = conf.getConverter().uidToShortString(predicate);
+                // TODO : component predicate matches need to be handled here
+                if (object != null){
+                    String value = conf.getConverter().toString(object);
+                    boolBuilder.addMust(queryBuilder.term(predicateField, value));    
+                }else{
+                    boolBuilder.addMust(queryBuilder.wildcard(predicateField, "*"));
+                }
+                
+            }else if (object != null){
+                String value = conf.getConverter().toString(object);
+                boolBuilder.addMust(queryBuilder.term(ALL_FIELD_NAME, value));
+            }
+            
+            if (conf.isContextsStored()){
+                if (context != null){
+                    String value = conf.getConverter().toString(context);
+                    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, value));
+                }else{
+                    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, CONTEXT_NULL));
+                }
+            }
+                                   
+            return boolBuilder.toQuery();
+            
+        }else{
+            return queryBuilder.matchAll();
+        }
+    }
+        
+    @Override
+    public CloseableIterator<STMT> findStatements(final ID subject, final UID predicate, final NODE object, 
+            final UID context, boolean includeInferred) {        
+        CompassQuery query = createQuery(subject, predicate, object, context);        
+        CompassHits hits = query.hits();        
+        if (hits.getLength() > 0){
+            return new ResultIterator(hits){
+                @Override
+                protected List<STMT> getStatements(Resource resource) {
+                    return findStatements(resource, subject, predicate, object, context);
+                }                
+            };
+        }else{
+            hits.close();
+            return new EmptyCloseableIterator<STMT>();
+        }
+    }
 }
