@@ -72,7 +72,7 @@ public @interface SearchablePredicate {
      * {@link SearchableMetaData}/{@link SearchableMetaDatas} AND the
      * {@link #name()} is not set.
      */
-    Index index() default Index.ANALYZED;
+    Index index() default Index.NOT_ANALYZED;
 
     /**
      * The store of the auto generated {@link SearchableMetaData}. Maps to
@@ -82,14 +82,14 @@ public @interface SearchablePredicate {
      * {@link SearchableMetaData}/{@link SearchableMetaDatas} AND the
      * {@link #name()} is not set.
      */
-    Store store() default Store.NO;
+    Store store() default Store.YES;
 
-
-    /**
-     * Index value in analyzed form into 'text' field
-     * 
-     * @return
-     */
-    boolean text() default false;
+//
+//    /**
+//     * Index value in analyzed form into 'text' field
+//     * 
+//     * @return
+//     */
+//    boolean text() default false;
 
 }

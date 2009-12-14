@@ -5,15 +5,13 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.lucene.Searchable;
-import com.mysema.rdfbean.lucene.SearchablePredicate;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 
@@ -29,7 +27,7 @@ public class ComponentTypesTest extends AbstractConfigurationTest{
     @ClassMapping(ns=TEST.NS)
     public static class Tag{
         @Predicate
-        @SearchablePredicate(text=true)
+        @SearchableText
         String name;
         
         public Tag(){}

@@ -14,6 +14,7 @@ import java.util.Collection;
 
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQueryBuilder;
+import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 import org.junit.Test;
 
@@ -24,6 +25,7 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.lucene.LuceneQuery;
 import com.mysema.rdfbean.lucene.Searchable;
 import com.mysema.rdfbean.lucene.SearchablePredicate;
+import com.mysema.rdfbean.lucene.SearchableText;
 import com.mysema.rdfbean.lucene.index.IndexingBlogFirstTest.User;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.UID;
@@ -45,11 +47,12 @@ public class IndexingBlogSecondTest  extends AbstractIndexTest{
     public static class Article{
         
         @Predicate
-        @SearchablePredicate(text=true, store=Store.YES)
+        @SearchablePredicate(store=Store.YES)
+        @SearchableText
         String title;
         
         @Predicate(ln="tagged")
-        @SearchablePredicate(store=Store.YES)
+        @SearchablePredicate(store=Store.YES, index=Index.ANALYZED)
         Collection<Tag> tags;
         
     }

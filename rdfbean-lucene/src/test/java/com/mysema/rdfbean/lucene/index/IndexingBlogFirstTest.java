@@ -25,6 +25,7 @@ import com.mysema.rdfbean.lucene.LuceneQuery;
 import com.mysema.rdfbean.lucene.Searchable;
 import com.mysema.rdfbean.lucene.SearchableComponent;
 import com.mysema.rdfbean.lucene.SearchablePredicate;
+import com.mysema.rdfbean.lucene.SearchableText;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.FlushMode;
@@ -46,11 +47,12 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
         // test:tagged
         
         @Predicate
-        @SearchablePredicate(text=true, store=Store.YES)
+        @SearchablePredicate(store=Store.YES)
+        @SearchableText
         String title;
         
         @Predicate
-        @SearchablePredicate(text=true)
+        @SearchableText
         String text;
         
         @Predicate
@@ -76,7 +78,7 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
     @ClassMapping(ns=TEST.NS)
     public static class Tag{
         @Predicate
-        @SearchablePredicate(text=true)
+        @SearchableText
         String name;
         
         public Tag(){}

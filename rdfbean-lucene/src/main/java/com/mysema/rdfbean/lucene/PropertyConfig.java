@@ -10,8 +10,6 @@ import net.jcip.annotations.Immutable;
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 
-import com.mysema.commons.lang.Assert;
-
 /**
  * PropertyConfig provides
  *
@@ -22,7 +20,7 @@ import com.mysema.commons.lang.Assert;
 public class PropertyConfig {
 
     /**
-     * Index value in not analyzed form int 'all' field 
+     * Index value in not analyzed form into 'all' field 
      * 
      */
     private final boolean allIndexed;
@@ -49,8 +47,8 @@ public class PropertyConfig {
     private final boolean textIndexed;
     
     public PropertyConfig(Store store, Index index, boolean textIndexed, boolean allIndexed, float boost) {
-        this.store = Assert.notNull(store);
-        this.index = Assert.notNull(index);
+        this.store = store != null ? store : Store.NO;
+        this.index = index != null ? index : Index.NO;
         this.textIndexed = textIndexed;
         this.allIndexed = allIndexed;
         this.boost = boost;

@@ -181,6 +181,7 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
                     
                     // predicate configuration
                     SearchablePredicate searchablePred = property.getAnnotation(SearchablePredicate.class);
+                    boolean textIndexed = property.getAnnotation(SearchableText.class) != null;
                     Index index = searchablePred != null ? searchablePred.index() : null;
                     Store store = null;
                     if (searchable.storeAll()){
@@ -188,14 +189,13 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
                     }else if (searchablePred != null){
                         store = searchablePred.store();
                     }
-                    if (index != null || store != null){
+                    if (index != null || store != null || textIndexed){
                         if (index == null) index = Index.NO;
                         for (MappedPredicate pred : mappedPath.getPredicatePath()){
                             uids.add(pred.getUID());
                         }
                         // TODO : handle longer predicate paths
                         MappedPredicate predicate = mappedPath.getPredicatePath().get(0);
-                        boolean textIndexed = searchablePred != null ? searchablePred.text() : false;
                         boolean allIndexed = searchablePred != null ? searchablePred.all() : false;      
                         float boost = searchablePred != null ? searchablePred.boost() : 1.0f;
                         PropertyConfig propertyConfig = new PropertyConfig(store, index, textIndexed, allIndexed, boost);
