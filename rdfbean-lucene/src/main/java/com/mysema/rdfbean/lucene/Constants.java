@@ -23,5 +23,7 @@ public interface Constants {
     
     String ID_FIELD_NAME = "id";
     
+    String EMBEDDED_ID_FIELD_NAME = "eid";
+    
     String TEXT_FIELD_NAME = "text";
 }

@@ -17,7 +17,8 @@ import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 
 /**
- * SearchablePredicate provides
+ * SearchablePredicate can be be attached to Predicate annotated properties to 
+ * mark them to be indexed into Lucene
  *
  * @author tiwe
  * @version $Id$
@@ -83,13 +84,5 @@ public @interface SearchablePredicate {
      * {@link #name()} is not set.
      */
     Store store() default Store.YES;
-
-//
-//    /**
-//     * Index value in analyzed form into 'text' field
-//     * 
-//     * @return
-//     */
-//    boolean text() default false;
 
 }

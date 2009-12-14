@@ -47,7 +47,7 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
         // test:tagged
         
         @Predicate
-        @SearchablePredicate(store=Store.YES)
+        @SearchablePredicate
         @SearchableText
         String title;
         

@@ -14,7 +14,6 @@ import java.util.Collection;
 
 import org.compass.core.CompassHits;
 import org.compass.core.CompassQueryBuilder;
-import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 import org.junit.Test;
 
@@ -39,7 +38,7 @@ import com.mysema.rdfbean.object.SessionUtil;
  * @author tiwe
  * @version $Id$
  */
-public class IndexingBlogSecondTest  extends AbstractIndexTest{
+public class IndexingBlogThirdTest  extends AbstractIndexTest{
 
     @Searchable
     @ClassMapping(ns=TEST.NS)
@@ -50,9 +49,9 @@ public class IndexingBlogSecondTest  extends AbstractIndexTest{
         @SearchableText
         String title;
         
-        // indexed into ":tagged" fields
+        // only indexed as text (localName is indexed)
         @Predicate(ln="tagged")
-        @SearchablePredicate(store=Store.NO,index=Index.ANALYZED)
+        @SearchableText
         Collection<Tag> tags;
         
     }

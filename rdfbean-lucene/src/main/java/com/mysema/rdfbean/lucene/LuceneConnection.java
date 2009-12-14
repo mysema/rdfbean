@@ -9,6 +9,7 @@ import static com.mysema.rdfbean.lucene.Constants.ALL_FIELD_NAME;
 import static com.mysema.rdfbean.lucene.Constants.CONTEXT_FIELD_NAME;
 import static com.mysema.rdfbean.lucene.Constants.CONTEXT_NULL;
 import static com.mysema.rdfbean.lucene.Constants.ID_FIELD_NAME;
+import static com.mysema.rdfbean.lucene.Constants.EMBEDDED_ID_FIELD_NAME;
 import static com.mysema.rdfbean.lucene.Constants.TEXT_FIELD_NAME;
 
 import java.io.IOException;
@@ -43,6 +44,7 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.NodeType;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
@@ -109,7 +111,13 @@ public class LuceneConnection implements RDFConnection{
             }            
             
             if (propertyConfig.isTextIndexed()){
-                resource.addProperty(TEXT_FIELD_NAME, stmt.getObject().getValue());
+                String value;
+                if (conf.isLocalNameAsText() && stmt.getObject().getNodeType() == NodeType.URI){
+                    value = ((UID)stmt.getObject()).getLocalName();
+                }else{
+                    value = stmt.getObject().getValue();
+                }
+                resource.addProperty(TEXT_FIELD_NAME, value);
             }            
         }
         
@@ -151,6 +159,49 @@ public class LuceneConnection implements RDFConnection{
         return new BID();
     }
 
+    private CompassQuery createQuery(ID subject, UID predicate, NODE object, UID context){
+        CompassQueryBuilder queryBuilder = compassSession.queryBuilder();
+        if (subject != null || predicate != null || object != null || context != null){            
+            CompassBooleanQueryBuilder boolBuilder = queryBuilder.bool();
+            if (subject != null){
+                String subjectStr = conf.getConverter().toString(subject);
+                if (conf.isEmbeddedIds()){
+                    boolBuilder.addMust(queryBuilder.term(EMBEDDED_ID_FIELD_NAME, subjectStr));    
+                }else{
+                    boolBuilder.addMust(queryBuilder.term(ID_FIELD_NAME, subjectStr));
+                }
+            }   
+            if (predicate != null){
+                String predicateField = conf.getConverter().uidToShortString(predicate);
+                // TODO : component predicate matches need to be handled here
+                if (object != null){
+                    String value = conf.getConverter().toString(object);
+                    boolBuilder.addMust(queryBuilder.term(predicateField, value));    
+                }else{
+                    boolBuilder.addMust(queryBuilder.wildcard(predicateField, "*"));
+                }
+                
+            }else if (object != null){
+                String value = conf.getConverter().toString(object);
+                boolBuilder.addMust(queryBuilder.term(ALL_FIELD_NAME, value));
+            }
+            
+            if (conf.isContextsStored()){
+                if (context != null){
+                    String value = conf.getConverter().toString(context);
+                    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, value));
+                }else{
+                    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, CONTEXT_NULL));
+                }
+            }
+                                   
+            return boolBuilder.toQuery();
+            
+        }else{
+            return queryBuilder.matchAll();
+        }
+    }
+    
     @Override
     public BeanQuery createQuery(Session session) {
         throw new UnsupportedOperationException();
@@ -172,12 +223,30 @@ public class LuceneConnection implements RDFConnection{
         return compass.getResourceFactory().createResource("resource");
     }
     
+    @Override
+    public CloseableIterator<STMT> findStatements(final ID subject, final UID predicate, final NODE object, 
+            final UID context, boolean includeInferred) {        
+        CompassQuery query = createQuery(subject, predicate, object, context);        
+        CompassHits hits = query.hits();        
+        if (hits.getLength() > 0){
+            return new ResultIterator(hits){
+                @Override
+                protected List<STMT> getStatements(Resource resource) {
+                    return findStatements(resource, subject, predicate, object, context);
+                }                
+            };
+        }else{
+            hits.close();
+            return new EmptyCloseableIterator<STMT>();
+        }
+    }
+
     protected List<STMT> findStatements(Resource resource, ID subject, UID predicate, NODE object, UID context){
         // TODO : how to handle embedded properties of components?!?
         List<STMT> stmts = new ArrayList<STMT>();
         ID sub = subject;
         UID pre = predicate;
-        NODE obj = object;                    
+        NODE obj = object;               
         if (sub == null){
             sub = (ID) conf.getConverter().fromString(resource.getId());
         }                    
@@ -194,8 +263,7 @@ public class LuceneConnection implements RDFConnection{
         }else if (obj != null){
             String objString = conf.getConverter().toString(obj);
             for (Property property : resource.getProperties()){
-                if (isPredicateProperty(property.getName())  
-                        && objString.equals(property.getStringValue())){
+                if (isPredicateProperty(property.getName())  && objString.equals(property.getStringValue())){
                     pre = conf.getConverter().uidFromShortString(property.getName());
                     stmts.add(new STMT(sub, pre, obj));
                 }
@@ -212,26 +280,31 @@ public class LuceneConnection implements RDFConnection{
         }
         return stmts;
     }
-    
+          
     private String getPredicateField(UID predicate){
         return conf.getConverter().uidToShortString(predicate);
     }
-
+    
     private Resource getResource(String field, Object value) throws IOException {
         CompassHits hits = compassSession.queryBuilder().term(field, value).hits();
         return hits.getLength() > 0 ? hits.resource(0) : null;
     }
-          
+        
     private boolean isPredicateProperty(String fieldName){
         return !INTERNAL_FIELDS.contains(fieldName) && !fieldName.contains(" ");
     }
-    
+
     private void update(ListMap<ID,ID> types, ListMap<ID, STMT> rsAdded, ListMap<ID, STMT> rsRemoved,
             Set<ID> resources) throws IOException, CorruptIndexException {
 
         for (ID resource : resources) {
             String id = conf.getConverter().toString(resource);
-            Resource luceneResource = getResource(ID_FIELD_NAME, id);
+            Resource luceneResource = null;
+            if (conf.isEmbeddedIds()){
+                luceneResource = getResource(EMBEDDED_ID_FIELD_NAME, id);
+            }else{
+                luceneResource = getResource(ID_FIELD_NAME, id);
+            }
 
             if (luceneResource == null) {
                 luceneResource = createResource();
@@ -378,62 +451,5 @@ public class LuceneConnection implements RDFConnection{
                 throw new RuntimeException(error, e);
             }
         }                
-    }
-
-    private CompassQuery createQuery(ID subject, UID predicate, NODE object, UID context){
-        CompassQueryBuilder queryBuilder = compassSession.queryBuilder();
-        if (subject != null || predicate != null || object != null || context != null){            
-            CompassBooleanQueryBuilder boolBuilder = queryBuilder.bool();
-            if (subject != null){
-                boolBuilder.addMust(queryBuilder.term(ID_FIELD_NAME, conf.getConverter().toString(subject)));
-                // TODO : component id matches need to be handled here as well
-            }   
-            if (predicate != null){
-                String predicateField = conf.getConverter().uidToShortString(predicate);
-                // TODO : component predicate matches need to be handled here
-                if (object != null){
-                    String value = conf.getConverter().toString(object);
-                    boolBuilder.addMust(queryBuilder.term(predicateField, value));    
-                }else{
-                    boolBuilder.addMust(queryBuilder.wildcard(predicateField, "*"));
-                }
-                
-            }else if (object != null){
-                String value = conf.getConverter().toString(object);
-                boolBuilder.addMust(queryBuilder.term(ALL_FIELD_NAME, value));
-            }
-            
-            if (conf.isContextsStored()){
-                if (context != null){
-                    String value = conf.getConverter().toString(context);
-                    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, value));
-                }else{
-                    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, CONTEXT_NULL));
-                }
-            }
-                                   
-            return boolBuilder.toQuery();
-            
-        }else{
-            return queryBuilder.matchAll();
-        }
-    }
-        
-    @Override
-    public CloseableIterator<STMT> findStatements(final ID subject, final UID predicate, final NODE object, 
-            final UID context, boolean includeInferred) {        
-        CompassQuery query = createQuery(subject, predicate, object, context);        
-        CompassHits hits = query.hits();        
-        if (hits.getLength() > 0){
-            return new ResultIterator(hits){
-                @Override
-                protected List<STMT> getStatements(Resource resource) {
-                    return findStatements(resource, subject, predicate, object, context);
-                }                
-            };
-        }else{
-            hits.close();
-            return new EmptyCloseableIterator<STMT>();
-        }
     }
 }

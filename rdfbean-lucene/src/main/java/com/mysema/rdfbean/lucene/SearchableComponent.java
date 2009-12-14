@@ -12,7 +12,9 @@ import java.lang.annotation.Target;
 
 
 /**
- * SearchableComponent provides
+ * SearchableComponent declares a Predicate annotated property to be 
+ * indexed into Lucene, transitively including the properties defined 
+ * in the components type declaration
  *
  * @author tiwe
  * @version $Id$
@@ -23,7 +25,7 @@ import java.lang.annotation.Target;
 public @interface SearchableComponent {
 
     /**
-     * The depth of cyclic component references allowed.
+     * The depth of component references allowed.
      */
     int maxDepth() default 1;
 

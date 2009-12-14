@@ -37,5 +37,9 @@ public interface LuceneConfiguration {
     void initialize();
 
     boolean isContextsStored();
+    
+    boolean isEmbeddedIds();
+    
+    boolean isLocalNameAsText();
 
 }

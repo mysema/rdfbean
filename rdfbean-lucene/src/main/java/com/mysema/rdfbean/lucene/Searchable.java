@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Searchable provides
+ * Searchable declares a type to be indexed into Lucene
  *
  * @author tiwe
  * @version $Id$

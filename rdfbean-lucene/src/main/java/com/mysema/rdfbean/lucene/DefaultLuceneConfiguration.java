@@ -21,8 +21,8 @@ import org.compass.core.Compass;
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 import org.compass.core.config.CompassConfiguration;
-import org.compass.core.util.Assert;
 
+import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
@@ -69,9 +69,20 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
     private final Map<ID, Map<UID,PropertyConfig>> propertyConfigs = new HashMap<ID, Map<UID,PropertyConfig>>();
     
     private PropertyConfig rdfTypeConfig = new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, false, 1.0f);
-
+    
     // TODO : supertypes should be queried from Ontology and not from mapped classes
     private final ListMap<ID,ID> supertypes = new ListMap<ID,ID>();
+
+    private boolean localNameAsText = true;
+    
+    private boolean embeddedIds = false;
+    
+    public DefaultLuceneConfiguration(){}
+    
+    public DefaultLuceneConfiguration(CompassConfiguration compassConfig, Configuration coreConfig){
+        this.compassConfig = Assert.notNull(compassConfig);
+        this.coreConfig = Assert.notNull(coreConfig);
+    }
 
     public LuceneConfiguration addPrefix(String prefix, String ns){
         prefixToNs.put(prefix, ns);
@@ -145,11 +156,13 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
                 resource("resource")
                     // if field
                     .add(id(Constants.ID_FIELD_NAME))
-                    // context data
-                    .add(property(Constants.CONTEXT_FIELD_NAME).store(Store.YES).index(Index.NOT_ANALYZED))
-                    // all field for Object data
+                    // indexed embedded id field
+                    .add(property(Constants.EMBEDDED_ID_FIELD_NAME).store(Store.NO).index(Index.NOT_ANALYZED))
+                    // indexed context data
+                    .add(property(Constants.CONTEXT_FIELD_NAME).store(Store.NO).index(Index.NOT_ANALYZED))
+                    // indexed all field for Object data
                     .add(property(Constants.ALL_FIELD_NAME).store(Store.NO).index(Index.NOT_ANALYZED))
-                    // full text for String literals
+                    // indexed full text for String literals
                     .add(property(Constants.TEXT_FIELD_NAME).store(Store.NO).index(Index.ANALYZED)));
             
             compass = compassConfig.buildCompass();            
@@ -220,6 +233,14 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
         return contextsStored;
     }
     
+    public boolean isOnline() {
+        return online;
+    }
+
+    public boolean isEmbeddedIds() {
+        return embeddedIds;
+    }
+
     public void setCompassConfig(CompassConfiguration compassConfig) {
         this.compassConfig = compassConfig;
     }
@@ -240,10 +261,6 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
         this.defaultPropertyConfig = defaultConfig;
     }
 
-    public boolean isOnline() {
-        return online;
-    }
-
     public void setOnline(boolean online) {
         this.online = online;
     }
@@ -251,6 +268,19 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
     public void setRdfTypeConfig(PropertyConfig rdfTypeConfig) {
         this.rdfTypeConfig = rdfTypeConfig;
     }
+
+    public void seEmbeddedIds(boolean useEmbeddedIds) {
+        this.embeddedIds = useEmbeddedIds;
+    }
+
+    public boolean isLocalNameAsText() {
+        return localNameAsText;
+    }
+
+    public void setLocalNameAsText(boolean localNameAsText) {
+        this.localNameAsText = localNameAsText;
+    }
+    
     
     
 }
