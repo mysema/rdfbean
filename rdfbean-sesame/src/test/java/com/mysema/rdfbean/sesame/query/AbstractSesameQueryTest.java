@@ -17,7 +17,6 @@ import org.openrdf.store.StoreException;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.BeanQueryAdapter;
-import com.mysema.rdfbean.object.ConverterRegistryImpl;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionImpl;
 import com.mysema.rdfbean.sesame.SesameConnection;
@@ -42,8 +41,6 @@ public abstract class AbstractSesameQueryTest extends SessionTestBase {
     protected SesameConnection connection;
     
     protected List<SimpleType> instances;
-    
-//    protected SimpleType instance;
     
     @Before
     public void setUp() throws StoreException{
