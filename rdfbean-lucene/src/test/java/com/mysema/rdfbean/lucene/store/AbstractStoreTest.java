@@ -21,6 +21,6 @@ public abstract class AbstractStoreTest extends AbstractRepositoryTest{
     
     @Override
     protected PropertyConfig getDefaultPropertyConfig(){
-        return new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true, 1.0f);
+        return new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true, false, 1.0f);
     }
 }

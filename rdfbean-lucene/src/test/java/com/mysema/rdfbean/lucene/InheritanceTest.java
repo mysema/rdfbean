@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.lucene;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -49,6 +50,22 @@ public class InheritanceTest extends AbstractConfigurationTest{
         // age in Animal context is also not processed
         assertNull(configuration.getPropertyConfig(agePred, Collections.singleton(new UID(TEST.NS, Animal.class.getSimpleName()))));
         
+    }
+    
+    @Test
+    public void supertypesMapping(){
+        configuration.setCoreConfiguration(new DefaultConfiguration(Animal.class, Cat.class, Dog.class));
+        configuration.initialize();
+        
+        assertEquals(1, configuration.getSupertypes(new UID(TEST.NS, Cat.class.getSimpleName())).size());
+    }
+    
+    @Test
+    public void subtypesMapping(){
+        configuration.setCoreConfiguration(new DefaultConfiguration(Animal.class, Cat.class, Dog.class));
+        configuration.initialize();
+        
+        assertEquals(2, configuration.getSubtypes(new UID(TEST.NS, Animal.class.getSimpleName())).size());
     }
     
     @ClassMapping(ns=TEST.NS)

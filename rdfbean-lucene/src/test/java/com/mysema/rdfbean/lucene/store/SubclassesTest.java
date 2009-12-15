@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.lucene.index;
+package com.mysema.rdfbean.lucene.store;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -32,7 +32,7 @@ import com.mysema.rdfbean.object.SessionUtil;
  * @author tiwe
  * @version $Id$
  */
-public class IndexingSubclassesTest extends AbstractIndexTest{
+public class SubclassesTest extends AbstractStoreTest{
     
     @Test
     public void bankAccount() throws IOException{
@@ -64,20 +64,30 @@ public class IndexingSubclassesTest extends AbstractIndexTest{
         assertNotNull("id was not assigned", account.id);
         session.clear();
         
-        // get by subtype
-        assertNotNull(session.get(account.getClass(), account.id));
+        // get by type
+        assertNotNull("get by type failed", session.get(account.getClass(), account.id));
         session.clear();
         
         // get by supertype
-        assertNotNull(session.get(Account.class, account.id));
+        assertNotNull("get by supertype failed", session.get(Account.class, account.id));
         session.clear();
         
-        // query by subtype
-        assertFalse(session.createQuery(LuceneQuery.class).query(account.accountNumber).list(account.getClass()).isEmpty());
+        // find instances by type
+        assertFalse("find instances by type failed", session.findInstances(account.getClass()).isEmpty());
+        session.clear();
+        
+        // find instances by supertype
+        assertFalse("find instances by supertype failed", session.findInstances(Account.class).isEmpty());
+        session.clear();
+        
+        // query by type
+        assertFalse("query by type failed", 
+                session.createQuery(LuceneQuery.class).query(account.accountNumber).list(account.getClass()).isEmpty());
         session.clear();
         
         // query by supertype
-        assertFalse(session.createQuery(LuceneQuery.class).query(account.accountNumber).list(Account.class).isEmpty());
+        assertFalse("query by supertype failed", 
+                session.createQuery(LuceneQuery.class).query(account.accountNumber).list(Account.class).isEmpty());
         session.clear();
     }
     

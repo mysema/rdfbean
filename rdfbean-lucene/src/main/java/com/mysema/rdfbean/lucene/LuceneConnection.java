@@ -74,11 +74,13 @@ class LuceneConnection implements RDFConnection{
     
     private static final Logger logger = LoggerFactory.getLogger(LuceneConnection.class);
     
-    protected final Compass compass;
+    private final Compass compass;
     
-    protected final CompassSession compassSession;
+    private final CompassSession compassSession;
     
-    protected final LuceneConfiguration conf;
+    private final LuceneConfiguration conf;
+    
+    private final NodeConverter converter;
     
     @Nullable
     private LuceneTransaction localTxn = null;
@@ -86,30 +88,44 @@ class LuceneConnection implements RDFConnection{
     private boolean readonlyTnx = false;
         
     public LuceneConnection(LuceneConfiguration configuration, CompassSession session) {
-        this.conf = Assert.notNull(configuration);        
+        this.conf = Assert.notNull(configuration);
+        this.converter = conf.getConverter();
         this.compassSession = Assert.notNull(session);
         this.compass = conf.getCompass();
     }
 
     public void addStatement(Resource resource, boolean component, STMT stmt, List<ID> subjectTypes) {        
-        String objectValue = conf.getConverter().toString(stmt.getObject());        
+        String objectValue = converter.toString(stmt.getObject());        
         PropertyConfig propertyConfig = conf.getPropertyConfig(stmt.getPredicate(), subjectTypes);
         
-        if (propertyConfig != null){            
+        if (propertyConfig != null){           
+            // index predicate
             if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
-                String predicateField = conf.getConverter().uidToShortString(stmt.getPredicate());
+                String predicateField = converter.uidToShortString(stmt.getPredicate());
                 if (component){
-                    predicateField = conf.getConverter().toString(stmt.getSubject()) + " " + predicateField; 
+                    predicateField = converter.toString(stmt.getSubject()) + " " + predicateField; 
                 }                
                 Property property = compass.getResourceFactory().createProperty(predicateField, objectValue, 
                         propertyConfig.getStore(), propertyConfig.getIndex());
                 resource.addProperty(property);
+                
+                // index supertypes
+                if (conf.isIndexSupertypes() && stmt.getPredicate().equals(RDF.type) && stmt.getObject() instanceof ID){
+                    for (ID supertype : conf.getSupertypes((ID) stmt.getObject())){                        
+                        String supertypeValue = converter.toString(supertype);
+                        resource.addProperty(compass.getResourceFactory().createProperty(predicateField, supertypeValue, 
+                                Store.NO, Index.NOT_ANALYZED));
+                    }
+                }
+                
             }     
             
+            // index value into all field
             if (propertyConfig.isAllIndexed()){
                 resource.addProperty(ALL_FIELD_NAME, objectValue);
             }            
             
+            // index value into text field
             if (propertyConfig.isTextIndexed()){
                 String value;
                 if (conf.isLocalNameAsText() && stmt.getObject().getNodeType() == NodeType.URI){
@@ -159,12 +175,12 @@ class LuceneConnection implements RDFConnection{
         return new BID();
     }
 
-    private CompassQuery createQuery(ID subject, UID predicate, NODE object, UID context){
+    private CompassQuery createQuery(ID subject, UID predicate, NODE object, UID context, boolean includeInferred){
         CompassQueryBuilder queryBuilder = compassSession.queryBuilder();
         if (subject != null || predicate != null || object != null || context != null){            
             CompassBooleanQueryBuilder boolBuilder = queryBuilder.bool();
             if (subject != null){
-                String subjectStr = conf.getConverter().toString(subject);
+                String subjectStr = converter.toString(subject);
                 if (conf.isEmbeddedIds()){
                     boolBuilder.addMust(queryBuilder.term(EMBEDDED_ID_FIELD_NAME, subjectStr));    
                 }else{
@@ -172,23 +188,23 @@ class LuceneConnection implements RDFConnection{
                 }
             }   
             if (predicate != null){
-                String predicateField = conf.getConverter().uidToShortString(predicate);
+                String predicateField = converter.uidToShortString(predicate);
                 // TODO : component predicate matches need to be handled here
                 if (object != null){
-                    String value = conf.getConverter().toString(object);
-                    boolBuilder.addMust(queryBuilder.term(predicateField, value));    
+                    String value = converter.toString(object);
+                    boolBuilder.addMust(queryBuilder.term(predicateField, value));                        
                 }else{
                     boolBuilder.addMust(queryBuilder.wildcard(predicateField, "*"));
                 }
                 
             }else if (object != null){
-                String value = conf.getConverter().toString(object);
+                String value = converter.toString(object);
                 boolBuilder.addMust(queryBuilder.term(ALL_FIELD_NAME, value));
             }
             
             if (conf.isContextsStored()){
                 if (context != null){
-                    String value = conf.getConverter().toString(context);
+                    String value = converter.toString(context);
                     boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, value));
                 }else{
                     boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, CONTEXT_NULL));
@@ -226,7 +242,7 @@ class LuceneConnection implements RDFConnection{
     @Override
     public CloseableIterator<STMT> findStatements(final ID subject, final UID predicate, final NODE object, 
             final UID context, boolean includeInferred) {        
-        CompassQuery query = createQuery(subject, predicate, object, context);        
+        CompassQuery query = createQuery(subject, predicate, object, context, includeInferred);        
         CompassHits hits = query.hits();        
         if (hits.getLength() > 0){
             return new ResultIterator(hits){
@@ -248,23 +264,23 @@ class LuceneConnection implements RDFConnection{
         UID pre = predicate;
         NODE obj = object;               
         if (sub == null){
-            sub = (ID) conf.getConverter().fromString(resource.getId());
+            sub = (ID) converter.fromString(resource.getId());
         }                    
         if (pre != null){
             if (obj != null){
                 stmts.add(new STMT(sub, pre, obj));
             }else{
                 for (Property property : resource.getProperties(getPredicateField(pre))){
-                    obj = conf.getConverter().fromString(property.getStringValue());
+                    obj = converter.fromString(property.getStringValue());
                     stmts.add(new STMT(sub, pre, obj));
                 }
             }
             
         }else if (obj != null){
-            String objString = conf.getConverter().toString(obj);
+            String objString = converter.toString(obj);
             for (Property property : resource.getProperties()){
                 if (isPredicateProperty(property.getName())  && objString.equals(property.getStringValue())){
-                    pre = conf.getConverter().uidFromShortString(property.getName());
+                    pre = converter.uidFromShortString(property.getName());
                     stmts.add(new STMT(sub, pre, obj));
                 }
             }
@@ -272,8 +288,8 @@ class LuceneConnection implements RDFConnection{
         }else{
             for (Property property : resource.getProperties()){
                 if (isPredicateProperty(property.getName())){ 
-                    pre = conf.getConverter().uidFromShortString(property.getName());
-                    obj = conf.getConverter().fromString(property.getStringValue());
+                    pre = converter.uidFromShortString(property.getName());
+                    obj = converter.fromString(property.getStringValue());
                     stmts.add(new STMT(sub, pre, obj));
                 }    
             }            
@@ -282,7 +298,7 @@ class LuceneConnection implements RDFConnection{
     }
           
     private String getPredicateField(UID predicate){
-        return conf.getConverter().uidToShortString(predicate);
+        return converter.uidToShortString(predicate);
     }
     
     private Resource getResource(String field, Object value) throws IOException {
@@ -298,7 +314,7 @@ class LuceneConnection implements RDFConnection{
             Set<ID> resources) throws IOException, CorruptIndexException {
 
         for (ID resource : resources) {
-            String id = conf.getConverter().toString(resource);
+            String id = converter.toString(resource);
             Resource luceneResource = null;
             if (conf.isEmbeddedIds()){
                 luceneResource = getResource(EMBEDDED_ID_FIELD_NAME, id);
@@ -329,7 +345,7 @@ class LuceneConnection implements RDFConnection{
                         luceneResource.addProperty(CONTEXT_FIELD_NAME, CONTEXT_NULL);
                     }else{
                         for (ID c : contextsToAdd) {
-                            luceneResource.addProperty(CONTEXT_FIELD_NAME, conf.getConverter().toString(c));
+                            luceneResource.addProperty(CONTEXT_FIELD_NAME, converter.toString(c));
                         }    
                     }                                                           
                 }
@@ -351,7 +367,7 @@ class LuceneConnection implements RDFConnection{
                     removedOfResource = new ListMap<String, String>();
                     for (STMT r : removedStatements) {
                         removedOfResource.put(r.getPredicate().getValue(), 
-                                conf.getConverter().toString(r.getObject()));
+                                converter.toString(r.getObject()));
                     }
                 }
 
@@ -389,7 +405,7 @@ class LuceneConnection implements RDFConnection{
                             newResource.addProperty(CONTEXT_FIELD_NAME, CONTEXT_NULL);
                         }else{
                             for (ID c : contextsToAdd) {
-                                newResource.addProperty(CONTEXT_FIELD_NAME, conf.getConverter().toString(c));
+                                newResource.addProperty(CONTEXT_FIELD_NAME, converter.toString(c));
                             }
                         }
                             

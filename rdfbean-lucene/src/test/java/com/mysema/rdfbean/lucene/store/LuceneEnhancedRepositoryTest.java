@@ -54,7 +54,7 @@ public class LuceneEnhancedRepositoryTest {
         
         DefaultLuceneConfiguration configuration = new DefaultLuceneConfiguration();
         configuration.setCoreConfiguration(new DefaultConfiguration());
-        configuration.setDefaultPropertyConfig(new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true, 1.0f));
+        configuration.setDefaultPropertyConfig(new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true, false,  1.0f));
         configuration.setCompassConfig(compassConfig);
         configuration.addPrefix("test", TEST.NS);
         

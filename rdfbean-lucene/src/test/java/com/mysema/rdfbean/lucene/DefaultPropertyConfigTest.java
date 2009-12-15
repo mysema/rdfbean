@@ -30,7 +30,7 @@ public class DefaultPropertyConfigTest extends AbstractConfigurationTest{
     @Test
     public void defaultConfig(){
         configuration.setCoreConfiguration(new DefaultConfiguration());
-        PropertyConfig defaultConfig = new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true, 1.0f);
+        PropertyConfig defaultConfig = new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true, false, 1.0f);
         configuration.setDefaultPropertyConfig(defaultConfig);
         configuration.initialize();
         

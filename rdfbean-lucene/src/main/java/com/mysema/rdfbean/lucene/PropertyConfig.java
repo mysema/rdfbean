@@ -27,6 +27,12 @@ public class PropertyConfig {
     
     /**
      * 
+     * 
+     */
+    private final boolean inverted;
+    
+    /**
+     * 
      */
     private final float boost;
     
@@ -46,11 +52,12 @@ public class PropertyConfig {
      */
     private final boolean textIndexed;
     
-    public PropertyConfig(Store store, Index index, boolean textIndexed, boolean allIndexed, float boost) {
+    public PropertyConfig(Store store, Index index, boolean textIndexed, boolean allIndexed, boolean inverted, float boost) {
         this.store = store != null ? store : Store.NO;
         this.index = index != null ? index : Index.NO;
         this.textIndexed = textIndexed;
         this.allIndexed = allIndexed;
+        this.inverted = inverted;
         this.boost = boost;
     }
 
@@ -73,5 +80,11 @@ public class PropertyConfig {
     public boolean isTextIndexed() {
         return textIndexed;
     }
+
+    public boolean isInverted() {
+        return inverted;
+    }
+    
+    
     
 }
