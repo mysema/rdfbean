@@ -81,16 +81,22 @@ public interface LuceneConfiguration {
     boolean isContextsStored();
     
     /**
+     * Embedded id fields in documents
+     * 
      * @return
      */
     boolean isEmbeddedIds();
     
     /**
+     * Local name of URIs as text
+     * 
      * @return
      */
     boolean isLocalNameAsText();
 
     /**
+     * Indexing of supertyppes into rdf:type field
+     * 
      * @return
      */
     boolean isIndexSupertypes();
