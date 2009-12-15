@@ -15,7 +15,6 @@ import org.compass.core.Property.Store;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.lucene.PropertyConfig;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.DefaultConfiguration;

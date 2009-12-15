@@ -14,8 +14,6 @@ import org.compass.core.config.CompassConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mysema.rdfbean.lucene.DefaultLuceneConfiguration;
-import com.mysema.rdfbean.lucene.NodeConverter;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
@@ -48,12 +46,6 @@ public class NodeConverterTest {
     }
     
     @Test
-    public void testStringLiteral(){
-        assertEquals("Test|l", converter.toString(new LIT("Test")));
-        assertEquals("Test|l", converter.toString(new LIT("Test", XSD.stringType)));
-    }
-    
-    @Test
     public void test(){
         List<NODE> nodes = Arrays.<NODE>asList(
                 new LIT("lit"),
@@ -76,6 +68,12 @@ public class NodeConverterTest {
             System.out.println(str);
             assertEquals(node, converter.fromString(str));
         }
+    }
+    
+    @Test
+    public void testStringLiteral(){
+        assertEquals("Test|l", converter.toString(new LIT("Test")));
+        assertEquals("Test|l", converter.toString(new LIT("Test", XSD.stringType)));
     }
 
 }

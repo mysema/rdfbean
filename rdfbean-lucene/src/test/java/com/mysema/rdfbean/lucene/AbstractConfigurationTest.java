@@ -9,7 +9,6 @@ import org.compass.core.config.CompassConfiguration;
 import org.junit.Before;
 
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.lucene.DefaultLuceneConfiguration;
 
 /**
  * AbstractConfigurationTest provides

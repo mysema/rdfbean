@@ -34,6 +34,24 @@ import com.mysema.rdfbean.object.RDFBeanTransaction;
  */
 public class LuceneRepositoryTest extends AbstractStoreTest{
     
+    private int count(CloseableIterator<STMT> stmts) throws IOException {
+        int rv = 0;
+        try{
+            while (stmts.hasNext()){
+                rv++;
+                stmts.next();
+            }    
+        }finally{
+            stmts.close();    
+        }
+        return rv;
+    }
+
+    @Override
+    protected Configuration getCoreConfiguration() {
+        return new DefaultConfiguration();
+    }
+
     @Test
     public void test() throws IOException{
         repository.initialize();
@@ -96,24 +114,6 @@ public class LuceneRepositoryTest extends AbstractStoreTest{
         
         tx.commit();
         connection.close();
-    }
-
-    private int count(CloseableIterator<STMT> stmts) throws IOException {
-        int rv = 0;
-        try{
-            while (stmts.hasNext()){
-                rv++;
-                stmts.next();
-            }    
-        }finally{
-            stmts.close();    
-        }
-        return rv;
-    }
-
-    @Override
-    protected Configuration getCoreConfiguration() {
-        return new DefaultConfiguration();
     }
     
 

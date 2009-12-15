@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-import org.compass.core.Property.Store;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -29,7 +28,6 @@ import com.mysema.rdfbean.lucene.SearchableText;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.FlushMode;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 
 /**
@@ -40,58 +38,8 @@ import com.mysema.rdfbean.object.SessionUtil;
  */
 public class IndexingBlogFirstTest extends AbstractIndexTest{
     
-    @Searchable
-    @ClassMapping(ns=TEST.NS)
-    public static class Article{
-        // rdf:type, test:title, test:text, test:created, test:author
-        // test:tagged
-        
-        @Predicate
-        @SearchablePredicate
-        @SearchableText
-        String title;
-        
-        @Predicate
-        @SearchableText
-        String text;
-        
-        @Predicate
-        @SearchablePredicate
-        Date created;
-        
-        @Predicate(ln="tagged")
-        @SearchableComponent
-        Collection<Tag> tags;
-        
-        @Predicate
-        @SearchablePredicate
-        User author;
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class User{
-        @Predicate
-        String firstName, lastName, userName;
-    }
-    
-    @Searchable(embeddedOnly=true)
-    @ClassMapping(ns=TEST.NS)
-    public static class Tag{
-        @Predicate
-        @SearchableText
-        String name;
-        
-        public Tag(){}
-        
-        public Tag(String name){
-            this.name = name;
-        }
-    }
-    
     @Test
     public void basicSearch() throws IOException{
-        Session session = SessionUtil.openSession(repository, Article.class, User.class, Tag.class);
-                
         User user = new User();
         user.firstName = "John";
         user.lastName = "Smith";
@@ -123,14 +71,15 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
         query = session.createQuery(LuceneQuery.class);
         assertEquals(2, query.query("good").list(Article.class).size());
         
-        session.close();
-        
+    }
+    
+    @Override
+    protected Configuration getCoreConfiguration() {
+        return new DefaultConfiguration(Article.class, User.class, Tag.class);
     }
     
     @Test
     public void searchByTag() throws IOException{
-        // TODO : this should also work without manual flush!
-        Session session = SessionUtil.openSession(repository, Article.class, User.class, Tag.class);
         session.setFlushMode(FlushMode.MANUAL);
         
         Tag java = new Tag("java");
@@ -153,14 +102,16 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
         
         LuceneQuery query = session.createQuery(LuceneQuery.class);
         assertTrue(query.query("XXX").list(Article.class).isEmpty());
-        
-        session.close();
     }
-
+    
+    public void setUp() throws IOException, InterruptedException{
+        super.setUp();
+        session = SessionUtil.openSession(repository, Article.class, User.class, Tag.class);
+    }
+    
     @Test
     @Ignore
     public void tagPersistence() throws IOException{
-        Session session = SessionUtil.openSession(repository, Article.class, User.class, Tag.class);
         Tag java = new Tag("java");
         Tag web = new Tag("web");
         Tag dev = new Tag("dev");
@@ -170,14 +121,55 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
             LuceneQuery query = session.createQuery(LuceneQuery.class);
             // tags are only saved as components
             assertTrue("Tags should only be saved in embedded form", query.query(tag.name).list(Tag.class).isEmpty());    
-        }
-        
-        session.close();
+        }        
     }
     
-    @Override
-    protected Configuration getCoreConfiguration() {
-        return new DefaultConfiguration(Article.class, User.class, Tag.class);
+    @Searchable
+    @ClassMapping(ns=TEST.NS)
+    public static class Article{
+        // rdf:type, test:title, test:text, test:created, test:author
+        // test:tagged
+        
+        @Predicate
+        @SearchablePredicate
+        User author;
+        
+        @Predicate
+        @SearchablePredicate
+        Date created;
+        
+        @Predicate(ln="tagged")
+        @SearchableComponent
+        Collection<Tag> tags;
+        
+        @Predicate
+        @SearchableText
+        String text;
+        
+        @Predicate
+        @SearchablePredicate
+        @SearchableText
+        String title;
+    }
+
+    @Searchable(embeddedOnly=true)
+    @ClassMapping(ns=TEST.NS)
+    public static class Tag{
+        @Predicate
+        @SearchableText
+        String name;
+        
+        public Tag(){}
+        
+        public Tag(String name){
+            this.name = name;
+        }
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    public static class User{
+        @Predicate
+        String firstName, lastName, userName;
     }
 
 }

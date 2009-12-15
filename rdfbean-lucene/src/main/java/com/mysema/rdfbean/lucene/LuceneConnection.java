@@ -62,7 +62,7 @@ import com.mysema.util.ListMap;
  * @version $Id$
  */
 // TODO : clean this up!
-public class LuceneConnection implements RDFConnection{
+class LuceneConnection implements RDFConnection{
     
     private static final List<String> INTERNAL_FIELDS = Arrays.asList(
             "alias",

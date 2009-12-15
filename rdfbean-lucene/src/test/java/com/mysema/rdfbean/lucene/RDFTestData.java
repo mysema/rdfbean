@@ -26,24 +26,6 @@ import com.mysema.rdfbean.owl.OWL;
  */
 public class RDFTestData {    
 
-    public static final List<UID> subjects = Arrays.asList(
-            XSD.stringType,
-            OWL.Class,
-            RDF.Alt,
-            RDFS.comment,
-            new UID(TEST.NS, "bob"),
-            new UID(TEST.NS, "anne"),
-            new UID(TEST.NS, "Person"),
-            new UID("http://mycompany.com/", "test")            
-    );
-    
-    public static final List<UID> predicates = Arrays.asList(
-            OWL.allValuesFrom,
-            RDF.first,
-            RDFS.comment,
-            new UID(TEST.NS, "friend")            
-    );
-    
     public static final List<LIT> literals = Arrays.asList(
             new LIT("test"),
             new LIT("test", "en"),
@@ -54,6 +36,24 @@ public class RDFTestData {
     );
     
     public static final List<NODE> objects = new ArrayList<NODE>();
+    
+    public static final List<UID> predicates = Arrays.asList(
+            OWL.allValuesFrom,
+            RDF.first,
+            RDFS.comment,
+            new UID(TEST.NS, "friend")            
+    );
+    
+    public static final List<UID> subjects = Arrays.asList(
+            XSD.stringType,
+            OWL.Class,
+            RDF.Alt,
+            RDFS.comment,
+            new UID(TEST.NS, "bob"),
+            new UID(TEST.NS, "anne"),
+            new UID(TEST.NS, "Person"),
+            new UID("http://mycompany.com/", "test")            
+    );
     
     static{
         objects.addAll(subjects);

@@ -19,6 +19,7 @@ import org.junit.Before;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.Session;
 
 /**
  * AbstractLuceneTest provides
@@ -31,6 +32,8 @@ public abstract class AbstractRepositoryTest {
     private File indexDir = new File("target/test-index");
     
     protected Repository repository;
+    
+    protected Session session;
     
     protected Repository createRepository(LuceneConfiguration configuration){
         return new LuceneRepository(configuration);
@@ -70,10 +73,16 @@ public abstract class AbstractRepositoryTest {
     }
 
     @After
-    public void tearDown() throws IOException{        
-        if (repository != null){
-            repository.close();    
-        }
+    public void tearDown() throws IOException{
+        try{
+            if (session != null){
+                session.close();
+            }    
+        }finally{
+            if (repository != null){
+                repository.close();    
+            }    
+        }                
     }
 
 }

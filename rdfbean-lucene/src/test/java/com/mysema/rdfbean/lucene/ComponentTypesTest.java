@@ -23,6 +23,14 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
  */
 public class ComponentTypesTest extends AbstractConfigurationTest{
     
+    @Test
+    public void componentTypes(){
+        configuration.setCoreConfiguration(new DefaultConfiguration(Tag.class));        
+        configuration.initialize();    
+        
+        assertTrue(configuration.getComponentTypes().contains(new UID(TEST.NS, "Tag")));
+    }
+
     @Searchable(embeddedOnly=true)
     @ClassMapping(ns=TEST.NS)
     public static class Tag{
@@ -35,13 +43,5 @@ public class ComponentTypesTest extends AbstractConfigurationTest{
         public Tag(String name){
             this.name = name;
         }
-    }
-
-    @Test
-    public void componentTypes(){
-        configuration.setCoreConfiguration(new DefaultConfiguration(Tag.class));        
-        configuration.initialize();    
-        
-        assertTrue(configuration.getComponentTypes().contains(new UID(TEST.NS, "Tag")));
     }
 }

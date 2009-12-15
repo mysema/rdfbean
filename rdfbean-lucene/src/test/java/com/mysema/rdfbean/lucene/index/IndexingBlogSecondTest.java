@@ -30,7 +30,6 @@ import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 
 /**
@@ -41,48 +40,13 @@ import com.mysema.rdfbean.object.SessionUtil;
  */
 public class IndexingBlogSecondTest  extends AbstractIndexTest{
 
-    @Searchable
-    @ClassMapping(ns=TEST.NS)
-    public static class Article{
-        
-        @Predicate
-        @SearchablePredicate
-        @SearchableText
-        String title;
-        
-        // indexed into ":tagged" fields
-        @Predicate(ln="tagged")
-        @SearchablePredicate(store=Store.NO,index=Index.ANALYZED)
-        Collection<Tag> tags;
-        
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Tag{
-        @Id(IDType.URI)
-        UID id;
-        
-        protected Tag(){}
-        
-        public Tag(String name){
-            this.id = new UID("tag:", name);
-        }
-        
-        public String getName(){
-            return id.getLocalName();
-        }
-    }
-    
     @Override
     protected Configuration getCoreConfiguration() {
         return new DefaultConfiguration(Article.class, Tag.class);
     }
     
-    
     @Test
     public void searchByTag() throws IOException{
-        Session session = SessionUtil.openSession(repository, Article.class, Tag.class);
-        
         Tag java = new Tag("java");
         Tag web = new Tag("web");
         Tag dev = new Tag("dev");
@@ -105,9 +69,44 @@ public class IndexingBlogSecondTest  extends AbstractIndexTest{
         }
         
         LuceneQuery query = session.createQuery(LuceneQuery.class);
-        assertTrue(query.query("XXX").list(Article.class).isEmpty());
+        assertTrue(query.query("XXX").list(Article.class).isEmpty());        
+    }
+    
+    public void setUp() throws IOException, InterruptedException{
+        super.setUp();
+        session = SessionUtil.openSession(repository, Article.class, Tag.class);
+    }
+    
+    @Searchable
+    @ClassMapping(ns=TEST.NS)
+    public static class Article{
         
-        session.close();
+        // indexed into ":tagged" fields
+        @Predicate(ln="tagged")
+        @SearchablePredicate(store=Store.NO,index=Index.ANALYZED)
+        Collection<Tag> tags;
+        
+        @Predicate
+        @SearchablePredicate
+        @SearchableText
+        String title;
+        
+    }    
+    
+    @ClassMapping(ns=TEST.NS)
+    public static class Tag{
+        @Id(IDType.URI)
+        UID id;
+        
+        protected Tag(){}
+        
+        public Tag(String name){
+            this.id = new UID("tag:", name);
+        }
+        
+        public String getName(){
+            return id.getLocalName();
+        }
     }
 
 }

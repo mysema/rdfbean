@@ -5,7 +5,26 @@
  */
 package com.mysema.rdfbean.lucene.index;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+
 import org.junit.Test;
+
+import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
+import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.lucene.LuceneQuery;
+import com.mysema.rdfbean.lucene.Searchable;
+import com.mysema.rdfbean.lucene.SearchableText;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.DefaultConfiguration;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionUtil;
 
 /**
  * IndexingTypeHierarchiesTest provides
@@ -13,10 +32,74 @@ import org.junit.Test;
  * @author tiwe
  * @version $Id$
  */
-public class IndexingSubclassesTest {
-
+public class IndexingSubclassesTest extends AbstractIndexTest{
+    
     @Test
-    public void test(){
-        // TODO
+    public void bankAccount() throws IOException{
+        BankAccount account = new BankAccount();
+        account.accountNumber = "123";
+        testSaveAndQuery(session, account);
+    }
+    
+    @Test
+    public void creditAcount() throws IOException{
+        CreditAccount account = new CreditAccount();
+        account.accountNumber = "456";
+        testSaveAndQuery(session, account);
+                
+    }
+    
+    @Override
+    protected Configuration getCoreConfiguration() {
+        return new DefaultConfiguration(Account.class, BankAccount.class, CreditAccount.class);
+    }
+
+    public void setUp() throws IOException, InterruptedException{
+        super.setUp();
+        session = SessionUtil.openSession(repository, Account.class, BankAccount.class, CreditAccount.class);
+    }
+      
+    private void testSaveAndQuery(Session session, Account account){
+        session.save(account);
+        assertNotNull("id was not assigned", account.id);
+        session.clear();
+        
+        // get by subtype
+        assertNotNull(session.get(account.getClass(), account.id));
+        session.clear();
+        
+        // get by supertype
+        assertNotNull(session.get(Account.class, account.id));
+        session.clear();
+        
+        // query by subtype
+        assertFalse(session.createQuery(LuceneQuery.class).query(account.accountNumber).list(account.getClass()).isEmpty());
+        session.clear();
+        
+        // query by supertype
+        assertFalse(session.createQuery(LuceneQuery.class).query(account.accountNumber).list(Account.class).isEmpty());
+        session.clear();
+    }
+    
+    @Searchable
+    @ClassMapping(ns=TEST.NS)
+    public static class Account{
+        @SearchableText
+        @Predicate
+        String accountNumber;
+    
+        @Id(IDType.RESOURCE)
+        ID id;
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    public static class BankAccount extends Account{
+        
+    }
+
+
+    @ClassMapping(ns=TEST.NS)
+    public static class CreditAccount extends Account{
+        
     }
 }

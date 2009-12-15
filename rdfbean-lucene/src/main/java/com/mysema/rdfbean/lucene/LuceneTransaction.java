@@ -16,7 +16,7 @@ import com.mysema.rdfbean.object.RDFBeanTransaction;
  * @author tiwe
  * @version $Id$
  */
-public class LuceneTransaction implements RDFBeanTransaction{
+class LuceneTransaction implements RDFBeanTransaction{
     
     private boolean active = true;
     

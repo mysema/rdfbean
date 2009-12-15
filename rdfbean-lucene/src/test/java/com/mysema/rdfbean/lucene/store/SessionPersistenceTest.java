@@ -20,7 +20,6 @@ import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 
 /**
@@ -31,46 +30,19 @@ import com.mysema.rdfbean.object.SessionUtil;
  */
 public class SessionPersistenceTest extends AbstractStoreTest{
 
-    @ClassMapping(ns=TEST.NS)
-    public static class Employee{
-        @Id(IDType.RESOURCE)
-        ID id;        
-        
-        @Predicate
-        String firstName, lastName;   
-        
-        @Predicate
-        Department department;
-        
-        @Predicate
-        Employee superior;
+    @Override
+    protected Configuration getCoreConfiguration() {
+        return new DefaultConfiguration(Employee.class, Department.class, Company.class);
     }
     
-    @ClassMapping(ns=TEST.NS)
-    public static class Department{
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        Company company;
-        
-        @Predicate(ns=RDFS.NS, ln="label")
-        String name;
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Company{
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate(ns=RDFS.NS, ln="label")
-        String name;
+    public void setUp() throws IOException, InterruptedException{
+        super.setUp();
+        session = SessionUtil.openSession(repository, 
+                Employee.class, Department.class, Company.class);
     }
     
     @Test
     public void test() throws IOException{
-        Session session = SessionUtil.openSession(repository, 
-                Employee.class, Department.class, Company.class);
         Company company = new Company();
         company.name = "Big Company";
         
@@ -96,12 +68,41 @@ public class SessionPersistenceTest extends AbstractStoreTest{
         assertNotNull(session.get(Company.class, company.id));
         assertNotNull(session.get(Department.class, department.id));
         assertNotNull(session.get(Employee.class, employee.id));
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    public static class Company{
+        @Id(IDType.RESOURCE)
+        ID id;
         
-        session.close();
+        @Predicate(ns=RDFS.NS, ln="label")
+        String name;
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    public static class Department{
+        @Predicate
+        Company company;
+        
+        @Id(IDType.RESOURCE)
+        ID id;
+        
+        @Predicate(ns=RDFS.NS, ln="label")
+        String name;
     }
 
-    @Override
-    protected Configuration getCoreConfiguration() {
-        return new DefaultConfiguration(Employee.class, Department.class, Company.class);
+    @ClassMapping(ns=TEST.NS)
+    public static class Employee{
+        @Predicate
+        Department department;        
+        
+        @Predicate
+        String firstName, lastName;   
+        
+        @Id(IDType.RESOURCE)
+        ID id;
+        
+        @Predicate
+        Employee superior;
     }
 }

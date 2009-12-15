@@ -15,8 +15,6 @@ import org.junit.Test;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.lucene.Searchable;
-import com.mysema.rdfbean.lucene.SearchablePredicate;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 
@@ -27,28 +25,6 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
  * @version $Id$
  */
 public class InheritanceTest extends AbstractConfigurationTest{
-    
-    @ClassMapping(ns=TEST.NS)
-    @Searchable
-    public static class Animal{
-        @Predicate
-        @SearchablePredicate
-        String name;
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    @Searchable
-    public static class Cat extends Animal{
-        @Predicate
-        @SearchablePredicate
-        Cat mate;
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Dog extends Animal{
-        @Predicate
-        int age;
-    }
     
     @Test
     public void inheritance(){
@@ -73,6 +49,28 @@ public class InheritanceTest extends AbstractConfigurationTest{
         // age in Animal context is also not processed
         assertNull(configuration.getPropertyConfig(agePred, Collections.singleton(new UID(TEST.NS, Animal.class.getSimpleName()))));
         
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    @Searchable
+    public static class Animal{
+        @Predicate
+        @SearchablePredicate
+        String name;
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    @Searchable
+    public static class Cat extends Animal{
+        @Predicate
+        @SearchablePredicate
+        Cat mate;
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    public static class Dog extends Animal{
+        @Predicate
+        int age;
     }
 
 }

@@ -19,9 +19,6 @@ import org.junit.Test;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.lucene.PropertyConfig;
-import com.mysema.rdfbean.lucene.Searchable;
-import com.mysema.rdfbean.lucene.SearchablePredicate;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 
@@ -33,28 +30,6 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
  * @version $Id$
  */
 public class AllStoredTest extends AbstractConfigurationTest{
-    
-    @ClassMapping(ns=TEST.NS)
-    @Searchable(storeAll=true)
-    public static class AllStored{
-        
-        @Predicate
-        String title, description;
-        
-        @Predicate
-        @SearchablePredicate(index=Index.NO)
-        String text;
-    }
-
-//    @ClassMapping(ns=TEST.NS)
-//    @Searchable
-//    public static class Explicit{
-//        
-//        @Predicate
-//        @SearchablePredicate
-//        String account;
-//        
-//    }
     
     @Test
     public void allStored(){        
@@ -73,6 +48,28 @@ public class AllStoredTest extends AbstractConfigurationTest{
             
         }       
          
+    }
+
+//    @ClassMapping(ns=TEST.NS)
+//    @Searchable
+//    public static class Explicit{
+//        
+//        @Predicate
+//        @SearchablePredicate
+//        String account;
+//        
+//    }
+    
+    @ClassMapping(ns=TEST.NS)
+    @Searchable(storeAll=true)
+    public static class AllStored{
+        
+        @Predicate
+        @SearchablePredicate(index=Index.NO)
+        String text;
+        
+        @Predicate
+        String title, description;
     }
     
 
