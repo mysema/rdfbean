@@ -13,9 +13,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
+import org.compass.core.util.Assert;
 
 import com.mysema.rdfbean.lucene.PropertyConfig;
 import com.mysema.rdfbean.lucene.Searchable;
@@ -29,7 +31,7 @@ import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
-import com.mysema.util.ListMap;
+import com.mysema.util.SetMap;
 
 /**
  * MappedClassTypeMapping extracts mapping information from MappedClass instances 
@@ -47,9 +49,15 @@ public class MappedClassTypeMapping implements TypeMapping {
     
     private final Map<ID, Map<UID,PropertyConfig>> propertyConfigs = new HashMap<ID, Map<UID,PropertyConfig>>();
     
-    private final ListMap<ID,ID> subtypes = new ListMap<ID,ID>();
+    private final Set<ID> types = new HashSet<ID>();
     
-    private final ListMap<ID,ID> supertypes = new ListMap<ID,ID>();
+    private final SetMap<ID,ID> directSubtypes = new SetMap<ID,ID>();
+    
+    private final SetMap<ID,ID> directSupertypes = new SetMap<ID,ID>();
+    
+    private final SetMap<ID,ID> subtypes = new SetMap<ID,ID>();
+    
+    private final SetMap<ID,ID> supertypes = new SetMap<ID,ID>();    
     
     public MappedClassTypeMapping(Configuration coreConfig){
         this.coreConfig = coreConfig;
@@ -96,11 +104,12 @@ public class MappedClassTypeMapping implements TypeMapping {
         // handle types
         for (Class<?> javaClass : coreConfig.getMappedClasses()){
             MappedClass clazz = MappedClass.getMappedClass(javaClass);
+            types.add(clazz.getUID());
             uids.add(clazz.getUID());
             
             for (MappedClass superClass : clazz.getMappedSuperClasses()){
-                supertypes.put(clazz.getUID(), superClass.getUID());
-                subtypes.put(superClass.getUID(), clazz.getUID());
+                directSupertypes.put(clazz.getUID(), superClass.getUID());
+                directSubtypes.put(superClass.getUID(), clazz.getUID());
             }
             
             Searchable searchable = clazz.getAnnotation(Searchable.class);
@@ -117,7 +126,34 @@ public class MappedClassTypeMapping implements TypeMapping {
             }
         }
         
-        // TODO : populate transitive type relations
+        // populate mappings for transitive super and subtypes
+        for (ID type : types){
+            // handle subtypes
+            if (directSubtypes.containsKey(type)){
+                Stack<ID> t = new Stack<ID>();
+                t.addAll(directSubtypes.get(type));
+                while (!t.isEmpty()){
+                    ID subtype = t.pop();
+                    subtypes.put(type, subtype);
+                    if (directSubtypes.containsKey(subtype)){
+                        t.addAll(directSubtypes.get(subtype));
+                    }
+                }
+            }
+            
+            // handle supertypes
+            if (directSupertypes.containsKey(type)){
+                Stack<ID> t = new Stack<ID>();
+                t.addAll(directSupertypes.get(type));
+                while (!t.isEmpty()){
+                    ID subtype = t.pop();
+                    supertypes.put(type, subtype);
+                    if (directSupertypes.containsKey(subtype)){
+                        t.addAll(directSupertypes.get(subtype));
+                    }
+                }
+            }
+        }
     }
 
     private void initializeProperty(Collection<UID> uids, Searchable searchable,

@@ -55,12 +55,16 @@ public interface LuceneConfiguration {
     PropertyConfig getPropertyConfig(UID predicate, Collection<? extends ID> subjectTypes);
 
     /**
+     * Get the transitive supertypes of the given type
+     * 
      * @param type
      * @return
      */
     Collection<? extends ID> getSupertypes(ID type);
     
     /**
+     * Get the transitive subtypes of the given type
+     * 
      * @param type
      * @return
      */

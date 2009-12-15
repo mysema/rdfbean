@@ -9,15 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * 
- * A Map like structure where each key maps to a list of values. I couldn't get
- * the generics to work the way I wanted, so it doesn't inherit anything. TODO:
- * move this to a utils project.
- * 
- * @author grimnes
- * 
- */
 public class ListMap<K, V> {
 
     private final HashMap<K, List<V>> data;
@@ -45,7 +36,6 @@ public class ListMap<K, V> {
         return data.containsKey(key);
     }
 
-    @Override
     public String toString() {
         return data.toString();
     }

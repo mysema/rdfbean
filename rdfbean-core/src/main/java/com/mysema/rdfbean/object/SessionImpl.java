@@ -698,7 +698,7 @@ public class SessionImpl implements Session {
         }
         return statements;
     }
-    
+        
     private List<ID> findTypes(ID subject, UID context) {
         List<ID> types = new ArrayList<ID>();
         List<STMT> statements = findStatements(subject, RDF.type, null, true, context);
