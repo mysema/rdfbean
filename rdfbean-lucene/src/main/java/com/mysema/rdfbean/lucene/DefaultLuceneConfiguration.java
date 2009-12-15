@@ -116,8 +116,7 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
         Set<UID> uids = new HashSet<UID>();
         typeMapping = new MappedClassTypeMapping(coreConfig);
         typeMapping.initialize(uids);
-        
-        
+                
         uids.addAll(OWL.all);
         uids.addAll(RDF.all);
         uids.addAll(RDFS.all);        

@@ -34,7 +34,7 @@ import com.mysema.rdfbean.owl.OWL;
 public class NodeConverterTest {
     
     private NodeConverter converter;
-    
+        
     @Before
     public void setUp(){
         DefaultLuceneConfiguration configuration = new DefaultLuceneConfiguration();        
@@ -44,7 +44,7 @@ public class NodeConverterTest {
         configuration.initialize();
         converter = configuration.getConverter();
     }
-    
+        
     @Test
     public void test(){
         List<NODE> nodes = Arrays.<NODE>asList(
@@ -68,6 +68,12 @@ public class NodeConverterTest {
             System.out.println(str);
             assertEquals(node, converter.fromString(str));
         }
+    }    
+
+    @Test
+    public void testShortTypes(){
+        assertEquals("rdf:type", converter.toString(RDF.type));
+        assertEquals(RDF.type,   converter.fromString("rdf:type"));
     }
     
     @Test

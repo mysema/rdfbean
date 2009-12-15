@@ -27,10 +27,11 @@ import com.mysema.rdfbean.xsd.Converter;
  */
 public class NodeConverter implements Converter<NODE>{
     
-//  full uri = <uri>|U
-//  short uri = <prefix>:<local>|u    
-//  bnode = <bnode>|b
+//  short uri = <prefix>:<local>        
 //  string literal : <value>|l
+//  full uri = <uri>|U    
+//  bnode = <bnode>|b    
+
 //  localized literal : <value>|l@<lang>    
 //  typed literal = <value>|lt<prefix>:<local>
 //  typed literal2 = <value>|lT<uri>     
@@ -42,8 +43,6 @@ public class NodeConverter implements Converter<NODE>{
     private static final char LITERAL = 'l';
     
     private static final char SEPARATOR_CHAR = '|';
-    
-    private static final char SHORT_URI = 'u';
     
     private final Map<String,String> nsToPrefix = new HashMap<String,String>();
     
@@ -73,10 +72,7 @@ public class NodeConverter implements Converter<NODE>{
         if (i > -1){
             String value = str.substring(0, i);
             String md = str.substring(i+1);    
-            if (md.charAt(0) == SHORT_URI){
-                return uidFromShortString(value);
-                
-            }else if (md.charAt(0) == FULL_URI){
+            if (md.charAt(0) == FULL_URI){
                 return new UID(value);
                 
             }else if (md.charAt(0) == BNODE){
@@ -91,10 +87,17 @@ public class NodeConverter implements Converter<NODE>{
                     return new LIT(value, uidFromShortString(md.substring(2)));
                 }else if (md.charAt(1) == 'T'){
                     return new LIT(value, new UID(md.substring(2)));
+                }else{
+                    throw new IllegalArgumentException("Invalid Literal string : '" + str + "'");
                 }
-            }                
+            }else{
+                throw new IllegalArgumentException("Invalid Node string : '" + str + "'");
+            }
+            
+        }else{
+            return uidFromShortString(str);
         }
-        throw new IllegalArgumentException("Invalid Node string : '" + str + "'");
+        
     }
 
     public String toString(BID bid){
@@ -134,12 +137,11 @@ public class NodeConverter implements Converter<NODE>{
         }         
     }
     
-    public String toString(UID uid){
-        StringBuilder builder = new StringBuilder();
+    public String toString(UID uid){        
         if (nsToPrefix.containsKey(((UID)uid).getNamespace())){
-            builder.append(uidToShortString((UID)uid)).append(SEPARATOR_CHAR);
-            return builder.append(SHORT_URI).toString();    
+            return uidToShortString(uid);    
         }else{
+            StringBuilder builder = new StringBuilder();
             builder.append(uid.getValue()).append(SEPARATOR_CHAR);
             return builder.append(FULL_URI).toString();
         }

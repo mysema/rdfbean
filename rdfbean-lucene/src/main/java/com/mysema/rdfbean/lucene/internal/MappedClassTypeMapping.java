@@ -17,7 +17,6 @@ import java.util.Stack;
 
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
-import org.compass.core.util.Assert;
 
 import com.mysema.rdfbean.lucene.PropertyConfig;
 import com.mysema.rdfbean.lucene.Searchable;

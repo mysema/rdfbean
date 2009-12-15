@@ -417,6 +417,7 @@ class LuceneConnection implements RDFConnection{
         }        
     }
         
+    @SuppressWarnings("unchecked")
     @Override
     public void update(Set<STMT> removed, Set<STMT> added) {
         if (!readonlyTnx){
@@ -449,7 +450,7 @@ class LuceneConnection implements RDFConnection{
                         target.put(s.getSubject(), s);
                     }                
                     resources.add(s.getSubject());
-                    if (s.getPredicate().equals(RDF.type)){
+                    if (s.getPredicate().equals(RDF.type) && stmts == added){
                         types.put(s.getSubject(), (ID) s.getObject());
                     }
                 }                                  
