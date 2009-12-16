@@ -111,10 +111,12 @@ class LuceneConnection implements RDFConnection{
                 
                 // index supertypes
                 if (conf.isIndexSupertypes() && stmt.getPredicate().equals(RDF.type) && stmt.getObject() instanceof ID){
-                    for (ID supertype : conf.getSupertypes((ID) stmt.getObject())){                        
-                        String supertypeValue = converter.toString(supertype);
-                        resource.addProperty(compass.getResourceFactory().createProperty(predicateField, supertypeValue, 
-                                Store.NO, Index.NOT_ANALYZED));
+                    for (ID supertype : conf.getSupertypes((ID) stmt.getObject())){            
+                        if (!supertype.equals(stmt.getObject())){
+                            String supertypeValue = converter.toString(supertype);
+                            resource.addProperty(compass.getResourceFactory().createProperty(predicateField, supertypeValue, 
+                                    Store.NO, Index.NOT_ANALYZED));    
+                        }                        
                     }
                 }
                 

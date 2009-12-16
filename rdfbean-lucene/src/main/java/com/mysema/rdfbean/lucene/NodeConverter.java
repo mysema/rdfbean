@@ -29,7 +29,7 @@ public class NodeConverter implements Converter<NODE>{
     
 //  short uri = <prefix>:<local>        
 //  string literal : <value>|l
-//  full uri = <uri>|U    
+//  full uri = <uri>|u    
 //  bnode = <bnode>|b    
 
 //  localized literal : <value>|l@<lang>    
@@ -38,7 +38,7 @@ public class NodeConverter implements Converter<NODE>{
     
     private static final char BNODE = 'b';
     
-    private static final char FULL_URI = 'U';
+    private static final char FULL_URI = 'u';
     
     private static final char LITERAL = 'l';
     
@@ -107,8 +107,7 @@ public class NodeConverter implements Converter<NODE>{
     }
     
     public String toString(LIT lit){
-        StringBuilder builder = new StringBuilder();
-        builder.append(lit.getValue()).append(SEPARATOR_CHAR);
+        StringBuilder builder = new StringBuilder(lit.getValue()).append(SEPARATOR_CHAR);
         builder.append(LITERAL);
         if (lit.getLang() != null){
             builder.append("@");
@@ -141,8 +140,7 @@ public class NodeConverter implements Converter<NODE>{
         if (nsToPrefix.containsKey(((UID)uid).getNamespace())){
             return uidToShortString(uid);    
         }else{
-            StringBuilder builder = new StringBuilder();
-            builder.append(uid.getValue()).append(SEPARATOR_CHAR);
+            StringBuilder builder = new StringBuilder(uid.getValue()).append(SEPARATOR_CHAR);
             return builder.append(FULL_URI).toString();
         }
     }

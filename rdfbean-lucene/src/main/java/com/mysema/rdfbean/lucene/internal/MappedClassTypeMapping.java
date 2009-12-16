@@ -5,12 +5,10 @@
  */
 package com.mysema.rdfbean.lucene.internal;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -30,6 +28,7 @@ import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
+import com.mysema.util.Pair;
 import com.mysema.util.SetMap;
 
 /**
@@ -46,7 +45,7 @@ public class MappedClassTypeMapping implements TypeMapping {
     
     private final Configuration coreConfig;
     
-    private final Map<ID, Map<UID,PropertyConfig>> propertyConfigs = new HashMap<ID, Map<UID,PropertyConfig>>();
+    private final Map<Pair<ID,UID>,PropertyConfig> propertyConfigs = new HashMap<Pair<ID,UID>,PropertyConfig>();
     
     private final Set<ID> types = new HashSet<ID>();
     
@@ -63,21 +62,12 @@ public class MappedClassTypeMapping implements TypeMapping {
     }
 
     public PropertyConfig findPropertyConfig(UID predicate, Collection<? extends ID> subjectTypes) {
-        while (!subjectTypes.isEmpty()){
-            for (ID type : subjectTypes){
-                Map<UID,PropertyConfig> configs = propertyConfigs.get(type);                
-                if (configs != null && configs.containsKey(predicate)){
-                    return configs.get(predicate);
-                }
-            }    
-            List<ID> newTypes = new ArrayList<ID>(subjectTypes.size());
-            for (ID type : subjectTypes){
-                if (supertypes.containsKey(type)){
-                    newTypes.addAll(supertypes.get(type));
-                }
+        for (ID type : subjectTypes){
+            PropertyConfig config = propertyConfigs.get(new Pair<ID,UID>(type, predicate));
+            if (config != null){
+                return config;
             }
-            subjectTypes = newTypes;
-        }
+        }        
         return null;
     }
 
@@ -100,6 +90,8 @@ public class MappedClassTypeMapping implements TypeMapping {
     }
 
     public void initialize(Collection<UID> uids) {
+        Map<ID, Map<UID,PropertyConfig>> typeToConfigs = new HashMap<ID, Map<UID,PropertyConfig>>();
+        
         // handle types
         for (Class<?> javaClass : coreConfig.getMappedClasses()){
             MappedClass clazz = MappedClass.getMappedClass(javaClass);
@@ -119,14 +111,34 @@ public class MappedClassTypeMapping implements TypeMapping {
                 Map<UID,PropertyConfig> configs = new HashMap<UID,PropertyConfig>();                
                 // handle properties
                 for (MappedPath mappedPath : clazz.getProperties()){
-                    initializeProperty(uids, searchable, configs, mappedPath);                    
+                    initializeProperty(mappedPath, uids, searchable, configs);                    
                 }
-                propertyConfigs.put(clazz.getUID(), configs);
+                typeToConfigs.put(clazz.getUID(), configs);
             }
         }
         
+        // initialize subtype/supertype mappings               
+        initializeTypeHierarchy();
+        
+        // flatten typeconfig structure
+        for (ID type : types){
+            Map<UID,PropertyConfig> configs = typeToConfigs.get(type);
+            if (configs != null && !configs.isEmpty()){
+                for (Map.Entry<UID, PropertyConfig> entry : configs.entrySet()){
+                    for (ID subtype : subtypes.get(type)){
+                        propertyConfigs.put(new Pair<ID,UID>(subtype, entry.getKey()), entry.getValue());
+                    }
+                }
+            }
+        }
+    }
+    
+    private void initializeTypeHierarchy(){
         // populate mappings for transitive super and subtypes
         for (ID type : types){
+            subtypes.put(type, type);
+            supertypes.put(type, type);
+            
             // handle subtypes
             if (directSubtypes.containsKey(type)){
                 Stack<ID> t = new Stack<ID>();
@@ -155,8 +167,7 @@ public class MappedClassTypeMapping implements TypeMapping {
         }
     }
 
-    private void initializeProperty(Collection<UID> uids, Searchable searchable,
-            Map<UID, PropertyConfig> configs, MappedPath mappedPath) {
+    private void initializeProperty(MappedPath mappedPath, Collection<UID> uids, Searchable searchable, Map<UID, PropertyConfig> configs) {
         MappedProperty<?> property = mappedPath.getMappedProperty();
         
         // predicate configuration

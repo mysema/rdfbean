@@ -56,8 +56,7 @@ class LuceneTransaction implements RDFBeanTransaction{
 
     @Override
     public void prepare() {
-        tx.getSession().flush();
-        
+        tx.getSession().flush();        
     }
 
     @Override

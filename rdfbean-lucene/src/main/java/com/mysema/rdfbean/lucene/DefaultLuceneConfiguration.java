@@ -217,7 +217,6 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
 
     public void setIndexSupertypes(boolean indexSupertypes) {
         this.indexSupertypes = indexSupertypes;
-    }
-    
+    }    
     
 }

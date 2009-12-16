@@ -57,8 +57,8 @@ public class InheritanceTest extends AbstractConfigurationTest{
         configuration.setCoreConfiguration(new DefaultConfiguration(Animal.class, BlackCat.class, Cat.class, Dog.class));
         configuration.initialize();
         
-        // Animal
-        assertEquals(1, configuration.getSupertypes(new UID(TEST.NS, Cat.class.getSimpleName())).size());
+        // Animal, Cat
+        assertEquals(2, configuration.getSupertypes(new UID(TEST.NS, Cat.class.getSimpleName())).size());
     }
     
     @Test
@@ -66,8 +66,8 @@ public class InheritanceTest extends AbstractConfigurationTest{
         configuration.setCoreConfiguration(new DefaultConfiguration(Animal.class, BlackCat.class, Cat.class, Dog.class));
         configuration.initialize();
         
-        // Cat, BlackCat and Dog
-        assertEquals(3, configuration.getSubtypes(new UID(TEST.NS, Animal.class.getSimpleName())).size());
+        // Animal, Cat, BlackCat and Dog
+        assertEquals(4, configuration.getSubtypes(new UID(TEST.NS, Animal.class.getSimpleName())).size());
     }
     
     @ClassMapping(ns=TEST.NS)
