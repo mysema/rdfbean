@@ -145,7 +145,7 @@ public class NodeConverter implements Converter<NODE>{
         }
     }
 
-    public UID uidFromShortString(String str) {
+    private UID uidFromShortString(String str) {
         if (strToUid.containsKey(str)){
             return strToUid.get(str);
         }else{
@@ -155,7 +155,7 @@ public class NodeConverter implements Converter<NODE>{
         }
     }    
 
-    public String uidToShortString(UID uid) {
+    private String uidToShortString(UID uid) {
         if (uidToStr.containsKey(uid)){
             return uidToStr.get(uid);
         }else{

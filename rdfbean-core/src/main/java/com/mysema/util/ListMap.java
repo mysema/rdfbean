@@ -6,42 +6,29 @@
 package com.mysema.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 
-public class ListMap<K, V> {
+/**
+ * ListMap provides
+ *
+ * @author tiwe
+ * @version $Id$
+ *
+ * @param <K>
+ * @param <V>
+ */
+public class ListMap<K, V> extends AbstractCollectionMap<K,V>{
 
-    private final HashMap<K, List<V>> data;
-
-    public ListMap() {
-        data = new HashMap<K, List<V>>();
+    @Override
+    public Collection<V> createCollection() {
+        return new ArrayList<V>();
     }
 
-    public void put(K key, V value) {
-        List<V> list;
-        if (data.containsKey(key)) {
-            list = data.get(key);
-        } else {
-            list = new ArrayList<V>();
-            data.put(key, list);
-        }
-        list.add(value);
-    }
-
+    @Override
     public List<V> get(K key) {
-        return data.get(key);
+        return (List<V>) data.get(key);
     }
 
-    public boolean containsKey(K key) {
-        return data.containsKey(key);
-    }
-
-    public String toString() {
-        return data.toString();
-    }
-
-    public void remove(K key) {
-        data.remove(key);
-    }
 
 }

@@ -28,6 +28,7 @@ import com.mysema.util.EmptyCloseableIterator;
  * @author tiwe
  * @version $Id$
  */
+// TODO : replace with something more expressive
 public class LuceneQuery {
 
     private final CompassSession compassSession;
@@ -44,14 +45,18 @@ public class LuceneQuery {
         this.compassSession = Assert.notNull(compassSession);
     }
 
+    private CompassHits doQuery(){
+        return compassSession.find(query);
+    }
+
     private <T> T get(Resource resource, Class<T> clazz){
         // TODO : notify listeners of loaded resource
         ID id = (ID) conf.getConverter().fromString(resource.getId());
         return session.get(clazz, id);
     }
-
+    
     public <T> CloseableIterator<T> iterate(final Class<T> clazz){
-        final CompassHits hits = compassSession.find(query);
+        final CompassHits hits = doQuery();
         if (hits.length() > 0){
             final Iterator<CompassHit> iterator = hits.iterator();
             return new CloseableIterator<T>(){
@@ -76,7 +81,7 @@ public class LuceneQuery {
     }
     
     public <T> List<T> list(Class<T> clazz) {
-        CompassHits hits = compassSession.find(query);
+        final CompassHits hits = doQuery();
         if (hits.length() > 0){
             List<T> results = new ArrayList<T>(hits.length());
             for (int i = 0; i < hits.length(); i++){

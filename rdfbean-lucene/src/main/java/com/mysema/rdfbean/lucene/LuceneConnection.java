@@ -8,8 +8,8 @@ package com.mysema.rdfbean.lucene;
 import static com.mysema.rdfbean.lucene.Constants.ALL_FIELD_NAME;
 import static com.mysema.rdfbean.lucene.Constants.CONTEXT_FIELD_NAME;
 import static com.mysema.rdfbean.lucene.Constants.CONTEXT_NULL;
-import static com.mysema.rdfbean.lucene.Constants.ID_FIELD_NAME;
 import static com.mysema.rdfbean.lucene.Constants.EMBEDDED_ID_FIELD_NAME;
+import static com.mysema.rdfbean.lucene.Constants.ID_FIELD_NAME;
 import static com.mysema.rdfbean.lucene.Constants.TEXT_FIELD_NAME;
 
 import java.io.IOException;
@@ -52,6 +52,7 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SimpleBeanQuery;
 import com.mysema.util.EmptyCloseableIterator;
 import com.mysema.util.ListMap;
 
@@ -93,15 +94,52 @@ class LuceneConnection implements RDFConnection{
         this.compassSession = Assert.notNull(session);
         this.compass = conf.getCompass();
     }
+    
+    private void removeStatement(Resource resource, boolean component, STMT stmt, List<ID> subjectTypes){
+//        System.err.println("removed : " + stmt);
+        String objectValue = converter.toString(stmt.getObject());
+        PropertyConfig propertyConfig = conf.getPropertyConfig(stmt.getPredicate(), subjectTypes);
+        
+        if (propertyConfig != null){
+            if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
+                String predicateField = converter.toString(stmt.getPredicate());
+                if (component){
+                    predicateField = converter.toString(stmt.getSubject()) + " " + predicateField; 
+                }                
+                
+                List<Property> properties = new ArrayList<Property>(Arrays.asList(resource.getProperties(predicateField)));
+                for (Property property : properties.toArray(new Property[0])){
+                    if (property.getStringValue().equals(objectValue)){
+                        properties.remove(property);
+                    }
+                }   
+                // remove all predicate
+                resource.removeProperty(predicateField);
+                // add left ones back
+                for (Property left : properties){
+                    resource.addProperty(left);
+                }
+            }
+            
+            if (propertyConfig.isAllIndexed()){
+                // TODO : handle ALL indexed                
+            }
 
-    public void addStatement(Resource resource, boolean component, STMT stmt, List<ID> subjectTypes) {        
+            if (propertyConfig.isTextIndexed()){
+                // TODO : handled TEXT indexed
+            }
+        }
+    }   
+
+    private void addStatement(Resource resource, boolean component, STMT stmt, List<ID> subjectTypes) {        
+//        System.err.println("added : " + stmt);
         String objectValue = converter.toString(stmt.getObject());        
         PropertyConfig propertyConfig = conf.getPropertyConfig(stmt.getPredicate(), subjectTypes);
         
         if (propertyConfig != null){           
             // index predicate
             if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
-                String predicateField = converter.uidToShortString(stmt.getPredicate());
+                String predicateField = converter.toString(stmt.getPredicate());
                 if (component){
                     predicateField = converter.toString(stmt.getSubject()) + " " + predicateField; 
                 }                
@@ -190,7 +228,7 @@ class LuceneConnection implements RDFConnection{
                 }
             }   
             if (predicate != null){
-                String predicateField = converter.uidToShortString(predicate);
+                String predicateField = converter.toString(predicate);
                 // TODO : component predicate matches need to be handled here
                 if (object != null){
                     String value = converter.toString(object);
@@ -222,7 +260,7 @@ class LuceneConnection implements RDFConnection{
     
     @Override
     public BeanQuery createQuery(Session session) {
-        throw new UnsupportedOperationException();
+        return new SimpleBeanQuery(session);
     }
     
     @SuppressWarnings("unchecked")
@@ -282,7 +320,7 @@ class LuceneConnection implements RDFConnection{
             String objString = converter.toString(obj);
             for (Property property : resource.getProperties()){
                 if (isPredicateProperty(property.getName())  && objString.equals(property.getStringValue())){
-                    pre = converter.uidFromShortString(property.getName());
+                    pre = (UID) converter.fromString(property.getName());
                     stmts.add(new STMT(sub, pre, obj));
                 }
             }
@@ -290,7 +328,7 @@ class LuceneConnection implements RDFConnection{
         }else{
             for (Property property : resource.getProperties()){
                 if (isPredicateProperty(property.getName())){ 
-                    pre = converter.uidFromShortString(property.getName());
+                    pre = (UID) converter.fromString(property.getName());
                     obj = converter.fromString(property.getStringValue());
                     stmts.add(new STMT(sub, pre, obj));
                 }    
@@ -300,7 +338,7 @@ class LuceneConnection implements RDFConnection{
     }
           
     private String getPredicateField(UID predicate){
-        return converter.uidToShortString(predicate);
+        return converter.toString(predicate);
     }
     
     private Resource getResource(String field, Object value) throws IOException {
@@ -324,99 +362,49 @@ class LuceneConnection implements RDFConnection{
                 luceneResource = getResource(ID_FIELD_NAME, id);
             }
 
-            if (luceneResource == null) {
+            if (luceneResource == null){
                 luceneResource = createResource();
                 luceneResource.addProperty(ID_FIELD_NAME, id);
-                HashSet<ID> contextsToAdd = new HashSet<ID>();
-                List<STMT> list = rsAdded.get(resource);
-                if (list != null){
-                    for (STMT s : list) {
-                        List<ID> subjectTypes = types.get(s.getSubject());
-                        if (subjectTypes == null){
-                            subjectTypes = Collections.emptyList();
-                        }
-                        addStatement(luceneResource, !s.getSubject().equals(resource), s, subjectTypes);
-                        if (s.getContext() != null){
-                            contextsToAdd.add(s.getContext());    
-                        }                        
-                    }
-                }
-                    
-                if (conf.isContextsStored()){
-                    if (contextsToAdd.isEmpty()){
-                        luceneResource.addProperty(CONTEXT_FIELD_NAME, CONTEXT_NULL);
-                    }else{
-                        for (ID c : contextsToAdd) {
-                            luceneResource.addProperty(CONTEXT_FIELD_NAME, converter.toString(c));
-                        }    
-                    }                                                           
-                }
-                
-                compassSession.save(luceneResource);
-
-                if (rsRemoved.containsKey(resource)){
-                    logger.warn(rsRemoved.get(resource).size() +
-                        " statements are marked to be removed that should not be in the store," + 
-                        " for resource " + resource + ". Nothing done.");
-                }
-                    
-            } else {
-                Resource newResource = createResource();
-
-                ListMap<String, String> removedOfResource = null;
-                List<STMT> removedStatements = rsRemoved.get(resource);
-                if (removedStatements != null) {
-                    removedOfResource = new ListMap<String, String>();
-                    for (STMT r : removedStatements) {
-                        removedOfResource.put(r.getPredicate().getValue(), 
-                                converter.toString(r.getObject()));
-                    }
-                }
-
-                for (Property oldProperty : luceneResource.getProperties()) {
-                    if (removedOfResource != null) {
-                        List<String> objectsRemoved = removedOfResource.get(oldProperty.getName());
-                        if ((objectsRemoved != null) && (objectsRemoved.contains(oldProperty.getStringValue()))) {
-                            continue;
-                        }
-
-                    }
-                    newResource.addProperty(oldProperty);
-                }
-
-                List<STMT> addedToResource = rsAdded.get(resource);
-                if (addedToResource != null) {
-                    HashSet<ID> contextsToAdd = new HashSet<ID>();
-                    for (STMT s : addedToResource) {
-                        List<ID> subjectTypes = types.get(s.getSubject());
-                        if (subjectTypes == null){
-                            List<STMT> typeStmts = findStatements(luceneResource, s.getSubject(), RDF.type, null, null); 
-                            subjectTypes = new ArrayList<ID>(typeStmts.size());
-                            for (STMT stmt : typeStmts){
-                                subjectTypes.add((ID) stmt.getObject());
-                            }
-                        }
-                        addStatement(newResource, !s.getSubject().equals(resource), s, subjectTypes);
-                        if (s.getContext() != null){
-                            contextsToAdd.add(s.getContext());    
-                        }                        
-                    }
-
-                    if (conf.isContextsStored()){
-                        if (contextsToAdd.isEmpty()){
-                            newResource.addProperty(CONTEXT_FIELD_NAME, CONTEXT_NULL);
-                        }else{
-                            for (ID c : contextsToAdd) {
-                                newResource.addProperty(CONTEXT_FIELD_NAME, converter.toString(c));
-                            }
-                        }
-                            
-                    }                    
-                }
-
-                compassSession.save(newResource);
             }
+            
+            // removed
+            List<STMT> removedStatements = rsRemoved.get(resource);
+            if (removedStatements != null) {
+                for (STMT stmt : removedStatements) {
+                    List<ID> subjectTypes = getSubjectTypes(stmt.getSubject(), types, luceneResource);
+                    removeStatement(luceneResource, !stmt.getSubject().equals(resource), stmt, subjectTypes);
+                }
+            }
+            
+            // added
+            List<STMT> addedToResource = rsAdded.get(resource);
+            if (addedToResource != null) {
+                for (STMT stmt : addedToResource) {
+                    List<ID> subjectTypes = getSubjectTypes(stmt.getSubject(), types, luceneResource);
+                    addStatement(luceneResource, !stmt.getSubject().equals(resource), stmt, subjectTypes);
+                }
+            }
+
+            if (luceneResource.getProperties(converter.toString(RDF.type)).length > 0){
+                compassSession.save(luceneResource);    
+            }else{
+                compassSession.delete(luceneResource);
+            }
+            
         }        
+    }
+
+    private List<ID> getSubjectTypes(ID subject, ListMap<ID, ID> types, Resource luceneResource) {
+        List<ID> subjectTypes = types.get(subject);
+        if (subjectTypes == null){
+            List<STMT> typeStmts = findStatements(luceneResource, subject, RDF.type, null, null); 
+            subjectTypes = new ArrayList<ID>(typeStmts.size());
+            for (STMT stmt : typeStmts){
+                subjectTypes.add((ID) stmt.getObject());
+            }
+            types.put(subject, subjectTypes);
+        }
+        return subjectTypes;
     }
         
     @SuppressWarnings("unchecked")
