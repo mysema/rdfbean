@@ -88,7 +88,11 @@ public abstract class Dialect
     public abstract U getPredicate(S statement);
 
     public final R getResource(ID id) {
-        return id.isURI() ? getURI((UID)id) : getBNode((BID)id);        
+        if (id.isURI()){
+            return getURI((UID)id);
+        }else{
+            return getBNode((BID)id);
+        }        
     }
         
     public abstract R getSubject(S statement);

@@ -21,6 +21,7 @@ import org.compass.core.Property.Store;
 import org.compass.core.config.CompassConfiguration;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.lucene.internal.MappedClassTypeMapping;
 import com.mysema.rdfbean.lucene.internal.TypeMapping;
 import com.mysema.rdfbean.model.ID;
@@ -102,7 +103,7 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
         PropertyConfig config = typeMapping.findPropertyConfig(predicate, subjectTypes);
         if (config != null){
             return config;
-        }else if (predicate.equals(RDF.type)){
+        }else if (predicate.equals(RDF.type) && rdfTypeConfig != null){
             return rdfTypeConfig;
         }else{
             return defaultPropertyConfig;    
@@ -122,6 +123,7 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
         uids.addAll(RDFS.all);        
         uids.addAll(XSD.all);
         
+        prefixToNs.put("core", CORE.NS);
         prefixToNs.put("owl", OWL.NS);
         prefixToNs.put("rdf", RDF.NS);
         prefixToNs.put("rdfs", RDFS.NS);
