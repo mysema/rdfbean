@@ -17,6 +17,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.commons.lang.Assert;
 
+// TODO : move this to rdfbean-core
 public class RDFSource {
 
     private String resource;

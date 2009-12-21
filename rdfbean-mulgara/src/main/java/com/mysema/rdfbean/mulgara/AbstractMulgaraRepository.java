@@ -17,7 +17,7 @@ import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 
 /**
- * MulgaraRepository provides
+ * AbstractMulgaraRepository provides
  *
  * @author tiwe
  * @version $Id$
