@@ -22,6 +22,11 @@ public final class MiniDialect extends Dialect<NODE, ID, BID, UID, LIT, STMT> {
     public STMT createStatement(ID subject, UID predicate, NODE object) {
         return new STMT(subject, predicate, object, null, true);
     }
+    
+    @Override
+    public STMT createStatement(ID subject, UID predicate, NODE object, UID context) {
+        return new STMT(subject, predicate, object, context, true);
+    }
 
     @Override
     public BID getBID(BID bnode) {
@@ -94,13 +99,18 @@ public final class MiniDialect extends Dialect<NODE, ID, BID, UID, LIT, STMT> {
     }
 
     @Override
+    public UID getURI(String uri) {
+        return new UID(uri);
+    }
+
+    @Override
     public UID getURI(UID uid) {
         return uid;
     }
 
     @Override
-    public UID getURI(String uri) {
-        return new UID(uri);
+    public NODE getNODE(NODE node) {
+        return node;
     }
    
 }

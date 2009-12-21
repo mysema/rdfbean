@@ -29,7 +29,6 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
@@ -187,44 +186,27 @@ public class SesameConnection implements RDFConnection {
     }
 
     private STMT convert(Statement statement, boolean asserted) {
-        UID context = statement.getContext() != null ? 
-                (UID)dialect.getID(statement.getContext()) : null;
+        UID context = statement.getContext() != null ? (UID)dialect.getID(statement.getContext()) : null;
         return new STMT(
                 dialect.getID(statement.getSubject()), 
                 dialect.getUID(statement.getPredicate()), 
-                dialect.getNode(statement.getObject()), 
+                dialect.getNODE(statement.getObject()), 
                 context, asserted);
     }
     
     @Nullable
-    private URI convert(UID uid) {
-        if (uid == null){
-            return null;
-        }else{
-            return vf.createURI(uid.getId());
-        }
+    private URI convert(@Nullable UID uid) {
+        return uid != null ? dialect.getURI(uid) : null;
     }
     
     @Nullable
-    private Resource convert(ID id) {
-        if (id == null) {
-            return null;
-        } else if (id.isBNode()) {
-            return vf.createBNode(id.getId());
-        } else {
-            return convert((UID) id);
-        }
+    private Resource convert(@Nullable ID id) {
+        return id != null ? dialect.getResource(id) : null;
     }
 
     @Nullable
-    private Value convert(NODE node) {
-        if (node == null){
-            return null;
-        }else if (node.isLiteral()) {
-            return dialect.getLiteral((LIT) node);
-        } else {
-            return dialect.getResource((ID)node);
-        }
+    private Value convert(@Nullable NODE node) {
+        return node != null ? dialect.getNode(node) : null;
     }    
 
     @Override
@@ -251,15 +233,11 @@ public class SesameConnection implements RDFConnection {
     private Collection<Statement> convert(Collection<STMT> stmts) {
         List<Statement> statements = new ArrayList<Statement>(stmts.size());
         for (STMT stmt : stmts) {
-            Value object = stmt.isObjectStatement() 
-                ? dialect.getResource((ID) stmt.getObject())
-                : dialect.getLiteral((LIT) stmt.getObject());
-            statements.add(vf.createStatement(
-                    dialect.getResource(stmt.getSubject()), 
-                    dialect.getURI(stmt.getPredicate()), 
-                    object,
-                    stmt.getContext() != null ? dialect.getURI(stmt.getContext()) : null
-                    ));
+            statements.add(dialect.createStatement(
+                    stmt.getSubject(), 
+                    stmt.getPredicate(), 
+                    stmt.getObject(), 
+                    stmt.getContext()));
         }
         return statements;
     }

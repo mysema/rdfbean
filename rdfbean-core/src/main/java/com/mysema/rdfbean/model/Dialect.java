@@ -5,7 +5,11 @@
  */ 
 package com.mysema.rdfbean.model;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 /**
  * Dialect provides a generic model of RDF APIs
@@ -20,36 +24,63 @@ public abstract class Dialect
      U extends R, 
      L extends N, 
      S> {
+
+    private static final Map<String,UID> datatypeUIDCache = new HashMap<String,UID>();
+    
+    static{
+        for (UID uid : XSD.all){
+            datatypeUIDCache.put(uid.getId(), uid);
+        }
+    }
     
     public abstract B createBNode();
-
-    public R createResource() {
-        return createBNode();
+    
+    public S createStatement(ID subject, UID predicate, NODE object, @Nullable UID context){
+        U c = context != null ? getURI(context) : null;
+        return createStatement(getResource(subject), getURI(predicate), getNode(object), c); 
     }
 
     public abstract S createStatement(R subject, U predicate, N object);
     
+    public abstract S createStatement(R subject, U predicate, N object, @Nullable U context);
+
     public abstract BID getBID(B bnode);
-
-    public abstract B getBNode(BID bid);
-
-    // Can this be generalized? Jena?
-//    public abstract UID getContext(S statement);
     
+    public abstract B getBNode(BID bid);
+    
+    protected UID getDatatypeUID(String datatype){
+        UID uid = datatypeUIDCache.get(datatype);
+        if (uid == null){
+            uid = new UID(datatype);
+            datatypeUIDCache.put(datatype, uid);            
+        }
+        return uid;
+    }
+
     public abstract ID getID(R resource);
     
     public abstract LIT getLIT(L literal);
-
+    
     public abstract L getLiteral(LIT lit);
-    
-    public abstract L getLiteral(String value);
 
-    public abstract L getLiteral(String value, Locale language);
+    public abstract L getLiteral(String value);
     
+    public abstract L getLiteral(String value, Locale language);
+
     public abstract L getLiteral(String value, U datatype);
     
-    public abstract NODE getNode(N node);
-
+    public N getNode(NODE node){
+        if (node.isLiteral()){
+            return getLiteral((LIT)node);
+        }else if (node.isBNode()){
+            return getBNode((BID)node);
+        }else{
+            return getURI((UID)node);
+        }
+    }
+    
+    public abstract NODE getNODE(N node);
+    
     public abstract NodeType getNodeType(N node); 
 
     public abstract N getObject(S statement); 
@@ -57,24 +88,15 @@ public abstract class Dialect
     public abstract U getPredicate(S statement);
 
     public final R getResource(ID id) {
-        if (id instanceof UID) {
-            return getURI((UID) id);
-        } else{
-            return getBNode((BID) id);
-        }
+        return id.isURI() ? getURI((UID)id) : getBNode((BID)id);        
     }
         
     public abstract R getSubject(S statement);
     
     public abstract UID getUID(U resource);
 
-    public abstract U getURI(UID uid);
-    
     public abstract U getURI(String uri);
-
-    public final boolean isResource(N node) {
-        NodeType type = getNodeType(node);
-        return type == NodeType.URI || type == NodeType.BLANK;
-    }
+    
+    public abstract U getURI(UID uid);
     
 }

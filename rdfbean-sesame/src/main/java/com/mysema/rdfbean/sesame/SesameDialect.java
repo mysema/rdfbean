@@ -9,11 +9,25 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.openrdf.model.*;
+import org.openrdf.model.BNode;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.Dialect;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.NodeType;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 
 /**
  * @author sasa
@@ -21,13 +35,13 @@ import com.mysema.rdfbean.model.*;
  */
 public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal, Statement> {
     
-    private final ValueFactory vf;
+    private final Map<BNode, BID> bnodeCache = new HashMap<BNode, BID>(1024);
+    
+    private final Map<Literal, LIT> literalCache = new HashMap<Literal, LIT>(1024); 
     
     private final Map<URI, UID> uriCache = new HashMap<URI, UID>(1024); 
     
-    private final Map<BNode, BID> bnodeCache = new HashMap<BNode, BID>(1024); 
-    
-    private final Map<Literal, LIT> literalCache = new HashMap<Literal, LIT>(1024); 
+    private final ValueFactory vf; 
 
     public SesameDialect(ValueFactory vf) {
         Assert.notNull(vf);
@@ -40,15 +54,18 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     }
 
     @Override
-    public Statement createStatement(Resource subject, URI predicate,
-            Value object) {
+    public Statement createStatement(Resource subject, URI predicate, Value object) {
         return vf.createStatement(subject, predicate, object);
+    }
+    
+    @Override
+    public Statement createStatement(Resource subject, URI predicate, Value object, URI context) {
+        return vf.createStatement(subject, predicate, object, context);
     }
 
     @Override
     public BID getBID(BNode bnode) {
-        BID bid;
-        bid = bnodeCache.get(bnode);
+        BID bid = bnodeCache.get(bnode);
         if (bid == null) {
             bid = new BID(bnode.getID());
             bnodeCache.put(bnode, bid);
@@ -72,13 +89,12 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
 
     @Override
     public LIT getLIT(Literal literal) {
-        LIT lit;
-        lit = literalCache.get(literal);
+        LIT lit = literalCache.get(literal);
         if (lit == null) {
             if (literal.getLanguage() != null) {
                 lit = new LIT(literal.stringValue(), literal.getLanguage());
             } else if (literal.getDatatype() != null) {
-                lit = new LIT(literal.stringValue(), getUID(literal.getDatatype()));
+                lit = new LIT(literal.stringValue(), getDatatypeUID(literal.getDatatype().stringValue()));
             } else {
                 lit = new LIT(literal.stringValue(), RDF.text);
             }
@@ -125,7 +141,7 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     }
 
     @Override
-    public NODE getNode(Value node) {
+    public NODE getNODE(Value node) {
         if (node instanceof Resource) {
             return getID((Resource) node);
         } else {
@@ -163,8 +179,7 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
 
     @Override
     public UID getUID(URI uri) {
-        UID uid;
-        uid = uriCache.get(uri);
+        UID uid = uriCache.get(uri);
         if (uid == null) {
             uid = new UID(uri.getNamespace(), uri.getLocalName());
             uriCache.put((URI) uri, uid);
@@ -173,13 +188,13 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     }
 
     @Override
-    public URI getURI(UID uid) {
-        return vf.createURI(uid.ns(), uid.ln());
+    public URI getURI(String uri) {
+        return vf.createURI(uri);
     }
 
     @Override
-    public URI getURI(String uri) {
-        return vf.createURI(uri);
+    public URI getURI(UID uid) {
+        return vf.createURI(uid.ns(), uid.ln());
     }
 
 }

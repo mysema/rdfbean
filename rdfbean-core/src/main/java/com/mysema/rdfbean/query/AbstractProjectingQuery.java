@@ -27,6 +27,7 @@ import com.mysema.query.types.path.Path;
 import com.mysema.query.types.path.PathMetadata;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.NodeType;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.Session;
@@ -201,7 +202,8 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     
     @SuppressWarnings("unchecked")
     private <RT> RT getAsProjectionValue(Class<RT> type, N node){
-        if (dialect.isResource(node)){
+        NodeType nodeType = dialect.getNodeType(node);
+        if (nodeType != NodeType.LITERAL){            
             ID id = dialect.getID((R)node);
             if (type.equals(String.class)){
                 // TODO : always return LID ?
@@ -209,8 +211,8 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
             }else{
                 return (RT) session.get(type, id);    
             }            
-        }else{            
-            return convert(type, (L)node);
+        }else{
+            return convert(type, (L)node);            
         }
     }
 

@@ -27,15 +27,18 @@
   
   <modules>
     <!-- core modules -->
-    <module>../rdfbean-core</module>
-    <module>../rdfbean-spring</module>
-    <module>../rdfbean-sesame</module>
-    <module>../rdfbean-maven-plugin</module>
+    <module>../rdfbean-core</module>    
+    <module>../rdfbean-sesame</module>    
     <module>../rdfbean-lucene</module>
+    <module>../rdfbean-mulgara</module>
     
     <!-- various support modules -->
+    <module>../rdfbean-spring</module>    
     <module>../rdfbean-guice</module>
-    <module>../rdfbean-tapestry</module>    
+    <module>../rdfbean-tapestry</module>
+    <module>../rdfbean-maven-plugin</module>    
+    
+    <!-- demo -->
     <module>../rdfbean-demo</module>
 <!--         
     <module>../rdfbean-docs</module>
