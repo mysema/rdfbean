@@ -9,7 +9,6 @@ import java.io.Closeable;
 
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.collections.ColQueryTemplates;
 import com.mysema.query.collections.CustomQueryable;
 import com.mysema.query.collections.impl.EvaluatorFactory;
 import com.mysema.query.types.path.PEntity;
@@ -23,12 +22,10 @@ import com.mysema.query.types.path.Path;
  */
 public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements Closeable, BeanQuery {
 
-    private static final ColQueryTemplates templates = new ColQueryTemplates();
-    
     private Session session;
     
     public SimpleBeanQuery(final Session session) {
-        super(new DefaultQueryMetadata(), new EvaluatorFactory(templates));
+        super(new DefaultQueryMetadata(), EvaluatorFactory.DEFAULT);
         this.session = session;
     }
        

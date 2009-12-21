@@ -45,21 +45,21 @@ public class UpdateTest extends AbstractStoreTest{
         article.title = "Test";
         session.save(article);
         session.clear();        
-        assertTrue(query(QArticle.article.title.eq("Test")) != null);
+        assertTrue(query(QUpdateTest_Article.article.title.eq("Test")) != null);
         
         article.title = "Other";
         session.save(article);
         session.clear();               
-        assertTrue(query(QArticle.article.title.eq("Other")) != null);
-        assertTrue(query(QArticle.article.title.eq("Test")) == null);
+        assertTrue(query(QUpdateTest_Article.article.title.eq("Other")) != null);
+        assertTrue(query(QUpdateTest_Article.article.title.eq("Test")) == null);
         
         article.title = null;
         session.save(article);
         session.clear();        
-        EBoolean notNull = QArticle.article.title.isNotNull();
-        assertTrue(query(notNull.and(QArticle.article.title.eq("Test"))) == null);
-        assertTrue(query(notNull.and(QArticle.article.title.eq("Other"))) == null);
-        assertTrue(query(QArticle.article.title.isNull()) != null);
+        EBoolean notNull = QUpdateTest_Article.article.title.isNotNull();
+        assertTrue(query(notNull.and(QUpdateTest_Article.article.title.eq("Test"))) == null);
+        assertTrue(query(notNull.and(QUpdateTest_Article.article.title.eq("Other"))) == null);
+        assertTrue(query(QUpdateTest_Article.article.title.isNull()) != null);
     }
     
     @Test
@@ -68,32 +68,33 @@ public class UpdateTest extends AbstractStoreTest{
         article.titles.add("Test");
         session.save(article);
         session.clear();               
-        assertTrue(query(QArticle.article.titles.contains("Test")) != null);
+        assertTrue(query(QUpdateTest_Article.article.titles.contains("Test")) != null);
         
         article.titles.clear();
         article.titles.add("Other");
         session.save(article);
         session.clear();               
-        assertTrue(query(QArticle.article.titles.contains("Other")) != null);
-        assertTrue(query(QArticle.article.titles.contains("Test")) == null);
+        assertTrue(query(QUpdateTest_Article.article.titles.contains("Other")) != null);
+        assertTrue(query(QUpdateTest_Article.article.titles.contains("Test")) == null);
         
         article.titles.clear();        
         session.save(article);
         session.clear();        
-        assertTrue(query(QArticle.article.titles.contains("Test")) == null);
-        assertTrue(query(QArticle.article.titles.contains("Other")) == null);
-        assertTrue(query(QArticle.article.titles.isEmpty()) != null);
+        assertTrue(query(QUpdateTest_Article.article.titles.contains("Test")) == null);
+        assertTrue(query(QUpdateTest_Article.article.titles.contains("Other")) == null);
+        assertTrue(query(QUpdateTest_Article.article.titles.isEmpty()) != null);
         
         article.titles.add("1");
         article.titles.add("2");
         session.save(article);
         session.clear();        
-        assertTrue(query(QArticle.article.titles.contains("1")) != null);
-        assertTrue(query(QArticle.article.titles.contains("2")) != null);
+        assertTrue(query(QUpdateTest_Article.article.titles.contains("1")) != null);
+        assertTrue(query(QUpdateTest_Article.article.titles.contains("2")) != null);
     }
     
     private Article query(EBoolean cond){
-        return session.from(QArticle.article).where(cond).uniqueResult(QArticle.article);
+        return session.from(QUpdateTest_Article.article).where(cond)
+            .uniqueResult(QUpdateTest_Article.article);
     }
     
     @Searchable

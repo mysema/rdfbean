@@ -101,7 +101,12 @@ public final class SesameFunctions {
             protected String evaluate(Value[] args) {
                 return QueryFunctions.stringContains(args[0].stringValue(), args[1].stringValue());
             } 
-        });        
+        });
+        register(Ops.STRING_CONTAINS_IC, new BaseFunction("functions:stringContainsIc", XMLSchema.BOOLEAN) {
+            protected String evaluate(Value[] args) {
+                return QueryFunctions.stringContainsIc(args[0].stringValue(), args[1].stringValue());
+            } 
+        });   
         register(Ops.EQ_IGNORE_CASE, new BaseFunction("functions:equalsIgnoreCase", XMLSchema.BOOLEAN) {
             protected String evaluate(Value[] args) {
                 return QueryFunctions.equalsIgnoreCase(args[0].stringValue(), args[1].stringValue());
@@ -162,6 +167,11 @@ public final class SesameFunctions {
                 return QueryFunctions.year(args[0].stringValue());
             } 
         });        
+        register(Ops.DateTimeOps.YEAR_MONTH, new BaseFunction("functions:yearMonth", XMLSchema.INT) {
+            protected String evaluate(Value[] args) {
+                return QueryFunctions.yearMonth(args[0].stringValue());
+            } 
+        });     
         register(Ops.DateTimeOps.MONTH, new BaseFunction("functions:month", XMLSchema.INT) {
             protected String evaluate(Value[] args) {
                 return QueryFunctions.month(args[0].stringValue());

@@ -41,6 +41,7 @@ public class RDFTestData {
             OWL.allValuesFrom,
             RDF.first,
             RDFS.comment,
+            RDF.type,
             new UID(TEST.NS, "friend")            
     );
     

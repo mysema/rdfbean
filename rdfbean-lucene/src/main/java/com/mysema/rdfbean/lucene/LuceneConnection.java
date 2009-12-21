@@ -441,7 +441,9 @@ class LuceneConnection implements RDFConnection{
                     }                
                     resources.add(s.getSubject());
                     if (s.getPredicate().equals(RDF.type) && stmts == added){
-                        types.put(s.getSubject(), (ID) s.getObject());
+                        if (s.getObject().isResource()){
+                            types.put(s.getSubject(), (ID) s.getObject());    
+                        }                        
                     }
                 }                                  
             }

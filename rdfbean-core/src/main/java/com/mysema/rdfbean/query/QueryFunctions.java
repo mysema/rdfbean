@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.query;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 
 import com.mysema.rdfbean.xsd.DateTimeConverter;
 
@@ -103,6 +104,11 @@ public final class QueryFunctions {
         return String.valueOf(dateTime.fromString(str).getMonthOfYear());
     }
     
+    public static final String yearMonth(String str){
+        DateTime date = dateTime.fromString(str);
+        return String.valueOf(date.getYear() * 100 + date.getMonthOfYear());
+    }
+    
     public static final String second(String str){
         return String.valueOf(dateTime.fromString(str).getSecondOfMinute());
     }
@@ -125,6 +131,10 @@ public final class QueryFunctions {
     
     public static final String stringContains(String str, String str2){
         return Boolean.toString(str.contains(str2));
+    }
+    
+    public static final String stringContainsIc(String str, String str2){
+        return stringContains(str.toLowerCase(), str2.toLowerCase());
     }
     
     public static final String stringLength(String str){
