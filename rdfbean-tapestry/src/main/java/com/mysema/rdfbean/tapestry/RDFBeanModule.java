@@ -42,7 +42,7 @@ public class RDFBeanModule {
     }
     
     public static void contributeIdentityService(final MappedConfiguration<String, String> configuration) {
-        configuration.add(DERBY_URL, "jdbc:derby:target/blog/blogids;create=true") ;
+        configuration.add(DERBY_URL, "jdbc:derby:target/test/testids;create=true") ;
     }
 
     public static SessionFactory buildSessionFactory(Configuration configuration, Repository repository){        
