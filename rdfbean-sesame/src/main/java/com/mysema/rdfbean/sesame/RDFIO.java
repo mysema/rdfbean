@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.model.io.RDFSource;
 
 /**
  * @author sasa
@@ -66,10 +67,10 @@ public class RDFIO {
         RepositoryConnection conn = repository.getConnection();
         for (RDFSource source : sources) {
             try {
-                source.readInto(conn);
-                System.out.println(source.getFormat().getName() + " syntax validated OK.");
+                conn.add(source.openStream(), source.getContext(), FormatHelper.getFormat(source.getFormat()));
+                System.out.println(source.getFormat() + " syntax validated OK.");
             } catch (RDFParseException e) {
-                System.err.println(source.getResource() + " failed " + source.getFormat().getName() +
+                System.err.println(source.getResource() + " failed " + source.getFormat() +
                         " validation: " + e.getMessage());
                 return false;
             }

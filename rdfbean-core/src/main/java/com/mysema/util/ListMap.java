@@ -8,6 +8,8 @@ package com.mysema.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * ListMap provides
@@ -30,5 +32,9 @@ public class ListMap<K, V> extends AbstractCollectionMap<K,V>{
         return (List<V>) data.get(key);
     }
 
+    @SuppressWarnings("unchecked")
+    public Set<Map.Entry<K,List<V>>> entrySet(){
+        return (Set)data.entrySet();
+    }
 
 }

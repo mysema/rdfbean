@@ -8,10 +8,11 @@ import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.rio.RDFFormat;
 import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 import com.mysema.rdfbean.sesame.query.QSimpleType;
@@ -34,8 +35,8 @@ public class PlainLiteralTest{
     public void setUp(){
         repository = new MemoryRepository();
         repository.setSources(
-                new RDFSource("classpath:/test.ttl", RDFFormat.TURTLE, TEST.NS),
-                new RDFSource("classpath:/foaf.rdf", RDFFormat.RDFXML, FOAF.NS)
+                new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),
+                new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
         );
         repository.initialize();    
     }

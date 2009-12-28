@@ -15,6 +15,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.io.RDFSource;
 
 /**
  * @author sasa
@@ -63,7 +64,7 @@ public abstract class AbstractSesameRepository implements Repository{
                         for (RDFSource source : sources) {
                             connection.add(source.openStream(), 
                                     source.getContext(),
-                                    source.getFormat(), 
+                                    FormatHelper.getFormat(source.getFormat()), 
                                     vf.createURI(source.getContext()));
                         }
                     }

@@ -113,6 +113,9 @@ public class SchemaGenMojo extends AbstractMojo{
             }
             
             if (schemaFile != null){
+                if (!schemaFile.getParentFile().exists()){
+                    schemaFile.getParentFile().mkdirs();
+                }
                 new SesameSchemaGen()
                     .setNamespace(prefix, namespace)
                     .setOntology(ontology)

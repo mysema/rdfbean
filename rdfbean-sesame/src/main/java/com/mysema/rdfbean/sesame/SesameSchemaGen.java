@@ -28,9 +28,20 @@ import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.schema.SchemaGen;
 
+/**
+ * SesameSchemaGen provides
+ *
+ * @author tiwe
+ * @version $Id$
+ *
+ */
 public class SesameSchemaGen extends SchemaGen {
     
     private final Map<String, String> namespaces = new LinkedHashMap<String, String>();
+    
+    private OutputStream outputStream = System.out;
+    
+    private Writer writer;
     
     {
         namespaces.put("rdf", RDF.NS);
@@ -38,39 +49,17 @@ public class SesameSchemaGen extends SchemaGen {
         namespaces.put("owl", OWL.NS);
         namespaces.put("xsd", XSD.NS);
     }
-    
-    private OutputStream outputStream = System.out;
-    
-    private Writer writer;
 
-    public SesameSchemaGen setOutputStream(OutputStream outputStream) {
-        writer = null;
-        this.outputStream = outputStream;
+    @Override
+    public SesameSchemaGen addExportNamespace(String ns) {
+        super.addExportNamespace(ns);
         return this;
     }
 
-    public SesameSchemaGen setWriter(Writer writer) {
-        outputStream = null;
-        this.writer = writer;
+    @Override
+    public SesameSchemaGen addExportNamespaces(Set<String> namespaces) {
+        super.addExportNamespaces(namespaces);
         return this;
-    }
-
-    public void generateTurtle(Configuration configuration) throws StoreException, RDFHandlerException, RDFParseException, IOException {
-        if (outputStream != null) {
-            generateTurtle(configuration, outputStream);
-        } else if (writer != null) {
-            generateTurtle(configuration, writer);
-        } else {
-            throw new IllegalArgumentException("both writer and outputStream were null");
-        }
-    }
-
-    public void generateTurtle(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
-        generateSchema(configuration, new TurtleWriter(out));
-    }
-
-    public void generateTurtle(Configuration configuration, Writer out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
-        generateSchema(configuration, new TurtleWriter(out));
     }
 
     public void generateRDFXML(Configuration configuration) throws StoreException, RDFHandlerException, RDFParseException, IOException {
@@ -90,7 +79,7 @@ public class SesameSchemaGen extends SchemaGen {
     public void generateRDFXML(Configuration configuration, Writer out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
         generateSchema(configuration, new RDFXMLPrettyWriter(out));
     }
-    
+
     public void generateSchema(Configuration configuration, RDFHandler handler) throws StoreException, RDFHandlerException, RDFParseException, IOException {
         for (Map.Entry<String, String> entry : namespaces.entrySet()) {
             handler.handleNamespace(entry.getKey(), entry.getValue());
@@ -113,26 +102,32 @@ public class SesameSchemaGen extends SchemaGen {
         conn.export(handler);
         conn.close();
     }
+
+    public void generateTurtle(Configuration configuration) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+        if (outputStream != null) {
+            generateTurtle(configuration, outputStream);
+        } else if (writer != null) {
+            generateTurtle(configuration, writer);
+        } else {
+            throw new IllegalArgumentException("both writer and outputStream were null");
+        }
+    }
+
+    public void generateTurtle(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+        generateSchema(configuration, new TurtleWriter(out));
+    }
     
-    public SesameSchemaGen setNamespaces(Map<String, String> namespaces) {
-        this.namespaces.putAll(namespaces);
-        return this;
+    public void generateTurtle(Configuration configuration, Writer out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+        generateSchema(configuration, new TurtleWriter(out));
     }
     
     public SesameSchemaGen setNamespace(String prefix, String namespace) {
         this.namespaces.put(prefix, namespace);
         return this;
     }
-
-    @Override
-    public SesameSchemaGen addExportNamespace(String ns) {
-        super.addExportNamespace(ns);
-        return this;
-    }
-
-    @Override
-    public SesameSchemaGen addExportNamespaces(Set<String> namespaces) {
-        super.addExportNamespaces(namespaces);
+    
+    public SesameSchemaGen setNamespaces(Map<String, String> namespaces) {
+        this.namespaces.putAll(namespaces);
         return this;
     }
 
@@ -143,14 +138,26 @@ public class SesameSchemaGen extends SchemaGen {
     }
 
     @Override
+    public SesameSchemaGen setOntologyImports(String... ontologyImports) {
+        super.setOntologyImports(ontologyImports);
+        return this;
+    }
+
+    public SesameSchemaGen setOutputStream(OutputStream outputStream) {
+        writer = null;
+        this.outputStream = outputStream;
+        return this;
+    }
+
+    @Override
     public SesameSchemaGen setUseTypedLists(boolean useTypedLists) {
         super.setUseTypedLists(useTypedLists);
         return this;
     }
 
-    @Override
-    public SesameSchemaGen setOntologyImports(String... ontologyImports) {
-        super.setOntologyImports(ontologyImports);
+    public SesameSchemaGen setWriter(Writer writer) {
+        outputStream = null;
+        this.writer = writer;
         return this;
     }
     

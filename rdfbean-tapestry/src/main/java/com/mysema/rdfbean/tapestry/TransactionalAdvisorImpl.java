@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.tapestry;
 
 import java.lang.reflect.Method;
@@ -14,7 +19,7 @@ import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SimpleSessionContext;
 
 /**
- * TransactionalWorker provides
+ * TransactionalAdvisorImpl provides
  *
  * @author tiwe
  * @version $Id$

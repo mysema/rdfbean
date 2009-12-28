@@ -6,7 +6,6 @@
 package com.mysema.rdfbean.mulgara;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -49,15 +48,9 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
     private static final Map<String,URI> datatypeURICache = new HashMap<String,URI>();
     
     static{
-        try{
-            for (UID uid : XSD.all){
-                datatypeURICache.put(uid.getId(), new URI(uid.getId()));    
-            }
-        } catch (URISyntaxException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        }         
+        for (UID uid : XSD.all){
+            datatypeURICache.put(uid.getId(), URI.create(uid.getId()));    
+        }      
     }
     
     private final Map<BlankNode, BID> bnodeCache = new HashMap<BlankNode, BID>(1024);
@@ -126,14 +119,8 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
     protected URI getDatatypeURI(String datatype) {
         URI uri = datatypeURICache.get(datatype);
         if (uri == null){
-            try {
-                uri = new URI(datatype);
-                datatypeURICache.put(datatype, uri);
-            } catch (URISyntaxException e) {
-                String error = "Caught " + e.getClass().getName();
-                logger.error(error, e);
-                throw new RuntimeException(error, e);
-            }                        
+            uri = URI.create(datatype);
+            datatypeURICache.put(datatype, uri);
         }
         return uri;        
     }
@@ -275,13 +262,9 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
     @Override
     public URIReference getURI(String u) {        
         try {
-            URI uri = new URI(u);
+            URI uri = URI.create(u);
             return elementFactory.createResource(uri);
         } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        } catch (URISyntaxException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
             throw new RuntimeException(error, e);
@@ -291,12 +274,8 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
     @Override
     public URIReference getURI(UID uid) {
         try {
-            URI uri = new URI(uid.getValue());
+            URI uri = URI.create(uid.getValue());
             return elementFactory.createResource(uri);
-        } catch (URISyntaxException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
         } catch (GraphElementFactoryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);

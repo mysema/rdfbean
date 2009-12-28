@@ -2,6 +2,7 @@ package com.mysema.util;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -20,6 +21,11 @@ public class SetMap<K,V> extends AbstractCollectionMap<K,V> {
     @Override
     public Set<V> get(K key) {
         return (Set<V>) data.get(key);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public Set<Map.Entry<K,Set<V>>> entrySet(){
+        return (Set)data.entrySet();
     }
 
 }

@@ -30,9 +30,8 @@ public interface RDFConnection extends Closeable {
             @Nullable NODE object, 
             @Nullable UID context, boolean includeInferred);
     
-    // Map<UID,Set<STMT>> findStatements(ID subject, Set<UID> directProps, 
-    //     Set<UID> inverseProps, UID context, boolean includeInferred);
-
+    // CloseableIterator<STMT> find(patterns, filter, boolean includedInferred)
+    
     void update(Set<STMT> removedStatements, Set<STMT> addedStatements);
     
     void clear();

@@ -5,9 +5,16 @@
  */
 package com.mysema.rdfbean.mulgara;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
+import static com.mysema.rdfbean.mulgara.Constants.EMPTY_GRAPH;
+import static com.mysema.rdfbean.mulgara.Constants.O_VAR;
+import static com.mysema.rdfbean.mulgara.Constants.P_VAR;
+import static com.mysema.rdfbean.mulgara.Constants.S_VAR;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.jrdf.graph.GraphElementFactory;
@@ -15,9 +22,10 @@ import org.jrdf.graph.GraphException;
 import org.jrdf.graph.Triple;
 import org.mulgara.client.jrdf.GraphElementBuilder;
 import org.mulgara.connection.Connection;
-import org.mulgara.query.QueryException;
+import org.mulgara.query.*;
 import org.mulgara.query.operation.Deletion;
 import org.mulgara.query.operation.Insertion;
+import org.mulgara.query.rdf.URIReferenceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +41,7 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleBeanQuery;
+import com.mysema.util.SetMap;
 
 /**
  * MulgaraConnection provides
@@ -74,6 +83,7 @@ public class MulgaraConnection implements RDFConnection{
     public void cleanUpAfterRollback(){
         localTxn = null;
         readonlyTnx = false;
+        close();
     }
     
     @Override
@@ -90,7 +100,7 @@ public class MulgaraConnection implements RDFConnection{
 
     @Override
     public BID createBNode() {
-        return new BID();
+        return dialect.getBID(dialect.createBNode());
     }
 
     @Override
@@ -106,20 +116,70 @@ public class MulgaraConnection implements RDFConnection{
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, boolean includeInferred) {
-        // TODO Auto-generated method stub
-        return null;
+        List<SelectElement> variableList = new ArrayList<SelectElement>();        
+        if (subject == null){
+            variableList.add(S_VAR);
+        }
+        if (predicate == null){
+            variableList.add(P_VAR);
+        }
+        if (object == null){
+            variableList.add(O_VAR);
+        }
+        URI contextURI = context != null ? URI.create(context.getId()) : EMPTY_GRAPH;
+        GraphExpression graphExpression = new GraphResource(contextURI);        
+        // FIXME!
+        ConstraintExpression constraintExpression = new ConstraintImpl(
+                (ConstraintElement)(subject != null ? dialect.getResource(subject) : S_VAR),
+                (ConstraintElement)(predicate != null ? dialect.getURI(predicate) : P_VAR),
+                (ConstraintElement)(object != null ? dialect.getNode(object) : O_VAR),
+                new URIReferenceImpl(contextURI));
+        Query query = new Query(variableList,
+                graphExpression, 
+                constraintExpression, 
+                null, /* constraintHaving */
+                Collections.<Order>emptyList(), /* order */ 
+                null, /* limit */ 
+                0,  /* offset */
+                new UnconstrainedAnswer());
+        
+        try {
+            Answer answer = connection.execute(query);
+            return new MulgaraResultIterator(dialect, answer, subject, predicate, object, context);
+        } catch (QueryException e) {
+            String error = "Caught " + e.getClass().getName();
+            logger.error(error, e);
+            throw new RuntimeException(error, e);
+        } catch (TuplesException e) {
+            String error = "Caught " + e.getClass().getName();
+            logger.error(error, e);
+            throw new RuntimeException(error, e);
+        }
     }
-
+    
     @Override
-    public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
+    public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {        
         if (!readonlyTnx){
             try {
-                // TODO : what about contexts ?!?
-                if (!removedStatements.isEmpty()){
-                    connection.execute(new Deletion(null, convert(removedStatements)));
+                // group by context
+                SetMap<URI,Triple> removed = new SetMap<URI,Triple>();
+                SetMap<URI,Triple> added = new SetMap<URI,Triple>();
+                for (STMT stmt : removedStatements){
+                    URI context = stmt.getContext() != null ? URI.create(stmt.getContext().getId()) : EMPTY_GRAPH;
+                    removed.put(context, convert(stmt));
                 }
-                if (!addedStatements.isEmpty()){
-                    connection.execute(new Insertion(null, convert(addedStatements)));
+                for (STMT stmt : addedStatements){
+                    URI context = stmt.getContext() != null ? URI.create(stmt.getContext().getId()) : EMPTY_GRAPH;
+                    added.put(context, convert(stmt));
+                }
+                
+                // apply deletions
+                for (Map.Entry<URI, Set<Triple>> entry : removed.entrySet()){
+                    connection.execute(new Deletion(entry.getKey(), entry.getValue()));
+                }                
+                // apply insertions
+                for (Map.Entry<URI, Set<Triple>> entry : added.entrySet()){
+                    connection.execute(new Insertion(entry.getKey(), entry.getValue()));
                 }
             } catch (Exception e) {
                 String error = "Caught " + e.getClass().getName();
@@ -129,20 +189,12 @@ public class MulgaraConnection implements RDFConnection{
         }
     }
     
-    private Set<Triple> convert(Collection<STMT> statements){
-        Set<Triple> triples = new HashSet<Triple>(statements.size());
-        for (STMT stmt : statements){
-            triples.add(dialect.createStatement(
-                    stmt.getSubject(), 
-                    stmt.getPredicate(),
-                    stmt.getObject(),
-                    stmt.getContext()));
-        }
-        return triples;
+    private Triple convert(STMT stmt){
+        return dialect.createStatement(stmt.getSubject(), stmt.getPredicate(),stmt.getObject(),stmt.getContext());
     }
 
     @Override
-    public void close() throws IOException {
+    public void close(){
         try {
             connection.close();
         } catch (QueryException e) {

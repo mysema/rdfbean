@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-root</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.8.1</version>
   <packaging>pom</packaging>
   <name>RDFBean</name>
   
@@ -39,8 +39,8 @@
     <module>../rdfbean-maven-plugin</module>    
     
     <!-- demo -->
-    <module>../rdfbean-demo</module>
 <!--         
+    <module>../rdfbean-demo</module>    
     <module>../rdfbean-docs</module>
  -->
   </modules>

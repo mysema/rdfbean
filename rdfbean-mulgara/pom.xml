@@ -9,7 +9,7 @@
   <parent>
   <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
-    <version>0.8.0-SNAPSHOT</version>
+    <version>0.8.1</version>
   </parent>  
 
   <properties>
@@ -27,12 +27,6 @@
       <groupId>org.fcrepo</groupId>
       <artifactId>mulgara-core</artifactId>
       <version>${mulgara.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>javax.resource</groupId>
-          <artifactId>connector-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     
     <!-- test deps -->
@@ -97,6 +91,17 @@
       <name>Mulgara</name>
       <url>https://fedora-commons.org/m2/content/repositories/releases</url>
       <layout>default</layout>
+    </repository>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+        <checksumPolicy>fail</checksumPolicy>
+      </releases>
+      <id>jboss</id>
+      <name>JBoss</name>
+      <url>http://repository.jboss.com/maven2/</url>
+      <layout>default</layout>      
     </repository>
   </repositories>
   
