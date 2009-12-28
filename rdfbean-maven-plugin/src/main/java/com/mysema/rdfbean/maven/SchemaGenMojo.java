@@ -79,6 +79,11 @@ public class SchemaGenMojo extends AbstractMojo{
     private String classes;
     
     /** 
+     * @parameter 
+     */
+    private boolean useTurtle;
+    
+    /** 
      * @parameter expression="${project}" readonly=true required=true 
      */
     private MavenProject project;
@@ -116,12 +121,16 @@ public class SchemaGenMojo extends AbstractMojo{
                 if (!schemaFile.getParentFile().exists()){
                     schemaFile.getParentFile().mkdirs();
                 }
-                new SesameSchemaGen()
+                SesameSchemaGen schemaGen = new SesameSchemaGen()
                     .setNamespace(prefix, namespace)
                     .setOntology(ontology)
                     .setOutputStream(new FileOutputStream(schemaFile))
-                    .addExportNamespace(namespace)
-                    .generateRDFXML(configuration);    
+                    .addExportNamespace(namespace);
+                if (useTurtle){
+                    schemaGen.generateTurtle(configuration);
+                }else{
+                    schemaGen.generateRDFXML(configuration);
+                }        
             }            
             
             if (classListFile != null){
