@@ -24,8 +24,8 @@ public class ListQueriesTest extends AbstractSesameQueryTest{
     
     @Test
     public void in(){
-        where(var.listProperty.contains(var.listProperty(0))).count();
-        where(var.listProperty.contains(var.listProperty(0)),
+        where(var.listProperty.contains(var.listProperty.get(0))).count();
+        where(var.listProperty.contains(var.listProperty.get(0)),
               var.listProperty.isNotEmpty()).count();
     }
     

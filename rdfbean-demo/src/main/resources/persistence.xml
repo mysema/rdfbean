@@ -20,13 +20,15 @@
   <bean id="sesameRepository" class="com.mysema.rdfbean.sesame.MemoryRepository">
     <property name="sources">
         <list>
-            <bean parent="owlSource">
-                <property name="resource" value="classpath:demo.owl"/>
-                <property name="context" value="http://www.mysema.com/rdfbean/demo"/>
+            <bean class="com.mysema.rdfbean.model.io.RDFSource">
+                <constructor-arg value="classpath:demo.owl"/>
+                <constructor-arg value="RDFXML" />
+                <constructor-arg value="http://www.mysema.com/rdfbean/demo"/>
             </bean>
-            <bean parent="owlSource">
-                <property name="resource" value="classpath:demodata.owl"/>
-                <property name="context" value="http://www.mysema.com/rdfbean/demodata"/>
+            <bean class="com.mysema.rdfbean.model.io.RDFSource">
+                <constructor-arg value="classpath:demodata.owl"/>
+                <constructor-arg value="RDFXML" />
+                <constructor-arg value="http://www.mysema.com/rdfbean/demodata"/>
             </bean>
         </list>
     </property>
@@ -39,10 +41,6 @@
       <constructor-arg value="${identityService.derby.url}"/>
   </bean>
  
-  <bean id="owlSource" class="com.mysema.rdfbean.sesame.RDFSource" abstract="true">
-      <property name="format" value="RDFXML" />
-  </bean>
-
   <bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">
       <constructor-arg value="true"/>
       <constructor-arg>

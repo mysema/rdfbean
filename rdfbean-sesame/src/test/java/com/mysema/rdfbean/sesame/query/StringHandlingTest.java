@@ -21,7 +21,7 @@ import com.mysema.query.types.path.PString;
  */
 public class StringHandlingTest extends AbstractSesameQueryTest{
     
-    private PString stringPath = var.listProperty(1).directProperty;
+    private PString stringPath = var.listProperty.get(1).directProperty;
 
     @Test
     public void untypedLiterals(){

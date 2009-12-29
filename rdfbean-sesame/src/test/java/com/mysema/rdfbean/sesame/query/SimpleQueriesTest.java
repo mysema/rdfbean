@@ -113,13 +113,13 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
     @Test
     public void listAccess(){        
         System.out.println("listAccess");
-        assertEquals(1, where(var.listProperty(1).directProperty.eq("nsprefix")).list(var).size());
+        assertEquals(1, where(var.listProperty.get(1).directProperty.eq("nsprefix")).list(var).size());
     }
     
     @Test
     public void listAccess2(){
         System.out.println("listAccess2");
-        assertEquals(1, where(var.listProperty(0).directProperty.eq("target_idspace")).list(var).size());
+        assertEquals(1, where(var.listProperty.get(0).directProperty.eq("target_idspace")).list(var).size());
     }
         
     @Test

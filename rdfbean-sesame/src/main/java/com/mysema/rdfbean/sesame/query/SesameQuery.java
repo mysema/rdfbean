@@ -7,11 +7,23 @@ package com.mysema.rdfbean.sesame.query;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Stack;
 
 import javax.annotation.Nullable;
 
-import org.openrdf.model.*;
+import org.openrdf.model.BNode;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
+import org.openrdf.model.URI;
+import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
@@ -26,9 +38,10 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.BooleanBuilder;
+import com.mysema.query.JoinExpression;
+import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.Constant;
-import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EConstructor;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.operation.Operation;
@@ -41,7 +54,13 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.*;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.ConverterRegistry;
+import com.mysema.rdfbean.object.MappedClass;
+import com.mysema.rdfbean.object.MappedPath;
+import com.mysema.rdfbean.object.MappedPredicate;
+import com.mysema.rdfbean.object.MappedProperty;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.query.AbstractProjectingQuery;
 import com.mysema.rdfbean.query.VarNameIterator;
 import com.mysema.rdfbean.sesame.SesameDialect;
@@ -115,56 +134,52 @@ public class SesameQuery extends
         this.joinBuilder = new JoinBuilder(dialect, datatypeInference);
     }
     
-    @SuppressWarnings("unchecked")
-    @Override
-    protected SesameQuery addToProjection(Expr<?>... o) {
-        for (Expr<?> expr : o) {
-            if (expr instanceof Path){
-                projection.addElement(new ProjectionElem(transformPath((Path<?>) expr).getName()));    
-            }else if (expr instanceof EConstructor){    
-                EConstructor<?> constructor = (EConstructor<?>)expr;
-                for (Expr<?> arg : constructor.getArgs()){
-                    addToProjection(arg);
-                }
-            }else{
-                ValueExpr val = toValue(expr);
-                if (val instanceof Var){
-                    projection.addElement(new ProjectionElem(((Var)val).getName()));
-                }else{
-                    String extLabel = extNames.next();
-                    projection.addElement(new ProjectionElem(extLabel));
-                    extensions.add(new ExtensionElem(val, extLabel));
-                }
-            }            
-        }
-        return this;
-    }
-    
-    @Override
-    public SesameQuery from(Expr<?>... o) {
-        for (Expr<?> expr : o) {
-            handleRootPath((Path<?>) expr);
-        }
-        return this;
-    }
-    
+
+    private void init() {
+        QueryMetadata metadata = queryMixin.getMetadata();
         
-    @Override
-    public SesameQuery where(EBoolean... o) {
-        for (int i = 0; i < o.length; i++) {
-            addFilterCondition(toValue(o[i]));
+        // from
+        for (JoinExpression join : metadata.getJoins()){            
+            handleRootPath((Path<?>) join.getTarget());
         }
-        return this;
-    }
-    
-    @Override
-    public SesameQuery orderBy(OrderSpecifier<?>... o) {
-        for (OrderSpecifier<?> os : o){
+        
+        // where
+        if (metadata.getWhere() != null){
+            addFilterCondition(toValue(metadata.getWhere()));
+        }
+        
+        // order by
+        for (OrderSpecifier<?> os : metadata.getOrderBy()){
             orderElements.add(new OrderElem(toValue(os.getTarget()), os.isAscending()));
         }
-        return this;
-    }
         
+        // select
+        for (Expr<?> expr : metadata.getProjection()){
+            addProjection(expr);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void addProjection(Expr<?> expr){
+        if (expr instanceof Path){
+            projection.addElement(new ProjectionElem(transformPath((Path<?>) expr).getName()));    
+        }else if (expr instanceof EConstructor){    
+            EConstructor<?> constructor = (EConstructor<?>)expr;
+            for (Expr<?> arg : constructor.getArgs()){
+                addProjection(arg);
+            }
+        }else{
+            ValueExpr val = toValue(expr);
+            if (val instanceof Var){
+                projection.addElement(new ProjectionElem(((Var)val).getName()));
+            }else{
+                String extLabel = extNames.next();
+                projection.addElement(new ProjectionElem(extLabel));
+                extensions.add(new ExtensionElem(val, extLabel));
+            }
+        }  
+    }
+    
     public void close() throws IOException {
         if (queryResult != null){
             try {
@@ -206,6 +221,8 @@ public class SesameQuery extends
         
     @Override
     protected Iterator<Value[]> getInnerResults() {
+        init();
+        
         // from 
         TupleExpr tupleExpr = joinBuilder.getJoins();        
         // where
@@ -271,6 +288,7 @@ public class SesameQuery extends
             throw new RuntimeException(e.getMessage(), e);
         }        
     }
+
 
     protected void logQuery(TupleQueryModel query) {
         if (queryTreeLogger.isDebugEnabled()){

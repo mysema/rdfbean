@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-root</artifactId>
-  <version>0.8.2-SNAPSHOT</version>
+  <version>0.8.3</version>
   <packaging>pom</packaging>
   <name>RDFBean</name>
   
@@ -14,7 +14,7 @@
   </parent>
   
   <properties>
-    <querydsl.version>1.0.1</querydsl.version>
+    <querydsl.version>1.0.3</querydsl.version>
     <spring.version>2.5.5</spring.version>
   </properties>
   
@@ -39,8 +39,9 @@
     <module>../rdfbean-maven-plugin</module>    
     
     <!-- demo -->
-<!--         
-    <module>../rdfbean-demo</module>    
+         
+    <module>../rdfbean-demo</module>
+ <!--
     <module>../rdfbean-docs</module>
  -->
   </modules>
