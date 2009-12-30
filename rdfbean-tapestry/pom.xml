@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.6</version>
   </parent>  
   
   <properties>
@@ -54,7 +54,7 @@
            <configuration>
            <archive>
              <manifestEntries>
-               <Tapestry-Module-Classes>com.mysema.rdfbean.tapestry.RDFBeanModule</Tapestry-Module-Classes>
+               <Tapestry-Module-Classes>com.mysema.rdfbean.tapestry.services.RDFBeanModule</Tapestry-Module-Classes>
              </manifestEntries>
            </archive>
            </configuration>

@@ -1,13 +1,18 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.annotations;
 
 /**
- * InverseFunctionalProperty provides
+ * UniqueProperty provides
  * 
  * @see http://www.w3.org/TR/owl-ref/#InverseFunctionalProperty-def
  *
  * @author tiwe
  * @version $Id$
  */
-public @interface InverseFunctionalProperty {
+public @interface UniqueProperty {
 
 }

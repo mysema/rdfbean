@@ -16,7 +16,7 @@ import org.apache.tapestry5.ioc.annotations.EagerLoad;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PathMetadata;
-import com.mysema.rdfbean.annotations.InverseFunctionalProperty;
+import com.mysema.rdfbean.annotations.UniqueProperty;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedProperty;
@@ -33,7 +33,7 @@ import com.mysema.rdfbean.object.SessionFactory;
 @EagerLoad
 public class SeedEntityImpl implements SeedEntity{
     
-    private Map<MappedClass,MappedProperty<?>> inverseFunctionalProperties = new HashMap<MappedClass,MappedProperty<?>>();
+    private Map<MappedClass,MappedProperty<?>> uniqueProperties = new HashMap<MappedClass,MappedProperty<?>>();
     
     public SeedEntityImpl(SessionFactory sessionFactory, List<Object> entities) throws IOException {
         Session session = sessionFactory.openSession();        
@@ -41,7 +41,7 @@ public class SeedEntityImpl implements SeedEntity{
         try{
             for (Object entity : entities){
                 MappedClass mappedClass = MappedClass.getMappedClass(entity.getClass());
-                MappedProperty<?> property = getInverseFunctionalProperty(mappedClass);
+                MappedProperty<?> property = getUniqueProperty(mappedClass);
                 if (property != null){
                     PEntity<Object> entityPath = new PEntity<Object>(entity.getClass(), 
                             entity.getClass().getSimpleName(), 
@@ -70,18 +70,18 @@ public class SeedEntityImpl implements SeedEntity{
         
     }
 
-    private MappedProperty<?> getInverseFunctionalProperty(MappedClass mappedClass) {
-        if (inverseFunctionalProperties.containsKey(mappedClass)){
-            return inverseFunctionalProperties.get(mappedClass);
+    private MappedProperty<?> getUniqueProperty(MappedClass mappedClass) {
+        if (uniqueProperties.containsKey(mappedClass)){
+            return uniqueProperties.get(mappedClass);
         }else{
             MappedProperty<?> property = null;
             for (MappedPath path : mappedClass.getProperties()){
-                if (path.getMappedProperty().getAnnotation(InverseFunctionalProperty.class) != null){
+                if (path.getMappedProperty().getAnnotation(UniqueProperty.class) != null){
                     property = path.getMappedProperty();
                     break;
                 }
             }    
-            inverseFunctionalProperties.put(mappedClass, property);
+            uniqueProperties.put(mappedClass, property);
             return property;
         }        
     }
