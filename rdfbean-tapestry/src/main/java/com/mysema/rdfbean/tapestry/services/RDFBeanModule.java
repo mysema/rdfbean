@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.tapestry;
+package com.mysema.rdfbean.tapestry.services;
 
 import java.io.IOException;
 import java.util.Map;
@@ -18,6 +18,8 @@ import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.object.identity.DerbyIdentityService;
 import com.mysema.rdfbean.object.identity.IdentityService;
+import com.mysema.rdfbean.tapestry.TransactionalAdvisor;
+import com.mysema.rdfbean.tapestry.TransactionalAdvisorImpl;
 
 /**
  * RDFBeanModule defines an abstract module for Tapestry IoC with a basic RDFBean configuration
@@ -31,6 +33,7 @@ public class RDFBeanModule {
     
     public static void bind(ServiceBinder binder){
         binder.bind(TransactionalAdvisor.class, TransactionalAdvisorImpl.class);
+        binder.bind(SeedEntity.class, SeedEntityImpl.class);
     }
 
     public static void adviseTransactions(TransactionalAdvisor advisor, MethodAdviceReceiver receiver){

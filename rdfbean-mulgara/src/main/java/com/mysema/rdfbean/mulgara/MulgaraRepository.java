@@ -6,7 +6,6 @@
 package com.mysema.rdfbean.mulgara;
 
 import java.io.File;
-import java.io.InputStream;
 import java.net.URI;
 
 import javax.activation.MimeType;

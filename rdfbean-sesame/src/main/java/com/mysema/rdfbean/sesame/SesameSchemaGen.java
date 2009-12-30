@@ -114,11 +114,11 @@ public class SesameSchemaGen extends SchemaGen {
     }
 
     public void generateTurtle(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
-        generateSchema(configuration, new TurtleWriter(out));
+        generateSchema(configuration, new RDFWriterAdapter(new TurtleWriter(out)));
     }
     
     public void generateTurtle(Configuration configuration, Writer out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
-        generateSchema(configuration, new TurtleWriter(out));
+        generateSchema(configuration, new RDFWriterAdapter(new TurtleWriter(out)));
     }
     
     public SesameSchemaGen setNamespace(String prefix, String namespace) {
