@@ -4,12 +4,12 @@
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-search</artifactId>
   <packaging>jar</packaging>
-  <name>RDFBean - Search</name>
+  <name>RDFBean - Lucene</name>
 
   <parent>
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
-    <version>0.8.7</version>
+    <version>0.8.7-SNAPSHOT</version>
   </parent>
 
   <properties>
