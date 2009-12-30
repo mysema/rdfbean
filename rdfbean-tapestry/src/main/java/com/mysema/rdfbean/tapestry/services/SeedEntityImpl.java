@@ -43,11 +43,17 @@ public class SeedEntityImpl implements SeedEntity{
                 MappedClass mappedClass = MappedClass.getMappedClass(entity.getClass());
                 MappedProperty<?> property = getInverseFunctionalProperty(mappedClass);
                 if (property != null){
-                    PEntity<Object> entityPath = new PEntity<Object>(entity.getClass(), entity.getClass().getSimpleName(), PathMetadata.forVariable("entity"));
-                    PSimple<Object> propertyPath = new PSimple<Object>(property.getType(), entityPath, property.getName());
+                    PEntity<Object> entityPath = new PEntity<Object>(entity.getClass(), 
+                            entity.getClass().getSimpleName(), 
+                            PathMetadata.forVariable("entity"));
+                    PSimple<Object> propertyPath = new PSimple<Object>(property.getType(), 
+                            entityPath, 
+                            property.getName());
                     Object propertyValue = property.getValue(new BeanMap(entity));
                     if (propertyValue != null){
-                        Object savedEntity = session.from(entityPath).where(propertyPath.eq(propertyValue)).uniqueResult(entityPath);
+                        Object savedEntity = session.from(entityPath)
+                            .where(propertyPath.eq(propertyValue))
+                            .uniqueResult(entityPath);
                         if (savedEntity != null){
                             continue;
                         }    
