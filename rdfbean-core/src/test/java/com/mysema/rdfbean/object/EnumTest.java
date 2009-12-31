@@ -14,6 +14,7 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.InjectProperty;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.MiniRepository;
+import com.mysema.rdfbean.model.UID;
 
 public class EnumTest {
 
@@ -43,4 +44,11 @@ public class EnumTest {
         assertEquals(EnumType.SECONDARY, eref.etype);
     }
     
+    @Test
+    public void getId(){
+        MiniRepository repository = new MiniRepository();
+        Session session = SessionUtil.openSession(repository, EnumType.class, EnumRef.class);        
+        assertEquals(new UID(TEST.NS, "PRIMARY"), session.getId(EnumType.PRIMARY));
+        assertEquals(new UID(TEST.NS, "SECONDARY"), session.getId(EnumType.SECONDARY));
+    }
 }

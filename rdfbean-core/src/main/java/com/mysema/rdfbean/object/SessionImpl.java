@@ -934,10 +934,15 @@ public class SessionImpl implements Session {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public ID getId(Object instance){
-        BeanMap beanMap = toBeanMap(instance);
         MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
-        return getId(mappedClass, beanMap);    
+        if (instance.getClass().isEnum()){
+            return new UID(mappedClass.getUID().ns(), ((Enum) instance).name());
+        }else{
+            BeanMap beanMap = toBeanMap(instance);            
+            return getId(mappedClass, beanMap);
+        }   
     }
     
     public IdentityService getIdentityService() {

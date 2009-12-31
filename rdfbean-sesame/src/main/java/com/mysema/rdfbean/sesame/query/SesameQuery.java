@@ -123,6 +123,8 @@ public class SesameQuery extends
     private final boolean datatypeInference;
     
     private final ValueFactory valueFactory;
+    
+    private boolean optionalPath;
         
     public SesameQuery(Session session, 
             SesameDialect dialect,
@@ -153,9 +155,11 @@ public class SesameQuery extends
         }
         
         // order by
+        optionalPath = true;
         for (OrderSpecifier<?> os : metadata.getOrderBy()){
             orderElements.add(new OrderElem(toValue(os.getTarget()), os.isAscending()));
         }
+        optionalPath = false;
         
         // select
         for (Expr<?> expr : metadata.getProjection()){
@@ -324,7 +328,7 @@ public class SesameQuery extends
     }
     
     private boolean inOptionalPath(){
-        return operatorStack.contains(Ops.IS_NULL) || operatorStack.contains(Ops.OR);
+        return optionalPath || operatorStack.contains(Ops.IS_NULL) || operatorStack.contains(Ops.OR);
     }
     
     private boolean inNegation(){
