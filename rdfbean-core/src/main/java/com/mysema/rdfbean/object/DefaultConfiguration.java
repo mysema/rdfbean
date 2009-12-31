@@ -19,6 +19,8 @@ import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 import com.mysema.rdfbean.owl.OWL;
 
 /**
+ * Default implementation of the Configuration interface
+ * 
  * @author sasa
  * 
  */

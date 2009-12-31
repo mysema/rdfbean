@@ -122,25 +122,6 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     }
 
     @Override
-    public Literal getLiteral(String value) {
-        return vf.createLiteral(value);
-    }
-
-    @Override
-    public Literal getLiteral(String value, Locale locale) {
-        if (locale.equals(Locale.ROOT)) {
-            return vf.createLiteral(value);
-        } else {
-            return vf.createLiteral(value, LocaleUtil.toLang(locale));
-        }
-    }
-
-    @Override
-    public Literal getLiteral(String value, URI datatype) {
-        return vf.createLiteral(value, datatype);
-    }
-
-    @Override
     public NODE getNODE(Value node) {
         if (node instanceof Resource) {
             return getID((Resource) node);
@@ -188,13 +169,12 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     }
 
     @Override
-    public URI getURI(String uri) {
-        return vf.createURI(uri);
-    }
-
-    @Override
     public URI getURI(UID uid) {
         return vf.createURI(uid.ns(), uid.ln());
+    }
+    
+    public ValueFactory getValueFactory(){
+        return vf;
     }
 
 }

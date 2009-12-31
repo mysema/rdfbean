@@ -176,44 +176,6 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
     }
 
     @Override
-    public Literal getLiteral(String value) {
-        try {
-            return elementFactory.createLiteral(value);
-        } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        }
-    }
-
-    @Override
-    public Literal getLiteral(String value, Locale locale) {
-        try {
-            if (locale.equals(Locale.ROOT)){
-                return elementFactory.createLiteral(value);
-            }else{
-                return elementFactory.createLiteral(value, LocaleUtil.toLang(locale));    
-            }            
-        } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        }
-    }
-
-    @Override
-    public Literal getLiteral(String value, URIReference datatype) {
-        try{
-            return elementFactory.createLiteral(value, getDatatypeURI(datatype.toString()));
-        } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        }
-        
-    }
-
-    @Override
     public NODE getNODE(Node node) {
         if (node.isBlankNode()){
             return getBID((BlankNode)node);
@@ -257,18 +219,6 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
             uriCache.put((URIReference) uri, uid);
         }
         return uid; 
-    }
-
-    @Override
-    public URIReference getURI(String u) {        
-        try {
-            URI uri = URI.create(u);
-            return elementFactory.createResource(uri);
-        } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        }
     }
 
     @Override

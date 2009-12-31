@@ -6,7 +6,6 @@
 package com.mysema.rdfbean.model;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -63,12 +62,6 @@ public abstract class Dialect
     
     public abstract L getLiteral(LIT lit);
 
-    public abstract L getLiteral(String value);
-    
-    public abstract L getLiteral(String value, Locale language);
-
-    public abstract L getLiteral(String value, U datatype);
-    
     public N getNode(NODE node){
         if (node.isLiteral()){
             return getLiteral((LIT)node);
@@ -98,8 +91,6 @@ public abstract class Dialect
     public abstract R getSubject(S statement);
     
     public abstract UID getUID(U resource);
-
-    public abstract U getURI(String uri);
     
     public abstract U getURI(UID uid);
     

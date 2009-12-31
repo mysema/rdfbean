@@ -35,7 +35,10 @@ import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.identity.IdentityService;
 
 /**
+ * Default implementation of the Session interface
+ * 
  * @author sasa
+ * @author tiwe
  * 
  */
 public class SessionImpl implements Session {

@@ -24,6 +24,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
@@ -120,18 +121,21 @@ public class SesameQuery extends
     private final Configuration conf;
     
     private final boolean datatypeInference;
+    
+    private final ValueFactory valueFactory;
         
     public SesameQuery(Session session, 
-            SesameDialect dialect, 
+            SesameDialect dialect,
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,
             boolean datatypeInference) {
-        super(dialect, session);
+        super(dialect, session);        
         this.connection = Assert.notNull(connection, "connection was null");
         this.conf = session.getConfiguration();
         this.datatypeInference = datatypeInference;
         this.patternScope = patternScope;
-        this.joinBuilder = new JoinBuilder(dialect, datatypeInference);
+        this.valueFactory = dialect.getValueFactory();
+        this.joinBuilder = new JoinBuilder(valueFactory, datatypeInference);
     }
     
 
@@ -391,7 +395,7 @@ public class SesameQuery extends
             }else if (converter.supports(javaValue.getClass())){
                 String label = converter.toString(javaValue);
                 UID datatype = converter.getDatatype(javaValue.getClass());
-                rdfValue = dialect.getLiteral(label, dialect.getURI(datatype));
+                rdfValue = valueFactory.createLiteral(label, dialect.getURI(datatype));
             }else{
                 ID id = session.getId(javaValue);                
                 rdfValue =  dialect.getResource(Assert.notNull(id, "id is null"));
@@ -550,7 +554,7 @@ public class SesameQuery extends
     private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 
             @Nullable Var valNode, @Nullable Var keyNode) {
         MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
-        JoinBuilder builder = new JoinBuilder((SesameDialect)dialect, datatypeInference);
+        JoinBuilder builder = new JoinBuilder(valueFactory, datatypeInference);
         if (valNode != null){
             if (mappedProperty.getValuePredicate() != null){
                 match(builder, pathVar, mappedProperty.getValuePredicate(), valNode);
@@ -596,7 +600,7 @@ public class SesameQuery extends
                 }else{
                     throw new IllegalArgumentException("Unsupported path type " + pathType);
                 }
-                constValue = dialect.getLiteral(value, locale);
+                constValue = valueFactory.createLiteral(value, LocaleUtil.toLang(locale));
                 
             }else{
                 constValue = ((Var) toValue(operation.getArg(1))).getValue();    
@@ -618,7 +622,7 @@ public class SesameQuery extends
             Var constVar = toVar(constValue);
             Compare compare = new Compare(pathVar, constVar, Compare.CompareOp.NE);
             if (locale != null){
-                Var langVar = toVar(dialect.getLiteral(LocaleUtil.toLang(locale)));
+                Var langVar = toVar(valueFactory.createLiteral(LocaleUtil.toLang(locale)));
                 return new And(
                     compare, 
                     new Compare(new Lang(pathVar), langVar, Compare.CompareOp.EQ));
@@ -639,7 +643,7 @@ public class SesameQuery extends
             size++;
         }
         
-        JoinBuilder builder = new JoinBuilder((SesameDialect)dialect, datatypeInference);
+        JoinBuilder builder = new JoinBuilder(valueFactory, datatypeInference);
         // path from size operation
         Path<?> path = (Path<?>)((Operation<?,?>)operation.getArg(0)).getArg(0); 
         Var pathVar = transformPath(path);                                

@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.model;
 
-import java.util.Locale;
 
 /**
  * @author sasa
@@ -54,21 +53,6 @@ public final class MiniDialect extends Dialect<NODE, ID, BID, UID, LIT, STMT> {
     }
 
     @Override
-    public LIT getLiteral(String value) {
-        return new LIT(value);
-    }
-
-    @Override
-    public LIT getLiteral(String value, Locale language) {
-        return new LIT(value, language);
-    }
-
-    @Override
-    public LIT getLiteral(String value, UID datatype) {
-        return new LIT(value, datatype);
-    }
-    
-    @Override
     public NODE getNode(NODE node) {
         return node;
     }
@@ -96,11 +80,6 @@ public final class MiniDialect extends Dialect<NODE, ID, BID, UID, LIT, STMT> {
     @Override
     public UID getUID(UID resource) {
         return resource;
-    }
-
-    @Override
-    public UID getURI(String uri) {
-        return new UID(uri);
     }
 
     @Override

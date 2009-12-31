@@ -11,11 +11,14 @@ import java.util.TreeSet;
 import net.jcip.annotations.Immutable;
 
 import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
-import org.openrdf.query.algebra.*;
-
-import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.sesame.SesameDialect;
+import org.openrdf.model.ValueFactory;
+import org.openrdf.model.vocabulary.XMLSchema;
+import org.openrdf.query.algebra.Join;
+import org.openrdf.query.algebra.LeftJoin;
+import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.Union;
+import org.openrdf.query.algebra.Var;
 
 /**
  * JoinBuilder provides
@@ -27,16 +30,13 @@ public class JoinBuilder{
     
     private final SortedSet<JoinElement> elements = new TreeSet<JoinElement>();
     
-    private final SesameDialect dialect;
+    private final ValueFactory vf;
     
     private final boolean datatypeInference;
     
-    private final URI xsdString;
-    
-    public JoinBuilder(SesameDialect dialect, boolean datatypeInference){
-        this.dialect = dialect;
-        this.datatypeInference = datatypeInference;
-        this.xsdString = dialect.getURI(XSD.stringType);
+    public JoinBuilder(ValueFactory vf, boolean datatypeInference){
+        this.vf = vf;
+        this.datatypeInference = datatypeInference; 
     }
 
     public TupleExpr getJoins() {
@@ -58,8 +58,8 @@ public class JoinBuilder{
             Var objVar = pattern.getObjectVar();
             if (objVar.getValue() != null && objVar.getValue() instanceof Literal){
                 Literal lit = (Literal) pattern.getObjectVar().getValue();
-                if (lit.getDatatype() != null && lit.getDatatype().equals(xsdString)){
-                    Var obj2 = new Var(objVar.getName()+"_untyped", dialect.getLiteral(lit.getLabel()));
+                if (lit.getDatatype() != null && lit.getDatatype().equals(XMLSchema.STRING)){
+                    Var obj2 = new Var(objVar.getName()+"_untyped", vf.createLiteral(lit.getLabel()));
                     StatementPattern pattern2 = new StatementPattern(
                             pattern.getScope(), 
                             pattern.getSubjectVar(), 
