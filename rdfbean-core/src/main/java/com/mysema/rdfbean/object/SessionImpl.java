@@ -16,13 +16,19 @@ import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
 import org.apache.commons.lang.ObjectUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.PSimple;
+import com.mysema.query.types.path.PathMetadata;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
@@ -39,6 +45,18 @@ public class SessionImpl implements Session {
                     RDF.Alt, RDF.Seq, RDF.Bag, RDFS.Container
             ))
     );
+    
+    private static final Set<Class<?>> DATE_TIME_TYPES = new HashSet<Class<?>>(Arrays.<Class<?>>asList(
+            LocalDate.class,
+            LocalTime.class,
+            DateTime.class, 
+            java.util.Date.class,
+            java.sql.Date.class,
+            java.sql.Time.class,
+            java.sql.Timestamp.class
+            ));
+    
+    private static final PathMetadata<?> ENTITY = PathMetadata.forVariable("entity");
     
     static final int DEFAULT_INITIAL_CAPACITY = 1024;
     
@@ -786,6 +804,30 @@ public class SessionImpl implements Session {
     @Override
     public <T> T getById(String id, Class<T> clazz) {
         return get(clazz, new LID(id));
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <T> T getByExample(T entity){
+        PEntity<T> entityPath = new PEntity<T>((Class<T>)entity.getClass(), entity.getClass().getSimpleName(), ENTITY);
+        BeanMap beanMap = new BeanMap(entity);
+        BooleanBuilder conditions = new BooleanBuilder();
+        // TODO: take unique properties into account
+        for (Map.Entry<String,Object> entry : beanMap.entrySet()){
+            if (!entry.getKey().equals("class")){
+                if (entry.getValue() != null 
+                        && !DATE_TIME_TYPES.contains(entry.getValue().getClass()) 
+                        && !(entry.getValue() instanceof BID)){
+                    PSimple<Object> propertyPath = new PSimple<Object>(entry.getValue().getClass(), entityPath, entry.getKey());
+                    conditions.and(propertyPath.eq(entry.getValue()));
+                }    
+            }                                    
+        }
+        if (conditions.getValue() != null){
+            return from(entityPath).where(conditions).uniqueResult(entityPath);    
+        }else{
+            return null;
+        }
+        
     }
 
     protected Class<?> getClass(Object object) {

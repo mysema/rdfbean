@@ -200,6 +200,13 @@ public interface Session extends ObjectRepository, Closeable {
     <T> T getById(String id, Class<T> clazz);
     
     /**
+     * @param <T>
+     * @param example
+     */
+    @Nullable
+    <T> T getByExample(T example);
+    
+    /**
      * @return  Configuration used by this session.
      */
     Configuration getConfiguration();

@@ -9,9 +9,15 @@ import static com.mysema.query.alias.Alias.$;
 import static com.mysema.query.alias.Alias.alias;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +58,20 @@ public class UpdateTest {
             this.age = age;
             this.company = company;
         }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public Company getCompany() {
+            return company;
+        }
+        
+        
     
     }
     
@@ -80,6 +100,10 @@ public class UpdateTest {
         // Getter provided for Querydsl MiniApi
         public String getName() {
             return name; 
+        }
+        
+        public String getDescription(){
+            return description;
         }
     }
     
@@ -281,5 +305,44 @@ public class UpdateTest {
         newSession(Locale.ENGLISH);
         company = getCompany();
         assertEquals("In English", company.description);
+    }
+    
+    @Test
+    public void getCompanyByExample(){
+        newSession();
+        Company company = getCompany();
+        
+        Company example = new Company();
+        example.description = company.description;
+        assertEquals(company, session.getByExample(example));
+        
+        example.name = company.name;
+        assertEquals(company, session.getByExample(example));
+        
+        example.description = "XXX";
+        assertNull(session.getByExample(example));
+        
+        example.name = null;
+        example.description = null;
+        assertNull(session.getByExample(example));               
+    }
+    
+    @Test
+    public void getEmployeeByExample(){
+        newSession();
+        Employee employee = getEmployee();
+        
+        Employee example = new Employee();
+        example.age = employee.age;
+        assertEquals(employee, session.getByExample(example));
+        
+        example.company = employee.company;
+        assertEquals(employee, session.getByExample(example));
+        
+        example.name = employee.name;
+        assertEquals(employee, session.getByExample(example));
+        
+        example.name = "XXX";
+        assertNull(session.getByExample(example));
     }
 }

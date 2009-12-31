@@ -6,20 +6,10 @@
 package com.mysema.rdfbean.tapestry.services;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.collections15.BeanMap;
 import org.apache.tapestry5.ioc.annotations.EagerLoad;
 
-import com.mysema.query.types.path.PEntity;
-import com.mysema.query.types.path.PSimple;
-import com.mysema.query.types.path.PathMetadata;
-import com.mysema.rdfbean.annotations.UniqueProperty;
-import com.mysema.rdfbean.object.MappedClass;
-import com.mysema.rdfbean.object.MappedPath;
-import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
@@ -33,33 +23,14 @@ import com.mysema.rdfbean.object.SessionFactory;
 @EagerLoad
 public class SeedEntityImpl implements SeedEntity{
     
-    private Map<MappedClass,MappedProperty<?>> uniqueProperties = new HashMap<MappedClass,MappedProperty<?>>();
-    
     public SeedEntityImpl(SessionFactory sessionFactory, List<Object> entities) throws IOException {
         Session session = sessionFactory.openSession();        
         RDFBeanTransaction tx = session.beginTransaction();        
         try{
-            for (Object entity : entities){
-                MappedClass mappedClass = MappedClass.getMappedClass(entity.getClass());
-                MappedProperty<?> property = getUniqueProperty(mappedClass);
-                if (property != null){
-                    PEntity<Object> entityPath = new PEntity<Object>(entity.getClass(), 
-                            entity.getClass().getSimpleName(), 
-                            PathMetadata.forVariable("entity"));
-                    PSimple<Object> propertyPath = new PSimple<Object>(property.getType(), 
-                            entityPath, 
-                            property.getName());
-                    Object propertyValue = property.getValue(new BeanMap(entity));
-                    if (propertyValue != null){
-                        Object savedEntity = session.from(entityPath)
-                            .where(propertyPath.eq(propertyValue))
-                            .uniqueResult(entityPath);
-                        if (savedEntity != null){
-                            continue;
-                        }    
-                    }                    
-                }
-                session.save(entity);
+            for (Object entity : entities){                    
+                if (session.getByExample(entity) == null){
+                    session.save(entity);    
+                }                
             }
             tx.commit();
         }catch(Throwable e){
@@ -68,22 +39,6 @@ public class SeedEntityImpl implements SeedEntity{
             session.close();
         }
         
-    }
-
-    private MappedProperty<?> getUniqueProperty(MappedClass mappedClass) {
-        if (uniqueProperties.containsKey(mappedClass)){
-            return uniqueProperties.get(mappedClass);
-        }else{
-            MappedProperty<?> property = null;
-            for (MappedPath path : mappedClass.getProperties()){
-                if (path.getMappedProperty().getAnnotation(UniqueProperty.class) != null){
-                    property = path.getMappedProperty();
-                    break;
-                }
-            }    
-            uniqueProperties.put(mappedClass, property);
-            return property;
-        }        
     }
 
 }
