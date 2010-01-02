@@ -26,9 +26,9 @@ import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.BooleanBuilder;
+import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.path.PEntity;
-import com.mysema.query.types.path.PSimple;
-import com.mysema.query.types.path.PathMetadata;
+import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
@@ -58,8 +58,6 @@ public class SessionImpl implements Session {
             java.sql.Time.class,
             java.sql.Timestamp.class
             ));
-    
-    private static final PathMetadata<?> ENTITY = PathMetadata.forVariable("entity");
     
     static final int DEFAULT_INITIAL_CAPACITY = 1024;
     
@@ -811,17 +809,16 @@ public class SessionImpl implements Session {
     
     @SuppressWarnings("unchecked")
     public <T> T getByExample(T entity){
-        PEntity<T> entityPath = new PEntity<T>((Class<T>)entity.getClass(), entity.getClass().getSimpleName(), ENTITY);
-        BeanMap beanMap = new BeanMap(entity);
+        PathBuilder<T> entityPath = new PathBuilder<T>((Class<T>)entity.getClass(), "entity");
         BooleanBuilder conditions = new BooleanBuilder();
         // TODO: take unique properties into account
-        for (Map.Entry<String,Object> entry : beanMap.entrySet()){
+        for (Map.Entry<String,Object> entry : new BeanMap(entity).entrySet()){
             if (!entry.getKey().equals("class")){
                 if (entry.getValue() != null 
                         && !DATE_TIME_TYPES.contains(entry.getValue().getClass()) 
                         && !(entry.getValue() instanceof BID)){
-                    PSimple<Object> propertyPath = new PSimple<Object>(entry.getValue().getClass(), entityPath, entry.getKey());
-                    conditions.and(propertyPath.eq(entry.getValue()));
+                    Expr<Object> property = (Expr)entityPath.get(entry.getKey(), entry.getValue().getClass());
+                    conditions.and(property.eq(entry.getValue()));
                 }    
             }                                    
         }
@@ -832,7 +829,7 @@ public class SessionImpl implements Session {
         }
         
     }
-
+    
     protected Class<?> getClass(Object object) {
         return object instanceof BeanMap ? ((BeanMap) object).getBean().getClass() : object.getClass();
     }

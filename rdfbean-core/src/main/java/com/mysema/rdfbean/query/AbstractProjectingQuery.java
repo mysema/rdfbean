@@ -21,7 +21,7 @@ import com.mysema.query.QueryMixin;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
 import com.mysema.query.collections.impl.LimitingIterator;
-import com.mysema.query.support.QueryBaseWithProjection;
+import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.types.expr.Constant;
 import com.mysema.query.types.expr.EConstructor;
 import com.mysema.query.types.expr.Expr;
@@ -47,7 +47,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     R extends N, 
     B extends R, 
     U extends R, 
-    L extends N, S> extends QueryBaseWithProjection<SubType>{
+    L extends N, S> extends ProjectableQuery<SubType>{
     
     protected final Dialect<N,R,B,U,L,S> dialect;
     
@@ -117,7 +117,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         }else{
             N node = nodes[offset.intValue()];
             offset.add(1);
-            return getAsProjectionValue(expr.getType(), node);                
+            return node != null ? getAsProjectionValue(expr.getType(), node) : null;
         }
     }
     

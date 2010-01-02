@@ -41,6 +41,9 @@ public class RDFBeanModule {
     }
     
     public static IdentityService buildIdentityService(Map<String,String> configuration) throws IOException{
+        if (!configuration.containsKey(DERBY_URL)){
+            throw new IllegalArgumentException(DERBY_URL + " parameter is missing");
+        }
         return new DerbyIdentityService(configuration.get(DERBY_URL));
     }
     

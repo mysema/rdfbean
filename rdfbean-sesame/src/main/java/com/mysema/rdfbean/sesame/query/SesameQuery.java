@@ -154,17 +154,17 @@ public class SesameQuery extends
             addFilterCondition(toValue(metadata.getWhere()));
         }
         
-        // order by
+        // order by (optional paths)
         optionalPath = true;
         for (OrderSpecifier<?> os : metadata.getOrderBy()){
             orderElements.add(new OrderElem(toValue(os.getTarget()), os.isAscending()));
         }
-        optionalPath = false;
         
-        // select
+        // select (optional paths)
         for (Expr<?> expr : metadata.getProjection()){
             addProjection(expr);
         }
+        optionalPath = false;
     }
     
     @SuppressWarnings("unchecked")
