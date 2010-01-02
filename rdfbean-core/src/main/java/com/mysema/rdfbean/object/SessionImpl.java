@@ -815,8 +815,14 @@ public class SessionImpl implements Session {
         for (Map.Entry<String,Object> entry : new BeanMap(entity).entrySet()){
             if (!entry.getKey().equals("class")){
                 if (entry.getValue() != null 
-                        && !DATE_TIME_TYPES.contains(entry.getValue().getClass()) 
-                        && !(entry.getValue() instanceof BID)){
+                 // date/time values are skipped
+                 && !DATE_TIME_TYPES.contains(entry.getValue().getClass())
+                 // collection values are skipped
+                 && (!(entry.getValue() instanceof Collection))
+                 // map values are skipped
+                 && (!(entry.getValue() instanceof Map))
+                 // blank nodes are skipped
+                 && !(entry.getValue() instanceof BID)){
                     Expr<Object> property = (Expr)entityPath.get(entry.getKey(), entry.getValue().getClass());
                     conditions.and(property.eq(entry.getValue()));
                 }    

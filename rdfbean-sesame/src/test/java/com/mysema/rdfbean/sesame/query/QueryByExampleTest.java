@@ -2,6 +2,9 @@ package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
@@ -56,6 +59,9 @@ public class QueryByExampleTest extends SessionTestBase{
         @Predicate
         private Profile profile;
         
+        @Predicate
+        private Set<User> buddies = new HashSet<User>();
+        
         public String getFirstName() {
             return firstName;
         }
@@ -79,6 +85,12 @@ public class QueryByExampleTest extends SessionTestBase{
         public Profile getProfile() {
             return profile;
         }
+
+        public Set<User> getBuddies() {
+            return buddies;
+        }
+        
+        
         
     }
     
