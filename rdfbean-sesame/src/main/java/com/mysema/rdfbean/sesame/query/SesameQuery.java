@@ -315,7 +315,6 @@ public class SesameQuery extends
     }
 
     private void handleRootPath(Path<?> path) {
-//        getMetadata().addFrom(path.asExpr());
         Var var = new Var(path.getMetadata().getExpression().toString());
         varNames.disallow(var.getName());
         pathToVar.put(path, var);
