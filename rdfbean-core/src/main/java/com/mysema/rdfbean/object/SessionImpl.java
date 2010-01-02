@@ -811,22 +811,23 @@ public class SessionImpl implements Session {
     public <T> T getByExample(T entity){
         PathBuilder<T> entityPath = new PathBuilder<T>((Class<T>)entity.getClass(), "entity");
         BooleanBuilder conditions = new BooleanBuilder();
-        // TODO: take unique properties into account
-        for (Map.Entry<String,Object> entry : new BeanMap(entity).entrySet()){
-            if (!entry.getKey().equals("class")){
-                if (entry.getValue() != null 
+        BeanMap beanMap = new BeanMap(entity);        
+        MappedClass mappedClass = MappedClass.getMappedClass(entity.getClass());        
+        for (MappedPath mappedPath : mappedClass.getProperties()){
+            MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
+            Object value = mappedProperty.getValue(beanMap);
+            if (value != null 
                  // date/time values are skipped
-                 && !DATE_TIME_TYPES.contains(entry.getValue().getClass())
+                 && !DATE_TIME_TYPES.contains(value.getClass())
                  // collection values are skipped
-                 && (!(entry.getValue() instanceof Collection))
+                 && (!(value instanceof Collection))
                  // map values are skipped
-                 && (!(entry.getValue() instanceof Map))
+                 && (!(value instanceof Map))
                  // blank nodes are skipped
-                 && !(entry.getValue() instanceof BID)){
-                    Expr<Object> property = (Expr)entityPath.get(entry.getKey(), entry.getValue().getClass());
-                    conditions.and(property.eq(entry.getValue()));
-                }    
-            }                                    
+                 && !(value instanceof BID)){
+                Expr<Object> property = (Expr)entityPath.get(mappedProperty.getName(), mappedProperty.getType());
+                conditions.and(property.eq(value));
+            }
         }
         if (conditions.getValue() != null){
             return from(entityPath).where(conditions).uniqueResult(entityPath);    

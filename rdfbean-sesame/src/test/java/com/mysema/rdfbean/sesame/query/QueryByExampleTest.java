@@ -90,7 +90,9 @@ public class QueryByExampleTest extends SessionTestBase{
             return buddies;
         }
         
-        
+        public boolean isActive(){
+            return true;
+        }
         
     }
     

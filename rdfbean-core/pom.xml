@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
-    <version>0.9.3-SNAPSHOT</version>
+    <version>0.9.4</version>
   </parent>
 
   <dependencies>
