@@ -40,8 +40,10 @@ class TransactionalInterceptor implements MethodInterceptor{
         
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {        
         Transactional annotation = configuration.get().get(methodInvocation.getMethod());
+        boolean inSession = false;
         boolean inTx = false;
         if (sessionContext.getCurrentSession() != null){
+            inSession = true;
             Session session = sessionContext.getCurrentSession();
             inTx = session.getTransaction() != null && session.getTransaction().isActive();
         }
@@ -72,6 +74,9 @@ class TransactionalInterceptor implements MethodInterceptor{
             
         } finally {
             session.setFlushMode(savedFlushMode);
+            if (!inSession){
+                sessionContext.getCurrentSession().close();
+            }            
             sessionContext.releaseSession();                
         }
     }

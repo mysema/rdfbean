@@ -5,11 +5,14 @@
  */
 package com.mysema.rdfbean.tapestry;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 import org.apache.tapestry5.ioc.Invocation;
 import org.apache.tapestry5.ioc.MethodAdvice;
 import org.apache.tapestry5.ioc.MethodAdviceReceiver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mysema.rdfbean.object.FlushMode;
@@ -27,11 +30,15 @@ import com.mysema.rdfbean.object.SimpleSessionContext;
  */
 public class TransactionalAdvisorImpl implements TransactionalAdvisor {
     
+    private static final Logger logger = LoggerFactory.getLogger(TransactionalAdvisorImpl.class);
+    
     private final MethodAdvice advice = new MethodAdvice() {
         @Override
         public void advise(Invocation invocation) {
+            boolean inSession = false;
             boolean inTx = false;
             if (sessionContext.getCurrentSession() != null){
+                inSession = true;
                 Session session = sessionContext.getCurrentSession();
                 inTx = session.getTransaction() != null && session.getTransaction().isActive();
             }
@@ -56,6 +63,15 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
                     
                 } finally {
                     session.setFlushMode(savedFlushMode);
+                    if (!inSession){
+                        try {
+                            sessionContext.getCurrentSession().close();
+                        } catch (IOException e) {
+                            String error = "Caught " + e.getClass().getName();
+                            logger.error(error, e);
+                            throw new RuntimeException(error, e);
+                        }
+                    }
                     sessionContext.releaseSession();                
                 }    
             }else{

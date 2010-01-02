@@ -29,6 +29,7 @@ import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PathBuilder;
+import com.mysema.query.types.path.PathBuilderFactory;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
@@ -42,12 +43,14 @@ import com.mysema.rdfbean.object.identity.IdentityService;
  * 
  */
 public class SessionImpl implements Session {
-  
+    
     public static final Set<UID> CONTAINER_TYPES = Collections.unmodifiableSet(
             new HashSet<UID>(Arrays.<UID>asList(
                     RDF.Alt, RDF.Seq, RDF.Bag, RDFS.Container
             ))
     );
+    
+    private static final PathBuilderFactory pathBuilderFactory = new PathBuilderFactory();
     
     private static final Set<Class<?>> DATE_TIME_TYPES = new HashSet<Class<?>>(Arrays.<Class<?>>asList(
             LocalDate.class,
@@ -809,24 +812,24 @@ public class SessionImpl implements Session {
     
     @SuppressWarnings("unchecked")
     public <T> T getByExample(T entity){
-        PathBuilder<T> entityPath = new PathBuilder<T>((Class<T>)entity.getClass(), "entity");
+        PathBuilder<T> entityPath = (PathBuilder) pathBuilderFactory.create(entity.getClass());
         BooleanBuilder conditions = new BooleanBuilder();
         BeanMap beanMap = new BeanMap(entity);        
         MappedClass mappedClass = MappedClass.getMappedClass(entity.getClass());        
         for (MappedPath mappedPath : mappedClass.getProperties()){
-            MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
-            Object value = mappedProperty.getValue(beanMap);
+            MappedProperty<?> property = mappedPath.getMappedProperty();
+            Object value = property.getValue(beanMap);
             if (value != null 
                  // date/time values are skipped
                  && !DATE_TIME_TYPES.contains(value.getClass())
                  // collection values are skipped
-                 && (!(value instanceof Collection))
+                 && !property.isCollection()
                  // map values are skipped
-                 && (!(value instanceof Map))
+                 && !property.isMap()
                  // blank nodes are skipped
                  && !(value instanceof BID)){
-                Expr<Object> property = (Expr)entityPath.get(mappedProperty.getName(), mappedProperty.getType());
-                conditions.and(property.eq(value));
+                Expr<Object> propertyPath = (Expr)entityPath.get(property.getName(), property.getType());
+                conditions.and(propertyPath.eq(value));
             }
         }
         if (conditions.getValue() != null){
