@@ -10,7 +10,6 @@ import java.util.UUID;
 import net.jcip.annotations.Immutable;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.annotations.QueryEntity;
 
 /**
  * BID represents a blank node
@@ -18,7 +17,6 @@ import com.mysema.query.annotations.QueryEntity;
  * @author sasa
  *
  */
-@QueryEntity
 @Immutable
 public final class BID extends ID {
 

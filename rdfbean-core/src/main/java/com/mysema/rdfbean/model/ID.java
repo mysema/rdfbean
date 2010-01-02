@@ -7,15 +7,12 @@ package com.mysema.rdfbean.model;
 
 import net.jcip.annotations.Immutable;
 
-import com.mysema.query.annotations.QueryEntity;
-
 /**
  * ID represents a general RDF resource
  * 
  * @author sasa
  *
  */
-@QueryEntity
 @Immutable
 public abstract class ID extends NODE implements Identifier {
     

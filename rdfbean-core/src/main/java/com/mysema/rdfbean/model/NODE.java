@@ -9,15 +9,12 @@ import java.io.Serializable;
 
 import net.jcip.annotations.Immutable;
 
-import com.mysema.query.annotations.QueryEntity;
-
 /**
  * NODE represents a general RDF node
  * 
  * @author sasa
  *
  */
-@QueryEntity
 @Immutable
 public abstract class NODE implements Serializable {
 

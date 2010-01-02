@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 import net.jcip.annotations.Immutable;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.annotations.QueryEntity;
 
 /**
  * UID represents an URI resource
@@ -21,7 +20,6 @@ import com.mysema.query.annotations.QueryEntity;
  * @author sasa
  *
  */
-@QueryEntity
 @Immutable
 public final class UID extends ID {
 

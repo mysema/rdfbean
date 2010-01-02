@@ -37,7 +37,6 @@ public class TransactionHandlingTest extends SessionTestBase{
     
     private PEntity<Restriction> restriction = new PEntity<Restriction>(
             Restriction.class, 
-            "Restriction", 
             PathMetadataFactory.forVariable("var"));
     
     private SessionFactoryImpl sessionFactory;

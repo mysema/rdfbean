@@ -13,7 +13,6 @@ import net.jcip.annotations.Immutable;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.annotations.QueryEntity;
 
 /**
  * LIT represents typed and localized literals
@@ -21,7 +20,6 @@ import com.mysema.query.annotations.QueryEntity;
  * @author sasa
  *
  */
-@QueryEntity
 @Immutable
 public final class LIT extends NODE {
     
