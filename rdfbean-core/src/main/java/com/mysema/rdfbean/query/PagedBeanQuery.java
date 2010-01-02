@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.tapestry;
+package com.mysema.rdfbean.query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,29 +19,35 @@ import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionFactory;
 
 /**
- * PagedQuery provides
+ * PagedQuery provides an RDFBeanQuery style query builder for paged results
  *
  * @author tiwe
  * @version $Id$
  */
-public class PagedQuery extends QueryBase<PagedQuery>{
+public class PagedBeanQuery extends QueryBase<PagedBeanQuery>{
 
     private final CallbackService txCallback;
+    
+    private final SessionFactory sessionFactory;
     
     private final Session session;
     
     private final List<PEntity<?>> sources = new ArrayList<PEntity<?>>();
     
-    public PagedQuery(CallbackService txCallback, Session session){
-        super(new QueryMixin<PagedQuery>(new DefaultQueryMetadata()));
+    public PagedBeanQuery(CallbackService txCallback, 
+            SessionFactory sessionFactory,
+            Session session){
+        super(new QueryMixin<PagedBeanQuery>(new DefaultQueryMetadata()));
         this.queryMixin.setSelf(this);
         this.txCallback = txCallback;
+        this.sessionFactory = sessionFactory;
         this.session = session;
     }
     
-    public PagedQuery from(PEntity<?>... from){
+    public PagedBeanQuery from(PEntity<?>... from){
         for (PEntity<?> source : from){
             sources.add(source);    
         }        
@@ -62,7 +68,7 @@ public class PagedQuery extends QueryBase<PagedQuery>{
             return new ListSourceBase<T>(txCallback, count){
                 @Override
                 protected List<T> getInnerResults(final int from, final int to) {
-                    BeanQuery qry = session.from(sourceArray)
+                    BeanQuery qry = sessionFactory.getCurrentSession().from(sourceArray)
                         .offset(from).limit(to - from)
                         .orderBy(order);
                     if (condition != null){
