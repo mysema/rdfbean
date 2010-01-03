@@ -12,9 +12,19 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 
 /**
  * SessionFactoryImpl is the default implementation of the SessionFactory interface
@@ -25,6 +35,8 @@ import com.mysema.rdfbean.model.*;
  */
 public class SessionFactoryImpl implements SessionFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(SessionFactoryImpl.class);
+    
     private SessionContext sessionContext;
     
     private Configuration configuration;
@@ -181,6 +193,26 @@ public class SessionFactoryImpl implements SessionFactory {
     @Override
     public void close() {
         repository.close();
+    }
+
+    @Override
+    public <T> T execute(SessionCallback<T> cb){
+        if (sessionContext.getCurrentSession() != null){
+            return cb.doInSession(sessionContext.getCurrentSession());
+        }else{
+            Session session = openSession();
+            try{
+                return cb.doInSession(session);
+            }finally{
+                try {
+                    session.close();
+                } catch (IOException e) {
+                    String error = "Caught " + e.getClass().getName();
+                    logger.error(error, e);
+                    throw new RuntimeException(error, e);
+                }
+            }
+        }
     }
 
 }

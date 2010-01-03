@@ -11,9 +11,7 @@ import java.util.List;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryBase;
 import com.mysema.query.QueryMixin;
-import com.mysema.query.paging.CallbackService;
 import com.mysema.query.paging.ListSource;
-import com.mysema.query.paging.ListSourceBase;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PEntity;
@@ -29,20 +27,15 @@ import com.mysema.rdfbean.object.SessionFactory;
  */
 public class PagedBeanQuery extends QueryBase<PagedBeanQuery>{
 
-    private final CallbackService txCallback;
-    
     private final SessionFactory sessionFactory;
     
     private final Session session;
     
     private final List<PEntity<?>> sources = new ArrayList<PEntity<?>>();
     
-    public PagedBeanQuery(CallbackService txCallback, 
-            SessionFactory sessionFactory,
-            Session session){
+    public PagedBeanQuery(SessionFactory sessionFactory, Session session){
         super(new QueryMixin<PagedBeanQuery>(new DefaultQueryMetadata()));
         this.queryMixin.setSelf(this);
-        this.txCallback = txCallback;
         this.sessionFactory = sessionFactory;
         this.session = session;
     }
@@ -65,10 +58,10 @@ public class PagedBeanQuery extends QueryBase<PagedBeanQuery>{
         long count = countQry.count();
         
         if (count > 0l){
-            return new ListSourceBase<T>(txCallback, count){
+            return new ListSourceBase<T>(sessionFactory, count){
                 @Override
-                protected List<T> getInnerResults(final int from, final int to) {
-                    BeanQuery qry = sessionFactory.getCurrentSession().from(sourceArray)
+                protected List<T> getInnerResults(Session session, int from, int to) {
+                    BeanQuery qry = session.from(sourceArray)
                         .offset(from).limit(to - from)
                         .orderBy(order);
                     if (condition != null){

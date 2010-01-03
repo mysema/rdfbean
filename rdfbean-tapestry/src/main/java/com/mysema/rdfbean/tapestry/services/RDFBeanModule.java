@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.tapestry5.ioc.MappedConfiguration;
-import org.apache.tapestry5.ioc.MethodAdviceReceiver;
 import org.apache.tapestry5.ioc.ServiceBinder;
 
 import com.mysema.rdfbean.model.Repository;
@@ -36,9 +35,10 @@ public class RDFBeanModule {
         binder.bind(SeedEntity.class, SeedEntityImpl.class);
     }
 
-    public static void adviseTransactions(TransactionalAdvisor advisor, MethodAdviceReceiver receiver){
-        advisor.addTransactionCommitAdvice(receiver);
-    }
+//    @Match({"CallbackService"})
+//    public static void adviseTransactions(TransactionalAdvisor advisor, MethodAdviceReceiver receiver){
+//        advisor.addTransactionCommitAdvice(receiver);
+//    }
     
     public static IdentityService buildIdentityService(Map<String,String> configuration) throws IOException{
         if (!configuration.containsKey(DERBY_URL)){

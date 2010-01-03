@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.object;
 
+import java.io.IOException;
+
 import javax.annotation.Nullable;
 
 /**
@@ -41,5 +43,12 @@ public interface SessionFactory {
      * @param sessionContext
      */
     public void setSessionContext(SessionContext sessionContext);
+    
+    /**
+     * @param <T>
+     * @param cb
+     * @return
+     */
+    public <T> T execute(SessionCallback<T> cb);
     
 }

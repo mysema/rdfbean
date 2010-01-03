@@ -74,10 +74,10 @@ class TransactionalInterceptor implements MethodInterceptor{
             
         } finally {
             session.setFlushMode(savedFlushMode);
+            sessionContext.releaseSession();
             if (!inSession){
-                sessionContext.getCurrentSession().close();
-            }            
-            sessionContext.releaseSession();                
+                session.close();
+            }                                        
         }
     }
 

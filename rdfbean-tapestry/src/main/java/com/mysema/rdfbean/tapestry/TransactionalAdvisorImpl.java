@@ -63,16 +63,16 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
                     
                 } finally {
                     session.setFlushMode(savedFlushMode);
+                    sessionContext.releaseSession();
                     if (!inSession){
                         try {
-                            sessionContext.getCurrentSession().close();
+                            session.close();
                         } catch (IOException e) {
                             String error = "Caught " + e.getClass().getName();
                             logger.error(error, e);
                             throw new RuntimeException(error, e);
                         }
-                    }
-                    sessionContext.releaseSession();                
+                    }                                    
                 }    
             }else{
                 invocation.proceed();

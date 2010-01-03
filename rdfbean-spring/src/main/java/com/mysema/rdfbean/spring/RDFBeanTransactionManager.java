@@ -5,6 +5,10 @@
  */
 package com.mysema.rdfbean.spring;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionSystemException;
@@ -13,7 +17,11 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.SmartTransactionObject;
 
-import com.mysema.rdfbean.object.*;
+import com.mysema.rdfbean.object.FlushMode;
+import com.mysema.rdfbean.object.RDFBeanTransaction;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionFactoryImpl;
+import com.mysema.rdfbean.object.SimpleSessionContext;
 
 
 /**
@@ -26,6 +34,8 @@ import com.mysema.rdfbean.object.*;
  */
 public class RDFBeanTransactionManager extends AbstractPlatformTransactionManager{
 
+    private static final Logger logger = LoggerFactory.getLogger(RDFBeanTransactionManager.class);
+    
     private static final long serialVersionUID = -4060513400839374983L;
 
     private transient final SimpleSessionContext sessionContext;
@@ -65,8 +75,9 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
      */
     @Override
     protected Object doGetTransaction() {
+        boolean closeAfterTx = sessionContext.getCurrentSession() == null;
         Session session = sessionContext.getOrCreateSession();               
-        return new TransactionObject(session);
+        return new TransactionObject(session, closeAfterTx);
     }
 
     /**
@@ -125,7 +136,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
         
         try {     
             txObj.getSession().flush();            
-            tx.commit();
+            tx.commit();            
         } catch (RuntimeException oe) {
             throw new TransactionSystemException("error committing transaction", oe);
         } finally {
@@ -133,6 +144,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
                 txObj.getSession().setFlushMode(txObj.getOriginalFlushMode());    
             }            
             sessionContext.releaseSession();
+            txObj.close();
         }
     }
 
@@ -165,6 +177,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
             if (clearSessionOnRollback) {
                 txObj.getSession().clear();
             }            
+            txObj.close();
         }
     }
 
@@ -227,11 +240,14 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
      */
     private static class TransactionObject implements SmartTransactionObject {
         private final Session session;
+        
+        private final boolean closeAfterTx;
 
         private FlushMode flushMode;
         
-        public TransactionObject(Session session) {
+        public TransactionObject(Session session, boolean closeAfterTx) {
             this.session = session;
+            this.closeAfterTx = closeAfterTx;
             this.flushMode = session.getFlushMode();
         }
 
@@ -239,20 +255,32 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
             return flushMode;
         }
         
-        Session getSession() {
+        public Session getSession() {
             return session;
         }
         
-        RDFBeanTransaction getTransaction(){
+        public RDFBeanTransaction getTransaction(){
             return session.getTransaction();
         }
 
-        void setRollbackOnly() {
+        public void setRollbackOnly() {
             session.getTransaction().setRollbackOnly();
         }
 
         public boolean isRollbackOnly() {
             return session.getTransaction().isRollbackOnly();
+        }
+
+        public void close(){
+            if (closeAfterTx){
+                try {
+                    session.close();
+                } catch (IOException e) {
+                    String error = "Caught " + e.getClass().getName();
+                    logger.error(error, e);
+                    throw new RuntimeException(error, e);
+                }
+            }
         }
     }
     
