@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
@@ -48,41 +49,80 @@ public class OrderTest extends SessionTestBase{
             return firstName;
         }
                 
-    }        
+    }
+    
+    private Session session;
+    
+    @After
+    public void tearDown() throws IOException{
+        if (session != null) session.close();
+    }
     
     @Test
     public void testOrderBy() throws StoreException, IOException{
         Session session = createSession(User.class);
         
-        try{
-            session.save(new User());
-            User user = Alias.alias(User.class, "user");
-            assertFalse(session.from($(user))
-                    .orderBy($(user.getFirstName()).asc()).list($(user)).isEmpty());
-            
-            assertFalse(session.from($(user))
-                    .where($(user.getFirstName()).isNull())
-                    .orderBy($(user.getFirstName()).asc()).list($(user)).isEmpty());    
-        }finally{
-            session.close();
-        }        
+        session.save(new User());
+        User user = Alias.alias(User.class, "user");
+        assertFalse(session.from($(user))
+                .orderBy($(user.getFirstName()).asc()).list($(user)).isEmpty());
+        
+        assertFalse(session.from($(user))
+                .where($(user.getFirstName()).isNull())
+                .orderBy($(user.getFirstName()).asc()).list($(user)).isEmpty());
     }
     
     @Test
     public void correctOrder() throws StoreException, IOException{
-        Session session = createSession(User.class);        
-        session.save(new User("C"));
-        session.save(new User("A"));
-        session.save(new User("D"));
-        session.save(new User("B"));
+        Session session = createSession(User.class);     
+        for(User user : session.findInstances(User.class)){
+            session.delete(user);
+        }
+        
+        for (String name : Arrays.asList("C","A","D","B")){
+            session.save(new User(name));    
+        }
         
         User user = Alias.alias(User.class, "user");
         List<String> results = session.from($(user))
-            .where($(user.getFirstName()).isNotNull())
             .orderBy($(user.getFirstName()).asc())
             .list($(user.getFirstName()));
-        session.close();
         assertEquals(Arrays.asList("A","B","C","D"), results);
+    }
+    
+    @Test
+    public void orderWithOffset() throws StoreException, IOException{
+        Session session = createSession(User.class);     
+        for(User user : session.findInstances(User.class)){
+            session.delete(user);
+        }
+        
+        for (String name : Arrays.asList("C","A","D","B")){
+            session.save(new User(name));    
+        }
+        
+        // #1
+        User user = Alias.alias(User.class, "user");
+        List<String> results = session.from($(user))
+            .orderBy($(user.getFirstName()).asc())
+            .offset(1)
+            .list($(user.getFirstName()));
+        assertEquals(Arrays.asList("B","C","D"), results);
+
+        // #2
+        results = session.from($(user))
+            .orderBy($(user.getFirstName()).asc())
+            .limit(3)
+            .list($(user.getFirstName()));
+        assertEquals(Arrays.asList("A","B","C"), results);
+        
+        // #3
+        results = session.from($(user))
+            .orderBy($(user.getFirstName()).asc())
+            .offset(1)
+            .limit(2)
+            .list($(user.getFirstName()));
+        assertEquals(Arrays.asList("B","C"), results);
     }
 
 }

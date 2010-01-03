@@ -22,7 +22,7 @@ import com.mysema.query.types.path.Path;
  */
 public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements Closeable, BeanQuery {
 
-    private Session session;
+    private final Session session;
     
     public SimpleBeanQuery(final Session session) {
         super(new DefaultQueryMetadata(), EvaluatorFactory.DEFAULT);

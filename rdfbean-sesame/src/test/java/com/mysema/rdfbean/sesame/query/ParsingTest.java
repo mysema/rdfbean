@@ -29,6 +29,9 @@ public class ParsingTest {
         print("SELECT R FROM {R} rdfs:label {\"Hello World\"^^xsd:string}");
         print("SELECT label(L), lang(L) FROM {R} rdfs:label {L}");
         print("SELECT xsd:integer(L) FROM {R} rdfs:label {L}");
+        print("SELECT R FROM {R} rdfs:label {L} LIMIT 1");        
+        print("SELECT R FROM {R} rdfs:label {L} OFFSET 2");
+        print("SELECT R FROM {R} rdfs:label {L} LIMIT 2 OFFSET 3");
     }
     
     private void print(String query) throws MalformedQueryException, UnsupportedQueryLanguageException {

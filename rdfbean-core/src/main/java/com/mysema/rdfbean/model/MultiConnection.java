@@ -8,6 +8,8 @@ package com.mysema.rdfbean.model;
 import java.io.IOException;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ public abstract class MultiConnection implements RDFConnection{
 
     private final RDFConnection[] connections;
     
+    @Nullable
     private RDFBeanTransaction localTxn;
     
     private boolean readonlyTnx;

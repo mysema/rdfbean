@@ -70,8 +70,12 @@ public class BeanQueryAdapter extends ProjectableAdapter implements BeanQuery{
 
     @Override
     public BeanQuery offset(long offset) {
-        query.getMetadata().setLimit(offset);
+        query.getMetadata().setOffset(offset);
         return this;
+    }
+    
+    public String toString(){
+        return query.toString();
     }
 
 }

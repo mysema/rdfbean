@@ -250,6 +250,14 @@ public class SesameQuery extends
             tupleExpr = new Projection(tupleExpr, projection);    
         }        
         
+        if (getMetadata().getModifiers().isRestricting()){
+            Long limit = getMetadata().getModifiers().getLimit();
+            Long offset = getMetadata().getModifiers().getOffset();
+            tupleExpr = new Slice(tupleExpr, 
+                    offset != null ? offset.intValue() : 0,
+                    limit != null ? limit.intValue() : -1);
+        }
+        
         // evaluate it
         try {
             TupleQueryModel query;
@@ -605,8 +613,11 @@ public class SesameQuery extends
                 }
                 constValue = valueFactory.createLiteral(value, LocaleUtil.toLang(locale));
                 
+            }else if (Collection.class.isAssignableFrom(operation.getArg(1).getType())){
+                throw new UnsupportedOperationException("Unsupported operation : path eq Collection");
             }else{
-                constValue = ((Var) toValue(operation.getArg(1))).getValue();    
+                constValue = ((Var) toValue(operation.getArg(1))).getValue();   
+               
             }                                
         }else{
             ID id = getResourceForLID(operation.getArg(1));
@@ -781,5 +792,5 @@ public class SesameQuery extends
         }
 
     }
-    
+        
 }

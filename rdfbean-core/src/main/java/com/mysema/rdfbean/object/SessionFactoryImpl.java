@@ -37,49 +37,76 @@ public class SessionFactoryImpl implements SessionFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionFactoryImpl.class);
     
-    private SessionContext sessionContext;
-    
     private Configuration configuration;
-    
-    private BID model;
-    
-    private Repository repository;
     
     private Iterable<Locale> locales;
     
+    private BID model;
+    
     private Map<String, ObjectRepository> objectRepositories;
+    
+    private Repository repository;
+    
+    private SessionContext sessionContext;
 
     public SessionFactoryImpl(){
         this(Locale.getDefault());
     }
     
+    public SessionFactoryImpl(Iterable<Locale> locales) {
+        this.locales = locales;
+    }
+
     public SessionFactoryImpl(Locale locale) {
         this(Collections.singleton(locale));
         setSessionContext(new EmptySessionContext());
     }
 
-    public SessionFactoryImpl(Iterable<Locale> locales) {
-        this.locales = locales;
-    }
-
-    public Session getCurrentSession(){
-        return sessionContext.getCurrentSession();
+    private void addCheckNumber(RDFConnection connection, BID model, BID bid) {
+        String lid = configuration.getIdentityService().getLID(model, bid).getId();
+        addStatement(connection, new STMT(bid, CORE.localId, new LIT(lid), null));
     }
     
-    public Iterable<Locale> getLocales() {
-        return locales;
+    private void addStatement(RDFConnection connection, STMT stmt) {
+        connection.update(Collections.<STMT>emptySet(), Collections.singleton(stmt));
+    }
+
+    private void cleanupModel(RDFConnection connection){
+        removeStatements(connection, null, CORE.modelId, null, null);
+        removeStatements(connection, null, CORE.localId, null, null);
     }
 
     @Override
-    public Session openSession() {
-        RDFConnection connection = repository.openConnection();
-        SessionImpl session = new SessionImpl(configuration, connection, getLocales(), model);
-        if (objectRepositories != null) {
-            for (Map.Entry<String, ObjectRepository> entry : objectRepositories.entrySet()) {
-                session.addParent(entry.getKey(), entry.getValue());
+    public void close() {
+        repository.close();
+    }
+
+    @Override
+    public <T> T execute(SessionCallback<T> cb){
+        if (sessionContext.getCurrentSession() != null){
+            return cb.doInSession(sessionContext.getCurrentSession());
+        }else{
+            Session session = openSession();
+            try{
+                return cb.doInSession(session);
+            }finally{
+                try {
+                    session.close();
+                } catch (IOException e) {
+                    String error = "Caught " + e.getClass().getName();
+                    logger.error(error, e);
+                    throw new RuntimeException(error, e);
+                }
             }
         }
-        return session;
+    }
+    
+    public Session getCurrentSession(){
+        return sessionContext.getCurrentSession();
+    }
+
+    public Iterable<Locale> getLocales() {
+        return locales;
     }
 
     public void initialize() {
@@ -119,18 +146,20 @@ public class SessionFactoryImpl implements SessionFactory {
         }
     }
 
-    private void addCheckNumber(RDFConnection connection, BID model, BID bid) {
-        String lid = configuration.getIdentityService().getLID(model, bid).getId();
-        addStatement(connection, new STMT(bid, CORE.localId, new LIT(lid), null));
-    }
-    
-    private void addStatement(RDFConnection connection, STMT stmt) {
-        connection.update(Collections.<STMT>emptySet(), Collections.singleton(stmt));
+    @Override
+    public Session openSession() {
+        RDFConnection connection = repository.openConnection();
+        SessionImpl session = new SessionImpl(configuration, connection, getLocales(), model);
+        if (objectRepositories != null) {
+            for (Map.Entry<String, ObjectRepository> entry : objectRepositories.entrySet()) {
+                session.addParent(entry.getKey(), entry.getValue());
+            }
+        }
+        return session;
     }
 
-    private void cleanupModel(RDFConnection connection){
-        removeStatements(connection, null, CORE.modelId, null, null);
-        removeStatements(connection, null, CORE.localId, null, null);
+    private void removeStatement(RDFConnection connection, STMT stmt) {
+        connection.update(Collections.singleton(stmt), Collections.<STMT>emptySet());
     }
 
     protected void removeStatements(RDFConnection connection,@Nullable ID subject, UID predicate, @Nullable NODE object, @Nullable UID context) {
@@ -148,10 +177,6 @@ public class SessionFactoryImpl implements SessionFactory {
         }
     }
 
-    private void removeStatement(RDFConnection connection, STMT stmt) {
-        connection.update(Collections.singleton(stmt), Collections.<STMT>emptySet());
-    }
-
     private boolean verifyLocalId(RDFConnection connection, BID model, BID bnode) {
         String lid = configuration.getIdentityService().getLID(model, bnode).getId();
         CloseableIterator<STMT> stmts = connection.findStatements(bnode, CORE.localId, new LIT(lid), null, false);
@@ -165,21 +190,9 @@ public class SessionFactoryImpl implements SessionFactory {
             }
         }
     }
-
+    
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
-    }
-    
-    public void setObjectRepositories(Map<String, ObjectRepository> objectRepositories) {
-        this.objectRepositories = objectRepositories;
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public void setSessionContext(SessionContext sessionContext){
-        this.sessionContext = sessionContext;
     }
 
     public void setLocale(Locale locale) {
@@ -190,29 +203,16 @@ public class SessionFactoryImpl implements SessionFactory {
         this.locales = locales;
     }
 
-    @Override
-    public void close() {
-        repository.close();
+    public void setObjectRepositories(Map<String, ObjectRepository> objectRepositories) {
+        this.objectRepositories = objectRepositories;
     }
 
-    @Override
-    public <T> T execute(SessionCallback<T> cb){
-        if (sessionContext.getCurrentSession() != null){
-            return cb.doInSession(sessionContext.getCurrentSession());
-        }else{
-            Session session = openSession();
-            try{
-                return cb.doInSession(session);
-            }finally{
-                try {
-                    session.close();
-                } catch (IOException e) {
-                    String error = "Caught " + e.getClass().getName();
-                    logger.error(error, e);
-                    throw new RuntimeException(error, e);
-                }
-            }
-        }
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
+
+    public void setSessionContext(SessionContext sessionContext){
+        this.sessionContext = sessionContext;
     }
 
 }

@@ -10,8 +10,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.IteratorUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.mutable.MutableInt;
 
 import com.mysema.commons.lang.Assert;
@@ -101,6 +102,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
         
     @SuppressWarnings("unchecked")
+    @Nullable
     private <RT> RT getAsProjectionValue(Expr<RT> expr, N[] nodes, MutableInt offset) {
         if (expr instanceof EConstructor){
             EConstructor<?> constructor = (EConstructor<?>)expr;
@@ -117,7 +119,11 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         }else{
             N node = nodes[offset.intValue()];
             offset.add(1);
-            return node != null ? getAsProjectionValue(expr.getType(), node) : null;
+            if (node != null){
+                return getAsProjectionValue(expr.getType(), node);
+            }else{
+                return null;
+            }
         }
     }
     
@@ -137,13 +143,13 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         return queryMixin.getMetadata();
     }
     
-    private Iterator<N[]> getPagedResults(){        
-        return getPagedResults(getInnerResults(), queryMixin.getMetadata().getModifiers());
-    }
-    
-    private Iterator<N[]> getPagedResults(Iterator<N[]> iterator, QueryModifiers modifiers) {
-        return LimitingIterator.create(iterator, modifiers);
-    }
+//    private Iterator<N[]> getPagedResults(){        
+//        return getPagedResults(getInnerResults(), queryMixin.getMetadata().getModifiers());
+//    }
+//    
+//    private Iterator<N[]> getPagedResults(Iterator<N[]> iterator, QueryModifiers modifiers) {
+//        return LimitingIterator.create(iterator, modifiers);
+//    }
     
     protected R getTypeForDomainClass(Class<?> clazz){        
         MappedClass mc = MappedClass.getMappedClass(clazz);
@@ -159,7 +165,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         queryMixin.addToProjection(first, second);
         queryMixin.addToProjection(rest);
         
-        final Iterator<N[]> innerResults = getPagedResults();
+        final Iterator<N[]> innerResults = getInnerResults();
         return new Iterator<Object[]>(){
             public boolean hasNext() {
                 return innerResults.hasNext();
@@ -185,7 +191,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     public <RT> Iterator<RT> iterate(final Expr<RT> expr) {
         queryMixin.addToProjection(expr);
         
-        final Iterator<N[]> innerResults = getPagedResults();
+        final Iterator<N[]> innerResults = getInnerResults();
         return new Iterator<RT>(){
             public boolean hasNext() {
                 return innerResults.hasNext();
@@ -202,14 +208,14 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     @Override
     public <RT> SearchResults<RT> listResults(Expr<RT> expr) {
         // TODO : simplify this
-        queryMixin.addToProjection(expr);
-        
+        queryMixin.addToProjection(expr);        
         QueryModifiers modifiers = queryMixin.getMetadata().getModifiers();
+        queryMixin.getMetadata().setModifiers(new QueryModifiers(null, null));        
         if (modifiers.isRestricting()){
             Iterator<N[]> iterator = getInnerResults();
             if (iterator.hasNext()){
                 List<N[]> total = IteratorUtils.toList(iterator);            
-                iterator = getPagedResults(total.iterator(), modifiers);
+                iterator = LimitingIterator.create(total.iterator(), modifiers);
                 if (iterator.hasNext()){
                     List<RT> targetList = new ArrayList<RT>();
                     while (iterator.hasNext()){
@@ -231,7 +237,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
 
     @Override
     public String toString(){
-        return ToStringBuilder.reflectionToString(this);
+        return queryMixin.getMetadata().toString();
     }
     
 }

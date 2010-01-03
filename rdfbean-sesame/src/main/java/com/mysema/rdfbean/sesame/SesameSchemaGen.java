@@ -12,6 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
@@ -39,8 +41,10 @@ public class SesameSchemaGen extends SchemaGen {
     
     private final Map<String, String> namespaces = new LinkedHashMap<String, String>();
     
+    @Nullable
     private OutputStream outputStream = System.out;
     
+    @Nullable
     private Writer writer;
     
     {

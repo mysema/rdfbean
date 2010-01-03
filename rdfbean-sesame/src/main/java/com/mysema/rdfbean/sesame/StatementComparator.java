@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.sesame;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.openrdf.model.BNode;
@@ -7,15 +8,14 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 
-import com.mysema.rdfbean.model.NodeType;
-
 /**
  * StatementComparator provides
  *
  * @author tiwe
  * @version $Id$
  */
-public class StatementComparator implements Comparator<Statement>{
+@SuppressWarnings("serial")
+public class StatementComparator implements Comparator<Statement>, Serializable{
     
     @Override
     public int compare(Statement o1, Statement o2) {

@@ -65,14 +65,15 @@ public class RDFBeanGridDataSource<T> implements GridDataSource {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void prepare(Session session, int startIndex, int endIndex, List<SortConstraint> sortConstraints) {
         BeanQuery beanQuery = session.from(entityPath);
         beanQuery.offset(startIndex);
-        beanQuery.limit(endIndex - startIndex);
-        
+        beanQuery.limit(endIndex - startIndex);        
         for (SortConstraint constraint : sortConstraints) {
             String propertyName = constraint.getPropertyModel().getPropertyName();
-            PComparable<?> propertyPath = entityPath.getComparable(propertyName, Comparable.class);
+            Class<? extends Comparable<?>> propertyType = constraint.getPropertyModel().getPropertyType();
+            PComparable<?> propertyPath = entityPath.getComparable(propertyName, propertyType);
             switch (constraint.getColumnSort()) {
                 case ASCENDING:  beanQuery.orderBy(propertyPath.asc()); break; 
                 case DESCENDING: beanQuery.orderBy(propertyPath.desc()); break;

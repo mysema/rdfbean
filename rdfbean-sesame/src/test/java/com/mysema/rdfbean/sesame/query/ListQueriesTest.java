@@ -7,6 +7,8 @@ package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -35,8 +37,13 @@ public class ListQueriesTest extends AbstractSesameQueryTest{
         // TODO
     }
 
+    @Test(expected=UnsupportedOperationException.class)    
+    public void listPropertyEq(){
+        where(var.listProperty.eq(Collections.<SimpleType2>emptyList())).list(var);
+    }
+    
     @Test
-    public void eq(){
+    public void sizeEq(){
         // eq
         assertEquals(0, where(size.eq(1)).count());
         assertEquals(1, where(size.eq(2)).count());

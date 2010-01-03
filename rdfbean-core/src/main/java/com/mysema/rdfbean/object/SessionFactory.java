@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.object;
 
-import java.io.IOException;
-
 import javax.annotation.Nullable;
 
 /**

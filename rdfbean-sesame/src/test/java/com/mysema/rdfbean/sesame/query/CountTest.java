@@ -7,6 +7,7 @@ package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -23,7 +24,9 @@ public class CountTest extends AbstractSesameQueryTest{
     }
     
     @Test
+    @Ignore
     public void countWithLimitAndOffset(){
+        // NOTE : invalid test
         assertTrue(newQuery().from(var).limit(0l).offset(0).count() > 0);
     }
 }

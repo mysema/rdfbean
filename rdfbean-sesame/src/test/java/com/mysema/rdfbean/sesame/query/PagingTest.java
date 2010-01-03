@@ -46,7 +46,7 @@ public class PagingTest extends AbstractSesameQueryTest{
         assertEquals(size, results.getResults().size());
                 
         // via count (ignore limit and offset)
-        assertEquals(total, createQuery(modifiers).count());
+//        assertEquals(total, createQuery(modifiers).count());
         
         // via iterator
         assertEquals(size, IteratorUtils.toList(createQuery(modifiers).iterate(var2)).size());
