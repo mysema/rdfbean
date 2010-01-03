@@ -15,6 +15,8 @@ import com.mysema.query.types.path.PComparable;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionCallback;
+import com.mysema.rdfbean.object.SessionFactory;
 
 /**
  * RDFBeanDataSource provides
@@ -24,7 +26,7 @@ import com.mysema.rdfbean.object.Session;
  */
 public class RDFBeanGridDataSource<T> implements GridDataSource {
 
-    private final Session session;
+    private final SessionFactory sessionFactory;
 
     private final Class<T> entityType;
     
@@ -34,23 +36,37 @@ public class RDFBeanGridDataSource<T> implements GridDataSource {
 
     private List<T> preparedResults;
 
-    public RDFBeanGridDataSource(Session session, Class<T> entityType) {
-        this.session = Assert.notNull(session, "session");
-        this.entityType = Assert.notNull(entityType, "entityType");
+    public RDFBeanGridDataSource(SessionFactory sessionFactory, Class<T> entityType) {
+        this.sessionFactory = Assert.notNull(sessionFactory);
+        this.entityType = Assert.notNull(entityType);
         this.entityPath = new PathBuilder<T>(entityType, "entity");
     }
-
+    
     public int getAvailableRows() {
-        // TODO : tx
-        BeanQuery beanQuery = getSession().from(entityPath);
-        applyConstraints(beanQuery);
-        return (int) beanQuery.count();
+        return sessionFactory.execute(new SessionCallback<Integer>(){
+            @Override
+            public Integer doInSession(Session session) {
+                BeanQuery beanQuery = session.from(entityPath);
+                applyConstraints(beanQuery);
+                return (int) beanQuery.count();
+            }            
+        });
     }
 
-    public void prepare(int startIndex, int endIndex, List<SortConstraint> sortConstraints) {
-        Assert.notNull(sortConstraints);
-        // TODO : tx
-        BeanQuery beanQuery = getSession().from(entityPath);
+    public void prepare(final int start, final int end, final List<SortConstraint> sortConstraints) {
+        Assert.notNull(sortConstraints);   
+        sessionFactory.execute(new SessionCallback<Void>(){
+            @Override
+            public Void doInSession(Session session) {
+                prepare(session, start, end, sortConstraints);
+                return null;
+            }
+            
+        });
+    }
+
+    private void prepare(Session session, int startIndex, int endIndex, List<SortConstraint> sortConstraints) {
+        BeanQuery beanQuery = session.from(entityPath);
         beanQuery.offset(startIndex);
         beanQuery.limit(endIndex - startIndex);
         
@@ -66,10 +82,6 @@ public class RDFBeanGridDataSource<T> implements GridDataSource {
         applyConstraints(beanQuery);
         this.startIndex = startIndex;
         preparedResults = beanQuery.list(entityPath);
-    }
-
-    protected Session getSession(){
-        return session;
     }
     
     protected void applyConstraints(BeanQuery beanQuery) {

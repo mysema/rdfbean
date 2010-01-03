@@ -6,7 +6,6 @@
 package com.mysema.rdfbean.tapestry;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -21,8 +20,10 @@ import org.junit.Test;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.MiniRepository;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionUtil;
+import com.mysema.rdfbean.object.SessionFactoryImpl;
 
 /**
  * RDFBeanGridDataSourceTest provides
@@ -32,7 +33,7 @@ import com.mysema.rdfbean.object.SessionUtil;
  */
 public class RDFBeanGridDataSourceTest {
     
-    private static Session session;
+    private static SessionFactoryImpl sessionFactory;
     
     @ClassMapping(ns=TEST.NS)
     public static class User{
@@ -50,27 +51,34 @@ public class RDFBeanGridDataSourceTest {
     }
     
     @BeforeClass
-    public static void before(){
-        session = SessionUtil.openSession(User.class);
-        for (char c = 'A'; c < 'Z'; c++){
-            for (int i = 0; i < 10; i++){
-                session.save(new User(String.valueOf(c)+i, String.valueOf(c+i)+i));
+    public static void before() throws IOException{
+        sessionFactory = new SessionFactoryImpl();
+        sessionFactory.setConfiguration(new DefaultConfiguration(User.class));
+        sessionFactory.setRepository(new MiniRepository());
+        sessionFactory.initialize();
+        
+        Session session = sessionFactory.openSession();
+        try{
+            for (char c = 'A'; c < 'Z'; c++){
+                for (int i = 0; i < 10; i++){
+                    session.save(new User(String.valueOf(c)+i, String.valueOf(c+i)+i));
+                }    
             }    
+        }finally{
+            session.close();    
         }
     }
     
     @AfterClass
     public static void after() throws IOException{
-        if (session != null){
-            session.close();
-        }
+        sessionFactory.close();
     }
     
     private GridDataSource dataSource;
     
     @Before
     public void setUp(){
-        dataSource = new RDFBeanGridDataSource<User>(session, User.class);
+        dataSource = new RDFBeanGridDataSource<User>(sessionFactory, User.class);
     }
 
     @Test
