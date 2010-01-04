@@ -94,7 +94,15 @@ public class BeanGridDataSourceTest {
 
     @Test
     public void testGetRowValue() {
-        // TODO
+        dataSource.prepare(0, 9, Collections.<SortConstraint>emptyList());
+        for (int i = 0; i < 10; i++){
+            dataSource.getRowValue(i);
+        }
+        
+        dataSource.prepare(10, 19, Collections.<SortConstraint>emptyList());
+        for (int i = 10; i < 20; i++){
+            dataSource.getRowValue(i);
+        }
     }
 
     @Test

@@ -84,7 +84,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
     private void prepare(Session session, int startIndex, int endIndex, List<SortConstraint> sortConstraints) {
         BeanQuery beanQuery = session.from(entityPath);
         beanQuery.offset(startIndex);
-        beanQuery.limit(endIndex - startIndex);        
+        beanQuery.limit(endIndex - startIndex + 1);        
         for (SortConstraint constraint : sortConstraints) {
             String propertyName = constraint.getPropertyModel().getPropertyName();
             Class<? extends Comparable<?>> propertyType = constraint.getPropertyModel().getPropertyType();
