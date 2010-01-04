@@ -143,14 +143,6 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         return queryMixin.getMetadata();
     }
     
-//    private Iterator<N[]> getPagedResults(){        
-//        return getPagedResults(getInnerResults(), queryMixin.getMetadata().getModifiers());
-//    }
-//    
-//    private Iterator<N[]> getPagedResults(Iterator<N[]> iterator, QueryModifiers modifiers) {
-//        return LimitingIterator.create(iterator, modifiers);
-//    }
-    
     protected R getTypeForDomainClass(Class<?> clazz){        
         MappedClass mc = MappedClass.getMappedClass(clazz);
         if (mc.getUID() != null){

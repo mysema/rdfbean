@@ -17,16 +17,7 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.ConverterRegistry;
-import com.mysema.rdfbean.object.ConverterRegistryImpl;
-import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.MappedClass;
-import com.mysema.rdfbean.object.MappedPath;
-import com.mysema.rdfbean.object.MappedPredicate;
-import com.mysema.rdfbean.object.MappedProperty;
-import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionFactoryImpl;
+import com.mysema.rdfbean.object.*;
 import com.mysema.rdfbean.owl.DatatypeProperty;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.OWLClass;
@@ -165,7 +156,7 @@ public class SchemaGen {
                             } else {
                                 property = new DatatypeProperty(puid);
                             }
-                            property.setLabel(Locale.ROOT, puid.getLocalName());
+                            property.setLabel(Locale.ROOT, puid.getLocalName());                            
                             resources.put(puid, property);
                             // label
                         }

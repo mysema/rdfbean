@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
@@ -31,7 +32,7 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
  * @author tiwe
  * @version $Id$
  */
-public class RDFBeanGridDataSourceTest {
+public class BeanGridDataSourceTest {
     
     private static SessionFactoryImpl sessionFactory;
     
@@ -78,7 +79,7 @@ public class RDFBeanGridDataSourceTest {
     
     @Before
     public void setUp(){
-        dataSource = new RDFBeanGridDataSource<User>(sessionFactory, User.class);
+        dataSource = new BeanGridDataSource<User>(sessionFactory, new PathBuilder<User>(User.class,"user"));
     }
 
     @Test

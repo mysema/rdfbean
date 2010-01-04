@@ -7,11 +7,15 @@ package com.mysema.rdfbean.tapestry;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.apache.tapestry5.grid.GridDataSource;
 import org.apache.tapestry5.grid.SortConstraint;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PComparable;
+import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
@@ -24,7 +28,7 @@ import com.mysema.rdfbean.object.SessionFactory;
  * @author tiwe
  * @version $Id$
  */
-public class RDFBeanGridDataSource<T> implements GridDataSource {
+public class BeanGridDataSource<T> implements GridDataSource {
 
     private final SessionFactory sessionFactory;
 
@@ -35,11 +39,20 @@ public class RDFBeanGridDataSource<T> implements GridDataSource {
     private int startIndex;
 
     private List<T> preparedResults;
+    
+    @Nullable
+    private final EBoolean conditions;
 
-    public RDFBeanGridDataSource(SessionFactory sessionFactory, Class<T> entityType) {
+    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity) {
+        this(sessionFactory, entity, null);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, @Nullable EBoolean conditions) {
         this.sessionFactory = Assert.notNull(sessionFactory);
-        this.entityType = Assert.notNull(entityType);
-        this.entityPath = new PathBuilder<T>(entityType, "entity");
+        this.entityType = (Class<T>) Assert.notNull(entity.getType());
+        this.entityPath = new PathBuilder<T>(entity.getType(), entity.getMetadata());
+        this.conditions = conditions;
     }
     
     public int getAvailableRows() {
@@ -47,7 +60,9 @@ public class RDFBeanGridDataSource<T> implements GridDataSource {
             @Override
             public Integer doInSession(Session session) {
                 BeanQuery beanQuery = session.from(entityPath);
-                applyConstraints(beanQuery);
+                if (conditions != null){
+                    beanQuery.where(conditions);
+                }
                 return (int) beanQuery.count();
             }            
         });
@@ -79,20 +94,13 @@ public class RDFBeanGridDataSource<T> implements GridDataSource {
                 case DESCENDING: beanQuery.orderBy(propertyPath.desc()); break;
             }
         }
-
-        applyConstraints(beanQuery);
+        if (conditions != null){
+            beanQuery.where(conditions);
+        }
         this.startIndex = startIndex;
         preparedResults = beanQuery.list(entityPath);
     }
     
-    protected void applyConstraints(BeanQuery beanQuery) {
-        
-    }
-    
-    protected PathBuilder<T> getEntityPath(){
-        return entityPath;
-    }
-
     public Object getRowValue(int index) {
         return preparedResults.get(index - startIndex);
     }

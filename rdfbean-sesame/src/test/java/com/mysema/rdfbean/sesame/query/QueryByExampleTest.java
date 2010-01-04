@@ -12,7 +12,6 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.annotations.UniqueProperty;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
@@ -50,7 +49,6 @@ public class QueryByExampleTest extends SessionTestBase{
         private String firstName, lastName, email;
         
         @Predicate
-        @UniqueProperty
         private String username;
         
         @Predicate

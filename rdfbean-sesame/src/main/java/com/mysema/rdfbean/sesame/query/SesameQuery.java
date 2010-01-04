@@ -55,6 +55,7 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.ConverterRegistry;
 import com.mysema.rdfbean.object.MappedClass;
@@ -74,7 +75,7 @@ import com.mysema.rdfbean.sesame.SesameDialect;
  * @version $Id$
  */
 public class SesameQuery extends 
-    AbstractProjectingQuery<SesameQuery, Value, Resource, BNode, URI, Literal, Statement>  implements Closeable{
+    AbstractProjectingQuery<SesameQuery, Value, Resource, BNode, URI, Literal, Statement>  implements BeanQuery, Closeable{
    
     private static final Logger logger = LoggerFactory.getLogger(SesameQuery.class);
     

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.query;
 
 import static com.mysema.query.alias.Alias.$;
@@ -79,7 +84,7 @@ public class PagedBeanQueryTest {
 
     @Test
     public void orderByFirstName(){
-        PagedBeanQuery query = new PagedBeanQuery(sessionFactory);
+        BeanListSourceBuilder query = new BeanListSourceBuilder(sessionFactory);
         User user = Alias.alias(User.class);
         assertEquals(
             Arrays.asList("Anton", "Bernard", "Chris", "John", "Zoe"),
@@ -92,7 +97,7 @@ public class PagedBeanQueryTest {
     
     @Test
     public void orderByLastName(){
-        PagedBeanQuery query = new PagedBeanQuery(sessionFactory);
+        BeanListSourceBuilder query = new BeanListSourceBuilder(sessionFactory);
         User user = Alias.alias(User.class);
         assertEquals(
             Arrays.asList("Ark", "Bruxner", "Rock", "Shaw", "Smith"),

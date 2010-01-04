@@ -34,7 +34,6 @@ import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanQuery;
-import com.mysema.rdfbean.object.BeanQueryAdapter;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
@@ -136,7 +135,7 @@ public class SesameConnection implements RDFConnection {
                 StatementPattern.Scope.DEFAULT_CONTEXTS,
                 datatypeInference);
         query.getMetadata().setDistinct(true);
-        return new BeanQueryAdapter(query,query);
+        return query;
     }
 
     @Override

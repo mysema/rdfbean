@@ -28,6 +28,7 @@ import com.mysema.rdfbean.object.SimpleSessionContext;
  * @version $Id$
  *
  */
+// TODO : merge with tx support of Guice module
 public class TransactionalAdvisorImpl implements TransactionalAdvisor {
     
     private static final Logger logger = LoggerFactory.getLogger(TransactionalAdvisorImpl.class);
