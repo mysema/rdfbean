@@ -12,6 +12,7 @@ import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
+import com.mysema.rdfbean.query.BeanListSourceBuilder;
 import com.mysema.rdfbean.tapestry.BeanGridDataSource;
 
 /**
@@ -28,6 +29,10 @@ public abstract class AbstractService {
     protected Session getSession(){
         return sessionFactory.getCurrentSession();
     }    
+    
+    protected BeanListSourceBuilder getPagedQuery(){
+      return new BeanListSourceBuilder(sessionFactory);
+    }
     
     protected <T> GridDataSource createGridDataSource(PEntity<T> entity){
         return new BeanGridDataSource<T>(sessionFactory, entity, null);
