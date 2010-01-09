@@ -33,8 +33,7 @@ public class BeanAnnotationProcessor extends AbstractProcessor{
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Running " + getClass().getSimpleName());
         
         Configuration configuration = new BeanConfiguration(roundEnv);        
-        Processor p = new Processor(processingEnv, configuration);
-        p.process(roundEnv);
+        new Processor(processingEnv, roundEnv, configuration).process();
         return true;
     }       
     

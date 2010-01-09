@@ -11,7 +11,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
 import com.mysema.query.annotations.QueryTransient;
-import com.mysema.query.apt.SimpleConfiguration;
+import com.mysema.query.apt.DefaultConfiguration;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.InjectService;
@@ -24,7 +24,7 @@ import com.mysema.rdfbean.annotations.Predicate;
  * @author tiwe
  * @version $Id$
  */
-public class BeanConfiguration extends SimpleConfiguration {
+public class BeanConfiguration extends DefaultConfiguration {
     
     public BeanConfiguration(RoundEnvironment roundEnv) {
         super(roundEnv, ClassMapping.class, null, null, QueryTransient.class);
