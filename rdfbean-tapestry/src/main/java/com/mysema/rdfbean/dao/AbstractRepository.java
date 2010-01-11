@@ -10,7 +10,7 @@ import java.util.Collection;
 import com.mysema.query.types.path.PEntity;
 
 /**
- * AbstractRepository provides
+ * AbstractRepository provides a basic stub for Repository implementations
  *
  * @author tiwe
  * @version $Id$

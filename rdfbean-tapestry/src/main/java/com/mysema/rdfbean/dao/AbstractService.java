@@ -16,7 +16,7 @@ import com.mysema.rdfbean.query.BeanListSourceBuilder;
 import com.mysema.rdfbean.tapestry.BeanGridDataSource;
 
 /**
- * AbstractService provides
+ * AbstractService provides a stub for transactional RDFBean DAOs/Repositories
  *
  * @author tiwe
  * @version $Id$
