@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.object;
 
+import javax.annotation.Nullable;
+
 /**
  * SessionCallback provides
  *
@@ -13,6 +15,7 @@ package com.mysema.rdfbean.object;
  */
 public interface SessionCallback<T> {
     
+    @Nullable
     T doInSession(Session session);
 
 }

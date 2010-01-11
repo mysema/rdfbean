@@ -23,7 +23,7 @@ import com.mysema.rdfbean.object.SessionCallback;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**
- * RDFBeanDataSource provides
+ * BeanGridDataSource provides
  * 
  * @author tiwe
  * @version $Id$

@@ -27,6 +27,7 @@ import com.mysema.rdfbean.object.SessionFactory;
  * @author tiwe
  * @version $Id$
  */
+// TODO : test me!
 @EagerLoad
 public class SeedEntityImpl implements SeedEntity{
     
@@ -67,11 +68,13 @@ public class SeedEntityImpl implements SeedEntity{
         BeanMap beanMap = new BeanMap(entity);
         MappedClass mappedClass = MappedClass.getMappedClass(entity.getClass());
         for (MappedPath mappedPath : mappedClass.getProperties()){
-            Object value = mappedPath.getMappedProperty().getValue(beanMap);
-            if (value != null && persisted.containsKey(value)){
-                value = persisted.get(value);
-                mappedPath.getMappedProperty().setValue(beanMap, value);
-            }
+            if (mappedPath.isReference() && mappedPath.isSimpleProperty()){
+                Object value = mappedPath.getMappedProperty().getValue(beanMap);
+                if (value != null && persisted.containsKey(value)){
+                    value = persisted.get(value);
+                    mappedPath.getMappedProperty().setValue(beanMap, value);
+                }    
+            }            
         }
     }
 
