@@ -41,5 +41,9 @@ public abstract class AbstractService {
     protected <T> GridDataSource createGridDataSource(PEntity<T> entity, EBoolean conditions){
         return new BeanGridDataSource<T>(sessionFactory, entity, conditions);
     }
+
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
     
 }
