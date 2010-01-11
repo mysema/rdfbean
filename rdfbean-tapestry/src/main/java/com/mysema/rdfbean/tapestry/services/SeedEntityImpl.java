@@ -27,7 +27,6 @@ import com.mysema.rdfbean.object.SessionFactory;
  * @author tiwe
  * @version $Id$
  */
-// TODO : test me!
 @EagerLoad
 public class SeedEntityImpl implements SeedEntity{
     
