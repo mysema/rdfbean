@@ -8,11 +8,11 @@ package com.mysema.rdfbean.tapestry.services;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
 
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.ObjectRepository;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.object.identity.DerbyIdentityService;
@@ -35,11 +35,6 @@ public class RDFBeanModule {
         binder.bind(SeedEntity.class, SeedEntityImpl.class);
     }
 
-//    @Match({"CallbackService"})
-//    public static void adviseTransactions(TransactionalAdvisor advisor, MethodAdviceReceiver receiver){
-//        advisor.addTransactionCommitAdvice(receiver);
-//    }
-    
     public static IdentityService buildIdentityService(Map<String,String> configuration) throws IOException{
         if (!configuration.containsKey(DERBY_URL)){
             throw new IllegalArgumentException(DERBY_URL + " parameter is missing");
@@ -47,12 +42,14 @@ public class RDFBeanModule {
         return new DerbyIdentityService(configuration.get(DERBY_URL));
     }
     
-    public static void contributeIdentityService(final MappedConfiguration<String, String> configuration) {
-        configuration.add(DERBY_URL, "jdbc:derby:target/test/testids;create=true") ;
-    }
+//    public static void contributeIdentityService(final MappedConfiguration<String, String> configuration) {
+//        configuration.add(DERBY_URL, "jdbc:derby:target/test/testids;create=true") ;
+//    }
 
-    public static SessionFactory buildSessionFactory(Configuration configuration, Repository repository){        
-        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
+    public static SessionFactory buildSessionFactory(Configuration configuration, Repository repository, 
+            Map<String,ObjectRepository> objectRepositories){        
+        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();        
+        sessionFactory.setObjectRepositories(objectRepositories);
         sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
