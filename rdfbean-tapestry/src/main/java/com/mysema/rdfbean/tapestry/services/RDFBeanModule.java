@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.annotations.Inject;
+import org.apache.tapestry5.ioc.annotations.Symbol;
 
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
@@ -35,17 +37,10 @@ public class RDFBeanModule {
         binder.bind(SeedEntity.class, SeedEntityImpl.class);
     }
 
-    public static IdentityService buildIdentityService(Map<String,String> configuration) throws IOException{
-        if (!configuration.containsKey(DERBY_URL)){
-            throw new IllegalArgumentException(DERBY_URL + " parameter is missing");
-        }
-        return new DerbyIdentityService(configuration.get(DERBY_URL));
+    public static IdentityService buildIdentityService(@Inject @Symbol(DERBY_URL) String derbyURL) throws IOException{
+        return new DerbyIdentityService(derbyURL);
     }
     
-//    public static void contributeIdentityService(final MappedConfiguration<String, String> configuration) {
-//        configuration.add(DERBY_URL, "jdbc:derby:target/test/testids;create=true") ;
-//    }
-
     public static SessionFactory buildSessionFactory(Configuration configuration, Repository repository, 
             Map<String,ObjectRepository> objectRepositories){        
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl();        
