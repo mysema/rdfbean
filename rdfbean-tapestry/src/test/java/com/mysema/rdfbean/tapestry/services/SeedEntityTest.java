@@ -18,10 +18,10 @@ import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
-import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
+import com.mysema.rdfbean.sesame.MemoryRepository;
 
 /**
  * SeedEntityTest provides
@@ -64,7 +64,7 @@ public class SeedEntityTest {
     public static void before() throws IOException{
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(new DefaultConfiguration(User.class, Article.class));
-        sessionFactory.setRepository(new MiniRepository());
+        sessionFactory.setRepository(new MemoryRepository());
         sessionFactory.initialize();        
     }
     
@@ -79,7 +79,6 @@ public class SeedEntityTest {
     }
     
     @Test
-    @Ignore
     public void test() throws IOException{
         List<Object> entities = Arrays.<Object>asList(new User("John","Smith"), new User("Bob","Stewart"));
         new SeedEntityImpl(sessionFactory, entities);
