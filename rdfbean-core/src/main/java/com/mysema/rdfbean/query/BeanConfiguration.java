@@ -16,6 +16,7 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.InjectService;
 import com.mysema.rdfbean.annotations.Mixin;
+import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 
 /**
@@ -43,6 +44,7 @@ public class BeanConfiguration extends DefaultConfiguration {
     private boolean isValid(Element d){
         return d.getAnnotation(InjectService.class) == null && 
             (d.getAnnotation(Predicate.class) != null 
+            || d.getAnnotation(Path.class) != null        
             || d.getAnnotation(Mixin.class) != null 
             || d.getAnnotation(Id.class) != null);
     }
