@@ -5,8 +5,8 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import net.jcip.annotations.Immutable;
 
@@ -28,7 +28,7 @@ import org.openrdf.query.algebra.Var;
  */
 public class JoinBuilder{
     
-    private final SortedSet<JoinElement> elements = new TreeSet<JoinElement>();
+    private final Set<JoinElement> elements = new LinkedHashSet<JoinElement>();
     
     private final ValueFactory vf;
     
@@ -41,18 +41,15 @@ public class JoinBuilder{
 
     public TupleExpr getJoins() {
         TupleExpr rv = null;
-        JoinElement previous = null;
         for (JoinElement pattern : elements){
             if (rv == null){
+                if (pattern.isOptional()) throw new IllegalStateException("First join "+pattern+" can't be optional");
                 rv = convert(pattern.getPattern());                
             }else if (pattern.isOptional()){
                 rv = new LeftJoin(rv, convert(pattern.getPattern()));
-            }else if (previous != null && previous.isOptional() && !(rv instanceof LeftJoin)){    
-                rv = new LeftJoin(convert(pattern.getPattern()), rv);
             }else{
                 rv = new Join(rv, convert(pattern.getPattern()));
             }
-            previous = pattern;
         }
         return rv;
     }
@@ -88,7 +85,7 @@ public class JoinBuilder{
     }
     
     @Immutable 
-    private static class JoinElement implements Comparable<JoinElement>{
+    private static class JoinElement {
         
         private final StatementPattern pattern;
         
@@ -97,20 +94,6 @@ public class JoinBuilder{
         public JoinElement(StatementPattern pattern, boolean optional){
             this.pattern = pattern;
             this.optional = optional;
-        }        
-        @Override
-        public int compareTo(JoinElement o) {
-            int rv = compare(pattern.getSubjectVar(), o.pattern.getSubjectVar());
-            if (rv == 0){
-                rv = compare(pattern.getPredicateVar(), o.pattern.getPredicateVar());
-                if (rv == 0){
-                    return compare(pattern.getObjectVar(), o.pattern.getObjectVar());
-                }else{
-                    return rv;
-                }
-            }else{
-                return rv;
-            }
         }
         
         @Override
@@ -123,10 +106,6 @@ public class JoinBuilder{
             return pattern.hashCode();
         }
         
-        private int compare(Var var1, Var var2){
-            return var1.getName().compareTo(var2.getName());
-        }
-        
         public StatementPattern getPattern() {
             return pattern;
         }
@@ -134,5 +113,9 @@ public class JoinBuilder{
         public boolean isOptional() {
             return optional;
         }        
+        
+        public String toString(){
+            return pattern.toString();
+        }
     }
 }

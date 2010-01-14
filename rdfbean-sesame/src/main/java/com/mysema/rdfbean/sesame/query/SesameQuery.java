@@ -212,7 +212,6 @@ public class SesameQuery extends
     }
     
     private SesameQuery match(Var sub, UID pred, Var obj) {
-//        System.err.println(sub + " " + pred + " " + obj + " " + inOptionalPath());
         joinBuilder.add(createPattern(sub, pred, obj), inOptionalPath());
         return this;
     }
