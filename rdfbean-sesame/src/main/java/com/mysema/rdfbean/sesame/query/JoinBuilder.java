@@ -41,14 +41,18 @@ public class JoinBuilder{
 
     public TupleExpr getJoins() {
         TupleExpr rv = null;
+        JoinElement previous = null;
         for (JoinElement pattern : elements){
             if (rv == null){
-                rv = convert(pattern.getPattern());
+                rv = convert(pattern.getPattern());                
             }else if (pattern.isOptional()){
                 rv = new LeftJoin(rv, convert(pattern.getPattern()));
+            }else if (previous != null && previous.isOptional() && !(rv instanceof LeftJoin)){    
+                rv = new LeftJoin(convert(pattern.getPattern()), rv);
             }else{
                 rv = new Join(rv, convert(pattern.getPattern()));
             }
+            previous = pattern;
         }
         return rv;
     }

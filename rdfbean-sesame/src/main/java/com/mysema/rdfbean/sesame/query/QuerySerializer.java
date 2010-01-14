@@ -146,8 +146,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(FunctionCall node) throws RuntimeException{
-//        append( "<" ).append(node.getURI()).append( ">" );        
+    public void meet(FunctionCall node) throws RuntimeException{        
         URI uri = new URIImpl(node.getURI());
         namespaces.add(uri.getNamespace());
         append(Namespaces.getReadableURI(uri.getNamespace(), uri.getLocalName()));
