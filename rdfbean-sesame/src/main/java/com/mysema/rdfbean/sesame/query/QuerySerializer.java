@@ -235,10 +235,10 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             append( "\nFROM " );
             fromPrinted = true;
         }
-        node.getLeftArg().visit(this);        
+        node.getArg(0).visit(this);        
         append( ".\n  OPTIONAL ( " );
         lastPattern = null;
-        node.getRightArg().visit(this);
+        node.getArg(1).visit(this);
         append( " )" );
     }
     

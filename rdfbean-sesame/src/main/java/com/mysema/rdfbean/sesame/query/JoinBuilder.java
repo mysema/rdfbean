@@ -5,10 +5,8 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import net.jcip.annotations.Immutable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.ValueFactory;
@@ -20,6 +18,8 @@ import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.Union;
 import org.openrdf.query.algebra.Var;
 
+import com.mysema.commons.lang.Assert;
+
 /**
  * JoinBuilder provides
  *
@@ -28,30 +28,24 @@ import org.openrdf.query.algebra.Var;
  */
 public class JoinBuilder{
     
-    private final Set<JoinElement> elements = new LinkedHashSet<JoinElement>();
+    private final boolean datatypeInference;
+    
+    private boolean optional;
+    
+    private List<StatementPattern> patterns = new ArrayList<StatementPattern>();
+    
+    private TupleExpr tupleExpr;
     
     private final ValueFactory vf;
     
-    private final boolean datatypeInference;
-    
     public JoinBuilder(ValueFactory vf, boolean datatypeInference){
-        this.vf = vf;
+        this.vf = Assert.notNull(vf);
         this.datatypeInference = datatypeInference; 
     }
 
-    public TupleExpr getJoins() {
-        TupleExpr rv = null;
-        for (JoinElement pattern : elements){
-            if (rv == null){
-                if (pattern.isOptional()) throw new IllegalStateException("First join "+pattern+" can't be optional");
-                rv = convert(pattern.getPattern());                
-            }else if (pattern.isOptional()){
-                rv = new LeftJoin(rv, convert(pattern.getPattern()));
-            }else{
-                rv = new Join(rv, convert(pattern.getPattern()));
-            }
-        }
-        return rv;
+    public JoinBuilder add(StatementPattern pattern){
+        patterns.add(pattern);        
+        return this;
     }
     
     private TupleExpr convert(StatementPattern pattern){
@@ -74,48 +68,45 @@ public class JoinBuilder{
         return pattern;
     }
     
-    public JoinBuilder add(StatementPattern pattern, boolean optional){
-        elements.add(new JoinElement(pattern, optional));
-        return this;
+    public TupleExpr getTupleExpr() {
+        if (!patterns.isEmpty()){
+            tupleExpr = merge(patterns, tupleExpr);
+        }        
+        return tupleExpr;
     }
-    
     
     public boolean isEmpty() {
-        return elements.isEmpty();
+        return tupleExpr == null && patterns.isEmpty();
     }
     
-    @Immutable 
-    private static class JoinElement {
-        
-        private final StatementPattern pattern;
-        
-        private final boolean optional;
-        
-        public JoinElement(StatementPattern pattern, boolean optional){
-            this.pattern = pattern;
-            this.optional = optional;
-        }
-        
-        @Override
-        public boolean equals(Object o){
-            return o instanceof JoinElement && ((JoinElement)o).pattern.equals(pattern);
-        }
-        
-        @Override
-        public int hashCode(){
-            return pattern.hashCode();
-        }
-        
-        public StatementPattern getPattern() {
-            return pattern;
-        }
-        
-        public boolean isOptional() {
-            return optional;
+    public void setMandatory(){
+        if (!patterns.isEmpty()){        
+            tupleExpr = new LeftJoin(tupleExpr, merge(patterns, null)); 
+            patterns.clear();
         }        
-        
-        public String toString(){
-            return pattern.toString();
-        }
+        optional = false;
     }
+    
+    private TupleExpr merge(List<StatementPattern> patterns, TupleExpr base){
+        TupleExpr rv = base;
+        for (StatementPattern pattern : patterns){
+            if (rv != null){
+                rv = new Join(rv, convert(pattern));
+            }else{
+                rv = convert(pattern);
+            }
+        }
+        patterns.clear();
+        return rv;
+        
+    }
+    
+        
+    public void setOptional(){
+        if (!patterns.isEmpty()){
+            tupleExpr = merge(patterns, tupleExpr);
+        }        
+        optional = true;
+    }
+    
 }

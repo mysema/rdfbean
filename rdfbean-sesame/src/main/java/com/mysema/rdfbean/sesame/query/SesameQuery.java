@@ -109,9 +109,9 @@ public class SesameQuery extends
     
     private final Map<Object,Var> constToVar = new HashMap<Object,Var>();
     
-    private final VarNameIterator varNames = new VarNameIterator("_var");
+    private final VarNameIterator varNames = new VarNameIterator("_var_");
     
-    private final VarNameIterator extNames = new VarNameIterator("_ext");
+    private final VarNameIterator extNames = new VarNameIterator("_ext_");
     
     private final JoinBuilder joinBuilder;
     
@@ -124,8 +124,6 @@ public class SesameQuery extends
     private final boolean datatypeInference;
     
     private final ValueFactory valueFactory;
-    
-    private boolean optionalPath;
         
     public SesameQuery(Session session, 
             SesameDialect dialect,
@@ -133,7 +131,7 @@ public class SesameQuery extends
             StatementPattern.Scope patternScope,
             boolean datatypeInference) {
         super(dialect, session);        
-        this.connection = Assert.notNull(connection, "connection was null");
+        this.connection = Assert.notNull(connection);
         this.conf = session.getConfiguration();
         this.datatypeInference = datatypeInference;
         this.patternScope = patternScope;
@@ -156,7 +154,7 @@ public class SesameQuery extends
         }
         
         // order by (optional paths)
-        optionalPath = true;
+        joinBuilder.setOptional();
         for (OrderSpecifier<?> os : metadata.getOrderBy()){
             orderElements.add(new OrderElem(toValue(os.getTarget()), os.isAscending()));
         }
@@ -165,7 +163,7 @@ public class SesameQuery extends
         for (Expr<?> expr : metadata.getProjection()){
             addProjection(expr);
         }
-        optionalPath = false;
+        joinBuilder.setMandatory();
     }
     
     @SuppressWarnings("unchecked")
@@ -212,12 +210,12 @@ public class SesameQuery extends
     }
     
     private SesameQuery match(Var sub, UID pred, Var obj) {
-        joinBuilder.add(createPattern(sub, pred, obj), inOptionalPath());
+        joinBuilder.add(createPattern(sub, pred, obj));
         return this;
     }
     
     private SesameQuery match(JoinBuilder builder, Var sub, UID pred, Var obj){
-        builder.add(createPattern(sub, pred, obj), false);
+        builder.add(createPattern(sub, pred, obj));
         return this;
     }
     
@@ -233,7 +231,7 @@ public class SesameQuery extends
         init();
         
         // from 
-        TupleExpr tupleExpr = joinBuilder.getJoins();        
+        TupleExpr tupleExpr = joinBuilder.getTupleExpr();        
         // where
         if (filterConditions != null){
             tupleExpr = new Filter(tupleExpr, filterConditions);
@@ -336,7 +334,8 @@ public class SesameQuery extends
     }
     
     private boolean inOptionalPath(){
-        return optionalPath || operatorStack.contains(Ops.IS_NULL) || operatorStack.contains(Ops.OR);
+        return operatorStack.contains(Ops.IS_NULL) || 
+            (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
     }
     
     private boolean inNegation(){
@@ -376,9 +375,18 @@ public class SesameQuery extends
             
         } else if (expr instanceof Operation) {
             Operation<?,?> op = (Operation<?,?>)expr;
-            operatorStack.push(op.getOperator());            
+            boolean outerOptional = inOptionalPath();
+            boolean innerOptional = false;
+            operatorStack.push(op.getOperator());        
+            if (!outerOptional && inOptionalPath()){
+                joinBuilder.setOptional();
+                innerOptional = true;
+            }            
             ValueExpr rv =  transformOperation(op);
             operatorStack.pop();
+            if (!outerOptional && innerOptional){
+                joinBuilder.setMandatory();
+            }
             return rv;
             
         } else if (expr instanceof Constant) {
@@ -528,7 +536,7 @@ public class SesameQuery extends
             if (inNegation()){
                 return new Exists(pattern);    
             }else{
-                joinBuilder.add(pattern, true);
+                joinBuilder.add(pattern); // TODO : optional
                 return null;
             }                        
             
@@ -579,7 +587,7 @@ public class SesameQuery extends
         }                        
         
         if (!builder.isEmpty()){
-            return new Exists(builder.getJoins()); 
+            return new Exists(builder.getTupleExpr()); 
         }else if (inNegation()){
             return new Compare(pathVar, valNode, CompareOp.EQ);
         }else{
@@ -682,9 +690,9 @@ public class SesameQuery extends
         }          
         
         if (op != Ops.LT){
-            return new Exists(builder.getJoins());    
+            return new Exists(builder.getTupleExpr());    
         }else{
-            return new Not(new Exists(builder.getJoins()));
+            return new Not(new Exists(builder.getTupleExpr()));
         }           
         
     }
