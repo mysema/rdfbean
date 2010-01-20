@@ -43,6 +43,7 @@ import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.Constant;
+import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EConstructor;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.operation.Operation;
@@ -51,6 +52,7 @@ import com.mysema.query.types.operation.Ops;
 import com.mysema.query.types.path.Path;
 import com.mysema.query.types.path.PathMetadata;
 import com.mysema.query.types.path.PathType;
+import com.mysema.query.types.query.SubQuery;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.RDF;
@@ -113,7 +115,7 @@ public class SesameQuery extends
     
     private final VarNameIterator extNames = new VarNameIterator("_ext_");
     
-    private final JoinBuilder joinBuilder;
+    private JoinBuilder joinBuilder;
     
     private final boolean includeInferred = true;
     
@@ -540,6 +542,9 @@ public class SesameQuery extends
                 return null;
             }                        
             
+        }else if (op.equals(Ops.EXISTS)){     
+            return transformExists(operation);
+            
         }else{
             transformer = SesameTransformers.getTransformer(op);
         }       
@@ -569,6 +574,27 @@ public class SesameQuery extends
             throw new IllegalArgumentException("Unsupported operation instance : " + operation);
         }
     }
+
+    private ValueExpr transformExists(Operation<?, ?> operation) {
+        Expr<?> arg0 = operation.getArg(0);
+        if (arg0 instanceof SubQuery){
+            SubQuery subQuery = (SubQuery)arg0;
+            EBoolean where = subQuery.getMetadata().getWhere();
+            
+            JoinBuilder normalJoins = joinBuilder;
+            joinBuilder = new JoinBuilder(valueFactory, datatypeInference);
+            for (JoinExpression join : subQuery.getMetadata().getJoins()){            
+                handleRootPath((Path<?>) join.getTarget());
+            }               
+            ValueExpr filterConditions = toValue(where);
+            TupleExpr tupleExpr = joinBuilder.getTupleExpr();
+            joinBuilder = normalJoins;
+            return new Exists(new Filter(tupleExpr, filterConditions));
+        }else{
+            throw new IllegalArgumentException("Unexpected EXISTS operand " + operation.getArg(0));
+        }
+    }
+
 
     @Nullable
     private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 

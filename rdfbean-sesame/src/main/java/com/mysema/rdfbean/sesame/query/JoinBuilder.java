@@ -79,14 +79,6 @@ public class JoinBuilder{
         return tupleExpr == null && patterns.isEmpty();
     }
     
-    public void setMandatory(){
-        if (!patterns.isEmpty()){        
-            tupleExpr = new LeftJoin(tupleExpr, merge(patterns, null)); 
-            patterns.clear();
-        }        
-        optional = false;
-    }
-    
     private TupleExpr merge(List<StatementPattern> patterns, TupleExpr base){
         TupleExpr rv = base;
         for (StatementPattern pattern : patterns){
@@ -97,10 +89,16 @@ public class JoinBuilder{
             }
         }
         patterns.clear();
-        return rv;
-        
+        return rv;        
     }
     
+    public void setMandatory(){
+        if (!patterns.isEmpty()){        
+            tupleExpr = new LeftJoin(tupleExpr, merge(patterns, null)); 
+            patterns.clear();
+        }        
+        optional = false;
+    }    
         
     public void setOptional(){
         if (!patterns.isEmpty()){
