@@ -131,7 +131,7 @@ public class SimpleQueriesTest extends AbstractSesameQueryTest{
     @Test
     @Ignore
     public void dtoProjection(){
-     // TODO
+        // TODO
     }
     
     @Test
