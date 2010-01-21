@@ -44,16 +44,16 @@ import com.mysema.rdfbean.sesame.query.SesameQuery;
  */
 public class SesameConnection implements RDFConnection {
     
+    private static final boolean datatypeInference = true;
+    
     private final RepositoryConnection connection;
     
     private final SesameDialect dialect;
     
     @Nullable
     private SesameTransaction localTxn = null;
-    
-    private boolean readonlyTnx = false;
 
-    private final boolean datatypeInference = true;
+    private boolean readonlyTnx = false;
     
     private final ValueFactory vf;
     
@@ -63,6 +63,14 @@ public class SesameConnection implements RDFConnection {
         this.dialect = new SesameDialect(vf);
     }
 
+    @Override
+    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
+        localTxn = new SesameTransaction(this, isolationLevel);        
+        readonlyTnx = readOnly;
+        localTxn.begin();
+        return localTxn;
+    }
+    
     public void cleanUpAfterCommit(){
         localTxn = null;
         readonlyTnx = false;
@@ -73,7 +81,11 @@ public class SesameConnection implements RDFConnection {
         readonlyTnx = false;
         close();
     }
-    
+
+    @Override
+    public void clear() {
+    }
+
     @Override
     public void close() {
         try {
@@ -86,39 +98,41 @@ public class SesameConnection implements RDFConnection {
         }
 
     }
-
-    @Override
-    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
-        localTxn = new SesameTransaction(this, isolationLevel);        
-        readonlyTnx = readOnly;
-        localTxn.begin();
-        return localTxn;
-    }
-
-    private ModelResult findStatements(Resource subject, URI predicate, Value object, boolean includeInferred, URI context) {
-        try {
-            if (context == null) {
-                return connection.match(subject, predicate, object, includeInferred);
-            } else if (includeInferred) {
-                return connection.match(subject, predicate, object, includeInferred, context, null);
-            } else {
-                return connection.match(subject, predicate, object, includeInferred, context);
-            }
-        } catch (StoreException e) {
-            throw new RuntimeException(e);
+    
+    private Collection<Statement> convert(Collection<STMT> stmts) {
+        List<Statement> statements = new ArrayList<Statement>(stmts.size());
+        for (STMT stmt : stmts) {
+            statements.add(dialect.createStatement(
+                    stmt.getSubject(), 
+                    stmt.getPredicate(), 
+                    stmt.getObject(), 
+                    stmt.getContext()));
         }
+        return statements;
     }
     
-    public RepositoryConnection getConnection(){
-        return connection;
+    @Nullable
+    private Resource convert(@Nullable ID id) {
+        return id != null ? dialect.getResource(id) : null;
     }
     
-    public Dialect<Value, Resource, BNode, URI, Literal, Statement> getDialect() {
-        return dialect;
+    @Nullable
+    private Value convert(@Nullable NODE node) {
+        return node != null ? dialect.getNode(node) : null;
     }
-    
-    public RDFBeanTransaction getTransaction() {
-        return localTxn;
+
+    private STMT convert(Statement statement, boolean asserted) {
+        UID context = statement.getContext() != null ? (UID)dialect.getID(statement.getContext()) : null;
+        return new STMT(
+                dialect.getID(statement.getSubject()), 
+                dialect.getUID(statement.getPredicate()), 
+                dialect.getNODE(statement.getObject()), 
+                context, asserted);
+    }
+
+    @Nullable
+    private URI convert(@Nullable UID uid) {
+        return uid != null ? dialect.getURI(uid) : null;
     }
 
     @Override
@@ -137,7 +151,12 @@ public class SesameConnection implements RDFConnection {
         query.getMetadata().setDistinct(true);
         return query;
     }
-
+    
+    @Override
+    public <Q> Q createQuery(Session session, Class<Q> queryType) {
+        throw new RuntimeException();
+    }
+    
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, final boolean includeInferred) {
@@ -149,6 +168,15 @@ public class SesameConnection implements RDFConnection {
                     includeInferred,
                     convert(context));
         return new CloseableIterator<STMT>() {
+
+            @Override
+            public void close() throws IOException {
+                try {
+                    statements.close();
+                } catch (StoreException e1) {
+                    throw new IOException(e1);
+                }
+            }
 
             @Override
             public boolean hasNext() {
@@ -172,45 +200,33 @@ public class SesameConnection implements RDFConnection {
             public void remove() {
                 throw new UnsupportedOperationException("remove");
             }
-
-            @Override
-            public void close() throws IOException {
-                try {
-                    statements.close();
-                } catch (StoreException e1) {
-                    throw new IOException(e1);
-                }
-            }
         };
     }
 
-    private STMT convert(Statement statement, boolean asserted) {
-        UID context = statement.getContext() != null ? (UID)dialect.getID(statement.getContext()) : null;
-        return new STMT(
-                dialect.getID(statement.getSubject()), 
-                dialect.getUID(statement.getPredicate()), 
-                dialect.getNODE(statement.getObject()), 
-                context, asserted);
-    }
-    
-    @Nullable
-    private URI convert(@Nullable UID uid) {
-        return uid != null ? dialect.getURI(uid) : null;
-    }
-    
-    @Nullable
-    private Resource convert(@Nullable ID id) {
-        return id != null ? dialect.getResource(id) : null;
-    }
-
-    @Nullable
-    private Value convert(@Nullable NODE node) {
-        return node != null ? dialect.getNode(node) : null;
+    private ModelResult findStatements(Resource subject, URI predicate, Value object, boolean includeInferred, URI context) {
+        try {
+            if (context == null) {
+                return connection.match(subject, predicate, object, includeInferred);
+            } else if (includeInferred) {
+                return connection.match(subject, predicate, object, includeInferred, context, null);
+            } else {
+                return connection.match(subject, predicate, object, includeInferred, context);
+            }
+        } catch (StoreException e) {
+            throw new RuntimeException(e);
+        }
     }    
 
-    @Override
-    public <Q> Q createQuery(Session session, Class<Q> queryType) {
-        throw new RuntimeException();
+    public RepositoryConnection getConnection(){
+        return connection;
+    }
+
+    public Dialect<Value, Resource, BNode, URI, Literal, Statement> getDialect() {
+        return dialect;
+    }
+    
+    public RDFBeanTransaction getTransaction() {
+        return localTxn;
     }
 
     @Override
@@ -227,22 +243,6 @@ public class SesameConnection implements RDFConnection {
                 throw new RuntimeException(e);
             }    
         }        
-    }
-    
-    private Collection<Statement> convert(Collection<STMT> stmts) {
-        List<Statement> statements = new ArrayList<Statement>(stmts.size());
-        for (STMT stmt : stmts) {
-            statements.add(dialect.createStatement(
-                    stmt.getSubject(), 
-                    stmt.getPredicate(), 
-                    stmt.getObject(), 
-                    stmt.getContext()));
-        }
-        return statements;
-    }
-
-    @Override
-    public void clear() {
     }
 
 

@@ -8,6 +8,8 @@ package com.mysema.rdfbean.sesame.query;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.Literal;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -30,7 +32,7 @@ public class JoinBuilder{
     
     private final boolean datatypeInference;
     
-    private boolean optional;
+//    private boolean optional;
     
     private List<StatementPattern> patterns = new ArrayList<StatementPattern>();
     
@@ -79,7 +81,7 @@ public class JoinBuilder{
         return tupleExpr == null && patterns.isEmpty();
     }
     
-    private TupleExpr merge(List<StatementPattern> patterns, TupleExpr base){
+    private TupleExpr merge(List<StatementPattern> patterns, @Nullable TupleExpr base){
         TupleExpr rv = base;
         for (StatementPattern pattern : patterns){
             if (rv != null){
@@ -97,14 +99,14 @@ public class JoinBuilder{
             tupleExpr = new LeftJoin(tupleExpr, merge(patterns, null)); 
             patterns.clear();
         }        
-        optional = false;
+//        optional = false;
     }    
         
     public void setOptional(){
         if (!patterns.isEmpty()){
             tupleExpr = merge(patterns, tupleExpr);
         }        
-        optional = true;
+//        optional = true;
     }
     
 }

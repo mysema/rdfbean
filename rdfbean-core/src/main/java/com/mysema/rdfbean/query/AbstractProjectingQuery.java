@@ -63,24 +63,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
     
     protected abstract <RT> RT convert(Class<RT> rt, L node);
-    
-    @Override
-    public long count() {
-        // TODO : use aggregate function
-//        for(JoinExpression je : getMetadata().getJoins()){
-//            if (je.getType() == JoinType.DEFAULT || je.getType() == JoinType.INNERJOIN){
-//                addToProjection(je.getTarget());    
-//            }            
-//        }
-        long total = 0l;
-        Iterator<?> it = getInnerResults();
-        while (it.hasNext()){
-            total++;
-            it.next();
-        }
-        return total;
-    }
-    
+        
     public SubType from(PEntity<?>... args){
         return queryMixin.from(args);
     }
@@ -153,9 +136,8 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
     
     @Override
-    public Iterator<Object[]> iterate(final Expr<?> first, final Expr<?> second, final Expr<?>... rest) {
-        queryMixin.addToProjection(first, second);
-        queryMixin.addToProjection(rest);
+    public Iterator<Object[]> iterate(final Expr<?>[] args) {
+        queryMixin.addToProjection(args);
         
         final Iterator<N[]> innerResults = getInnerResults();
         return new Iterator<Object[]>(){
@@ -166,10 +148,8 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
                 N[] nodes = innerResults.next();
                 Object[] rv = new  Object[nodes.length];
                 MutableInt offset = new MutableInt();
-                rv[0] = getAsProjectionValue(first, nodes, offset);          
-                rv[1] = getAsProjectionValue(second, nodes, offset);         
-                for (int i = 2; i < rv.length; i++){
-                    rv [i] = getAsProjectionValue(rest[i-2], nodes, offset); 
+                for (int i = 0; i < rv.length; i++){
+                    rv [i] = getAsProjectionValue(args[i], nodes, offset); 
                 }
                 return rv;
                 

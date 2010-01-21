@@ -189,6 +189,23 @@ public class SesameQuery extends
         }  
     }
     
+    @Override
+    public long count() {
+        // TODO : use aggregate function
+//        for(JoinExpression je : getMetadata().getJoins()){
+//            if (je.getType() == JoinType.DEFAULT || je.getType() == JoinType.INNERJOIN){
+//                addToProjection(je.getTarget());    
+//            }            
+//        }
+        long total = 0l;
+        Iterator<?> it = getInnerResults();
+        while (it.hasNext()){
+            total++;
+            it.next();
+        }
+        return total;
+    }
+    
     public void close() throws IOException {
         if (queryResult != null){
             try {

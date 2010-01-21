@@ -84,7 +84,7 @@ public class OptionalPaths2Test extends SessionTestBase{
     
     @Test
     public void test() throws StoreException, IOException{
-        Session session = createSession(NoteRevision.class, Note.class, Term.class);
+        session = createSession(NoteRevision.class, Note.class, Term.class);
         
         Note note = new Note();
         session.save(note);        

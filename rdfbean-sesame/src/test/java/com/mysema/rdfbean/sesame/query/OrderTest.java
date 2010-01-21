@@ -60,7 +60,7 @@ public class OrderTest extends SessionTestBase{
     
     @Test
     public void testOrderBy() throws StoreException, IOException{
-        Session session = createSession(User.class);
+        session = createSession(User.class);
         
         session.save(new User());
         User user = Alias.alias(User.class, "user");
