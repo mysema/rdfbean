@@ -88,6 +88,20 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
+    public void meet(CompareAll node) throws RuntimeException{
+        node.getArg().visit(this);
+        append( " " ).append(node.getOperator().getSymbol()).append( " ALL " );
+        node.getSubQuery().visit(this);
+    }
+    
+    @Override
+    public void meet(CompareAny node) throws RuntimeException{
+        node.getArg().visit(this);
+        append( " " ).append(node.getOperator().getSymbol()).append( " ANY " );
+        node.getSubQuery().visit(this);
+    }
+    
+    @Override
     public void meet(Count node) throws RuntimeException{
         append( "COUNT( " ).visit(node.getArg()).append( " )" );
     }

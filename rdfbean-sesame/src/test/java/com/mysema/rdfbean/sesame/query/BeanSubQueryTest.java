@@ -33,7 +33,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
 public class BeanSubQueryTest extends SessionTestBase{
     
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping(ns=TEST.NS, ln="EntSQ")
     public static class Entity {
         @Predicate
         private long revision;

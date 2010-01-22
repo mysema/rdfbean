@@ -9,6 +9,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +42,7 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
+import com.mysema.query.QueryModifiers;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.Constant;
 import com.mysema.query.types.expr.EBoolean;
@@ -163,19 +165,20 @@ public class SesameQuery extends
         
         // select (optional paths)
         for (Expr<?> expr : metadata.getProjection()){
-            addProjection(expr);
+            addProjection(expr, projection, extensions);
         }
         joinBuilder.setMandatory();
     }
     
+        
     @SuppressWarnings("unchecked")
-    private void addProjection(Expr<?> expr){
+    private void addProjection(Expr<?> expr, ProjectionElemList projection, List<ExtensionElem> extensions){
         if (expr instanceof Path){
             projection.addElement(new ProjectionElem(transformPath((Path<?>) expr).getName()));    
         }else if (expr instanceof EConstructor){    
             EConstructor<?> constructor = (EConstructor<?>)expr;
             for (Expr<?> arg : constructor.getArgs()){
-                addProjection(arg);
+                addProjection(arg, projection, extensions);
             }
         }else{
             ValueExpr val = toValue(expr);
@@ -244,14 +247,45 @@ public class SesameQuery extends
                 toVar(Assert.notNull(p, "predicate is null")), 
                 Assert.notNull(o, "object is null"));
     }
+    
+    private TupleExpr transformSubQueryToTuples(SubQuery subQuery){
+        EBoolean where = subQuery.getMetadata().getWhere();
         
-    @Override
-    protected Iterator<Value[]> getInnerResults() {
-        init();
+        JoinBuilder normalJoins = joinBuilder;
+        joinBuilder = new JoinBuilder(valueFactory, datatypeInference);
+        for (JoinExpression join : subQuery.getMetadata().getJoins()){            
+            handleRootPath((Path<?>) join.getTarget());
+        }
+       
+        // list
+        ProjectionElemList projection = new ProjectionElemList();            
+        List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
+        for (Expr<?> expr : subQuery.getMetadata().getProjection()){
+            addProjection(expr, projection, extensions);
+        }        
         
-        // from 
-        TupleExpr tupleExpr = joinBuilder.getTupleExpr();        
-        // where
+        ValueExpr filterConditions = toValue(where);
+        
+        // from
+        TupleExpr tupleExpr = createTupleExpr(
+                joinBuilder.getTupleExpr(),             // from
+                filterConditions,                       // where
+                Collections.<OrderElem>emptyList(),     // order
+                extensions,                             // select
+                projection,
+                subQuery.getMetadata().getModifiers()); // paging
+                
+        joinBuilder = normalJoins;
+        return tupleExpr;
+    }
+    
+    private TupleExpr createTupleExpr(TupleExpr tupleExpr, 
+            ValueExpr filterConditions, 
+            List<OrderElem> orderElements,
+            List<ExtensionElem> extensions,
+            ProjectionElemList projection,
+            QueryModifiers modifiers){
+        
         if (filterConditions != null){
             tupleExpr = new Filter(tupleExpr, filterConditions);
         }        
@@ -266,15 +300,32 @@ public class SesameQuery extends
         
         if (!projection.getElements().isEmpty()){
             tupleExpr = new Projection(tupleExpr, projection);    
-        }        
-        
-        if (getMetadata().getModifiers().isRestricting()){
-            Long limit = getMetadata().getModifiers().getLimit();
-            Long offset = getMetadata().getModifiers().getOffset();
+        }                
+
+        // limit / offset
+        if (modifiers.isRestricting()){
+            Long limit = modifiers.getLimit();
+            Long offset = modifiers.getOffset();
             tupleExpr = new Slice(tupleExpr, 
                     offset != null ? offset.intValue() : 0,
                     limit != null ? limit.intValue() : -1);
         }
+        
+        return tupleExpr;
+    }
+        
+    @Override
+    protected Iterator<Value[]> getInnerResults() {
+        init();
+        
+        TupleExpr tupleExpr = createTupleExpr(
+                joinBuilder.getTupleExpr(),   // from
+                filterConditions,             // where
+                orderElements,                // order
+                extensions,                   // select
+                projection,
+                getMetadata().getModifiers());// paging
+        
         
         // evaluate it
         try {
@@ -358,7 +409,12 @@ public class SesameQuery extends
     }
     
     private boolean inNegation(){
-        return operatorStack.contains(Ops.NOT);
+        int notIndex = operatorStack.lastIndexOf(Ops.NOT);
+        if (notIndex > -1){
+            int existsIndex = operatorStack.lastIndexOf(Ops.EXISTS);
+            return notIndex > existsIndex;
+        }
+        return false;
     }
   
     private Var toVar(UID id) {
@@ -457,7 +513,7 @@ public class SesameQuery extends
             if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof Path){
                 // TODO : make path in path work for RDF sequences and containers
                 Path<?> path = (Path<?>) operation.getArg(0);
-                if (path.getMetadata().getParent() == null && !inNegation()){
+                if (!inNegation()){
                     Path<?> otherPath = (Path<?>) operation.getArg(1);
                     pathToMatchedVar.put(otherPath, transformPath(path));
                     transformPath(otherPath);
@@ -532,7 +588,7 @@ public class SesameQuery extends
         // path == path
         }else if (isPathEqPath(operation, op)){
             Path<?> path = (Path<?>) operation.getArg(0);
-            if (path.getMetadata().getParent() == null && !inNegation()){
+            if (!inNegation() && !inOptionalPath()){
                 Path<?> otherPath = (Path<?>) operation.getArg(1);
                 pathToMatchedVar.put(otherPath, transformPath(path));
                 transformPath(otherPath);
@@ -561,6 +617,9 @@ public class SesameQuery extends
             
         }else if (op.equals(Ops.EXISTS)){     
             return transformExists(operation);
+            
+        }else if (operation.getArgs().size() > 1 && operation.getArg(1) instanceof SubQuery){
+            return transformSubQueryOperation(operation);
             
         }else{
             transformer = SesameTransformers.getTransformer(op);
@@ -592,25 +651,39 @@ public class SesameQuery extends
         }
     }
 
+    private ValueExpr transformSubQueryOperation(Operation<?, ?> operation) {
+        ValueExpr lhs = toValue(operation.getArg(0));
+        TupleExpr rhs = transformSubQueryToTuples((SubQuery) operation.getArg(1));
+        Operator<?> op = operation.getOperator();
+        
+        if (op == Ops.EQ_OBJECT || op == Ops.EQ_PRIMITIVE){
+            return new CompareAll(lhs, rhs, CompareOp.EQ);
+        }else if (op == Ops.NE_OBJECT || op == Ops.NE_PRIMITIVE){
+            return new CompareAll(lhs, rhs, CompareOp.NE);
+        }else if (op == Ops.GT){
+            return new CompareAll(lhs, rhs, CompareOp.GT);
+        }else if (op == Ops.GOE){
+            return new CompareAll(lhs, rhs, CompareOp.GE);
+        }else if (op == Ops.LT){
+            return new CompareAll(lhs, rhs, CompareOp.LT);
+        }else if (op == Ops.LOE){
+            return new CompareAll(lhs, rhs, CompareOp.LE);
+        }else{
+            throw new IllegalArgumentException("Unsupported operation " + operation);
+        }
+    }
+
+
     private ValueExpr transformExists(Operation<?, ?> operation) {
         Expr<?> arg0 = operation.getArg(0);
         if (arg0 instanceof SubQuery){
-            SubQuery subQuery = (SubQuery)arg0;
-            EBoolean where = subQuery.getMetadata().getWhere();
-            
-            JoinBuilder normalJoins = joinBuilder;
-            joinBuilder = new JoinBuilder(valueFactory, datatypeInference);
-            for (JoinExpression join : subQuery.getMetadata().getJoins()){            
-                handleRootPath((Path<?>) join.getTarget());
-            }               
-            ValueExpr filterConditions = toValue(where);
-            TupleExpr tupleExpr = joinBuilder.getTupleExpr();
-            joinBuilder = normalJoins;
-            return new Exists(new Filter(tupleExpr, filterConditions));
+            TupleExpr tupleExpr = transformSubQueryToTuples((SubQuery)arg0);
+            return new Exists(tupleExpr);
         }else{
             throw new IllegalArgumentException("Unexpected EXISTS operand " + operation.getArg(0));
         }
-    }
+    }    
+    
 
 
     @Nullable
@@ -783,6 +856,9 @@ public class SesameQuery extends
                         MappedPredicate pred = predPath.get(i);
                         if (matchedVar != null && i == predPath.size() -1){
                             pathNode = matchedVar;
+                        }else if (i == predPath.size() - 1){    
+                            pathNode = new Var(path.toString().replace('.', '_'));
+                            varNames.disallow(pathNode.getName());
                         }else{
                             pathNode = new Var(varNames.next());    
                         }                        

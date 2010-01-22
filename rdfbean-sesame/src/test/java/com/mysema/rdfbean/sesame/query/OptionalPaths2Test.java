@@ -25,7 +25,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  */
 public class OptionalPaths2Test extends SessionTestBase{
     
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping(ns=TEST.NS, ln="NoteRevision_OptPath")
     public static class NoteRevision {
         @Predicate
         String basicForm;
@@ -47,7 +47,7 @@ public class OptionalPaths2Test extends SessionTestBase{
         }                
     }
     
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping(ns=TEST.NS, ln="Note_OptPath")
     public static class Note { 
         @Predicate
         Term term;
@@ -65,7 +65,7 @@ public class OptionalPaths2Test extends SessionTestBase{
         
     }
     
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping(ns=TEST.NS, ln="Term_OptPath")
     public static class Term{
         @Predicate
         String meaning;
