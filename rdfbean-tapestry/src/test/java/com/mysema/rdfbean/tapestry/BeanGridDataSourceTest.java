@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.tapestry;
 
+import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.mysema.query.types.path.PathBuilder;
+import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
@@ -49,6 +50,16 @@ public class BeanGridDataSourceTest {
             this.firstName = firstName;
             this.lastName = lastName;
         }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+        
+        
     }
     
     @BeforeClass
@@ -79,7 +90,8 @@ public class BeanGridDataSourceTest {
     
     @Before
     public void setUp(){
-        dataSource = new BeanGridDataSource<User>(sessionFactory, new PathBuilder<User>(User.class,"user"));
+        User user = Alias.alias(User.class);        
+        dataSource = new BeanGridDataSource<User>(sessionFactory, $(user), $(user.getFirstName()).asc());
     }
 
     @Test

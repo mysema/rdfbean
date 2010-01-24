@@ -13,6 +13,7 @@ import org.apache.tapestry5.grid.GridDataSource;
 import org.apache.tapestry5.grid.SortConstraint;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PComparable;
 import com.mysema.query.types.path.PEntity;
@@ -42,16 +43,19 @@ public class BeanGridDataSource<T> implements GridDataSource {
     
     @Nullable
     private final EBoolean conditions;
+    
+    private final OrderSpecifier<?> defaultOrder;
 
-    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity) {
-        this(sessionFactory, entity, null);
+    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder) {
+        this(sessionFactory, entity, defaultOrder, null);
     }
     
     @SuppressWarnings("unchecked")
-    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, @Nullable EBoolean conditions) {
+    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder, @Nullable EBoolean conditions) {
         this.sessionFactory = Assert.notNull(sessionFactory);
         this.entityType = (Class<T>) Assert.notNull(entity.getType());
         this.entityPath = new PathBuilder<T>(entity.getType(), entity.getMetadata());
+        this.defaultOrder = Assert.notNull(defaultOrder);
         this.conditions = conditions;
     }
     
@@ -85,6 +89,9 @@ public class BeanGridDataSource<T> implements GridDataSource {
         BeanQuery beanQuery = session.from(entityPath);
         beanQuery.offset(startIndex);
         beanQuery.limit(endIndex - startIndex + 1);        
+        if (sortConstraints.isEmpty()){
+            beanQuery.orderBy(defaultOrder);
+        }        
         for (SortConstraint constraint : sortConstraints) {
             String propertyName = constraint.getPropertyModel().getPropertyName();
             Class<? extends Comparable<?>> propertyType = constraint.getPropertyModel().getPropertyType();

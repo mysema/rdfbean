@@ -8,6 +8,7 @@ package com.mysema.rdfbean.dao;
 import org.apache.tapestry5.grid.GridDataSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
 
+import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.object.Session;
@@ -34,12 +35,12 @@ public abstract class AbstractService {
       return new BeanListSourceBuilder(sessionFactory);
     }
     
-    protected <T> GridDataSource createGridDataSource(PEntity<T> entity){
-        return new BeanGridDataSource<T>(sessionFactory, entity, null);
+    protected <T> GridDataSource createGridDataSource(PEntity<T> entity, OrderSpecifier<?> defaultOrder){
+        return new BeanGridDataSource<T>(sessionFactory, entity, defaultOrder, null);
     }
     
-    protected <T> GridDataSource createGridDataSource(PEntity<T> entity, EBoolean conditions){
-        return new BeanGridDataSource<T>(sessionFactory, entity, conditions);
+    protected <T> GridDataSource createGridDataSource(PEntity<T> entity, OrderSpecifier<?> defaultOrder, EBoolean conditions){
+        return new BeanGridDataSource<T>(sessionFactory, entity, defaultOrder, conditions);
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
