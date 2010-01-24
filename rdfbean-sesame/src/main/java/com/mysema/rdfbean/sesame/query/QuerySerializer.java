@@ -177,6 +177,17 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
+    public void meet(Slice node) throws RuntimeException{
+        node.getArg().visit(this);
+        if (node.getLimit() > -1){
+            append("\nLIMIT " + node.getLimit());    
+        }
+        if (node.getOffset() > 0){
+            append("\nOFFSET " + node.getOffset());    
+        }        
+    }
+    
+    @Override
     public void meet(In node) throws RuntimeException{
         node.getArg().visit(this);
         append( " IN " );
@@ -296,18 +307,6 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Union node) throws RuntimeException{
-        for (int i = 0; i < node.getNumberOfArguments(); i++){            
-            if (i > 0){
-                lastPattern = null;
-                append(" OR ");
-            }
-            visit(node.getArg(i));
-        }        
-//        lastPattern = null;
-    }
-    
-    @Override
     public void meet(Projection node) throws RuntimeException{
         meet(node, false);
     }
@@ -369,6 +368,18 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     @Override
     public void meet(Str node) throws RuntimeException{
         append( "str( " ).visit(node.getArg()).append( " )" );
+    }
+    
+    @Override
+    public void meet(Union node) throws RuntimeException{
+        for (int i = 0; i < node.getNumberOfArguments(); i++){            
+            if (i > 0){
+                lastPattern = null;
+                append(" UNION ");
+            }
+            visit(node.getArg(i));
+        }        
+//        lastPattern = null;
     }
         
     private void meet(Value value){

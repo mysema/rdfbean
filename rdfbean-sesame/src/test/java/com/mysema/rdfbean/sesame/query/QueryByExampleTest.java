@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertEquals;
@@ -13,7 +18,6 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.IDType;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -102,7 +106,7 @@ public class QueryByExampleTest extends SessionTestBase{
     
     @Test
     public void test() throws StoreException{
-        Session session = createSession(User.class, Profile.class, Identifiable.class);
+        session = createSession(User.class, Profile.class, Identifiable.class);
         User user = new User();
         user.email = "a@b.com";
         user.firstName = "Anton";

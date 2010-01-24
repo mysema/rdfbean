@@ -149,7 +149,6 @@ public interface Session extends ObjectRepository, Closeable {
      * @param queryClass
      * @return
      */
-    // TODO : this is temporary, replace with something else, when Query interfaces ha
     <Q> Q createQuery(Class<Q> queryClass);
     
     /**

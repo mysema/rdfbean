@@ -7,10 +7,15 @@ package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openrdf.store.StoreException;
 
+import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PString;
+import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.sesame.SessionTestBase;
 
 
 /**
@@ -19,10 +24,20 @@ import com.mysema.query.types.path.PString;
  * @author tiwe
  * @version $Id$
  */
-public class StringHandlingTest extends AbstractSesameQueryTest{
+public class StringHandlingTest extends SessionTestBase{
     
     private PString stringPath = var.listProperty.get(1).directProperty;
+    
 
+    @Before
+    public void setUp() throws StoreException{
+        session = createSession(FI, SimpleType.class, SimpleType2.class);
+    }
+
+    private BeanQuery where(EBoolean... conditions) {
+        return from(var).where(conditions);
+    }
+    
     @Test
     public void untypedLiterals(){
         assertEquals(1, where(var.directProperty.eq("metaonto_elements")).count());

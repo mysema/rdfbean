@@ -8,7 +8,6 @@ package com.mysema.rdfbean.sesame.query;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,7 +28,7 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
-import org.openrdf.query.algebra.Compare.CompareOp;
+import org.openrdf.query.algebra.StatementPattern.Scope;
 import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.TupleResult;
@@ -37,7 +36,6 @@ import org.openrdf.store.StoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.JoinExpression;
@@ -78,57 +76,75 @@ import com.mysema.rdfbean.sesame.SesameDialect;
  * @author tiwe
  * @version $Id$
  */
-public class SesameQuery extends 
-    AbstractProjectingQuery<SesameQuery, Value, Resource, BNode, URI, Literal, Statement>  implements BeanQuery, Closeable{
+public class SesameQuery 
+    extends AbstractProjectingQuery<SesameQuery, Value, Resource, BNode, URI, Literal, Statement>  
+    implements TransformerContext, BeanQuery, Closeable{
    
     private static final Logger logger = LoggerFactory.getLogger(SesameQuery.class);
     
     private static final Logger queryTreeLogger = LoggerFactory.getLogger("com.mysema.rdfbean.sesame.queryTree");
     
+    private static final Map<Operator<?>,Transformer> transformers = new HashMap<Operator<?>,Transformer>();
+    
     static{
         SesameQueryHolder.init();
+        register(new FunctionTransformer());
+        
+        register(new BetweenTransformer());
+        register(new BooleanTransformer());
+        register(new CastTransformer());
+        register(new ColIsEmptyTransformer());
+        register(new CompareTransformer());
+        register(new ContainsKeyValueTransformer());
+        register(new EqualsTransformer());
+        register(new ExistsTransformer());
+        register(new InstanceOfTransformer());
+        register(new InTransformer());
+        register(new IsNullTransformer());
+        register(new MapIsEmptyTransformer());
+        register(new MathTransformer());
+        register(new RegexTransformer());
+        register(new StringContainsTransformer());
     }
-    
-    private final StatementPattern.Scope patternScope;
-    
-    private ValueExpr filterConditions;
-
-    private boolean idPropertyInOperation = false;
-    
-    private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
-
-    private final Map<Path<?>, Var> pathToVar = new HashMap<Path<?>, Var>();
-    
-    private final Map<Path<?>, Var> pathToMatchedVar = new HashMap<Path<?>,Var>();
-
-    private final ProjectionElemList projection = new ProjectionElemList();
-    
-    private final List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
-    
-    private final List<OrderElem> orderElements = new ArrayList<OrderElem>(); 
-
-    private TupleResult queryResult;
-
-    private final Map<UID, Var> resToVar = new HashMap<UID, Var>();
-    
-    private final Map<Object,Var> constToVar = new HashMap<Object,Var>();
-    
-    private final VarNameIterator varNames = new VarNameIterator("_var_");
-    
-    private final VarNameIterator extNames = new VarNameIterator("_ext_");
-    
-    private JoinBuilder joinBuilder;
-    
-    private final boolean includeInferred = true;
-    
-    private final RepositoryConnection connection;
     
     private final Configuration conf;
     
+    private final RepositoryConnection connection;
+    
+    private final Map<Object,Var> constToVar = new HashMap<Object,Var>();
+
     private final boolean datatypeInference;
     
+    private final List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
+
+    private final VarNameIterator extNames = new VarNameIterator("_ext_");
+    
+    private ValueExpr filterConditions;
+    
+    private final boolean includeInferred = true;
+    
+    private JoinBuilder joinBuilder; 
+
+    private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
+
+    private final List<OrderElem> orderElements = new ArrayList<OrderElem>();
+    
+    private final Map<Path<?>, Var> pathToMatchedVar = new HashMap<Path<?>,Var>();
+    
+    private final Map<Path<?>, Var> pathToVar = new HashMap<Path<?>, Var>();
+    
+    private final StatementPattern.Scope patternScope;
+    
+    private final ProjectionElemList projection = new ProjectionElemList();
+    
+    private TupleResult queryResult;
+    
+    private final Map<UID, Var> resToVar = new HashMap<UID, Var>();
+    
     private final ValueFactory valueFactory;
-        
+    
+    private final VarNameIterator varNames = new VarNameIterator("_var_");
+    
     public SesameQuery(Session session, 
             SesameDialect dialect,
             RepositoryConnection connection, 
@@ -142,39 +158,25 @@ public class SesameQuery extends
         this.valueFactory = dialect.getValueFactory();
         this.joinBuilder = new JoinBuilder(valueFactory, datatypeInference);
     }
-    
+            
+    private static void register(Transformer transformer){
+        for (Operator<?> operator : transformer.getSupportedOperations()){
+            transformers.put(operator, transformer);
+        }
+    }
 
-    private void init() {
-        QueryMetadata metadata = queryMixin.getMetadata();
-        
-        // from
-        for (JoinExpression join : metadata.getJoins()){            
-            handleRootPath((Path<?>) join.getTarget());
+    private void addFilterCondition(ValueExpr filterCondition) {
+        if (filterConditions == null) {
+            filterConditions = filterCondition;
+        } else if (filterCondition != null){
+            filterConditions = new And(filterConditions, filterCondition);
         }
-        
-        // where
-        if (metadata.getWhere() != null){
-            addFilterCondition(toValue(metadata.getWhere()));
-        }
-        
-        // order by (optional paths)
-        joinBuilder.setOptional();
-        for (OrderSpecifier<?> os : metadata.getOrderBy()){
-            orderElements.add(new OrderElem(toValue(os.getTarget()), os.isAscending()));
-        }
-        
-        // select (optional paths)
-        for (Expr<?> expr : metadata.getProjection()){
-            addProjection(expr, projection, extensions);
-        }
-        joinBuilder.setMandatory();
     }
     
-        
     @SuppressWarnings("unchecked")
     private void addProjection(Expr<?> expr, ProjectionElemList projection, List<ExtensionElem> extensions){
         if (expr instanceof Path){
-            projection.addElement(new ProjectionElem(transformPath((Path<?>) expr).getName()));    
+            projection.addElement(new ProjectionElem(toVar((Path<?>) expr).getName()));    
         }else if (expr instanceof EConstructor){    
             EConstructor<?> constructor = (EConstructor<?>)expr;
             for (Expr<?> arg : constructor.getArgs()){
@@ -192,23 +194,6 @@ public class SesameQuery extends
         }  
     }
     
-    @Override
-    public long count() {
-        // TODO : use aggregate function
-//        for(JoinExpression je : getMetadata().getJoins()){
-//            if (je.getType() == JoinType.DEFAULT || je.getType() == JoinType.INNERJOIN){
-//                addToProjection(je.getTarget());    
-//            }            
-//        }
-        long total = 0l;
-        Iterator<?> it = getInnerResults();
-        while (it.hasNext()){
-            total++;
-            it.next();
-        }
-        return total;
-    }
-    
     public void close() throws IOException {
         if (queryResult != null){
             try {
@@ -223,22 +208,16 @@ public class SesameQuery extends
         return conf.getConverterRegistry().fromString(literal.getLabel(), rt);
     }
 
-    private void addFilterCondition(ValueExpr filterCondition) {
-        if (filterConditions == null) {
-            filterConditions = filterCondition;
-        } else if (filterCondition != null){
-            filterConditions = new And(filterConditions, filterCondition);
+    @Override
+    public long count() {
+        // TODO : use aggregate function
+        long total = 0l;
+        Iterator<?> it = getInnerResults();
+        while (it.hasNext()){
+            total++;
+            it.next();
         }
-    }
-    
-    private SesameQuery match(Var sub, UID pred, Var obj) {
-        joinBuilder.add(createPattern(sub, pred, obj));
-        return this;
-    }
-    
-    private SesameQuery match(JoinBuilder builder, Var sub, UID pred, Var obj){
-        builder.add(createPattern(sub, pred, obj));
-        return this;
+        return total;
     }
     
     private StatementPattern createPattern(Var s, UID p, Var o){
@@ -246,37 +225,6 @@ public class SesameQuery extends
                 Assert.notNull(s, "subject is null"), 
                 toVar(Assert.notNull(p, "predicate is null")), 
                 Assert.notNull(o, "object is null"));
-    }
-    
-    private TupleExpr transformSubQueryToTuples(SubQuery subQuery){
-        EBoolean where = subQuery.getMetadata().getWhere();
-        
-        JoinBuilder normalJoins = joinBuilder;
-        joinBuilder = new JoinBuilder(valueFactory, datatypeInference);
-        for (JoinExpression join : subQuery.getMetadata().getJoins()){            
-            handleRootPath((Path<?>) join.getTarget());
-        }
-       
-        // list
-        ProjectionElemList projection = new ProjectionElemList();            
-        List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
-        for (Expr<?> expr : subQuery.getMetadata().getProjection()){
-            addProjection(expr, projection, extensions);
-        }        
-        
-        ValueExpr filterConditions = toValue(where);
-        
-        // from
-        TupleExpr tupleExpr = createTupleExpr(
-                joinBuilder.getTupleExpr(),             // from
-                filterConditions,                       // where
-                Collections.<OrderElem>emptyList(),     // order
-                extensions,                             // select
-                projection,
-                subQuery.getMetadata().getModifiers()); // paging
-                
-        joinBuilder = normalJoins;
-        return tupleExpr;
     }
     
     private TupleExpr createTupleExpr(TupleExpr tupleExpr, 
@@ -304,8 +252,11 @@ public class SesameQuery extends
 
         // limit / offset
         if (modifiers.isRestricting()){
+            if (orderElements.isEmpty()){
+                logger.error("paged query without any orderBy elements");
+            }            
             Long limit = modifiers.getLimit();
-            Long offset = modifiers.getOffset();
+            Long offset = modifiers.getOffset();            
             tupleExpr = new Slice(tupleExpr, 
                     offset != null ? offset.intValue() : 0,
                     limit != null ? limit.intValue() : -1);
@@ -313,7 +264,17 @@ public class SesameQuery extends
         
         return tupleExpr;
     }
-        
+    
+    @Override
+    public Var createVar() {
+       return new Var(varNames.next());
+    }
+    
+    @Override
+    public Locale getCurrentLocale() {
+        return session.getCurrentLocale();
+    }
+    
     @Override
     protected Iterator<Value[]> getInnerResults() {
         init();
@@ -338,7 +299,6 @@ public class SesameQuery extends
             
             logQuery(query);
             
-            // TODO : replace the following two lines with proper Sesame integration
             SesameQueryHolder.set(query);
             TupleQuery tupleQuery = connection.prepareTupleQuery(SesameQueryHolder.QUERYDSL, "");                       
             tupleQuery.setIncludeInferred(includeInferred);
@@ -373,24 +333,34 @@ public class SesameQuery extends
             throw new RuntimeException(e.getMessage(), e);
         }        
     }
+        
+    @Override
+    public MappedPath getMappedPath(Path<?> path) {
+        return this.getMappedPathForPropertyPath(path);
+    }
 
+    @Override
+    public Scope getPatternScope() {
+        return patternScope;
+    }
 
-    protected void logQuery(TupleQueryModel query) {
-        if (queryTreeLogger.isDebugEnabled()){
-            queryTreeLogger.debug(query.toString());                    
-        }                        
-        if (logger.isDebugEnabled()){
-            logger.debug(new QuerySerializer(query,false).toString());
-        }
+    @Override
+    public Value toValue(ID id) {
+        return dialect.getResource(id);
     }
 
     @SuppressWarnings("unchecked")
-    private ID getResourceForLID(Expr<?> arg) {
+    public ID getResourceForLID(Expr<?> arg) {
         String lid = ((Constant<String>)arg).getConstant();
         ID id = conf.getIdentityService().getID(new LID(lid));
         return id;
     }
-
+    
+    @Override
+    public ValueFactory getValueFactory() {
+        return valueFactory;
+    }
+    
     private void handleRootPath(Path<?> path) {
         Var var = new Var(path.getMetadata().getExpression().toString());
         varNames.disallow(var.getName());
@@ -402,13 +372,34 @@ public class SesameQuery extends
             throw new IllegalArgumentException("No types mapped against " + path.getType().getName());
         }
     }
-    
-    private boolean inOptionalPath(){
-        return operatorStack.contains(Ops.IS_NULL) || 
-            (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
+  
+    private void init() {
+        QueryMetadata metadata = queryMixin.getMetadata();
+        
+        // from
+        for (JoinExpression join : metadata.getJoins()){            
+            handleRootPath((Path<?>) join.getTarget());
+        }
+        
+        // where
+        if (metadata.getWhere() != null){
+            addFilterCondition(toValue(metadata.getWhere()));
+        }
+        
+        // order by (optional paths)
+        joinBuilder.setOptional();
+        for (OrderSpecifier<?> os : metadata.getOrderBy()){
+            orderElements.add(new OrderElem(toValue(os.getTarget()), os.isAscending()));
+        }
+        
+        // select (optional paths)
+        for (Expr<?> expr : metadata.getProjection()){
+            addProjection(expr, projection, extensions);
+        }
+        joinBuilder.setMandatory();
     }
     
-    private boolean inNegation(){
+    public boolean inNegation(){
         int notIndex = operatorStack.lastIndexOf(Ops.NOT);
         if (notIndex > -1){
             int existsIndex = operatorStack.lastIndexOf(Ops.EXISTS);
@@ -416,64 +407,113 @@ public class SesameQuery extends
         }
         return false;
     }
-  
-    private Var toVar(UID id) {
-        if (resToVar.containsKey(id)) {
-            return resToVar.get(id);
-        } else {
-            Var var = new Var(varNames.next(), dialect.getResource(id));
-            var.setAnonymous(true);
-            resToVar.put(id, var);
-            return var;
-        }
+            
+    public boolean inOptionalPath(){
+        return operatorStack.contains(Ops.IS_NULL) || 
+            (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
     }
     
-    private Var toVar(Value value){
-        if (constToVar.containsKey(value)){
-            return constToVar.get(value);
-        }else{
-            Var var = new Var(varNames.next(), value);
-            var.setAnonymous(true);
-            constToVar.put(value, var);
-            return var;
+    @Override
+    public boolean isRegistered(Path<?> path) {
+        return pathToMatchedVar.containsKey(path);
+    }
+    
+    protected void logQuery(TupleQueryModel query) {
+        if (queryTreeLogger.isDebugEnabled()){
+            queryTreeLogger.debug(query.toString());                    
+        }                        
+        if (logger.isDebugEnabled()){
+            logger.debug(new QuerySerializer(query,false).toString());
         }
     }
-            
+
+    public void match(JoinBuilder builder, Var sub, UID pred, Var obj){
+        builder.add(createPattern(sub, pred, obj));
+    }
+        
+    public void match(Var sub, UID pred, Var obj) {
+        joinBuilder.add(createPattern(sub, pred, obj));
+    }
+    
+    @Override
+    public void register(Path<?> path, Var var) {
+        pathToMatchedVar.put(path, var);
+    }
+
+    public TupleExpr toTuples(SubQuery subQuery){
+        EBoolean where = subQuery.getMetadata().getWhere();
+        
+        JoinBuilder normalJoins = joinBuilder;
+        joinBuilder = new JoinBuilder(valueFactory, datatypeInference);
+        for (JoinExpression join : subQuery.getMetadata().getJoins()){            
+            handleRootPath((Path<?>) join.getTarget());
+        }
+       
+        // list
+        ProjectionElemList projection = new ProjectionElemList();            
+        List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
+        for (Expr<?> expr : subQuery.getMetadata().getProjection()){
+            addProjection(expr, projection, extensions);
+        }        
+        
+        ValueExpr filterConditions = toValue(where);
+        
+        // from
+        TupleExpr tupleExpr = createTupleExpr(
+                joinBuilder.getTupleExpr(),             // from
+                filterConditions,                       // where
+                Collections.<OrderElem>emptyList(),     // order
+                extensions,                             // select
+                projection,
+                subQuery.getMetadata().getModifiers()); // paging
+                
+        joinBuilder = normalJoins;
+        return tupleExpr;
+    }
+
     @SuppressWarnings("unchecked")
     @Nullable
-    private ValueExpr toValue(Expr<?> expr) {
+    public ValueExpr toValue(Expr<?> expr) {
         if (expr instanceof BooleanBuilder){
-            return toValue(((BooleanBuilder)expr).getValue());
-            
+            return toValue(((BooleanBuilder)expr).getValue());            
         }else if (expr instanceof Path) {
-            return transformPath((Path<?>) expr);
-            
+            return toVar((Path<?>) expr);            
         } else if (expr instanceof Operation) {
-            Operation<?,?> op = (Operation<?,?>)expr;
-            boolean outerOptional = inOptionalPath();
-            boolean innerOptional = false;
-            operatorStack.push(op.getOperator());        
-            if (!outerOptional && inOptionalPath()){
-                joinBuilder.setOptional();
-                innerOptional = true;
-            }            
-            ValueExpr rv =  transformOperation(op);
+           return  toValue((Operation<?,?>)expr);            
+        } else if (expr instanceof Constant) {
+            return toVar((Constant<?>)expr);            
+        } else {
+            throw new IllegalArgumentException(expr.toString());
+        }
+    }
+
+    @Nullable
+    private ValueExpr toValue(Operation<?,?> operation) {
+        boolean outerOptional = inOptionalPath();
+        boolean innerOptional = false;
+        operatorStack.push(operation.getOperator());        
+        if (!outerOptional && inOptionalPath()){
+            joinBuilder.setOptional();
+            innerOptional = true;
+        }                  
+        try{
+            Transformer transformer = transformers.get(operation.getOperator());
+            if (transformer != null) {             
+                return transformer.transform(operation, this);
+            } else {
+                throw new IllegalArgumentException(operation.toString());
+            }    
+        }finally{
             operatorStack.pop();
             if (!outerOptional && innerOptional){
                 joinBuilder.setMandatory();
             }
-            return rv;
-            
-        } else if (expr instanceof Constant) {
-            return transformConstant((Constant<?>)expr);
-            
-        } else {
-            throw new IllegalArgumentException("Unsupported expr instance : " + expr + " (" + expr.getClass().getSimpleName()+ ")");
         }
+        
     }
-    
+
     @SuppressWarnings("unchecked")
-    private Var transformConstant(Constant<?> constant) {
+    public Var toVar(Constant<?> constant) {
         Object javaValue = constant.getConstant();
         if (constToVar.containsKey(javaValue)){
             return constToVar.get(javaValue);
@@ -501,350 +541,15 @@ public class SesameQuery extends
             return var;
         }        
     }
-    
-    @SuppressWarnings("unchecked")
-    @Nullable
-    private ValueExpr transformOperation(Operation<?,?> operation) {
-        Operator<?> op = operation.getOperator();
-        Transformer transformer;
-        
-        if (op.equals(Ops.IN)){
-            // path in path
-            if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof Path){
-                // TODO : make path in path work for RDF sequences and containers
-                Path<?> path = (Path<?>) operation.getArg(0);
-                if (!inNegation()){
-                    Path<?> otherPath = (Path<?>) operation.getArg(1);
-                    pathToMatchedVar.put(otherPath, transformPath(path));
-                    transformPath(otherPath);
-                    return null;
-                }else{
-                    transformer = SesameTransformers.getTransformer(Ops.EQ_OBJECT);    
-                }
-                
-            // const in path    
-            }else if (operation.getArg(0) instanceof Constant && operation.getArg(1) instanceof Path){
-                // TODO : make const in path work for RDF sequences and containers
-                if (!inNegation()){
-                    Var var = transformConstant((Constant<?>) operation.getArg(0));
-                    Var path = transformPath((Path<?>) operation.getArg(1));
-                    path.setValue(var.getValue());
-                    return null;    
-                }else{
-                    transformer = SesameTransformers.getTransformer(Ops.EQ_OBJECT);
-                }
-                
-            // path in collection    
-            }else if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof Constant){
-                Expr<Object> expr = (Expr<Object>)operation.getArg(0);
-                Constant<?> constant = (Constant<?>)operation.getArg(1);
-                Collection<?> collection = (Collection<?>)constant.getConstant();
-                BooleanBuilder bo = new BooleanBuilder();
-                for (Object elem : collection){
-                    bo.or(expr.eq(elem));
-                }               
-                return toValue(bo);
-                
-            }else{
-                throw new IllegalArgumentException("Unsupported operation " + operation);
-            }
-            
-         // size(col)    
-        }else if (isSizeCompareConstant(operation, op)){            
-            return transformSizeCompareConstant(operation, op);
-            
-        }else if (op.equals(Ops.COL_IS_EMPTY)){
-            Var pathVar = transformPath((Path<?>)operation.getArg(0));            
-            if (inNegation()){
-                return new Compare(pathVar, toVar(RDF.nil), Compare.CompareOp.EQ);    
-            }else{
-                pathVar.setValue(dialect.getResource(RDF.nil));
-                return null;    
-            }
-            
-        }else if (op.equals(Ops.MAP_ISEMPTY)){
-            transformer = SesameTransformers.getTransformer(Ops.IS_NULL);
-            
-        // containsKey / containsValue
-        }else if (op.equals(Ops.CONTAINS_KEY) || op.equals(Ops.CONTAINS_VALUE)){
-            Path<?> path = (Path<?>) operation.getArg(0);
-            Var pathVar = transformPath(path);
-            MappedPath mappedPath = getMappedPathForPropertyPath(path); 
-            if (!mappedPath.getMappedProperty().isLocalized()){
-                Var valNode, keyNode;
-                if (op.equals(Ops.CONTAINS_KEY)){
-                    keyNode = (Var) toValue(operation.getArg(1));
-                    valNode = null;                        
-                }else{                    
-                    keyNode = null;
-                    valNode = (Var) toValue(operation.getArg(1));
-                }                
-                return transformMapAccess(pathVar, mappedPath, valNode, keyNode);
-            }else{  
-                // TODO
-                return null;
-            }
-                        
-        // path == path
-        }else if (isPathEqPath(operation, op)){
-            Path<?> path = (Path<?>) operation.getArg(0);
-            if (!inNegation() && !inOptionalPath()){
-                Path<?> otherPath = (Path<?>) operation.getArg(1);
-                pathToMatchedVar.put(otherPath, transformPath(path));
-                transformPath(otherPath);
-                return null;
-            }else{
-                transformer = SesameTransformers.getTransformer(Ops.EQ_OBJECT);    
-            }
-            
-        // path == const OR path != const
-        }else if (isPathEqNeConstant(operation, op)){
-            return transformPathEqNeConstant(operation);
-            
-        // expr typeOf expr
-        }else if (op.equals(Ops.INSTANCE_OF)){    
-            StatementPattern pattern = new StatementPattern(
-                    patternScope,
-                    (Var)toValue(operation.getArg(0)),
-                    toVar(RDF.type),
-                    (Var)toValue(operation.getArg(1)));
-            if (inNegation()){
-                return new Exists(pattern);    
-            }else{
-                joinBuilder.add(pattern); // TODO : optional
-                return null;
-            }                        
-            
-        }else if (op.equals(Ops.EXISTS)){     
-            return transformExists(operation);
-            
-        }else if (operation.getArgs().size() > 1 && operation.getArg(1) instanceof SubQuery){
-            return transformSubQueryOperation(operation);
-            
-        }else{
-            transformer = SesameTransformers.getTransformer(op);
-        }       
-        
-        // handle operation via transformer
-        if (transformer != null) {            
-            List<ValueExpr> values = new ArrayList<ValueExpr>(operation.getArgs().size());
-            for (Expr<?> arg : operation.getArgs()) {
-                ValueExpr value;
-                // transform LID strings to Resources
-                if (idPropertyInOperation 
-                        && op.equals(Ops.NE_OBJECT) 
-                        && arg instanceof Constant){
-                    ID id = getResourceForLID(arg);
-                    value = toVar(dialect.getResource(id));
-                }else{
-                    value = toValue(arg);    
-                }
-                
-                if (op != Ops.AND && op != Ops.OR){
-                    Assert.notNull(value, arg + " resolved to null");
-                }
-                values.add(value);
-            }    
-            return transformer.transform(values);
-        } else {
-            throw new IllegalArgumentException("Unsupported operation instance : " + operation);
-        }
-    }
 
-    private ValueExpr transformSubQueryOperation(Operation<?, ?> operation) {
-        ValueExpr lhs = toValue(operation.getArg(0));
-        TupleExpr rhs = transformSubQueryToTuples((SubQuery) operation.getArg(1));
-        Operator<?> op = operation.getOperator();
-        
-        if (op == Ops.EQ_OBJECT || op == Ops.EQ_PRIMITIVE){
-            return new CompareAll(lhs, rhs, CompareOp.EQ);
-        }else if (op == Ops.NE_OBJECT || op == Ops.NE_PRIMITIVE){
-            return new CompareAll(lhs, rhs, CompareOp.NE);
-        }else if (op == Ops.GT){
-            return new CompareAll(lhs, rhs, CompareOp.GT);
-        }else if (op == Ops.GOE){
-            return new CompareAll(lhs, rhs, CompareOp.GE);
-        }else if (op == Ops.LT){
-            return new CompareAll(lhs, rhs, CompareOp.LT);
-        }else if (op == Ops.LOE){
-            return new CompareAll(lhs, rhs, CompareOp.LE);
-        }else{
-            throw new IllegalArgumentException("Unsupported operation " + operation);
-        }
-    }
-
-
-    private ValueExpr transformExists(Operation<?, ?> operation) {
-        Expr<?> arg0 = operation.getArg(0);
-        if (arg0 instanceof SubQuery){
-            TupleExpr tupleExpr = transformSubQueryToTuples((SubQuery)arg0);
-            return new Exists(tupleExpr);
-        }else{
-            throw new IllegalArgumentException("Unexpected EXISTS operand " + operation.getArg(0));
-        }
-    }    
-    
-
-
-    @Nullable
-    private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 
-            @Nullable Var valNode, @Nullable Var keyNode) {
-        MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
-        JoinBuilder builder = new JoinBuilder(valueFactory, datatypeInference);
-        if (valNode != null){
-            if (mappedProperty.getValuePredicate() != null){
-                match(builder, pathVar, mappedProperty.getValuePredicate(), valNode);
-            }else if (!inNegation()){    
-                pathVar.setValue(valNode.getValue());
-            }
-        }
-        if (keyNode != null){
-            match(builder, pathVar, mappedProperty.getKeyPredicate(), keyNode);   
-        }                        
-        
-        if (!builder.isEmpty()){
-            return new Exists(builder.getTupleExpr()); 
-        }else if (inNegation()){
-            return new Compare(pathVar, valNode, CompareOp.EQ);
-        }else{
-            return null;
-        }        
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    private ValueExpr transformPathEqNeConstant(Operation<?, ?> operation) {
-        Path<?> path = (Path<?>) operation.getArg(0);
-        Var pathVar = transformPath(path);
-        Value constValue;
-        
-        MappedPath mappedPath;
-        PathType pathType = path.getMetadata().getPathType();
-        if (pathType.equals(PathType.PROPERTY)) {
-            mappedPath = getMappedPathForPropertyPath(path);   
-        }else{
-            mappedPath = getMappedPathForPropertyPath(path.getMetadata().getParent());
-        }
-        Locale locale = null;
-        if (!mappedPath.getPredicatePath().isEmpty()){
-            if (mappedPath.getMappedProperty().isLocalized()){
-                String value = operation.getArg(1).toString();
-                if (pathType.equals(PathType.PROPERTY)){
-                    locale = session.getCurrentLocale();
-                }else if (pathType.equals(PathType.MAPVALUE_CONSTANT)){
-                    locale = ((Constant<Locale>)path.getMetadata().getExpression()).getConstant();                        
-                }else{
-                    throw new IllegalArgumentException("Unsupported path type " + pathType);
-                }
-                constValue = valueFactory.createLiteral(value, LocaleUtil.toLang(locale));
-                
-            }else if (Collection.class.isAssignableFrom(operation.getArg(1).getType())){
-                throw new UnsupportedOperationException("Unsupported operation : path eq Collection");
-            }else{
-                constValue = ((Var) toValue(operation.getArg(1))).getValue();   
-               
-            }                                
-        }else{
-            ID id = getResourceForLID(operation.getArg(1));
-            constValue = dialect.getResource(id);
-        }
-        
-        if (Ops.equalsOps.contains(operation.getOperator())){
-            if (!inOptionalPath()){
-                pathVar.setValue(constValue);
-                return null;    
-            }else{
-                return new Compare(pathVar, toVar(constValue), Compare.CompareOp.EQ);
-            }
-                            
-        }else{
-            Var constVar = toVar(constValue);
-            Compare compare = new Compare(pathVar, constVar, Compare.CompareOp.NE);
-            if (locale != null){
-                Var langVar = toVar(valueFactory.createLiteral(LocaleUtil.toLang(locale)));
-                return new And(
-                    compare, 
-                    new Compare(new Lang(pathVar), langVar, Compare.CompareOp.EQ));
-            }else{
-                return compare;
-            }
-        }                
-    }
-        
-    private ValueExpr transformSizeCompareConstant(Operation<?, ?> operation, Operator<?> op) {        
-        @SuppressWarnings("unchecked")
-        int size = getIntValue((Constant<Integer>) operation.getArg(1));
-        if (op == Ops.GOE){
-            op = Ops.GT;
-            size--;
-        }else if (op == Ops.LOE){
-            op = Ops.LT;
-            size++;
-        }
-        
-        JoinBuilder builder = new JoinBuilder(valueFactory, datatypeInference);
-        // path from size operation
-        Path<?> path = (Path<?>)((Operation<?,?>)operation.getArg(0)).getArg(0); 
-        Var pathVar = transformPath(path);                                
-        for (int i=0; i < size-1; i++){
-            Var rest = new Var(varNames.next());
-            match(builder, pathVar, RDF.rest, rest);
-            pathVar = rest;
-        }
-        
-        // last
-        if (op == Ops.EQ_PRIMITIVE){
-            match(builder, pathVar, RDF.rest, toVar(RDF.nil));
-            
-        }else if (op == Ops.GT){
-            Var next = new Var(varNames.next());
-            match(builder, pathVar, RDF.rest, next);
-            match(builder, next, RDF.rest, new Var(varNames.next()));
-            
-        }else if (op == Ops.LT){
-            match(builder, pathVar, RDF.rest, new Var(varNames.next()));
-        }          
-        
-        if (op != Ops.LT){
-            return new Exists(builder.getTupleExpr());    
-        }else{
-            return new Not(new Exists(builder.getTupleExpr()));
-        }           
-        
-    }
-
-    @SuppressWarnings("unchecked")
-    private boolean isPathEqPath(Operation<?, ?> operation, Operator<?> op) {
-        return  Ops.equalsOps.contains(op)
-                && operation.getArg(0) instanceof Path 
-                && operation.getArg(1) instanceof Path;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private boolean isPathEqNeConstant(Operation<?, ?> operation, Operator<?> op) {
-        return (Ops.equalsOps.contains(op) || Ops.notEqualsOps.contains(op)) 
-                && operation.getArg(0) instanceof Path 
-                && operation.getArg(1) instanceof Constant;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private boolean isSizeCompareConstant(Operation<?, ?> operation, Operator<?> op) {
-        if (Ops.compareOps.contains(op)){
-            Expr<?> arg1 = operation.getArg(0);
-            return (arg1 instanceof Operation && ((Operation)arg1).getOperator().equals(Ops.COL_SIZE));
-        }else{
-            return false;
-        }        
-    }
-    
-    private Var transformPath(Path<?> path) {
+    public Var toVar(Path<?> path) {
         if (pathToVar.containsKey(path)) {
             return pathToVar.get(path);
             
         } else if (path.getMetadata().getParent() != null) {
             PathMetadata<?> md = path.getMetadata();
             PathType pathType = md.getPathType();            
-            Var parentNode = transformPath(md.getParent());
+            Var parentNode = toVar(md.getParent());
             Var pathNode = null;
             Var matchedVar = pathToMatchedVar.get(path);
             
@@ -871,7 +576,7 @@ public class SesameQuery extends
                     }
                      
                 }else{
-                    idPropertyInOperation = true;
+//                    idPropertyInOperation = true;
                     // id property
                     pathNode =  parentNode;
                 }
@@ -918,7 +623,31 @@ public class SesameQuery extends
         } else {
             throw new IllegalArgumentException("Undeclared path " + path);
         }
-
     }
+
+    public Var toVar(UID id) {
+        if (resToVar.containsKey(id)) {
+            return resToVar.get(id);
+        } else {
+            Var var = new Var(varNames.next(), dialect.getResource(id));
+            var.setAnonymous(true);
+            resToVar.put(id, var);
+            return var;
+        }
+    }
+
+    public Var toVar(Value value){
+        if (constToVar.containsKey(value)){
+            return constToVar.get(value);
+        }else{
+            Var var = new Var(varNames.next(), value);
+            var.setAnonymous(true);
+            constToVar.put(value, var);
+            return var;
+        }
+    }
+
+
+
         
 }

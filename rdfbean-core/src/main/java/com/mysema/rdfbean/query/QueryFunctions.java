@@ -16,6 +16,7 @@ import com.mysema.rdfbean.xsd.DateTimeConverter;
  * @author tiwe
  * @version $Id$
  */
+// TODO : move these to Querydsl
 public final class QueryFunctions {
     
     private static final DateTimeConverter dateTime = new DateTimeConverter();

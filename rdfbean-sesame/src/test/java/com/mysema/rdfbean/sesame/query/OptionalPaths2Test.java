@@ -1,20 +1,25 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.sesame.query;
+
+import static com.mysema.query.alias.Alias.$;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
-import static com.mysema.query.alias.Alias.*;
-import static org.junit.Assert.*;
-
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -25,7 +30,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  */
 public class OptionalPaths2Test extends SessionTestBase{
     
-    @ClassMapping(ns=TEST.NS, ln="NoteRevision_OptPath")
+    @ClassMapping(ns=TEST.NS)
     public static class NoteRevision {
         @Predicate
         String basicForm;
@@ -47,7 +52,7 @@ public class OptionalPaths2Test extends SessionTestBase{
         }                
     }
     
-    @ClassMapping(ns=TEST.NS, ln="Note_OptPath")
+    @ClassMapping(ns=TEST.NS)
     public static class Note { 
         @Predicate
         Term term;
@@ -65,7 +70,7 @@ public class OptionalPaths2Test extends SessionTestBase{
         
     }
     
-    @ClassMapping(ns=TEST.NS, ln="Term_OptPath")
+    @ClassMapping(ns=TEST.NS)
     public static class Term{
         @Predicate
         String meaning;
@@ -75,15 +80,8 @@ public class OptionalPaths2Test extends SessionTestBase{
         }                   
     }
     
-    private Session session;
-    
-    @After
-    public void tearDown() throws IOException{
-        if (session != null) session.close();
-    }
-    
-    @Test
-    public void test() throws StoreException, IOException{
+    @Before
+    public void setUp() throws StoreException{
         session = createSession(NoteRevision.class, Note.class, Term.class);
         
         Note note = new Note();
@@ -103,20 +101,16 @@ public class OptionalPaths2Test extends SessionTestBase{
         rev2.note = note2;
         rev2.lemma = "X b X";
         session.save(rev2);
-        
+    }
+    
+    @Test
+    public void test() throws StoreException, IOException{
         NoteRevision noteVar = Alias.alias(NoteRevision.class);
         BooleanBuilder builder = new BooleanBuilder();
         builder.or($(noteVar.getLemma()).contains("a", false));
         builder.or($(noteVar.getNote().getTerm().getMeaning()).contains("a",false));
         assertEquals(1, session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).size());
         System.out.println();
-        
-//      SELECT DISTINCT noteRevision
-//      FROM {noteRevision} rdf:type test:NoteRevision.
-//        OPTIONAL ( {noteRevision} test:lemma {_var_c} ).
-//        OPTIONAL ( {noteRevision} test:note {_var_f} . {_var_f} test:term {_var_h} . {_var_h} test:meaning {_var_j} ).
-//      WHERE <functions:stringContainsIc>( {_var_c},"a"^^xsd:string ) OR
-//        <functions:stringContainsIc>( {_var_j},"a"^^xsd:string )
         
         builder = new BooleanBuilder();
         builder.or($(noteVar.getLemma()).isNotNull().and($(noteVar.getLemma()).contains("c",false)));
@@ -136,8 +130,6 @@ public class OptionalPaths2Test extends SessionTestBase{
         builder.or($(noteVar.getNote().getTerm().getMeaning()).contains("c",false));
         assertFalse(session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).isEmpty());      
     }
-    
-
     
     
 }

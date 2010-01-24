@@ -7,8 +7,12 @@ package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.openrdf.store.StoreException;
+
+import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
  * CountTest provides
@@ -16,17 +20,23 @@ import org.junit.Test;
  * @author tiwe
  * @version $Id$
  */
-public class CountTest extends AbstractSesameQueryTest{
+public class CountTest extends SessionTestBase{
 
+
+    @Before
+    public void setUp() throws StoreException{
+        session = createSession(FI, SimpleType.class, SimpleType2.class);
+    }
+    
     @Test
     public void test(){
-        assertTrue(newQuery().from(var).count() > 0);        
+        assertTrue(from(var).count() > 0);        
     }
     
     @Test
     @Ignore
     public void countWithLimitAndOffset(){
         // NOTE : invalid test
-        assertTrue(newQuery().from(var).limit(0l).offset(0).count() > 0);
+        assertTrue(from(var).limit(0l).offset(0).count() > 0);
     }
 }

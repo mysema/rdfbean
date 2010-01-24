@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.sesame.query;
 
 import static com.mysema.query.alias.Alias.$;
@@ -7,7 +12,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
@@ -19,7 +23,6 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.object.BeanSubQuery;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -30,7 +33,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  */
 public class BeanSubQuery2Test extends SessionTestBase{
     
-    @ClassMapping(ns=TEST.NS, ln="Rev1")
+    @ClassMapping(ns=TEST.NS)
     public static class Revision {
         @Predicate
         long svnRevision;
@@ -56,7 +59,7 @@ public class BeanSubQuery2Test extends SessionTestBase{
     }
     
 
-    @ClassMapping(ns=TEST.NS, ln ="Ent1")
+    @ClassMapping(ns=TEST.NS)
     public static class Entity {
         
         @Id
@@ -75,7 +78,7 @@ public class BeanSubQuery2Test extends SessionTestBase{
                                 
     }
     
-    @ClassMapping(ns=TEST.NS, ln="Doc1")
+    @ClassMapping(ns=TEST.NS)
     public static class Document {
         
         @Id
@@ -86,8 +89,6 @@ public class BeanSubQuery2Test extends SessionTestBase{
         }
                                 
     }
-    
-    private Session session;
     
     private Revision rev1 = Alias.alias(Revision.class,"rev1");
     
@@ -109,16 +110,10 @@ public class BeanSubQuery2Test extends SessionTestBase{
             rev.svnRevision = 1;
             rev.revisionOf = entity;
             rev.created = created;
-            session.save(rev);
-        }        
-        
+            session.save(rev);            
+        }
+                
         session.clear();        
-    }
-    
-    @After
-    public void tearDown() throws IOException{
-        if (session != null) session.close();
-        System.out.println();
     }
     
     @Test

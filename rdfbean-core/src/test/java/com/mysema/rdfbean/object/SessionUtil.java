@@ -31,11 +31,7 @@ public final class SessionUtil {
     }
 
     public static Session openSession(Repository repository, Iterable<Locale> locales, Class<?>... classes) {
-        SessionFactoryImpl sessionFactory = new SessionFactoryImpl(locales);
-        sessionFactory.setConfiguration(new DefaultConfiguration(classes));
-        sessionFactory.setRepository(repository);
-        sessionFactory.initialize();
-        return sessionFactory.openSession();
+        return openSession(repository, locales, new DefaultConfiguration(classes));
     }
 
     public static Session openSession(Repository repository, Package... packages) {
@@ -45,10 +41,14 @@ public final class SessionUtil {
     public static Session openSession(Repository repository, @Nullable Locale locale, Package... packages) {
         return openSession(repository, locale != null ? Arrays.asList(locale) : Collections.<Locale>emptyList(), packages);
     }
-
+    
     public static Session openSession(Repository repository, Iterable<Locale> locales, Package... packages) {
+        return openSession(repository, locales, new DefaultConfiguration(packages));
+    }
+    
+    public static Session openSession(Repository repository, Iterable<Locale> locales, Configuration configuration) {
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl(locales);
-        sessionFactory.setConfiguration(new DefaultConfiguration(packages));
+        sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
         return sessionFactory.openSession();

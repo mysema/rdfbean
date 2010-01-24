@@ -15,6 +15,7 @@ import org.openrdf.store.StoreException;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EMap;
 import com.mysema.query.types.expr.Expr;
+import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
  * MapQueriesTest provides
@@ -22,7 +23,7 @@ import com.mysema.query.types.expr.Expr;
  * @author tiwe
  * @version $Id$
  */
-public class MapQueriesTest extends AbstractSesameQueryTest{
+public class MapQueriesTest extends SessionTestBase{
     
     protected QSimpleType v1 = new QSimpleType("v1");
     
@@ -30,17 +31,18 @@ public class MapQueriesTest extends AbstractSesameQueryTest{
 
     private SimpleType2 instance;
     
+
     @Before
     public void setUp() throws StoreException{
-        super.setUp();
-        instance = newQuery().from(QSimpleType2.simpleType2).uniqueResult(QSimpleType2.simpleType2);    
+        session = createSession(FI, SimpleType.class, SimpleType2.class);
+        instance = from(QSimpleType2.simpleType2).uniqueResult(QSimpleType2.simpleType2);    
     }
     
     @Test
     public void mapFilters() {
         for (EBoolean f : mapFilters(v1.mapProperty, v2.mapProperty, "", instance)){
             System.err.println("\n" + f);
-            newQuery().from(v1,v2).where(f).list(v1.directProperty);
+            from(v1,v2).where(f).list(v1.directProperty);
         }             
     }
 
@@ -48,7 +50,7 @@ public class MapQueriesTest extends AbstractSesameQueryTest{
     public void mapProjections() {
         for (Expr<?> pr : mapProjections(v1.mapProperty, v2.mapProperty, "", instance)){
             System.err.println("\n" + pr);
-            newQuery().from(v1,v2).list(pr);
+            from(v1,v2).list(pr);
         }    
     }
     

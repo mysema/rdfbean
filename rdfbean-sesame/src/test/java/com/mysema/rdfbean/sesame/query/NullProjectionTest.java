@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.sesame.query;
 
 import static com.mysema.query.alias.Alias.$;
@@ -25,7 +30,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  */
 public class NullProjectionTest extends SessionTestBase{
     
-    @ClassMapping(ns=TEST.NS, ln="NullProjectionTest_User")
+    @ClassMapping(ns=TEST.NS)
     public static class User{
         
         @Predicate

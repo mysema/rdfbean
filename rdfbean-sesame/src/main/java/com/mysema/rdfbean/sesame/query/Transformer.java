@@ -5,9 +5,14 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import java.util.List;
+import java.util.Collection;
+
+import javax.annotation.Nullable;
 
 import org.openrdf.query.algebra.ValueExpr;
+
+import com.mysema.query.types.operation.Operation;
+import com.mysema.query.types.operation.Operator;
 
 /**
  * Transformer provides
@@ -17,6 +22,9 @@ import org.openrdf.query.algebra.ValueExpr;
  */
 public interface Transformer{
 
-    ValueExpr transform(List<ValueExpr> args);
+    @Nullable
+    ValueExpr transform(Operation<?,?> operation, TransformerContext context);
+
+    Collection<? extends Operator<?>> getSupportedOperations();
     
 }

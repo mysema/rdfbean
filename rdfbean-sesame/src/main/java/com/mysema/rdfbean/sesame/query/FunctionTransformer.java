@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,8 @@ import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.Function;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
+import com.mysema.query.types.expr.Expr;
+import com.mysema.query.types.operation.Operation;
 import com.mysema.query.types.operation.Operator;
 import com.mysema.query.types.operation.Ops;
 import com.mysema.rdfbean.model.XSD;
@@ -30,13 +34,11 @@ import com.mysema.rdfbean.query.QueryFunctions;
  * @author tiwe
  * @version $Id$
  */
-public final class SesameFunctions {
+public class FunctionTransformer implements Transformer{
     
-    private SesameFunctions(){}
-    
-    private static final Map<Operator<?>, String> opToFunctionURI = new HashMap<Operator<?>, String>();
+    private final Map<Operator<?>, String> ops = new HashMap<Operator<?>, String>();
          
-    static{        
+    {        
         register(Ops.TRIM, new BaseFunction("functions:trim"){
             protected String evaluate(Value[] args) {
                 return QueryFunctions.trim(args[0].stringValue());
@@ -224,24 +226,13 @@ public final class SesameFunctions {
         });
     }
 
-    public static void addTransformers(Map<Operator<?>, Transformer> byOp) {
-        for (final Map.Entry<Operator<?>, String> e : opToFunctionURI.entrySet()) {
-            byOp.put(e.getKey(), new Transformer() {
-                public ValueExpr transform(List<ValueExpr> args) {
-                    return new FunctionCall(e.getValue(), args);
-                }
-            });
-        }
-
-    }
-
-    private static void register(BaseFunction function) {
+    private void register(BaseFunction function) {
         FunctionRegistry.getInstance().add(function);
     }
     
-    private static void register(Operator<?> op, BaseFunction function) {
+    private void register(Operator<?> op, BaseFunction function) {
         FunctionRegistry.getInstance().add(function);
-        opToFunctionURI.put(op, function.getURI());
+        ops.put(op, function.getURI());
     }
 
     private static abstract class BaseFunction implements Function {
@@ -270,6 +261,21 @@ public final class SesameFunctions {
         public final String getURI() {
             return uri;
         }
+    }
+
+    @Override
+    public Collection<? extends Operator<?>> getSupportedOperations() {
+        return ops.keySet();
+    }
+
+    @Override
+    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+        String functionName = ops.get(operation.getOperator());
+        List<ValueExpr> args = new ArrayList<ValueExpr>(operation.getArgs().size());
+        for (Expr<?> expr : operation.getArgs()){
+            args.add(context.toValue(expr));
+        }
+        return new FunctionCall(functionName, args);
     }
 
 }

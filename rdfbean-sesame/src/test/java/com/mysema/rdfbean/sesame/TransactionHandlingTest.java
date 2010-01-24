@@ -51,29 +51,31 @@ public class TransactionHandlingTest extends SessionTestBase{
     }
     
     @Test
-    public void commit() throws StoreException, ClassNotFoundException{
-        Session session = sessionFactory.openSession();
+    public void commit() throws StoreException, ClassNotFoundException, IOException{
+        session = sessionFactory.openSession();
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
         session.save(new Restriction());
         session.save(new Restriction());
         tx.commit();
+        session.close();
         
         session = createSession(FI, OWL.class.getPackage());
         assertEquals(count + 2, session.from(restriction).list(restriction).size());
     }
         
     @Test
-    public void rollback() throws StoreException, ClassNotFoundException{
-        Session session = createSession(FI, OWL.class.getPackage());
+    public void rollback() throws StoreException, ClassNotFoundException, IOException{
+        session = createSession(FI, OWL.class.getPackage());
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
         session.save(new Restriction());
         session.save(new Restriction());
         tx.rollback();
+        session.close();
         
         session = createSession(FI, OWL.class.getPackage());
-        assertEquals(count, session.from(restriction).list(restriction).size());
+        assertEquals(count, session.from(restriction).list(restriction).size());       
     }
 
 }

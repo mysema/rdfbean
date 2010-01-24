@@ -5,16 +5,24 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
+import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections15.IteratorUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.openrdf.store.StoreException;
 
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
+import com.mysema.query.alias.Alias;
+import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
  * PagingTest provides
@@ -22,8 +30,31 @@ import com.mysema.rdfbean.object.BeanQuery;
  * @author tiwe
  * @version $Id$
  */
-public class PagingTest extends AbstractSesameQueryTest{
+public class PagingTest extends SessionTestBase{
 
+    @ClassMapping(ns=TEST.NS)
+    public static class Entity{
+        @Predicate
+        String property;
+        
+        public String getProperty(){
+            return property;
+        }
+    }
+    
+    private static final Entity entity = Alias.alias(Entity.class);
+    
+    @Before
+    public void setUp() throws StoreException{
+        session = createSession(FI, Entity.class);
+        for (int i = 0; i < 9; i++){
+            Entity entity = new Entity();
+            entity.property = String.valueOf(i);
+            session.save(entity);
+        }
+        session.clear();
+    }
+    
     @Test
     public void test(){
         assertResultSize(9, 9, null);
@@ -38,22 +69,22 @@ public class PagingTest extends AbstractSesameQueryTest{
     
     private void assertResultSize(int total, int size, @Nullable QueryModifiers modifiers){        
         // via list
-        assertEquals(size, createQuery(modifiers).list(var2).size());
+        assertEquals(size, createQuery(modifiers).list($(entity)).size());
+        System.out.println();
         
         // via results
-        SearchResults<?> results = createQuery(modifiers).listResults(var2);
+        SearchResults<?> results = createQuery(modifiers).listResults($(entity));
         assertEquals(total, results.getTotal());
         assertEquals(size, results.getResults().size());
-                
-        // via count (ignore limit and offset)
-//        assertEquals(total, createQuery(modifiers).count());
+        System.out.println();        
         
         // via iterator
-        assertEquals(size, IteratorUtils.toList(createQuery(modifiers).iterate(var2)).size());
+        assertEquals(size, IteratorUtils.toList(createQuery(modifiers).iterate($(entity))).size());
+        System.out.println();
     }
     
     private BeanQuery createQuery(@Nullable QueryModifiers modifiers){
-        BeanQuery beanQuery = newQuery().from(var2);
+        BeanQuery beanQuery = from($(entity)).orderBy($(entity.getProperty()).asc());
         if (modifiers != null) beanQuery.restrict(modifiers);
         return beanQuery;
     }

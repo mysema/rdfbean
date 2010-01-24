@@ -5,13 +5,18 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
+import java.io.IOException;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.openrdf.store.StoreException;
 
 import com.mysema.query.Module;
 import com.mysema.query.StandardTest;
 import com.mysema.query.Target;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.Expr;
+import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
  * BeanQueryStandardTest provides
@@ -19,7 +24,7 @@ import com.mysema.query.types.expr.Expr;
  * @author tiwe
  * @version $Id$
  */
-public class BeanQueryStandardTest extends AbstractSesameQueryTest {
+public class BeanQueryStandardTest extends SessionTestBase {
     
     private String knownStringValue = "propertymap";
     
@@ -29,6 +34,12 @@ public class BeanQueryStandardTest extends AbstractSesameQueryTest {
     
     private SimpleType2 other;
     
+
+    @Before
+    public void setUp() throws StoreException{
+        session = createSession(FI, SimpleType.class, SimpleType2.class);
+    }
+    
     private StandardTest standardTest = new StandardTest(Module.RDFBEAN, Target.MEM){
         @Override
         public int executeFilter(EBoolean f) {
@@ -36,19 +47,19 @@ public class BeanQueryStandardTest extends AbstractSesameQueryTest {
                 f.toString().matches("com.*.SimpleType2@.* in v1.listProperty")){ // searching for items sequence is not supported
                 return 1;    
             }else{                
-                return newQuery().from(v1, v2).where(f).list(v1, v2).size();
+                return from(v1, v2).where(f).list(v1, v2).size();
             }
             
         }
         @Override
         public int executeProjection(Expr<?> pr) {
-            return newQuery().from(v1, v2).list(v1, v2).size();
+            return from(v1, v2).list(v1, v2).size();
         }        
     };
     
     @Test
     public void test() throws InterruptedException{
-        SimpleType st = newQuery().from(v1).uniqueResult(v1);
+        SimpleType st = from(v1).uniqueResult(v1);
         SimpleType2 inMap = st.getMapProperty().values().iterator().next();
         SimpleType2 inList = st.getListProperty().iterator().next();
         SimpleType2 inSet = st.getSetProperty().iterator().next();
@@ -72,7 +83,7 @@ public class BeanQueryStandardTest extends AbstractSesameQueryTest {
     }
         
     @Override
-    public void tearDown(){
+    public void tearDown() throws IOException{
         session.delete(other);
         super.tearDown();
     }

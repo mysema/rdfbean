@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
@@ -21,7 +20,6 @@ import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 
@@ -33,7 +31,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  */
 public class OrderTest extends SessionTestBase{
     
-    @ClassMapping(ns=TEST.NS, ln="OrderTest_User")
+    @ClassMapping(ns=TEST.NS)
     public static class User{
         
         @Predicate
@@ -49,13 +47,6 @@ public class OrderTest extends SessionTestBase{
             return firstName;
         }
                 
-    }
-    
-    private Session session;
-    
-    @After
-    public void tearDown() throws IOException{
-        if (session != null) session.close();
     }
     
     @Test
@@ -74,7 +65,7 @@ public class OrderTest extends SessionTestBase{
     
     @Test
     public void correctOrder() throws StoreException, IOException{
-        Session session = createSession(User.class);     
+        session = createSession(User.class);     
         for(User user : session.findInstances(User.class)){
             session.delete(user);
         }
@@ -92,7 +83,7 @@ public class OrderTest extends SessionTestBase{
     
     @Test
     public void orderWithOffset() throws StoreException, IOException{
-        Session session = createSession(User.class);     
+        session = createSession(User.class);     
         for(User user : session.findInstances(User.class)){
             session.delete(user);
         }
