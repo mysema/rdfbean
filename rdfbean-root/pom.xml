@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-root</artifactId>
-  <version>1.1.4</version>
+  <version>1.1.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>RDFBean</name>
   
@@ -28,14 +28,17 @@
   <modules>
     <!-- core modules -->
     <module>../rdfbean-core</module>    
+    
+    <!-- persistence -->
     <module>../rdfbean-sesame</module>    
     <module>../rdfbean-lucene</module>
     <module>../rdfbean-mulgara</module>
     
-    <!-- various support modules -->
+    <!-- integration -->
     <module>../rdfbean-spring</module>    
     <module>../rdfbean-guice</module>
     <module>../rdfbean-tapestry</module>
+    
     <module>../rdfbean-maven-plugin</module>    
     
     <!-- demo -->
@@ -95,7 +98,7 @@
           <groups>
             <group>
               <title>Core</title>
-              <packages>com.mysema.rdfbean:com.mysema.rdfbean.annotations:com.mysema.rdfbean.model*:com.mysema.rdfbean.object*:com.mysema.rdfbean.owl:com.mysema.rdfbean.query:com.mysema.rdfbean.rdfs:com.mysema.rdfbean.rdfs:com.mysema.rdfbean.schema:com.mysema.rdfbean.xsd</packages>
+              <packages>com.mysema.rdfbean:com.mysema.rdfbean.annotations:com.mysema.rdfbean.model*:com.mysema.rdfbean.object*:com.mysema.rdfbean.owl:com.mysema.rdfbean.query:com.mysema.rdfbean.rdfs:com.mysema.rdfbean.schema:com.mysema.rdfbean.xsd</packages>
             </group>
             <group>
               <title>Guice integration</title>
