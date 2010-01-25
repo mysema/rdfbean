@@ -1,7 +1,7 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
-<sect1 id="sesame-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
-    <title>Sesame integration</title>
+<sect1 id="lucene-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Lucene</title>
     
     <para>TODO</para>
     
