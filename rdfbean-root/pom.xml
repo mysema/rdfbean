@@ -100,26 +100,22 @@
               <title>Core</title>
               <packages>com.mysema.rdfbean:com.mysema.rdfbean.annotations:com.mysema.rdfbean.model*:com.mysema.rdfbean.object*:com.mysema.rdfbean.owl:com.mysema.rdfbean.query:com.mysema.rdfbean.rdfs:com.mysema.rdfbean.schema:com.mysema.rdfbean.xsd</packages>
             </group>
-            <group>
-              <title>Guice integration</title>
-              <packages>com.mysema.rdfbean.guice</packages>
-            </group>
-            <group>
-              <title>Lucene persistence</title>
-              <packages>com.mysema.rdfbean.lucene*</packages>
-            </group>
-            <group>
-              <title>Maven plugin</title>
-              <packages>com.mysema.rdfbean.maven</packages>
-            </group>
-            <group>
-              <title>Mulgara persistence</title>
-              <packages>com.mysema.rdfbean.mulgara*</packages>
-            </group>
+            
+            <!-- persistence -->
             <group>
               <title>Sesame persistence</title>
               <packages>com.mysema.rdfbean.sesame*</packages>
-            </group>
+            </group>            
+            <group>
+              <title>Mulgara persistence</title>
+              <packages>com.mysema.rdfbean.mulgara*</packages>
+            </group>       
+            <group>
+              <title>Lucene persistence</title>
+              <packages>com.mysema.rdfbean.lucene*</packages>
+            </group>     
+            
+            <!-- integration -->
             <group>
               <title>Spring integration</title>
               <packages>com.mysema.rdfbean.spring</packages>
@@ -127,7 +123,19 @@
             <group>
               <title>Tapestry integration</title>
               <packages>com.mysema.rdfbean.tapestry*:com.mysema.rdfbean.dao</packages>
+            </group>            
+            <group>
+              <title>Guice integration</title>
+              <packages>com.mysema.rdfbean.guice</packages>
             </group>
+
+            <group>
+              <title>Maven plugin</title>
+              <packages>com.mysema.rdfbean.maven</packages>
+            </group>
+
+
+
           </groups>
         </configuration>   
       </plugin>        
