@@ -48,7 +48,6 @@ public class FieldProperty extends MappedProperty<Field> {
             return;
         }
         try {
-//            field.set(beanWrapper.getWrappedInstance(), value);
             field.set(beanMap.getBean(), value);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);

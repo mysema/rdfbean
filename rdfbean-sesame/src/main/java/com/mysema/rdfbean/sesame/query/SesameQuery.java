@@ -115,8 +115,6 @@ public class SesameQuery
 
     private final boolean datatypeInference;
     
-    private final List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
-
     private final VarNameIterator extNames = new VarNameIterator("_ext_");
     
     private ValueExpr filterConditions;
@@ -127,15 +125,11 @@ public class SesameQuery
 
     private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
 
-    private final List<OrderElem> orderElements = new ArrayList<OrderElem>();
-    
     private final Map<Path<?>, Var> pathToMatchedVar = new HashMap<Path<?>,Var>();
     
     private final Map<Path<?>, Var> pathToVar = new HashMap<Path<?>, Var>();
     
     private final StatementPattern.Scope patternScope;
-    
-    private final ProjectionElemList projection = new ProjectionElemList();
     
     private TupleResult queryResult;
     
@@ -277,7 +271,29 @@ public class SesameQuery
     
     @Override
     protected Iterator<Value[]> getInnerResults() {
-        init();
+        QueryMetadata metadata = queryMixin.getMetadata();
+        List<OrderElem> orderElements = new ArrayList<OrderElem>();
+        ProjectionElemList projection = new ProjectionElemList();
+        List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
+        
+        // from
+        for (JoinExpression join : metadata.getJoins()){            
+            handleRootPath((Path<?>) join.getTarget());
+        }        
+        // where
+        if (metadata.getWhere() != null){
+            addFilterCondition(toValue(metadata.getWhere()));
+        }        
+        // order by (optional paths)
+        joinBuilder.setOptional();
+        for (OrderSpecifier<?> os : metadata.getOrderBy()){
+            orderElements.add(new OrderElem(toValue(os.getTarget()), os.isAscending()));
+        }        
+        // select (optional paths)
+        for (Expr<?> expr : metadata.getProjection()){
+            addProjection(expr, projection, extensions);
+        }
+        joinBuilder.setMandatory();
         
         TupleExpr tupleExpr = createTupleExpr(
                 joinBuilder.getTupleExpr(),   // from
@@ -373,32 +389,6 @@ public class SesameQuery
         }
     }
   
-    private void init() {
-        QueryMetadata metadata = queryMixin.getMetadata();
-        
-        // from
-        for (JoinExpression join : metadata.getJoins()){            
-            handleRootPath((Path<?>) join.getTarget());
-        }
-        
-        // where
-        if (metadata.getWhere() != null){
-            addFilterCondition(toValue(metadata.getWhere()));
-        }
-        
-        // order by (optional paths)
-        joinBuilder.setOptional();
-        for (OrderSpecifier<?> os : metadata.getOrderBy()){
-            orderElements.add(new OrderElem(toValue(os.getTarget()), os.isAscending()));
-        }
-        
-        // select (optional paths)
-        for (Expr<?> expr : metadata.getProjection()){
-            addProjection(expr, projection, extensions);
-        }
-        joinBuilder.setMandatory();
-    }
-    
     public boolean inNegation(){
         int notIndex = operatorStack.lastIndexOf(Ops.NOT);
         if (notIndex > -1){
@@ -479,7 +469,7 @@ public class SesameQuery
         }else if (expr instanceof Path) {
             return toVar((Path<?>) expr);            
         } else if (expr instanceof Operation) {
-           return  toValue((Operation<?,?>)expr);            
+            return  toValue((Operation<?,?>)expr);            
         } else if (expr instanceof Constant) {
             return toVar((Constant<?>)expr);            
         } else {

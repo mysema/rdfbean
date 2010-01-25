@@ -53,7 +53,7 @@ public final class RDF {
 
     public static final UID text = new UID(NS, "text");
     
-    public static final Collection<UID> all = Arrays.asList(
+    public static final Collection<UID> ALL = Arrays.asList(
             type,
             Property,
             XMLLiteral,

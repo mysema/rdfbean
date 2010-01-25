@@ -57,7 +57,7 @@ public final class XSD {
 
     public static final UID time = new UID(NS, "time");
 
-    public static final Collection<UID> all = Arrays.asList(
+    public static final Collection<UID> ALL = Arrays.asList(
             anyURI,
             booleanType,
             byteType,

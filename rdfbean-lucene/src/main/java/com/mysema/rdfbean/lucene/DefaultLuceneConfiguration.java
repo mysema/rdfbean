@@ -118,10 +118,10 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
         typeMapping = new MappedClassTypeMapping(coreConfig);
         typeMapping.initialize(uids);
                 
-        uids.addAll(OWL.all);
-        uids.addAll(RDF.all);
-        uids.addAll(RDFS.all);        
-        uids.addAll(XSD.all);
+        uids.addAll(OWL.ALL);
+        uids.addAll(RDF.ALL);
+        uids.addAll(RDFS.ALL);        
+        uids.addAll(XSD.ALL);
         
         prefixToNs.put("core", CORE.NS);
         prefixToNs.put("owl", OWL.NS);

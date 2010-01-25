@@ -49,7 +49,7 @@ public final class RDFS {
     public static final UID ContainerMembershipProperty = new UID(NS,
             "ContainerMembershipProperty");
 
-    public static final Collection<UID> all = Arrays.asList(
+    public static final Collection<UID> ALL = Arrays.asList(
             Resource,
             Literal,
             Class,

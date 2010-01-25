@@ -9,15 +9,19 @@ import javax.annotation.Nullable;
 
 import net.jcip.annotations.Immutable;
 
+import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.UID;
 
 /**
  * @author sasa
  *
  */
 @Immutable
-public class MappedPredicate extends URIMapping {
+public class MappedPredicate {
 
+    private final UID uid;
+    
     private final boolean inv;
     
     private final boolean ignoreInvalid;
@@ -28,7 +32,7 @@ public class MappedPredicate extends URIMapping {
     private final String context;
     
     public MappedPredicate(String parentNs, Predicate predicate, @Nullable String elementName) {
-        super(parentNs, predicate.ns(), predicate.ln(), elementName);
+        this.uid = UID.create(parentNs, predicate.ns(), predicate.ln(), elementName);
         this.inv = predicate.inv();
         this.ignoreInvalid = predicate.ignoreInvalid();
         this.includeInferred = predicate.includeInferred();
@@ -55,4 +59,15 @@ public class MappedPredicate extends URIMapping {
         return context;
     }
 
+    public String getReadableURI() {
+        return Namespaces.getReadableURI(uid.ns(), uid.ln());
+    }
+
+    public UID getUID() {
+        return uid;
+    }
+    
+    public String toString() {
+        return getReadableURI();
+    }
 }

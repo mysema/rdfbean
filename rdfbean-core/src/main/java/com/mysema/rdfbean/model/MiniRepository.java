@@ -6,7 +6,16 @@
 package com.mysema.rdfbean.model;
 
 import java.io.IOException;
-import java.util.*;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -16,6 +25,7 @@ import org.apache.commons.collections15.iterators.IteratorChain;
 import org.apache.commons.collections15.iterators.SingletonIterator;
 
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.rdfbean.model.io.Format;
 
 /**
  * @author sasa
@@ -23,9 +33,10 @@ import com.mysema.commons.lang.CloseableIterator;
  */
 public final class MiniRepository implements Repository{
     
-    private Map<ID, PredicateCache> subjects;
+    private final Map<ID, PredicateCache> subjects;
     
-    private Map<ID, PredicateCache> objects;
+    @Nullable
+    private final Map<ID, PredicateCache> objects;
     
     private static final Iterator<STMT> EMPTY_ITERATOR = new Iterator<STMT>() {
 
@@ -64,6 +75,8 @@ public final class MiniRepository implements Repository{
         subjects = new HashMap<ID, PredicateCache>(initialCapacity);
         if (inverseIndex) {
             objects = new HashMap<ID, PredicateCache>(initialCapacity);
+        }else{
+            objects = null;
         }
     }
     
@@ -337,5 +350,11 @@ public final class MiniRepository implements Repository{
 
     @Override
     public void initialize() {
+    }
+
+    @Override
+    public void export(Format format, OutputStream os) {
+        // TODO : support NTriples ?!?
+        throw new UnsupportedOperationException();        
     }
 }

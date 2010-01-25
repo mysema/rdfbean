@@ -48,7 +48,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
     private static final Map<String,URI> datatypeURICache = new HashMap<String,URI>();
     
     static{
-        for (UID uid : XSD.all){
+        for (UID uid : XSD.ALL){
             datatypeURICache.put(uid.getId(), URI.create(uid.getId()));    
         }      
     }

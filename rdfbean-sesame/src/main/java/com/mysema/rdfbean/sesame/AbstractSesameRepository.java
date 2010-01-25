@@ -6,15 +6,21 @@
 package com.mysema.rdfbean.sesame;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
 import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 
 /**
@@ -86,6 +92,24 @@ public abstract class AbstractSesameRepository implements Repository{
     
     protected abstract org.openrdf.repository.Repository createRepository();
 
+    @Override
+    public void export(Format format, OutputStream out){
+        RDFFormat targetFormat = FormatHelper.getFormat(format);
+        RDFWriter writer = Rio.createWriter(targetFormat, out);
+        try {
+            RepositoryConnection conn = repository.getConnection();
+            try{
+                conn.export(writer);    
+            }finally{
+                conn.close();
+            }
+        } catch (StoreException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        } catch (RDFHandlerException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }                     
+    }
+    
     @Override
     public void close() {
         try {

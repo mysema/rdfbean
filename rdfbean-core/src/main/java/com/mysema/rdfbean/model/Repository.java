@@ -5,12 +5,18 @@
  */
 package com.mysema.rdfbean.model;
 
+import java.io.OutputStream;
+
+import com.mysema.rdfbean.model.io.Format;
+
 public interface Repository {
 
-    void initialize();
-    
-    RDFConnection openConnection();
-
     void close();
+    
+    void export(Format format, OutputStream os);
 
+    void initialize();
+
+    RDFConnection openConnection();
+    
 }

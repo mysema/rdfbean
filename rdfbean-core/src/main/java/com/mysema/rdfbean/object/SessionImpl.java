@@ -16,20 +16,13 @@ import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
 import org.apache.commons.lang.ObjectUtils;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.query.BooleanBuilder;
-import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.path.PEntity;
-import com.mysema.query.types.path.PathBuilder;
-import com.mysema.query.types.path.PathBuilderFactory;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
@@ -260,7 +253,7 @@ public class SessionImpl implements Session {
                 if ("li".equals(ln)) {
                     index = i;
                 } else if (RDF.isContainerMembershipPropertyLocalName(ln)) {
-                    index = new Integer(ln.substring(1));
+                    index = Integer.valueOf(ln.substring(1));
                 }
                 if (index > 0) {
                     maxIndex = Math.max(maxIndex, index);
@@ -398,8 +391,7 @@ public class SessionImpl implements Session {
                 // Enumerations
                 else if (targetClass.isEnum()) {
                     if (value instanceof UID) {
-                        convertedValue = Enum.valueOf((Class<? extends Enum>) targetClass, 
-                                ((UID) value).ln());
+                        convertedValue = Enum.valueOf((Class<? extends Enum>) targetClass, ((UID) value).ln());
                     } else if (value instanceof LIT) {
                         convertedValue = Enum.valueOf((Class<? extends Enum>) targetClass, value.getValue());
                     } else {

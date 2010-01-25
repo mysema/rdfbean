@@ -27,7 +27,7 @@ public abstract class Dialect
     private static final Map<String,UID> datatypeUIDCache = new HashMap<String,UID>();
     
     static{
-        for (UID uid : XSD.all){
+        for (UID uid : XSD.ALL){
             datatypeUIDCache.put(uid.getId(), uid);
         }
     }

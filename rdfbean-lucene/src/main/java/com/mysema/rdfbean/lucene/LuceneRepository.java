@@ -5,11 +5,14 @@
  */
 package com.mysema.rdfbean.lucene;
 
+import java.io.OutputStream;
+
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.io.Format;
 
 /**
  * LuceneRepository provides
@@ -62,6 +65,11 @@ public class LuceneRepository implements Repository{
 
     public void setConfiguration(LuceneConfiguration configuration) {
         this.configuration = configuration;
+    }
+
+    @Override
+    public void export(Format format, OutputStream os) {
+       throw new UnsupportedOperationException();        
     }
     
 }

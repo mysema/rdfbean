@@ -98,7 +98,7 @@ public final class OWL {
     
     public static final UID Thing = new UID(NS, "Thing");
     
-    public static final Collection<UID> all = Arrays.asList(
+    public static final Collection<UID> ALL = Arrays.asList(
             AllDifferent,
             allValuesFrom,
             AnnotationProperty,

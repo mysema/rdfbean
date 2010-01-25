@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.mulgara;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.net.URI;
 
 import javax.activation.MimeType;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 
 /**
@@ -116,6 +118,12 @@ public class MulgaraRepository implements Repository{
 
     public void setSources(RDFSource... sources) {
         this.sources = sources;
+    }
+
+    @Override
+    public void export(Format format, OutputStream os) {
+        throw new UnsupportedOperationException();
+        
     }
     
     

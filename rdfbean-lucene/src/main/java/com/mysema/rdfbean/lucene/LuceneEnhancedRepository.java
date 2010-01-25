@@ -5,12 +5,15 @@
  */
 package com.mysema.rdfbean.lucene;
 
+import java.io.OutputStream;
+
 import org.compass.core.CompassQueryBuilder;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.MultiConnection;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -70,5 +73,10 @@ public class LuceneEnhancedRepository implements Repository{
 
     public void setRepository(Repository repository){
         this.repository = Assert.notNull(repository);
+    }
+
+    @Override
+    public void export(Format format, OutputStream os) {
+        repository.export(format, os);        
     }
 }

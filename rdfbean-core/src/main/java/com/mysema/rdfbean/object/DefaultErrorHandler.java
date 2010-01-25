@@ -16,12 +16,12 @@ import com.mysema.rdfbean.model.UID;
  * @author sasa
  *
  */
-public class DefaultErrorHandler {
+public class DefaultErrorHandler implements ErrorHandler {
 
     public <T> T createInstanceError(ID subject, Collection<ID> types, Class<T> requiredType, Exception e) {
         throw new IllegalArgumentException("Cannot create an instance of " + requiredType + " from " + subject + " with types " + types, e);
     }
-    
+
     public <T> T typeMismatchError(ID subject, Collection<ID> types, Class<T> requiredType) {
         throw new IllegalArgumentException("Cannot convert instance " + subject
                 + " with types " + types + " into required type " + requiredType);

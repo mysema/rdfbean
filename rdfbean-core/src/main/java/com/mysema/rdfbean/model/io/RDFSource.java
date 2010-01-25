@@ -29,9 +29,9 @@ public class RDFSource {
     private final Format format;
 
     public RDFSource(String resource, Format format, String context) {
-        this.resource = Assert.notNull(resource, "resource was null");
-        this.format = Assert.notNull(format, "format was null");
-        this.context = Assert.notNull(context, "context was null");
+        this.resource = Assert.notNull(resource);
+        this.format = Assert.notNull(format);
+        this.context = Assert.notNull(context);
     }
 
     public String getContext() {
