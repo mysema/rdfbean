@@ -42,6 +42,26 @@
     <xi:include href="content/preface.xml"/>    
     <xi:include href="content/intro.xml" />
     <xi:include href="content/getting-started.xml"/>    
+    
+    <chapter>
+    
+      <title>RDF persistence providers</title>
+    
+      <!-- Sesame integration -->
+      <xi:include href="content/sesame-integration.xml" />
+    
+    </chapter>
+    
+    <chapter>
+    
+      <title>Service integration</title>
+    
+    <!-- Service level integration -->
+    <xi:include href="content/spring-integration.xml" />
+    <xi:include href="content/tapestry-integration.xml" />
+    <xi:include href="content/guice-integration.xml" />
+    
+    </chapter>
 
 </book>
 

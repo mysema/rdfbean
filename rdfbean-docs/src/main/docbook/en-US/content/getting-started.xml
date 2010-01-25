@@ -1,103 +1,85 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
-<chapter id="getting-started" xmlns:xi="http://www.w3.org/2001/XInclude">
+<sect1 id="getting-started" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Getting started with RDFBean</title>
     
-    <para>
-    In this chapter we develop a simple program using RDFBean, Maven, Eclipse, 
-    JUnit and Sesame's using an in-memory RDF storage engine.
+    <para>The core of RDFBean usage is the usage of RDFBean annotated domain types.</para>
     
-    The steps are 
-    * Maven configuration
-    * Creating a holder class 
-    * Creating the domain classes
-    * Testing via JUnit, that 
-    </para>
+    <sect2>
     
-    
-    <sect1>
-        <title>Maven</title>
+      <title>RDFBean annotations</title>
+      
+      <para><emphasis>ClassMapping</emphasis> declares a mapping from a Java type to an RDF type. If your Java type simple name
+      is equal to the local name of the RDF type, which is a good practice, all you need to do is to declare 
+      the namespace. The namespace is best kept accessible via a public static final constant : </para>
+      
+<programlisting language="java"><![CDATA[    
+@ClassMapping(ns=MYPROJECT.NS)
+public class User {
 
-        <programlisting>
-            <filename>pom.xml</filename>
-<![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-            http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.mysema.rdf</groupId>
-    <artifactId>rdfbean-demo</artifactId>
-    <version>0.1.0</version>
-    <packaging>jar</packaging>
-    <name>RDFBean Demo</name>
-    <description>RDFBean Demo</description>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- versions of dependencies -->
-        <spring.version>2.5.5</spring.version>
-        <rdfbean.version>0.7.4-SNAPSHOT</rdfbean.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.mysema.rdf</groupId>
-            <artifactId>rdfbean-sesame</artifactId>
-            <version>${rdfbean.version}</version>
-        </dependency>
-
-        <!-- Log using SLF4J over Log4J -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.2</version>
-        </dependency>
-
-        <!-- testing -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.4</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-            <!-- Querydsl APT processor that generates query model -->
-            <plugin>
-                <groupId>com.mysema.maven</groupId>
-                <artifactId>maven-apt-plugin</artifactId>
-                <version>0.2.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/generated-sources/java</outputDirectory>
-                            <processor>com.mysema.rdfbean.query.BeanAnnotationProcessor</processor>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-</project>
-]]>
-        </programlisting>
+    // ...
+}
+]]></programlisting>        
+      
+      <para><emphasis>Predicate</emphasis> declares a mapping from a Java property to an RDF predicate / property. 
+        You can annotate getters and fields with it. </para>
         
-    </sect1>
-    <para>TODO</para>
+      <para>A good practice is to not repeat the namespace declaration for a Predicate annotation, if the predicates 
+      namespace is the same as the namespace of the host type : </para>
+      
+<programlisting language="java"><![CDATA[    
+@ClassMapping(ns=MYPROJECT.NS)
+public class User {
+
+    @Predicate(ln="user_name")
+    private String userName;
     
-</chapter>    
+    @Predicate
+    private String email;
+}
+]]></programlisting>          
+
+    <para>The default value for the local name is the property's name.</para>
+    
+    <para><emphasis>Id</emphasis> is used to annotate properties holding the id of the entity. The default is to handle 
+    the id as an RDFBean managed integer surrogate id. Numeric ids are shorter than full URLs or bnode ids and are easier
+    to use on the application level :</para>
+    
+<programlisting language="java"><![CDATA[    
+@ClassMapping(ns=MYPROJECT.NS)
+public class User {
+
+    @Id
+    private String id;
+
+    @Predicate(ln="user_name")
+    private String userName;
+    
+    @Predicate
+    private String email;
+}
+]]></programlisting>          
+    
+    <para>Alternatively the id can be inject in IDType.URI or IDType.RESOURCE form. Use the UID type for URI injection
+    and ID for RESOURCE typed injection.</para>
+    
+    <para>A good practice is to use <emphasis>MappedClasses</emphasis> in the domain package package-info.java to declare the
+    annotated types in the package.</para>
+    
+    <para>This way you can use <emphasis>DefaultConfiguration.addPackages</emphasis> to configure the annoteated types. </para>
+    
+    <para><emphasis>Localized</emphasis> ...</para>
+    
+    <para><emphasis>Mixin</emphasis> ...</para>
+    
+    <para><emphasis>Context</emphasis> ...</para>
+    
+    <para><emphasis>Path</emphasis> ... </para>
+    
+    <para><emphasis>Required</emphasis> ...</para>
+    
+    <para><emphasis>Unique</emphasis> ...</para>
+    
+    </sect2>
+    
+</sect1>    

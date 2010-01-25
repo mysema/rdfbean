@@ -1,0 +1,110 @@
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<sect1 id="tapestry-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Tapestry integration</title>
+    
+    <sect2>
+    
+    <title>Dependencies</title>
+    
+    <para>
+    To integrate RDFBean with Tapestry (and Maven) all you need to do is inject the rdfbean-tapestry module
+    into your project in addition to your basic RDFBean dependencies : 
+    </para>
+    
+<programlisting language="xml">
+<![CDATA[    
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-tapestry</artifactId>
+      <version>${rdfbean.version}</version>
+    </dependency>    
+]]>
+</programlisting>    
+    
+    <para>To use the Sesame based backend you would additionally include the following dependency :</para>
+
+<programlisting language="xml">
+<![CDATA[        
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-sesame</artifactId>
+      <version>${rdfbean.version}</version>
+    </dependency>    
+]]>
+</programlisting>    
+
+  <para>And to get the type-safe queries working you would additionally need the 
+  following Maven plugin configuration block :</para>
+
+<programlisting language="xml">
+<![CDATA[          
+      <plugin>
+        <groupId>com.mysema.maven</groupId>
+        <artifactId>maven-apt-plugin</artifactId>
+        <version>0.3.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>target/generated-sources/java</outputDirectory>
+              <processor>com.mysema.rdfbean.query.BeanAnnotationProcessor</processor>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>  
+]]>
+</programlisting>    
+         
+    </sect2>
+    
+    <sect2>
+    
+      <title>Tapestry IOC level configuration</title>
+      
+      <para>
+      In your Tapestry application module you would need to declare the following services :
+      </para>
+      
+<programlisting language="java"><![CDATA[                   
+    // RDFBean configuration    
+    public static Configuration buildConfiguration(IdentityService identityService){
+        DefaultConfiguration configuration = new DefaultConfiguration();
+        configuration.setFetchStrategies(Collections.<FetchStrategy>singletonList(new PredicateWildcardFetch()));
+        // TODO : declared annotated classes
+        configuration.setIdentityService(identityService);
+        return configuration;
+    }
+
+    // RDFBean repository
+    public static Repository buildRepository(Configuration configuration,
+            @Inject @Symbol(someSymbolKeyHere) String rdfbeanDataDir) {
+        MemoryRepository repository = new MemoryRepository();
+        repository.setDataDirName(rdfbeanDataDir);
+        // TODO : set sources
+        return repository;        
+    }
+    
+]]></programlisting>  
+
+    <para>RDFBean Tapestry provides support for transactional wrapping of service methods. All you 
+    need to do to enable it is to annoteate your service interfaces with @org.springframework.transaction.annotation.Transactional
+    and to add include the following block in your module class : </para>
+    
+    
+<programlisting language="java"><![CDATA[             
+    
+    // TODO : set Match content to match your transactional service names
+    @Match({"*Service","*DAO"})
+    public static void adviseTransactions(TransactionalAdvisor advisor, MethodAdviceReceiver receiver){
+        advisor.addTransactionCommitAdvice(receiver);
+    }    
+    
+]]></programlisting>      
+    
+    </sect2>
+    
+              
+</sect1>
