@@ -11,7 +11,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * Dialect provides a generic model of RDF APIs
+ * Dialect provides a generic service for RDF node creation and conversion
  * 
  * @author Samppa
  * @author Timo

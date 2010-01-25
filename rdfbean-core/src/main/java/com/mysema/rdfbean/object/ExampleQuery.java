@@ -24,7 +24,7 @@ import com.mysema.query.types.path.PathBuilderFactory;
 import com.mysema.rdfbean.model.BID;
 
 /**
- * ExampleQuery provides
+ * ExampleQuery provides support query by example queries
  *
  * @author tiwe
  * @version $Id$
@@ -49,6 +49,12 @@ public class ExampleQuery <T>{
     
     private final BooleanBuilder conditions;
     
+    /**
+     * Create a new Query-by-example query
+     * 
+     * @param session
+     * @param entity
+     */
     @SuppressWarnings("unchecked")
     public ExampleQuery(Session session, T entity){
         this.session = Assert.notNull(session);

@@ -15,7 +15,7 @@ import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.Path;
 
 /**
- * ColQuery based BeanQuery implementation
+ * Non-optimized Memory based BeanQuery implementation
  * 
  * @author sasa
  *

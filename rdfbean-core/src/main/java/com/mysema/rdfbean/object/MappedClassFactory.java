@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.object;
 
 import java.lang.reflect.Constructor;
@@ -10,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * MappedClassFactory provides
+ * MappedClassFactory provides a factory for MappedClass creation 
  *
  * @author tiwe
  * @version $Id$

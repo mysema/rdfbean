@@ -21,16 +21,52 @@ import com.mysema.query.types.path.PEntity;
  */
 public interface BeanQuery extends Projectable, Closeable{
     
+    /**
+     * Defines the sources of the query
+     * 
+     * @param o
+     * @return
+     */
     BeanQuery from(PEntity<?>... o);
     
+    /**
+     * Defines the order of the query results
+     * 
+     * @param o
+     * @return
+     */
     BeanQuery orderBy(OrderSpecifier<?>... o);
     
+    /**
+     * Defines the filters of the query
+     * 
+     * @param o multiple mandatory fileters
+     * @return
+     */
     BeanQuery where(EBoolean... o);
     
+    /**
+     * Maximum number of results
+     * 
+     * @param limit
+     * @return
+     */
     BeanQuery limit(long limit);
     
+    /**
+     * Offset of results
+     * 
+     * @param offset
+     * @return
+     */
     BeanQuery offset(long offset);
     
+    /**
+     * Defines limit and offset
+     * 
+     * @param mod
+     * @return
+     */
     BeanQuery restrict(QueryModifiers mod);
 
 }

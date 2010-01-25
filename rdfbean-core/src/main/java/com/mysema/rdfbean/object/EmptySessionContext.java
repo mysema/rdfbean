@@ -6,7 +6,7 @@
 package com.mysema.rdfbean.object;
 
 /**
- * EmptySessionContext provides
+ * EmptySessionContext is an empty implementation of the SessionContext interface
  *
  * @author tiwe
  * @version $Id$

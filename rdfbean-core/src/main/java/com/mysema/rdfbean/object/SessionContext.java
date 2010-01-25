@@ -8,7 +8,7 @@ package com.mysema.rdfbean.object;
 import javax.annotation.Nullable;
 
 /**
- * SessionContext provides
+ * SessionContext provides thread bound Session access functionality
  *
  * @author tiwe
  * @version $Id$

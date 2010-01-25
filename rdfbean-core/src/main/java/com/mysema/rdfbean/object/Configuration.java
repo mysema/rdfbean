@@ -15,6 +15,13 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.identity.IdentityService;
 
+/**
+ * Configuration defines the main configuration interface for RDFBean
+ *
+ * @author tiwe
+ * @version $Id$
+ *
+ */
 public interface Configuration {
     
     ConverterRegistry getConverterRegistry();

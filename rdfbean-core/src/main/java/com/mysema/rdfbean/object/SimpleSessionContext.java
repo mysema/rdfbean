@@ -7,7 +7,7 @@ package com.mysema.rdfbean.object;
 
 
 /**
- * ThreadLocalSessionContext provides
+ * SimpleSessionContext provides thread bound Session access
  *
  * @author tiwe
  * @version $Id$

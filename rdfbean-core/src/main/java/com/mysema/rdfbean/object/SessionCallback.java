@@ -8,7 +8,7 @@ package com.mysema.rdfbean.object;
 import javax.annotation.Nullable;
 
 /**
- * SessionCallback provides
+ * SessionCallback defines a callback interface for in-session logic
  *
  * @author tiwe
  * @version $Id$

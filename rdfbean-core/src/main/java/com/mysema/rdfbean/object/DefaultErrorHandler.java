@@ -13,6 +13,8 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.UID;
 
 /**
+ * Default implementation of the ErrorHandler interface
+ * 
  * @author sasa
  *
  */

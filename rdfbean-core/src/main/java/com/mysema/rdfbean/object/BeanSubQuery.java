@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.object;
 
 import com.mysema.query.DefaultQueryMetadata;
@@ -12,7 +17,7 @@ import com.mysema.query.types.query.ListSubQuery;
 import com.mysema.query.types.query.ObjectSubQuery;
 
 /**
- * BeanSubQuery provides
+ * BeanSubQuery is a subquery class for use in BeanQuery instances
  *
  * @author tiwe
  * @version $Id$
@@ -28,14 +33,32 @@ public class BeanSubQuery implements Detachable {
         detachableMixin = new DetachableMixin(queryMixin);
     }
     
+    /**
+     * Defines the sources of the subquery
+     * 
+     * @param o
+     * @return
+     */
     public BeanSubQuery from(PEntity<?>... o) {
         return queryMixin.from(o);
     }
         
+    /**
+     * Defines the order of the subquery
+     * 
+     * @param o
+     * @return
+     */
     public BeanSubQuery orderBy(OrderSpecifier<?>... o){
         return queryMixin.orderBy(o);
     }
     
+    /**
+     * Defines the filter conditions of the subquery
+     * 
+     * @param o multiple mandatory filters
+     * @return
+     */
     public BeanSubQuery where(EBoolean... o){
         return queryMixin.where(o);
     }

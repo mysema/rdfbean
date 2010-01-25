@@ -17,32 +17,13 @@ import com.mysema.rdfbean.model.UID;
  */
 public interface ConverterRegistry {
     
-    /**
-     * @param <T>
-     * @param value
-     * @param requiredType
-     * @return
-     */
     <T> T fromString(String value, Class<T> requiredType);
 
-    /**
-     * @param javaClass
-     * @return
-     */
     @Nullable
     UID getDatatype(Class<?> javaClass);
 
-    /**
-     * @param cl
-     * @return
-     */
     boolean supports(Class<?> cl);
 
-    /**
-     * @param <T>
-     * @param javaValue
-     * @return
-     */
     <T> String toString(T javaValue);
        
 }
