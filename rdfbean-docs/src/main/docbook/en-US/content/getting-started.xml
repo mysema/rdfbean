@@ -13,7 +13,8 @@
       
       <title>ClassMapping</title>
       
-      <para><emphasis>ClassMapping</emphasis> declares a mapping from a Java type to an RDF type. If your Java type simple name
+      <para><emphasis>ClassMapping</emphasis> declares a mapping from a Java type to an RDF type. If your Java type 
+      simple name
       is equal to the local name of the RDF type, which is a good practice, all you need to do is to declare 
       the namespace. The namespace is best kept accessible via a public static final constant : </para>
       
@@ -76,7 +77,8 @@ public class User {
 }
 ]]></programlisting>          
     
-    <para>Alternatively the id can be injected in IDType.URI or IDType.RESOURCE form. Use the UID type for URI injection
+    <para>Alternatively the id can be injected in IDType.URI or IDType.RESOURCE form. Use the UID or ID type for URI 
+    injection
     and ID for RESOURCE typed injection.</para>
     
     </sect2>
@@ -85,10 +87,11 @@ public class User {
     
     <title>MappedClasses</title>
     
-    <para>A good practice is to use <emphasis>MappedClasses</emphasis> in the domain package package-info.java to declare the
-    annotated types in the package.</para>
+    <para>A good practice is to use <emphasis>MappedClasses</emphasis> in the domain package package-info.java to 
+    declare the annotated types in the package.</para>
     
-    <para>This way you can use <emphasis>DefaultConfiguration.addPackages</emphasis> to configure the annoteated types. </para>
+    <para>This way you can use <emphasis>DefaultConfiguration.addPackages</emphasis> to configure the annoteated
+     types. </para>
     
 <programlisting language="java"><![CDATA[      
 @MappedClasses( { 
