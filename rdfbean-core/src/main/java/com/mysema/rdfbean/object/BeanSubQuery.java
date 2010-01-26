@@ -24,13 +24,23 @@ import com.mysema.query.types.query.ObjectSubQuery;
  */
 public class BeanSubQuery implements Detachable {
     
-    private final QueryMixin<BeanSubQuery> queryMixin;
-    
     private final DetachableMixin detachableMixin;
+    
+    private final QueryMixin<BeanSubQuery> queryMixin;
     
     public BeanSubQuery() {
         queryMixin = new QueryMixin<BeanSubQuery>(this, new DefaultQueryMetadata());
         detachableMixin = new DetachableMixin(queryMixin);
+    }
+    
+    @Override
+    public ObjectSubQuery<Long> count() {
+        return detachableMixin.count();
+    }
+        
+    @Override
+    public EBoolean exists() {
+        return detachableMixin.exists();
     }
     
     /**
@@ -42,7 +52,27 @@ public class BeanSubQuery implements Detachable {
     public BeanSubQuery from(PEntity<?>... o) {
         return queryMixin.from(o);
     }
-        
+
+    @Override
+    public ListSubQuery<Object[]> list(Expr<?> first, Expr<?> second, Expr<?>... rest) {
+        return detachableMixin.list(first, second, rest);
+    }
+
+    @Override
+    public ListSubQuery<Object[]> list(Expr<?>[] args) {
+        return detachableMixin.list(args);
+    }
+
+    @Override
+    public <RT> ListSubQuery<RT> list(Expr<RT> projection) {
+        return detachableMixin.list(projection);
+    }
+
+    @Override
+    public EBoolean notExists() {
+        return detachableMixin.notExists();
+    }
+
     /**
      * Defines the order of the subquery
      * 
@@ -52,7 +82,24 @@ public class BeanSubQuery implements Detachable {
     public BeanSubQuery orderBy(OrderSpecifier<?>... o){
         return queryMixin.orderBy(o);
     }
-    
+
+    // TODO : provide any / all distinction ?!?
+    @Override
+    public ObjectSubQuery<Object[]> unique(Expr<?> first, Expr<?> second, Expr<?>... rest) {
+        return detachableMixin.unique(first, second, rest);
+    }
+
+    @Override
+    public ObjectSubQuery<Object[]> unique(Expr<?>[] args) {
+        return detachableMixin.unique(args);
+    }
+
+    // TODO : provide any / all distinction ?!?
+    @Override
+    public <RT> ObjectSubQuery<RT> unique(Expr<RT> projection) {
+        return detachableMixin.unique(projection);
+    }
+
     /**
      * Defines the filter conditions of the subquery
      * 
@@ -61,51 +108,6 @@ public class BeanSubQuery implements Detachable {
      */
     public BeanSubQuery where(EBoolean... o){
         return queryMixin.where(o);
-    }
-
-    @Override
-    public ObjectSubQuery<Long> count() {
-        return detachableMixin.count();
-    }
-
-    @Override
-    public EBoolean exists() {
-        return detachableMixin.exists();
-    }
-
-    @Override
-    public <RT> ListSubQuery<RT> list(Expr<RT> projection) {
-        return detachableMixin.list(projection);
-    }
-
-    @Override
-    public ListSubQuery<Object[]> list(Expr<?> first, Expr<?> second, Expr<?>... rest) {
-        return detachableMixin.list(first, second, rest);
-    }
-
-    @Override
-    public EBoolean notExists() {
-        return detachableMixin.notExists();
-    }
-
-    @Override
-    public <RT> ObjectSubQuery<RT> unique(Expr<RT> projection) {
-        return detachableMixin.unique(projection);
-    }
-
-    @Override
-    public ObjectSubQuery<Object[]> unique(Expr<?> first, Expr<?> second, Expr<?>... rest) {
-        return detachableMixin.unique(first, second, rest);
-    }
-
-    @Override
-    public ListSubQuery<Object[]> list(Expr<?>[] args) {
-        return detachableMixin.list(args);
-    }
-
-    @Override
-    public ObjectSubQuery<Object[]> unique(Expr<?>[] args) {
-        return detachableMixin.unique(args);
     }
     
 
