@@ -109,7 +109,68 @@
     <sect2>
       <title>Repository stubs</title>
       
-      <para>TODO</para>
+      <para>The RDFBean Tapestry module provides the following Repository interface for entity type specific persistence functionality :</para>
+      
+<programlisting language="java"><![CDATA[         
+public interface Repository<Entity, Id extends Serializable> {    
+
+    Collection<Entity> getAll();
+
+    @Nullable
+    Entity getById( Id id );
+
+    void remove( Entity entity );
+    
+    void remove(Id id);
+
+    Entity save( Entity entity );
+    
+    void saveAll( Iterable<? extends Entity> entities);
+
+}      
+]]></programlisting>        
+
+    <para>Extend the AbstractRepository class to create a a type specific implementation of the Repository interface.</para>
+
+    <para>Here is an example for the User type :</para>
+    
+<programlisting language="java"><![CDATA[             
+public class UserRepositoryImpl extends AbstractRepository<User> implements UserRepository{
+    
+    public UserRepositoryImpl() {
+        super(user);
+    }
+
+    @Override
+    public User getByUsername(String username){
+        return getSession().from(user).where(user.username.eq(username))
+            .uniqueResult(user);
+    }
+    
+    @Override
+    public List<User> getOrderedByName() {
+        return getSession().from(user).orderBy(user.username.asc())
+            .list(user);
+    }
+
+}    
+]]></programlisting>        
+
+    <para>using</para>
+    
+<programlisting language="java"><![CDATA[      
+@Transactional
+public interface UserRepository extends Repository<User,String>{
+    
+    @Nullable
+    User getByUsername(String shortName);
+    
+    List<User> getOrderedByName();
+
+}
+]]></programlisting>    
+    
+    <para>For other RDFBean persistence services extend AbstractService.</para>    
     
     </sect2>
     

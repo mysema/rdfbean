@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows defining default value for object/reference properties. For example a default Role of a User: 
+ * Allows defining a default value for object/reference properties. For example a default Role of a User: 
  * <pre>
  * &#64;ClassMapping(ns=TEST.NS)
  * public class User {

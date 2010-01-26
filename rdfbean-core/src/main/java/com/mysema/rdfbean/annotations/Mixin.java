@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
  * Thus it is never used in conjunction with &#64;Predicate. &#64;Mixin property's type
  * may not be assignable from the host type (self reference). 
  * <p>
- * Mixin references are useful when there's multiple projections (DTO's) for the same 
+ * Mixin references are useful when there's multiple projections (DTOs) for the same 
  * underlying resource, e.g. one containing only basic information about the subject and 
  * another containing everything else. The class containing details don't have to repeat
  * info classes properties as it can reuse it using &#64;Mixin property.

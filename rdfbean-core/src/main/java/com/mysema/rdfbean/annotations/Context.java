@@ -15,10 +15,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Target context (URI) for given class or classes of annotated package. 
+ * Target context (URI) for given class or the classes of an annotated package. 
  * <p>
  * Many RDF persistence solutions store quadruples containing the context/model/source of the 
- * statement instead of simple triples. Queries can thus be targeted to specified context. 
+ * statement instead of simple triples. Queries can thus be targeted to a specific context. 
  * 
  * @author sasa
  *

@@ -18,7 +18,7 @@
       the namespace. The namespace is best kept accessible via a public static final constant : </para>
       
 <programlisting language="java"><![CDATA[    
-@ClassMapping(ns=MYPROJECT.NS)
+@ClassMapping(ns=TEST.NS)
 public class User {
 
     // ...
@@ -38,7 +38,7 @@ public class User {
       namespace is the same as the namespace of the host type : </para>
       
 <programlisting language="java"><![CDATA[    
-@ClassMapping(ns=MYPROJECT.NS)
+@ClassMapping(ns=TEST.NS)
 public class User {
 
     @Predicate(ln="user_name")
@@ -62,7 +62,7 @@ public class User {
     to use on the application level :</para>
     
 <programlisting language="java"><![CDATA[    
-@ClassMapping(ns=MYPROJECT.NS)
+@ClassMapping(ns=TEST.NS)
 public class User {
 
     @Id
@@ -111,7 +111,12 @@ import com.mysema.rdfbean.annotations.MappedClasses;
          
     <title>Localized</title>
      
-    <para><emphasis>Localized</emphasis> ...</para>
+    <para><emphasis>Localized</emphasis> defines that a property is bound to a localized value. The locale preference
+    is set in the Session. When multiple values with different locales are available for a property, the value with
+    the best matching locale is bound to the Java property. 
+    </para>
+    
+    <para>For updates the the primary locale is used as the literal's locale.</para>
     
     </sect2>
     
@@ -119,7 +124,9 @@ import com.mysema.rdfbean.annotations.MappedClasses;
 
       <title>Mixin</title>
     
-      <para><emphasis>Mixin</emphasis> ...</para>    
+      <para><emphasis>Mixin</emphasis> defines a view on the host type's subject with a different type.
+        Mixin can't be combined with Predicate or Path, since the RDF identity of the mixin property is the 
+        same as the host's identity.</para>    
     
     </sect2>
     
@@ -127,7 +134,8 @@ import com.mysema.rdfbean.annotations.MappedClasses;
     
       <title>Context</title>
       
-      <para><emphasis>Context</emphasis> ...</para>
+      <para><emphasis>Context</emphasis> defines the target context of the annotated type or
+      the context of the types of an annotated package.</para>
     
     </sect2>
     
@@ -135,7 +143,8 @@ import com.mysema.rdfbean.annotations.MappedClasses;
     
       <title>Path</title>
     
-      <para><emphasis>Path</emphasis> ... </para>
+      <para><emphasis>Path</emphasis> defines a chain of predicates for readonly properties. The value accessible
+      by the predicate path is bound to the property. Path can contain both direct and inverse predicates. </para>
     
     </sect2>
     
@@ -143,7 +152,22 @@ import com.mysema.rdfbean.annotations.MappedClasses;
     
       <title>Required</title>
     
-      <para><emphasis>Required</emphasis> ...</para>
+      <para><emphasis>Required</emphasis> defines that a certain property is mandatory.</para>
+      
+<programlisting language="java"><![CDATA[    
+@ClassMapping(ns=TEST.NS)
+public class User {
+
+    @Id
+    private String id;
+
+    @Predicate
+    @Required
+    private String userName;
+    
+}
+]]></programlisting>       
+          
     
     </sect2>
     
@@ -151,7 +175,21 @@ import com.mysema.rdfbean.annotations.MappedClasses;
     
       <title>Unique</title>
     
-      <para><emphasis>Unique</emphasis> ...</para>
+      <para><emphasis>Unique</emphasis> defines that the annotated property is unique.</para>
+      
+<programlisting language="java"><![CDATA[    
+@ClassMapping(ns=TEST.NS)
+public class User {
+
+    @Id
+    private String id;
+
+    @Predicate(ln="user_name")
+    @Unique
+    private String userName;
+    
+}
+]]></programlisting>       
     
     </sect2>
     

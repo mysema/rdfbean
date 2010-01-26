@@ -15,8 +15,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * &#64;Path mapping allows mapping predicate path's into read-only properties. 
- * A path consist of direct and inverse predicates.
+ * &#64;Path mapping allows mapping predicate paths into read-only properties. 
+ * A path can include direct and inverse mapped predicates.
  * 
  * @author sasa
  */

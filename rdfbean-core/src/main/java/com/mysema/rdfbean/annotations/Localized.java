@@ -15,8 +15,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * &#64;Localized String properties are directly binded with the best matching literal value 
- * using sessions locale preferences. When updating localized String properties, the primary 
+ * &#64;Localized String properties are directly bound to the best matching literal value 
+ * using session locale preferences. When updating localized String properties, the primary 
  * language is expected. 
  * <pre>
  *   &#64;Predicate(ns=RDFS.NS)
