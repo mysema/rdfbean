@@ -163,7 +163,7 @@ public class User {
 
     @Predicate
     @Required
-    private String userName;
+    private String email;
     
 }
 ]]></programlisting>       
