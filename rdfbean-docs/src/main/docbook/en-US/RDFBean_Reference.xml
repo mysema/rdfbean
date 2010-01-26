@@ -60,8 +60,8 @@
     
     <!-- Service level integration -->
     <xi:include href="content/integration/spring-integration.xml" />
-    <xi:include href="content/integration/tapestry-integration.xml" />
     <xi:include href="content/integration/guice-integration.xml" />
+    <xi:include href="content/integration/tapestry-integration.xml" />    
     
     </chapter>
 
