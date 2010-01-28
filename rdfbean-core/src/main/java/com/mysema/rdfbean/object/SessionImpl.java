@@ -59,7 +59,7 @@ public class SessionImpl implements Session {
     
     private final IdentityService identityService;
     
-    Map<ID, List<Object>> instanceCache;
+    private Map<ID, List<Object>> instanceCache;
     
     private Iterable<Locale> locales;
     

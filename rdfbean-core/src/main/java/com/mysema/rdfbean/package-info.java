@@ -3,6 +3,11 @@
  * All rights reserved.
  * 
  */
+
+
+/**
+ * Utility classes
+ */
 @DefaultAnnotation( { Nonnull.class })
 package com.mysema.rdfbean;
 

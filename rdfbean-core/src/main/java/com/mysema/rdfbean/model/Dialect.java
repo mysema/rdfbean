@@ -34,11 +34,6 @@ public abstract class Dialect
     
     public abstract B createBNode();
     
-    public S createStatement(ID subject, UID predicate, NODE object, @Nullable UID context){
-        U c = context != null ? getURI(context) : null;
-        return createStatement(getResource(subject), getURI(predicate), getNode(object), c); 
-    }
-
     public abstract S createStatement(R subject, U predicate, N object);
     
     public abstract S createStatement(R subject, U predicate, N object, @Nullable U context);

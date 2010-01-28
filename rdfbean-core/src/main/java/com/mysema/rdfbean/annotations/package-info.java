@@ -3,6 +3,10 @@
  * All rights reserved.
  * 
  */
+
+/**
+ * Annotations for domain types 
+ */
 @DefaultAnnotation( { Nonnull.class })
 package com.mysema.rdfbean.annotations;
 

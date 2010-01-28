@@ -3,6 +3,10 @@
  * All rights reserved.
  * 
  */
+
+/**
+ * Literal converters for XML Schema types
+ */
 @DefaultAnnotation( { Nonnull.class })
 package com.mysema.rdfbean.xsd;
 

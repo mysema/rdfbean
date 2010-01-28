@@ -3,6 +3,10 @@
  * All rights reserved.
  * 
  */
+
+/**
+ * OWL types and constants 
+ */
 @DefaultAnnotation( { Nonnull.class })
 @MappedClasses({
     DataRange.class, 

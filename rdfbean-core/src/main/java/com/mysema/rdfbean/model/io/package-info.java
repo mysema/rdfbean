@@ -5,10 +5,10 @@
  */
 
 /**
- * Schema generation/serialization classes
+ * Model IO
  */
 @DefaultAnnotation( { Nonnull.class })
-package com.mysema.rdfbean.schema;
+package com.mysema.rdfbean.model.io;
 
 import javax.annotation.Nonnull;
 

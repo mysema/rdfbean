@@ -3,6 +3,10 @@
  * All rights reserved.
  * 
  */
+
+/**
+ * Session API
+ */
 @DefaultAnnotation( { Nonnull.class })
 package com.mysema.rdfbean.object;
 

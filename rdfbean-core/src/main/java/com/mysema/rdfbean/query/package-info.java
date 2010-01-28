@@ -3,6 +3,11 @@
  * All rights reserved.
  * 
  */
+
+/**
+ * Session level query classes
+ * 
+ */
 @DefaultAnnotation( { Nonnull.class })
 package com.mysema.rdfbean.query;
 

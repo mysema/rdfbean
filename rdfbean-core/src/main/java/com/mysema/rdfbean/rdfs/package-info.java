@@ -4,6 +4,9 @@
  * 
  */
 
+/**
+ * RDF schema types and constants 
+ */
 @MappedClasses({
     RDFProperty.class, 
     RDFPropertyFeature.class, 
