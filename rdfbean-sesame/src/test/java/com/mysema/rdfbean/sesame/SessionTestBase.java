@@ -19,6 +19,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.BeanQuery;

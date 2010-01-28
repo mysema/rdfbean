@@ -6,13 +6,14 @@
 package com.mysema.rdfbean.sesame;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections15.Transformer;
+import org.apache.commons.collections15.iterators.TransformIterator;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -57,6 +58,13 @@ public class SesameConnection implements RDFConnection {
     
     private final ValueFactory vf;
     
+    private final Transformer<STMT,Statement> stmtTransformer = new Transformer<STMT,Statement>(){
+        @Override
+        public Statement transform(STMT stmt) {
+            return convert(stmt);
+        }        
+    };
+    
     public SesameConnection(RepositoryConnection connection) {
         this.connection = connection;
         this.vf = connection.getValueFactory();
@@ -83,7 +91,7 @@ public class SesameConnection implements RDFConnection {
     }
 
     @Override
-    public void clear() {
+    public void clear() {        
     }
 
     @Override
@@ -99,16 +107,22 @@ public class SesameConnection implements RDFConnection {
 
     }
     
-    private Collection<Statement> convert(Collection<STMT> stmts) {
-        List<Statement> statements = new ArrayList<Statement>(stmts.size());
-        for (STMT stmt : stmts) {
-            statements.add(dialect.createStatement(
-                    stmt.getSubject(), 
-                    stmt.getPredicate(), 
-                    stmt.getObject(), 
-                    stmt.getContext()));
-        }
-        return statements;
+    private Iterable<Statement> convert(final Collection<STMT> stmts) {
+        return new Iterable<Statement>(){
+            @Override
+            public Iterator<Statement> iterator() {
+                return new TransformIterator<STMT,Statement>(stmts.iterator(),stmtTransformer);
+            }
+            
+        };
+    }
+    
+    private Statement convert(STMT stmt){
+        Resource subject = dialect.getResource(stmt.getSubject());
+        URI predicate = dialect.getURI(stmt.getPredicate());
+        Value object = dialect.getNode(stmt.getObject());
+        URI context = stmt.getContext() != null ? dialect.getURI(stmt.getContext()) : null;
+        return dialect.createStatement(subject, predicate, object, context);
     }
     
     @Nullable
