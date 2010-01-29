@@ -1,21 +1,35 @@
-package com.mysema.rdfbean.sesame;
+/*
+ * Copyright (c) 2009 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
+package com.mysema.rdfbean.sesame.load;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.MiniRepository;
+import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionUtil;
+import com.mysema.rdfbean.object.SessionFactoryImpl;
+import com.mysema.rdfbean.sesame.MemoryRepository;
+import com.mysema.rdfbean.sesame.NativeRepository;
+import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
  * SavingTest provides
@@ -23,7 +37,7 @@ import com.mysema.rdfbean.object.SessionUtil;
  * @author tiwe
  * @version $Id$
  */
-public class SavingTest extends SessionTestBase{
+public class LoadTest extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class Revision {
@@ -61,33 +75,43 @@ public class SavingTest extends SessionTestBase{
                    
     }
     
-    @Test
-    public void test_MemoryRepository() throws StoreException{
-        System.out.println("test_MemoryRepository");
-        session = createSession(Document.class, Entity.class, Revision.class);
-        session.setFlushMode(FlushMode.MANUAL);
-        
-        loadTest(session, 10);
-        loadTest(session, 50);
-        loadTest(session, 100);
-        loadTest(session, 500);
-        loadTest(session, 1000);    
+    @After
+    public void tearDown() throws IOException{
+        FileUtils.deleteDirectory(new File("target/native"));
     }
     
     @Test
-    public void test_MiniRepository() throws IOException{
-        System.out.println("test_MiniRepository");
-        Session localSession = SessionUtil.openSession(Document.class, Entity.class, Revision.class);
+    public void test() throws IOException{        
+        loadTest(new MiniRepository());
+        
+        // Sesame repositories
+        loadTest(new DirectMemoryRepository());
+        loadTest(new InferencingMemoryRepository());
+        loadTest(new MemoryRepository(null, true));        
+        loadTest(new NativeRepository(new File("target/native"), false));
+    }        
+    
+    private void loadTest(Repository repository) throws IOException{
+        System.out.println("testing " + repository.getClass().getSimpleName());
+        System.out.println();
+        
+        SessionFactoryImpl sessionFactory = new SessionFactoryImpl(Locale.ENGLISH);
+        sessionFactory.setConfiguration(new DefaultConfiguration(Document.class, Entity.class, Revision.class));
+        sessionFactory.setRepository(repository);
+        sessionFactory.initialize();
+        
+        Session localSession = sessionFactory.openSession();
         
         try{
             loadTest(localSession, 10);
             loadTest(localSession, 50);
             loadTest(localSession, 100);
             loadTest(localSession, 500);
-            loadTest(localSession, 1000);    
+            loadTest(localSession, 1000);  
         }finally{
             localSession.close();
-        }        
+            sessionFactory.close();
+        }            
     }
     
     private void loadTest(Session session, int size){
@@ -119,9 +143,9 @@ public class SavingTest extends SessionTestBase{
         long t2 = System.currentTimeMillis();
         session.flush();
         long t3 = System.currentTimeMillis();
-        System.err.println("Save of " + objects.size() + " objects took " + (t2-t1)+"ms");
-        System.err.println("Flush took " + (t3-t2)+"ms");
-        System.err.println();
+        System.out.println("  Save of " + objects.size() + " objects took " + (t2-t1)+"ms");
+        System.out.println("  Flush took " + (t3-t2)+"ms");
+        System.out.println();
     }
 
 }

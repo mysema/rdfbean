@@ -92,6 +92,7 @@ public class SesameConnection implements RDFConnection {
 
     @Override
     public void clear() {        
+        dialect.clear();
     }
 
     @Override

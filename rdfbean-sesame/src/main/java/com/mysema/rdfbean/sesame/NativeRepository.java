@@ -7,40 +7,32 @@ package com.mysema.rdfbean.sesame;
 
 import java.io.File;
 
-import org.apache.commons.lang.StringUtils;
-import org.openrdf.repository.Repository;
-import org.openrdf.repository.sail.SailRepository;
+import org.openrdf.sail.NotifyingSail;
 import org.openrdf.sail.nativerdf.NativeStore;
+
+import com.mysema.commons.lang.Assert;
+
 
 /**
  * @author sasa
  *
  */
-public class NativeRepository extends AbstractSesameRepository {
+public class NativeRepository extends AbstractSailRepository {
     
-    private File dataDir;
-    
-    public NativeRepository() {}
-    
-    public NativeRepository(File dataDir) {
-        this.dataDir = dataDir;
+    public NativeRepository(){}
+
+    public NativeRepository(File dataDir, boolean sailInference) {
+        super(dataDir, sailInference);
     }
 
     @Override
-    protected Repository createRepository() {
-        NativeStore store = new NativeStore(dataDir);
-        return new SailRepository(store);
-//        return new SailRepository(new ForwardChainingRDFSInferencer(store));
-    }
-
-    public void setDataDir(File dataDir) {
-        this.dataDir = dataDir;
-    }
-    
-    public void setDataDirName(String dataDirName) {
-        if (StringUtils.isNotEmpty(dataDirName)) {
-            this.dataDir = new File(dataDirName);
+    protected NotifyingSail createSail(File dataDir, boolean sailInference) {
+        NativeStore store = new NativeStore(Assert.notNull(dataDir));
+        if (sailInference){
+            return new ExtendedRDFSInferencer(store);
+        }else{
+            return store;
         }
     }
-
+    
 }

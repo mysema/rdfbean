@@ -40,7 +40,7 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     private final Map<Literal, LIT> literalCache = new HashMap<Literal, LIT>(1024); 
     
     private final Map<URI, UID> uriCache = new HashMap<URI, UID>(1024); 
-    
+        
     private final ValueFactory vf; 
 
     public SesameDialect(ValueFactory vf) {
@@ -175,6 +175,12 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     
     public ValueFactory getValueFactory(){
         return vf;
+    }
+    
+    public void clear(){
+        uriCache.clear();
+        bnodeCache.clear();
+        literalCache.clear();
     }
 
 }
