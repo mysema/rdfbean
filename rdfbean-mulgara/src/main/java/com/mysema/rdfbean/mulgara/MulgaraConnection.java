@@ -189,8 +189,12 @@ public class MulgaraConnection implements RDFConnection{
         }
     }
     
-    private Triple convert(STMT stmt){
-        return dialect.createStatement(stmt.getSubject(), stmt.getPredicate(),stmt.getObject(),stmt.getContext());
+    private Triple convert(STMT stmt){        
+        return dialect.createStatement(
+                dialect.getResource(stmt.getSubject()), 
+                dialect.getURI(stmt.getPredicate()),
+                dialect.getNode(stmt.getObject()),
+                stmt.getContext() != null ? dialect.getURI(stmt.getContext()) : null);
     }
 
     @Override

@@ -109,7 +109,7 @@ public class SessionFactoryImpl implements SessionFactory {
         return locales;
     }
 
-    public void initialize() {
+    public void initialize() {        
         repository.initialize();
         RDFConnection connection = repository.openConnection();
         try {

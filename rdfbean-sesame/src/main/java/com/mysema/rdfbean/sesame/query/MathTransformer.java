@@ -23,7 +23,7 @@ import com.mysema.query.types.operation.Ops;
  * @author tiwe
  * @version $Id$
  */
-public class MathTransformer implements Transformer {
+public class MathTransformer implements OperationTransformer {
     
     private final Map<Operator<?>, MathOp> ops = new HashMap<Operator<?>,MathOp>();
     

@@ -28,7 +28,7 @@ import com.mysema.query.types.path.Path;
  * @author tiwe
  * @version $Id$
  */
-public class InTransformer implements Transformer{
+public class InTransformer implements OperationTransformer{
 
     private final EqualsTransformer equals = new EqualsTransformer();
     

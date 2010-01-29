@@ -43,5 +43,5 @@ public interface Configuration {
     IdentityService getIdentityService();
 
     List<FetchStrategy> getFetchStrategies();
-    
+        
 }

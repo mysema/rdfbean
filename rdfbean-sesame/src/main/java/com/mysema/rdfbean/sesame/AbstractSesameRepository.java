@@ -18,6 +18,9 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.store.StoreException;
 
+import com.mysema.rdfbean.model.EmptyOntology;
+import com.mysema.rdfbean.model.InferenceOptions;
+import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.io.Format;
@@ -28,7 +31,9 @@ import com.mysema.rdfbean.model.io.RDFSource;
  *
  */
 public abstract class AbstractSesameRepository implements Repository{
-
+    
+    private Ontology ontology = new EmptyOntology();
+    
     private RDFSource[] sources;
     
     private org.openrdf.repository.Repository repository;
@@ -44,7 +49,7 @@ public abstract class AbstractSesameRepository implements Repository{
     @Override
     public RDFConnection openConnection() {
         try {
-            return new SesameConnection(repository.getConnection());
+            return new SesameConnection(repository.getConnection(), ontology, getInferenceOptions());
         } catch (StoreException e) {
             throw new RuntimeException(e);
         }
@@ -57,7 +62,7 @@ public abstract class AbstractSesameRepository implements Repository{
     public void setSources(RDFSource... sources) {
         this.sources = sources;
     }
-
+    
     public void initialize() {
         if (!initialized) {
             try {
@@ -91,6 +96,8 @@ public abstract class AbstractSesameRepository implements Repository{
     }
     
     protected abstract org.openrdf.repository.Repository createRepository();
+    
+    protected abstract InferenceOptions getInferenceOptions();
 
     @Override
     public void export(Format format, OutputStream out){
@@ -119,4 +126,8 @@ public abstract class AbstractSesameRepository implements Repository{
         }
     }
 
+    public void setOntology(Ontology ontology) {
+        this.ontology = ontology;
+    }
+    
 }

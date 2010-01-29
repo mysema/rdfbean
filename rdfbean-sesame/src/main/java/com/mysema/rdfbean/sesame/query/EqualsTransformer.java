@@ -45,13 +45,13 @@ import com.mysema.rdfbean.object.MappedPath;
  * @author tiwe
  * @version $Id$
  */
-public class EqualsTransformer implements Transformer{
+public class EqualsTransformer implements OperationTransformer{
 
-    private final Map<Operator<?>,CompareOp> ops = new HashMap<Operator<?>,CompareOp>();
+    private static final Map<Operator<?>,CompareOp> ops = new HashMap<Operator<?>,CompareOp>();
     
-    private final Transformer colSize = new ColSizeTransformer();
+    private final OperationTransformer colSize = new ColSizeTransformer();
     
-    {
+    static{
         ops.put(EQ_OBJECT, CompareOp.EQ); 
         ops.put(EQ_PRIMITIVE, CompareOp.EQ);
         ops.put(NE_OBJECT,  CompareOp.NE);

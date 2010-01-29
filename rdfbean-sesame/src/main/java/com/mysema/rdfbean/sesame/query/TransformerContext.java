@@ -67,5 +67,7 @@ public interface TransformerContext {
     Var toVar(UID id);
 
     Var toVar(Value value);
+
+    JoinBuilder createJoinBuilder();
     
 }

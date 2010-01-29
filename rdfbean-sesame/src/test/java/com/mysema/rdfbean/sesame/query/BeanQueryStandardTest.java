@@ -84,7 +84,7 @@ public class BeanQueryStandardTest extends SessionTestBase {
         
     @Override
     public void tearDown() throws IOException{
-        session.delete(other);
+        if (other != null) session.delete(other);
         super.tearDown();
     }
 

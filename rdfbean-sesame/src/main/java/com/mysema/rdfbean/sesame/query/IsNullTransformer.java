@@ -24,7 +24,7 @@ import com.mysema.query.types.path.Path;
  * @author tiwe
  * @version $Id$
  */
-public class IsNullTransformer implements Transformer{
+public class IsNullTransformer implements OperationTransformer{
 
     @Override
     public Collection<? extends Operator<?>> getSupportedOperations() {

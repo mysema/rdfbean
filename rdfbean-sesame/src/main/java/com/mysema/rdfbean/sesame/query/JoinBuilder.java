@@ -10,15 +10,11 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.vocabulary.XMLSchema;
+import org.apache.commons.collections15.Transformer;
 import org.openrdf.query.algebra.Join;
 import org.openrdf.query.algebra.LeftJoin;
 import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.TupleExpr;
-import org.openrdf.query.algebra.Union;
-import org.openrdf.query.algebra.Var;
 
 import com.mysema.commons.lang.Assert;
 
@@ -30,46 +26,21 @@ import com.mysema.commons.lang.Assert;
  */
 public class JoinBuilder{
     
-    private final boolean datatypeInference;
+    private final Transformer<StatementPattern,TupleExpr> stmtTransformer;
     
-//    private boolean optional;
-    
-    private List<StatementPattern> patterns = new ArrayList<StatementPattern>();
+    private final List<StatementPattern> patterns = new ArrayList<StatementPattern>();
     
     private TupleExpr tupleExpr;
     
-    private final ValueFactory vf;
-    
-    public JoinBuilder(ValueFactory vf, boolean datatypeInference){
-        this.vf = Assert.notNull(vf);
-        this.datatypeInference = datatypeInference; 
+    public JoinBuilder(Transformer<StatementPattern,TupleExpr> stmtTransformer){
+        this.stmtTransformer = Assert.notNull(stmtTransformer);
     }
 
     public JoinBuilder add(StatementPattern pattern){
         patterns.add(pattern);        
         return this;
     }
-    
-    private TupleExpr convert(StatementPattern pattern){
-        if (datatypeInference){
-            Var objVar = pattern.getObjectVar();
-            if (objVar.getValue() != null && objVar.getValue() instanceof Literal){
-                Literal lit = (Literal) pattern.getObjectVar().getValue();
-                if (lit.getDatatype() != null && lit.getDatatype().equals(XMLSchema.STRING)){
-                    Var obj2 = new Var(objVar.getName()+"_untyped", vf.createLiteral(lit.getLabel()));
-                    StatementPattern pattern2 = new StatementPattern(
-                            pattern.getScope(), 
-                            pattern.getSubjectVar(), 
-                            pattern.getPredicateVar(),
-                            obj2,
-                            pattern.getContextVar());
-                    return new Union(pattern, pattern2);
-                }
-            }            
-        }        
-        return pattern;
-    }
-    
+        
     public TupleExpr getTupleExpr() {
         if (!patterns.isEmpty()){
             tupleExpr = merge(patterns, tupleExpr);
@@ -85,9 +56,9 @@ public class JoinBuilder{
         TupleExpr rv = base;
         for (StatementPattern pattern : patterns){
             if (rv != null){
-                rv = new Join(rv, convert(pattern));
+                rv = new Join(rv, stmtTransformer.transform(pattern));
             }else{
-                rv = convert(pattern);
+                rv = stmtTransformer.transform(pattern);
             }
         }
         patterns.clear();
@@ -99,14 +70,12 @@ public class JoinBuilder{
             tupleExpr = new LeftJoin(tupleExpr, merge(patterns, null)); 
             patterns.clear();
         }        
-//        optional = false;
     }    
         
     public void setOptional(){
         if (!patterns.isEmpty()){
             tupleExpr = merge(patterns, tupleExpr);
         }        
-//        optional = true;
     }
     
 }

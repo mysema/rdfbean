@@ -12,8 +12,10 @@ import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.ioc.annotations.Symbol;
 
+import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.DefaultOntology;
 import com.mysema.rdfbean.object.ObjectRepository;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
@@ -39,6 +41,10 @@ public class RDFBeanModule {
 
     public static IdentityService buildIdentityService(@Inject @Symbol(DERBY_URL) String derbyURL) throws IOException{
         return new DerbyIdentityService(derbyURL);
+    }
+    
+    public static Ontology buildOntology(Configuration configuration){
+        return new DefaultOntology(configuration);
     }
     
     public static SessionFactory buildSessionFactory(Configuration configuration, Repository repository, 

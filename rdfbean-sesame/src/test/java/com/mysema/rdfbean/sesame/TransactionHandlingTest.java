@@ -20,7 +20,6 @@ import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PathMetadataFactory;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.Restriction;

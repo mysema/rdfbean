@@ -23,7 +23,7 @@ import com.mysema.query.types.query.SubQuery;
  * @author tiwe
  * @version $Id$
  */
-public class ExistsTransformer implements Transformer{
+public class ExistsTransformer implements OperationTransformer{
 
     @Override
     public ValueExpr transform(Operation<?,?> operation, TransformerContext context) {

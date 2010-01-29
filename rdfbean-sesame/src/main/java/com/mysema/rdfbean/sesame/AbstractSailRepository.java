@@ -9,6 +9,9 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.NotifyingSail;
 
+import com.mysema.rdfbean.model.InferenceOptions;
+import com.mysema.rdfbean.model.Ontology;
+
 /**
  * AbstractSailRepository provides
  *
@@ -19,21 +22,30 @@ public abstract class AbstractSailRepository extends AbstractSesameRepository{
     
     @Nullable
     private File dataDir;
-    
-    private boolean sailInference = false;
+        
+    private boolean sesameInference = false;
     
     public AbstractSailRepository(){}
     
     public AbstractSailRepository(File dataDir, boolean sailInference){
         this.dataDir = dataDir;
-        this.sailInference = sailInference;
+        this.sesameInference = sailInference;
     }
     
+    public AbstractSailRepository(File dataDir, Ontology ontology) {
+        this.dataDir = dataDir;
+        setOntology(ontology);
+    }
+
+    public AbstractSailRepository(Ontology ontology) {
+        setOntology(ontology);
+    }
+
     protected abstract NotifyingSail createSail(@Nullable File dataDir, boolean sailInference);
     
     @Override
     public Repository createRepository() {
-        return new SailRepository(createSail(dataDir, sailInference));
+        return new SailRepository(createSail(dataDir, sesameInference));
     }
 
     public void setDataDir(File dataDir) {
@@ -44,11 +56,15 @@ public abstract class AbstractSailRepository extends AbstractSesameRepository{
         if (StringUtils.isNotEmpty(dataDirName)) {
             this.dataDir = new File(dataDirName);
         }
+    }    
+
+    @Override
+    protected InferenceOptions getInferenceOptions() {
+        return new InferenceOptions(!sesameInference, !sesameInference, true);
     }
 
-    public void setSailInference(boolean sailInference) {
-        this.sailInference = sailInference;
+    public void setSesameInference(boolean sesameInference) {
+        this.sesameInference = sesameInference;
     }
-
     
 }

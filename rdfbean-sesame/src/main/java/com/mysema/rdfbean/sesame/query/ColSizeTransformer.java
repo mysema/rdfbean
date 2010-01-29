@@ -25,7 +25,7 @@ import com.mysema.rdfbean.model.RDF;
  * @author tiwe
  * @version $Id$
  */
-public class ColSizeTransformer implements Transformer{
+public class ColSizeTransformer implements OperationTransformer{
 
     @Override
     public Collection<? extends Operator<?>> getSupportedOperations() {
@@ -45,7 +45,7 @@ public class ColSizeTransformer implements Transformer{
             size++;
         }
         
-        JoinBuilder builder = new JoinBuilder(context.getValueFactory(), true);
+        JoinBuilder builder = context.createJoinBuilder();
         // path from size operation
         Path<?> path = (Path<?>)((Operation<?,?>)operation.getArg(0)).getArg(0); 
         Var pathVar = context.toVar(path);                                

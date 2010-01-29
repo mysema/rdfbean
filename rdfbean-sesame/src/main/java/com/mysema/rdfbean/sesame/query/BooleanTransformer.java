@@ -25,7 +25,7 @@ import com.mysema.query.types.operation.Ops;
  * @author tiwe
  * @version $Id$
  */
-public class BooleanTransformer implements Transformer{
+public class BooleanTransformer implements OperationTransformer{
 
     @Override
     public Collection<? extends Operator<?>> getSupportedOperations() {

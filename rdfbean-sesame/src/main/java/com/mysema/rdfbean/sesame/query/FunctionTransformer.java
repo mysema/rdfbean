@@ -34,7 +34,7 @@ import com.mysema.rdfbean.query.QueryFunctions;
  * @author tiwe
  * @version $Id$
  */
-public class FunctionTransformer implements Transformer{
+public class FunctionTransformer implements OperationTransformer{
     
     private final Map<Operator<?>, String> ops = new HashMap<Operator<?>, String>();
          

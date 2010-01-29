@@ -35,6 +35,7 @@
     <!-- 
     <property name="dataDirName" value="${persistence.sesame.mem.dir}"/>
      -->
+     <property name="sesameInference" value="true"/>
   </bean>
  
   <bean id="identityService" class="com.mysema.rdfbean.object.identity.DerbyIdentityService">

@@ -24,6 +24,7 @@ import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
+import com.mysema.rdfbean.object.DefaultOntology;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
@@ -51,7 +52,7 @@ public class SessionTestBase {
     protected Session session;
     
     private List<Session> openSessions = new ArrayList<Session>();
-    
+        
     @BeforeClass
     public static void before(){
         repository = new MemoryRepository();
@@ -66,7 +67,7 @@ public class SessionTestBase {
     public static void after(){
         try{
             if (sessionFactory != null) sessionFactory.close();
-            repository.close();    
+            if (repository != null) repository.close();    
         }finally{
             sessionFactory = null;
             repository = null;
@@ -109,6 +110,7 @@ public class SessionTestBase {
     }
     
     private SessionFactory createSessionFactory(Locale locale, Configuration configuration){
+        repository.setOntology(new DefaultOntology(configuration));
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl(Collections.singletonList(locale));
         sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);

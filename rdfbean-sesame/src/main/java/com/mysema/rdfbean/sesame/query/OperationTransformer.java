@@ -15,16 +15,24 @@ import com.mysema.query.types.operation.Operation;
 import com.mysema.query.types.operation.Operator;
 
 /**
- * Transformer provides
+ * OperationTransformer provides
  *
  * @author tiwe
  * @version $Id$
  */
-public interface Transformer{
+public interface OperationTransformer{
 
+    /**
+     * @param operation
+     * @param context
+     * @return
+     */
     @Nullable
     ValueExpr transform(Operation<?,?> operation, TransformerContext context);
 
+    /**
+     * @return
+     */
     Collection<? extends Operator<?>> getSupportedOperations();
     
 }

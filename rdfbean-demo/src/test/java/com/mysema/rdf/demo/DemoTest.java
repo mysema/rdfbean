@@ -1,11 +1,13 @@
 package com.mysema.rdf.demo;
 
+import static com.mysema.rdf.demo.domain.QCompany.company;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +21,20 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 
-import static com.mysema.rdf.demo.domain.QCompany.company;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/persistence.xml" })
 public class DemoTest {
 
+    private Session session;
+
     @Autowired
     private SessionFactory sessionFactory;
-
-    private Session session;
+    
+    private void closeSession() throws IOException {
+        if (this.session != null) {
+            this.session.close();
+        }
+    }
 
     @Test
     public void demonstrate() throws IOException {
@@ -57,8 +63,7 @@ public class DemoTest {
         List<Object> objects = session.findInstances(Object.class);
         assertEquals(3, objects.size()); // John Doe, Da Company and Mysema
 
-        objects = session.findInstances(Object.class, new UID(DEMO.NS,
-                "Company"));
+        objects = session.findInstances(Object.class, new UID(DEMO.NS, "Company"));
         assertEquals(2, objects.size()); // Da Company and Mysema
     }
     
@@ -80,9 +85,8 @@ public class DemoTest {
         this.session = sessionFactory.openSession();
     }
 
-    private void closeSession() throws IOException {
-        if (this.session != null) {
-            this.session.close();
-        }
+    @After
+    public void tearDown() throws IOException{
+        closeSession();
     }
 }

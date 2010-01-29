@@ -29,7 +29,7 @@ import com.mysema.rdfbean.object.MappedProperty;
  * @author tiwe
  * @version $Id$
  */
-public class ContainsKeyValueTransformer implements Transformer{
+public class ContainsKeyValueTransformer implements OperationTransformer{
 
     @Override
     public Collection<? extends Operator<?>> getSupportedOperations() {
@@ -61,7 +61,7 @@ public class ContainsKeyValueTransformer implements Transformer{
     private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 
             @Nullable Var valNode, @Nullable Var keyNode, TransformerContext context) {
         MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
-        JoinBuilder builder = new JoinBuilder(context.getValueFactory(), true);
+        JoinBuilder builder = context.createJoinBuilder();
         if (valNode != null){
             if (mappedProperty.getValuePredicate() != null){
                 context.match(builder, pathVar, mappedProperty.getValuePredicate(), valNode);

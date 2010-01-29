@@ -14,10 +14,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections15.Transformer;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -25,6 +27,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
@@ -54,7 +57,9 @@ import com.mysema.query.types.path.PathMetadata;
 import com.mysema.query.types.path.PathType;
 import com.mysema.query.types.query.SubQuery;
 import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.InferenceOptions;
 import com.mysema.rdfbean.model.LID;
+import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -84,7 +89,9 @@ public class SesameQuery
     
     private static final Logger queryTreeLogger = LoggerFactory.getLogger("com.mysema.rdfbean.sesame.queryTree");
     
-    private static final Map<Operator<?>,Transformer> transformers = new HashMap<Operator<?>,Transformer>();
+    private static final URI RDF_TYPE = org.openrdf.model.vocabulary.RDF.TYPE;
+    
+    private static final Map<Operator<?>,OperationTransformer> transformers = new HashMap<Operator<?>,OperationTransformer>();
     
     static{
         SesameQueryHolder.init();
@@ -113,15 +120,17 @@ public class SesameQuery
     
     private final Map<Object,Var> constToVar = new HashMap<Object,Var>();
 
-    private final boolean datatypeInference;
-    
     private final VarNameIterator extNames = new VarNameIterator("_ext_");
     
     private ValueExpr filterConditions;
     
     private final boolean includeInferred = true;
     
-    private JoinBuilder joinBuilder; 
+    private final InferenceOptions inference;
+    
+    private JoinBuilder joinBuilder;
+    
+    private final Ontology ontology; 
 
     private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
 
@@ -135,6 +144,30 @@ public class SesameQuery
     
     private final Map<UID, Var> resToVar = new HashMap<UID, Var>();
     
+    private final Transformer<StatementPattern,TupleExpr> stmtTransformer = new Transformer<StatementPattern,TupleExpr>(){
+
+        @Override
+        public TupleExpr transform(StatementPattern pattern) {
+            if (inference.untypedAsString()){
+                Var object = pattern.getObjectVar();
+                if (object.getValue() != null && object.getValue() instanceof Literal){
+                    return transformLiteralPattern(pattern, object);                    
+                }            
+            }        
+            
+            if (inference.subClassOf()){
+                Value predicate = pattern.getPredicateVar().getValue();
+                Var object = pattern.getObjectVar();
+                if (predicate != null && predicate.equals(RDF_TYPE) && object.getValue() != null){
+                    return transformTypePattern(pattern, object);
+                }
+            }
+            
+            return pattern;
+        }
+        
+    };
+    
     private final ValueFactory valueFactory;
     
     private final VarNameIterator varNames = new VarNameIterator("_var_");
@@ -143,22 +176,24 @@ public class SesameQuery
             SesameDialect dialect,
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,
-            boolean datatypeInference) {
+            Ontology ontology,
+            InferenceOptions inference) {
         super(dialect, session);        
         this.connection = Assert.notNull(connection);
         this.conf = session.getConfiguration();
-        this.datatypeInference = datatypeInference;
+        this.ontology = Assert.notNull(ontology);
+        this.inference = Assert.notNull(inference);
         this.patternScope = patternScope;
         this.valueFactory = dialect.getValueFactory();
-        this.joinBuilder = new JoinBuilder(valueFactory, datatypeInference);
+        this.joinBuilder = new JoinBuilder(stmtTransformer);
     }
-            
-    private static void register(Transformer transformer){
+    
+    private static void register(OperationTransformer transformer){
         for (Operator<?> operator : transformer.getSupportedOperations()){
             transformers.put(operator, transformer);
         }
     }
-
+    
     private void addFilterCondition(ValueExpr filterCondition) {
         if (filterConditions == null) {
             filterConditions = filterCondition;
@@ -187,7 +222,7 @@ public class SesameQuery
             }
         }  
     }
-    
+            
     public void close() throws IOException {
         if (queryResult != null){
             try {
@@ -197,11 +232,11 @@ public class SesameQuery
             }
         }
     }
-        
+
     protected <RT> RT convert(Class<RT> rt, Literal literal) {
         return conf.getConverterRegistry().fromString(literal.getLabel(), rt);
     }
-
+    
     @Override
     public long count() {
         // TODO : use aggregate function
@@ -214,13 +249,18 @@ public class SesameQuery
         return total;
     }
     
+    @Override
+    public JoinBuilder createJoinBuilder() {
+        return new JoinBuilder(stmtTransformer);
+    }
+        
     private StatementPattern createPattern(Var s, UID p, Var o){
         return new StatementPattern(patternScope, 
                 Assert.notNull(s, "subject is null"), 
                 toVar(Assert.notNull(p, "predicate is null")), 
                 Assert.notNull(o, "object is null"));
     }
-    
+
     private TupleExpr createTupleExpr(TupleExpr tupleExpr, 
             ValueExpr filterConditions, 
             List<OrderElem> orderElements,
@@ -349,46 +389,42 @@ public class SesameQuery
             throw new RuntimeException(e.getMessage(), e);
         }        
     }
-        
+    
     @Override
     public MappedPath getMappedPath(Path<?> path) {
         return this.getMappedPathForPropertyPath(path);
     }
-
+    
     @Override
     public Scope getPatternScope() {
         return patternScope;
     }
-
-    @Override
-    public Value toValue(ID id) {
-        return dialect.getResource(id);
-    }
-
+        
     @SuppressWarnings("unchecked")
     public ID getResourceForLID(Expr<?> arg) {
         String lid = ((Constant<String>)arg).getConstant();
         ID id = conf.getIdentityService().getID(new LID(lid));
         return id;
     }
-    
+
     @Override
     public ValueFactory getValueFactory() {
         return valueFactory;
     }
-    
+
     private void handleRootPath(Path<?> path) {
         Var var = new Var(path.getMetadata().getExpression().toString());
         varNames.disallow(var.getName());
         pathToVar.put(path, var);
-        UID rdfType = MappedClass.getMappedClass(path.getType()).getUID();
+        MappedClass mappedClass = MappedClass.getMappedClass(path.getType());
+        UID rdfType = mappedClass.getUID();
         if (rdfType != null){
             match(var, RDF.type, toVar(rdfType));
         } else {
             throw new IllegalArgumentException("No types mapped against " + path.getType().getName());
         }
     }
-  
+
     public boolean inNegation(){
         int notIndex = operatorStack.lastIndexOf(Ops.NOT);
         if (notIndex > -1){
@@ -397,7 +433,7 @@ public class SesameQuery
         }
         return false;
     }
-            
+    
     public boolean inOptionalPath(){
         return operatorStack.contains(Ops.IS_NULL) || 
             (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
@@ -407,7 +443,7 @@ public class SesameQuery
     public boolean isRegistered(Path<?> path) {
         return pathToMatchedVar.containsKey(path);
     }
-    
+  
     protected void logQuery(TupleQueryModel query) {
         if (queryTreeLogger.isDebugEnabled()){
             queryTreeLogger.debug(query.toString());                    
@@ -416,11 +452,11 @@ public class SesameQuery
             logger.debug(new QuerySerializer(query,false).toString());
         }
     }
-
+            
     public void match(JoinBuilder builder, Var sub, UID pred, Var obj){
         builder.add(createPattern(sub, pred, obj));
     }
-        
+    
     public void match(Var sub, UID pred, Var obj) {
         joinBuilder.add(createPattern(sub, pred, obj));
     }
@@ -430,11 +466,19 @@ public class SesameQuery
         pathToMatchedVar.put(path, var);
     }
 
+    private StatementPattern replaceObject(StatementPattern pattern, Var obj){
+        return new StatementPattern(pattern.getScope(), 
+                pattern.getSubjectVar(), 
+                pattern.getPredicateVar(),
+                obj,
+                pattern.getContextVar());
+    }
+        
     public TupleExpr toTuples(SubQuery subQuery){
         EBoolean where = subQuery.getMetadata().getWhere();
         
         JoinBuilder normalJoins = joinBuilder;
-        joinBuilder = new JoinBuilder(valueFactory, datatypeInference);
+        joinBuilder = createJoinBuilder();
         for (JoinExpression join : subQuery.getMetadata().getJoins()){            
             handleRootPath((Path<?>) join.getTarget());
         }
@@ -460,7 +504,7 @@ public class SesameQuery
         joinBuilder = normalJoins;
         return tupleExpr;
     }
-
+    
     @SuppressWarnings("unchecked")
     @Nullable
     public ValueExpr toValue(Expr<?> expr) {
@@ -477,6 +521,11 @@ public class SesameQuery
         }
     }
 
+    @Override
+    public Value toValue(ID id) {
+        return dialect.getResource(id);
+    }
+
     @Nullable
     private ValueExpr toValue(Operation<?,?> operation) {
         boolean outerOptional = inOptionalPath();
@@ -487,7 +536,7 @@ public class SesameQuery
             innerOptional = true;
         }                  
         try{
-            Transformer transformer = transformers.get(operation.getOperator());
+            OperationTransformer transformer = transformers.get(operation.getOperator());
             if (transformer != null) {             
                 return transformer.transform(operation, this);
             } else {
@@ -637,7 +686,37 @@ public class SesameQuery
         }
     }
 
+    private TupleExpr transformLiteralPattern(StatementPattern pattern, Var object) {
+        Literal lit = (Literal) pattern.getObjectVar().getValue();
+        if (lit.getDatatype() != null && lit.getDatatype().equals(XMLSchema.STRING)){
+            // match untyped literal for xsd:string vars
+            Var obj2 = new Var(object.getName()+"_untyped", valueFactory.createLiteral(lit.getLabel()));
+            StatementPattern pattern2 = replaceObject(pattern, obj2);
+            return new Union(pattern, pattern2);
+        }else{
+            return pattern;
+        }
+    }
 
-
-        
+    private TupleExpr transformTypePattern(StatementPattern pattern, Var object) {
+        if (object.getValue() instanceof URI){
+            Set<UID> subtypes = ontology.getSubtypes(dialect.getUID((URI) object.getValue()));
+            if (subtypes.size() > 1){
+                List<StatementPattern> patterns = new ArrayList<StatementPattern>(subtypes.size());
+                int counter = 1;
+                for (UID type : subtypes){
+                    Var subtypeVar = new Var(object.getName() + "_" + (counter++));
+                    subtypeVar.setValue(dialect.getURI(type));
+                    patterns.add(replaceObject(pattern, subtypeVar));
+                }
+                return new Union(patterns);
+            }else{
+                return pattern;
+            }
+            
+        }else{
+            return pattern;
+        }        
+    }
+    
 }

@@ -24,7 +24,7 @@ import com.mysema.rdfbean.model.RDF;
  * @author tiwe
  * @version $Id$
  */
-public class InstanceOfTransformer implements Transformer{
+public class InstanceOfTransformer implements OperationTransformer{
 
     @Override
     public Collection<? extends Operator<?>> getSupportedOperations() {

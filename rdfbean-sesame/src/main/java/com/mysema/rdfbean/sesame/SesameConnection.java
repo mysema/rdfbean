@@ -26,11 +26,14 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.ModelResult;
 import org.openrdf.store.StoreException;
 
+import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.InferenceOptions;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
@@ -45,9 +48,9 @@ import com.mysema.rdfbean.sesame.query.SesameQuery;
  */
 public class SesameConnection implements RDFConnection {
     
-    private static final boolean datatypeInference = true;
-    
     private final RepositoryConnection connection;
+    
+    private final Ontology ontology;
     
     private final SesameDialect dialect;
     
@@ -58,6 +61,8 @@ public class SesameConnection implements RDFConnection {
     
     private final ValueFactory vf;
     
+    private final InferenceOptions inference;
+    
     private final Transformer<STMT,Statement> stmtTransformer = new Transformer<STMT,Statement>(){
         @Override
         public Statement transform(STMT stmt) {
@@ -65,10 +70,12 @@ public class SesameConnection implements RDFConnection {
         }        
     };
     
-    public SesameConnection(RepositoryConnection connection) {
-        this.connection = connection;
+    public SesameConnection(RepositoryConnection connection, Ontology ontology, InferenceOptions inference) {
+        this.connection = Assert.notNull(connection);
         this.vf = connection.getValueFactory();
         this.dialect = new SesameDialect(vf);
+        this.ontology = Assert.notNull(ontology);
+        this.inference = Assert.notNull(inference);
     }
 
     @Override
@@ -162,7 +169,8 @@ public class SesameConnection implements RDFConnection {
                 dialect, 
                 connection, 
                 StatementPattern.Scope.DEFAULT_CONTEXTS,
-                datatypeInference);
+                ontology,
+                inference);
         query.getMetadata().setDistinct(true);
         return query;
     }
@@ -175,6 +183,7 @@ public class SesameConnection implements RDFConnection {
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, final boolean includeInferred) {
+        // TODO : take inference into account
         final ModelResult statements = 
             findStatements(
                     convert(subject), 
