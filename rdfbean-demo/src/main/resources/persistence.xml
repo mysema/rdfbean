@@ -39,7 +39,7 @@
   </bean>
  
   <bean id="identityService" class="com.mysema.rdfbean.object.identity.DerbyIdentityService">
-      <constructor-arg value="${identityService.derby.url}"/>
+      <constructor-arg value="${identityService.derby.databaseName}"/>
   </bean>
  
   <bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">

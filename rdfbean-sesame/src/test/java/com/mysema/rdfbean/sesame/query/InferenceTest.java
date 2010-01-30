@@ -62,5 +62,7 @@ public class InferenceTest extends SessionTestBase{
         assertEquals(2, session.from($(var2)).list($(var2)).size());
         assertEquals(1, session.from($(var3)).list($(var3)).size());
     }
+    
+    // TODO : subPropertyOf
 
 }
