@@ -32,11 +32,11 @@ import com.mysema.util.JDBCUtil;
  */
 public abstract class JDBCIdentityService implements IdentityService{
     
-    private String createLIDStatement = "{ call createlid(?,?,?) }";
+    private String createLIDStatement = "{ call createlid(?,?) }";
     
     private String getIDStatement = "{ call getid(?) }";
     
-    private String getLIDStatement = "{ call getlid(?,?,?) }";
+    private String getLIDStatement = "{ call getlid(?,?) }";
     
     private Map<LID,ID> idMap = Collections.synchronizedMap(new HashMap<LID,ID>());
     
@@ -51,29 +51,35 @@ public abstract class JDBCIdentityService implements IdentityService{
         this.createLIDStatement = Assert.hasText(createlid);
     }
  
-    protected abstract Connection getConnection();
+    protected abstract Connection getConnection() throws SQLException;
     
     @Override
     public ID getID(LID lid) {
         if (idMap.containsKey(lid)){
             return idMap.get(lid);
         }else{
-            Connection conn = getConnection();
+            Connection conn = null;
             CallableStatement stmt = null;
             ResultSet rs = null;
             try{
+                conn = getConnection();
                 stmt = conn.prepareCall(getIDStatement);
-                stmt.setLong(1, Long.valueOf(lid.getId()));
+                long longVal = Long.valueOf(lid.getId());
+                stmt.setLong(1, longVal);
                 rs = stmt.executeQuery();
                 if (rs.next()){
                     String id = rs.getString(1);
-                    boolean is_uid = rs.getShort(2) == 1;                    
-                    ID rv = is_uid ? new UID(id) : new BID(id);
+                    ID rv;
+                    if (longVal % 2 == 0){
+                        rv = new UID(id);
+                    }else{
+                        rv = new BID(id);
+                    }
                     idMap.put(lid, rv);
                     return rv;
                 }else{
-                    return null;
-                }                        
+                    throw new IllegalArgumentException("No ID for " + lid);
+                }
             } catch (SQLException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }finally{
@@ -92,10 +98,11 @@ public abstract class JDBCIdentityService implements IdentityService{
         if (lidMap.containsKey(key)){
             return lidMap.get(key);
         }else{
-            Connection conn = getConnection();
+            Connection conn = null;
             CallableStatement stmt = null;
             ResultSet rs = null;
             try{
+                conn = getConnection();
                 stmt = prepareForGetCreateLID(getLIDStatement, model, id, conn);
                 rs = stmt.executeQuery();
                 // already exists
@@ -130,7 +137,6 @@ public abstract class JDBCIdentityService implements IdentityService{
         return getLID(null, id);
     }
 
-
     private CallableStatement prepareForGetCreateLID(String call, ID model, ID id, Connection conn) throws SQLException {
         CallableStatement stmt;
         stmt = conn.prepareCall(call);
@@ -140,7 +146,6 @@ public abstract class JDBCIdentityService implements IdentityService{
             stmt.setNull(1, Types.VARCHAR);
         }                
         stmt.setString(2, id.getId());    
-        stmt.setShort(3, (short)(id instanceof UID ? 1 : 0));
         return stmt;
     }
     

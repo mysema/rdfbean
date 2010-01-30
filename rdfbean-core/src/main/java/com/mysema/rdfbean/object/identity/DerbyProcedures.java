@@ -18,66 +18,74 @@ import com.mysema.util.JDBCUtil;
 public final class DerbyProcedures {
     
     static final String CONNECTION = "jdbc:default:connection";
+    
+    static final String BID_CREATE_ID = "insert into bids(model, id) values(?, ?)";
    
-    static final String GET_ID = "select id, is_uid from ids where lid = ?";
+    static final String BID_GET_ID = "select id from bids where lid = ?";
     
-    static final String CREATE_ID = "insert into ids(model,id,is_uid) values(?,?,?)";
+    static final String BID_GET_LID = "select lid from bids where model = ? and id = ?";
     
-    static final String GET_LID1 = "select lid from ids where model = ? and id = ? and is_uid = ?";
+    static final String UID_CREATE_ID = "insert into uids(id) values(?)";
     
-    static final String GET_LID2 = "select lid from ids where model is null and id = ? and is_uid = ?";
+    static final String UID_GET_ID = "select id from uids where lid = ?";
     
-    public static void getID(long lid, ResultSet[] data) throws SQLException{
+    static final String UID_GET_LID = "select lid from uids where id = ?";
+    
+    public static void createLID(String model, String id, ResultSet[] data) throws SQLException{
         Connection conn = DriverManager.getConnection(CONNECTION);
-        try{
-            PreparedStatement stmt = conn.prepareStatement(GET_ID);
-            stmt.setLong(1, lid);
-            data[0] = stmt.executeQuery();    
-        }finally{
-            JDBCUtil.safeClose(conn);
-        }
-    }
-    
-    public static void getLID(String model, String id, short is_uid, ResultSet[] data) throws SQLException{
-        Connection conn = DriverManager.getConnection(CONNECTION);
-        try{
-            data[0] = innerGetLID(conn, model, id, is_uid);
-        }finally{
-            JDBCUtil.safeClose(conn);
-        }
-    }
-    
-    public static void createLID(String model, String id, short is_uid, ResultSet[] data) throws SQLException{
-        Connection conn = DriverManager.getConnection(CONNECTION);
-        PreparedStatement stmt = conn.prepareStatement(CREATE_ID);
+        PreparedStatement stmt = null; 
         try{
             if (model != null){
-                stmt.setString(1, model);    
+                stmt = conn.prepareStatement(BID_CREATE_ID);
+                stmt.setString(1, model);
+                stmt.setString(2, id);
+                stmt.executeUpdate();
+                data[0] = innerGetLID(conn, model, id);
             }else{
-                stmt.setNull(1, Types.VARCHAR);
-            }    
-            stmt.setString(2, id);
-            stmt.setShort(3, is_uid);
-            stmt.executeUpdate();
-            data[0] = innerGetLID(conn, model, id, is_uid);
+                stmt = conn.prepareStatement(UID_CREATE_ID);
+                stmt.setString(1, id);
+                stmt.executeUpdate();
+                data[0] = innerGetLID(conn, id);
+            }                
         }finally{
             JDBCUtil.safeClose(null, stmt, conn);    
         }
     }
-
-    private static ResultSet innerGetLID(Connection conn, String model, String id, short is_uid) throws SQLException {
+    
+    public static void getID(long lid, ResultSet[] data) throws SQLException{
+        Connection conn = DriverManager.getConnection(CONNECTION);
         PreparedStatement stmt = null;
-        if (model != null){
-            stmt = conn.prepareStatement(GET_LID1);   
-            stmt.setString(1, model);
-            stmt.setString(2, id);
-            stmt.setShort(3, is_uid);
+        if (lid % 2 == 0){
+            stmt = conn.prepareStatement(UID_GET_ID);    
         }else{
-            stmt = conn.prepareStatement(GET_LID2);
-            stmt.setString(1, id);
-            stmt.setShort(2, is_uid);
+            stmt = conn.prepareStatement(BID_GET_ID);
         }        
-        return stmt.executeQuery();
+        stmt.setLong(1, lid);
+        data[0] = stmt.executeQuery();
+        conn.close();
+    }
+    
+    public static void getLID(String model, String id, ResultSet[] data) throws SQLException{
+        Connection conn = DriverManager.getConnection(CONNECTION);
+        if (model != null){
+            data[0] = innerGetLID(conn, model, id);    
+        }else{
+            data[0] = innerGetLID(conn, id);
+        }        
+        conn.close();
+    }
+
+    private static ResultSet innerGetLID(Connection conn, String id) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(UID_GET_LID);
+        stmt.setString(1, id);     
+        return stmt.executeQuery();        
+    }
+    
+    private static ResultSet innerGetLID(Connection conn, String model, String id) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(BID_GET_LID);   
+        stmt.setString(1, model);
+        stmt.setString(2, id);      
+        return stmt.executeQuery();        
     }
 
 }

@@ -30,15 +30,15 @@ import com.mysema.rdfbean.tapestry.TransactionalAdvisorImpl;
  */
 public class RDFBeanModule {
 
-    public static final String DERBY_URL = "identityService.derbyUrl";
+    public static final String DERBY_DATABASE = "identityService.derby.databaseName";
     
     public static void bind(ServiceBinder binder){
         binder.bind(TransactionalAdvisor.class, TransactionalAdvisorImpl.class);
         binder.bind(SeedEntity.class, SeedEntityImpl.class);
     }
 
-    public static IdentityService buildIdentityService(@Inject @Symbol(DERBY_URL) String derbyURL) throws IOException{
-        return new DerbyIdentityService(derbyURL);
+    public static IdentityService buildIdentityService(@Inject @Symbol(DERBY_DATABASE) String databaseName) throws IOException{
+        return new DerbyIdentityService(databaseName);
     }
     
     public static SessionFactory buildSessionFactory(Configuration configuration, Repository repository, 

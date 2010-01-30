@@ -69,9 +69,9 @@ public abstract class RDFBeanModule extends AbstractModule{
     
     @Provides
     @Singleton
-    public IdentityService createIdentityService(@Named("identityService.derby.url") String url) 
+    public IdentityService createIdentityService(@Named("identityService.derby.database") String databaseName) 
         throws IOException{
-        return new DerbyIdentityService(url);
+        return new DerbyIdentityService(databaseName);
     }
     
     @Provides 
