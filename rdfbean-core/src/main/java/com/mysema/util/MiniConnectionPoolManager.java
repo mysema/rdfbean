@@ -11,7 +11,7 @@
 // Please contact the author if you need another license.
 // This module is provided "as is", without warranties of any kind.
 
-package com.mysema.rdfbean.object.identity;
+package com.mysema.util;
 
 import java.io.PrintWriter;
 import java.sql.Connection;

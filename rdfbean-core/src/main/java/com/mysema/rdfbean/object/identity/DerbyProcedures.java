@@ -17,19 +17,19 @@ import com.mysema.util.JDBCUtil;
  */
 public final class DerbyProcedures {
     
-    static final String CONNECTION = "jdbc:default:connection";
+    private static final String CONNECTION = "jdbc:default:connection";
     
-    static final String BID_CREATE_ID = "insert into bids(model, id) values(?, ?)";
+    private static final String BID_CREATE_ID = "insert into bids(model, id) values(?, ?)";
    
-    static final String BID_GET_ID = "select id from bids where lid = ?";
+    private static final String BID_GET_ID = "select id from bids where lid = ?";
     
-    static final String BID_GET_LID = "select lid from bids where model = ? and id = ?";
+    private static final String BID_GET_LID = "select lid from bids where model = ? and id = ?";
     
-    static final String UID_CREATE_ID = "insert into uids(id) values(?)";
+    private static final String UID_CREATE_ID = "insert into uids(id) values(?)";
     
-    static final String UID_GET_ID = "select id from uids where lid = ?";
+    private static final String UID_GET_ID = "select id from uids where lid = ?";
     
-    static final String UID_GET_LID = "select lid from uids where id = ?";
+    private static final String UID_GET_LID = "select lid from uids where id = ?";
     
     public static void createLID(String model, String id, ResultSet[] data) throws SQLException{
         Connection conn = DriverManager.getConnection(CONNECTION);
