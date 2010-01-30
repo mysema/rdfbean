@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -22,11 +23,15 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.MiniRepository;
+import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
+import com.mysema.rdfbean.object.ConfigurationOntology;
 import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
+import com.mysema.rdfbean.sesame.AbstractSesameRepository;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 import com.mysema.rdfbean.sesame.NativeRepository;
 import com.mysema.rdfbean.sesame.SessionTestBase;
@@ -37,28 +42,24 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class LoadTest extends SessionTestBase{
-    
+public class LoadTest extends SessionTestBase{    
+
     @ClassMapping(ns=TEST.NS)
-    public static class Revision {
-        @Predicate
-        long svnRevision;
+    public static class Document {        
+        @Id
+        String id;
         
         @Predicate
-        long created;
-                
-        @Predicate
-        Entity revisionOf;
-                                        
-    }
+        String text;                   
+    }        
     
     @ClassMapping(ns=TEST.NS)
     public static class Entity {        
-        @Id
-        String id;
-
         @Predicate
         Document document;
+
+        @Id
+        String id;
         
         @Predicate
         String text;
@@ -66,13 +67,26 @@ public class LoadTest extends SessionTestBase{
     }
     
     @ClassMapping(ns=TEST.NS)
-    public static class Document {        
-        @Id
-        String id;
+    public static class Revision {
+        @Predicate
+        long created;
         
         @Predicate
-        String text;
-                   
+        Entity revisionOf;
+                
+        @Predicate
+        long svnRevision;
+                                        
+    }
+    
+    private Configuration configuration;
+    
+    private Ontology ontology;
+    
+    @Before
+    public void setUp(){
+        configuration = new DefaultConfiguration(Revision.class, Entity.class, Document.class);
+        ontology = new ConfigurationOntology(configuration);
     }
     
     @After
@@ -82,21 +96,25 @@ public class LoadTest extends SessionTestBase{
     
     @Test
     public void test() throws IOException{        
-        loadTest(new MiniRepository());
+        loadTest(MiniRepository.class.getSimpleName(), new MiniRepository());
         
         // Sesame repositories
-        loadTest(new DirectMemoryRepository());
-        loadTest(new InferencingMemoryRepository());
-        loadTest(new MemoryRepository(null, true));        
-        loadTest(new NativeRepository(new File("target/native"), false));
-    }        
+        loadTest("MemoryStore, no inferencing", new DirectMemoryRepository());
+        loadTest("MemoryStore, basic inferencing", new InferencingMemoryRepository());
+        loadTest("MemoryStore, full inferencing", new MemoryRepository(null, true));        
+        loadTest("NativeStore, no inferencing", new NativeRepository(new File("target/native"), false));
+    }
     
-    private void loadTest(Repository repository) throws IOException{
-        System.out.println("testing " + repository.getClass().getSimpleName());
+    private void loadTest(String label, Repository repository) throws IOException{
+        System.out.println("testing " + label);
         System.out.println();
         
+        if (repository instanceof AbstractSesameRepository){
+            ((AbstractSesameRepository)repository).setOntology(ontology);
+        }
+        
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl(Locale.ENGLISH);
-        sessionFactory.setConfiguration(new DefaultConfiguration(Document.class, Entity.class, Revision.class));
+        sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
         
@@ -113,6 +131,8 @@ public class LoadTest extends SessionTestBase{
             sessionFactory.close();
         }            
     }
+    
+
     
     private void loadTest(Session session, int size){
         session.setFlushMode(FlushMode.MANUAL);
@@ -145,6 +165,15 @@ public class LoadTest extends SessionTestBase{
         long t3 = System.currentTimeMillis();
         System.out.println("  Save of " + objects.size() + " objects took " + (t2-t1)+"ms");
         System.out.println("  Flush took " + (t3-t2)+"ms");
+        
+        long t4 = System.currentTimeMillis();
+        session.clear();
+        session.findInstances(Document.class);
+        session.findInstances(Entity.class);
+        session.findInstances(Revision.class);
+        long t5 = System.currentTimeMillis();
+        System.out.println("  Load of all objects took " + (t5-t4) + "ms");
+        
         System.out.println();
     }
 

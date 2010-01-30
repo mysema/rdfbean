@@ -15,6 +15,10 @@ import javax.annotation.Nullable;
  */
 public interface SessionCallback<T> {
     
+    /**
+     * @param session
+     * @return
+     */
     @Nullable
     T doInSession(Session session);
 

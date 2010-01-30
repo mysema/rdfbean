@@ -9,7 +9,7 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 
 /**
- * MultiTransaction provides
+ * MultiTransaction is the RDFBeanTransaction of MultiConnection
  *
  * @author tiwe
  * @version $Id$

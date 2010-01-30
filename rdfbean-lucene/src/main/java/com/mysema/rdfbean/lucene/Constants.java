@@ -5,6 +5,10 @@
  */
 package com.mysema.rdfbean.lucene;
 
+import org.compass.core.CompassQueryBuilder;
+
+import com.mysema.rdfbean.object.QueryLanguage;
+
 /**
  * Constants provides
  *
@@ -12,6 +16,10 @@ package com.mysema.rdfbean.lucene;
  * @version $Id$
  */
 public interface Constants {
+    
+    QueryLanguage<Void,CompassQueryBuilder> COMPASSQUERY = QueryLanguage.create("CompassQueryBuilder", CompassQueryBuilder.class);
+    
+    QueryLanguage<Void,LuceneQuery> LUCENEQUERY = QueryLanguage.create("Lucene query", LuceneQuery.class);
     
     String ALL_FIELD_NAME = "all";
     

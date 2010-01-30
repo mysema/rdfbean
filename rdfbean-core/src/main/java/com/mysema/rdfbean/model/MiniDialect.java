@@ -7,6 +7,8 @@ package com.mysema.rdfbean.model;
 
 
 /**
+ * MiniDialect is the Dialect implementation for the MiniRepository 
+ * 
  * @author sasa
  * 
  */

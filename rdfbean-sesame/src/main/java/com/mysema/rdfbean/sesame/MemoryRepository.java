@@ -22,8 +22,8 @@ public class MemoryRepository extends AbstractSailRepository {
     
     public MemoryRepository(){}
 
-    public MemoryRepository(File dataDir, boolean sailInference) {
-        super(dataDir, sailInference);
+    public MemoryRepository(File dataDir, boolean sesameInference) {
+        super(dataDir, sesameInference);
     }
 
     public MemoryRepository(File dataDir, Ontology ontology) {
@@ -35,9 +35,9 @@ public class MemoryRepository extends AbstractSailRepository {
     }
 
     @Override
-    protected NotifyingSail createSail(File dataDir, boolean sailInference) {
+    protected NotifyingSail createSail(File dataDir, boolean sesameInference) {
         MemoryStore store = dataDir != null ? new MemoryStore(dataDir) : new MemoryStore();
-        if (sailInference){
+        if (sesameInference){
             return new ExtendedRDFSInferencer(store);
         }else{
             return store;

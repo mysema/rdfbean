@@ -9,11 +9,11 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.NotifyingSail;
 
-import com.mysema.rdfbean.model.InferenceOptions;
+import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.Ontology;
 
 /**
- * AbstractSailRepository provides
+ * AbstractSailRepository provides a base class for SAIL based RDFBean repositories
  *
  * @author tiwe
  * @version $Id$
@@ -24,6 +24,8 @@ public abstract class AbstractSailRepository extends AbstractSesameRepository{
     private File dataDir;
         
     private boolean sesameInference = false;
+    
+    private Inference inference = Inference.FULL;
     
     public AbstractSailRepository(){}
     
@@ -59,12 +61,13 @@ public abstract class AbstractSailRepository extends AbstractSesameRepository{
     }    
 
     @Override
-    protected InferenceOptions getInferenceOptions() {
-        return new InferenceOptions(!sesameInference, !sesameInference, true);
+    protected Inference getInferenceOptions() {
+        return inference;
     }
 
     public void setSesameInference(boolean sesameInference) {
         this.sesameInference = sesameInference;
+        this.inference = sesameInference ? Inference.LITERAL : Inference.FULL;
     }
     
 }

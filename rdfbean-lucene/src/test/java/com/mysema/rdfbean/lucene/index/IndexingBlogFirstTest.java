@@ -20,6 +20,7 @@ import org.junit.Test;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.lucene.Constants;
 import com.mysema.rdfbean.lucene.LuceneQuery;
 import com.mysema.rdfbean.lucene.Searchable;
 import com.mysema.rdfbean.lucene.SearchableComponent;
@@ -62,13 +63,13 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
         session.clear();
         
         // article search
-        LuceneQuery query = session.createQuery(LuceneQuery.class);
+        LuceneQuery query = session.createQuery(Constants.LUCENEQUERY);
         assertFalse(query.query("j2ee").list(Article.class).isEmpty());
         
-        query = session.createQuery(LuceneQuery.class);
+        query = session.createQuery(Constants.LUCENEQUERY);
         assertTrue(query.query("dot").list(Article.class).isEmpty());
         
-        query = session.createQuery(LuceneQuery.class);
+        query = session.createQuery(Constants.LUCENEQUERY);
         assertEquals(2, query.query("good").list(Article.class).size());
         
     }
@@ -96,11 +97,11 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
         // article search
         
         for (Tag tag : article.tags){
-            LuceneQuery query = session.createQuery(LuceneQuery.class);
+            LuceneQuery query = session.createQuery(Constants.LUCENEQUERY);
             assertFalse(query.query(tag.name).list(Article.class).isEmpty());    
         }
         
-        LuceneQuery query = session.createQuery(LuceneQuery.class);
+        LuceneQuery query = session.createQuery(Constants.LUCENEQUERY);
         assertTrue(query.query("XXX").list(Article.class).isEmpty());
     }
     
@@ -118,7 +119,7 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
         session.saveAll(java, web, dev);
         
         for (Tag tag : Arrays.asList(java, web, dev)){
-            LuceneQuery query = session.createQuery(LuceneQuery.class);
+            LuceneQuery query = session.createQuery(Constants.LUCENEQUERY);
             // tags are only saved as components
             assertTrue("Tags should only be saved in embedded form", query.query(tag.name).list(Tag.class).isEmpty());    
         }        

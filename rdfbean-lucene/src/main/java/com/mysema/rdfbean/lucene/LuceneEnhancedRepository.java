@@ -7,13 +7,12 @@ package com.mysema.rdfbean.lucene;
 
 import java.io.OutputStream;
 
-import org.compass.core.CompassQueryBuilder;
-
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.MultiConnection;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.object.QueryLanguage;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -57,11 +56,11 @@ public class LuceneEnhancedRepository implements Repository{
         final RDFConnection connection = repository.openConnection();
         return new MultiConnection(connection, luceneConnection){
             @Override
-            public <Q> Q createQuery(Session session, Class<Q> queryType) {
-                if (queryType.equals(LuceneQuery.class) || queryType.equals(CompassQueryBuilder.class)){
-                    return luceneConnection.createQuery(session, queryType);
+            public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
+                if (queryLanguage.equals(Constants.LUCENEQUERY) || queryLanguage.equals(Constants.COMPASSQUERY)){
+                    return luceneConnection.createQuery(session, queryLanguage, definition);
                 }else{
-                    return connection.createQuery(session, queryType);
+                    return connection.createQuery(session, queryLanguage, definition);
                 }
             }
         };

@@ -16,7 +16,7 @@
       <para><emphasis>ClassMapping</emphasis> declares a mapping from a Java type to an RDF type. If your Java type 
       simple name
       is equal to the local name of the RDF type, which is a good practice, all you need to do is to declare 
-      the namespace. The namespace is best kept accessible via a public static final constant : </para>
+      the namespace. The namespace is best kept accessible via a public static final String constant : </para>
       
 <programlisting language="java"><![CDATA[    
 @ClassMapping(ns=TEST.NS)
@@ -51,6 +51,12 @@ public class User {
 ]]></programlisting>          
 
     <para>The default value for the local name is the property's name.</para>
+    
+    <para>A Predicate can be forward and inverse mapped. Forward is the default and inverse can be declared, by setting
+    the annotation's inv attribute to true. Inverse means that the host entity is not in the subject position for
+    the bound triples, but in the object position and the bound values correspond to the subjects of the triples.</para>
+    
+    <para>Inverse Predicates cannot be declared on literal properties.</para>
     
     </sect2>
     

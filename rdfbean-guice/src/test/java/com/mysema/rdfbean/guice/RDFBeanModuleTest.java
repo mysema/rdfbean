@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
 
@@ -37,7 +37,7 @@ public class RDFBeanModuleTest {
                 bind(ServiceD.class).to(ServiceDImpl.class);
             }
             @Override
-            public Repository createRepository(Ontology configuration) {
+            public Repository createRepository(Configuration configuration) {
                 return new MemoryRepository();
             }            
         });

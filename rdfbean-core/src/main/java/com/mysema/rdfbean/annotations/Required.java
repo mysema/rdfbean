@@ -15,6 +15,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Declares that a property is required. To be used in combination
+ * with {@link Predicate}
+ * 
  * @author sasa
  * 
  */

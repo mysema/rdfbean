@@ -24,8 +24,8 @@ public class NativeRepository extends AbstractSailRepository {
     
     public NativeRepository(){}
 
-    public NativeRepository(File dataDir, boolean sailInference) {
-        super(dataDir, sailInference);
+    public NativeRepository(File dataDir, boolean sesameInference) {
+        super(dataDir, sesameInference);
     }
     
     public NativeRepository(File dataDir, Ontology ontology) {
@@ -37,9 +37,9 @@ public class NativeRepository extends AbstractSailRepository {
     }
 
     @Override
-    protected NotifyingSail createSail(File dataDir, boolean sailInference) {
+    protected NotifyingSail createSail(File dataDir, boolean sesameInference) {
         NativeStore store = new NativeStore(Assert.notNull(dataDir));
-        if (sailInference){
+        if (sesameInference){
             return new ExtendedRDFSInferencer(store);
         }else{
             return store;

@@ -9,12 +9,14 @@ import java.io.IOException;
 import java.util.Set;
 
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.object.QueryLanguage;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleBeanQuery;
 
 /**
+ * MiniConnection is an RDFConnection implementation for the MiniRepository
+ * 
  * @author sasa
  *
  */
@@ -29,11 +31,6 @@ public class MiniConnection implements RDFConnection {
     @Override
     public BID createBNode() {
         return new BID();
-    }
-
-    @Override
-    public BeanQuery createQuery(Session session) {
-        return new SimpleBeanQuery(session);
     }
 
     @Override
@@ -65,8 +62,7 @@ public class MiniConnection implements RDFConnection {
     }
 
     @Override
-    public RDFBeanTransaction beginTransaction(boolean readOnly,
-            int txTimeout, int isolationLevel) {
+    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
         throw new UnsupportedOperationException();
     }
 
@@ -78,9 +74,14 @@ public class MiniConnection implements RDFConnection {
         return repository;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <Q> Q createQuery(Session session, Class<Q> queryType) {
-        throw new UnsupportedOperationException();
+    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
+        if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
+            return (Q) new SimpleBeanQuery(session);
+        }else{
+            throw new UnsupportedQueryLanguageException(queryLanguage);
+        }
     }
 
 }

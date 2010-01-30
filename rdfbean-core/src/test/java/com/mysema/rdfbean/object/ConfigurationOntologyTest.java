@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.model;
+package com.mysema.rdfbean.object;
 
 import static org.junit.Assert.assertEquals;
 
@@ -19,7 +19,7 @@ import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.DefaultOntology;
+import com.mysema.rdfbean.object.ConfigurationOntology;
 import com.mysema.rdfbean.object.MappedClass;
 
 
@@ -29,7 +29,7 @@ import com.mysema.rdfbean.object.MappedClass;
  * @author tiwe
  * @version $Id$
  */
-public class OntologyTest {
+public class ConfigurationOntologyTest {
     
     @ClassMapping(ns=TEST.NS)
     public class Entity1{
@@ -51,7 +51,7 @@ public class OntologyTest {
     @Before
     public void setUp(){
         Configuration configuration = new DefaultConfiguration(Entity1.class, Entity2.class, Entity3.class);
-        ontology = new DefaultOntology(configuration);
+        ontology = new ConfigurationOntology(configuration);
     }
     
     @Test
@@ -69,13 +69,13 @@ public class OntologyTest {
     @Test
     public void getMappedSupertypes(){
         MappedClass cl = MappedClass.getMappedClass(Entity3.class);
-        assertEquals(getUIDs(Entity1.class, Entity2.class, Entity3.class), ontology.getSupertypes(cl.getUID()));
-        
-        cl = MappedClass.getMappedClass(Entity2.class);
         assertEquals(getUIDs(Entity1.class, Entity2.class), ontology.getSupertypes(cl.getUID()));
         
-        cl = MappedClass.getMappedClass(Entity1.class);
+        cl = MappedClass.getMappedClass(Entity2.class);
         assertEquals(getUIDs(Entity1.class), ontology.getSupertypes(cl.getUID()));
+        
+        cl = MappedClass.getMappedClass(Entity1.class);
+        assertEquals(getUIDs(), ontology.getSupertypes(cl.getUID()));
     }
 
     private static Set<UID> getUIDs(Class<?>... classes){

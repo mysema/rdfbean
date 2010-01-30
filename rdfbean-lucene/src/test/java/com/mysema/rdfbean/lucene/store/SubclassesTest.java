@@ -16,6 +16,7 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.lucene.Constants;
 import com.mysema.rdfbean.lucene.LuceneQuery;
 import com.mysema.rdfbean.lucene.Searchable;
 import com.mysema.rdfbean.lucene.SearchableText;
@@ -82,12 +83,12 @@ public class SubclassesTest extends AbstractStoreTest{
         
         // query by type
         assertFalse("query by type failed", 
-                session.createQuery(LuceneQuery.class).query(account.accountNumber).list(account.getClass()).isEmpty());
+                session.createQuery(Constants.LUCENEQUERY).query(account.accountNumber).list(account.getClass()).isEmpty());
         session.clear();
         
         // query by supertype
         assertFalse("query by supertype failed", 
-                session.createQuery(LuceneQuery.class).query(account.accountNumber).list(Account.class).isEmpty());
+                session.createQuery(Constants.LUCENEQUERY).query(account.accountNumber).list(Account.class).isEmpty());
         session.clear();
     }
     

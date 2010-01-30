@@ -49,7 +49,8 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
+import com.mysema.rdfbean.object.QueryLanguage;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleBeanQuery;
@@ -95,42 +96,6 @@ class LuceneConnection implements RDFConnection{
         this.compass = conf.getCompass();
     }
     
-    private void removeStatement(Resource resource, boolean component, STMT stmt, List<ID> subjectTypes){
-//        System.err.println("removed : " + stmt);
-        String objectValue = converter.toString(stmt.getObject());
-        PropertyConfig propertyConfig = conf.getPropertyConfig(stmt.getPredicate(), subjectTypes);
-        
-        if (propertyConfig != null){
-            if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
-                String predicateField = converter.toString(stmt.getPredicate());
-                if (component){
-                    predicateField = converter.toString(stmt.getSubject()) + " " + predicateField; 
-                }                
-                
-                List<Property> properties = new ArrayList<Property>(Arrays.asList(resource.getProperties(predicateField)));
-                for (Property property : properties.toArray(new Property[0])){
-                    if (property.getStringValue().equals(objectValue)){
-                        properties.remove(property);
-                    }
-                }   
-                // remove all predicate
-                resource.removeProperty(predicateField);
-                // add left ones back
-                for (Property left : properties){
-                    resource.addProperty(left);
-                }
-            }
-            
-            if (propertyConfig.isAllIndexed()){
-                // TODO : handle ALL indexed                
-            }
-
-            if (propertyConfig.isTextIndexed()){
-                // TODO : handled TEXT indexed
-            }
-        }
-    }   
-
     private void addStatement(Resource resource, boolean component, STMT stmt, List<ID> subjectTypes) {        
 //        System.err.println("added : " + stmt);
         String objectValue = converter.toString(stmt.getObject());        
@@ -177,8 +142,8 @@ class LuceneConnection implements RDFConnection{
             }            
         }
         
-    }
-    
+    }   
+
     @Override
     public RDFBeanTransaction beginTransaction(boolean readOnly,
             int txTimeout, int isolationLevel) {
@@ -199,12 +164,12 @@ class LuceneConnection implements RDFConnection{
         // NOTE : LuceneConnection is closed after rollback
         close();
     }
-
+    
     @Override
     public void clear() {
         compassSession.evictAll();        
     }
-    
+
     @Override
     public void close()  {
         compassSession.close();
@@ -214,7 +179,7 @@ class LuceneConnection implements RDFConnection{
     public BID createBNode() {
         return new BID();
     }
-
+    
     private CompassQuery createQuery(ID subject, UID predicate, NODE object, UID context, boolean includeInferred){
         CompassQueryBuilder queryBuilder = compassSession.queryBuilder();
         if (subject != null || predicate != null || object != null || context != null){            
@@ -257,24 +222,21 @@ class LuceneConnection implements RDFConnection{
             return queryBuilder.matchAll();
         }
     }
-    
-    @Override
-    public BeanQuery createQuery(Session session) {
-        return new SimpleBeanQuery(session);
-    }
-    
+
     @SuppressWarnings("unchecked")
     @Override
-    public <Q> Q createQuery(Session session, Class<Q> queryType) {
-        if (queryType.equals(LuceneQuery.class)){
-            return (Q)new LuceneQuery(conf, session, compassSession);
-        }else if (queryType.equals(CompassQueryBuilder.class)){    
-            return (Q) compass.queryBuilder();
+    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
+        if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
+            return (Q) new SimpleBeanQuery(session);
+        }else if (queryLanguage.equals(Constants.LUCENEQUERY)){
+            return (Q) new LuceneQuery(conf, session, compassSession);
+        }else if (queryLanguage.equals(Constants.COMPASSQUERY)){    
+            return (Q) compassSession.queryBuilder();
         }else{
-            throw new IllegalArgumentException("Unsupported query type : " + queryType.getSimpleName());
+            throw new UnsupportedQueryLanguageException(queryLanguage);
         }
     }
-    
+        
     private Resource createResource(){
         return compass.getResourceFactory().createResource("resource");
     }
@@ -346,10 +308,59 @@ class LuceneConnection implements RDFConnection{
         return hits.getLength() > 0 ? hits.resource(0) : null;
     }
         
+    private List<ID> getSubjectTypes(ID subject, ListMap<ID, ID> types, Resource luceneResource) {
+        List<ID> subjectTypes = types.get(subject);
+        if (subjectTypes == null){
+            List<STMT> typeStmts = findStatements(luceneResource, subject, RDF.type, null, null); 
+            subjectTypes = new ArrayList<ID>(typeStmts.size());
+            for (STMT stmt : typeStmts){
+                subjectTypes.add((ID) stmt.getObject());
+            }
+            types.put(subject, subjectTypes);
+        }
+        return subjectTypes;
+    }
+
     private boolean isPredicateProperty(String fieldName){
         return !INTERNAL_FIELDS.contains(fieldName) && !fieldName.contains(" ");
     }
 
+    private void removeStatement(Resource resource, boolean component, STMT stmt, List<ID> subjectTypes){
+//        System.err.println("removed : " + stmt);
+        String objectValue = converter.toString(stmt.getObject());
+        PropertyConfig propertyConfig = conf.getPropertyConfig(stmt.getPredicate(), subjectTypes);
+        
+        if (propertyConfig != null){
+            if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
+                String predicateField = converter.toString(stmt.getPredicate());
+                if (component){
+                    predicateField = converter.toString(stmt.getSubject()) + " " + predicateField; 
+                }                
+                
+                List<Property> properties = new ArrayList<Property>(Arrays.asList(resource.getProperties(predicateField)));
+                for (Property property : properties.toArray(new Property[0])){
+                    if (property.getStringValue().equals(objectValue)){
+                        properties.remove(property);
+                    }
+                }   
+                // remove all predicate
+                resource.removeProperty(predicateField);
+                // add left ones back
+                for (Property left : properties){
+                    resource.addProperty(left);
+                }
+            }
+            
+            if (propertyConfig.isAllIndexed()){
+                // TODO : handle ALL indexed                
+            }
+
+            if (propertyConfig.isTextIndexed()){
+                // TODO : handled TEXT indexed
+            }
+        }
+    }
+        
     private void update(ListMap<ID,ID> types, ListMap<ID, STMT> rsAdded, ListMap<ID, STMT> rsRemoved,
             Set<ID> resources) throws IOException, CorruptIndexException {
 
@@ -394,19 +405,6 @@ class LuceneConnection implements RDFConnection{
         }        
     }
 
-    private List<ID> getSubjectTypes(ID subject, ListMap<ID, ID> types, Resource luceneResource) {
-        List<ID> subjectTypes = types.get(subject);
-        if (subjectTypes == null){
-            List<STMT> typeStmts = findStatements(luceneResource, subject, RDF.type, null, null); 
-            subjectTypes = new ArrayList<ID>(typeStmts.size());
-            for (STMT stmt : typeStmts){
-                subjectTypes.add((ID) stmt.getObject());
-            }
-            types.put(subject, subjectTypes);
-        }
-        return subjectTypes;
-    }
-        
     @SuppressWarnings("unchecked")
     @Override
     public void update(Set<STMT> removed, Set<STMT> added) {

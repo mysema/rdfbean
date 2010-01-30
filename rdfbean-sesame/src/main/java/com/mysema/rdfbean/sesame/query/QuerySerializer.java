@@ -17,6 +17,7 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
+import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.query.parser.TupleQueryModel;
 
 import com.mysema.rdfbean.Namespaces;
@@ -48,19 +49,29 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     private boolean usingNsPrinted;
     
-    public QuerySerializer(TupleQueryModel query, boolean verbose){
-        query.getTupleExpr().visit(this);
-        
+    public QuerySerializer(GraphQueryModel query, boolean verbose){
+        query.getTupleExpr().visit(this);        
         if (!namespaces.isEmpty() && verbose){           
-            for (String ns : namespaces){
-                String prefix = Namespaces.getPrefix(ns);
-                if (prefix != null && !knownNamespaces.contains(ns)){
-                    if (!usingNsPrinted){
-                        append("\nPREFIXES");
-                        usingNsPrinted = true;
-                    }
-                    append("\n  ").append(prefix).append(": <").append(ns).append(">");
+            printNamespaces();
+        }
+    }
+    
+    public QuerySerializer(TupleQueryModel query, boolean verbose){
+        query.getTupleExpr().visit(this);        
+        if (!namespaces.isEmpty() && verbose){           
+            printNamespaces();
+        }
+    }
+
+    private void printNamespaces() {
+        for (String ns : namespaces){
+            String prefix = Namespaces.getPrefix(ns);
+            if (prefix != null && !knownNamespaces.contains(ns)){
+                if (!usingNsPrinted){
+                    append("\nPREFIXES");
+                    usingNsPrinted = true;
                 }
+                append("\n  ").append(prefix).append(": <").append(ns).append(">");
             }
         }
     }

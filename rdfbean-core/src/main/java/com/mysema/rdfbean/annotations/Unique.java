@@ -15,6 +15,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Declares the a property is unique
+ * 
  * @author tiwe
  * 
  */

@@ -3,6 +3,98 @@
 <sect1 id="sesame-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Sesame</title>
     
-    <para>TODO</para>
+    <para>The RDFBean sesame module depends currently on Sesame 3.0 alpha. We chose the 3.0 branch
+      since it provides better transactional support and a more compact API than Sesame 2.*.</para>
+      
+    <para>The main Repository backends of this module are MemoryRepository and NativeRepository.</para>
+    
+    <sect2>
+      <title>MemoryRepository</title>
+      
+      <para>MemoryRepository is an Repository implementation wrapping the Sesame MemoryStore. 
+      The configuration options are the data dir for File based data persistence and sesameInference
+      for turning on the Sesame level RDF Schema inference.</para>
+    </sect2>
+    
+    <sect2>
+      <title>NativeRepository</title>
+      
+      <para>NativeRepository wraps the Sesame NativeStore and has the mandatory configuration attribute
+      dataDir for the location of the data directory and sesameInference for turning on Seame inference.</para>
+      
+      <para>NativeRepository is slower for small amounts of triples than the MemoryRepository, but scales
+      better with higher amounts of triples</para>
+    </sect2>
+    
+    <sect2>
+      <title>Custom Sesame repository</title>
+      
+      <para>To use other Sesame repositories or further customize the usage of MemoryStore and NativeStore 
+      create a subclass of AbstractSesameRepository or AbstractSailRepository.</para>
+    </sect2>
+    
+    <sect2>
+      <title>Declaring inital data</title>
+      
+      <para>To declare initial data for a Sesame based repository you can use the setSources method like this :</para>
+      
+<programlisting language="java">
+<![CDATA[         
+repository.setSources(
+  new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),
+  new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
+);    
+]]>
+</programlisting>
+
+      <para>The parameters for RDFSource are the location of the data as an URL expression, the format of the data
+      and the target context in the Repository.</para>        
+    
+    </sect2>
+    
+    <sect2>
+      <title>Inferencing</title>
+      
+      <para>
+        RDF Schema inferencing via ForwardChainingRDFSInferencer turned out to be quite slow, 
+        so we are providing lightweight inferencing for subClassOf, subPropertyOf expansions on 
+        RDFBean level.
+      </para>  
+      
+      <para>
+        Sesame repository level inferencing is disabled by default, but can be activated like this:
+      </para>
+
+<programlisting language="java">
+<![CDATA[   
+MemoryRepository repository = new MemoryRepository();
+repository.setSesameInference(true);
+]]>
+</programlisting>        
+
+      <para>   
+        Subtypes and subproperties are provided to the Repository level via the Ontology interface. 
+        The Ontology can either be populated via the Repository itself or via the Configuration.
+      </para>
+
+      <para>
+        The Repository based population is suitable for cases, where the ontology is defined in the
+        repository data itself and the Configuration based approach for cases where it isn't.
+      </para> 
+      
+      <para>The Repository based Ontology is the default option and the Configuration based
+        Repository can be used like this :</para>
+        
+<programlisting language="java">
+<![CDATA[    
+Configuration configuration = new DefaultConfiguration(classes);
+Ontology ontology = new ConfigurationOntology(configuration);
+MemoryRepository repository = new MemoryRepository();
+repository.setOntology(ontology);
+repository.initialize();
+]]>
+</programlisting>            
+    
+    </sect2>
     
 </sect1>    

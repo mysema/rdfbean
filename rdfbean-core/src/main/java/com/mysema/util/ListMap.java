@@ -7,6 +7,7 @@ package com.mysema.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +30,7 @@ public class ListMap<K, V> extends AbstractCollectionMap<K,V>{
 
     @Override
     public List<V> get(K key) {
-        return (List<V>) data.get(key);
+        return (List<V>)(data.containsKey(key) ? data.get(key) : Collections.emptyList());
     }
 
     @SuppressWarnings("unchecked")

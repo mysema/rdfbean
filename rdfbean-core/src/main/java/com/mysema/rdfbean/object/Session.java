@@ -143,13 +143,23 @@ public interface Session extends ObjectRepository, Closeable {
     BeanQuery from(PEntity<?>... exprs);
     
     /**
-     * Creates a query instance of the given type
+     * Prepare a query of the given queryLanguage with the given definition
      * 
+     * @param <D>
      * @param <Q>
-     * @param queryClass
+     * @param queryLanguage
+     * @param definition
      * @return
      */
-    <Q> Q createQuery(Class<Q> queryClass);
+    <D,Q> Q createQuery(QueryLanguage<D,Q> queryLanguage, D definition);
+    
+    /**
+     * Prepare a query of the given queryLanguage without a definion
+     * 
+     * @param <Q>
+     * @param queryLanguage
+     */
+    <Q> Q createQuery(QueryLanguage<Void,Q> queryLanguage);
     
     /**
      * Returns a bean of type clazz with the given natural id (URI or blank node) or null if not found.

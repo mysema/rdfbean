@@ -29,7 +29,6 @@ import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
-import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.StatementPattern.Scope;
 import org.openrdf.query.parser.TupleQueryModel;
@@ -57,7 +56,7 @@ import com.mysema.query.types.path.PathMetadata;
 import com.mysema.query.types.path.PathType;
 import com.mysema.query.types.query.SubQuery;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.InferenceOptions;
+import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.RDF;
@@ -72,8 +71,8 @@ import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.query.AbstractProjectingQuery;
 import com.mysema.rdfbean.query.VarNameIterator;
+import com.mysema.rdfbean.sesame.DirectQuery;
 import com.mysema.rdfbean.sesame.SesameDialect;
-
 
 /**
  * SesameQuery provides a query implementation for Sesame Repository
@@ -88,13 +87,12 @@ public class SesameQuery
     private static final Logger logger = LoggerFactory.getLogger(SesameQuery.class);
     
     private static final Logger queryTreeLogger = LoggerFactory.getLogger("com.mysema.rdfbean.sesame.queryTree");
-    
+   
     private static final URI RDF_TYPE = org.openrdf.model.vocabulary.RDF.TYPE;
     
     private static final Map<Operator<?>,OperationTransformer> transformers = new HashMap<Operator<?>,OperationTransformer>();
     
     static{
-        SesameQueryHolder.init();
         register(new FunctionTransformer());
         
         register(new BetweenTransformer());
@@ -126,7 +124,7 @@ public class SesameQuery
     
     private final boolean includeInferred = true;
     
-    private final InferenceOptions inference;
+    private final Inference inference;
     
     private JoinBuilder joinBuilder;
     
@@ -177,7 +175,7 @@ public class SesameQuery
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,
             Ontology ontology,
-            InferenceOptions inference) {
+            Inference inference) {
         super(dialect, session);        
         this.connection = Assert.notNull(connection);
         this.conf = session.getConfiguration();
@@ -286,9 +284,9 @@ public class SesameQuery
 
         // limit / offset
         if (modifiers.isRestricting()){
-            if (orderElements.isEmpty()){
-                logger.error("paged query without any orderBy elements");
-            }            
+//            if (orderElements.isEmpty()){
+//                logger.error("paged query without any orderBy elements");
+//            }            
             Long limit = modifiers.getLimit();
             Long offset = modifiers.getOffset();            
             tupleExpr = new Slice(tupleExpr, 
@@ -353,13 +351,9 @@ public class SesameQuery
                 query = new TupleQueryModel(tupleExpr);
             }
             
-            logQuery(query);
+            logQuery(query);            
+            queryResult = DirectQuery.query(connection, query, includeInferred);
             
-            SesameQueryHolder.set(query);
-            TupleQuery tupleQuery = connection.prepareTupleQuery(SesameQueryHolder.QUERYDSL, "");                       
-            tupleQuery.setIncludeInferred(includeInferred);
-            
-            queryResult =  tupleQuery.evaluate();
             return new Iterator<Value[]>(){
                 public boolean hasNext() {
                     try {                        

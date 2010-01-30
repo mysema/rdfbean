@@ -19,11 +19,9 @@ import com.google.inject.Singleton;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.name.Named;
 import com.google.inject.name.Names;
-import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.DefaultOntology;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.object.identity.DerbyIdentityService;
@@ -78,13 +76,7 @@ public abstract class RDFBeanModule extends AbstractModule{
     
     @Provides 
     @Singleton
-    public abstract Repository createRepository(Ontology ontology);
-    
-    @Provides
-    @Singleton
-    public Ontology createOntology(Configuration configuration){
-        return new DefaultOntology(configuration); 
-    }
+    public abstract Repository createRepository(Configuration configuration);
     
     @Provides
     @Singleton

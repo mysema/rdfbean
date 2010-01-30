@@ -28,6 +28,9 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.io.Format;
 
 /**
+ * MiniRepository is a lightweight implementation of the Repository interface
+ * for use in local cacheing of statements and tests
+ * 
  * @author sasa
  *
  */

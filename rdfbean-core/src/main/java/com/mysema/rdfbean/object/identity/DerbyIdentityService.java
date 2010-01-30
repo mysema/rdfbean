@@ -26,6 +26,7 @@ import com.mysema.util.JDBCUtil;
  * @author tiwe
  * @version $Id$
  */
+// FIXME : too slow
 public class DerbyIdentityService extends JDBCIdentityService {
     
     private final String connectionUrl, username, password;

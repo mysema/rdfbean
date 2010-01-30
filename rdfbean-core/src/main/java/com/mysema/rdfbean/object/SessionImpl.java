@@ -492,10 +492,16 @@ public class SessionImpl implements Session {
         return instance;
     }
     
-    public <Q> Q createQuery(Class<Q> queryClass){
-        return connection.createQuery(this, queryClass);
+    @Override
+    public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
+        return connection.createQuery(this, queryLanguage, definition);
     }
-
+    
+    @Override
+    public <Q> Q createQuery(QueryLanguage<Void, Q> queryLanguage) {
+        return connection.createQuery(this, queryLanguage, null);
+    }
+    
     protected ID createResource(BeanMap instance) {
         ID id = conf.createURI(instance.getBean());
         if (id == null) {
@@ -574,7 +580,7 @@ public class SessionImpl implements Session {
         }
         return false;
     }
-    
+
     private Set<NODE> filterObjects(CloseableIterator<STMT> statements) {
         Set<NODE> objects = new LinkedHashSet<NODE>();
         try {
@@ -591,7 +597,7 @@ public class SessionImpl implements Session {
         }
         return objects;
     }
-    
+
     @SuppressWarnings("unchecked")
     private <T extends NODE> Set<T> filterSubject(CloseableIterator<STMT> statements) {
         Set<T> subjects = new LinkedHashSet<T>();
@@ -609,7 +615,7 @@ public class SessionImpl implements Session {
         }
         return subjects;
     }
-
+    
     @Override
     public <T> List<T> findInstances(Class<T> clazz) {
         final Set<T> instances = new LinkedHashSet<T>();
@@ -617,7 +623,7 @@ public class SessionImpl implements Session {
         findInstances(clazz, type, instances);
         return new ArrayList<T>(instances);
     }
-
+    
     @Override
     public <T> List<T> findInstances(Class<T> clazz, LID lid) {
         ID id = identityService.getID(lid);
@@ -627,14 +633,14 @@ public class SessionImpl implements Session {
             throw new IllegalArgumentException("Blank nodes not supported");
         }
     }
-    
+
     @Override
     public <T> List<T> findInstances(Class<T> clazz, UID uri) {
         final Set<T> instances = new LinkedHashSet<T>();
         findInstances(clazz, uri, instances);
         return new ArrayList<T>(instances);
     }
-    
+
     private <T> void findInstances(Class<T> clazz, UID uri, final Set<T> instances) {
         UID context = getContext(clazz, null, null);
 //        try {
@@ -650,7 +656,7 @@ public class SessionImpl implements Session {
 //            throw new RuntimeException(e);
 //        }
     }
-
+    
     private List<ID> findMappedTypes(ID subject, UID context) {
         List<ID> types = new ArrayList<ID>();
         List<STMT> statements = findStatements(subject, RDF.type, null, true, context);
@@ -662,7 +668,7 @@ public class SessionImpl implements Session {
         }
         return types;
     }
-
+        
     private Set<NODE> findPathValues(ID resource, MappedPath path, int index, UID context) {
         MappedPredicate predicate = path.get(index);
         if (predicate.context() != null) {
@@ -700,7 +706,7 @@ public class SessionImpl implements Session {
         }
         return statements;
     }
-        
+    
     private List<ID> findTypes(ID subject, UID context) {
         List<ID> types = new ArrayList<ID>();
         List<STMT> statements = findStatements(subject, RDF.type, null, true, context);
@@ -709,7 +715,7 @@ public class SessionImpl implements Session {
         }
         return types;
     }
-    
+
     private Set<NODE> findValues(ID resource, UID predicate, boolean inverse, boolean includeInferred, 
             UID context) {
         if (inverse) {
@@ -718,24 +724,24 @@ public class SessionImpl implements Session {
             return filterObjects(connection.findStatements(resource, predicate, null, context, includeInferred));
         }
     }
-    
+
     public void flush() {
         connection.update(removedStatements, addedStatements);
         removedStatements = new LinkedHashSet<STMT>();
         addedStatements = new LinkedHashSet<STMT>();
     }
-
+    
     @Override
     public BeanQuery from(PEntity<?>... expr) {
-        return connection.createQuery(this).from(expr);
+        return connection.createQuery(this, QueryLanguage.QUERYDSL, null).from(expr);
     }
-
+    
     @Override
     public <T> T get(Class<T> clazz, ID subject) {
         Assert.notNull(subject, "subject was null");
         return getBean(clazz, subject);
     }
-    
+
     @Override
     public <T> T get(Class<T> clazz, LID subject) {
         return get(clazz, identityService.getID(subject));
@@ -759,7 +765,7 @@ public class SessionImpl implements Session {
         }
         return instances;
     }
-    
+
     @Override
     public <T> List<T> getAll(Class<T> clazz, LID... subjects) {
         List<T> instances = new ArrayList<T>(subjects.length);
@@ -779,19 +785,19 @@ public class SessionImpl implements Session {
         }
         return this.<T>convertMappedObject(subject, clazz, polymorphic, false);
     }
-
+    
     @Override
     public <T> T getBean(Class<T> clazz, UID subject) {
         return (T) get(clazz, subject);
     }
-
-    @Override
-    public <T> T getById(String id, Class<T> clazz) {
-        return get(clazz, new LID(id));
-    }
     
     public <T> T getByExample(T entity){
         return new ExampleQuery<T>(this, entity).uniqueResult();        
+    }
+    
+    @Override
+    public <T> T getById(String id, Class<T> clazz) {
+        return get(clazz, new LID(id));
     }
     
     protected Class<?> getClass(Object object) {
@@ -806,7 +812,7 @@ public class SessionImpl implements Session {
     public RDFConnection getConnection() {
         return connection;
     }
-    
+
     private List<Object> getConstructorArguments(MappedClass mappedClass, ID subject, MappedConstructor mappedConstructor) throws InstantiationException, IllegalAccessException {
         List<Object> constructorArguments = new ArrayList<Object>(mappedConstructor.getArgumentCount());
         // TODO parentContext?
@@ -827,7 +833,7 @@ public class SessionImpl implements Session {
             return defaultContext;
         }
     }
-
+    
     public UID getContext(Object instance, @Nullable ID subject, @Nullable UID defaultContext) {
         return getContext(instance.getClass(), subject, defaultContext);
     }
@@ -835,7 +841,7 @@ public class SessionImpl implements Session {
     public ConverterRegistry getConverterRegistry(){
         return conf.getConverterRegistry();
     }
-    
+
     public Locale getCurrentLocale() {
         if (locales != null) {
             Iterator<Locale> liter = locales.iterator();
@@ -845,7 +851,7 @@ public class SessionImpl implements Session {
         }
         return Locale.ROOT;
     }
-    
+        
     public FlushMode getFlushMode() {
         return flushMode;
     }
@@ -863,7 +869,7 @@ public class SessionImpl implements Session {
             return null;
         }
     }
-        
+    
     @Nullable
     private ID getId(MappedClass mappedClass, Object instance) {
         MappedProperty<?> idProperty = mappedClass.getIdProperty();
@@ -894,7 +900,7 @@ public class SessionImpl implements Session {
         }
         return null;
     }
-
+    
     @SuppressWarnings("unchecked")
     public ID getId(Object instance){
         MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
@@ -905,7 +911,7 @@ public class SessionImpl implements Session {
             return getId(mappedClass, beanMap);
         }   
     }
-    
+
     public IdentityService getIdentityService() {
         return identityService;
     }
@@ -913,11 +919,11 @@ public class SessionImpl implements Session {
     public LID getLID(ID id) {
         return identityService.getLID(getModel(), id);
     }
-
+    
     protected BID getModel() {
         return model;
     }
-    
+
     private Set<NODE> getPathValue(MappedClass mappedClass, MappedPath path, ID subject, UID context) {
         if (conf.allowRead(path)) {
             Set<NODE> values;
@@ -978,7 +984,7 @@ public class SessionImpl implements Session {
         }
         return convertedValue;
     }
-    
+
     private boolean isContainer(ID node, UID context) {
         for (ID type : findTypes(node, context)) {
             if (CONTAINER_TYPES.contains(type)) {
@@ -987,7 +993,7 @@ public class SessionImpl implements Session {
         }
         return false;
     }
-
+    
     @Nullable
     @SuppressWarnings("unchecked")
     protected <T> Class<? extends T> matchType(Collection<ID> types, Class<T> targetType) {
@@ -1024,7 +1030,7 @@ public class SessionImpl implements Session {
             resourceCache.put(value, resource);
         }
     }
-    
+
     private void recordAddStatement(ID subject, UID predicate, NODE object, UID context) {
         STMT statement = new STMT(subject, predicate, object, context, true);
         if (!removedStatements.remove(statement)) {
@@ -1045,7 +1051,7 @@ public class SessionImpl implements Session {
             }
         }
     }
-
+    
     private void removeList(ID node, UID context) {
         if (findStatements(node, RDF.type, RDF.List, true, context).size() > 0) {
             removeListInternal(node, context);
@@ -1085,7 +1091,7 @@ public class SessionImpl implements Session {
         }
         return toLID(subject);
     }
-    
+
     @Override
     public List<LID> saveAll(Object... instances) {
         List<LID> ids = new ArrayList<LID>(instances.length);

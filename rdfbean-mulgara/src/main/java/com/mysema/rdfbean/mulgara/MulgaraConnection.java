@@ -37,7 +37,8 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
+import com.mysema.rdfbean.object.QueryLanguage;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleBeanQuery;
@@ -55,9 +56,9 @@ public class MulgaraConnection implements RDFConnection{
     
     private final Connection connection;
     
-    private final GraphElementFactory elementFactory;
-    
     private final MulgaraDialect dialect;
+    
+    private final GraphElementFactory elementFactory;
 
     private MulgaraTransaction localTxn;
 
@@ -75,6 +76,14 @@ public class MulgaraConnection implements RDFConnection{
         }
     }
 
+    @Override
+    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout,
+            int isolationLevel) {
+        localTxn = new MulgaraTransaction(this, connection, readOnly, txTimeout, isolationLevel);
+        readonlyTnx = readOnly;
+        return localTxn;
+    }
+    
     public void cleanUpAfterCommit(){
         localTxn = null;
         readonlyTnx = false;
@@ -85,32 +94,44 @@ public class MulgaraConnection implements RDFConnection{
         readonlyTnx = false;
         close();
     }
-    
-    @Override
-    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout,
-            int isolationLevel) {
-        localTxn = new MulgaraTransaction(this, connection, readOnly, txTimeout, isolationLevel);
-        readonlyTnx = readOnly;
-        return localTxn;
-    }
 
     @Override
     public void clear() {
     }
 
     @Override
+    public void close(){
+        try {
+            connection.close();
+        } catch (QueryException e) {
+            String error = "Caught " + e.getClass().getName();
+            logger.error(error, e);
+            throw new RuntimeException(error, e);
+        }
+        
+    }
+
+    private Triple convert(STMT stmt){        
+        return dialect.createStatement(
+                dialect.getResource(stmt.getSubject()), 
+                dialect.getURI(stmt.getPredicate()),
+                dialect.getNode(stmt.getObject()),
+                stmt.getContext() != null ? dialect.getURI(stmt.getContext()) : null);
+    }
+    
+    @Override
     public BID createBNode() {
         return dialect.getBID(dialect.createBNode());
     }
-
+    
+    @SuppressWarnings("unchecked")
     @Override
-    public BeanQuery createQuery(Session session) {
-        return new SimpleBeanQuery(session);
-    }
-
-    @Override
-    public <Q> Q createQuery(Session session, Class<Q> queryType) {
-        throw new UnsupportedOperationException();
+    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
+        if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
+            return (Q) new SimpleBeanQuery(session);
+        }else{
+            throw new UnsupportedQueryLanguageException(queryLanguage);
+        }
     }
 
     @Override
@@ -156,7 +177,7 @@ public class MulgaraConnection implements RDFConnection{
             throw new RuntimeException(error, e);
         }
     }
-    
+
     @Override
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {        
         if (!readonlyTnx){
@@ -187,26 +208,6 @@ public class MulgaraConnection implements RDFConnection{
                 throw new RuntimeException(error, e);
             }
         }
-    }
-    
-    private Triple convert(STMT stmt){        
-        return dialect.createStatement(
-                dialect.getResource(stmt.getSubject()), 
-                dialect.getURI(stmt.getPredicate()),
-                dialect.getNode(stmt.getObject()),
-                stmt.getContext() != null ? dialect.getURI(stmt.getContext()) : null);
-    }
-
-    @Override
-    public void close(){
-        try {
-            connection.close();
-        } catch (QueryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RuntimeException(error, e);
-        }
-        
     }
 
 }

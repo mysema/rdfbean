@@ -20,7 +20,8 @@ import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 
 /**
- * MultiConnection provides
+ * MultiConnection provides an implementation of the RDFConnection interface
+ * to populate multiple backends via a single RDFConnection handle
  *
  * @author tiwe
  * @version $Id$
@@ -74,11 +75,6 @@ public abstract class MultiConnection implements RDFConnection{
             logger.error(error, e);
             throw new RuntimeException(error, e);
         }
-    }
-
-    @Override
-    public BeanQuery createQuery(Session session) {
-        return connections[0].createQuery(session);
     }
 
     @Override

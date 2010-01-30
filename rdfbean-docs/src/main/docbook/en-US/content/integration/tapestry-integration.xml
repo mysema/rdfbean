@@ -90,7 +90,7 @@
 ]]></programlisting>  
 
     <para>RDFBean Tapestry provides support for transactional wrapping of service methods. All you 
-    need to do to enable it is to annoteate your service interfaces with @org.springframework.transaction.annotation.Transactional
+    need to do to enable it is to annotate your service interfaces with @org.springframework.transaction.annotation.Transactional
     and to add include the following block in your module class : </para>
     
     

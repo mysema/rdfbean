@@ -22,6 +22,7 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.lucene.Constants;
 import com.mysema.rdfbean.lucene.LuceneQuery;
 import com.mysema.rdfbean.lucene.Searchable;
 import com.mysema.rdfbean.lucene.SearchablePredicate;
@@ -58,17 +59,17 @@ public class IndexingBlogSecondTest  extends AbstractIndexTest{
         session.save(article);        
         session.clear();
         
-        CompassHits hits = session.createQuery(CompassQueryBuilder.class).term("text", "title").hits();
+        CompassHits hits = session.createQuery(Constants.COMPASSQUERY).term("text", "title").hits();
         displayAndClose(hits);
                 
         // article search
         
         for (Tag tag : article.tags){
-            LuceneQuery query = session.createQuery(LuceneQuery.class);
+            LuceneQuery query = session.createQuery(Constants.LUCENEQUERY);
             assertFalse(query.query(tag.getName()).list(Article.class).isEmpty());    
         }
         
-        LuceneQuery query = session.createQuery(LuceneQuery.class);
+        LuceneQuery query = session.createQuery(Constants.LUCENEQUERY);
         assertTrue(query.query("XXX").list(Article.class).isEmpty());        
     }
     
