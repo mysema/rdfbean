@@ -44,6 +44,10 @@ public abstract class AbstractSesameRepository implements Repository{
 
     private boolean initialized = false;
     
+    private boolean sesameInference = false;
+    
+    private Inference inference = Inference.FULL;
+    
     public AbstractSesameRepository() {}
     
     public AbstractSesameRepository(org.openrdf.repository.Repository repository) {
@@ -70,7 +74,7 @@ public abstract class AbstractSesameRepository implements Repository{
     public void initialize() {
         if (!initialized) {
             try {
-                repository = createRepository();
+                repository = createRepository(sesameInference);
                 repository.initialize();
                 RepositoryConnection connection = repository.getConnection();
                 try {
@@ -105,10 +109,8 @@ public abstract class AbstractSesameRepository implements Repository{
         }
     }
     
-    protected abstract org.openrdf.repository.Repository createRepository();
+    protected abstract org.openrdf.repository.Repository createRepository(boolean sesameInference);
     
-    protected abstract Inference getInferenceOptions();
-
     @Override
     public void export(Format format, OutputStream out){
         RDFFormat targetFormat = FormatHelper.getFormat(format);
@@ -140,4 +142,12 @@ public abstract class AbstractSesameRepository implements Repository{
         this.ontology = ontology;
     }
     
+    protected Inference getInferenceOptions() {
+        return inference;
+    }
+
+    public void setSesameInference(boolean sesameInference) {
+        this.sesameInference = sesameInference;
+        this.inference = sesameInference ? Inference.LITERAL : Inference.FULL;
+    }
 }

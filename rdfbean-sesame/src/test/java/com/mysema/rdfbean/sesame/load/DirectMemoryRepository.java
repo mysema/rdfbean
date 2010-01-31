@@ -5,12 +5,11 @@
  */
 package com.mysema.rdfbean.sesame.load;
 
-import java.io.File;
-
-import org.openrdf.sail.NotifyingSail;
+import org.openrdf.repository.Repository;
+import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.memory.MemoryStore;
 
-import com.mysema.rdfbean.sesame.AbstractSailRepository;
+import com.mysema.rdfbean.sesame.AbstractSesameRepository;
 
 /**
  * DirectMemoryRepository provides
@@ -18,11 +17,11 @@ import com.mysema.rdfbean.sesame.AbstractSailRepository;
  * @author tiwe
  * @version $Id$
  */
-class DirectMemoryRepository extends AbstractSailRepository{
+class DirectMemoryRepository extends AbstractSesameRepository{
 
     @Override
-    protected NotifyingSail createSail(File dataDir, boolean sailInference) {
-        return new MemoryStore();
+    protected Repository createRepository(boolean sesameInference) {
+        return new SailRepository(new MemoryStore());
     }
 
 }

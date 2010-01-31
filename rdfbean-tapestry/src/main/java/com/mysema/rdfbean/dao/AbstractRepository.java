@@ -8,6 +8,10 @@ package com.mysema.rdfbean.dao;
 import java.util.Collection;
 
 import com.mysema.query.types.path.PEntity;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.object.Session;
 
 /**
  * AbstractRepository provides a basic stub for Repository implementations
@@ -20,8 +24,15 @@ public abstract class AbstractRepository<T> extends AbstractService
     
     private final PEntity<T> entity;
     
+    private final IDType idType;
+    
     protected AbstractRepository(PEntity<T> entity){
+        this(entity, IDType.LOCAL);
+    }
+    
+    protected AbstractRepository(PEntity<T> entity, IDType idType){
         this.entity = entity;
+        this.idType = idType;
     }
     
     @SuppressWarnings("unchecked")
@@ -36,7 +47,15 @@ public abstract class AbstractRepository<T> extends AbstractService
 
     @Override
     public T getById(String id) {
-        return getSession().getById(id, getType());
+        Session session = getSession();
+        if (idType == IDType.LOCAL){
+            return session.getById(id, getType());    
+        }else if (idType == IDType.RESOURCE){
+            return session.get(entity.getType(), new BID(id));
+        }else{
+            return session.get(entity.getType(), new UID(id));
+        }
+        
     }
 
     @Override
