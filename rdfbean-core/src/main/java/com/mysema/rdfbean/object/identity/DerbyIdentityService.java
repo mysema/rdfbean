@@ -11,10 +11,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.List;
-
-import javax.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,13 +33,15 @@ import com.mysema.util.MiniConnectionPoolManager;
  */
 public class DerbyIdentityService implements IdentityService {
     
-    private static final String checkCall = "{ call getlid('a','b') }" ;
-    
-    private static final String createLIDStatement = "{ call createlid(?,?) }";
-    
-    private static final String getIDStatement = "{ call getid(?) }";
+    private static final String checkCall = "{ call getlidforbid('a','b') }" ;
 
-    private static final String getLIDStatement = "{ call getlid(?,?) }";
+    private static final String getBIDStatement = "{ call getbid(?) }";
+    
+    private static final String getUIDStatement = "{ call getuid(?) }";
+
+    private static final String getLIDForUIDStatement = "{ call getlidforuid(?) }";
+                                                                
+    private static final String getLIDForBIDStatement = "{ call getlidforbid(?,?) }";
     
     static{
         System.setProperty("derby.storage.pageCacheSize", "4000"); 
@@ -65,24 +64,26 @@ public class DerbyIdentityService implements IdentityService {
     
     @Override
     public ID getID(LID lid) {
+        long longVal = Long.parseLong(lid.getId());
+        if (longVal % 2 == 0){
+            return getUID(longVal);
+        }else{
+            return getBID(longVal);
+        }
+    }
+    
+    private BID getBID(long lid){
         Connection conn = null;
         CallableStatement stmt = null;
         ResultSet rs = null;
         try{
             conn = poolManager.getConnection();
-            stmt = conn.prepareCall(getIDStatement);
-            long longVal = Long.valueOf(lid.getId());
-            stmt.setLong(1, longVal);
+            stmt = conn.prepareCall(getBIDStatement);
+            stmt.setLong(1, lid);
             rs = stmt.executeQuery();
             if (rs.next()){
                 String id = rs.getString(1);
-                ID rv;
-                if (longVal % 2 == 0){
-                    rv = new UID(id);
-                }else{
-                    rv = new BID(id);
-                }
-                return rv;
+                return new BID(id);
             }else{
                 throw new IllegalArgumentException("No ID for " + lid);
             }
@@ -90,38 +91,49 @@ public class DerbyIdentityService implements IdentityService {
             throw new RuntimeException(e.getMessage(), e);
         }finally{
             JDBCUtil.safeClose(rs, stmt, conn);
-        }                     
+        }                 
     }
     
-    @Override
-    public LID getLID(@Nullable ID model, ID id) {
-        if (id instanceof UID){
-            model = null;
-        }
+    private UID getUID(long lid){
         Connection conn = null;
         CallableStatement stmt = null;
         ResultSet rs = null;
         try{
             conn = poolManager.getConnection();
-            stmt = prepareForGetCreateLID(getLIDStatement, model, id, conn);
+            stmt = conn.prepareCall(getUIDStatement);
+            stmt.setLong(1, lid);
             rs = stmt.executeQuery();
-            // already exists
+            if (rs.next()){
+                String id = rs.getString(1);
+                return new UID(id);
+            }else{
+                throw new IllegalArgumentException("No ID for " + lid);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }finally{
+            JDBCUtil.safeClose(rs, stmt, conn);
+        }
+    }
+    
+    @Override
+    public LID getLID(ID model, BID id) {
+        Connection conn = null;
+        CallableStatement stmt = null;
+        ResultSet rs = null;
+        try{
+            conn = poolManager.getConnection();
+            stmt = conn.prepareCall(getLIDForBIDStatement);
+            stmt.setString(1, model.getId());
+            stmt.setString(2, id.getId());  
+            rs = stmt.executeQuery();
             if (rs.next()){
                 long lid = rs.getLong(1);
                 LID rv = new LID(lid);
-                return rv;
+                return rv;    
             }else{
-                JDBCUtil.safeClose(rs, stmt, null);
-                stmt = prepareForGetCreateLID(createLIDStatement, model, id, conn);
-                rs = stmt.executeQuery();    
-                if (rs.next()){
-                    long lid = rs.getLong(1);
-                    LID rv = new LID(lid);
-                    return rv;
-                }else{        
-                    throw new IllegalArgumentException("No LID for " + id + " (" + model + ")");
-                }
-            }            
+                return null;
+            }  
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
         }finally{
@@ -131,7 +143,26 @@ public class DerbyIdentityService implements IdentityService {
   
     @Override
     public LID getLID(UID id) {        
-        return getLID(null, id);
+        Connection conn = null;
+        CallableStatement stmt = null;
+        ResultSet rs = null;
+        try{
+            conn = poolManager.getConnection();
+            stmt = conn.prepareCall(getLIDForUIDStatement);
+            stmt.setString(1, id.getId());   
+            rs = stmt.executeQuery();
+            if (rs.next()){
+                long lid = rs.getLong(1);
+                LID rv = new LID(lid);
+                return rv;    
+            }else{
+                return null;
+            }               
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }finally{
+            JDBCUtil.safeClose(rs, stmt, conn);                    
+        }    
     }
         
     @SuppressWarnings("unchecked")
@@ -173,19 +204,6 @@ public class DerbyIdentityService implements IdentityService {
         }        
     }
     
-    private CallableStatement prepareForGetCreateLID(
-            String call, ID model, ID id, Connection conn) throws SQLException {
-        CallableStatement stmt;
-        stmt = conn.prepareCall(call);
-        if (model != null){
-            stmt.setString(1, model.getId());    
-        }else{
-            stmt.setNull(1, Types.VARCHAR);
-        }                
-        stmt.setString(2, id.getId());    
-        return stmt;
-    }
-
     public void reset() throws IOException{
         Connection connection = null;        
         Statement stmt = null;        

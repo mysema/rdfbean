@@ -917,7 +917,12 @@ public class SessionImpl implements Session {
     }
     
     public LID getLID(ID id) {
-        return identityService.getLID(getModel(), id);
+        if (id.isBNode()){
+            return identityService.getLID(getModel(), (BID)id);    
+        }else{
+            return identityService.getLID((UID)id);
+        }
+        
     }
     
     protected BID getModel() {
@@ -1089,7 +1094,7 @@ public class SessionImpl implements Session {
                 flush();
             }
         }
-        return toLID(subject);
+        return getLID(subject);
     }
 
     @Override
@@ -1118,7 +1123,7 @@ public class SessionImpl implements Session {
             Class<?> type = idProperty.getType();
             IDType idType = idProperty.getIDType();
             if (idType == IDType.LOCAL) {
-                identifier = toLID(subject);
+                identifier = getLID(subject);
             } else if (idType == IDType.URI) {
                 if (subject.isURI()) {
                     identifier = subject;
@@ -1144,10 +1149,6 @@ public class SessionImpl implements Session {
 
     protected BeanMap toBeanMap(Object instance) {
         return instance instanceof BeanMap ? (BeanMap) instance : new BeanMap(instance);
-    }
-
-    protected LID toLID(ID resource) {
-        return identityService.getLID(getModel(), resource);
     }
 
     @SuppressWarnings("unchecked")

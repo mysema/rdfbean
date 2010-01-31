@@ -17,23 +17,30 @@ CREATE INDEX uids_lid ON uids(lid)
 
 CREATE INDEX uids_id ON uids(id)
 
-CREATE PROCEDURE getlid ( IN model VARCHAR(255), IN id VARCHAR(255))
-PARAMETER STYLE JAVA
-LANGUAGE JAVA 
-READS SQL DATA
-DYNAMIC RESULT SETS 1
-EXTERNAL NAME 'com.mysema.rdfbean.object.identity.DerbyProcedures.getLID'
-
-CREATE PROCEDURE createlid ( IN model VARCHAR(255), IN id VARCHAR(255) )
+CREATE PROCEDURE getlidforbid ( IN model VARCHAR(255), IN id VARCHAR(255))
 PARAMETER STYLE JAVA
 LANGUAGE JAVA 
 MODIFIES SQL DATA
 DYNAMIC RESULT SETS 1
-EXTERNAL NAME 'com.mysema.rdfbean.object.identity.DerbyProcedures.createLID'
+EXTERNAL NAME 'com.mysema.rdfbean.object.identity.DerbyProcedures.getLIDForBID'
 
-CREATE PROCEDURE getid ( IN lid BIGINT )
+CREATE PROCEDURE getlidforuid ( IN id VARCHAR(255))
+PARAMETER STYLE JAVA
+LANGUAGE JAVA 
+MODIFIES SQL DATA
+DYNAMIC RESULT SETS 1
+EXTERNAL NAME 'com.mysema.rdfbean.object.identity.DerbyProcedures.getLIDForUID'
+
+CREATE PROCEDURE getbid ( IN lid BIGINT )
 PARAMETER STYLE JAVA
 LANGUAGE JAVA 
 READS SQL DATA
 DYNAMIC RESULT SETS 1
-EXTERNAL NAME 'com.mysema.rdfbean.object.identity.DerbyProcedures.getID'
+EXTERNAL NAME 'com.mysema.rdfbean.object.identity.DerbyProcedures.getBID'
+
+CREATE PROCEDURE getuid ( IN lid BIGINT )
+PARAMETER STYLE JAVA
+LANGUAGE JAVA 
+READS SQL DATA
+DYNAMIC RESULT SETS 1
+EXTERNAL NAME 'com.mysema.rdfbean.object.identity.DerbyProcedures.getUID'

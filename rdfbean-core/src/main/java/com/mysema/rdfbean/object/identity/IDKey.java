@@ -14,6 +14,7 @@ import net.jcip.annotations.Immutable;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.UID;
 
 /**
  * IDKey defines a single model and id pair for ID/LID mapping
@@ -32,7 +33,7 @@ public final class IDKey implements Serializable {
     
     private final ID id;
 
-    public IDKey(ID uid) {
+    public IDKey(UID uid) {
         this(null, uid);
     }
 
@@ -40,7 +41,7 @@ public final class IDKey implements Serializable {
         this(Assert.notNull(model), (ID) bid);
     }
 
-    public IDKey(@Nullable ID model, ID id) {
+    private IDKey(@Nullable ID model, ID id) {
         this.model = model;
         this.id = Assert.notNull(id);
     }

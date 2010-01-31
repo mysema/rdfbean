@@ -7,6 +7,7 @@ package com.mysema.rdfbean.object.identity;
 
 import javax.annotation.Nullable;
 
+import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.UID;
@@ -20,7 +21,7 @@ import com.mysema.rdfbean.model.UID;
 public interface IdentityService {
     
     /**
-     * Get the local id for the given URI
+     * Get the local id for the given UID
      * 
      * @param id
      * @return
@@ -28,13 +29,13 @@ public interface IdentityService {
     LID getLID(UID id);
     
     /**
-     * Get the local id for the given ID in the given model
+     * Get the local id for the given BID in the given model
      * 
      * @param model
      * @param id
      * @return
      */
-    LID getLID(@Nullable ID model, ID id);
+    LID getLID(ID model, BID id);
 
     /**
      * Get the ID for the given local id 

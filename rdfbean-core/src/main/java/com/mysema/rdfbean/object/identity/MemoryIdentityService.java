@@ -126,17 +126,13 @@ public class MemoryIdentityService implements IdentityService {
     }
 
     @Override
-    public LID getLID(UID uid) {
-        return getLID(null, uid);
+    public synchronized LID getLID(UID uid) {
+        return ids.get(new IDKey(uid));
     }
 
     @Override
-    public synchronized LID getLID(@Nullable ID model, ID rid) {
-        if (rid instanceof UID) {
-            return ids.get(new IDKey((UID) rid));
-        } else {
-            return ids.get(new IDKey(model, (BID) rid));
-        }
+    public synchronized LID getLID(ID model, BID rid) {
+        return ids.get(new IDKey(model, rid));
     }
 
     @Override

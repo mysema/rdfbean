@@ -33,14 +33,14 @@ public abstract class AbstractIdentityServiceTest {
     @Test
     public void testURI2(){
         LID lid = identityService.getLID(RDF.type);
-        assertEquals(lid, identityService.getLID(RDF.type, RDF.type));
-        assertEquals(lid, identityService.getLID(RDF.Property, RDF.type));
+        assertEquals(lid, identityService.getLID(RDF.type));
+        assertEquals(lid, identityService.getLID(RDF.type));
         assertFalse(lid.equals(identityService.getLID(RDF.li)));
     }
     
     @Test
     public void testURINamedContext(){     
-        LID lid = identityService.getLID(context, RDF.type);
+        LID lid = identityService.getLID(RDF.type);
         assertEquals(RDF.type, identityService.getID(lid));
         assertEquals(RDF.type, identityService.getID(lid));
     }

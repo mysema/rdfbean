@@ -32,14 +32,14 @@ public class IdentityServiceTest {
     }
     
     private void load(IdentityService identityService, int count){        
-        List<ID> ids = new ArrayList<ID>(count);
+        List<BID> ids = new ArrayList<BID>(count);
         for (int i = 0; i < count; i++){
             ids.add(new BID());
         }
         
         UID model = new UID(TEST.NS,"model");
         long s = System.currentTimeMillis();
-        for (ID id : ids){
+        for (BID id : ids){
             identityService.getLID(model, id);
         }
         long e = System.currentTimeMillis();

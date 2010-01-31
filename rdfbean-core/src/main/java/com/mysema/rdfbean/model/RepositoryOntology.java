@@ -23,52 +23,46 @@ import com.mysema.util.SetMap;
 public class RepositoryOntology extends AbstractOntology{
     
     public RepositoryOntology(Repository repository) throws IOException{
-        Set<UID> types = new HashSet<UID>();
-        SetMap<UID,UID> directSubtypes = new SetMap<UID,UID>();
-        SetMap<UID, UID> directSupertypes = new SetMap<UID,UID>();
-//        SetMap<UID,UID> directSubproperties = new SetMap<UID,UID>();
-//        SetMap<UID, UID> directSuperproperties = new SetMap<UID,UID>();
-        
+        Set<UID> types = new HashSet<UID>();                
         RDFConnection connection = repository.openConnection();
         try{
-            // classes
-            // TODO : query for RDFS.Class as well
-            CloseableIterator<STMT> stmts = connection.findStatements(null, RDF.type, OWL.Class, null, false);
-            try{
-                while (stmts.hasNext()){
-                    STMT stmt = stmts.next();
-                    types.add((UID) stmt.getSubject());
-                    
-                }   
-            }finally{
-                stmts.close();    
-            }
-            
-            
-            // subClassOf hierarchy
-            stmts = connection.findStatements(null, RDFS.subClassOf, null, null, false);
-            try{
-                while (stmts.hasNext()){
-                    STMT stmt = stmts.next();
-                    if (stmt.getSubject().isURI() && stmt.getObject().isURI()){
-                        directSupertypes.put((UID)stmt.getSubject(), (UID)stmt.getObject());
-                        directSubtypes.put((UID)stmt.getObject(), (UID)stmt.getSubject());
-                    }
-                }    
-            }finally{
-                stmts.close();    
-            }
-            
-            // properties
-            // TODO
-            
-            // subPropertyOf hierarchy
-            // TODO
-            
-            
-            initializeTypeHierarchy(types, directSubtypes, directSupertypes);
+            initTypes(types, connection);                        
+            initTypeHierachy(types, connection);  
+            // TODO : initProperties
+            // TODO : initPropertyHierarchy
         }finally{
             connection.close();
+        }
+    }
+
+    private void initTypeHierachy(Set<UID> types, RDFConnection connection) throws IOException {
+        SetMap<UID,UID> directSubtypes = new SetMap<UID,UID>();
+        SetMap<UID, UID> directSupertypes = new SetMap<UID,UID>();
+        CloseableIterator<STMT> stmts = connection.findStatements(null, RDFS.subClassOf, null, null, false);
+        try{
+            while (stmts.hasNext()){
+                STMT stmt = stmts.next();
+                if (stmt.getSubject().isURI() && stmt.getObject().isURI()){
+                    directSupertypes.put((UID)stmt.getSubject(), (UID)stmt.getObject());
+                    directSubtypes.put((UID)stmt.getObject(), (UID)stmt.getSubject());
+                }
+            }
+            initializeTypeHierarchy(types, directSubtypes, directSupertypes);
+        }finally{
+            stmts.close();    
+        }
+    }
+
+    private void initTypes(Set<UID> types, RDFConnection connection)throws IOException {
+        CloseableIterator<STMT> stmts = connection.findStatements(null, RDF.type, OWL.Class, null, false);
+        try{
+            while (stmts.hasNext()){
+                STMT stmt = stmts.next();
+                types.add((UID) stmt.getSubject());
+                
+            }   
+        }finally{
+            stmts.close();    
         }
     }
 
