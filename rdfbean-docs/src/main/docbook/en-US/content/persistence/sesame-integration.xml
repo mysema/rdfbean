@@ -30,7 +30,7 @@
       <title>Custom Sesame repository</title>
       
       <para>To use other Sesame repositories or further customize the usage of MemoryStore and NativeStore 
-      create a subclass of AbstractSesameRepository or AbstractSailRepository.</para>
+      create a subclass of AbstractSesameRepository.</para>
     </sect2>
     
     <sect2>
