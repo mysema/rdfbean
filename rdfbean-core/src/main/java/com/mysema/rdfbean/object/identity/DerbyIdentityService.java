@@ -8,6 +8,7 @@ package com.mysema.rdfbean.object.identity;
 import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -65,6 +66,20 @@ public class DerbyIdentityService implements IdentityService {
         dataSource.setDatabaseName (databaseName);
         dataSource.setCreateDatabase ("create");
         poolManager = new MiniConnectionPoolManager(dataSource, maxConnections);
+        
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    DriverManager.getConnection("jdbc:derby:;shutdown=true");
+                } catch (SQLException e) {
+                    if (!e.getSQLState().equals("XJ015")){
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        });
+        
         init();
     }
     
