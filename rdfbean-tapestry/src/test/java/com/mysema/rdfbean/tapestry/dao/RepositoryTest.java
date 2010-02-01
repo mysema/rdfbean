@@ -65,8 +65,7 @@ public class RepositoryTest {
         sessionFactory.setRepository(new MiniRepository());
         sessionFactory.initialize();    
         
-        repository = new AbstractRepository<User>(new PathBuilder<User>(User.class, "user")){};
-        repository.setSessionFactory(sessionFactory);
+        repository = new AbstractRepository<User>(sessionFactory, new PathBuilder<User>(User.class, "user")){};
         Session session = null;
         try{
             session = sessionFactory.openSession();

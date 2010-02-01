@@ -31,6 +31,7 @@ import com.mysema.util.MiniConnectionPoolManager;
  * @author tiwe
  * @version $Id$
  */
+// TODO : use UID local id for model
 public class DerbyIdentityService implements IdentityService {
     
     private static final String checkCall = "{ call getlidforbid('a','b') }" ;

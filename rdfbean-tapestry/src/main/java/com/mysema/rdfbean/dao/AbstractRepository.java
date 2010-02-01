@@ -12,6 +12,7 @@ import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionFactory;
 
 /**
  * AbstractRepository provides a basic stub for Repository implementations
@@ -26,11 +27,12 @@ public abstract class AbstractRepository<T> extends AbstractService
     
     private final IDType idType;
     
-    protected AbstractRepository(PEntity<T> entity){
-        this(entity, IDType.LOCAL);
+    protected AbstractRepository(SessionFactory sessionFactory, PEntity<T> entity){
+        this(sessionFactory, entity, IDType.LOCAL);
     }
     
-    protected AbstractRepository(PEntity<T> entity, IDType idType){
+    protected AbstractRepository(SessionFactory sessionFactory, PEntity<T> entity, IDType idType){
+        super(sessionFactory);
         this.entity = entity;
         this.idType = idType;
     }

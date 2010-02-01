@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.identity.DerbyIdentityService;
 import com.mysema.rdfbean.object.identity.IdentityService;

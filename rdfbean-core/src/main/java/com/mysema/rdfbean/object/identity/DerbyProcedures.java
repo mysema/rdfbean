@@ -33,74 +33,62 @@ public final class DerbyProcedures {
         
     public static void getLIDForBID(String model, String id, ResultSet[] data) throws SQLException{
         Connection conn = DriverManager.getConnection(CONNECTION);
-        PreparedStatement stmt = null; 
-        try{
-            PreparedStatement s = conn.prepareStatement(BID_GET_LID,
-                    ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
-            s.setString(1, model);
-            s.setString(2, id);      
-            ResultSet rs = s.executeQuery(); 
-            if (rs.next()){    
-                rs.beforeFirst();
-                data[0] = rs;
-            }else{
-                stmt = conn.prepareStatement(BID_CREATE_ID);
-                stmt.setString(1, model);
-                stmt.setString(2, id);
-                stmt.executeUpdate();
-                stmt.close();   
-                data[0] = s.executeQuery();
-            }   
-        }finally{
-            JDBCUtil.safeClose(null, null, conn);
-        }        
+        PreparedStatement stmt = null;
+        PreparedStatement s = conn.prepareStatement(BID_GET_LID,
+                ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        s.setString(1, model);
+        s.setString(2, id);      
+        ResultSet rs = s.executeQuery(); 
+        if (rs.next()){    
+            rs.beforeFirst();
+            data[0] = rs;
+        }else{
+            stmt = conn.prepareStatement(BID_CREATE_ID);
+            stmt.setString(1, model);
+            stmt.setString(2, id);
+            stmt.executeUpdate();
+            stmt.close();   
+            data[0] = s.executeQuery();
+        }  
+        JDBCUtil.safeClose(null, null, conn);      
     }
     
     public static void getLIDForUID(String id, ResultSet[] data) throws SQLException{
         Connection conn = DriverManager.getConnection(CONNECTION);
         PreparedStatement stmt = null; 
-        try{
-            PreparedStatement s = conn.prepareStatement(UID_GET_LID,
-                    ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
-            s.setString(1, id);     
-            ResultSet rs = s.executeQuery();        
-            if (rs.next()){
-                rs.beforeFirst();
-                data[0] = rs;
-            }else{
-                stmt = conn.prepareStatement(UID_CREATE_ID);
-                stmt.setString(1, id);
-                stmt.executeUpdate();
-                stmt.close();                     
-                data[0] = s.executeQuery();
-            }            
-        }finally{
-            JDBCUtil.safeClose(null, stmt, conn);    
-        }
+        PreparedStatement s = conn.prepareStatement(UID_GET_LID,
+                ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_READ_ONLY);
+        s.setString(1, id);     
+        ResultSet rs = s.executeQuery();        
+        if (rs.next()){
+            rs.beforeFirst();
+            data[0] = rs;
+        }else{
+            stmt = conn.prepareStatement(UID_CREATE_ID);
+            stmt.setString(1, id);
+            stmt.executeUpdate();
+            stmt.close();                     
+            data[0] = s.executeQuery();
+        } 
+        JDBCUtil.safeClose(null, stmt, conn);    
     }
     
     public static void getBID(long lid, ResultSet[] data) throws SQLException{
         Connection conn = DriverManager.getConnection(CONNECTION);
-        try{
-            PreparedStatement stmt = conn.prepareStatement(BID_GET_ID);
-            stmt.setLong(1, lid);
-            data[0] = stmt.executeQuery();    
-        }finally{
-            conn.close();    
-        }
+        PreparedStatement stmt = conn.prepareStatement(BID_GET_ID);
+        stmt.setLong(1, lid);
+        data[0] = stmt.executeQuery();
+        conn.close();    
     }
     
     public static void getUID(long lid, ResultSet[] data) throws SQLException{
         Connection conn = DriverManager.getConnection(CONNECTION);
-        try{
-            PreparedStatement stmt = conn.prepareStatement(UID_GET_ID);
-            stmt.setLong(1, lid);
-            data[0] = stmt.executeQuery();    
-        }finally{
-            conn.close();    
-        }
+        PreparedStatement stmt = conn.prepareStatement(UID_GET_ID);
+        stmt.setLong(1, lid);
+        data[0] = stmt.executeQuery();
+        conn.close();
     }
     
 }

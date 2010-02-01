@@ -24,8 +24,11 @@ import com.mysema.rdfbean.tapestry.BeanGridDataSource;
  */
 public abstract class AbstractService {
     
-    @Inject
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory;
+    
+    public AbstractService(@Inject SessionFactory sessionFactory){
+        this.sessionFactory = sessionFactory;
+    }
     
     protected Session getSession(){
         return sessionFactory.getCurrentSession();
@@ -43,8 +46,4 @@ public abstract class AbstractService {
         return new BeanGridDataSource<T>(sessionFactory, entity, defaultOrder, conditions);
     }
 
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-    
 }
