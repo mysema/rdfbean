@@ -11,7 +11,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -31,11 +33,12 @@ import com.mysema.util.MiniConnectionPoolManager;
  * @author tiwe
  * @version $Id$
  */
-// TODO : use UID local id for model
 public class DerbyIdentityService implements IdentityService {
     
-    private static final String checkCall = "{ call getlidforbid('a','b') }" ;
+    private static final String checkCall = "{ call getlidforuid('http://www.w3c.org') }" ;
 
+    private static final String getModelIdStatement = "{ call getmodelid(?) }";
+    
     private static final String getBIDStatement = "{ call getbid(?) }";
     
     private static final String getUIDStatement = "{ call getuid(?) }";
@@ -50,6 +53,8 @@ public class DerbyIdentityService implements IdentityService {
     }
     
     private final MiniConnectionPoolManager poolManager;
+    
+    private final Map<ID,Integer> modelIds = new HashMap<ID,Integer>();
     
     public DerbyIdentityService(String databaseName) throws IOException {
         this(databaseName, 50);
@@ -117,6 +122,33 @@ public class DerbyIdentityService implements IdentityService {
         }
     }
     
+    private int getModelId(ID model){
+        if (modelIds.containsKey(model)){
+            return modelIds.get(model).intValue();
+        }else{
+            Connection conn = null;
+            CallableStatement stmt = null;
+            ResultSet rs = null;
+            try{
+                conn = poolManager.getConnection();
+                stmt = conn.prepareCall(getModelIdStatement);
+                stmt.setString(1, model.getId());
+                rs = stmt.executeQuery();
+                if (rs.next()){
+                    int modelId = rs.getInt(1);
+                    modelIds.put(model, modelId);
+                    return modelId;
+                }else{
+                    throw new IllegalArgumentException("No modelId for " + model);
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e.getMessage(), e);    
+            }finally{
+                JDBCUtil.safeClose(rs, stmt, conn);
+            }
+        }
+    }
+    
     @Override
     public LID getLID(ID model, BID id) {
         Connection conn = null;
@@ -125,7 +157,7 @@ public class DerbyIdentityService implements IdentityService {
         try{
             conn = poolManager.getConnection();
             stmt = conn.prepareCall(getLIDForBIDStatement);
-            stmt.setString(1, model.getId());
+            stmt.setInt(1, getModelId(model));
             stmt.setString(2, id.getId());  
             rs = stmt.executeQuery();
             if (rs.next()){
@@ -213,14 +245,20 @@ public class DerbyIdentityService implements IdentityService {
             connection.setAutoCommit(false);
             stmt = connection.createStatement();
             stmt.execute("DROP TABLE bids");
-            stmt.execute("DROP TABLE uids");            
+            stmt.execute("DROP TABLE uids");   
+            stmt.execute("DROP TABLE models");     
+            
             stmt.execute("DROP INDEX bids_lid");
             stmt.execute("DROP INDEX bids_id");
             stmt.execute("DROP INDEX uids_lid");
-            stmt.execute("DROP INDEX uids_id");            
-            stmt.execute("DROP PROCEDURE getid");
-            stmt.execute("DROP PROCEDURE getlid");
-            stmt.execute("DROP PROCEDURE createlid");
+            stmt.execute("DROP INDEX uids_id");
+            stmt.execute("DROP INDEX models_model");
+            
+            stmt.execute("DROP PROCEDURE getlidforbid");
+            stmt.execute("DROP PROCEDURE getlidforuid");
+            stmt.execute("DROP PROCEDURE getbid");
+            stmt.execute("DROP PROCEDURE getuid");
+            stmt.execute("DROP PROCEDURE getmodelid");
             connection.commit();
         }catch(SQLException e){
             throw new IOException(e.getMessage(), e);

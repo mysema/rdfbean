@@ -27,7 +27,7 @@ public class IdentityServiceTest {
     public void test() throws IOException{
         int iterations = 1000;
         load(MemoryIdentityService.instance(), iterations);       //   16 ms
-        load(new DerbyIdentityService(databaseName), iterations); // 1656 ms
+        load(new DerbyIdentityService(databaseName), iterations); // 1484 ms
     }
     
     private void load(IdentityService identityService, int count){        
