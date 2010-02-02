@@ -261,14 +261,12 @@ public class DerbyIdentityService implements IdentityService {
             stmt = connection.createStatement();
             stmt.execute("DROP TABLE bids");
             stmt.execute("DROP TABLE uids");   
-            stmt.execute("DROP TABLE models");     
-            
+            stmt.execute("DROP TABLE models");                 
             stmt.execute("DROP INDEX bids_lid");
             stmt.execute("DROP INDEX bids_id");
             stmt.execute("DROP INDEX uids_lid");
             stmt.execute("DROP INDEX uids_id");
-            stmt.execute("DROP INDEX models_model");
-            
+            stmt.execute("DROP INDEX models_model");            
             stmt.execute("DROP PROCEDURE getlidforbid");
             stmt.execute("DROP PROCEDURE getlidforuid");
             stmt.execute("DROP PROCEDURE getbid");
