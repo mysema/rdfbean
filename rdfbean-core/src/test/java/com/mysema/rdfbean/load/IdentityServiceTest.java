@@ -28,7 +28,7 @@ public class IdentityServiceTest {
     
     @Test
     public void test() throws IOException{
-        FileUtils.deleteDirectory(new File("target/derbydb"));        
+        FileUtils.deleteDirectory(new File(databaseName));        
         int iterations = 1000;
         load(MemoryIdentityService.instance(), iterations);       //   16 ms
         load(new DerbyIdentityService(databaseName), iterations); // 1484 ms
