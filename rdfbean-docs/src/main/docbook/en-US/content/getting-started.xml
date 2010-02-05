@@ -216,11 +216,104 @@ public class User {
     
       <title>Type-safe querying</title>      
       
+      <para>RDFBean uses Querydsl to provide a type-safe object oriented querying interface on top of RDFBean domain models.
+      Querydsl usage is presented in the form of examples</para>
+      
+      <para>Querydsl uses generated query types to enable the construction of type-sae queries.</para>
+      
+      <para>See the Querydsl documentation for Querydsl usage specific details.</para>
+      
+      <sect2>
+      
+         <title>Configuring Querydsl</title>
+         
+         <para>If you are using Maven, then the following APT configuration will create Querydsl query types into the
+         folder <emphasis>target/generated-sources/java</emphasis> : </para>
+         
+             <programlisting language="xml"><![CDATA[
+<plugin>
+  <groupId>com.mysema.maven</groupId>
+  <artifactId>maven-apt-plugin</artifactId>
+  <version>0.3.1</version>
+  <executions>
+    <execution>
+      <goals>
+        <goal>process</goal>
+      </goals>
+      <configuration>
+        <outputDirectory>target/generated-sources/java</outputDirectory>
+        <processor>com.mysema.rdfbean.query.BeanAnnotationProcessor</processor>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+]]></programlisting>
+      
+      </sect2>
+      
+      <sect2>
+      
+      <title>Querying with Querydsl</title>
+      
+    <para>
+      BeanQuery is the main querying interface for RDFBean. You obtain a BeanQuery instance like this 
+    </para>
+
+    <programlisting language="java"><![CDATA[
+QCustomer customer = QCustomer.customer; // query variable    
+// where session is a RDFBean session
+BeanQuery query = session.from(customer);
+]]></programlisting>
+
+    <para>
+      To retrieve the customer with the first name Bob you would construct a
+      query like this :
+  </para>
+
+    <programlisting language="java"><![CDATA[
+QCustomer customer = QCustomer.customer;
+Customer bob = session.from(customer)
+  .where(customer.firstName.eq("Bob"))
+  .uniqueResult(customer);
+]]></programlisting>
+
+    <para>
+      The from call defines the query source, the where part defines the
+      filter and uniqueResult defines the projection and tells Querydsl
+      to return a single element. Easy, right?
+  </para>
+  
+  <para>
+    To create a query with multiple sources you onbtain a BeanQuery interface like this :
+  </para>
+
+    <programlisting language="java"><![CDATA[
+session.from(customer, company);    
+]]></programlisting>    
+
+   <para>
+   And to use multiple filters use it like this
+   </para>
+   
+   <programlisting language="java"><![CDATA[
+session.from(customer)
+    .where(customer.firstName.eq("Bob"), customer.lastName.eq("Wilson"));   
+]]></programlisting>   
+  
+  <para>Or like this</para>
+    
+<programlisting language="java"><![CDATA[
+session.form(customer)
+    .where(customer.firstName.eq("Bob").and(customer.lastName.eq("Wilson")));
+]]></programlisting>      
+      
+  </sect2>    
+      
   <sect2>
       
   <title>General usage</title>
   
-  <para>Use the the cascading methods of the HQLQuery method like this</para>
+  <para>Use the the cascading methods of the BeanQuery interface like this</para>
   
   <para><emphasis>from :</emphasis> Define the query sources here.</para>
   
@@ -242,12 +335,19 @@ public class User {
   <para>The syntax for declaring ordering is </para>
   
 <programlisting language="java"><![CDATA[ 
-query.from(customer)
+session.from(customer)
     .orderBy(customer.lastName.asc(), customer.firstName.desc())
     .list(customer);
 ]]></programlisting>
 
   </sect2>  
+  
+  <sect2>
+    <title>Subqueries</title>
+    
+    <para>TODO</para>
+  
+  </sect2>
       
     </sect1>
     
