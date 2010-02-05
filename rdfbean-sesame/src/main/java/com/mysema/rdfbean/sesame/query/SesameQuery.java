@@ -132,6 +132,8 @@ public class SesameQuery
 
     private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
 
+    private Map<Path<?>,Var> allPaths = new HashMap<Path<?>,Var>();
+    
     private Map<Path<?>, Var> pathToMatchedVar = new HashMap<Path<?>,Var>();
     
     private Map<Path<?>, Var> pathToVar = new HashMap<Path<?>, Var>();
@@ -284,9 +286,6 @@ public class SesameQuery
 
         // limit / offset
         if (modifiers.isRestricting()){
-//            if (orderElements.isEmpty()){
-//                logger.error("paged query without any orderBy elements");
-//            }            
             Long limit = modifiers.getLimit();
             Long offset = modifiers.getOffset();            
             tupleExpr = new Slice(tupleExpr, 
@@ -327,6 +326,9 @@ public class SesameQuery
         for (OrderSpecifier<?> os : metadata.getOrderBy()){
             orderElements.add(new OrderElem(toValue(os.getTarget()), os.isAscending()));
         }        
+        
+        allPaths.putAll(pathToVar);
+        pathToVar = allPaths;
         // select (optional paths)
         for (Expr<?> expr : metadata.getProjection()){
             addProjection(expr, projection, extensions);
@@ -530,6 +532,7 @@ public class SesameQuery
         if (!outerOptional && inOptionalPath()){
             joinBuilder.setOptional();
             innerOptional = true;
+            
             _pathToVar = pathToVar;
             _pathToMatchedVar = pathToMatchedVar;
             pathToVar = new HashMap<Path<?>,Var>(_pathToVar);
@@ -546,6 +549,8 @@ public class SesameQuery
             operatorStack.pop();
             if (!outerOptional && innerOptional){
                 joinBuilder.setMandatory();
+                
+                allPaths.putAll(pathToVar);
                 pathToVar = _pathToVar;
                 pathToMatchedVar = _pathToMatchedVar;
             }
