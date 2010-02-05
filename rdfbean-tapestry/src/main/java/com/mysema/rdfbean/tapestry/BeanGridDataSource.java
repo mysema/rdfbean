@@ -133,7 +133,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
     public Object getRowValue(int index) {
         index = index - startIndex; 
         if (index < preparedResults.size()){
-            return preparedResults.get(index - startIndex);    
+            return preparedResults.get(index);    
         }else{
             logger.error("Invalid index " + index + " (size " + preparedResults.size() + ")" );
             return null;
