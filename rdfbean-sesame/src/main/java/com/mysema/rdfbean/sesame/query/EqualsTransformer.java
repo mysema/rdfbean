@@ -125,7 +125,7 @@ public class EqualsTransformer implements OperationTransformer{
             if (mappedPath.getMappedProperty().isLocalized()){
                 String value = constant.toString();
                 if (pathType.equals(PathType.PROPERTY)){
-                    locale = context.getCurrentLocale();
+                    locale = context.getLocale();
                 }else if (pathType.equals(PathType.MAPVALUE_CONSTANT)){
                     locale = ((Constant<Locale>)path.getMetadata().getExpression()).getConstant();                        
                 }else{

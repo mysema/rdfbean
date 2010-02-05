@@ -30,6 +30,8 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
 /**
+ * SesameDialect is a Dialect implementation for Sesame 
+ * 
  * @author sasa
  *
  */
@@ -48,16 +50,22 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
         this.vf = vf;
     }
 
+    public void clear(){
+        uriCache.clear();
+        bnodeCache.clear();
+        literalCache.clear();
+    }
+
     @Override
     public BNode createBNode() {
         return vf.createBNode();
     }
-
+    
     @Override
     public Statement createStatement(Resource subject, URI predicate, Value object) {
         return vf.createStatement(subject, predicate, object);
     }
-    
+
     @Override
     public Statement createStatement(Resource subject, URI predicate, Value object, URI context) {
         return vf.createStatement(subject, predicate, object, context);
@@ -167,7 +175,7 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
         }
         return uid;
     }
-
+    
     @Override
     public URI getURI(UID uid) {
         return vf.createURI(uid.ns(), uid.ln());
@@ -175,12 +183,6 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     
     public ValueFactory getValueFactory(){
         return vf;
-    }
-    
-    public void clear(){
-        uriCache.clear();
-        bnodeCache.clear();
-        literalCache.clear();
     }
 
 }

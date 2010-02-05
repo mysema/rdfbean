@@ -17,7 +17,7 @@ import org.openrdf.rio.helpers.RDFHandlerWrapper;
 import com.mysema.commons.lang.Assert;
 
 /**
- * ExtendedTurtleWriter provides
+ * RDFWriterAdapter provides
  * 
  * @author tiwe
  * @version $Id$

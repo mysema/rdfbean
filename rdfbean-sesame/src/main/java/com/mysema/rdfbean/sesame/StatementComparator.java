@@ -14,7 +14,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 
 /**
- * StatementComparator provides
+ * StatementComparator is a Comparator implementation for OpenRDF statements
  *
  * @author tiwe
  * @version $Id$

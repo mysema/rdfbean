@@ -21,7 +21,7 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 
 /**
- * SesameTransaction provides
+ * SesameTransaction provides an RDFBeanTransaction implementation for SesameConnection
  *
  * @author tiwe
  * @version $Id$

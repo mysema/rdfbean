@@ -10,7 +10,7 @@ import org.openrdf.rio.RDFFormat;
 import com.mysema.rdfbean.model.io.Format;
 
 /**
- * FormatHelper provides
+ * FormatHelper provides Format to RDFFormat conversion functionality
  *
  * @author tiwe
  * @version $Id$

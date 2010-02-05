@@ -302,7 +302,7 @@ public class SesameQuery
     }
     
     @Override
-    public Locale getCurrentLocale() {
+    public Locale getLocale() {
         return session.getCurrentLocale();
     }
     

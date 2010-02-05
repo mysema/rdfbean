@@ -23,51 +23,141 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.MappedPath;
 
 /**
- * TransformerContext provides
+ * TransformerContext provides a limited view of SesameQuery methods to OperationTransformer instances
  *
  * @author tiwe
  * @version $Id$
  */
 public interface TransformerContext {
     
+    /**
+     * Create a new Variable
+     */
     Var createVar();
             
-    Locale getCurrentLocale();
+    /**
+     * Get the Locale
+     */
+    Locale getLocale();
 
+    /**
+     * Get the mapped path for the given path
+     */
     MappedPath getMappedPath(Path<?> parent);
 
+    /**
+     * Get the pattern scope
+     */
     Scope getPatternScope();
 
+    /**
+     * Get the resource for the given expression
+     */
     ID getResourceForLID(Expr<?> arg);
 
+    /**
+     * Get the ValueFactory
+     */
     ValueFactory getValueFactory();
 
+    /**
+     * @return
+     */
     boolean inNegation();
 
+    /**
+     * @return
+     */
     boolean inOptionalPath();
 
+    /**
+     * @param path
+     * @return
+     */
     boolean isRegistered(Path<?> path);
 
+    /**
+     * @param builder
+     * @param s
+     * @param p
+     * @param o
+     */
     void match(JoinBuilder builder, Var s, UID p, Var o);
 
+    /**
+     * @param s
+     * @param p
+     * @param o
+     */
     void match(Var s, UID p, Var o);
 
+    /**
+     * @param otherPath
+     * @param var
+     */
     void register(Path<?> otherPath, Var var);
 
+    /**
+     * Transform the given SubQuery to a TupleExpr
+     * 
+     * @param arg0
+     * @return
+     */
     TupleExpr toTuples(SubQuery arg0);
 
+    /**
+     * Transform the given Expr to a ValueExpr
+     * 
+     * @param expr
+     * @return
+     */
     ValueExpr toValue(Expr<?> expr);
 
+    /**
+     * Transform the given ID to a Value
+     * 
+     * @param id
+     * @return
+     */
     Value toValue(ID id);
 
+    /**
+     * Transform the given Constant to a Var
+     * 
+     * @param arg1
+     * @return
+     */
     Var toVar(Constant<?> arg1);
 
+    /**
+     * Transform the given Path to a Var
+     * 
+     * @param path
+     * @return
+     */
     Var toVar(Path<?> path);
 
+    /**
+     * Transform the given UID to a Var
+     * 
+     * @param id
+     * @return
+     */
     Var toVar(UID id);
 
+    /**
+     * Transform the given Value to a Var
+     * 
+     * @param value
+     * @return
+     */
     Var toVar(Value value);
 
+    /**
+     * Create a new JoinBuilder
+     * 
+     * @return
+     */
     JoinBuilder createJoinBuilder();
     
 }
