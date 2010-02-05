@@ -132,9 +132,9 @@ public class SesameQuery
 
     private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
 
-    private final Map<Path<?>, Var> pathToMatchedVar = new HashMap<Path<?>,Var>();
+    private Map<Path<?>, Var> pathToMatchedVar = new HashMap<Path<?>,Var>();
     
-    private final Map<Path<?>, Var> pathToVar = new HashMap<Path<?>, Var>();
+    private Map<Path<?>, Var> pathToVar = new HashMap<Path<?>, Var>();
     
     private final StatementPattern.Scope patternScope;
     
@@ -524,10 +524,16 @@ public class SesameQuery
     private ValueExpr toValue(Operation<?,?> operation) {
         boolean outerOptional = inOptionalPath();
         boolean innerOptional = false;
+        Map<Path<?>,Var> _pathToVar = null;
+        Map<Path<?>,Var> _pathToMatchedVar = null;
         operatorStack.push(operation.getOperator());        
         if (!outerOptional && inOptionalPath()){
             joinBuilder.setOptional();
             innerOptional = true;
+            _pathToVar = pathToVar;
+            _pathToMatchedVar = pathToMatchedVar;
+            pathToVar = new HashMap<Path<?>,Var>(_pathToVar);
+            pathToMatchedVar = new HashMap<Path<?>,Var>(_pathToMatchedVar);
         }                  
         try{
             OperationTransformer transformer = transformers.get(operation.getOperator());
@@ -540,6 +546,8 @@ public class SesameQuery
             operatorStack.pop();
             if (!outerOptional && innerOptional){
                 joinBuilder.setMandatory();
+                pathToVar = _pathToVar;
+                pathToMatchedVar = _pathToMatchedVar;
             }
         }
         

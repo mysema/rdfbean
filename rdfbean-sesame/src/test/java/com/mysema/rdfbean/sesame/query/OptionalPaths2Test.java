@@ -32,8 +32,6 @@ public class OptionalPaths2Test extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class NoteRevision {
-        @Predicate
-        String basicForm;
         
         @Predicate
         String lemma;
@@ -41,9 +39,6 @@ public class OptionalPaths2Test extends SessionTestBase{
         @Predicate
         Note note;
         
-        public String getBasicForm() {
-            return basicForm;
-        }
         public String getLemma() {
             return lemma;
         }
@@ -72,8 +67,16 @@ public class OptionalPaths2Test extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class Term{
+        
+        @Predicate
+        String basicForm;
+        
         @Predicate
         String meaning;
+        
+        public String getBasicForm(){
+            return basicForm;
+        }
         
         public String getMeaning() {
             return meaning;
@@ -129,7 +132,11 @@ public class OptionalPaths2Test extends SessionTestBase{
         builder.or($(noteVar.getLemma()).contains("c",false));
         builder.or($(noteVar.getNote().getTerm().getMeaning()).contains("c",false));
         assertFalse(session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).isEmpty());      
+        
+        builder = new BooleanBuilder();
+        builder.or($(noteVar.getNote().getTerm().getBasicForm()).contains("c", false));
+        builder.or($(noteVar.getNote().getTerm().getMeaning()).contains("c", false));        
+        assertEquals(1, session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).size());
     }
-    
     
 }

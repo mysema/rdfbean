@@ -35,6 +35,8 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
  */
 public class BeanGridDataSourceTest {
     
+    // TODO : better tests
+    
     private static SessionFactoryImpl sessionFactory;
     
     @ClassMapping(ns=TEST.NS)
@@ -113,6 +115,13 @@ public class BeanGridDataSourceTest {
         
         dataSource.prepare(10, 19, Collections.<SortConstraint>emptyList());
         for (int i = 10; i < 20; i++){
+            dataSource.getRowValue(i);
+        }
+        
+        // ...
+        
+        dataSource.prepare(240, 249, Collections.<SortConstraint>emptyList());
+        for (int i = 240; i < 250; i++){
             dataSource.getRowValue(i);
         }
     }
