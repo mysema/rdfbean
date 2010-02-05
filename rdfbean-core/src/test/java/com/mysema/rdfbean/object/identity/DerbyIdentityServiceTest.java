@@ -7,8 +7,8 @@ package com.mysema.rdfbean.object.identity;
 
 import java.io.IOException;
 
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 
 /**
@@ -25,10 +25,10 @@ public class DerbyIdentityServiceTest extends AbstractIdentityServiceTest{
     public void setUp() throws IOException{        
         identityService = new DerbyIdentityService(databaseName);
     }
-        
-    @Test
-    public void repetitiveInstantiation() throws IOException{
-        new DerbyIdentityService(databaseName);
-    }
     
+    @After
+    public void tearDown(){
+        ((DerbyIdentityService)identityService).shutdown();
+    }
+         
 }

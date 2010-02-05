@@ -70,17 +70,22 @@ public class DerbyIdentityService implements IdentityService {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                try {
-                    DriverManager.getConnection("jdbc:derby:;shutdown=true");
-                } catch (SQLException e) {
-                    if (!e.getSQLState().equals("XJ015")){
-                        throw new RuntimeException(e);
-                    }
-                }
+                shutdown();
             }
         });
         
         init();
+    }
+    
+    public void shutdown(){
+        try {
+            poolManager.dispose();
+            DriverManager.getConnection("jdbc:derby:;shutdown=true");
+        } catch (SQLException e) {
+            if (!e.getSQLState().equals("XJ015")){
+                throw new RuntimeException(e);
+            }
+        }
     }
     
     @Override

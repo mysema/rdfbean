@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 
 import org.apache.tapestry5.grid.GridDataSource;
 import org.apache.tapestry5.grid.SortConstraint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.types.OrderSpecifier;
@@ -24,12 +26,14 @@ import com.mysema.rdfbean.object.SessionCallback;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**
- * BeanGridDataSource provides
+ * BeanGridDataSource provides an implementation of the GridDataSource interface for RDFBean
  * 
  * @author tiwe
  * @version $Id$
  */
 public class BeanGridDataSource<T> implements GridDataSource {
+    
+    private static final Logger logger = LoggerFactory.getLogger(BeanGridDataSource.class);
 
     private final SessionFactory sessionFactory;
 
@@ -46,10 +50,25 @@ public class BeanGridDataSource<T> implements GridDataSource {
     
     private final OrderSpecifier<?> defaultOrder;
 
+    /**
+     * Create a new BeanGridDataSource instance with no filter conditions
+     * 
+     * @param sessionFactory
+     * @param entity root entity of the query
+     * @param defaultOrder default order for queries, if no order is specified
+     */
     public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder) {
         this(sessionFactory, entity, defaultOrder, null);
     }
     
+    /**
+     * Create a new BeanGridDataSource instance with filter conditions
+     * 
+     * @param sessionFactory
+     * @param entity root entity of the query
+     * @param defaultOrder default order for queries, if no order is specified
+     * @param conditions filter conditions
+     */
     @SuppressWarnings("unchecked")
     public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder, @Nullable EBoolean conditions) {
         this.sessionFactory = Assert.notNull(sessionFactory);
@@ -59,6 +78,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
         this.conditions = conditions;
     }
     
+    @Override
     public int getAvailableRows() {
         return sessionFactory.execute(new SessionCallback<Integer>(){
             @Override
@@ -72,6 +92,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
         });
     }
 
+    @Override
     public void prepare(final int start, final int end, final List<SortConstraint> sortConstraints) {
         Assert.notNull(sortConstraints);   
         sessionFactory.execute(new SessionCallback<Void>(){
@@ -83,7 +104,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
             
         });
     }
-
+    
     @SuppressWarnings("unchecked")
     private void prepare(Session session, int startIndex, int endIndex, List<SortConstraint> sortConstraints) {
         BeanQuery beanQuery = session.from(entityPath);
@@ -108,10 +129,18 @@ public class BeanGridDataSource<T> implements GridDataSource {
         preparedResults = beanQuery.list(entityPath);
     }
     
+    @Override
     public Object getRowValue(int index) {
-        return preparedResults.get(index - startIndex);
+        index = index - startIndex; 
+        if (index < preparedResults.size()){
+            return preparedResults.get(index - startIndex);    
+        }else{
+            logger.error("Invalid index " + index + " (size " + preparedResults.size() + ")" );
+            return null;
+        }
     }
 
+    @Override
     public Class<?> getRowType() {
         return entityType;
     }
