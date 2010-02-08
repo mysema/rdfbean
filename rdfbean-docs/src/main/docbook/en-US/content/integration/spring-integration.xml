@@ -3,6 +3,98 @@
 <sect1 id="spring-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Spring integration</title>
     
-    <para>TODO</para>
+    <sect2>
+    
+      <title>Basic wiring</title>
+    
+      <para>TODO</para>
+    
+<programlisting language="xml">
+<![CDATA[    
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans 
+          http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean id="propertyConfigurer"
+    class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="properties">
+      <bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+          <list>        
+            <value>classpath:/persistence.properties</value>
+          </list>
+        </property>
+      </bean>
+    </property>
+  </bean>  
+  
+  <bean id="sesameRepository" class="com.mysema.rdfbean.sesame.MemoryRepository">
+    <property name="sources">
+        <list>
+            <bean class="com.mysema.rdfbean.model.io.RDFSource">
+                <constructor-arg value="classpath:demo.owl"/>
+                <constructor-arg value="RDFXML" />
+                <constructor-arg value="http://www.mysema.com/rdfbean/demo"/>
+            </bean>
+            <bean class="com.mysema.rdfbean.model.io.RDFSource">
+                <constructor-arg value="classpath:demodata.owl"/>
+                <constructor-arg value="RDFXML" />
+                <constructor-arg value="http://www.mysema.com/rdfbean/demodata"/>
+            </bean>
+        </list>
+    </property>
+     <property name="sesameInference" value="true"/>
+  </bean>
+ 
+  <bean id="identityService" class="com.mysema.rdfbean.object.identity.DerbyIdentityService">
+      <constructor-arg value="${identityService.derby.databaseName}"/>
+  </bean>
+ 
+  <bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">
+      <constructor-arg value="true"/>
+      <constructor-arg>
+          <list>
+              <value>com.mysema.rdf.demo.domain.Person</value>
+          </list>
+      </constructor-arg>
+      <property name="defaultContext" value="http://demo.mysema.com/rdfbean-demo"/>
+    <property name="identityService" ref="identityService"/>
+  </bean>
+  
+  <bean id="sessionFactory" class="com.mysema.rdfbean.spring.ContextAwareSessionFactory"
+        init-method="initialize" destroy-method="close">
+    <property name="configuration" ref="configuration"/>
+    <property name="repository" ref="sesameRepository"/>
+  </bean>
+  
+  <bean id="transactionManager" class="com.mysema.rdfbean.spring.RDFBeanTransactionManager">
+    <constructor-arg ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="demoService" class="com.mysema.rdf.demo.service.DemoService"/>
+  
+</beans>    
+]]>
+</programlisting>    
+    
+    </sect2>
+    
+    <sect2>
+    
+      <title>Transactional services</title>
+    
+      <para>TODO</para>
+    
+    </sect2>
+    
+    <sect2>
+    
+      <title>Integrating Spring dependency injection into RDFBean</title>
+    
+      <para>TODO</para>
+    
+    </sect2>    
     
 </sect1>    
