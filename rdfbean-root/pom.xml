@@ -14,7 +14,7 @@
   </parent>
   
   <properties>
-    <querydsl.version>1.1.6</querydsl.version>
+    <querydsl.version>1.2.0</querydsl.version>
     <spring.version>2.5.5</spring.version>
   </properties>
   
@@ -133,8 +133,6 @@
               <title>Maven plugin</title>
               <packages>com.mysema.rdfbean.maven</packages>
             </group>
-
-
 
           </groups>
         </configuration>   

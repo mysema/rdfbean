@@ -85,24 +85,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- 
-      <plugin>
-        <groupId>com.mysema.maven</groupId>
-        <artifactId>maven-apt-plugin</artifactId>
-        <version>0.3.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>target/generated-sources/java</outputDirectory>
-              <processor>com.mysema.query.apt.QuerydslAnnotationProcessor</processor>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-       -->
     </plugins>
   </build>
 
