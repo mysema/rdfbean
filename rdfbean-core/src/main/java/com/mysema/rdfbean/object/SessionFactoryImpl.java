@@ -55,6 +55,12 @@ public class SessionFactoryImpl implements SessionFactory {
     
     public SessionFactoryImpl(Iterable<Locale> locales) {
         this.locales = locales;
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                close();
+            }
+        });
     }
 
     public SessionFactoryImpl(Locale locale) {

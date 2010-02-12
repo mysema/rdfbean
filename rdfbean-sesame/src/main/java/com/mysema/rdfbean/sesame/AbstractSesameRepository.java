@@ -132,6 +132,7 @@ public abstract class AbstractSesameRepository implements Repository{
     @Override
     public void close() {
         try {
+            initialized = false;
             repository.shutDown();
         } catch (StoreException e) {
             throw new RuntimeException(e);
