@@ -65,4 +65,9 @@ public class NativeRepository extends AbstractSesameRepository {
         }
     }
 
+    @Override
+    public boolean isBNodeIDPreserved() {
+        return true;
+    }
+
 }

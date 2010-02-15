@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Mysema Ltd.
+ * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
  * 
  */
@@ -84,7 +84,8 @@ public class SessionFactoryImpl implements SessionFactory {
 
     @Override
     public void close() {
-        repository.close();
+        model = null;
+        repository.close();        
     }
 
     @Override
@@ -117,6 +118,10 @@ public class SessionFactoryImpl implements SessionFactory {
 
     public void initialize() {        
         repository.initialize();
+        if (!repository.isBNodeIDPreserved()){
+            return;
+        }        
+        
         RDFConnection connection = repository.openConnection();
         try {
             CloseableIterator<STMT> statements = connection.findStatements(null, CORE.modelId, null, null, false);
@@ -124,13 +129,16 @@ public class SessionFactoryImpl implements SessionFactory {
                 STMT statement = statements.next();
                 if (!statements.hasNext()) {
                     BID subject = (BID) statement.getSubject();
-                    BID object = (BID) statement.getObject();
-                    model = (BID) object;
+                    model = (BID) statement.getObject();
                     
-                    if (verifyLocalId(connection, (BID) model, subject) && verifyLocalId(connection, model, object)) {
+                    if (verifyLocalId(connection, (BID) model, subject) && verifyLocalId(connection, model, model)) {
                         // OK
                         return;
+                    }else{
+                        logger.error("verify of localId failed");
                     }
+                }else{
+                    logger.error("Repository has multiple modelId statements");
                 }
             }
             cleanupModel(connection);

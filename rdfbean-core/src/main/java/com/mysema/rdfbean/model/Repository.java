@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Mysema Ltd.
+ * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
  * 
  */
@@ -42,5 +42,11 @@ public interface Repository {
      * @return
      */
     RDFConnection openConnection();
+    
+    /**
+     * Returns true, if the blank node IDs are preserved accross connections
+     * @return
+     */
+    boolean isBNodeIDPreserved();
     
 }

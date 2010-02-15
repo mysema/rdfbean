@@ -71,5 +71,10 @@ public class LuceneRepository implements Repository{
     public void export(Format format, OutputStream os) {
        throw new UnsupportedOperationException();        
     }
+
+    @Override
+    public boolean isBNodeIDPreserved() {
+        return true;
+    }
     
 }

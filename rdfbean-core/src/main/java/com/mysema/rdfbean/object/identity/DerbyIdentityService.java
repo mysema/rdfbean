@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Mysema Ltd.
+ * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
  * 
  */
@@ -82,7 +82,7 @@ public class DerbyIdentityService implements IdentityService {
             poolManager.dispose();
             DriverManager.getConnection("jdbc:derby:;shutdown=true");
         } catch (SQLException e) {
-            if (!e.getSQLState().equals("XJ015")){
+            if (e.getSQLState() == null || !e.getSQLState().equals("XJ015")){
                 throw new RuntimeException(e);
             }
         }

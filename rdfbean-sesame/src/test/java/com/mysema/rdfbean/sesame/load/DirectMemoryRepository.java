@@ -24,4 +24,9 @@ class DirectMemoryRepository extends AbstractSesameRepository{
         return new SailRepository(new MemoryStore());
     }
 
+    @Override
+    public boolean isBNodeIDPreserved() {
+        return false;
+    }
+
 }

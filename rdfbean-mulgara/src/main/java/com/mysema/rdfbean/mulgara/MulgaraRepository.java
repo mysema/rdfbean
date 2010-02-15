@@ -125,6 +125,12 @@ public class MulgaraRepository implements Repository{
         throw new UnsupportedOperationException();
         
     }
+
+    @Override
+    public boolean isBNodeIDPreserved() {
+        // ?!?
+        return false;
+    }
     
     
 

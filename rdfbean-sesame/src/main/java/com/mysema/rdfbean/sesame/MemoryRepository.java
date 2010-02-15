@@ -63,4 +63,9 @@ public class MemoryRepository extends AbstractSesameRepository {
         }
     }
 
+    @Override
+    public boolean isBNodeIDPreserved() {
+        return false;
+    }
+
 }

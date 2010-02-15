@@ -1,9 +1,15 @@
+/*
+ * Copyright (c) 2010 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.object;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Field;
 
+import org.junit.After;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.BID;
@@ -18,11 +24,18 @@ import com.mysema.rdfbean.model.Repository;
  */
 public class SessionFactoryTest {
     
+    private SessionFactoryImpl sessionFactory;
+    
+    @After
+    public void tearDown(){
+        sessionFactory.close();
+    }
+    
     @Test
     public void test() throws Exception{
         Configuration configuration = new DefaultConfiguration();        
         Repository repository = new MiniRepository();
-        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
+        sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
@@ -35,6 +48,14 @@ public class SessionFactoryTest {
         
         sessionFactory.initialize();
         BID model2 = (BID) field.get(sessionFactory);
+        assertEquals(model1, model2);
+        
+        sessionFactory = new SessionFactoryImpl();
+        sessionFactory.setConfiguration(configuration);
+        sessionFactory.setRepository(repository);
+        sessionFactory.initialize();
+        
+        model2 = (BID) field.get(sessionFactory);
         assertEquals(model1, model2);
     }
 

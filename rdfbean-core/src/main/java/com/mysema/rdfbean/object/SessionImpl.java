@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Mysema Ltd.
+ * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
  * 
  */
@@ -27,6 +27,7 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.identity.IdentityService;
+import com.mysema.rdfbean.object.identity.RepositoryIdentityService;
 
 /**
  * Default implementation of the Session interface
@@ -63,6 +64,7 @@ public class SessionImpl implements Session {
     
     private Iterable<Locale> locales;
     
+    @Nullable
     private final BID model;
     
     private Map<String,ObjectRepository> parentRepositories = new HashMap<String, ObjectRepository>();
@@ -76,14 +78,19 @@ public class SessionImpl implements Session {
     
     private RDFBeanTransaction transaction;
     
-    public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales, BID model) {
+    public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales, @Nullable BID model) {
         this.conf = Assert.notNull(conf);
         this.connection = Assert.notNull(connection);
-        this.model = Assert.notNull(model);
+        this.model = model;
         this.locales = locales;
         
-        this.identityService = conf.getIdentityService();
+        if (model != null){
+            this.identityService = conf.getIdentityService();    
+        }else{
+            this.identityService = new RepositoryIdentityService(connection);
+        }        
         
+        // TODO : do this in SessionFactory ?!?
         List<FetchStrategy> fetchStrategies = conf.getFetchStrategies();
         if (fetchStrategies != null) {
             if (this.connection instanceof FetchOptimizer) {
@@ -92,10 +99,11 @@ public class SessionImpl implements Session {
                 this.connection = new FetchOptimizer(this.connection, fetchStrategies);
             }
         }
+        
         clear();
     }
 
-    public SessionImpl(Configuration configuration, RDFConnection connection, Locale locale, BID model) {
+    public SessionImpl(Configuration configuration, RDFConnection connection, Locale locale, @Nullable BID model) {
         this(configuration, connection, locale != null ? Arrays.asList(locale) : null, model);
     }
 
@@ -918,15 +926,10 @@ public class SessionImpl implements Session {
     
     public LID getLID(ID id) {
         if (id.isBNode()){
-            return identityService.getLID(getModel(), (BID)id);    
+            return identityService.getLID(model, (BID)id);    
         }else{
             return identityService.getLID((UID)id);
-        }
-        
-    }
-    
-    protected BID getModel() {
-        return model;
+        }        
     }
 
     private Set<NODE> getPathValue(MappedClass mappedClass, MappedPath path, ID subject, UID context) {

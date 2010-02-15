@@ -78,4 +78,9 @@ public class LuceneEnhancedRepository implements Repository{
     public void export(Format format, OutputStream os) {
         repository.export(format, os);        
     }
+
+    @Override
+    public boolean isBNodeIDPreserved() {
+        return repository.isBNodeIDPreserved();
+    }
 }

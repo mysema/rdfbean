@@ -25,4 +25,9 @@ class InferencingMemoryRepository extends AbstractSesameRepository{
         return new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
     }
 
+    @Override
+    public boolean isBNodeIDPreserved() {
+        return false;
+    }
+
 }

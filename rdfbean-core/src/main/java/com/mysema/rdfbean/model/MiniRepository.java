@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009 Mysema Ltd.
+ * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
  * 
  */
@@ -36,11 +36,6 @@ import com.mysema.rdfbean.model.io.Format;
  */
 public final class MiniRepository implements Repository{
     
-    private final Map<ID, PredicateCache> subjects;
-    
-    @Nullable
-    private final Map<ID, PredicateCache> objects;
-    
     private static final Iterator<STMT> EMPTY_ITERATOR = new Iterator<STMT>() {
 
         @Override
@@ -61,15 +56,15 @@ public final class MiniRepository implements Repository{
     
     private MiniDialect dialect = new MiniDialect();
     
+    @Nullable
+    private final Map<ID, PredicateCache> objects;
+    
+    private final Map<ID, PredicateCache> subjects;
+    
     public MiniRepository() {
         this(1024);
     }
 
-    public MiniRepository(STMT... stmts) {
-        this(stmts.length);
-        add(stmts);
-    }
-    
     public MiniRepository(int initialCapacity) {
         this(initialCapacity, true);
     }
@@ -83,6 +78,11 @@ public final class MiniRepository implements Repository{
         }
     }
     
+    public MiniRepository(STMT... stmts) {
+        this(stmts.length);
+        add(stmts);
+    }
+    
     public void add(STMT... stmts) {
         for (STMT stmt : stmts) {
             index(stmt.getSubject(), stmt, subjects);
@@ -92,15 +92,30 @@ public final class MiniRepository implements Repository{
         }
     }
     
-    public void index(ID key, STMT stmt, Map<ID, PredicateCache> index) {
-        PredicateCache stmtCache = index.get(key);
-        if (stmtCache == null) {
-            stmtCache = new PredicateCache();
-            index.put(key, stmtCache);
-        } 
-        stmtCache.add(stmt);
+    public void addStatements(CloseableIterator<STMT> stmts) {
+        try {
+            while (stmts.hasNext()) {
+                add(stmts.next());
+            }
+        } finally {
+            try {
+                stmts.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
+    @Override
+    public void close() {
+    }
+    
+    @Override
+    public void export(Format format, OutputStream os) {
+        // TODO : support NTriples ?!?
+        throw new UnsupportedOperationException();        
+    }
+    
     public CloseableIterator<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context, boolean includeInferred) {
         Iterator<STMT> iterator = null;
         if (subject != null) {
@@ -117,6 +132,10 @@ public final class MiniRepository implements Repository{
         return new ResultIterator(iterator, subject, predicate, object, context, includeInferred);
     }
     
+    public MiniDialect getDialect() {
+        return dialect;
+    }
+
     private Iterator<STMT> getIndexed(ID key, UID predicate, Map<ID, PredicateCache> index) {
         PredicateCache stmtCache = index.get(key);
         if (stmtCache != null) {
@@ -126,59 +145,26 @@ public final class MiniRepository implements Repository{
         }
     }
     
-    public static class ResultIterator implements CloseableIterator<STMT> {
-        
-        private Iterator<STMT> iter;
-        
-        private ResultIterator(Iterable<STMT> iterable, @Nullable final ID subject, @Nullable final UID predicate, 
-                @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
-            this(iterable.iterator(), subject, predicate, object, context, includeInferred);
-        }
-        
-        private ResultIterator(Iterator<STMT> iterator, @Nullable final ID subject, @Nullable final UID predicate, 
-                @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
-            this.iter = new FilterIterator<STMT>(iterator, new Predicate<STMT>() {
+    public void index(ID key, STMT stmt, Map<ID, PredicateCache> index) {
+        PredicateCache stmtCache = index.get(key);
+        if (stmtCache == null) {
+            stmtCache = new PredicateCache();
+            index.put(key, stmtCache);
+        } 
+        stmtCache.add(stmt);
+    }
 
-                @Override
-                public boolean evaluate(STMT stmt) {
-                    return STMTMatcher.matches(stmt, subject, predicate, object, context, includeInferred);
-                }
-                
-            });
-        }
-
-        @Override
-        public boolean hasNext() {
-            return iter.hasNext();
-        }
-
-        @Override
-        public STMT next() {
-            return iter.next();
-        }
-
-        @Override
-        public void remove() {
-        }
-
-        @Override
-        public void close() throws IOException {
-        }
-        
+    @Override
+    public void initialize() {
     }
     
-    public MiniDialect getDialect() {
-        return dialect;
+    @Override
+    public boolean isBNodeIDPreserved() {
+        return true;
     }
-
-    public void removeStatement(STMT... stmts) {
-        for (STMT stmt : stmts) {
-            if (removeIndexed(stmt.getSubject(), stmt, subjects)) {
-                if (objects != null && stmt.getObject().isResource()) {
-                    removeIndexed((ID) stmt.getObject(), stmt, objects);
-                }
-            }
-        }
+    
+    public MiniConnection openConnection() {
+        return new MiniConnection(this);
     }
     
     private boolean removeIndexed(ID key, STMT stmt, Map<ID, PredicateCache> index) {
@@ -190,89 +176,41 @@ public final class MiniRepository implements Repository{
         }
     }
 
-    public MiniConnection openConnection() {
-        return new MiniConnection(this);
-    }
-    
-    public void addStatements(CloseableIterator<STMT> stmts) {
-        try {
-            while (stmts.hasNext()) {
-                add(stmts.next());
-            }
-        } finally {
-            try {
-                stmts.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    public void removeStatement(STMT... stmts) {
+        for (STMT stmt : stmts) {
+            if (removeIndexed(stmt.getSubject(), stmt, subjects)) {
+                if (objects != null && stmt.getObject().isResource()) {
+                    removeIndexed((ID) stmt.getObject(), stmt, objects);
+                }
             }
         }
     }
-    
-    public static class STMTCache {
-        
-        private STMT single;
-        
-        private Set<STMT> multi;
-        
-        public STMTCache(STMT single) {
-            this.single = single;
-        }
-        
-        public void add(STMT stmt) {
-            if (multi == null) {
-                if (single == null) {
-                    single = stmt;
-                } else if (!stmt.equals(single)) {
-                    multi = new LinkedHashSet<STMT>();
-                    multi.add(single);
-                    multi.add(stmt);
-                }
-            } else {
-                multi.add(stmt);
-            }
-        }
-        
-        public boolean remove(STMT stmt) {
-            if (multi == null) {
-                if (stmt.equals(single)) {
-                    single = null;
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return multi.remove(stmt);
-            }
-        }
-        
-        public Iterator<STMT> iterator() {
-            if (multi == null) {
-                if (single == null) {
-                    return EMPTY_ITERATOR;
-                } else {
-                    return new SingletonIterator<STMT>(single);
-                }
-            } else {
-                return multi.iterator();
-            }
-        }
-        
-        public String toString() {
-            if (multi != null) {
-                return multi.toString();
-            } else if (single != null) {
-                return single.toString();
-            } else {
-                return "";
-            }
-        }
-    }
-    
+
     public static class PredicateCache {
     
+        private List<STMT> containerProperties;
+        
         private Map<UID, STMTCache> predicates;
         
-        private List<STMT> containerProperties;
+        public void add(STMT stmt) {
+            if (RDF.isContainerMembershipProperty(stmt.getPredicate())) {
+                if (containerProperties == null) {
+                    containerProperties = new ArrayList<STMT>();
+                }
+                containerProperties.add(stmt);
+            } else {
+                if (predicates == null) {
+                    predicates = new LinkedHashMap<UID, STMTCache>();
+                }
+                STMTCache stmts = predicates.get(stmt.getPredicate());
+                if (stmts == null) {
+                    stmts = new STMTCache(stmt);
+                    predicates.put(stmt.getPredicate(), stmts);
+                } else {
+                    stmts.add(stmt);
+                }
+            }
+        }
         
         public Iterator<STMT> iterator(UID predicate) {
             if (predicate == null) {
@@ -297,26 +235,6 @@ public final class MiniRepository implements Repository{
                 }
             }
             return EMPTY_ITERATOR;
-        }
-        
-        public void add(STMT stmt) {
-            if (RDF.isContainerMembershipProperty(stmt.getPredicate())) {
-                if (containerProperties == null) {
-                    containerProperties = new ArrayList<STMT>();
-                }
-                containerProperties.add(stmt);
-            } else {
-                if (predicates == null) {
-                    predicates = new LinkedHashMap<UID, STMTCache>();
-                }
-                STMTCache stmts = predicates.get(stmt.getPredicate());
-                if (stmts == null) {
-                    stmts = new STMTCache(stmt);
-                    predicates.put(stmt.getPredicate(), stmts);
-                } else {
-                    stmts.add(stmt);
-                }
-            }
         }
         
         public boolean remove(STMT stmt) {
@@ -347,17 +265,104 @@ public final class MiniRepository implements Repository{
         }
     }
 
-    @Override
-    public void close() {
+    public static class ResultIterator implements CloseableIterator<STMT> {
+        
+        private Iterator<STMT> iter;
+        
+        private ResultIterator(Iterable<STMT> iterable, @Nullable final ID subject, @Nullable final UID predicate, 
+                @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
+            this(iterable.iterator(), subject, predicate, object, context, includeInferred);
+        }
+        
+        private ResultIterator(Iterator<STMT> iterator, @Nullable final ID subject, @Nullable final UID predicate, 
+                @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
+            this.iter = new FilterIterator<STMT>(iterator, new Predicate<STMT>() {
+
+                @Override
+                public boolean evaluate(STMT stmt) {
+                    return STMTMatcher.matches(stmt, subject, predicate, object, context, includeInferred);
+                }
+                
+            });
+        }
+
+        @Override
+        public void close() throws IOException {
+        }
+
+        @Override
+        public boolean hasNext() {
+            return iter.hasNext();
+        }
+
+        @Override
+        public STMT next() {
+            return iter.next();
+        }
+
+        @Override
+        public void remove() {
+        }
+        
     }
 
-    @Override
-    public void initialize() {
-    }
-
-    @Override
-    public void export(Format format, OutputStream os) {
-        // TODO : support NTriples ?!?
-        throw new UnsupportedOperationException();        
+    public static class STMTCache {
+        
+        private Set<STMT> multi;
+        
+        private STMT single;
+        
+        public STMTCache(STMT single) {
+            this.single = single;
+        }
+        
+        public void add(STMT stmt) {
+            if (multi == null) {
+                if (single == null) {
+                    single = stmt;
+                } else if (!stmt.equals(single)) {
+                    multi = new LinkedHashSet<STMT>();
+                    multi.add(single);
+                    multi.add(stmt);
+                }
+            } else {
+                multi.add(stmt);
+            }
+        }
+        
+        public Iterator<STMT> iterator() {
+            if (multi == null) {
+                if (single == null) {
+                    return EMPTY_ITERATOR;
+                } else {
+                    return new SingletonIterator<STMT>(single);
+                }
+            } else {
+                return multi.iterator();
+            }
+        }
+        
+        public boolean remove(STMT stmt) {
+            if (multi == null) {
+                if (stmt.equals(single)) {
+                    single = null;
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return multi.remove(stmt);
+            }
+        }
+        
+        public String toString() {
+            if (multi != null) {
+                return multi.toString();
+            } else if (single != null) {
+                return single.toString();
+            } else {
+                return "";
+            }
+        }
     }
 }
