@@ -3,18 +3,20 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.object.identity;
+package com.mysema.rdfbean.object;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LID;
+import com.mysema.rdfbean.model.MiniConnection;
+import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.RDFConnection;
 
 /**
  * AbstractIdentityServiceTest provides
@@ -22,11 +24,16 @@ import com.mysema.rdfbean.model.UID;
  * @author tiwe
  * @version $Id$
  */
-public abstract class AbstractIdentityServiceTest {
+public class IdentityServiceTest {
 
-    protected IdentityService identityService;
+    private IdentityService identityService;
     
-    private UID context = new UID(RDF.NS);
+    @Before
+    public void setUp(){
+        MiniRepository repository = new MiniRepository();
+        RDFConnection connection = new MiniConnection(repository);
+        identityService = new SessionIdentityService(connection);
+    }
     
     @Test
     public void testURI(){     
@@ -53,30 +60,23 @@ public abstract class AbstractIdentityServiceTest {
     @Test
     public void testBlankNode(){
         BID id = new BID();        
-        LID lid = identityService.getLID(context, id);
+        LID lid = identityService.getLID(id);
         assertEquals(id, identityService.getID(lid));
         assertEquals(id, identityService.getID(lid));
     }
     
     @Test
     public void testBlankNode2(){
-        BID context = new BID("_:node1445r1ioqx128");
-        BID otherContext = new BID("_:node1445r1ioqx120");
         BID id = new BID("_:node1445r1ioqx129");        
-        LID lid = identityService.getLID(context, id);
+        LID lid = identityService.getLID(id);
         assertEquals(id, identityService.getID(lid));
-        assertEquals(id, identityService.getID(lid));        
-        assertFalse(lid.equals(identityService.getLID(otherContext, id)));
+        assertEquals(id, identityService.getID(lid));       
+        assertEquals(lid, identityService.getLID(id));
     }
     
-    @Test(expected=IllegalArgumentException.class)
-    public void getID(){
-        identityService.getID(new LID(String.valueOf(Long.MAX_VALUE)));
-    }
+//    @Test(expected=IllegalArgumentException.class)
+//    public void getID(){
+//        identityService.getID(new LID(String.valueOf(Long.MAX_VALUE)));
+//    }
     
-    @Test
-    @Ignore
-    public void testSynchronousExecuction(){
-        // TODO : test for deadlocks
-    }
 }

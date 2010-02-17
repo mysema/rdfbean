@@ -3,14 +3,12 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.object.identity;
+package com.mysema.rdfbean.object;
 
 import javax.annotation.Nullable;
 
-import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
-import com.mysema.rdfbean.model.UID;
 
 /**
  * IdentityService provides ID/LID mapping functions
@@ -21,22 +19,13 @@ import com.mysema.rdfbean.model.UID;
 public interface IdentityService {
     
     /**
-     * Get the local id for the given UID
+     * Get the local id for the given ID
      * 
      * @param id
      * @return
      */
-    LID getLID(UID id);
+    LID getLID(ID id);
     
-    /**
-     * Get the local id for the given BID in the given model
-     * 
-     * @param model
-     * @param id
-     * @return
-     */
-    LID getLID(ID model, BID id);
-
     /**
      * Get the ID for the given local id 
      * 

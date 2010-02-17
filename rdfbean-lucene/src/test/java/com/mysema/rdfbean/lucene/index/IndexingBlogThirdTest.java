@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.compass.core.CompassHits;
-import org.compass.core.CompassQueryBuilder;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -79,6 +78,9 @@ public class IndexingBlogThirdTest  extends AbstractIndexTest{
     @Searchable
     @ClassMapping(ns=TEST.NS)
     public static class Article{
+        
+        @Id
+        String id;
         
         // only indexed as text (localName is indexed)
         @Predicate(ln="tagged")

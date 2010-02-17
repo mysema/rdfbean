@@ -26,8 +26,6 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.object.identity.IdentityService;
-import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 import com.mysema.rdfbean.owl.OWL;
 
 /**
@@ -57,8 +55,6 @@ public class DefaultConfiguration implements Configuration {
     
     @Nullable
     private List<FetchStrategy> fetchStrategies;
-    
-    private IdentityService identityService = MemoryIdentityService.instance();
     
     private final Set<String> restrictedResources = new HashSet<String>(buildinNamespaces);
     
@@ -152,10 +148,6 @@ public class DefaultConfiguration implements Configuration {
         return fetchStrategies;
     }
 
-    public IdentityService getIdentityService() {
-        return identityService;
-    }
-
     @Override
     public Set<Class<?>> getMappedClasses() {
         return classes;
@@ -176,10 +168,6 @@ public class DefaultConfiguration implements Configuration {
 
     public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
         this.fetchStrategies = fetchStrategies;
-    }
-    
-    public void setIdentityService(IdentityService identityService) {
-        this.identityService = identityService;
     }
     
 }

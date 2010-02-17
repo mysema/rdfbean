@@ -31,7 +31,7 @@ import com.mysema.rdfbean.object.ConfigurationOntology;
 import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
-import com.mysema.rdfbean.sesame.AbstractSesameRepository;
+import com.mysema.rdfbean.sesame.SesameRepository;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 import com.mysema.rdfbean.sesame.NativeRepository;
 import com.mysema.rdfbean.sesame.SessionTestBase;
@@ -109,8 +109,8 @@ public class LoadTest extends SessionTestBase{
         System.out.println("testing " + label);
         System.out.println();
         
-        if (repository instanceof AbstractSesameRepository){
-            ((AbstractSesameRepository)repository).setOntology(ontology);
+        if (repository instanceof SesameRepository){
+            ((SesameRepository)repository).setOntology(ontology);
         }
         
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl(Locale.ENGLISH);

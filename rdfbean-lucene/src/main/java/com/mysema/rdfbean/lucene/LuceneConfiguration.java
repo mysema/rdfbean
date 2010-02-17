@@ -101,4 +101,9 @@ public interface LuceneConfiguration {
      */
     boolean isIndexSupertypes();
 
+    /**
+     * @return
+     */
+    long getNextLocalId();
+
 }

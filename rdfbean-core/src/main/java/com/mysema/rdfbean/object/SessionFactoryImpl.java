@@ -41,8 +41,6 @@ public class SessionFactoryImpl implements SessionFactory {
     
     private Iterable<Locale> locales;
     
-    private BID model;
-    
     private Map<String, ObjectRepository> objectRepositories;
     
     private Repository repository;
@@ -68,23 +66,8 @@ public class SessionFactoryImpl implements SessionFactory {
         setSessionContext(new EmptySessionContext());
     }
 
-    private void addCheckNumber(RDFConnection connection, BID model, BID bid) {
-        String lid = configuration.getIdentityService().getLID(model, bid).getId();
-        addStatement(connection, new STMT(bid, CORE.localId, new LIT(lid), null));
-    }
-    
-    private void addStatement(RDFConnection connection, STMT stmt) {
-        connection.update(Collections.<STMT>emptySet(), Collections.singleton(stmt));
-    }
-
-    private void cleanupModel(RDFConnection connection){
-        removeStatements(connection, null, CORE.modelId, null, null);
-        removeStatements(connection, null, CORE.localId, null, null);
-    }
-
     @Override
     public void close() {
-        model = null;
         repository.close();        
     }
 
@@ -117,53 +100,13 @@ public class SessionFactoryImpl implements SessionFactory {
     }
 
     public void initialize() {        
-        repository.initialize();
-        if (!repository.isBNodeIDPreserved()){
-            return;
-        }        
-        
-        RDFConnection connection = repository.openConnection();
-        try {
-            CloseableIterator<STMT> statements = connection.findStatements(null, CORE.modelId, null, null, false);
-            if (statements.hasNext()) {
-                STMT statement = statements.next();
-                if (!statements.hasNext()) {
-                    BID subject = (BID) statement.getSubject();
-                    model = (BID) statement.getObject();
-                    
-                    if (verifyLocalId(connection, (BID) model, subject) && verifyLocalId(connection, model, model)) {
-                        // OK
-                        return;
-                    }else{
-                        logger.error("verify of localId failed");
-                    }
-                }else{
-                    logger.error("Repository has multiple modelId statements");
-                }
-            }
-            cleanupModel(connection);
-            if (model == null) {
-                // modelId
-                BID subject = connection.createBNode();
-                model = connection.createBNode();
-                addStatement(connection, new STMT(subject, CORE.modelId, model, null));
-    
-                addCheckNumber(connection, model, subject);
-                addCheckNumber(connection, model, model);
-            }
-        } finally {
-            try {
-                connection.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+        repository.initialize();        
     }
 
     @Override
     public Session openSession() {
         RDFConnection connection = repository.openConnection();
-        SessionImpl session = new SessionImpl(configuration, connection, getLocales(), model);
+        SessionImpl session = new SessionImpl(configuration, connection, getLocales());
         if (objectRepositories != null) {
             for (Map.Entry<String, ObjectRepository> entry : objectRepositories.entrySet()) {
                 session.addParent(entry.getKey(), entry.getValue());
@@ -182,20 +125,6 @@ public class SessionFactoryImpl implements SessionFactory {
             while (stmts.hasNext()) {
                 removeStatement(connection, stmts.next());
             }
-        } finally {
-            try {
-                stmts.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private boolean verifyLocalId(RDFConnection connection, BID model, BID bnode) {
-        String lid = configuration.getIdentityService().getLID(model, bnode).getId();
-        CloseableIterator<STMT> stmts = connection.findStatements(bnode, CORE.localId, new LIT(lid), null, false);
-        try {
-            return stmts.hasNext();
         } finally {
             try {
                 stmts.close();

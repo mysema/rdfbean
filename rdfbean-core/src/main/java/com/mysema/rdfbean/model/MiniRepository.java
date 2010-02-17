@@ -56,6 +56,8 @@ public final class MiniRepository implements Repository{
     
     private MiniDialect dialect = new MiniDialect();
     
+    private long localId = 0;
+    
     @Nullable
     private final Map<ID, PredicateCache> objects;
     
@@ -145,6 +147,10 @@ public final class MiniRepository implements Repository{
         }
     }
     
+    public synchronized long getNextLocalId() {
+        return ++localId;
+    }
+
     public void index(ID key, STMT stmt, Map<ID, PredicateCache> index) {
         PredicateCache stmtCache = index.get(key);
         if (stmtCache == null) {
@@ -153,20 +159,15 @@ public final class MiniRepository implements Repository{
         } 
         stmtCache.add(stmt);
     }
-
-    @Override
-    public void initialize() {
-    }
     
     @Override
-    public boolean isBNodeIDPreserved() {
-        return true;
+    public void initialize() {
     }
     
     public MiniConnection openConnection() {
         return new MiniConnection(this);
     }
-    
+
     private boolean removeIndexed(ID key, STMT stmt, Map<ID, PredicateCache> index) {
         PredicateCache stmtMap = index.get(key);
         if (stmtMap != null) {

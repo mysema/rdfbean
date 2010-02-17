@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Property>
+  <Review id="DEFAULT">
+    <Description>property.default.description</Description>
+    <Author></Author>
+    <CreationDate format="yyyy-MM-dd :: HH:mm:ss:SSS z">1970-01-01 :: 00:00:00:000 GMT-10:00</CreationDate>
+    <Directory>review</Directory>
+    <Reviewers>
+      <Entry id="tiwe" name="tiwe"/>
+    </Reviewers>
+    <Files/>
+    <FieldItems>
+      <FieldItem id="Type" default="item.label.unset">
+        <Entry name="item.label.unset"/>
+        <Entry name="item.type.label.codingStandards"/>
+        <Entry name="item.type.label.programLogic"/>
+        <Entry name="item.type.label.optimization"/>
+        <Entry name="item.type.label.usability"/>
+        <Entry name="item.type.label.clarity"/>
+        <Entry name="item.type.label.missing"/>
+        <Entry name="item.type.label.irrelevant"/>
+        <Entry name="item.type.label.suggestion"/>
+        <Entry name="item.type.label.other"/>
+      </FieldItem>
+      <FieldItem id="Severity" default="item.label.unset">
+        <Entry name="item.label.unset"/>
+        <Entry name="item.severity.label.critical"/>
+        <Entry name="item.severity.label.major"/>
+        <Entry name="item.severity.label.normal"/>
+        <Entry name="item.severity.label.minor"/>
+        <Entry name="item.severity.label.trivial"/>
+      </FieldItem>
+      <FieldItem id="Resolution" default="item.label.unset">
+        <Entry name="item.label.unset"/>
+        <Entry name="item.resolution.label.validNeedsfixing"/>
+        <Entry name="item.resolution.label.validFixlater"/>
+        <Entry name="item.resolution.label.validDuplicate"/>
+        <Entry name="item.resolution.label.validWontfix"/>
+        <Entry name="item.resolution.label.invalidWontfix"/>
+        <Entry name="item.resolution.label.unsureValidity"/>
+      </FieldItem>
+      <FieldItem id="Status" default="item.status.label.open">
+        <Entry name="item.status.label.open"/>
+        <Entry name="item.status.label.resolved"/>
+        <Entry name="item.status.label.closed"/>
+        <Entry name="item.status.label.reopened"/>
+      </FieldItem>
+    </FieldItems>
+    <Filters>
+      <Phase name="phase.individual" enabled="true">
+        <Filter name="Interval" value="7" enabled="false"/>
+        <Filter name="Reviewer" value="item.reviewer.label.automatic" enabled="true"/>
+        <Filter name="Type" value="item.label.unset" enabled="false"/>
+        <Filter name="Severity" value="item.label.unset" enabled="false"/>
+        <Filter name="AssignedTo" value="" enabled="false"/>
+        <Filter name="Resolution" value="item.label.unset" enabled="false"/>
+        <Filter name="Status" value="item.status.label.open" enabled="false"/>
+        <Filter name="File" value="" enabled="false"/>
+      </Phase>
+      <Phase name="phase.team" enabled="true">
+        <Filter name="Interval" value="7" enabled="false"/>
+        <Filter name="Reviewer" value="" enabled="false"/>
+        <Filter name="Type" value="item.label.unset" enabled="false"/>
+        <Filter name="Severity" value="item.label.unset" enabled="false"/>
+        <Filter name="AssignedTo" value="" enabled="false"/>
+        <Filter name="Resolution" value="item.label.unset" enabled="true"/>
+        <Filter name="Status" value="item.status.label.open" enabled="false"/>
+        <Filter name="File" value="" enabled="false"/>
+      </Phase>
+      <Phase name="phase.rework" enabled="true">
+        <Filter name="Interval" value="7" enabled="false"/>
+        <Filter name="Reviewer" value="" enabled="false"/>
+        <Filter name="Type" value="item.label.unset" enabled="false"/>
+        <Filter name="Severity" value="item.label.unset" enabled="false"/>
+        <Filter name="AssignedTo" value="item.reviewer.label.automatic" enabled="true"/>
+        <Filter name="Resolution" value="item.label.unset" enabled="false"/>
+        <Filter name="Status" value="item.status.label.open" enabled="true"/>
+        <Filter name="File" value="" enabled="false"/>
+      </Phase>
+    </Filters>
+  </Review>
+  <Review id="first">
+    <Description>first review of RDFBean</Description>
+    <Author>tiwe</Author>
+    <CreationDate format="yyyy-MM-dd :: HH:mm:ss:SSS z">2010-02-15 :: 15:03:32:082 EET</CreationDate>
+    <Directory>review</Directory>
+    <Reviewers>
+      <Entry id="tiwe" name="tiwe"/>
+    </Reviewers>
+    <Files>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/ClassMapping.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/ComponentType.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Container.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/ContainerType.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Context.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Default.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Defaults.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Id.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/InjectProperty.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/InjectService.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Localized.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/MapElements.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/MappedClasses.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Mixin.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Path.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Predicate.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Required.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/annotations/Unique.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/CORE.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/AbstractOntology.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/BID.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/Dialect.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/EmptyOntology.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/FetchOptimizer.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/FetchStrategy.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/FullContextFetch.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/ID.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/Identifier.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/IDType.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/Inference.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/io/Format.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/io/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/io/RDFSource.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/LID.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/LIDEditor.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/LIT.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/MiniConnection.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/MiniDialect.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/MiniRepository.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/MultiConnection.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/MultiTransaction.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/NODE.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/NodeType.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/Ontology.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/PredicateWildcardFetch.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/RDF.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/RDFConnection.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/RDFS.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/Repository.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/RepositoryOntology.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/STMT.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/STMTMatcher.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/UID.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/UIDEditor.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/UnsupportedQueryLanguageException.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/model/XSD.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/Namespaces.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/BeanQuery.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/BeanSubQuery.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/Configuration.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/ConfigurationOntology.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/ConstructorParameter.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/ConverterRegistry.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/ConverterRegistryImpl.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/DefaultConfiguration.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/DefaultErrorHandler.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/EmptySessionContext.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/ErrorHandler.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/ExampleQuery.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/FieldProperty.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/FlushMode.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/identity/DerbyIdentityService.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/identity/DerbyProcedures.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/identity/IdentityService.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/identity/IDKey.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/identity/LIDFactory.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/identity/MemoryIdentityService.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/identity/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/identity/RepositoryIdentityService.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/LifeCycleAware.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/MappedClass.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/MappedClassFactory.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/MappedConstructor.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/MappedPath.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/MappedPredicate.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/MappedProperty.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/MethodProperty.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/ObjectRepository.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/QueryLanguage.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/RDFBeanTransaction.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/Session.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/SessionCallback.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/SessionContext.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/SessionFactory.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/SessionFactoryImpl.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/SessionImpl.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/SimpleBeanQuery.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/object/SimpleSessionContext.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/DataRange.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/DatatypeProperty.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/ObjectProperty.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/ObjectPropertyFeature.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/Ontology.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/OWL.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/OWLClass.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/Restriction.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/Thing.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/owl/TypedList.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/query/AbstractProjectingQuery.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/query/BeanAnnotationProcessor.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/query/BeanConfiguration.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/query/BeanListSource.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/query/BeanListSourceBuilder.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/query/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/query/QueryFunctions.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/query/VarNameIterator.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/rdfs/MappedResourceBase.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/rdfs/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/rdfs/RDFProperty.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/rdfs/RDFPropertyFeature.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/rdfs/RDFSClass.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/rdfs/RDFSDatatype.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/rdfs/RDFSResource.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/schema/AnyThing.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/schema/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/schema/ReferenceClass.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/schema/SchemaGen.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/SRV.java"/>
+      <Entry name="src/main/java/com/mysema/rdfbean/TEST.java"/>
+      <Entry name="src/main/java/com/mysema/util/AbstractCollectionMap.java"/>
+      <Entry name="src/main/java/com/mysema/util/BidirectionalMap.java"/>
+      <Entry name="src/main/java/com/mysema/util/EmptyCloseableIterator.java"/>
+      <Entry name="src/main/java/com/mysema/util/JDBCUtil.java"/>
+      <Entry name="src/main/java/com/mysema/util/ListMap.java"/>
+      <Entry name="src/main/java/com/mysema/util/MiniConnectionPoolManager.java"/>
+      <Entry name="src/main/java/com/mysema/util/package-info.java"/>
+      <Entry name="src/main/java/com/mysema/util/Pair.java"/>
+      <Entry name="src/main/java/com/mysema/util/SetMap.java"/>
+      <Entry name="src/main/java/com/mysema/util/StringUtils.java"/>
+    </Files>
+    <FieldItems>
+      <FieldItem id="Type" default="item.label.unset">
+        <Entry name="item.label.unset"/>
+        <Entry name="item.type.label.codingStandards"/>
+        <Entry name="item.type.label.programLogic"/>
+        <Entry name="item.type.label.optimization"/>
+        <Entry name="item.type.label.usability"/>
+        <Entry name="item.type.label.clarity"/>
+        <Entry name="item.type.label.missing"/>
+        <Entry name="item.type.label.irrelevant"/>
+        <Entry name="item.type.label.suggestion"/>
+        <Entry name="item.type.label.other"/>
+      </FieldItem>
+      <FieldItem id="Severity" default="item.label.unset">
+        <Entry name="item.label.unset"/>
+        <Entry name="item.severity.label.critical"/>
+        <Entry name="item.severity.label.major"/>
+        <Entry name="item.severity.label.normal"/>
+        <Entry name="item.severity.label.minor"/>
+        <Entry name="item.severity.label.trivial"/>
+      </FieldItem>
+      <FieldItem id="Resolution" default="item.label.unset">
+        <Entry name="item.label.unset"/>
+        <Entry name="item.resolution.label.validNeedsfixing"/>
+        <Entry name="item.resolution.label.validFixlater"/>
+        <Entry name="item.resolution.label.validDuplicate"/>
+        <Entry name="item.resolution.label.validWontfix"/>
+        <Entry name="item.resolution.label.invalidWontfix"/>
+        <Entry name="item.resolution.label.unsureValidity"/>
+      </FieldItem>
+      <FieldItem id="Status" default="item.status.label.open">
+        <Entry name="item.status.label.open"/>
+        <Entry name="item.status.label.resolved"/>
+        <Entry name="item.status.label.closed"/>
+        <Entry name="item.status.label.reopened"/>
+      </FieldItem>
+    </FieldItems>
+    <Filters>
+      <Phase name="phase.individual" enabled="true">
+        <Filter name="Interval" value="7" enabled="false"/>
+        <Filter name="Reviewer" value="item.reviewer.label.automatic" enabled="true"/>
+        <Filter name="Type" value="item.label.unset" enabled="false"/>
+        <Filter name="Severity" value="item.label.unset" enabled="false"/>
+        <Filter name="AssignedTo" value="" enabled="false"/>
+        <Filter name="Resolution" value="item.label.unset" enabled="false"/>
+        <Filter name="Status" value="item.status.label.open" enabled="false"/>
+        <Filter name="File" value="" enabled="false"/>
+      </Phase>
+      <Phase name="phase.team" enabled="true">
+        <Filter name="Interval" value="7" enabled="false"/>
+        <Filter name="Reviewer" value="" enabled="false"/>
+        <Filter name="Type" value="item.label.unset" enabled="false"/>
+        <Filter name="Severity" value="item.label.unset" enabled="false"/>
+        <Filter name="AssignedTo" value="" enabled="false"/>
+        <Filter name="Resolution" value="item.label.unset" enabled="true"/>
+        <Filter name="Status" value="item.status.label.open" enabled="false"/>
+        <Filter name="File" value="" enabled="false"/>
+      </Phase>
+      <Phase name="phase.rework" enabled="true">
+        <Filter name="Interval" value="7" enabled="false"/>
+        <Filter name="Reviewer" value="" enabled="false"/>
+        <Filter name="Type" value="item.label.unset" enabled="false"/>
+        <Filter name="Severity" value="item.label.unset" enabled="false"/>
+        <Filter name="AssignedTo" value="item.reviewer.label.automatic" enabled="true"/>
+        <Filter name="Resolution" value="item.label.unset" enabled="false"/>
+        <Filter name="Status" value="item.status.label.open" enabled="true"/>
+        <Filter name="File" value="" enabled="false"/>
+      </Phase>
+    </Filters>
+  </Review>
+</Property>

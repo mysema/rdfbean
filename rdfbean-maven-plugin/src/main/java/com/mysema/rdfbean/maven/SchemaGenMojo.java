@@ -33,7 +33,6 @@ import org.jboss.util.file.ArchiveBrowser;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.identity.MemoryIdentityService;
 import com.mysema.rdfbean.sesame.SesameSchemaGen;
 
 /**
@@ -107,7 +106,6 @@ public class SchemaGenMojo extends AbstractMojo{
             Collections.sort(entityClasses, fileComparator);
             DefaultConfiguration configuration = new DefaultConfiguration();
             configuration.addClasses(entityClasses.toArray(new Class[entityClasses.size()]));
-            configuration.setIdentityService(MemoryIdentityService.instance());
             
             if (ontology == null){
                 if (namespace.endsWith("#") || namespace.endsWith("/")){

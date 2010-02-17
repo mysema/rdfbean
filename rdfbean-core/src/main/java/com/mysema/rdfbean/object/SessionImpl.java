@@ -26,8 +26,6 @@ import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.object.identity.IdentityService;
-import com.mysema.rdfbean.object.identity.RepositoryIdentityService;
 
 /**
  * Default implementation of the Session interface
@@ -64,9 +62,6 @@ public class SessionImpl implements Session {
     
     private Iterable<Locale> locales;
     
-    @Nullable
-    private final BID model;
-    
     private Map<String,ObjectRepository> parentRepositories = new HashMap<String, ObjectRepository>();
     
     private Set<STMT> removedStatements;
@@ -78,17 +73,12 @@ public class SessionImpl implements Session {
     
     private RDFBeanTransaction transaction;
     
-    public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales, @Nullable BID model) {
+    public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales) {
         this.conf = Assert.notNull(conf);
         this.connection = Assert.notNull(connection);
-        this.model = model;
         this.locales = locales;
         
-        if (model != null){
-            this.identityService = conf.getIdentityService();    
-        }else{
-            this.identityService = new RepositoryIdentityService(connection);
-        }        
+        this.identityService = new SessionIdentityService(connection);
         
         // TODO : do this in SessionFactory ?!?
         List<FetchStrategy> fetchStrategies = conf.getFetchStrategies();
@@ -103,8 +93,8 @@ public class SessionImpl implements Session {
         clear();
     }
 
-    public SessionImpl(Configuration configuration, RDFConnection connection, Locale locale, @Nullable BID model) {
-        this(configuration, connection, locale != null ? Arrays.asList(locale) : null, model);
+    public SessionImpl(Configuration configuration, RDFConnection connection, Locale locale) {
+        this(configuration, connection, locale != null ? Arrays.asList(locale) : null);
     }
 
     @Override
@@ -752,7 +742,8 @@ public class SessionImpl implements Session {
 
     @Override
     public <T> T get(Class<T> clazz, LID subject) {
-        return get(clazz, identityService.getID(subject));
+        ID id = identityService.getID(subject);
+        return id != null ? get(clazz, id) : null;
     }
     
     @Nullable
@@ -911,13 +902,17 @@ public class SessionImpl implements Session {
     
     @SuppressWarnings("unchecked")
     public ID getId(Object instance){
-        MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
-        if (instance.getClass().isEnum()){
-            return new UID(mappedClass.getUID().ns(), ((Enum) instance).name());
+        if (instance instanceof LID){
+            return identityService.getID((LID)instance);
         }else{
-            BeanMap beanMap = toBeanMap(instance);            
-            return getId(mappedClass, beanMap);
-        }   
+            MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
+            if (instance.getClass().isEnum()){
+                return new UID(mappedClass.getUID().ns(), ((Enum) instance).name());
+            }else{
+                BeanMap beanMap = toBeanMap(instance);            
+                return getId(mappedClass, beanMap);
+            }    
+        }  
     }
 
     public IdentityService getIdentityService() {
@@ -925,11 +920,7 @@ public class SessionImpl implements Session {
     }
     
     public LID getLID(ID id) {
-        if (id.isBNode()){
-            return identityService.getLID(model, (BID)id);    
-        }else{
-            return identityService.getLID((UID)id);
-        }        
+        return identityService.getLID(id);   
     }
 
     private Set<NODE> getPathValue(MappedClass mappedClass, MappedPath path, ID subject, UID context) {

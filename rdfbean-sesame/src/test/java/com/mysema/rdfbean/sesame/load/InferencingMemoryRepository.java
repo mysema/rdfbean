@@ -10,7 +10,7 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.sail.memory.MemoryStore;
 
-import com.mysema.rdfbean.sesame.AbstractSesameRepository;
+import com.mysema.rdfbean.sesame.SesameRepository;
 
 /**
  * InferencingMemoryRepository provides
@@ -18,16 +18,11 @@ import com.mysema.rdfbean.sesame.AbstractSesameRepository;
  * @author tiwe
  * @version $Id$
  */
-class InferencingMemoryRepository extends AbstractSesameRepository{
+class InferencingMemoryRepository extends SesameRepository{
 
     @Override
     protected Repository createRepository(boolean sesameInference) {
         return new SailRepository(new ForwardChainingRDFSInferencer(new MemoryStore()));
-    }
-
-    @Override
-    public boolean isBNodeIDPreserved() {
-        return false;
     }
 
 }

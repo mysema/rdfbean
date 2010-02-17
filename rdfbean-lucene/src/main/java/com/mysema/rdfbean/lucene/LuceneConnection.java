@@ -459,4 +459,9 @@ class LuceneConnection implements RDFConnection{
             }
         }                
     }
+
+    @Override
+    public synchronized long getNextLocalId() {
+        return conf.getNextLocalId();
+    }
 }

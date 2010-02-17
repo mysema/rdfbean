@@ -17,7 +17,6 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.identity.IdentityService;
 
 /**
  * Session provides an access point for persisting and querying persisted instances of mapped classes.

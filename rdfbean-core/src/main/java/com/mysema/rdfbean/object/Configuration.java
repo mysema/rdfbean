@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.identity.IdentityService;
 
 /**
  * Configuration defines the main configuration interface for RDFBean
@@ -39,8 +38,6 @@ public interface Configuration {
     boolean isRestricted(UID uid);
 
     UID createURI(Object instance);
-
-    IdentityService getIdentityService();
 
     List<FetchStrategy> getFetchStrategies();
         

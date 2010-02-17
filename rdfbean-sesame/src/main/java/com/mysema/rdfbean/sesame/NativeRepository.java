@@ -15,6 +15,7 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.model.FileIdSource;
 import com.mysema.rdfbean.model.Ontology;
 
 
@@ -24,11 +25,13 @@ import com.mysema.rdfbean.model.Ontology;
  * @author sasa
  *
  */
-public class NativeRepository extends AbstractSesameRepository {
+public class NativeRepository extends SesameRepository {
     
     @Nullable
     private File dataDir;
         
+    private FileIdSource idSource;
+    
     public NativeRepository(){}
 
     public NativeRepository(File dataDir, boolean sesameInference) {
@@ -48,12 +51,18 @@ public class NativeRepository extends AbstractSesameRepository {
     @Override
     protected Repository createRepository(boolean sesameInference) {
         NativeStore store = new NativeStore(Assert.notNull(dataDir));
+        idSource = new FileIdSource(new File(dataDir, "lastLocalId"));
         if (sesameInference){
             return new SailRepository(new ExtendedRDFSInferencer(store));
         }else{
             return new SailRepository(store);
         }
-    }        
+    }            
+
+    @Override
+    public long getNextLocalId(){
+        return idSource.getNextId();
+    }
 
     public void setDataDir(File dataDir) {
         this.dataDir = dataDir;
@@ -63,11 +72,6 @@ public class NativeRepository extends AbstractSesameRepository {
         if (StringUtils.isNotEmpty(dataDirName)) {
             this.dataDir = new File(dataDirName);
         }
-    }
-
-    @Override
-    public boolean isBNodeIDPreserved() {
-        return true;
     }
 
 }

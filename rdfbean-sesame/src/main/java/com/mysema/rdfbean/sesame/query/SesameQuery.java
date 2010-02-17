@@ -399,7 +399,8 @@ public class SesameQuery
     @SuppressWarnings("unchecked")
     public ID getResourceForLID(Expr<?> arg) {
         String lid = ((Constant<String>)arg).getConstant();
-        ID id = conf.getIdentityService().getID(new LID(lid));
+//        ID id = conf.getIdentityService().getID(new LID(lid));
+        ID id = session.getId(new LID(lid));
         return id;
     }
 

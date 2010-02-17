@@ -40,6 +40,8 @@ import com.mysema.rdfbean.owl.OWL;
  * @version $Id$
  */
 public class DefaultLuceneConfiguration implements LuceneConfiguration {
+    
+    private long localId;
 
     private boolean indexSupertypes = true;
     
@@ -219,6 +221,11 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
 
     public void setIndexSupertypes(boolean indexSupertypes) {
         this.indexSupertypes = indexSupertypes;
+    }
+
+    @Override
+    public long getNextLocalId() {
+        return ++localId;
     }    
     
 }

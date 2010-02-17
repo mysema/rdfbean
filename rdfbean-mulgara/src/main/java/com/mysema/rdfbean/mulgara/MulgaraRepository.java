@@ -126,12 +126,4 @@ public class MulgaraRepository implements Repository{
         
     }
 
-    @Override
-    public boolean isBNodeIDPreserved() {
-        // ?!?
-        return false;
-    }
-    
-    
-
 }

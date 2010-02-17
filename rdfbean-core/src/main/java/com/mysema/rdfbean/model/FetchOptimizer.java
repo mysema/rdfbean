@@ -164,5 +164,10 @@ public class FetchOptimizer implements RDFConnection {
         connection.update(removedStatements, addedStatements);
     }
 
+    @Override
+    public long getNextLocalId() {
+        return connection.getNextLocalId();
+    }
+
     
 }

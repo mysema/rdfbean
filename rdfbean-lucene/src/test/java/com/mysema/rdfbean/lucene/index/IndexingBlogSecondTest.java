@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.compass.core.CompassHits;
-import org.compass.core.CompassQueryBuilder;
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 import org.junit.Test;
@@ -81,6 +80,9 @@ public class IndexingBlogSecondTest  extends AbstractIndexTest{
     @Searchable
     @ClassMapping(ns=TEST.NS)
     public static class Article{
+        
+        @Id
+        String id;
         
         // indexed into ":tagged" fields
         @Predicate(ln="tagged")

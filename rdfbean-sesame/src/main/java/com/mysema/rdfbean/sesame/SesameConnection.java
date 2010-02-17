@@ -43,17 +43,17 @@ import com.mysema.rdfbean.sesame.query.SesameQuery;
  * 
  */
 public class SesameConnection implements RDFConnection {
-    
+
     private static final URI RDF_TYPE = org.openrdf.model.vocabulary.RDF.TYPE;
-        
+
+    private static final Var RDF_TYPE_VAR = new Var("rdf_type", RDF_TYPE);;
+    
     private static final Var SUBJECT_VAR = new Var("subject");
     
-    private static final Var RDF_TYPE_VAR = new Var("rdf_type", RDF_TYPE);
-
-    private static final ExtensionElem extensionElem = new ExtensionElem(new ValueConstant(RDF_TYPE),"_rdf_type");;
-    
+    private static final ExtensionElem extensionElem = new ExtensionElem(new ValueConstant(RDF_TYPE),"_rdf_type");
+        
     private static final ProjectionElemList projections = new ProjectionElemList();
-      
+          
     static{
         RDF_TYPE_VAR.setAnonymous(true);
         projections.addElements(new ProjectionElem("subject"));
@@ -83,7 +83,10 @@ public class SesameConnection implements RDFConnection {
     
     private final ValueFactory vf;
     
-    public SesameConnection(RepositoryConnection connection, Ontology ontology, Inference inference) {
+    private final SesameRepository repository;
+    
+    public SesameConnection(SesameRepository repository, RepositoryConnection connection, Ontology ontology, Inference inference) {
+        this.repository = Assert.notNull(repository);
         this.connection = Assert.notNull(connection);
         this.vf = connection.getValueFactory();
         this.dialect = new SesameDialect(vf);
@@ -248,6 +251,11 @@ public class SesameConnection implements RDFConnection {
     
     public Dialect<Value, Resource, BNode, URI, Literal, Statement> getDialect() {
         return dialect;
+    }
+
+    @Override
+    public long getNextLocalId() {
+        return repository.getNextLocalId();
     }
 
     public RDFBeanTransaction getTransaction() {

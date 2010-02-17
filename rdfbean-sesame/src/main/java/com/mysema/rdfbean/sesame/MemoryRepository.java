@@ -14,6 +14,7 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.memory.MemoryStore;
 
+import com.mysema.rdfbean.model.FileIdSource;
 import com.mysema.rdfbean.model.Ontology;
 
 /**
@@ -22,10 +23,13 @@ import com.mysema.rdfbean.model.Ontology;
  * @author sasa
  *
  */
-public class MemoryRepository extends AbstractSesameRepository {
+public class MemoryRepository extends SesameRepository {
     
     @Nullable
     private File dataDir;
+    
+    @Nullable
+    private FileIdSource idSource;
         
     public MemoryRepository(){}
 
@@ -45,13 +49,24 @@ public class MemoryRepository extends AbstractSesameRepository {
     
     @Override
     protected Repository createRepository(boolean sesameInference) {
-        MemoryStore store = dataDir != null ? new MemoryStore(dataDir) : new MemoryStore();
+        MemoryStore store;
+        if (dataDir != null){
+            store = new MemoryStore(dataDir);
+            idSource = new FileIdSource(new File(dataDir, "lastLocalId"));
+        }else{
+            store = new MemoryStore();
+        }
         if (sesameInference){
             return new SailRepository(new ExtendedRDFSInferencer(store));
         }else{
             return new SailRepository(store);
         }
     }    
+    
+    @Override
+    public long getNextLocalId(){
+        return idSource != null ? idSource.getNextId() : super.getNextLocalId();
+    }
    
     public void setDataDir(File dataDir) {
         this.dataDir = dataDir;
@@ -61,11 +76,6 @@ public class MemoryRepository extends AbstractSesameRepository {
         if (StringUtils.isNotEmpty(dataDirName)) {
             this.dataDir = new File(dataDirName);
         }
-    }
-
-    @Override
-    public boolean isBNodeIDPreserved() {
-        return false;
     }
 
 }

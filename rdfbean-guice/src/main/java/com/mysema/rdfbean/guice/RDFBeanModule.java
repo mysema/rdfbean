@@ -17,15 +17,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.matcher.Matchers;
-import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
+import com.mysema.rdfbean.object.IdentityService;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
-import com.mysema.rdfbean.object.identity.DerbyIdentityService;
-import com.mysema.rdfbean.object.identity.IdentityService;
 
 /**
  * RDFBeanModule provides an abstract base class for RDFBean based Guice modules
@@ -67,24 +65,16 @@ public abstract class RDFBeanModule extends AbstractModule{
         bindInterceptor(Matchers.any(), methodMatcher, interceptor);
     }
     
-    @Provides
-    @Singleton
-    public IdentityService createIdentityService(@Named("identityService.derby.database") String databaseName) 
-        throws IOException{
-        return new DerbyIdentityService(databaseName);
-    }
-    
     @Provides 
     @Singleton
     public abstract Repository createRepository(Configuration configuration);
     
     @Provides
     @Singleton
-    public Configuration createConfiguration(IdentityService identityService){
+    public Configuration createConfiguration(){
         DefaultConfiguration configuration = new DefaultConfiguration();
         configuration.addClasses(getAnnotatedClasses());
         configuration.addPackages(getAnnotatedPackages());
-        configuration.setIdentityService(identityService);
         return configuration;
     }
     

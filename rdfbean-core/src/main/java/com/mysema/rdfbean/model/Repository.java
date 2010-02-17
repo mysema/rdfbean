@@ -42,11 +42,5 @@ public interface Repository {
      * @return
      */
     RDFConnection openConnection();
-    
-    /**
-     * Returns true, if the blank node IDs are preserved accross connections
-     * @return
-     */
-    boolean isBNodeIDPreserved();
-    
+           
 }

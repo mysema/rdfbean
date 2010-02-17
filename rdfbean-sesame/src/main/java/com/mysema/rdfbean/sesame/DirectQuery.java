@@ -55,14 +55,18 @@ public class DirectQuery {
         });
     }
 
-    public static TupleResult query(RepositoryConnection connection, TupleQueryModel tupleQueryModel, boolean includeInferred) throws StoreException, MalformedQueryException{
+    public static TupleResult query(RepositoryConnection connection, 
+            TupleQueryModel tupleQueryModel, 
+            boolean includeInferred) throws StoreException, MalformedQueryException{
         QUERY_HOLDER.set(tupleQueryModel);
         TupleQuery tupleQuery = connection.prepareTupleQuery(DirectQuery.DIRECTQUERY, "");                      
         tupleQuery.setIncludeInferred(includeInferred);        
         return  tupleQuery.evaluate();
     }
     
-    public static GraphResult query(RepositoryConnection connection, GraphQueryModel graphQueryModel, boolean includeInferred) throws StoreException, MalformedQueryException{
+    public static GraphResult query(RepositoryConnection connection, 
+            GraphQueryModel graphQueryModel,
+            boolean includeInferred) throws StoreException, MalformedQueryException{
         QUERY_HOLDER.set(graphQueryModel);
         GraphQuery graphQuery = connection.prepareGraphQuery(DirectQuery.DIRECTQUERY, "");
         graphQuery.setIncludeInferred(includeInferred);

@@ -28,13 +28,13 @@ import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 
 /**
- * AbstractSesameRepository provides a base class for Sesame repository based RDFBean repositories 
+ * SesameRepository provides a base class for Sesame repository based RDFBean repositories 
  * 
  * @author sasa
  * @author tiwe
  *
  */
-public abstract class AbstractSesameRepository implements Repository{
+public abstract class SesameRepository implements Repository{
     
     private Ontology ontology;
     
@@ -48,16 +48,18 @@ public abstract class AbstractSesameRepository implements Repository{
     
     private Inference inference = Inference.FULL;
     
-    public AbstractSesameRepository() {}
+    private long localId;
     
-    public AbstractSesameRepository(org.openrdf.repository.Repository repository) {
+    public SesameRepository() {}
+    
+    public SesameRepository(org.openrdf.repository.Repository repository) {
         this.repository = repository;
     }
 
     @Override
     public RDFConnection openConnection() {
         try {
-            return new SesameConnection(repository.getConnection(), ontology, getInferenceOptions());
+            return new SesameConnection(this, repository.getConnection(), ontology, getInferenceOptions());
         } catch (StoreException e) {
             throw new RuntimeException(e);
         }
@@ -69,6 +71,10 @@ public abstract class AbstractSesameRepository implements Repository{
     
     public void setSources(RDFSource... sources) {
         this.sources = sources;
+    }
+    
+    public long getNextLocalId(){
+        return ++localId;
     }
     
     public void initialize() {
@@ -96,6 +102,7 @@ public abstract class AbstractSesameRepository implements Repository{
                     RepositoryOntology schemaOntology = new RepositoryOntology(this);
                     ontology = schemaOntology;
                 }
+                
             } catch (RDFParseException e) {
                 throw new RuntimeException(e);
             } catch (MalformedURLException e) {

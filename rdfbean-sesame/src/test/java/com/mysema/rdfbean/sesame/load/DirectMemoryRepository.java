@@ -9,7 +9,7 @@ import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.memory.MemoryStore;
 
-import com.mysema.rdfbean.sesame.AbstractSesameRepository;
+import com.mysema.rdfbean.sesame.SesameRepository;
 
 /**
  * DirectMemoryRepository provides
@@ -17,16 +17,11 @@ import com.mysema.rdfbean.sesame.AbstractSesameRepository;
  * @author tiwe
  * @version $Id$
  */
-class DirectMemoryRepository extends AbstractSesameRepository{
+class DirectMemoryRepository extends SesameRepository{
 
     @Override
     protected Repository createRepository(boolean sesameInference) {
         return new SailRepository(new MemoryStore());
-    }
-
-    @Override
-    public boolean isBNodeIDPreserved() {
-        return false;
     }
 
 }

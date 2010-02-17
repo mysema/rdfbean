@@ -210,4 +210,9 @@ public class MulgaraConnection implements RDFConnection{
         }
     }
 
+    @Override
+    public long getNextLocalId() {
+        throw new UnsupportedOperationException();
+    }
+
 }

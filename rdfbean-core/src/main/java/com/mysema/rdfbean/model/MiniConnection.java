@@ -84,4 +84,9 @@ public class MiniConnection implements RDFConnection {
         }
     }
 
+    @Override
+    public long getNextLocalId() {
+        return repository.getNextLocalId();
+    }
+
 }

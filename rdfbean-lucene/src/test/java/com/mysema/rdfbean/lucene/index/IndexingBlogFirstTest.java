@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.lucene.Constants;
 import com.mysema.rdfbean.lucene.LuceneQuery;
@@ -131,6 +132,9 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
         // rdf:type, test:title, test:text, test:created, test:author
         // test:tagged
         
+        @Id
+        String id;
+        
         @Predicate
         @SearchablePredicate
         User author;
@@ -156,6 +160,10 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
     @Searchable(embeddedOnly=true)
     @ClassMapping(ns=TEST.NS)
     public static class Tag{
+        
+        @Id
+        String id;
+        
         @Predicate
         @SearchableText
         String name;
@@ -169,6 +177,10 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
     
     @ClassMapping(ns=TEST.NS)
     public static class User{
+        
+        @Id
+        String id;
+        
         @Predicate
         String firstName, lastName, userName;
     }

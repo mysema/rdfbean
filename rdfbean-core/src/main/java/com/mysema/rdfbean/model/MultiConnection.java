@@ -15,9 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
-import com.mysema.rdfbean.object.Session;
 
 /**
  * MultiConnection provides an implementation of the RDFConnection interface
@@ -97,6 +95,11 @@ public abstract class MultiConnection implements RDFConnection{
         for (RDFConnection connection : connections){
             connection.close();
         }        
+    }
+    
+    @Override
+    public long getNextLocalId(){
+        return connections[0].getNextLocalId();
     }
 
     @Override

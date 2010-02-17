@@ -38,10 +38,6 @@
      <property name="sesameInference" value="true"/>
   </bean>
  
-  <bean id="identityService" class="com.mysema.rdfbean.object.identity.DerbyIdentityService">
-      <constructor-arg value="${identityService.derby.databaseName}"/>
-  </bean>
- 
   <bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">
       <constructor-arg value="true"/>
       <constructor-arg>
@@ -50,7 +46,6 @@
           </list>
       </constructor-arg>
       <property name="defaultContext" value="http://demo.mysema.com/rdfbean-demo"/>
-    <property name="identityService" ref="identityService"/>
   </bean>
   
   <bean id="sessionFactory" class="com.mysema.rdfbean.spring.ContextAwareSessionFactory"
