@@ -74,7 +74,7 @@ public interface TransformerContext {
      * @param path
      * @return
      */
-    boolean isRegistered(Path<?> path);
+    boolean isKnown(Path<?> path);
 
     /**
      * @param builder

@@ -11,12 +11,12 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
+import com.mysema.query.types.expr.EBoolean;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
@@ -28,7 +28,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class OptionalPaths2Test extends SessionTestBase{
+public class ComplexPathsTest extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class NoteRevision {
@@ -42,9 +42,11 @@ public class OptionalPaths2Test extends SessionTestBase{
         public String getLemma() {
             return lemma;
         }
+        
         public Note getNote() {
             return note;
-        }                
+        }        
+        
     }
     
     @ClassMapping(ns=TEST.NS)
@@ -83,8 +85,9 @@ public class OptionalPaths2Test extends SessionTestBase{
         }                   
     }
     
-    @Before
-    public void setUp() throws StoreException{
+    
+    @Test
+    public void optionalPaths() throws StoreException, IOException{
         session = createSession(NoteRevision.class, Note.class, Term.class);
         
         Note note = new Note();
@@ -104,10 +107,7 @@ public class OptionalPaths2Test extends SessionTestBase{
         rev2.note = note2;
         rev2.lemma = "X b X";
         session.save(rev2);
-    }
-    
-    @Test
-    public void test() throws StoreException, IOException{
+        
         NoteRevision noteVar = Alias.alias(NoteRevision.class);
         BooleanBuilder builder = new BooleanBuilder();
         builder.or($(noteVar.getLemma()).contains("a", false));
@@ -137,6 +137,24 @@ public class OptionalPaths2Test extends SessionTestBase{
         builder.or($(noteVar.getNote().getTerm().getBasicForm()).contains("c", false));
         builder.or($(noteVar.getNote().getTerm().getMeaning()).contains("c", false));        
         assertEquals(1, session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).size());
+    }
+    
+    @Test
+    public void deepPaths() throws StoreException{
+        session = createSession(NoteRevision.class, Note.class, Term.class);
+        
+        NoteRevision rev1 = new NoteRevision();
+        NoteRevision rev2 = new NoteRevision();
+        Note note = new Note();
+        
+        note.latestRevision = rev1;
+        rev1.note = note;
+        rev2.note = note;
+        session.saveAll(note, rev1, rev2);
+
+        NoteRevision noteVar = Alias.alias(NoteRevision.class);
+        EBoolean where = $(noteVar).eq($(noteVar.getNote().getLatestRevision()));
+        assertEquals(1, session.from($(noteVar)).where(where).list($(noteVar)).size());
     }
     
 }

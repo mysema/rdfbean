@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -26,14 +27,14 @@ import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.ConfigurationOntology;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
-import com.mysema.rdfbean.sesame.SesameRepository;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 import com.mysema.rdfbean.sesame.NativeRepository;
+import com.mysema.rdfbean.sesame.SesameRepository;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -95,6 +96,7 @@ public class LoadTest extends SessionTestBase{
     }
     
     @Test
+    @Ignore
     public void test() throws IOException{        
         loadTest(MiniRepository.class.getSimpleName(), new MiniRepository());
         
