@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2010 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.model;
 
 import java.io.Closeable;
@@ -18,11 +23,15 @@ public class FileIdSource implements Closeable{
     
     private final ByteBuffer buffer = ByteBuffer.allocate(8);
     
+    private final File file;
+    
     private final FileChannel fileChannel;
     
-    private volatile long lastId = 0l;
-    
     private final int granularity;
+    
+    private volatile long nextId = 1l;
+    
+    private volatile long maxId = 100l;
     
     public FileIdSource(File file) {
         this(file, 100);
@@ -36,35 +45,44 @@ public class FileIdSource implements Closeable{
                 }                
                 file.createNewFile();
             }            
+            this.file = file;
             this.fileChannel = new RandomAccessFile(file, "rwd").getChannel();
             this.granularity = granularity;
+            synchronize();      
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        try {
-            if (file.length() > 0l){
-                fileChannel.read(buffer, 0l);
-                buffer.rewind();
-                lastId = buffer.getLong();
-                long mod = lastId % granularity; 
-                lastId = lastId - mod + granularity;
-            }            
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    }
+    
+    private void synchronize() throws IOException{
+        // TODO : this method needs execlusive access to the file
+        
+        // get the next id
+        if (file.length() > 0l){
+            fileChannel.read(buffer, 0l);            
+            buffer.rewind();
+            nextId = buffer.getLong();            
+        }else{
+            nextId = 1l;
         }
+        maxId = nextId + granularity - 1l;
+        
+        // set the next id
+        buffer.rewind();
+        buffer.putLong(0, nextId + granularity);
+        fileChannel.write(buffer, 0l);
+        buffer.rewind();
+        
     }
 
     public synchronized long getNextId() {                
-        try {
-            ++lastId;            
-            if (lastId % granularity == 0l || lastId == 1l){
-                buffer.putLong(0, lastId);            
-                fileChannel.write(buffer, 0l);
-                buffer.rewind();    
+        try {            
+            if (nextId > maxId){                
+                synchronize();
             }            
-            return lastId;
+            return nextId++;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }        
@@ -73,4 +91,5 @@ public class FileIdSource implements Closeable{
     public void close() throws IOException{
         fileChannel.close();
     }
+    
 }

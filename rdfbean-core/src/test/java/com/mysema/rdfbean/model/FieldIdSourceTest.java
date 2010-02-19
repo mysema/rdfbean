@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2010 Mysema Ltd.
+ * All rights reserved.
+ * 
+ */
 package com.mysema.rdfbean.model;
 
 import static org.junit.Assert.assertEquals;
@@ -29,12 +34,16 @@ public class FieldIdSourceTest {
     }
     
     @After
-    public void tearDown() throws IOException{
+    public void tearDown() throws IOException{        
         idSource.close();
+        file.delete();
     }
     
     @Test
     public void test() throws IOException{
+        // 001-100
+        // 101-200
+        // 201-300
         long s = System.currentTimeMillis();
         for (int i = 0; i < 10000; i++){
             idSource.getNextId();
@@ -43,7 +52,7 @@ public class FieldIdSourceTest {
         System.out.println((e-s)+"ms");
         idSource.close();        
         idSource = new FileIdSource(file, 100);
-        assertEquals(10101l, idSource.getNextId());
+        assertEquals(10001l, idSource.getNextId());
     }
     
     @Test
@@ -54,6 +63,13 @@ public class FieldIdSourceTest {
         idSource.close();        
         idSource = new FileIdSource(file, 100);
         assertEquals(101l, idSource.getNextId());
+    }
+    
+    @Test
+    public void test3() throws IOException{
+        for (int i = 0; i < 300; i++){
+            idSource.getNextId();
+        }        
     }
 
 }
