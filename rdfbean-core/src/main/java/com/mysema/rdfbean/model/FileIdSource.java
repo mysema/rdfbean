@@ -19,7 +19,7 @@ import java.nio.channels.FileChannel;
  * @author tiwe
  * @version $Id$
  */
-public class FileIdSource implements Closeable{
+public class FileIdSource implements Closeable, IdSource{
     
     private final ByteBuffer buffer = ByteBuffer.allocate(8);
     
@@ -77,6 +77,9 @@ public class FileIdSource implements Closeable{
         
     }
 
+    /* (non-Javadoc)
+     * @see com.mysema.rdfbean.model.IdSource#getNextId()
+     */
     public synchronized long getNextId() {                
         try {            
             if (nextId > maxId){                

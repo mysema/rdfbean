@@ -19,9 +19,16 @@ import com.mysema.rdfbean.sesame.SesameRepository;
  */
 class DirectMemoryRepository extends SesameRepository{
 
+    private long nextLocalId = 1;
+    
     @Override
     protected Repository createRepository(boolean sesameInference) {
         return new SailRepository(new MemoryStore());
+    }
+
+    @Override
+    public long getNextLocalId() {
+        return nextLocalId++;
     }
 
 }

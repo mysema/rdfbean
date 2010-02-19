@@ -8,6 +8,8 @@ package com.mysema.rdfbean.tapestry.services;
 import java.util.Map;
 
 import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.services.RegistryShutdownHub;
+import org.apache.tapestry5.ioc.services.RegistryShutdownListener;
 
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
@@ -30,13 +32,22 @@ public class RDFBeanModule {
         binder.bind(SeedEntity.class, SeedEntityImpl.class);
     }
 
-    public static SessionFactory buildSessionFactory(Configuration configuration, Repository repository, 
-            Map<String,ObjectRepository> objectRepositories){        
-        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();        
+    public static SessionFactory buildSessionFactory(
+            Configuration configuration, 
+            Repository repository, 
+            Map<String,ObjectRepository> objectRepositories,
+            RegistryShutdownHub hub){        
+        final SessionFactoryImpl sessionFactory = new SessionFactoryImpl();        
         sessionFactory.setObjectRepositories(objectRepositories);
         sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
+        hub.addRegistryShutdownListener(new RegistryShutdownListener(){
+            @Override
+            public void registryDidShutdown() {
+                sessionFactory.close();                
+            }            
+        });
         return sessionFactory;
     }
 

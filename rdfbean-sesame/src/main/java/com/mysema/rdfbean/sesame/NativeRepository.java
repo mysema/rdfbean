@@ -16,6 +16,7 @@ import org.openrdf.sail.nativerdf.NativeStore;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.FileIdSource;
+import com.mysema.rdfbean.model.IdSource;
 import com.mysema.rdfbean.model.Ontology;
 
 
@@ -30,7 +31,7 @@ public class NativeRepository extends SesameRepository {
     @Nullable
     private File dataDir;
         
-    private FileIdSource idSource;
+    private IdSource idSource;
     
     public NativeRepository(){}
 

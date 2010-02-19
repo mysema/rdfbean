@@ -16,10 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
@@ -53,12 +50,6 @@ public class SessionFactoryImpl implements SessionFactory {
     
     public SessionFactoryImpl(Iterable<Locale> locales) {
         this.locales = locales;
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                close();
-            }
-        });
     }
 
     public SessionFactoryImpl(Locale locale) {

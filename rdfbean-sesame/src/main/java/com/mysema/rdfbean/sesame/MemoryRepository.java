@@ -15,6 +15,8 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.memory.MemoryStore;
 
 import com.mysema.rdfbean.model.FileIdSource;
+import com.mysema.rdfbean.model.IdSource;
+import com.mysema.rdfbean.model.MemoryIdSource;
 import com.mysema.rdfbean.model.Ontology;
 
 /**
@@ -29,7 +31,7 @@ public class MemoryRepository extends SesameRepository {
     private File dataDir;
     
     @Nullable
-    private FileIdSource idSource;
+    private IdSource idSource;
         
     public MemoryRepository(){}
 
@@ -55,6 +57,7 @@ public class MemoryRepository extends SesameRepository {
             idSource = new FileIdSource(new File(dataDir, "lastLocalId"));
         }else{
             store = new MemoryStore();
+            idSource = new MemoryIdSource();
         }
         if (sesameInference){
             return new SailRepository(new ExtendedRDFSInferencer(store));
@@ -65,7 +68,7 @@ public class MemoryRepository extends SesameRepository {
     
     @Override
     public long getNextLocalId(){
-        return idSource != null ? idSource.getNextId() : super.getNextLocalId();
+        return idSource.getNextId();
     }
    
     public void setDataDir(File dataDir) {

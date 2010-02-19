@@ -47,9 +47,7 @@ public abstract class SesameRepository implements Repository{
     private boolean sesameInference = false;
     
     private Inference inference = Inference.FULL;
-    
-    private long localId;
-    
+        
     public SesameRepository() {}
     
     public SesameRepository(org.openrdf.repository.Repository repository) {
@@ -73,9 +71,7 @@ public abstract class SesameRepository implements Repository{
         this.sources = sources;
     }
     
-    public long getNextLocalId(){
-        return ++localId;
-    }
+    public abstract long getNextLocalId();
     
     public void initialize() {
         if (!initialized) {
