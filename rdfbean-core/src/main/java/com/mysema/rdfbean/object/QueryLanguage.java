@@ -7,7 +7,7 @@ package com.mysema.rdfbean.object;
 
 
 /**
- * QueryLanguage defines support a query language
+ * QueryLanguage defines support for a query language
  *
  * @author tiwe
  * @version $Id$
