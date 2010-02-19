@@ -510,7 +510,7 @@ public class SessionImpl implements Session {
     
     @Override
     public void delete(Object instance) {
-        deleteInternal(instance);
+        deleteInternal(assertMapped(instance));
         if (flushMode == FlushMode.ALWAYS) {
             flush();
         }
@@ -519,7 +519,7 @@ public class SessionImpl implements Session {
     @Override
     public void deleteAll(Object... objects) {
         for (Object object : objects) {
-            deleteInternal(object);
+            deleteInternal(assertMapped(object));
         }
         if (flushMode == FlushMode.ALWAYS) {
             flush();
@@ -905,7 +905,7 @@ public class SessionImpl implements Session {
         if (instance instanceof LID){
             return identityService.getID((LID)instance);
         }else{
-            MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
+            MappedClass mappedClass = MappedClass.getMappedClass(getClass(assertMapped(instance)));
             if (instance.getClass().isEnum()){
                 return new UID(mappedClass.getUID().ns(), ((Enum) instance).name());
             }else{
@@ -1073,7 +1073,14 @@ public class SessionImpl implements Session {
             recordRemoveStatement(statement);
         }
     }
-
+    
+    private <T> T assertMapped(T instance){
+        if (instance.getClass().getAnnotation(ClassMapping.class) == null){
+            throw new IllegalArgumentException(instance.getClass().getName() + " is not mapped");
+        }
+        return instance;
+    }
+    
     @Override
     public LID save(Object instance) {
         boolean flush = false;
@@ -1081,7 +1088,7 @@ public class SessionImpl implements Session {
             seen = new HashSet<Object>();
             flush = true;
         }
-        ID subject = toRDF(instance, null);
+        ID subject = toRDF(assertMapped(instance), null);
         if (flush) {
             seen = null;
             if (flushMode == FlushMode.ALWAYS) {
@@ -1096,7 +1103,7 @@ public class SessionImpl implements Session {
         List<LID> ids = new ArrayList<LID>(instances.length);
         seen = new HashSet<Object>(instances.length*3);
         for (Object instance : instances) {
-            ids.add(save(instance));
+            ids.add(save(assertMapped(instance)));
         }
         seen = null;
         if (flushMode == FlushMode.ALWAYS) {
