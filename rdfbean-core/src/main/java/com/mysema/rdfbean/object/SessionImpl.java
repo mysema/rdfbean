@@ -123,7 +123,6 @@ public class SessionImpl implements Session {
         return beginTransaction(false, -1, java.sql.Connection.TRANSACTION_READ_COMMITTED);
     }
     
-
     @Override
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
         if (transaction != null) {

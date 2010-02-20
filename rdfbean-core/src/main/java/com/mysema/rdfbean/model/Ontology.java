@@ -32,7 +32,7 @@ public interface Ontology {
     Set<UID> getSupertypes(UID uid);
     
     /**
-     * Get the transitive and recursive sub properties for the given type
+     * Get the transitive and recursive sub properties for the given property
      * 
      * @param uid
      * @return
@@ -40,7 +40,7 @@ public interface Ontology {
     Set<UID> getSubproperties(UID uid);
     
     /**
-     * Get the transitive super properties for the given type
+     * Get the transitive super properties for the given property
      * 
      * @param uid
      * @return
