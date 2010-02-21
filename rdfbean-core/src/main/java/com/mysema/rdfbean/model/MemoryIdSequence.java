@@ -6,12 +6,12 @@
 package com.mysema.rdfbean.model;
 
 /**
- * MemoryIdSource provides
+ * MemoryIdSequence provides
  *
  * @author tiwe
  * @version $Id$
  */
-public class MemoryIdSource implements IdSource{
+public class MemoryIdSequence implements IdSequence{
 
     private long nextId = 1;
     

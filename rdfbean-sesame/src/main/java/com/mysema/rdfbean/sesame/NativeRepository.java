@@ -15,8 +15,8 @@ import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.model.FileIdSource;
-import com.mysema.rdfbean.model.IdSource;
+import com.mysema.rdfbean.model.FileIdSequence;
+import com.mysema.rdfbean.model.IdSequence;
 import com.mysema.rdfbean.model.Ontology;
 
 
@@ -31,7 +31,7 @@ public class NativeRepository extends SesameRepository {
     @Nullable
     private File dataDir;
         
-    private IdSource idSource;
+    private IdSequence idSource;
     
     public NativeRepository(){}
 
@@ -52,7 +52,7 @@ public class NativeRepository extends SesameRepository {
     @Override
     protected Repository createRepository(boolean sesameInference) {
         NativeStore store = new NativeStore(Assert.notNull(dataDir));
-        idSource = new FileIdSource(new File(dataDir, "lastLocalId"));
+        idSource = new FileIdSequence(new File(dataDir, "lastLocalId"));
         if (sesameInference){
             return new SailRepository(new ExtendedRDFSInferencer(store));
         }else{

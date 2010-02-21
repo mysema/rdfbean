@@ -24,13 +24,13 @@ public class FieldIdSourceTest {
     
     private File file;
     
-    private FileIdSource idSource;
+    private FileIdSequence idSource;
     
     @Before
     public void setUp(){
         file = new File("target", String.valueOf(System.currentTimeMillis()));
         file.delete();
-        idSource = new FileIdSource(file, 100);
+        idSource = new FileIdSequence(file, 100);
     }
     
     @After
@@ -51,7 +51,7 @@ public class FieldIdSourceTest {
         long e = System.currentTimeMillis();
         System.out.println((e-s)+"ms");
         idSource.close();        
-        idSource = new FileIdSource(file, 100);
+        idSource = new FileIdSequence(file, 100);
         assertEquals(10001l, idSource.getNextId());
     }
     
@@ -61,7 +61,7 @@ public class FieldIdSourceTest {
             idSource.getNextId();
         }
         idSource.close();        
-        idSource = new FileIdSource(file, 100);
+        idSource = new FileIdSequence(file, 100);
         assertEquals(101l, idSource.getNextId());
     }
     

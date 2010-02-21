@@ -6,12 +6,12 @@
 package com.mysema.rdfbean.model;
 
 /**
- * IdSource provides
+ * IdSequence provides
  *
  * @author tiwe
  * @version $Id$
  */
-public interface IdSource {
+public interface IdSequence {
 
     /**
      * @return

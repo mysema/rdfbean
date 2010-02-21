@@ -14,12 +14,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 /**
- * FileIdSource provides
+ * FileIdSequence provides
  *
  * @author tiwe
  * @version $Id$
  */
-public class FileIdSource implements Closeable, IdSource{
+public class FileIdSequence implements Closeable, IdSequence{
     
     private final ByteBuffer buffer = ByteBuffer.allocate(8);
     
@@ -27,17 +27,17 @@ public class FileIdSource implements Closeable, IdSource{
     
     private final FileChannel fileChannel;
     
-    private final int granularity;
+    private final int cache;
     
     private volatile long nextId = 1l;
     
     private volatile long maxId = 100l;
     
-    public FileIdSource(File file) {
+    public FileIdSequence(File file) {
         this(file, 100);
     }
     
-    public FileIdSource(File file, int granularity) {
+    public FileIdSequence(File file, int cache) {
         try {
             if (!file.exists()){
                 if (!file.getParentFile().exists()){
@@ -47,7 +47,7 @@ public class FileIdSource implements Closeable, IdSource{
             }            
             this.file = file;
             this.fileChannel = new RandomAccessFile(file, "rwd").getChannel();
-            this.granularity = granularity;
+            this.cache = cache;
             synchronize();      
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -57,9 +57,7 @@ public class FileIdSource implements Closeable, IdSource{
     }
     
     private void synchronize() throws IOException{
-        // TODO : this method needs execlusive access to the file
-        
-        // get the next id
+        // get the next id from file
         if (file.length() > 0l){
             fileChannel.read(buffer, 0l);            
             buffer.rewind();
@@ -67,11 +65,11 @@ public class FileIdSource implements Closeable, IdSource{
         }else{
             nextId = 1l;
         }
-        maxId = nextId + granularity - 1l;
+        maxId = nextId + cache - 1l;
         
-        // set the next id
+        // set the next id to file
         buffer.rewind();
-        buffer.putLong(0, nextId + granularity);
+        buffer.putLong(0, nextId + cache);
         fileChannel.write(buffer, 0l);
         buffer.rewind();
         
