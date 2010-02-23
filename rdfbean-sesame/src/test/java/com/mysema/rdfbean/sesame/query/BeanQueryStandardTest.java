@@ -5,13 +5,8 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
@@ -20,7 +15,6 @@ import com.mysema.query.Module;
 import com.mysema.query.StandardTest;
 import com.mysema.query.Target;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.expr.EDateConst;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -86,15 +80,6 @@ public class BeanQueryStandardTest extends SessionTestBase {
         // delay the report slightly
         Thread.sleep(10);
         standardTest.report();        
-    }
-    
-    @Test
-    public void testDate(){
-        DateTime dateTime = new DateTime();
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(dateTime.getMillis());
-        
-        assertEquals(dateTime.getWeekOfWeekyear(), cal.get(Calendar.WEEK_OF_YEAR));
     }
         
     @Override
