@@ -5,8 +5,13 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import java.io.IOException;
+import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
@@ -15,6 +20,7 @@ import com.mysema.query.Module;
 import com.mysema.query.StandardTest;
 import com.mysema.query.Target;
 import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.expr.EDateConst;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -68,7 +74,7 @@ public class BeanQueryStandardTest extends SessionTestBase {
         
         standardTest.booleanTests(v1.directProperty.isNull(), v2.numericProperty.isNotNull());
         standardTest.collectionTests(v1.setProperty, v2.setProperty, inSet, other);
-//        standardTest.dateTests(null, null, null);
+//        standardTest.dateTests(v1.dateProperty, v2.dateProperty, st.getDateProperty());
         standardTest.dateTimeTests(v1.dateProperty, v2.dateProperty, st.getDateProperty());
         standardTest.listTests(v1.listProperty, v2.listProperty, inList, other);
         standardTest.mapTests(v1.mapProperty, v2.mapProperty, "target_idspace", inMap, "xxx", other);
@@ -80,6 +86,15 @@ public class BeanQueryStandardTest extends SessionTestBase {
         // delay the report slightly
         Thread.sleep(10);
         standardTest.report();        
+    }
+    
+    @Test
+    public void testDate(){
+        DateTime dateTime = new DateTime();
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(dateTime.getMillis());
+        
+        assertEquals(dateTime.getWeekOfWeekyear(), cal.get(Calendar.WEEK_OF_YEAR));
     }
         
     @Override
