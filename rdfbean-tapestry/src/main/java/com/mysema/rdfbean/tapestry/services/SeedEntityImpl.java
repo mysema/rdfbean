@@ -49,7 +49,7 @@ public class SeedEntityImpl implements SeedEntity{
                 }
             }
             tx.commit();
-        }catch(Throwable e){
+        }catch(Exception e){
             logger.error(e.getMessage(), e);
             tx.rollback();
         }finally{

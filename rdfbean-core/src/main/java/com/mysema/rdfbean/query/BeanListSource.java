@@ -49,7 +49,7 @@ public class BeanListSource<T> implements ListSource<T>{
             QueryMetadata metadata,
             Path<T> projection){
         this.sessionFactory = sessionFactory;
-        this.sources = sourceArray;
+        this.sources = sourceArray.clone();
         this.condition = metadata.getWhere();
         this.projection = projection;
         this.order = metadata.getOrderBy().toArray(new OrderSpecifier[0]);    
