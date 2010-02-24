@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.query;
 
+import java.util.Calendar;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
@@ -159,7 +161,7 @@ public final class QueryFunctions {
     }
     
     public static final String week(String str){
-        return String.valueOf(dateTime.fromString(str).getWeekOfWeekyear());
+        return String.valueOf(dateTime.fromString(str).toGregorianCalendar().get(Calendar.WEEK_OF_YEAR));
     }
     
     public static final String year(String str){

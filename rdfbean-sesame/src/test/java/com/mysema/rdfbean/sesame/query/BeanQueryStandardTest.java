@@ -34,7 +34,6 @@ public class BeanQueryStandardTest extends SessionTestBase {
     
     private SimpleType2 other;
     
-
     @Before
     public void setUp() throws StoreException{
         session = createSession(FI, SimpleType.class, SimpleType2.class);
