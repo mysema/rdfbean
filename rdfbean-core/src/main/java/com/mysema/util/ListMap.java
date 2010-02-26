@@ -21,6 +21,7 @@ import java.util.Set;
  * @param <K>
  * @param <V>
  */
+@Deprecated
 public class ListMap<K, V> extends AbstractCollectionMap<K,V>{
 
     @Override

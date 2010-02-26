@@ -18,9 +18,9 @@ import org.compass.core.Resource;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.commons.lang.EmptyCloseableIterator;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.util.EmptyCloseableIterator;
 
 /**
  * LuceneQuery provides

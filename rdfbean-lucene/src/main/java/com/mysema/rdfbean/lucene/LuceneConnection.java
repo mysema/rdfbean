@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.commons.lang.EmptyCloseableIterator;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
@@ -54,7 +55,6 @@ import com.mysema.rdfbean.object.QueryLanguage;
 import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleBeanQuery;
-import com.mysema.util.EmptyCloseableIterator;
 import com.mysema.util.ListMap;
 
 /**

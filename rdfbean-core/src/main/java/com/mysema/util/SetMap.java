@@ -17,6 +17,7 @@ import java.util.Set;
  * @author tiwe
  * @version $Id$
  */
+@Deprecated
 public class SetMap<K,V> extends AbstractCollectionMap<K,V> {
     
     @Override

@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.commons.l10n.support.LocaleIterable;
-import com.mysema.commons.lang.IteratorWrapper;
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Localized;
@@ -251,7 +251,7 @@ public class UpdateTest {
         assertEquals(2, company.managers.size());
         assertEquals("Big Boss", company.managers.get(0).name);
         
-        int rsize = IteratorWrapper.asList(repository.findStatements(null, null, null, null, false)).size();
+        int rsize = IteratorAdapter.asList(repository.findStatements(null, null, null, null, false)).size();
         
         // Promote John Doe in manager list
         boss = company.managers.get(0);
@@ -267,7 +267,7 @@ public class UpdateTest {
         assertEquals("Ex-Boss", company.managers.get(1).name);
         
         // See that there's no garbage left...
-        assertEquals(rsize, IteratorWrapper.asList(repository.findStatements(null, null, null, null, false)).size());
+        assertEquals(rsize, IteratorAdapter.asList(repository.findStatements(null, null, null, null, false)).size());
     }
     
     @Test

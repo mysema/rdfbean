@@ -13,11 +13,6 @@
   </parent>
 
   <dependencies>
-    <dependency>
-      <groupId>com.mysema.commons</groupId>
-      <artifactId>mysema-commons-lang</artifactId>
-      <version>0.1.4</version>
-    </dependency>
     <!-- Mysema Source component -->
     <dependency>
       <groupId>com.mysema.querydsl</groupId>

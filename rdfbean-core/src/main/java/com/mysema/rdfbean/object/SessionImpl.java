@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
@@ -688,20 +689,7 @@ public class SessionImpl implements Session {
     // FIXME: This should return a closable iterator
     protected List<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, 
             boolean includeInferred, @Nullable UID context) {
-        List<STMT> statements = new ArrayList<STMT>();
-        CloseableIterator<STMT> iter = connection.findStatements(subject, predicate, object, context, includeInferred);
-        try {
-            while (iter.hasNext()) {
-                statements.add(iter.next());
-            }
-        } finally {
-            try {
-                iter.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return statements;
+        return IteratorAdapter.asList(connection.findStatements(subject, predicate, object, context, includeInferred));
     }
     
     private List<ID> findTypes(ID subject, UID context) {

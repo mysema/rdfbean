@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.mysema.commons.lang.IteratorWrapper;
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.InjectProperty;
@@ -62,7 +62,7 @@ public class VirtualPropertyTest {
         
         // Persistence
         session.save(new Person("John", "Doe"));
-        List<STMT> statements = IteratorWrapper.asList(repository
+        List<STMT> statements = IteratorAdapter.asList(repository
                 .findStatements(null, new UID(TEST.NS, "displayName"), null, null, false));
         assertEquals(1, statements.size());
         STMT stmt = statements.get(0);

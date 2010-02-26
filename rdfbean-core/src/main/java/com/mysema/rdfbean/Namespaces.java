@@ -8,11 +8,12 @@ package com.mysema.rdfbean;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
-import com.mysema.util.StringUtils;
 
 /**
  * Namespaces provides utility methods for namespace to prefix mappings
@@ -46,7 +47,7 @@ public final class Namespaces {
         if (ln == null) {
             ln = "";
         }
-        if (StringUtils.hasLength(ns)) {
+        if (StringUtils.isNotEmpty(ns)) {
             String prefix = ns2prefix.get(ns);
             if (prefix != null) {
                 return prefix+":"+ln;

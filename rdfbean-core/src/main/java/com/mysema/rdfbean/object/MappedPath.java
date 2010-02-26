@@ -14,12 +14,13 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.util.StringUtils;
 
 /**
  * @author sasa
@@ -75,7 +76,7 @@ public class MappedPath {
         Path path = property.getAnnotation(Path.class);
         Predicate[] predicates;
         if (path != null) {
-            if (StringUtils.hasLength(path.ns())) {
+            if (StringUtils.isNotEmpty(path.ns())) {
                 parentNs = path.ns();
             }
             predicates = path.value();

@@ -16,6 +16,7 @@ import java.util.Stack;
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 
+import com.mysema.commons.lang.Pair;
 import com.mysema.rdfbean.lucene.PropertyConfig;
 import com.mysema.rdfbean.lucene.Searchable;
 import com.mysema.rdfbean.lucene.SearchableComponent;
@@ -28,7 +29,6 @@ import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
-import com.mysema.util.Pair;
 import com.mysema.util.SetMap;
 
 /**

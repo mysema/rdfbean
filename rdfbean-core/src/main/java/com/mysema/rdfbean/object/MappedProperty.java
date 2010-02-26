@@ -6,18 +6,24 @@
 package com.mysema.rdfbean.object;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.*;
 
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections15.BeanMap;
+import org.apache.commons.lang.StringUtils;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.*;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.util.StringUtils;
 
 /**
  * @author sasa
@@ -42,7 +48,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 
     private static String getParentNs(MapElements mapElements, Member member) {
         String ns = mapElements.ns();
-        if (!StringUtils.hasLength(ns)) {
+        if (!StringUtils.isNotEmpty(ns)) {
             ns = MappedClass.getClassNs(member.getDeclaringClass());
         }
         return ns;

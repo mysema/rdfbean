@@ -14,6 +14,7 @@ import java.util.HashMap;
  * @author tiwe
  * @version $Id$
  */
+@Deprecated
 public abstract class AbstractCollectionMap<K, V>{
     
     protected final HashMap<K, Collection<V>> data;
