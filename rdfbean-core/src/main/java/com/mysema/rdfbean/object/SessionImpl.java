@@ -281,20 +281,22 @@ public final class SessionImpl implements Session {
     }
     
     private String convertLocalized(MappedPath propertyPath, Set<? extends NODE> values) {
-        return LocaleUtil.getLocalized(convertLocalizedMap(propertyPath, values), 
-                locales, null);
+        return LocaleUtil.getLocalized(convertLocalizedMap(propertyPath, values), locales, null);
     }
 
     private Map<Locale, String> convertLocalizedMap(MappedPath propertyPath, Set<? extends NODE> values) {
         Map<Locale, String> result = new HashMap<Locale, String>();
         for (NODE value : values) {
-            // XXX what if node is a resource?
-            LIT literal = (LIT) value;
-            Locale lang = literal.getLang();
-            if (lang == null) {
-                lang = Locale.ROOT;
-            }
-            result.put(lang, literal.getValue());
+            if (value.isLiteral()){
+                LIT literal = (LIT) value;
+                Locale lang = literal.getLang();
+                if (lang == null) {
+                    lang = Locale.ROOT;
+                }
+                result.put(lang, literal.getValue());    
+            }else{
+                throw new IllegalArgumentException("Expected Literal, got " + value.getNodeType());
+            }   
         }
         return result;
     }
