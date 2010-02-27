@@ -55,7 +55,7 @@ public interface TransformerContext {
     /**
      * Get the resource for the given expression
      */
-    ID getResourceForLID(Expr<?> arg);
+    ID getResourceForLID(Constant<String> arg);
 
     /**
      * Get the ValueFactory

@@ -6,8 +6,17 @@
 package com.mysema.rdfbean.object;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
-import java.util.*;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -244,7 +253,7 @@ public class MappedClass {
         }
     }
 
-    void setMappedConstructor(MappedConstructor constructor) {
+    void setMappedConstructor(@Nullable MappedConstructor constructor) {
         if (constructor == null && !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
             throw new IllegalArgumentException("Default or mapped constructor required for " + clazz);
         } else {

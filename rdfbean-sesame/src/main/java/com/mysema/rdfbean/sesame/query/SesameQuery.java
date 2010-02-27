@@ -122,6 +122,7 @@ public class SesameQuery
     
     private final VarNameIterator extNames = new VarNameIterator("_ext_");
     
+    @Nullable
     private ValueExpr filterConditions;
     
     private final boolean includeInferred = true;
@@ -398,11 +399,8 @@ public class SesameQuery
     }
         
     @SuppressWarnings("unchecked")
-    public ID getResourceForLID(Expr<?> arg) {
-        String lid = ((Constant<String>)arg).getConstant();
-//        ID id = conf.getIdentityService().getID(new LID(lid));
-        ID id = session.getId(new LID(lid));
-        return id;
+    public ID getResourceForLID(Constant<String> arg) {
+        return session.getId(new LID(arg.getConstant()));
     }
 
     @Override

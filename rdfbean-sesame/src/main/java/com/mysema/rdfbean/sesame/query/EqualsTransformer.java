@@ -143,7 +143,7 @@ public class EqualsTransformer implements OperationTransformer{
                
             }                                
         }else{
-            ID id = context.getResourceForLID(constant);
+            ID id = context.getResourceForLID((Constant<String>)constant);
             constValue = context.toValue(id);
         }
         
