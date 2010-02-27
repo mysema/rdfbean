@@ -44,9 +44,13 @@ public class StatementComparator implements Comparator<Statement>, Serializable{
     }
 
     private int getPosition(Value object) {
-        if (object instanceof Literal) return 3;
-        else if (object instanceof BNode) return 2;
-        else return 1;
+        if (object instanceof Literal){
+            return 3;
+        }else if (object instanceof BNode){
+            return 2;
+        }else{
+            return 1;
+        }
     }
 
 

@@ -29,7 +29,7 @@ import com.mysema.rdfbean.model.UID;
  * @author sasa
  * 
  */
-public class MappedClass {
+public final class MappedClass {
     
     public static String getClassNs(Class<?> clazz) {
         ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);

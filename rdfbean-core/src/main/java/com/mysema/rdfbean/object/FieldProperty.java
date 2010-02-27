@@ -17,7 +17,7 @@ import org.apache.commons.collections15.BeanMap;
  *
  */
 @Immutable
-public class FieldProperty extends MappedProperty<Field> {
+public final class FieldProperty extends MappedProperty<Field> {
 
     private final Field field;
 

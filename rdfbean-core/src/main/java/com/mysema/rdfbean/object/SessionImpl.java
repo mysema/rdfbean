@@ -35,7 +35,7 @@ import com.mysema.rdfbean.model.*;
  * @author tiwe
  * 
  */
-public class SessionImpl implements Session {
+public final class SessionImpl implements Session {
     
     public static final Set<UID> CONTAINER_TYPES = Collections.unmodifiableSet(
             new HashSet<UID>(Arrays.<UID>asList(

@@ -19,7 +19,7 @@ import org.apache.commons.collections15.BeanMap;
  *
  */
 @Immutable
-public class MethodProperty extends MappedProperty<Method> {
+public final class MethodProperty extends MappedProperty<Method> {
 
     @Nullable
     public static MethodProperty getMethodPropertyOrNull(Method method, MappedClass declaringClass) {

@@ -34,7 +34,7 @@ import com.mysema.rdfbean.owl.OWL;
  * @author sasa
  * 
  */
-public class DefaultConfiguration implements Configuration {
+public final class DefaultConfiguration implements Configuration {
     
     private final static Set<String> buildinNamespaces = new HashSet<String>();
 

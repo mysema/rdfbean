@@ -18,7 +18,7 @@ import com.mysema.rdfbean.model.UID;
  *
  */
 @Immutable
-public class MappedPredicate {
+public final class MappedPredicate {
 
     private final UID uid;
     

@@ -26,7 +26,7 @@ import com.mysema.rdfbean.model.UID;
  * @author sasa
  * 
  */
-public class MappedPath {
+public final class MappedPath {
 
     @Nullable
     static MappedPath getMappedPath(MappedProperty<?> property, @Nullable List<MappedPredicate> path) {

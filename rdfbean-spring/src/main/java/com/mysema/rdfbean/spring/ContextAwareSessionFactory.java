@@ -21,7 +21,7 @@ import com.mysema.rdfbean.object.ObjectRepository;
  * @author tiwe
  * @version $Id$
  */
-public class ContextAwareSessionFactory extends SpringSessionFactory implements ApplicationContextAware{
+public final class ContextAwareSessionFactory extends SpringSessionFactory implements ApplicationContextAware{
     
     private String namespace = SRV.NS;
     

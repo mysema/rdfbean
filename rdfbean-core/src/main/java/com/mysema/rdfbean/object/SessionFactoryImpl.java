@@ -145,7 +145,7 @@ public class SessionFactoryImpl implements SessionFactory {
         this.repository = repository;
     }
 
-    public void setSessionContext(SessionContext sessionContext){
+    public final void setSessionContext(SessionContext sessionContext){
         this.sessionContext = sessionContext;
     }
 

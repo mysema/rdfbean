@@ -18,7 +18,7 @@ import com.mysema.commons.lang.Assert;
  *
  */
 @Immutable
-public class MappedConstructor {
+public final class MappedConstructor {
 
     private final Constructor<?> constructor;
     

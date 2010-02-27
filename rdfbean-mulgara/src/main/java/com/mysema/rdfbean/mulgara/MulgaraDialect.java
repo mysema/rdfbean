@@ -190,10 +190,15 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
     
     @Override
     public NodeType getNodeType(Node node) {
-        if (node.isBlankNode()) return NodeType.BLANK;
-        else if (node.isURIReference()) return NodeType.URI;
-        else if (node.isLiteral()) return NodeType.LITERAL;
-        else throw new IllegalArgumentException("Illegal node : " + node); 
+        if (node.isBlankNode()){
+            return NodeType.BLANK;
+        }else if (node.isURIReference()){
+            return NodeType.URI;
+        }else if (node.isLiteral()){
+            return NodeType.LITERAL;
+        }else{
+            throw new IllegalArgumentException("Illegal node : " + node); 
+        }
     }
 
     @Override
