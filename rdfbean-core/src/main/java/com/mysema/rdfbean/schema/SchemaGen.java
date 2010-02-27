@@ -35,6 +35,7 @@ import com.mysema.rdfbean.rdfs.RDFSResource;
  * @author sasa
  *
  */
+// TODO : simplify
 public class SchemaGen {
     
     private Configuration configuration;
@@ -135,14 +136,12 @@ public class SchemaGen {
                         boolean seenProperty = resources.containsKey(puid);
                         if (seenProperty) {
                             property = (RDFProperty) resources.get(puid);
-                            if (mappedProperty.isAnyResource()) {
-                                // Should be RDFProperty in any case
-                            } else if (mappedPath.isReference()) {
+                            if (mappedPath.isReference()) {
                                 if (!(property instanceof ObjectProperty)) {
                                     throw new IllegalArgumentException("Expected ObjectProperty for: "
                                             + mappedPath);
                                 }
-                            } else {
+                            } else  if (!mappedProperty.isAnyResource()){
                                 if (!(property instanceof DatatypeProperty)) {
                                     throw new IllegalArgumentException("Expected DatatypeProperty for: "
                                             + mappedPath);

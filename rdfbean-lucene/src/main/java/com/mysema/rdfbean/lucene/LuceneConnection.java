@@ -330,7 +330,7 @@ class LuceneConnection implements RDFConnection{
                 }                
                 
                 List<Property> properties = new ArrayList<Property>(Arrays.asList(resource.getProperties(predicateField)));
-                for (Property property : properties.toArray(new Property[0])){
+                for (Property property : properties.toArray(new Property[properties.size()])){
                     if (property.getStringValue().equals(objectValue)){
                         properties.remove(property);
                     }

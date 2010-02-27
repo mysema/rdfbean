@@ -56,6 +56,7 @@ public final class LIT extends NODE {
         return value;
     }
 
+    @Nullable
     public Locale getLang() {
         return lang;
     }

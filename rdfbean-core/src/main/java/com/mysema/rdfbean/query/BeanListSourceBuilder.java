@@ -55,7 +55,7 @@ public class BeanListSourceBuilder{
     }
     
     public <T> ListSource<T> list(Path<T> projection){ 
-        PEntity<?>[] sourceArray = sources.toArray(new PEntity[0]);        
+        PEntity<?>[] sourceArray = sources.toArray(new PEntity[sources.size()]);        
         return new BeanListSource<T>(sessionFactory, sourceArray, metadata, projection);
     }
 

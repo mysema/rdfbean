@@ -33,10 +33,12 @@ public interface Configuration {
     
     Set<Class<?>> getMappedClasses();
 
+    @Nullable
     UID getContext(Class<?> javaClass, @Nullable ID subject);
 
     boolean isRestricted(UID uid);
 
+    @Nullable
     UID createURI(Object instance);
 
     List<FetchStrategy> getFetchStrategies();

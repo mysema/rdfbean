@@ -186,7 +186,7 @@ public class SesameConnection implements RDFConnection {
         }
     }
 
-    private ModelResult findOfType(Collection<UID> types, URI context, boolean includeInferred){        
+    private ModelResult findOfType(Collection<UID> types, @Nullable URI context, boolean includeInferred){        
         try {
             List<StatementPattern> patterns = new ArrayList<StatementPattern>();
             Var contextVar = context != null ? new Var("context", context) : null; 

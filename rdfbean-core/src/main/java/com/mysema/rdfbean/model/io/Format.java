@@ -19,7 +19,7 @@ public enum Format {
     /**
      * 
      */
-    NTRIPLES(null),
+    NTRIPLES("text/plain"),
     /**
      * 
      */

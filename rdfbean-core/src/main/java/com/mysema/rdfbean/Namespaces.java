@@ -8,6 +8,8 @@ package com.mysema.rdfbean;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.mysema.rdfbean.model.RDF;
@@ -43,7 +45,7 @@ public final class Namespaces {
         ns2prefix.put(XSD.NS,  "xsd");        
     }
     
-    public static String getReadableURI(String ns, String ln) {
+    public static String getReadableURI(String ns, @Nullable String ln) {
         if (ln == null) {
             ln = "";
         }

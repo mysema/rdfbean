@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import net.jcip.annotations.Immutable;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.annotations.QueryEntity;
 
 
 /**
@@ -19,7 +18,6 @@ import com.mysema.query.annotations.QueryEntity;
  * @author sasa
  *
  */
-@QueryEntity
 @Immutable
 public final class STMT {
     
@@ -66,6 +64,7 @@ public final class STMT {
         return "" + subject + " " + predicate + " " + object;
     }
 
+    @Nullable
     public UID getContext() {
         return context;
     }
@@ -82,9 +81,9 @@ public final class STMT {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((subject == null) ? 0 : subject.hashCode());
-        result = prime * result + ((predicate == null) ? 0 : predicate.hashCode());
-        result = prime * result + ((object == null) ? 0 : object.hashCode());
+        result = prime * result + subject.hashCode();
+        result = prime * result + predicate.hashCode();
+        result = prime * result + object.hashCode();
         result = prime * result + ((context == null) ? 0 : context.hashCode());
         result = prime * result + (asserted ? 1231 : 1237);
         return result;

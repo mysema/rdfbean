@@ -116,6 +116,7 @@ public class DefaultConfiguration implements Configuration {
     }
     
     @Override
+    @Nullable
     public UID createURI(Object instance) {
         Class<?> clazz = instance.getClass();
         UID context = getContext(clazz, null);
@@ -126,6 +127,7 @@ public class DefaultConfiguration implements Configuration {
     }
 
     @Override
+    @Nullable
     public UID getContext(Class<?> javaClass, @Nullable ID subject) {
         Context ctxAnno = javaClass.getAnnotation(Context.class);
         if (ctxAnno == null) {

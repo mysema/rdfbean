@@ -189,8 +189,10 @@ public final class MiniRepository implements Repository{
 
     public static class PredicateCache {
     
+        @Nullable
         private List<STMT> containerProperties;
         
+        @Nullable
         private Map<UID, STMTCache> predicates;
         
         public void add(STMT stmt) {
@@ -213,7 +215,7 @@ public final class MiniRepository implements Repository{
             }
         }
         
-        public Iterator<STMT> iterator(UID predicate) {
+        public Iterator<STMT> iterator(@Nullable UID predicate) {
             if (predicate == null) {
                 IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
                 if (predicates != null) {
@@ -309,6 +311,7 @@ public final class MiniRepository implements Repository{
 
     public static class STMTCache {
         
+        @Nullable
         private Set<STMT> multi;
         
         private STMT single;

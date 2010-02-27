@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFFormat;
@@ -36,6 +38,7 @@ import com.mysema.rdfbean.model.io.RDFSource;
  */
 public abstract class SesameRepository implements Repository{
     
+    @Nullable
     private Ontology ontology;
     
     private RDFSource[] sources;

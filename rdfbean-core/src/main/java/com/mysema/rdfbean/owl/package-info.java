@@ -7,7 +7,6 @@
 /**
  * OWL types and constants 
  */
-@DefaultAnnotation( { Nonnull.class })
 @MappedClasses({
     DataRange.class, 
     DatatypeProperty.class, 

@@ -29,7 +29,7 @@ import com.mysema.rdfbean.model.UID;
 public class MappedPath {
 
     @Nullable
-    static MappedPath getMappedPath(MappedProperty<?> property, List<MappedPredicate> path) {
+    static MappedPath getMappedPath(MappedProperty<?> property, @Nullable List<MappedPredicate> path) {
         property.resolve(null);
         if (path != null) {
             return new MappedPath(property, path, false);
@@ -48,6 +48,7 @@ public class MappedPath {
         return getMappedPath(property, path);
     }
 
+    @Nullable
     static MappedPath getPathMapping(MappedClass mappedClass, Constructor<?> constructor, int parameterIndex) {
         ConstructorParameter constructorParameter = new ConstructorParameter(constructor, parameterIndex, mappedClass);
         if (constructorParameter.isPropertyReference()) {

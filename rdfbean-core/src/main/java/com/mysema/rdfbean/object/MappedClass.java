@@ -63,12 +63,15 @@ public class MappedClass {
     
     private final Class<?> clazz;
     
+    @Nullable
     private MappedConstructor constructor;
     
+    @Nullable
     private MappedProperty<?> idProperty;
 
     private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
     
+    @Nullable
     private final UID uid;
     
     MappedClass(Class<?> clazz) {
@@ -148,6 +151,7 @@ public class MappedClass {
         return getClassNs(clazz);
     }
     
+    @Nullable
     public MappedConstructor getConstructor() {
         return constructor;
     }
@@ -192,6 +196,7 @@ public class MappedClass {
         return properties.values();
     }
     
+    @Nullable
     public UID getUID() {
         return uid;
     }

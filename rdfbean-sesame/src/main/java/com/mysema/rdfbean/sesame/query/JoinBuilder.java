@@ -30,6 +30,7 @@ public class JoinBuilder{
     
     private final List<StatementPattern> patterns = new ArrayList<StatementPattern>();
     
+    @Nullable
     private TupleExpr tupleExpr;
     
     public JoinBuilder(Transformer<StatementPattern,TupleExpr> stmtTransformer){

@@ -72,6 +72,7 @@ public class SessionImpl implements Session {
     @Nullable
     private Set<Object> seen;
     
+    @Nullable
     private RDFBeanTransaction transaction;
     
     public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales) {
@@ -94,8 +95,8 @@ public class SessionImpl implements Session {
         clear();
     }
 
-    public SessionImpl(Configuration configuration, RDFConnection connection, Locale locale) {
-        this(configuration, connection, locale != null ? Arrays.asList(locale) : null);
+    public SessionImpl(Configuration configuration, RDFConnection connection, @Nullable Locale locale) {
+        this(configuration, connection, locale != null ? Arrays.asList(locale) : Collections.<Locale>emptySet());
     }
 
     @Override
@@ -1296,7 +1297,7 @@ public class SessionImpl implements Session {
         return new LIT(conf.getConverterRegistry().toString(o), dataType);
     }
 
-    private NODE toRDFValue(Object object, UID context) {
+    private NODE toRDFValue(@Nullable Object object, @Nullable UID context) {
         if (object == null) {
             return null;
         } else {

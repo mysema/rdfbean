@@ -195,7 +195,7 @@ public class SesameQuery
         }
     }
         
-    private void addFilterCondition(ValueExpr filterCondition) {
+    private void addFilterCondition(@Nullable ValueExpr filterCondition) {
         if (filterConditions == null) {
             filterConditions = filterCondition;
         } else if (filterCondition != null){

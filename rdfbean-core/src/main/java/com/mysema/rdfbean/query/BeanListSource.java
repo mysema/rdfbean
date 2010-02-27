@@ -52,7 +52,7 @@ public class BeanListSource<T> implements ListSource<T>{
         this.sources = sourceArray.clone();
         this.condition = metadata.getWhere();
         this.projection = projection;
-        this.order = metadata.getOrderBy().toArray(new OrderSpecifier[0]);    
+        this.order = metadata.getOrderBy().toArray(new OrderSpecifier[metadata.getOrderBy().size()]);    
         this.size = sessionFactory.execute(new SessionCallback<Long>(){
             @Override
             public Long doInSession(Session session) {

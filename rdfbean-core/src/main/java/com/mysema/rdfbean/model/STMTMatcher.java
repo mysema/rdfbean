@@ -22,11 +22,11 @@ public final class STMTMatcher {
     
     @Nullable private final NODE object;    
     
-    private final UID context;
+    @Nullable private final UID context;
     
     private final boolean includeInferred;
     
-    public STMTMatcher(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, UID context,
+    public STMTMatcher(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context,
             boolean includeInferred) {
         super();
         this.subject = subject;
@@ -35,21 +35,31 @@ public final class STMTMatcher {
         this.context = context;
         this.includeInferred = includeInferred;
     }
+    
+    @Nullable
     public ID getSubject() {
         return subject;
     }
+    
+    @Nullable
     public UID getPredicate() {
         return predicate;
     }
+    
+    @Nullable
     public NODE getObject() {
         return object;
     }
+    
+    @Nullable
     public UID getContext() {
         return context;
     }
+        
     public boolean isIncludeInferred() {
         return includeInferred;
     }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -61,6 +71,7 @@ public final class STMTMatcher {
         result = prime * result + (includeInferred ? 1231 : 1237);
         return result;
     }
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

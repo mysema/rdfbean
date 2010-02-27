@@ -57,6 +57,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     @Nullable
     private String name;
     
+    @Nullable
     private Class<?> type;
     
     @Nullable
@@ -87,7 +88,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return declaringClass;
     }
     
-    static Class<?> getUpper(Class<?> clazz, Class<?> other) {
+    static Class<?> getUpper(@Nullable Class<?> clazz, Class<?> other) {
         if (clazz == null) {
             return other;
         } else if (other != null && !clazz.equals(other)) {
@@ -153,6 +154,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         }
     } 
 
+    @Nullable
     public Class<?> getComponentType() {
         return componentType;
     }
