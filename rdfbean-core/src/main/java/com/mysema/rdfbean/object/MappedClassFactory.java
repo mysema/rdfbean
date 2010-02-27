@@ -61,9 +61,10 @@ public class MappedClassFactory {
           mappedClass.setMappedConstructor(mappedConstructor);
       } else if (defaultConstructor != null) {
           mappedClass.setMappedConstructor(defaultConstructor);
-      } else {
-          // TODO return false? 
-      }
+      } 
+//      else {
+//          // TODO return false? 
+//      }
   }
 
   private static void collectFieldPaths(Class<?> clazz, MappedClass mappedClass) {

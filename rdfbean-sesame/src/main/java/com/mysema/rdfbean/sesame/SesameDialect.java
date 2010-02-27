@@ -137,8 +137,10 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     public NODE getNODE(Value node) {
         if (node instanceof Resource) {
             return getID((Resource) node);
-        } else {
+        } else  if (node instanceof Literal){
             return getLIT((Literal) node);
+        }else{
+            throw new IllegalArgumentException("Expected Resource or Literal, got " + node);
         }
     }
 

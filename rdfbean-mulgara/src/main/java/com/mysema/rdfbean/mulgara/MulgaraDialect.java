@@ -128,10 +128,12 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
 
     @Override
     public ID getID(SubjectNode resource) {
-        if (resource.isURIReference()){
+        if (resource instanceof URIReference){
             return getUID((URIReference) resource);
-        }else{
+        }else if (resource instanceof BlankNode){
             return getBID((BlankNode) resource);
+        }else{
+            throw new IllegalArgumentException("Expected URIReference or BlankNode, got " + resource);
         }
     }
 

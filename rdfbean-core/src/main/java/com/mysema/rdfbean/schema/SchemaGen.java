@@ -163,64 +163,62 @@ public class SchemaGen {
                             // label
                         }
                         
-                        if (mappedProperty.isLocalized()) {
-                            //TODO allValuesFrom rdf:text
-                        } else {
-                            final Restriction restriction = new Restriction();
-                            restriction.setOnProperty(property);
-                            
-                            // TODO range mismatches!
-                            if (mappedProperty.isCollection()) {
-                                if (mappedProperty.isList()) {
-                                    if (property.getRange().isEmpty()) {
-                                        RDFSClass<?> componentType = 
-                                            processClass(mappedProperty.getComponentType(), session, 
-                                                    resources);
-                                        if (useTypedLists && componentType != null) {
-                                            property.addRange(new TypedList(cuid.ns(), componentType));
-                                            // Protege doesn't support typed lists using allValuesFrom
-                                            //owlClass.setAllValuesFrom(property, new TypedList(cuid.ns(), componentType));
-                                        } else {
-                                            owlClass.setAllValuesFrom(property, (RDFSClass<RDFSResource>) resources.get(RDF.List));
-                                        }
-                                        restriction.setMaxCardinality(1);
-                                    }
-                                } else {
+                        final Restriction restriction = new Restriction();
+                        restriction.setOnProperty(property);
+                        
+                        // TODO range mismatches!
+                        if (mappedProperty.isCollection()) {
+                            if (mappedProperty.isList()) {
+                                if (property.getRange().isEmpty()) {
                                     RDFSClass<?> componentType = 
                                         processClass(mappedProperty.getComponentType(), session, 
                                                 resources);
-                                    if (componentType != null) {
-                                        restriction.setAllValuesFrom(componentType);
-                                    }
-                                }
-                            } else if (mappedPath.isReference()) {
-                                if (property.getRange().isEmpty()) {
-                                    RDFSClass<?> range = processClass(mappedProperty.getType(), 
-                                            session, resources);
-                                    if (range != null) {
-                                        owlClass.setAllValuesFrom(property, range);
-                                    } else if (mappedProperty.isAnyResource()) {
-                                        owlClass.setAllValuesFrom(property, (RDFSClass<?>) resources.get(RDFS.Resource));
-                                    }
-                                }
-                                restriction.setMaxCardinality(1);
-                            } else {
-                                if (property.getRange().isEmpty()) {
-                                    UID range;
-                                    if (mappedProperty.isAnyResource()) {
-                                        range = RDFS.Resource;
+                                    if (useTypedLists && componentType != null) {
+                                        property.addRange(new TypedList(cuid.ns(), componentType));
+                                        // Protege doesn't support typed lists using allValuesFrom
+                                        //owlClass.setAllValuesFrom(property, new TypedList(cuid.ns(), componentType));
                                     } else {
-                                        range = converterRegistry.getDatatype(mappedProperty.getType());
+                                        owlClass.setAllValuesFrom(property, (RDFSClass<RDFSResource>) resources.get(RDF.List));
                                     }
-                                    if (range != null) {
-                                        owlClass.setAllValuesFrom(property, getDatatype(range, resources));
-                                    }
+                                    restriction.setMaxCardinality(1);
                                 }
-                                restriction.setMaxCardinality(1);
+                            } else {
+                                RDFSClass<?> componentType = 
+                                    processClass(mappedProperty.getComponentType(), session, 
+                                            resources);
+                                if (componentType != null) {
+                                    restriction.setAllValuesFrom(componentType);
+                                }
                             }
-                            if (restriction.isDefined()) {
-                                owlClass.addSuperClass(restriction);
+                        } else if (mappedPath.isReference()) {
+                            if (property.getRange().isEmpty()) {
+                                RDFSClass<?> range = processClass(mappedProperty.getType(), 
+                                        session, resources);
+                                if (range != null) {
+                                    owlClass.setAllValuesFrom(property, range);
+                                } else if (mappedProperty.isAnyResource()) {
+                                    owlClass.setAllValuesFrom(property, (RDFSClass<?>) resources.get(RDFS.Resource));
+                                }
                             }
+                            restriction.setMaxCardinality(1);
+                        } else {
+                            if (property.getRange().isEmpty()) {
+                                UID range;
+                                if (mappedProperty.isAnyResource()) {
+                                    range = RDFS.Resource;
+                                }else if (mappedProperty.isLocalized()){    
+                                    range = RDF.text;
+                                } else {
+                                    range = converterRegistry.getDatatype(mappedProperty.getType());
+                                }
+                                if (range != null) {
+                                    owlClass.setAllValuesFrom(property, getDatatype(range, resources));
+                                }
+                            }
+                            restriction.setMaxCardinality(1);
+                        }
+                        if (restriction.isDefined()) {
+                            owlClass.addSuperClass(restriction);
                         }
                         
                         if (mappedProperty.isRequired()) {

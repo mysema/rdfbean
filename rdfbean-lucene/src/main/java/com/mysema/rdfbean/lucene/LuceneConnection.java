@@ -343,13 +343,13 @@ class LuceneConnection implements RDFConnection{
                 }
             }
             
-            if (propertyConfig.isAllIndexed()){
-                // TODO : handle ALL indexed                
-            }
-
-            if (propertyConfig.isTextIndexed()){
-                // TODO : handled TEXT indexed
-            }
+//            if (propertyConfig.isAllIndexed()){
+//                // TODO : handle ALL indexed                
+//            }
+//
+//            if (propertyConfig.isTextIndexed()){
+//                // TODO : handled TEXT indexed
+//            }
         }
     }
         
