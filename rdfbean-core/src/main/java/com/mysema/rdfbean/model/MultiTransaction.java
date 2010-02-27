@@ -6,7 +6,6 @@
 package com.mysema.rdfbean.model;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
 
 /**
  * MultiTransaction is the RDFBeanTransaction of MultiConnection

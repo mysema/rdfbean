@@ -17,8 +17,8 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.SmartTransactionObject;
 
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.object.FlushMode;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.object.SimpleSessionContext;

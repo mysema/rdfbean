@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -86,9 +88,11 @@ public class UpdateTest {
         
         @Predicate
         @Localized
+        @Nullable
         String description;
         
         @Predicate
+        @Nullable
         String name;
 
         public Company() {}

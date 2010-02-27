@@ -13,6 +13,9 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * FileIdSequence provides
  *
@@ -20,6 +23,8 @@ import java.nio.channels.FileChannel;
  * @version $Id$
  */
 public class FileIdSequence implements Closeable, IdSequence{
+    
+    private static final Logger logger = LoggerFactory.getLogger(FileIdSequence.class);
     
     private final ByteBuffer buffer = ByteBuffer.allocate(8);
     
@@ -41,9 +46,13 @@ public class FileIdSequence implements Closeable, IdSequence{
         try {
             if (!file.exists()){
                 if (!file.getParentFile().exists()){
-                    file.getParentFile().mkdirs();
+                    if (!file.getParentFile().mkdirs()){
+                        logger.error("Creation of " + file.getParentFile().getPath() + " failed");
+                    }
                 }                
-                file.createNewFile();
+                if (!file.createNewFile()){
+                    logger.error("Creation of " + file.getPath() + " failed");
+                }
             }            
             this.file = file;
             this.fileChannel = new RandomAccessFile(file, "rwd").getChannel();

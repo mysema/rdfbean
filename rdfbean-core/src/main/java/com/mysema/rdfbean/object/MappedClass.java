@@ -139,6 +139,7 @@ public class MappedClass {
         }
     }
     
+    @Nullable
     public <T extends Annotation> T getAnnotation(Class<T> atype) {
         return clazz.getAnnotation(atype);
     }

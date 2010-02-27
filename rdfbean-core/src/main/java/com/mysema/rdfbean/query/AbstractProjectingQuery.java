@@ -139,6 +139,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     public Iterator<Object[]> iterate(final Expr<?>[] args) {
         queryMixin.addToProjection(args);
         
+        // TODO : add batch fetch functionality
         final Iterator<N[]> innerResults = getInnerResults();
         return new Iterator<Object[]>(){
             public boolean hasNext() {
@@ -146,7 +147,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
             }
             public Object[] next() {
                 N[] nodes = innerResults.next();
-                Object[] rv = new  Object[nodes.length];
+                Object[] rv = new Object[nodes.length];
                 MutableInt offset = new MutableInt();
                 for (int i = 0; i < rv.length; i++){
                     rv [i] = getAsProjectionValue(args[i], nodes, offset); 
@@ -162,7 +163,8 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     @Override
     public <RT> Iterator<RT> iterate(final Expr<RT> expr) {
         queryMixin.addToProjection(expr);
-        
+
+        // TODO : add batch fetch functionality
         final Iterator<N[]> innerResults = getInnerResults();
         return new Iterator<RT>(){
             public boolean hasNext() {

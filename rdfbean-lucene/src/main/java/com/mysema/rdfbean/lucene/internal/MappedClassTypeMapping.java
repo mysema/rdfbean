@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.apache.commons.collections15.MultiMap;
 import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 
@@ -29,7 +30,7 @@ import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
-import com.mysema.util.SetMap;
+import com.mysema.util.MultiMapFactory;
 
 /**
  * MappedClassTypeMapping extracts mapping information from MappedClass instances 
@@ -49,13 +50,13 @@ public class MappedClassTypeMapping implements TypeMapping {
     
     private final Set<ID> types = new HashSet<ID>();
     
-    private final SetMap<ID,ID> directSubtypes = new SetMap<ID,ID>();
+    private final MultiMap<ID,ID> directSubtypes = MultiMapFactory.<ID,ID>createWithSet();
     
-    private final SetMap<ID,ID> directSupertypes = new SetMap<ID,ID>();
+    private final MultiMap<ID,ID> directSupertypes = MultiMapFactory.<ID,ID>createWithSet();
     
-    private final SetMap<ID,ID> subtypes = new SetMap<ID,ID>();
+    private final MultiMap<ID,ID> subtypes = MultiMapFactory.<ID,ID>createWithSet();
     
-    private final SetMap<ID,ID> supertypes = new SetMap<ID,ID>();    
+    private final MultiMap<ID,ID> supertypes = MultiMapFactory.<ID,ID>createWithSet();    
     
     public MappedClassTypeMapping(Configuration coreConfig){
         this.coreConfig = coreConfig;

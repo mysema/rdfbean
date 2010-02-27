@@ -31,8 +31,6 @@ import org.openrdf.store.StoreException;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.object.QueryLanguage;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
 
@@ -188,7 +186,7 @@ public class SesameConnection implements RDFConnection {
         }
     }
 
-    private ModelResult findOfType(Set<UID> types, URI context, boolean includeInferred){        
+    private ModelResult findOfType(Collection<UID> types, URI context, boolean includeInferred){        
         try {
             List<StatementPattern> patterns = new ArrayList<StatementPattern>();
             Var contextVar = context != null ? new Var("context", context) : null; 
@@ -215,7 +213,7 @@ public class SesameConnection implements RDFConnection {
         
         // subClassOf inference
         if (subject == null && RDF.type.equals(pre) && obj instanceof UID && inference.subClassOf()){
-            Set<UID> types = ontology.getSubtypes((UID)obj);
+            Collection<UID> types = ontology.getSubtypes((UID)obj);
             if (types.size() > 1){
                 return new ModelResultIterator(dialect, 
                         findOfType(types, context, includeInferred), 
@@ -231,7 +229,9 @@ public class SesameConnection implements RDFConnection {
                 includeInferred);       
     }    
 
-    private ModelResult findStatements(Resource subject, URI predicate, Value object, boolean includeInferred, URI context) {
+    private ModelResult findStatements(
+            @Nullable Resource subject, @Nullable URI predicate, @Nullable Value object, 
+            boolean includeInferred, @Nullable URI context) {
         try {
             if (context == null) {
                 return connection.match(subject, predicate, object, includeInferred);

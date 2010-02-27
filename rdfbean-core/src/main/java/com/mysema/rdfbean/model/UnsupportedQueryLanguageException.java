@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.model;
 
-import com.mysema.rdfbean.object.QueryLanguage;
 
 /**
  * UnsupportedQueryLanguageException provides

@@ -19,12 +19,12 @@ import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
 
 /**
  * LuceneRepositoryTest provides

@@ -9,10 +9,10 @@ import java.io.OutputStream;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.MultiConnection;
+import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.io.Format;
-import com.mysema.rdfbean.object.QueryLanguage;
 import com.mysema.rdfbean.object.Session;
 
 /**

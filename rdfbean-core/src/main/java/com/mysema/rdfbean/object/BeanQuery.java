@@ -68,5 +68,5 @@ public interface BeanQuery extends Projectable, Closeable{
      * @return
      */
     BeanQuery restrict(QueryModifiers mod);
-
+   
 }

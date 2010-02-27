@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.object.FlushMode;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SimpleSessionContext;

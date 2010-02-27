@@ -8,7 +8,7 @@ package com.mysema.rdfbean.lucene;
 import org.compass.core.CompassTransaction;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 
 /**
  * LuceneTransaction provides

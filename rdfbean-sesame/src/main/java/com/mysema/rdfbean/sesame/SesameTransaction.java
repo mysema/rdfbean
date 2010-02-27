@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 
 /**
  * SesameTransaction provides an RDFBeanTransaction implementation for SesameConnection

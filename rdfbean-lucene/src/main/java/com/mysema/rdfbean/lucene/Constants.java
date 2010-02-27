@@ -7,7 +7,7 @@ package com.mysema.rdfbean.lucene;
 
 import org.compass.core.CompassQueryBuilder;
 
-import com.mysema.rdfbean.object.QueryLanguage;
+import com.mysema.rdfbean.model.QueryLanguage;
 
 /**
  * Constants provides

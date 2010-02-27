@@ -9,9 +9,11 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.collections15.MultiMap;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.owl.OWL;
-import com.mysema.util.SetMap;
+import com.mysema.util.MultiMapFactory;
 
 
 /**
@@ -36,8 +38,8 @@ public class RepositoryOntology extends AbstractOntology{
     }
 
     private void initTypeHierachy(Set<UID> types, RDFConnection connection) throws IOException {
-        SetMap<UID,UID> directSubtypes = new SetMap<UID,UID>();
-        SetMap<UID, UID> directSupertypes = new SetMap<UID,UID>();
+        MultiMap<UID,UID> directSubtypes = MultiMapFactory.<UID,UID>createWithSet();
+        MultiMap<UID, UID> directSupertypes = MultiMapFactory.<UID,UID>createWithSet();
         CloseableIterator<STMT> stmts = connection.findStatements(null, RDFS.subClassOf, null, null, false);
         try{
             while (stmts.hasNext()){

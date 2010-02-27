@@ -5,10 +5,14 @@
  */
 package com.mysema.rdfbean.model;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.Stack;
 
-import com.mysema.util.SetMap;
+import org.apache.commons.collections15.MultiMap;
+
+import com.mysema.util.MultiMapFactory;
 
 /**
  * AbstractOntology provides a base implementation of the Ontology interface 
@@ -18,17 +22,17 @@ import com.mysema.util.SetMap;
  */
 public abstract class AbstractOntology implements Ontology{
 
-    private final SetMap<UID, UID> subtypes = new SetMap<UID, UID>();
+    private final MultiMap<UID, UID> subtypes = MultiMapFactory.<UID, UID>createWithSet();
     
-    private final SetMap<UID, UID> supertypes = new SetMap<UID, UID>();
+    private final MultiMap<UID, UID> supertypes = MultiMapFactory.<UID, UID>createWithSet();
     
-    private final SetMap<UID, UID> subproperties = new SetMap<UID, UID>();
+    private final MultiMap<UID, UID> subproperties = MultiMapFactory.<UID, UID>createWithSet();
     
-    private final SetMap<UID, UID> superproperties = new SetMap<UID, UID>();   
+    private final MultiMap<UID, UID> superproperties = MultiMapFactory.<UID, UID>createWithSet();   
 
     protected void initializeTypeHierarchy(Set<UID> types, 
-            SetMap<UID,UID> directSubtypes, 
-            SetMap<UID, UID> directSupertypes){
+            MultiMap<UID,UID> directSubtypes, 
+            MultiMap<UID, UID> directSupertypes){
         for (UID type : types){
             subtypes.put(type, type);            
             if (directSubtypes.containsKey(type)){
@@ -42,8 +46,8 @@ public abstract class AbstractOntology implements Ontology{
     
 
     protected void initializePropertyHierarchy(Set<UID> properties, 
-            SetMap<UID,UID> directSubproperties, 
-            SetMap<UID, UID> directSuperproperties){
+            MultiMap<UID,UID> directSubproperties, 
+            MultiMap<UID, UID> directSuperproperties){
         for (UID property : properties){
             subproperties.put(property, property);            
             if (directSubproperties.containsKey(property)){
@@ -55,7 +59,7 @@ public abstract class AbstractOntology implements Ontology{
         }
     }
     
-    private void flatten(UID id, SetMap<UID,UID> direct, SetMap<UID,UID> expanded){
+    private void flatten(UID id, MultiMap<UID,UID> direct, MultiMap<UID,UID> expanded){
         Stack<UID> t = new Stack<UID>();
         t.addAll(direct.get(id));
         while (!t.isEmpty()){
@@ -68,23 +72,27 @@ public abstract class AbstractOntology implements Ontology{
     }
         
     @Override
-    public Set<UID> getSubtypes(UID uid) {        
-        return subtypes.get(uid);
+    public Collection<UID> getSubtypes(UID uid) {        
+        Collection<UID> rv = subtypes.get(uid);
+        return rv != null ? rv : Collections.<UID>emptySet();
     }
 
     @Override
-    public Set<UID> getSupertypes(UID uid) {
-        return supertypes.get(uid);
+    public Collection<UID> getSupertypes(UID uid) {
+        Collection<UID> rv =  supertypes.get(uid);
+        return rv != null ? rv : Collections.<UID>emptySet();
     }
     
     @Override
-    public Set<UID> getSubproperties(UID uid) {        
-        return subproperties.get(uid);
+    public Collection<UID> getSubproperties(UID uid) {        
+        Collection<UID> rv =  subproperties.get(uid);
+        return rv != null ? rv : Collections.<UID>emptySet();
     }
 
     @Override
-    public Set<UID> getSuperproperties(UID uid) {
-        return superproperties.get(uid);
+    public Collection<UID> getSuperproperties(UID uid) {
+        Collection<UID> rv =  superproperties.get(uid);
+        return rv != null ? rv : Collections.<UID>emptySet();
     }
 
 }

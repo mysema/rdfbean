@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.object;
+package com.mysema.rdfbean.model;
 
 
 /**

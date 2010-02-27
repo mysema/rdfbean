@@ -8,13 +8,13 @@ package com.mysema.rdfbean.sesame.query;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 import javax.annotation.Nullable;
@@ -112,12 +112,14 @@ public class SesameQuery
         register(new StringContainsTransformer());
     }
     
+    private Map<Path<?>,Var> allPaths = new HashMap<Path<?>,Var>();
+    
     private final Configuration conf;
     
     private final RepositoryConnection connection;
-    
-    private final Map<Object,Var> constToVar = new HashMap<Object,Var>();
 
+    private final Map<Object,Var> constToVar = new HashMap<Object,Var>();
+    
     private final VarNameIterator extNames = new VarNameIterator("_ext_");
     
     private ValueExpr filterConditions;
@@ -126,13 +128,11 @@ public class SesameQuery
     
     private final Inference inference;
     
-    private JoinBuilder joinBuilder;
-    
-    private final Ontology ontology; 
+    private JoinBuilder joinBuilder; 
+
+    private final Ontology ontology;
 
     private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
-
-    private Map<Path<?>,Var> allPaths = new HashMap<Path<?>,Var>();
     
     private Map<Path<?>, Var> pathToKnownVar = new HashMap<Path<?>,Var>();
     
@@ -188,12 +188,13 @@ public class SesameQuery
         this.joinBuilder = new JoinBuilder(stmtTransformer);
     }
     
+
     private static void register(OperationTransformer transformer){
         for (Operator<?> operator : transformer.getSupportedOperations()){
             transformers.put(operator, transformer);
         }
     }
-    
+        
     private void addFilterCondition(ValueExpr filterCondition) {
         if (filterConditions == null) {
             filterConditions = filterCondition;
@@ -222,7 +223,7 @@ public class SesameQuery
             }
         }  
     }
-            
+    
     public void close() throws IOException {
         if (queryResult != null){
             try {
@@ -299,11 +300,6 @@ public class SesameQuery
     @Override
     public Var createVar() {
        return new Var(varNames.next());
-    }
-    
-    @Override
-    public Locale getLocale() {
-        return session.getCurrentLocale();
     }
     
     @Override
@@ -384,6 +380,11 @@ public class SesameQuery
         } catch (StoreException e) {
             throw new RuntimeException(e.getMessage(), e);
         }        
+    }
+    
+    @Override
+    public Locale getLocale() {
+        return session.getCurrentLocale();
     }
     
     @Override
@@ -710,7 +711,7 @@ public class SesameQuery
 
     private TupleExpr transformTypePattern(StatementPattern pattern, Var object) {
         if (object.getValue() instanceof URI){
-            Set<UID> subtypes = ontology.getSubtypes(dialect.getUID((URI) object.getValue()));
+            Collection<UID> subtypes = ontology.getSubtypes(dialect.getUID((URI) object.getValue()));
             if (subtypes.size() > 1){
                 List<StatementPattern> patterns = new ArrayList<StatementPattern>(subtypes.size());
                 int counter = 1;
@@ -728,5 +729,5 @@ public class SesameQuery
             return pattern;
         }        
     }
-    
+
 }

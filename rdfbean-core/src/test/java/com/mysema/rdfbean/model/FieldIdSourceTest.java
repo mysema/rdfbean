@@ -13,6 +13,10 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mysema.commons.lang.Assert;
 
 /**
  * FieldIdSourceTest provides
@@ -22,6 +26,8 @@ import org.junit.Test;
  */
 public class FieldIdSourceTest {
     
+    private static final Logger logger = LoggerFactory.getLogger(FieldIdSourceTest.class);
+    
     private File file;
     
     private FileIdSequence idSource;
@@ -29,14 +35,22 @@ public class FieldIdSourceTest {
     @Before
     public void setUp(){
         file = new File("target", String.valueOf(System.currentTimeMillis()));
-        file.delete();
+        if (file.exists()){
+            if (!file.delete()){
+                logger.error("Deletion of " + file.getPath() + " failed");
+            }
+        }        
         idSource = new FileIdSequence(file, 100);
     }
     
     @After
     public void tearDown() throws IOException{        
         idSource.close();
-        file.delete();
+        if (file.exists()){
+            if (!file.delete()){
+                logger.error("Deletion of " + file.getPath() + " failed");
+            }
+        }
     }
     
     @Test

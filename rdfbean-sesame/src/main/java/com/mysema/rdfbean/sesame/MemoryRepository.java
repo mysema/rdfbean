@@ -35,12 +35,12 @@ public class MemoryRepository extends SesameRepository {
         
     public MemoryRepository(){}
 
-    public MemoryRepository(File dataDir, boolean sesameInference) {
+    public MemoryRepository(@Nullable File dataDir, boolean sesameInference) {
         this.dataDir = dataDir;
         setSesameInference(sesameInference);
     }
 
-    public MemoryRepository(File dataDir, Ontology ontology) {
+    public MemoryRepository(@Nullable File dataDir, Ontology ontology) {
         this.dataDir = dataDir;
         setOntology(ontology);
     }

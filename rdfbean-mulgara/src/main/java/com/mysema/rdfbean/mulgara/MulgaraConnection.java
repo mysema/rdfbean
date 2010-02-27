@@ -12,11 +12,13 @@ import static com.mysema.rdfbean.mulgara.Constants.S_VAR;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections15.MultiMap;
 import org.jrdf.graph.GraphElementFactory;
 import org.jrdf.graph.GraphException;
 import org.jrdf.graph.Triple;
@@ -34,15 +36,15 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
-import com.mysema.rdfbean.object.QueryLanguage;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleBeanQuery;
-import com.mysema.util.SetMap;
+import com.mysema.util.MultiMapFactory;
 
 /**
  * MulgaraConnection provides
@@ -183,8 +185,8 @@ public class MulgaraConnection implements RDFConnection{
         if (!readonlyTnx){
             try {
                 // group by context
-                SetMap<URI,Triple> removed = new SetMap<URI,Triple>();
-                SetMap<URI,Triple> added = new SetMap<URI,Triple>();
+                MultiMap<URI,Triple> removed = MultiMapFactory.<URI,Triple>createWithSet();
+                MultiMap<URI,Triple> added = MultiMapFactory.<URI,Triple>createWithSet();
                 for (STMT stmt : removedStatements){
                     URI context = stmt.getContext() != null ? URI.create(stmt.getContext().getId()) : EMPTY_GRAPH;
                     removed.put(context, convert(stmt));
@@ -195,12 +197,12 @@ public class MulgaraConnection implements RDFConnection{
                 }
                 
                 // apply deletions
-                for (Map.Entry<URI, Set<Triple>> entry : removed.entrySet()){
-                    connection.execute(new Deletion(entry.getKey(), entry.getValue()));
+                for (Map.Entry<URI, Collection<Triple>> entry : removed.entrySet()){
+                    connection.execute(new Deletion(entry.getKey(), (Set<Triple>)entry.getValue()));
                 }                
                 // apply insertions
-                for (Map.Entry<URI, Set<Triple>> entry : added.entrySet()){
-                    connection.execute(new Insertion(entry.getKey(), entry.getValue()));
+                for (Map.Entry<URI, Collection<Triple>> entry : added.entrySet()){
+                    connection.execute(new Insertion(entry.getKey(), (Set<Triple>)entry.getValue()));
                 }
             } catch (Exception e) {
                 String error = "Caught " + e.getClass().getName();

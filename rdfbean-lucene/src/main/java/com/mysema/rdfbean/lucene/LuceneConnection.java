@@ -15,6 +15,7 @@ import static com.mysema.rdfbean.lucene.Constants.TEXT_FIELD_NAME;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections15.MultiMap;
 import org.apache.lucene.index.CorruptIndexException;
 import org.compass.core.Compass;
 import org.compass.core.CompassHits;
@@ -42,20 +44,10 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.EmptyCloseableIterator;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.NodeType;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
-import com.mysema.rdfbean.object.QueryLanguage;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleBeanQuery;
-import com.mysema.util.ListMap;
+import com.mysema.util.MultiMapFactory;
 
 /**
  * LuceneConnection provides
@@ -96,7 +88,7 @@ class LuceneConnection implements RDFConnection{
         this.compass = conf.getCompass();
     }
     
-    private void addStatement(Resource resource, boolean component, STMT stmt, List<ID> subjectTypes) {        
+    private void addStatement(Resource resource, boolean component, STMT stmt, Collection<ID> subjectTypes) {        
 //        System.err.println("added : " + stmt);
         String objectValue = converter.toString(stmt.getObject());        
         PropertyConfig propertyConfig = conf.getPropertyConfig(stmt.getPredicate(), subjectTypes);
@@ -308,15 +300,15 @@ class LuceneConnection implements RDFConnection{
         return hits.getLength() > 0 ? hits.resource(0) : null;
     }
         
-    private List<ID> getSubjectTypes(ID subject, ListMap<ID, ID> types, Resource luceneResource) {
-        List<ID> subjectTypes = types.get(subject);
+    private Collection<ID> getSubjectTypes(ID subject, MultiMap<ID, ID> types, Resource luceneResource) {
+        Collection<ID> subjectTypes = types.get(subject);
         if (subjectTypes == null){
             List<STMT> typeStmts = findStatements(luceneResource, subject, RDF.type, null, null); 
             subjectTypes = new ArrayList<ID>(typeStmts.size());
             for (STMT stmt : typeStmts){
                 subjectTypes.add((ID) stmt.getObject());
             }
-            types.put(subject, subjectTypes);
+            types.putAll(subject, subjectTypes);
         }
         return subjectTypes;
     }
@@ -325,7 +317,7 @@ class LuceneConnection implements RDFConnection{
         return !INTERNAL_FIELDS.contains(fieldName) && !fieldName.contains(" ");
     }
 
-    private void removeStatement(Resource resource, boolean component, STMT stmt, List<ID> subjectTypes){
+    private void removeStatement(Resource resource, boolean component, STMT stmt, Collection<ID> subjectTypes){
 //        System.err.println("removed : " + stmt);
         String objectValue = converter.toString(stmt.getObject());
         PropertyConfig propertyConfig = conf.getPropertyConfig(stmt.getPredicate(), subjectTypes);
@@ -361,7 +353,7 @@ class LuceneConnection implements RDFConnection{
         }
     }
         
-    private void update(ListMap<ID,ID> types, ListMap<ID, STMT> rsAdded, ListMap<ID, STMT> rsRemoved,
+    private void update(MultiMap<ID,ID> types, MultiMap<ID, STMT> rsAdded, MultiMap<ID, STMT> rsRemoved,
             Set<ID> resources) throws IOException, CorruptIndexException {
 
         for (ID resource : resources) {
@@ -379,19 +371,19 @@ class LuceneConnection implements RDFConnection{
             }
             
             // removed
-            List<STMT> removedStatements = rsRemoved.get(resource);
+            Collection<STMT> removedStatements = rsRemoved.get(resource);
             if (removedStatements != null) {
                 for (STMT stmt : removedStatements) {
-                    List<ID> subjectTypes = getSubjectTypes(stmt.getSubject(), types, luceneResource);
+                    Collection<ID> subjectTypes = getSubjectTypes(stmt.getSubject(), types, luceneResource);
                     removeStatement(luceneResource, !stmt.getSubject().equals(resource), stmt, subjectTypes);
                 }
             }
             
             // added
-            List<STMT> addedToResource = rsAdded.get(resource);
+            Collection<STMT> addedToResource = rsAdded.get(resource);
             if (addedToResource != null) {
                 for (STMT stmt : addedToResource) {
-                    List<ID> subjectTypes = getSubjectTypes(stmt.getSubject(), types, luceneResource);
+                    Collection<ID> subjectTypes = getSubjectTypes(stmt.getSubject(), types, luceneResource);
                     addStatement(luceneResource, !stmt.getSubject().equals(resource), stmt, subjectTypes);
                 }
             }
@@ -409,9 +401,9 @@ class LuceneConnection implements RDFConnection{
     @Override
     public void update(Set<STMT> removed, Set<STMT> added) {
         if (!readonlyTnx){
-            ListMap<ID, STMT> rsAdded = new ListMap<ID, STMT>();
-            ListMap<ID, STMT> rsRemoved = new ListMap<ID, STMT>();
-            ListMap<ID, ID> types = new ListMap<ID, ID>();
+            MultiMap<ID, STMT> rsAdded = MultiMapFactory.<ID, STMT>create();
+            MultiMap<ID, STMT> rsRemoved = MultiMapFactory.<ID, STMT>create();
+            MultiMap<ID, ID> types = MultiMapFactory.<ID, ID>create();
             HashSet<ID> resources = new HashSet<ID>();
 
             Map<ID,ID> componentToHost;
@@ -430,7 +422,7 @@ class LuceneConnection implements RDFConnection{
             
             // populate rsAdded and rsRemoved
             for (Set<STMT> stmts : Arrays.asList(added ,removed)){
-                ListMap<ID,STMT> target = stmts == added ? rsAdded : rsRemoved;
+                MultiMap<ID,STMT> target = stmts == added ? rsAdded : rsRemoved;
                 for (STMT s : stmts){
                     if (componentToHost.containsKey(s.getSubject())){
                         target.put(componentToHost.get(s.getSubject()), s);    

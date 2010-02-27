@@ -6,13 +6,18 @@
 package com.mysema.rdfbean.object;
 
 import java.io.Closeable;
+import java.util.Collection;
 
 import com.mysema.query.DefaultQueryMetadata;
+import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.collections.CustomQueryable;
+import com.mysema.query.collections.ColQuery;
+import com.mysema.query.collections.impl.ColQueryImpl;
 import com.mysema.query.collections.impl.EvaluatorFactory;
+import com.mysema.query.support.ProjectableAdapter;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PEntity;
-import com.mysema.query.types.path.Path;
 
 /**
  * Non-optimized Memory based BeanQuery implementation
@@ -20,13 +25,20 @@ import com.mysema.query.types.path.Path;
  * @author sasa
  *
  */
-public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements Closeable, BeanQuery {
-
+public class SimpleBeanQuery extends ProjectableAdapter implements Closeable, BeanQuery {
+    
     private final Session session;
     
-    public SimpleBeanQuery(final Session session) {
-        super(new DefaultQueryMetadata(), EvaluatorFactory.DEFAULT);
+    private final ColQuery colQuery;
+    
+    public SimpleBeanQuery(Session session) {
+        this(session, new DefaultQueryMetadata());
+    }
+    
+    protected SimpleBeanQuery(Session session, QueryMetadata metadata){
+        super(new ColQueryImpl(metadata, EvaluatorFactory.DEFAULT));
         this.session = session;
+        this.colQuery = (ColQuery) super.getProjectable();
     }
        
     @Override
@@ -34,33 +46,44 @@ public class SimpleBeanQuery extends CustomQueryable<SimpleBeanQuery> implements
 //        session.close();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public BeanQuery from(PEntity<?>... o) {
-        return super.from(o);
+        for (PEntity<?> path : o){
+            colQuery.from(path, (Collection)session.findInstances(path.getType()));
+        }
+        return this;
     }
 
     @Override
     public BeanQuery limit(long limit) {
-        getMetadata().setLimit(limit);
+        colQuery.limit(limit);
         return this;
     }
 
     @Override
     public BeanQuery offset(long offset) {
-        getMetadata().setOffset(offset);
+        colQuery.offset(offset);
         return this;
     }
 
     @Override
     public BeanQuery restrict(QueryModifiers mod) {
-        getMetadata().setModifiers(mod);
+        colQuery.restrict(mod);
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected <T> Iterable<T> getContent(Path<T> expr) {
-        return (Iterable<T>)session.findInstances(expr.getType());
+    public BeanQuery orderBy(OrderSpecifier<?>... o) {
+        colQuery.orderBy(o);
+        return this;
     }
+
+    @Override
+    public BeanQuery where(EBoolean... o) {
+        colQuery.where(o);
+        return this;
+    }
+
     
 }

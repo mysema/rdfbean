@@ -15,8 +15,6 @@ import java.util.Set;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.object.BeanQuery;
-import com.mysema.rdfbean.object.QueryLanguage;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 
 /**

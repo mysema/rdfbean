@@ -59,6 +59,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     
     private Class<?> type;
     
+    @Nullable
     private Class<?> componentType;
     
     private Class<?> keyType;
@@ -98,6 +99,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
     
     @SuppressWarnings("unchecked")
+    
     void resolve(@Nullable MappedClass owner) {
         if (this.type == null) {
             this.type = getTypeInternal();
@@ -241,10 +243,12 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
     
     @SuppressWarnings("unchecked")
+    @Nullable
     public <T extends Annotation> T getAnnotation(Class<T> atype) {
         return (T) annotations.get(atype);
     }
     
+    @Nullable
     public UID getKeyPredicate() {
         MapElements mapKey = getAnnotation(MapElements.class);
         String parentNs = getParentNs(mapKey, getMember());
@@ -292,13 +296,10 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         }
     }
     
+    @Nullable
     public IDType getIDType() {
-        IDType idType = null;
         Id annotation = getAnnotation(Id.class);
-        if (annotation != null) {
-            idType = annotation.value();
-        }
-        return idType;
+        return annotation != null ? annotation.value() : null;
     }
     
     public boolean isAnnotatedProperty() {
@@ -420,6 +421,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return container != null && container.value() != ContainerType.LIST;
     }
 
+    @Nullable
     public ContainerType getContainerType() {
         Container container = this.getAnnotation(Container.class);
         return container != null ? container.value() : null;

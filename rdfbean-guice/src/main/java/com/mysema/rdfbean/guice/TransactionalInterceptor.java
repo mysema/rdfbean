@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.object.*;
 
 

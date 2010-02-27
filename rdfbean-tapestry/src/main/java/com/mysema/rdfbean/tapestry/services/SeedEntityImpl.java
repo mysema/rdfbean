@@ -15,9 +15,9 @@ import org.apache.tapestry5.ioc.annotations.EagerLoad;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
-import com.mysema.rdfbean.object.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 

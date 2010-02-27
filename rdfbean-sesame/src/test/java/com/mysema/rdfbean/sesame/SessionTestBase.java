@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,8 +25,8 @@ import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.ConfigurationOntology;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
@@ -49,6 +51,7 @@ public class SessionTestBase {
     
     private static SessionFactory sessionFactory;
     
+    @Nullable
     protected Session session;
     
     private List<Session> openSessions = new ArrayList<Session>();
