@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.BeanMap;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -80,6 +82,7 @@ public class ExampleQuery <T>{
         }
     }
 
+    @Nullable
     public T uniqueResult() {
         if (conditions.getValue() != null){
             return session.from(entityPath).where(conditions).uniqueResult(entityPath);

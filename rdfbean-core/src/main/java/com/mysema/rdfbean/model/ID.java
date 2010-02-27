@@ -36,5 +36,10 @@ public abstract class ID extends NODE implements Identifier {
     public String getValue() {
         return id;
     }
+    
+    @Override
+    public ID asResource(){
+        return this;
+    }
 
 }

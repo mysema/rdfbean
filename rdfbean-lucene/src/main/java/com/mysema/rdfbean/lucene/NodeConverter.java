@@ -129,9 +129,9 @@ public class NodeConverter implements Converter<NODE>{
     @Override
     public String toString(NODE node) {        
         switch(node.getNodeType()){
-        case BLANK : return toString((BID)node);
-        case URI :   return toString((UID)node);
-        case LITERAL:return toString((LIT)node);
+        case BLANK : return toString(node.asBNode());
+        case URI :   return toString(node.asURI());
+        case LITERAL:return toString(node.asLiteral());
         default: throw new IllegalArgumentException("Invalid Node " + node); 
         }         
     }

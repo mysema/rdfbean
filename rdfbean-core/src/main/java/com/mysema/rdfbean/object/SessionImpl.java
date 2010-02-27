@@ -1297,6 +1297,7 @@ public class SessionImpl implements Session {
         return new LIT(conf.getConverterRegistry().toString(o), dataType);
     }
 
+    @Nullable
     private NODE toRDFValue(@Nullable Object object, @Nullable UID context) {
         if (object == null) {
             return null;

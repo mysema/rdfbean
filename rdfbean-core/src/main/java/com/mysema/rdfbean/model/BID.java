@@ -75,4 +75,8 @@ public final class BID extends ID {
         }
     }
 
+    @Override
+    public BID asBNode(){
+        return this;
+    }
 }

@@ -123,7 +123,7 @@ public final class MiniRepository implements Repository{
         if (subject != null) {
             iterator = getIndexed(subject, predicate, subjects);
         } else if (objects != null && object != null && object.isResource()) {
-            iterator = getIndexed((ID) object, predicate, objects);
+            iterator = getIndexed(object.asResource(), predicate, objects);
         } else {
             IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
             for (PredicateCache stmtCache : subjects.values()) {
@@ -314,9 +314,10 @@ public final class MiniRepository implements Repository{
         @Nullable
         private Set<STMT> multi;
         
+        @Nullable
         private STMT single;
         
-        public STMTCache(STMT single) {
+        public STMTCache(@Nullable STMT single) {
             this.single = single;
         }
         

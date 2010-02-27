@@ -7,6 +7,8 @@ package com.mysema.rdfbean.sesame.query;
 
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.query.algebra.TupleExpr;
@@ -111,6 +113,7 @@ public interface TransformerContext {
      * @param expr
      * @return
      */
+    @Nullable
     ValueExpr toValue(Expr<?> expr);
 
     /**

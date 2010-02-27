@@ -13,6 +13,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.Repository;
@@ -82,6 +84,7 @@ public class SchemaGen {
     }
 
     @SuppressWarnings("unchecked")
+    @Nullable
     private RDFSClass<RDFSResource> processClass(Class<?> clazz, Session session, 
             Map<UID, RDFSResource> resources) {
 //        if (clazz == null) {

@@ -35,4 +35,19 @@ public abstract class NODE implements Serializable {
 
     public abstract boolean isLiteral();
     
+    public LIT asLiteral(){
+        throw new UnsupportedOperationException();
+    }
+    
+    public ID asResource(){
+        throw new UnsupportedOperationException();
+    }
+    
+    public UID asURI(){
+        throw new UnsupportedOperationException();
+    }
+    
+    public BID asBNode(){
+        throw new UnsupportedOperationException();
+    }
 }

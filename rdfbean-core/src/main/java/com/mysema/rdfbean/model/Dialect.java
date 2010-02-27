@@ -59,11 +59,11 @@ public abstract class Dialect
 
     public N getNode(NODE node){
         if (node.isLiteral()){
-            return getLiteral((LIT)node);
+            return getLiteral(node.asLiteral());
         }else if (node.isBNode()){
-            return getBNode((BID)node);
+            return getBNode(node.asBNode());
         }else{
-            return getURI((UID)node);
+            return getURI(node.asURI());
         }
     }
     
@@ -77,9 +77,9 @@ public abstract class Dialect
 
     public final R getResource(ID id) {
         if (id.isURI()){
-            return getURI((UID)id);
+            return getURI(id.asURI());
         }else{
-            return getBNode((BID)id);
+            return getBNode(id.asBNode());
         }        
     }
         

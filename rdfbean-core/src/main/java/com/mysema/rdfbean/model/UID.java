@@ -130,5 +130,10 @@ public final class UID extends ID {
             return false;
         }
     }
+    
+    @Override
+    public UID asURI(){
+        return this;
+    }
 
 }

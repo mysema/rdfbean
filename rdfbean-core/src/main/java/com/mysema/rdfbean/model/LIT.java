@@ -150,4 +150,9 @@ public final class LIT extends NODE {
         return true;
     }
     
+    @Override
+    public LIT asLiteral(){
+        return this;
+    }
+    
 }

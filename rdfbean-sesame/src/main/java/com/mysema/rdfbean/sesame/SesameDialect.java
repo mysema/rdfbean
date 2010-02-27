@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -67,7 +69,7 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     }
 
     @Override
-    public Statement createStatement(Resource subject, URI predicate, Value object, URI context) {
+    public Statement createStatement(Resource subject, URI predicate, Value object, @Nullable URI context) {
         return vf.createStatement(subject, predicate, object, context);
     }
 
@@ -90,8 +92,10 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     public ID getID(Resource resource) {
         if (resource instanceof URI) {
             return getUID((URI) resource);
-        } else {
+        } else if (resource instanceof BNode){
             return getBID((BNode) resource);
+        }else{
+            throw new IllegalArgumentException("Expected URI or BNode, got " + resource);
         }
     }
 
