@@ -69,7 +69,7 @@ public interface Session extends ObjectRepository, Closeable {
      *
      * @throws RDFBeanException on an error
      */
-    public RDFBeanTransaction beginTransaction();
+    RDFBeanTransaction beginTransaction();
     
     /**
      * Begins a new transaction and binds this session to it.
@@ -83,7 +83,7 @@ public interface Session extends ObjectRepository, Closeable {
      * @throws RDFBeanException if a transaction is already active or if an error occurred starting
      *                      a new transaction
      */
-    public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel);
+    RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel);
 
     /**
      * Empties the primary cache and discards all unflushed changes.

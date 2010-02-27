@@ -12,6 +12,9 @@ package com.mysema.rdfbean.model;
  */
 public interface Identifier {
 
-    public String getId();
+    /**
+     * @return
+     */
+    String getId();
     
 }

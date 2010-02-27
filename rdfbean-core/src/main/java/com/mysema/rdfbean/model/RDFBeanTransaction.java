@@ -17,37 +17,37 @@ public interface RDFBeanTransaction {
     /**
      * Prepare the transaction for commit
      */
-    public void prepare();
+    void prepare();
     
     /**
      * Commit and close the connection.
      *
      * @throws RDFBeanException on an error in commit
      */
-    public void commit();
+    void commit();
     
     /**
      * 
      * @return
      */
-    public boolean isActive();
+    boolean isActive();
 
     /**
      * Test whether this transaction has been marked for rollback only.
      *
      * @return true if this transaction will be rolled back
      */
-    public boolean isRollbackOnly();
+    boolean isRollbackOnly();
 
     /**
      * Rollback the transaction and close the connection. Session data is left alone.
      *
      * @throws RDFBeanException on an error in roll-back
      */
-    public void rollback();
+    void rollback();
 
     /**
      * Mark the transaction for rollback.
      */
-    public void setRollbackOnly();
+    void setRollbackOnly();
 }

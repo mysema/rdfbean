@@ -26,7 +26,7 @@ public class LIDEditor extends PropertyEditorSupport {
     }
 
     @Override
-    public void setAsText(String text) throws IllegalArgumentException {
+    public void setAsText(String text) {
         if (StringUtils.isEmpty(text)) {
             setValue(null);
         } else {

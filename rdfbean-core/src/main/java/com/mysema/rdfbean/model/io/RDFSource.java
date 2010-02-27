@@ -46,7 +46,7 @@ public class RDFSource {
         return resource;
     }
     
-    public InputStream openStream() throws MalformedURLException, IOException {
+    public InputStream openStream() throws IOException {
         if (resource.startsWith("classpath:")){
             String name = resource.substring(10);
             if (name.startsWith("/")) {

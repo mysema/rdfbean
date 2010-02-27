@@ -11,8 +11,14 @@ package com.mysema.rdfbean.object;
  */
 public interface LifeCycleAware {
 
-    public void beforeBinding();
+    /**
+     * 
+     */
+    void beforeBinding();
     
-    public void afterBinding();
+    /**
+     * 
+     */
+    void afterBinding();
 
 }

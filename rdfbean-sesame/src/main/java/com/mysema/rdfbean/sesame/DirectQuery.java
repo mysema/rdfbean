@@ -37,7 +37,7 @@ public class DirectQuery {
         /**
          * Returns the threadbound query, ignores the parameters of the method invocation
          */
-        public QueryModel parseQuery(String queryStr, String baseURI)throws MalformedQueryException {
+        public QueryModel parseQuery(String queryStr, String baseURI) {
             return QUERY_HOLDER.get();
         }        
     };

@@ -20,7 +20,7 @@ public interface SessionFactory {
      * 
      * @return
      */
-    public Session openSession();
+    Session openSession();
 
     /**
      * Get the current session
@@ -28,24 +28,24 @@ public interface SessionFactory {
      * @return
      */
     @Nullable
-    public Session getCurrentSession();
+    Session getCurrentSession();
 
     /**
      * Initialize the SessionFactory
      */
-    public void initialize();
+    void initialize();
 
     /**
      * Close the SessionFactory
      */
-    public void close();
+    void close();
     
     /**
      * Set the SessionContext
      * 
      * @param sessionContext
      */
-    public void setSessionContext(SessionContext sessionContext);
+    void setSessionContext(SessionContext sessionContext);
     
     /**
      * Execute the given SessionCallback in the scope of the current session or
@@ -55,6 +55,6 @@ public interface SessionFactory {
      * @param cb
      * @return
      */
-    public <T> T execute(SessionCallback<T> cb);
+    <T> T execute(SessionCallback<T> cb);
     
 }
