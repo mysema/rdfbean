@@ -96,23 +96,29 @@ public final class STMT {
         } else if (obj instanceof STMT) {
             STMT other = (STMT) obj;
             
-            if (!subject.equals(other.subject))
+            if (!subject.equals(other.subject)){
                 return false;
+            }                
 
-            if (!predicate.equals(other.predicate))
+            if (!predicate.equals(other.predicate)){
                 return false;
+            }                
             
-            if (!object.equals(other.object))
+            if (!object.equals(other.object)){
                 return false;
+            }                
             
             if (context == null) {
-                if (other.context != null)
+                if (other.context != null){
                     return false;
-            } else if (!context.equals(other.context))
+                }                    
+            } else if (!context.equals(other.context)){
                 return false;
+            }                
 
-            if (asserted != other.asserted)
+            if (asserted != other.asserted){
                 return false;
+            }                
 
             return true;
         } else {

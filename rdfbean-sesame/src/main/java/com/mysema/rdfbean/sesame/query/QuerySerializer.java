@@ -82,55 +82,55 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(And node) throws RuntimeException{
+    public void meet(And node){
         visit(node.getArg(0)).append( " AND\n  " ).visit(node.getArg(1));
     }
     
     @Override
-    public void meet(Bound node) throws RuntimeException{
+    public void meet(Bound node){
         append( "BOUND( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(Compare node) throws RuntimeException{
+    public void meet(Compare node){
         node.getLeftArg().visit(this);
         append( " " ).append(node.getOperator().getSymbol()).append( " " );
         node.getRightArg().visit(this);
     }
     
     @Override
-    public void meet(CompareAll node) throws RuntimeException{
+    public void meet(CompareAll node){
         node.getArg().visit(this);
         append( " " ).append(node.getOperator().getSymbol()).append( " ALL " );
         node.getSubQuery().visit(this);
     }
     
     @Override
-    public void meet(CompareAny node) throws RuntimeException{
+    public void meet(CompareAny node){
         node.getArg().visit(this);
         append( " " ).append(node.getOperator().getSymbol()).append( " ANY " );
         node.getSubQuery().visit(this);
     }
     
     @Override
-    public void meet(Count node) throws RuntimeException{
+    public void meet(Count node){
         append( "COUNT( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(Datatype node) throws RuntimeException{
+    public void meet(Datatype node){
         append( "DATATYPE( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(Difference node) throws RuntimeException{
+    public void meet(Difference node){
         node.getLeftArg().visit(this);
         append( "\n\nMINUS\n\n" );
         node.getRightArg().visit(this);
     }
     
     @Override
-    public void meet(Distinct node) throws RuntimeException{
+    public void meet(Distinct node){
         if (node.getArg() instanceof Projection){
             meet((Projection)node.getArg(), true);
         }else{
@@ -139,7 +139,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Exists node) throws RuntimeException{
+    public void meet(Exists node){
         lastPattern = null;
         append( "EXISTS( " );
         visit(node.getSubQuery());
@@ -147,7 +147,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Extension node) throws RuntimeException{
+    public void meet(Extension node){
         append("\nEXTENSIONS ");
         boolean first = true;
         for (ExtensionElem elem : node.getElements()){
@@ -162,7 +162,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Filter node) throws RuntimeException{
+    public void meet(Filter node){
         append( "\nFROM " );
         fromPrinted = true;
         node.getArg().visit(this);
@@ -171,7 +171,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(FunctionCall node) throws RuntimeException{        
+    public void meet(FunctionCall node){        
         URI uri = new URIImpl(node.getURI());
         namespaces.add(uri.getNamespace());
         append(Namespaces.getReadableURI(uri.getNamespace(), uri.getLocalName()));
@@ -188,7 +188,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Slice node) throws RuntimeException{
+    public void meet(Slice node){
         node.getArg().visit(this);
         if (node.getLimit() > -1){
             append("\nLIMIT " + node.getLimit());    
@@ -199,41 +199,41 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(In node) throws RuntimeException{
+    public void meet(In node){
         node.getArg().visit(this);
         append( " IN " );
         node.getSubQuery().visit(this);
     }
     
     @Override
-    public void meet(Intersection node) throws RuntimeException{        
+    public void meet(Intersection node){        
         node.getLeftArg().visit(this);
         append( "\n\nINTERSECT\n\n" );
         node.getRightArg().visit(this);        
     }
     
     @Override
-    public void meet(IsBNode node) throws RuntimeException{
+    public void meet(IsBNode node){
         append( "isBNode( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(IsLiteral node) throws RuntimeException{
+    public void meet(IsLiteral node){
         append( "isLiteral( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(IsResource node) throws RuntimeException{
+    public void meet(IsResource node){
         append( "isResource( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(IsURI node) throws RuntimeException{
+    public void meet(IsURI node){
         append( "isURI( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(Join node) throws RuntimeException{
+    public void meet(Join node){
         if (!fromPrinted){
             append( "\nFROM " );
             fromPrinted = true;
@@ -245,28 +245,28 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Label node) throws RuntimeException{
+    public void meet(Label node){
         append( "label( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(Lang node) throws RuntimeException{
+    public void meet(Lang node){
         append( "lang( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(LangMatches node) throws RuntimeException{
+    public void meet(LangMatches node){
         visit(node.getLeftArg()).append(" match ").visit(node.getRightArg());
     }
     
 //    @Override
-//    public void meet(Like node) throws RuntimeException{
+//    public void meet(Like node){
 //        node.getArg().visit(this);
 //        append( " LIKE '" ).append(node.getOpPattern()).append( "' " );
 //    }
     
     @Override
-    public void meet(LeftJoin node) throws RuntimeException{
+    public void meet(LeftJoin node){
         if (!fromPrinted){
             append( "\nFROM " );
             fromPrinted = true;
@@ -280,22 +280,22 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     
     @Override
-    public void meet(Max node) throws RuntimeException{
+    public void meet(Max node){
         append( "MAX( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(Min node) throws RuntimeException{
+    public void meet(Min node){
         append( "MIN( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(Not node) throws RuntimeException{
+    public void meet(Not node){
         append( "NOT " ).visit(node.getArg());
     }
     
     @Override
-    public void meet(Or node) throws RuntimeException{
+    public void meet(Or node){
         node.getArg(0).visit(this);
         append( " OR\n  " );
         node.getArg(1).visit(this);
@@ -303,7 +303,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
 
     @Override
-    public void meet(Order node) throws RuntimeException{
+    public void meet(Order node){
         visit(node.getArg());
         append("\nORDER BY ");
         boolean first = true;
@@ -318,13 +318,15 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Projection node) throws RuntimeException{
+    public void meet(Projection node){
         meet(node, false);
     }
     
     private void meet(Projection node, boolean distinct){
         append( "SELECT " );
-        if (distinct) append("DISTINCT ");
+        if (distinct){
+            append("DISTINCT ");
+        }
         boolean first = true;
         for (ProjectionElem p : node.getProjectionElemList().getElements()){
             if (!first){
@@ -341,7 +343,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Regex node) throws RuntimeException{        
+    public void meet(Regex node){        
         append( "regex( " );
         node.getArg().visit(this);
         append( ", " );
@@ -354,7 +356,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(StatementPattern node) throws RuntimeException{
+    public void meet(StatementPattern node){
         if (!fromPrinted){
             append( "\nFROM " );
             fromPrinted = true;
@@ -377,12 +379,12 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Str node) throws RuntimeException{
+    public void meet(Str node){
         append( "str( " ).visit(node.getArg()).append( " )" );
     }
     
     @Override
-    public void meet(Union node) throws RuntimeException{
+    public void meet(Union node){
         for (int i = 0; i < node.getNumberOfArguments(); i++){            
             if (i > 0){
                 lastPattern = null;
@@ -415,12 +417,12 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(ValueConstant node) throws RuntimeException{
+    public void meet(ValueConstant node){
         meet(node.getValue());
     }
     
     @Override
-    public void meet(Var node) throws RuntimeException{
+    public void meet(Var node){
         Value value = node.getValue();
         if (value == null){
             append("{").append(node.getName()).append("}");            

@@ -79,34 +79,48 @@ public final class STMTMatcher {
         } else if (obj instanceof STMTMatcher) {
             STMTMatcher other = (STMTMatcher) obj;
             
+            // s
             if (subject == null) {
-                if (other.subject != null)
+                if (other.subject != null){
                     return false;
-            } else if (!subject.equals(other.subject))
+                }                    
+            } else if (!subject.equals(other.subject)){
                 return false;
+            }                
 
+            // p
             if (predicate == null) {
-                if (other.predicate != null)
+                if (other.predicate != null){
                     return false;
-            } else if (!predicate.equals(other.predicate))
+                }                    
+            } else if (!predicate.equals(other.predicate)){
                 return false;
+            }                
 
+            // o
             if (object == null) {
-                if (other.object != null)
+                if (other.object != null){
                     return false;
-            } else if (!object.equals(other.object))
+                }                    
+            } else if (!object.equals(other.object)){
                 return false;
+            }                
 
+            // c
             if (context == null) {
-                if (other.context != null)
+                if (other.context != null){
                     return false;
-            } else if (!context.equals(other.context))
+                }                    
+            } else if (!context.equals(other.context)){
                 return false;
+            }                
             
-            if (includeInferred != other.includeInferred)
+            if (includeInferred != other.includeInferred){
                 return false;
+            }                
     
             return true;
+            
         } else {
             return false;
         }

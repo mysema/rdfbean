@@ -150,7 +150,9 @@ public class NodeConverter implements Converter<NODE>{
             return strToUid.get(str);
         }else{
             int index = str.indexOf(':');
-            if (index == -1) throw new IllegalArgumentException("Illegal prefixed URI : '" + str + "'");
+            if (index == -1){
+                throw new IllegalArgumentException("Illegal prefixed URI : '" + str + "'");
+            }
             return new UID(prefixToNs.get(str.substring(0, index)), str.substring(index+1));                           
         }
     }    

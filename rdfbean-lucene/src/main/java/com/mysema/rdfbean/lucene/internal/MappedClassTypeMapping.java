@@ -182,7 +182,9 @@ public class MappedClassTypeMapping implements TypeMapping {
             store = searchablePred.store();
         }
         if (index != null || store != null || textIndexed){
-            if (index == null) index = Index.NO;
+            if (index == null){
+                index = Index.NO;
+            }
             for (MappedPredicate pred : mappedPath.getPredicatePath()){
                 uids.add(pred.getUID());
             }
