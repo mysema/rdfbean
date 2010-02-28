@@ -70,7 +70,7 @@ public class SessionIdentityService implements IdentityService{
             try {
                 stmts.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new SessionException(e);
             }
         }
     }

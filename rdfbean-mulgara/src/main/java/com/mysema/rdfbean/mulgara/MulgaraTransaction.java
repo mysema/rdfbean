@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * MulgaraTransaction provides
@@ -43,21 +44,21 @@ public class MulgaraTransaction implements RDFBeanTransaction{
         } catch (QueryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }        
     }
 
     @Override
     public void commit() {
         if (rollbackOnly){
-            throw new RuntimeException("Transaction is rollBackOnly");
+            throw new RepositoryException("Transaction is rollBackOnly");
         }    
         try {
             connection.execute(new Commit());
         } catch (Exception e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }finally{
             mulgaraConnection.cleanUpAfterCommit();
         }
@@ -86,7 +87,7 @@ public class MulgaraTransaction implements RDFBeanTransaction{
         } catch (Exception e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }finally{
             mulgaraConnection.cleanUpAfterRollback();
         }

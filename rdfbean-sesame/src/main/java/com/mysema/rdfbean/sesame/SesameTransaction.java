@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * SesameTransaction provides an RDFBeanTransaction implementation for SesameConnection
@@ -63,7 +64,7 @@ public class SesameTransaction implements RDFBeanTransaction{
         } catch (StoreException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }
         active = true;
     }
@@ -71,14 +72,14 @@ public class SesameTransaction implements RDFBeanTransaction{
     @Override
     public void commit() {
         if (rollbackOnly){
-            throw new RuntimeException("Transaction is rollBackOnly");
+            throw new RepositoryException("Transaction is rollBackOnly");
         }        
         try {
             connection.getConnection().commit();
         } catch (StoreException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }finally{
             connection.cleanUpAfterCommit();
         }
@@ -106,7 +107,7 @@ public class SesameTransaction implements RDFBeanTransaction{
        } catch (StoreException e) {
            String error = "Caught " + e.getClass().getName();
            logger.error(error, e);
-           throw new RuntimeException(error, e);
+           throw new RepositoryException(error, e);
        }finally{
            connection.cleanUpAfterRollback();
        }        

@@ -103,7 +103,7 @@ public final class MiniRepository implements Repository{
             try {
                 stmts.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RepositoryException(e);
             }
         }
     }

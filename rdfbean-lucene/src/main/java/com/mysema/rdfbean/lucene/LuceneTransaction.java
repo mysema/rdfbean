@@ -9,6 +9,7 @@ import org.compass.core.CompassTransaction;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * LuceneTransaction provides
@@ -34,7 +35,7 @@ class LuceneTransaction implements RDFBeanTransaction{
     @Override
     public void commit() {
         if (rollbackOnly){
-            throw new RuntimeException("Transaction is rollBackOnly");
+            throw new RepositoryException("Transaction is rollBackOnly");
         }   
         try {
             tx.commit();

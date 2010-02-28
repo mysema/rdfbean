@@ -443,11 +443,11 @@ class LuceneConnection implements RDFConnection{
             } catch (CorruptIndexException e) {
                 String error = "Caught " + e.getClass().getName();
                 logger.error(error, e);
-                throw new RuntimeException(error, e);
+                throw new RepositoryException(error, e);
             } catch (IOException e) {
                 String error = "Caught " + e.getClass().getName();
                 logger.error(error, e);
-                throw new RuntimeException(error, e);
+                throw new RepositoryException(error, e);
             }
         }                
     }

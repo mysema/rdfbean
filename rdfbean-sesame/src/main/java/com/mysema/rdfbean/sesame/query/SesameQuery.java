@@ -60,6 +60,7 @@ import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Configuration;
@@ -230,7 +231,7 @@ public class SesameQuery
             try {
                 queryResult.close();
             } catch (StoreException e) {
-                throw new RuntimeException(e.getMessage(), e);
+                throw new RepositoryException(e.getMessage(), e);
             }
         }
     }
@@ -358,7 +359,7 @@ public class SesameQuery
                     try {                        
                         return queryResult.hasNext();
                     } catch (StoreException e) {
-                        throw new RuntimeException(e.getMessage(), e);
+                        throw new RepositoryException(e.getMessage(), e);
                     }
                 }
                 public Value[] next() {
@@ -371,7 +372,7 @@ public class SesameQuery
                         }
                         return values;
                     } catch (StoreException e) {
-                        throw new RuntimeException(e.getMessage(), e);
+                        throw new RepositoryException(e.getMessage(), e);
                     }
                 }
                 public void remove() {
@@ -379,7 +380,7 @@ public class SesameQuery
                 }                
             };
         } catch (StoreException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RepositoryException(e.getMessage(), e);
         }        
     }
     
@@ -398,7 +399,6 @@ public class SesameQuery
         return patternScope;
     }
         
-    @SuppressWarnings("unchecked")
     public ID getResourceForLID(Constant<String> arg) {
         return session.getId(new LID(arg.getConstant()));
     }

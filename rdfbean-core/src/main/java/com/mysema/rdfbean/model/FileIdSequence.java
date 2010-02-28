@@ -59,9 +59,9 @@ public class FileIdSequence implements Closeable, IdSequence{
             this.cache = cache;
             synchronize();      
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
     }
     
@@ -94,7 +94,7 @@ public class FileIdSequence implements Closeable, IdSequence{
             }            
             return nextId++;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }        
     }
 

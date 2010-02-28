@@ -124,7 +124,7 @@ public class SesameConnection implements RDFConnection {
             }
             connection.close();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
 
     }
@@ -200,7 +200,7 @@ public class SesameConnection implements RDFConnection {
             Reduced reduced = new Reduced(projection);            
             return DirectQuery.query(connection, new GraphQueryModel(reduced), includeInferred);
         } catch (StoreException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
     }
     
@@ -241,7 +241,7 @@ public class SesameConnection implements RDFConnection {
                 return connection.match(subject, predicate, object, includeInferred, context);
             }
         } catch (StoreException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -273,7 +273,7 @@ public class SesameConnection implements RDFConnection {
                     connection.add(convert(addedStatements));
                 }
             } catch (StoreException e) {
-                throw new RuntimeException(e);
+                throw new RepositoryException(e);
             }    
         }        
     }

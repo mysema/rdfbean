@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 
@@ -82,7 +83,7 @@ public class MulgaraRepository implements Repository{
                         connection.close();
                     }    
                 } catch (Exception e) {
-                    throw new RuntimeException(e.getMessage(), e);
+                    throw new RepositoryException(e.getMessage(), e);
                 }
                 
             }            
@@ -96,7 +97,7 @@ public class MulgaraRepository implements Repository{
         } catch (Exception e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }
     }
 
@@ -108,11 +109,11 @@ public class MulgaraRepository implements Repository{
         } catch (ConnectionException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         } catch (QueryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }        
     }
 

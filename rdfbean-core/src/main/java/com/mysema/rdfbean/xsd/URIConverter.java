@@ -29,7 +29,7 @@ public class URIConverter  extends AbstractConverter<URI> {
         } catch (URISyntaxException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new IllegalArgumentException(error, e);
         }
     }
 

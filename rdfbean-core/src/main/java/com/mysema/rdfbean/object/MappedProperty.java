@@ -237,7 +237,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             } else if (type instanceof ParameterizedType) {
                 return (Class) ((ParameterizedType) type).getRawType();
             } else {
-                throw new RuntimeException("Unable to get generic type [" + index + "] of " + gtype
+                throw new SessionException("Unable to get generic type [" + index + "] of " + gtype
                         + " from " + owner);
             }
         }
@@ -441,7 +441,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             System.arraycopy(typeVariables, 0, clone.typeVariables, 0, 4);
             return clone;
         } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
+            throw new SessionException(e);
         }
     }
 

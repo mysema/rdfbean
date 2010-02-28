@@ -29,13 +29,13 @@ public class MultiTransaction implements RDFBeanTransaction{
     @Override
     public void commit() {
         if (rollbackOnly){
-            throw new RuntimeException("Transaction is rollBackOnly");
+            throw new RepositoryException("Transaction is rollBackOnly");
         }        
         try{
             prepare();
         }catch(RuntimeException e){
             rollback();
-            throw e;
+            throw new RepositoryException(e);
         }
         
         try{

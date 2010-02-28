@@ -14,7 +14,6 @@ import java.util.Set;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -88,7 +87,7 @@ public class FetchOptimizer implements RDFConnection {
                     stmts.close();
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RepositoryException(e);
             }
         }
         return cache.findStatements(subject, predicate, object, context, includeInferred);

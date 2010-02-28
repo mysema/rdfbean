@@ -28,7 +28,7 @@ public class URLConverter extends AbstractConverter<URL> {
         } catch (MalformedURLException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new IllegalArgumentException(error, e);
         }
     }
 

@@ -10,18 +10,8 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
 
 /**
  * SessionFactoryImpl is the default implementation of the SessionFactory interface
@@ -32,8 +22,6 @@ import com.mysema.rdfbean.model.UID;
  */
 public class SessionFactoryImpl implements SessionFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(SessionFactoryImpl.class);
-    
     private Configuration configuration;
     
     private Iterable<Locale> locales;
@@ -74,9 +62,7 @@ public class SessionFactoryImpl implements SessionFactory {
                 try {
                     session.close();
                 } catch (IOException e) {
-                    String error = "Caught " + e.getClass().getName();
-                    logger.error(error, e);
-                    throw new RuntimeException(error, e);
+                    throw new SessionException(e);
                 }
             }
         }
@@ -104,25 +90,6 @@ public class SessionFactoryImpl implements SessionFactory {
             }
         }
         return session;
-    }
-
-    private void removeStatement(RDFConnection connection, STMT stmt) {
-        connection.update(Collections.singleton(stmt), Collections.<STMT>emptySet());
-    }
-
-    protected void removeStatements(RDFConnection connection,@Nullable ID subject, UID predicate, @Nullable NODE object, @Nullable UID context) {
-        CloseableIterator<STMT> stmts = connection.findStatements(subject, predicate, object, context, false);
-        try {
-            while (stmts.hasNext()) {
-                removeStatement(connection, stmts.next());
-            }
-        } finally {
-            try {
-                stmts.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
     
     public void setConfiguration(Configuration configuration) {

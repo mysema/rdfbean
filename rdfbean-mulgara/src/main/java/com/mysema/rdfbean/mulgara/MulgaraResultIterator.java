@@ -13,6 +13,7 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
@@ -56,7 +57,7 @@ public class MulgaraResultIterator implements CloseableIterator<STMT>{
             } catch (TuplesException e) {
                 String error = "Caught " + e.getClass().getName();
                 logger.error(error, e);
-                throw new RuntimeException(error, e);
+                throw new RepositoryException(error, e);
             }                        
         }
         return next;
@@ -74,7 +75,7 @@ public class MulgaraResultIterator implements CloseableIterator<STMT>{
             } catch (TuplesException e) {
                 String error = "Caught " + e.getClass().getName();
                 logger.error(error, e);
-                throw new RuntimeException(error, e);
+                throw new RepositoryException(error, e);
             }
             
         }else{

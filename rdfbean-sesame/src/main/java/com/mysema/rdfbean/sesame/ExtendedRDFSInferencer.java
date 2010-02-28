@@ -16,6 +16,8 @@ import org.openrdf.sail.inferencer.InferencerConnection;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
 import org.openrdf.store.StoreException;
 
+import com.mysema.rdfbean.model.RepositoryException;
+
 /**
  * ExtendedRDFSInferencer extends ForwardChainingRDFSInferencer to add
  * better support for XSD datatype instances
@@ -50,7 +52,7 @@ public class ExtendedRDFSInferencer extends ForwardChainingRDFSInferencer {
         } catch (Exception e) {
             con.rollback();
             String error = "Caught " + e.getClass().getName();
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         } finally {
             con.close();
         }

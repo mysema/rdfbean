@@ -13,6 +13,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
@@ -52,7 +53,7 @@ public class ModelResultIterator implements CloseableIterator<STMT>{
         try {
             return statements.hasNext();
         } catch (StoreException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -61,7 +62,7 @@ public class ModelResultIterator implements CloseableIterator<STMT>{
         try {
             return convert(statements.next(), !includeInferred);
         } catch (StoreException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
     }
 

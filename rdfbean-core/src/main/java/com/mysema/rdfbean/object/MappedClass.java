@@ -242,14 +242,14 @@ public final class MappedClass {
             }
         }
         if (!found) {
-            throw new RuntimeException("Super class declaration for " + declaringClass + " not found from " + this);
+            throw new SessionException("Super class declaration for " + declaringClass + " not found from " + this);
         }
         
         Type type = (j == 0 ? clazz.getGenericSuperclass() : clazz.getGenericInterfaces()[j-1]);
         if (type instanceof ParameterizedType) {
             return ((ParameterizedType) type).getActualTypeArguments()[i];
         } else {
-            throw new RuntimeException("Generic parameters not supplied from " + this + " to " + declaringClass);
+            throw new SessionException("Generic parameters not supplied from " + this + " to " + declaringClass);
         }
     }
 

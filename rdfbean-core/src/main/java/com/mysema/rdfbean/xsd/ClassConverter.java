@@ -25,7 +25,7 @@ public class ClassConverter implements Converter<Class<?>>{
         } catch (ClassNotFoundException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new IllegalArgumentException(error, e);
         }
     }
 

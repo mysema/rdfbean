@@ -25,6 +25,7 @@ import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.RepositoryOntology;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
@@ -103,13 +104,13 @@ public abstract class SesameRepository implements Repository{
                 }
                 
             } catch (RDFParseException e) {
-                throw new RuntimeException(e);
+                throw new RepositoryException(e);
             } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
+                throw new RepositoryException(e);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RepositoryException(e);
             } catch (StoreException e) {
-                throw new RuntimeException(e);
+                throw new RepositoryException(e);
             }
             initialized = true;
         }
@@ -129,9 +130,9 @@ public abstract class SesameRepository implements Repository{
                 conn.close();
             }
         } catch (StoreException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RepositoryException(e.getMessage(), e);
         } catch (RDFHandlerException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new RepositoryException(e.getMessage(), e);
         }                     
     }
     
@@ -141,7 +142,7 @@ public abstract class SesameRepository implements Repository{
             initialized = false;
             repository.shutDown();
         } catch (StoreException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
     }
 

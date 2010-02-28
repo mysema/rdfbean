@@ -50,7 +50,7 @@ public final class FieldProperty extends MappedProperty<Field> {
         try {
             field.set(beanMap.getBean(), value);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new SessionException(e);
         }
     }
 
@@ -59,7 +59,7 @@ public final class FieldProperty extends MappedProperty<Field> {
         try {
             return field.get(instance.getBean());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new SessionException(e);
         }
     }
 

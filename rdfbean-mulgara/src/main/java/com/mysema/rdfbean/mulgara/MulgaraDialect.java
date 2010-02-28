@@ -25,15 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.Dialect;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.NodeType;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.model.*;
 
 /**
  * MulgaraDialect provides
@@ -72,7 +64,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
         } catch (GraphElementFactoryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }
     }
     
@@ -84,7 +76,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
         } catch (GraphElementFactoryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }
     }
 
@@ -96,7 +88,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
         } catch (GraphElementFactoryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }
     }
 
@@ -173,7 +165,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
         } catch (GraphElementFactoryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }        
     }
 
@@ -236,7 +228,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
         } catch (GraphElementFactoryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RuntimeException(error, e);
+            throw new RepositoryException(error, e);
         }
         
     }

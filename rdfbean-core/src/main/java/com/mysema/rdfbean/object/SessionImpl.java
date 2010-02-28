@@ -156,9 +156,9 @@ public final class SessionImpl implements Session {
                                     getPathValue(mappedClass, path, subject, context), 
                                     context);
                         } catch (InstantiationException e) {
-                            throw new RuntimeException(e);
+                            throw new SessionException(e);
                         } catch (IllegalAccessException e) {
-                            throw new RuntimeException(e);
+                            throw new SessionException(e);
                         }
                         if (convertedValue != null) {
                             property.setValue(beanMap, convertedValue);
@@ -575,7 +575,7 @@ public final class SessionImpl implements Session {
                     stmts.close();
                 } catch (IOException e) {
                     logger.error(e.getMessage(), e);
-                    throw new RuntimeException(e);
+                    throw new SessionException(e);
                 }
             }
         }
@@ -593,7 +593,7 @@ public final class SessionImpl implements Session {
             try {
                 statements.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new SessionException(e);
             }
         }
         return objects;
@@ -611,7 +611,7 @@ public final class SessionImpl implements Session {
             try {
                 statements.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new SessionException(e);
             }
         }
         return subjects;
@@ -654,7 +654,7 @@ public final class SessionImpl implements Session {
             }
         }
 //        } catch (Exception e) {
-//            throw new RuntimeException(e);
+//            throw new SessionException(e);
 //        }
     }
     
@@ -954,7 +954,7 @@ public final class SessionImpl implements Session {
             } else if (mappedProperty.getType().equals(String.class)) {
                 convertedValue = convertLocalized(propertyPath, values);
             } else {
-                throw new RuntimeException("Illegal use of @Localized with " 
+                throw new SessionException("Illegal use of @Localized with " 
                         + mappedProperty.getType() + " at " + propertyPath);
             }
         } 
@@ -1130,7 +1130,7 @@ public final class SessionImpl implements Session {
                 } else if (Identifier.class.isAssignableFrom(type)) {
                     id = identifier;
                 } else {
-                    throw new RuntimeException(
+                    throw new SessionException(
                             "Cannot assign id of " + mappedClass + " into " + type);
                 }
             }
