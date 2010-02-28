@@ -148,7 +148,7 @@ public class SesameSchemaGen extends SchemaGen {
     }
 
     public SesameSchemaGen setOutputStream(OutputStream outputStream) {
-        writer = null;
+        this.writer = null;
         this.outputStream = outputStream;
         return this;
     }
@@ -160,7 +160,7 @@ public class SesameSchemaGen extends SchemaGen {
     }
 
     public SesameSchemaGen setWriter(Writer writer) {
-        outputStream = null;
+        this.outputStream = null;
         this.writer = writer;
         return this;
     }

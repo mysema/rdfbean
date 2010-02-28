@@ -179,11 +179,11 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
 
     @Override
     public NODE getNODE(Node node) {
-        if (node.isBlankNode()){
+        if (node instanceof BlankNode){
             return getBID((BlankNode)node);
-        }else if (node.isURIReference()){
+        }else if (node instanceof URIReference){
             return getUID((URIReference)node);
-        }else if (node.isLiteral()){
+        }else if (node instanceof Literal){
             return getLIT((Literal)node);
         }else{
             throw new IllegalArgumentException("Illegal node : " + node);

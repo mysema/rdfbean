@@ -270,7 +270,7 @@ public final class MiniRepository implements Repository{
 
     public static class ResultIterator implements CloseableIterator<STMT> {
         
-        private Iterator<STMT> iter;
+        private final Iterator<STMT> iter;
         
         private ResultIterator(Iterable<STMT> iterable, @Nullable final ID subject, @Nullable final UID predicate, 
                 @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
