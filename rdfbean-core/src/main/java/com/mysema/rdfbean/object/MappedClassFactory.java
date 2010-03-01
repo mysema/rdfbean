@@ -20,12 +20,14 @@ import java.util.Map;
  * @author tiwe
  * @version $Id$
  */
-public class MappedClassFactory {
+public final class MappedClassFactory {
     
-  private static Map<Class<?>, MappedClass> mappedClasses = Collections.synchronizedMap(
+    private MappedClassFactory(){}
+    
+    private static Map<Class<?>, MappedClass> mappedClasses = Collections.synchronizedMap(
           new LinkedHashMap<Class<?>, MappedClass>());
 
-  private static void assignConstructor(Class<?> clazz, MappedClass mappedClass) {
+    private static void assignConstructor(Class<?> clazz, MappedClass mappedClass) {
       Constructor<?>[] constructors = clazz.getDeclaredConstructors();
       if (constructors.length == 0) {
           return;

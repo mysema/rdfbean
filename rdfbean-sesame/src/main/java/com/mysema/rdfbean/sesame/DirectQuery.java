@@ -26,7 +26,9 @@ import org.openrdf.store.StoreException;
  * @author tiwe
  * @version $Id$
  */
-public class DirectQuery {
+public final class DirectQuery {
+    
+    private DirectQuery(){}
     
     private static ThreadLocal<QueryModel> QUERY_HOLDER = new ThreadLocal<QueryModel>();    
     

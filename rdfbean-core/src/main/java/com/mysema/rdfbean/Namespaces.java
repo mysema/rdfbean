@@ -25,6 +25,8 @@ import com.mysema.rdfbean.owl.OWL;
  *
  */
 public final class Namespaces {
+    
+    private Namespaces(){}
 
     private static Map<String, String> ns2prefix = new HashMap<String, String>();
     

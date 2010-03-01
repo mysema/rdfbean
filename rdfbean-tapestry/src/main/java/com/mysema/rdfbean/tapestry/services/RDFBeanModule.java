@@ -23,7 +23,9 @@ import com.mysema.rdfbean.tapestry.TransactionalAdvisorImpl;
  * @author tiwe
  * @version $Id$
  */
-public class RDFBeanModule {
+public final class RDFBeanModule {
+    
+    private RDFBeanModule(){}
     
     public static void bind(ServiceBinder binder){
         binder.bind(TransactionalAdvisor.class, TransactionalAdvisorImpl.class);

@@ -63,7 +63,7 @@ public abstract class SesameRepository implements Repository{
         try {
             return new SesameConnection(this, repository.getConnection(), ontology, getInferenceOptions());
         } catch (StoreException e) {
-            throw new RuntimeException(e);
+            throw new RepositoryException(e);
         }
     }
     
