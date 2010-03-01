@@ -155,12 +155,12 @@ public class SchemaGenMojo extends AbstractMojo{
         ClassNotFoundException {
         List<Class<?>> entityClasses = new ArrayList<Class<?>>();        
         for (URL url : classLoader.getURLs()){
-            Iterator<?> classes = ArchiveBrowser.getBrowser(url, filter);
-            while (classes.hasNext()){
+            Iterator<?> classContents = ArchiveBrowser.getBrowser(url, filter);
+            while (classContents.hasNext()){
                 ClassFile classFile = null;
                 DataInputStream in = null;
                 try{
-                    in = new DataInputStream((InputStream)classes.next());
+                    in = new DataInputStream((InputStream)classContents.next());
                     classFile = new ClassFile(in);
                 }finally{
                     if (in != null){

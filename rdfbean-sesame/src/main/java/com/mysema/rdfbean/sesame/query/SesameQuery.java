@@ -486,12 +486,12 @@ public class SesameQuery
             addProjection(expr, projection, extensions);
         }        
         
-        ValueExpr filterConditions = toValue(where);
+        ValueExpr filters = toValue(where);
         
         // from
         TupleExpr tupleExpr = createTupleExpr(
                 joinBuilder.getTupleExpr(),             // from
-                filterConditions,                       // where
+                filters,                                // where
                 Collections.<OrderElem>emptyList(),     // order
                 extensions,                             // select
                 projection,

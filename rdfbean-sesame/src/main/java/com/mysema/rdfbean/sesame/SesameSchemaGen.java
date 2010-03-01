@@ -90,8 +90,7 @@ public class SesameSchemaGen extends SchemaGen {
         }
         String ontology = getOntology();
         if (ontology != null && handler instanceof RDFXMLWriter) {
-            RDFXMLWriter writer = (RDFXMLWriter) handler;
-            writer.setBaseURI(ontology);
+            ((RDFXMLWriter) handler).setBaseURI(ontology);
         }
         handler = new RDFBeanHandler(handler);
         MemoryRepository repository = new MemoryRepository();
