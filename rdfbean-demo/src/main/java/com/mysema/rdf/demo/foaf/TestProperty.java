@@ -3,7 +3,6 @@ package com.mysema.rdf.demo.foaf;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 import com.mysema.rdf.demo.generic.Property;
 import com.mysema.rdf.demo.generic.Value;
@@ -12,8 +11,9 @@ import com.mysema.rdfbean.model.UID;
 
 public class TestProperty<T> implements Property<T> {
 
-    private Set<LIT> literals = new HashSet<LIT>();
-    private Set<T> references = new HashSet<T>();
+    private Collection<LIT> literals = new HashSet<LIT>();
+    
+    private Collection<T> references = new HashSet<T>();
     
     private UID uid;
     
@@ -44,7 +44,7 @@ public class TestProperty<T> implements Property<T> {
     }
 
     @Override
-    public Collection getLiterals() {
+    public Collection<LIT> getLiterals() {
         return literals;
     }
 
@@ -54,7 +54,7 @@ public class TestProperty<T> implements Property<T> {
     }
 
     @Override
-    public Collection getReferences() {
+    public Collection<T> getReferences() {
         return references;
     }
 
@@ -64,7 +64,7 @@ public class TestProperty<T> implements Property<T> {
     }
 
     @Override
-    public Value getValue() {
+    public Value<T> getValue() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -76,7 +76,7 @@ public class TestProperty<T> implements Property<T> {
     }
 
     @Override
-    public Collection getValues() {
+    public Collection<Value<T>> getValues() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -106,11 +106,11 @@ public class TestProperty<T> implements Property<T> {
     }
 
     @Override
-    public void setLiterals(Collection values) {
-       literals = (Set) values;
+    public void setLiterals(Collection<LIT> values) {
+       literals = values;
     }
 
-    public Set<LIT> getLiteralsSet() {
+    public Collection<LIT> getLiteralsSet() {
         return literals;
     }
     
@@ -121,12 +121,12 @@ public class TestProperty<T> implements Property<T> {
     }
 
     @Override
-    public void setReferences(Collection values) {
+    public void setReferences(Collection<T> values) {
         // TODO Auto-generated method stub
         
     }
 
-    public Set<T> getReferencesSet() {
+    public Collection<T> getReferencesSet() {
         return references;
     }
     

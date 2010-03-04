@@ -36,6 +36,80 @@ import com.mysema.rdfbean.owl.OWL;
  */
 public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
+    private static final String ALL = " ALL ";
+
+    private static final String ANY = " ANY ";
+
+    private static final String AS = " AS ";
+
+    private static final String ASC = " ASC";
+
+    private static final String BOUND = "BOUND( ";
+    
+    private static final String COMMA = ", ";
+
+    private static final String COUNT = "COUNT( ";
+
+    private static final String DATATYPE = "DATATYPE( ";
+
+    private static final String DESC = " DESC";
+
+    private static final String DISTINCT = "DISTINCT( ";
+
+    private static final String DISTINCT2 = "DISTINCT ";
+
+    private static final String EQUALS = " = ";
+
+    private static final String EXISTS = "EXISTS( ";
+
+    private static final String EXTENSIONS = "\nEXTENSIONS ";
+
+    private static final String FROM = "\nFROM ";
+
+    private static final String IN = " IN ";
+
+    private static final String IS_B_NODE = "isBNode( ";
+
+    private static final String IS_LITERAL = "isLiteral( ";
+
+    private static final String IS_RESOURCE = "isResource( ";
+
+    private static final String IS_URI = "isURI( ";
+   
+    private static final String LABEL = "label( ";
+
+    private static final String LANG = "lang( ";
+
+    private static final String LIMIT = "\nLIMIT ";
+
+    private static final String MATCH = " match ";
+
+    private static final String MAX = "MAX( ";
+
+    private static final String MIN = "MIN( ";
+
+    private static final String NOT = "NOT ";
+
+    private static final String OFFSET = "\nOFFSET ";
+
+    private static final String OR = " OR\n  ";
+
+    private static final String ORDER_BY = "\nORDER BY ";
+
+    private static final String PREFIXES = "\nPREFIXES";
+
+    private static final String REGEX = "regex( ";
+
+    private static final String SELECT = "SELECT ";
+
+    private static final String SEMICOLON = " ; ";
+
+    private static final String STR = "str( ";
+
+    private static final String UNION = " UNION ";
+
+    private static final String WHERE = "\nWHERE ";
+    
     private static final Set<String> knownNamespaces = new HashSet<String>(Arrays.asList(RDF.NS, RDFS.NS, XSD.NS, OWL.NS));
     
     private final StringBuilder builder = new StringBuilder();
@@ -63,19 +137,6 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         }
     }
 
-    private void printNamespaces() {
-        for (String ns : namespaces){
-            String prefix = Namespaces.getPrefix(ns);
-            if (prefix != null && !knownNamespaces.contains(ns)){
-                if (!usingNsPrinted){
-                    append("\nPREFIXES");
-                    usingNsPrinted = true;
-                }
-                append("\n  ").append(prefix).append(": <").append(ns).append(">");
-            }
-        }
-    }
-    
     private QuerySerializer append(String str){
         builder.append(str);
         return this;
@@ -88,7 +149,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     @Override
     public void meet(Bound node){
-        append( "BOUND( " ).visit(node.getArg()).append( " )" );
+        append( BOUND ).visit(node.getArg()).append( " )" );
     }
     
     @Override
@@ -101,25 +162,25 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     @Override
     public void meet(CompareAll node){
         node.getArg().visit(this);
-        append( " " ).append(node.getOperator().getSymbol()).append( " ALL " );
+        append( " " ).append(node.getOperator().getSymbol()).append( ALL );
         node.getSubQuery().visit(this);
     }
     
     @Override
     public void meet(CompareAny node){
         node.getArg().visit(this);
-        append( " " ).append(node.getOperator().getSymbol()).append( " ANY " );
+        append( " " ).append(node.getOperator().getSymbol()).append( ANY );
         node.getSubQuery().visit(this);
     }
     
     @Override
     public void meet(Count node){
-        append( "COUNT( " ).visit(node.getArg()).append( " )" );
+        append( COUNT ).visit(node.getArg()).append( " )" );
     }
     
     @Override
     public void meet(Datatype node){
-        append( "DATATYPE( " ).visit(node.getArg()).append( " )" );
+        append( DATATYPE ).visit(node.getArg()).append( " )" );
     }
     
     @Override
@@ -134,27 +195,27 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         if (node.getArg() instanceof Projection){
             meet((Projection)node.getArg(), true);
         }else{
-            append( "DISTINCT( " ).visit(node.getArg()).append( " )" );    
+            append( DISTINCT ).visit(node.getArg()).append( " )" );    
         }        
     }
     
     @Override
     public void meet(Exists node){
         lastPattern = null;
-        append( "EXISTS( " );
+        append( EXISTS );
         visit(node.getSubQuery());
         append( " )" );
     }
     
     @Override
     public void meet(Extension node){
-        append("\nEXTENSIONS ");
+        append(EXTENSIONS);
         boolean first = true;
         for (ExtensionElem elem : node.getElements()){
             if (!first){
-                append( "," );
+                append( COMMA );
             }
-            append(elem.getName()).append(" = ");
+            append(elem.getName()).append(EQUALS);
             elem.getExpr().visit(this);
             first = false;
         }
@@ -163,10 +224,10 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     @Override
     public void meet(Filter node){
-        append( "\nFROM " );
+        append( FROM );
         fromPrinted = true;
         node.getArg().visit(this);
-        append( "\nWHERE " );
+        append( WHERE );
         node.getCondition().visit(this);
     }
     
@@ -179,7 +240,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         boolean first = true;
         for (ValueExpr v : node.getArgs()){
             if (!first){
-                append( "," );
+                append( COMMA );
             }
             first = false;
             v.visit(this);
@@ -188,20 +249,9 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     @Override
-    public void meet(Slice node){
-        node.getArg().visit(this);
-        if (node.getLimit() > -1){
-            append("\nLIMIT " + node.getLimit());    
-        }
-        if (node.getOffset() > 0){
-            append("\nOFFSET " + node.getOffset());    
-        }        
-    }
-    
-    @Override
     public void meet(In node){
         node.getArg().visit(this);
-        append( " IN " );
+        append( IN );
         node.getSubQuery().visit(this);
     }
     
@@ -214,28 +264,28 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     @Override
     public void meet(IsBNode node){
-        append( "isBNode( " ).visit(node.getArg()).append( " )" );
+        append( IS_B_NODE ).visit(node.getArg()).append( " )" );
     }
     
     @Override
     public void meet(IsLiteral node){
-        append( "isLiteral( " ).visit(node.getArg()).append( " )" );
+        append( IS_LITERAL ).visit(node.getArg()).append( " )" );
     }
     
     @Override
     public void meet(IsResource node){
-        append( "isResource( " ).visit(node.getArg()).append( " )" );
+        append( IS_RESOURCE ).visit(node.getArg()).append( " )" );
     }
     
     @Override
     public void meet(IsURI node){
-        append( "isURI( " ).visit(node.getArg()).append( " )" );
+        append( IS_URI ).visit(node.getArg()).append( " )" );
     }
     
     @Override
     public void meet(Join node){
         if (!fromPrinted){
-            append( "\nFROM " );
+            append( FROM );
             fromPrinted = true;
         }
         node.getArg(0).visit(this);
@@ -246,29 +296,23 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     @Override
     public void meet(Label node){
-        append( "label( " ).visit(node.getArg()).append( " )" );
+        append( LABEL ).visit(node.getArg()).append( " )" );
     }
     
     @Override
     public void meet(Lang node){
-        append( "lang( " ).visit(node.getArg()).append( " )" );
+        append( LANG ).visit(node.getArg()).append( " )" );
     }
     
     @Override
     public void meet(LangMatches node){
-        visit(node.getLeftArg()).append(" match ").visit(node.getRightArg());
+        visit(node.getLeftArg()).append(MATCH).visit(node.getRightArg());
     }
-    
-//    @Override
-//    public void meet(Like node){
-//        node.getArg().visit(this);
-//        append( " LIKE '" ).append(node.getOpPattern()).append( "' " );
-//    }
     
     @Override
     public void meet(LeftJoin node){
         if (!fromPrinted){
-            append( "\nFROM " );
+            append( FROM );
             fromPrinted = true;
         }
         node.getArg(0).visit(this);        
@@ -278,41 +322,46 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         append( " )" );
     }
     
-    
     @Override
     public void meet(Max node){
-        append( "MAX( " ).visit(node.getArg()).append( " )" );
+        append( MAX ).visit(node.getArg()).append( " )" );
     }
+    
+//    @Override
+//    public void meet(Like node){
+//        node.getArg().visit(this);
+//        append( " LIKE '" ).append(node.getOpPattern()).append( "' " );
+//    }
     
     @Override
     public void meet(Min node){
-        append( "MIN( " ).visit(node.getArg()).append( " )" );
+        append( MIN ).visit(node.getArg()).append( " )" );
     }
+    
     
     @Override
     public void meet(Not node){
-        append( "NOT " ).visit(node.getArg());
+        append( NOT ).visit(node.getArg());
     }
     
     @Override
     public void meet(Or node){
         node.getArg(0).visit(this);
-        append( " OR\n  " );
+        append( OR );
         node.getArg(1).visit(this);
     }
     
-
     @Override
     public void meet(Order node){
         visit(node.getArg());
-        append("\nORDER BY ");
+        append(ORDER_BY);
         boolean first = true;
         for (OrderElem elem : node.getElements()){
             if (!first){
-                append(", ");
+                append(COMMA);
             }
             visit(elem.getExpr());
-            append(elem.isAscending() ? " ASC" : " DESC");
+            append(elem.isAscending() ? ASC : DESC);
             first = false;
         }
     }
@@ -322,18 +371,19 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         meet(node, false);
     }
     
+
     private void meet(Projection node, boolean distinct){
-        append( "SELECT " );
+        append( SELECT );
         if (distinct){
-            append("DISTINCT ");
+            append(DISTINCT2);
         }
         boolean first = true;
         for (ProjectionElem p : node.getProjectionElemList().getElements()){
             if (!first){
-                append( ", " );
+                append( COMMA );
             }            
             if (!p.getSourceName().equals(p.getTargetName())){
-                append(p.getSourceName()).append( " AS " );
+                append(p.getSourceName()).append( AS );
             }
             append(p.getTargetName());
             
@@ -344,30 +394,41 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     @Override
     public void meet(Regex node){        
-        append( "regex( " );
+        append( REGEX );
         node.getArg().visit(this);
-        append( ", " );
+        append( COMMA );
         node.getPatternArg().visit(this);
         if (node.getFlagsArg() != null){
-            append( ", " );
+            append( COMMA );
             node.getFlagsArg().visit(this);
         }
         append( " )" );
     }
     
     @Override
+    public void meet(Slice node){
+        node.getArg().visit(this);
+        if (node.getLimit() > -1){
+            append(LIMIT + node.getLimit());    
+        }
+        if (node.getOffset() > 0){
+            append(OFFSET + node.getOffset());    
+        }        
+    }
+    
+    @Override
     public void meet(StatementPattern node){
         if (!fromPrinted){
-            append( "\nFROM " );
+            append( FROM );
             fromPrinted = true;
         }
         if (lastPattern != null){
             if (lastPattern.getSubjectVar().equals(node.getSubjectVar())){
                 if (lastPattern.getPredicateVar().equals(node.getPredicateVar())){
-                    append(" , ").visit(node.getObjectVar());
+                    append(COMMA).visit(node.getObjectVar());
                     return;
                 }else{
-                    append(" ; ").visit(node.getPredicateVar()).append(" ").visit(node.getObjectVar());
+                    append(SEMICOLON).visit(node.getPredicateVar()).append(" ").visit(node.getObjectVar());
                     return;
                 }
             }else{
@@ -380,7 +441,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     @Override
     public void meet(Str node){
-        append( "str( " ).visit(node.getArg()).append( " )" );
+        append( STR ).visit(node.getArg()).append( " )" );
     }
     
     @Override
@@ -388,13 +449,13 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         for (int i = 0; i < node.getNumberOfArguments(); i++){            
             if (i > 0){
                 lastPattern = null;
-                append(" UNION ");
+                append(UNION);
             }
             visit(node.getArg(i));
         }        
 //        lastPattern = null;
     }
-        
+    
     private void meet(Value value){
         if (value instanceof URI){    
             URI uri = (URI) value;
@@ -415,7 +476,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             append(value.toString());
         }
     }
-    
+        
     @Override
     public void meet(ValueConstant node){
         meet(node.getValue());
@@ -428,6 +489,19 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             append("{").append(node.getName()).append("}");            
         }else{    
             meet(value);
+        }
+    }
+    
+    private void printNamespaces() {
+        for (String ns : namespaces){
+            String prefix = Namespaces.getPrefix(ns);
+            if (prefix != null && !knownNamespaces.contains(ns)){
+                if (!usingNsPrinted){
+                    append(PREFIXES);
+                    usingNsPrinted = true;
+                }
+                append("\n  ").append(prefix).append(": <").append(ns).append(">");
+            }
         }
     }
     

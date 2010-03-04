@@ -39,22 +39,26 @@ public class ExtendedRDFSInferencer extends ForwardChainingRDFSInferencer {
     public void initialize() throws StoreException {
         super.initialize();
 
-        InferencerConnection con = getConnection();
+        InferencerConnection conn = getConnection();
         try {
-            con.begin();
+            conn.begin();
             for (Field field : XMLSchema.class.getFields()){
                 if (field.getType().equals(URI.class)){
-                    con.addInferredStatement((URI)field.get(null), RDF.TYPE, RDFS.DATATYPE);
+                    conn.addInferredStatement((URI)field.get(null), RDF.TYPE, RDFS.DATATYPE);
                 }
             }
             // TODO : datatype relations
-            con.commit();
-        } catch (Exception e) {
-            con.rollback();
+            conn.commit();
+        } catch (StoreException e) {
+            conn.rollback();
+            String error = "Caught " + e.getClass().getName();
+            throw new RepositoryException(error, e);
+        } catch (IllegalAccessException e) {
+            conn.rollback();
             String error = "Caught " + e.getClass().getName();
             throw new RepositoryException(error, e);
         } finally {
-            con.close();
+            conn.close();
         }
     }
 }

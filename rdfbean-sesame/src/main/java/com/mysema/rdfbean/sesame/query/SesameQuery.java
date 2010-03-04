@@ -152,7 +152,7 @@ public class SesameQuery
         public TupleExpr transform(StatementPattern pattern) {
             if (inference.untypedAsString()){
                 Var object = pattern.getObjectVar();
-                if (object.getValue() != null && object.getValue() instanceof Literal){
+                if (object.getValue() instanceof Literal){
                     return transformLiteralPattern(pattern, object);                    
                 }            
             }        

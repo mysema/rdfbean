@@ -30,6 +30,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.jboss.util.file.ArchiveBrowser;
+import org.openrdf.OpenRDFException;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.object.DefaultConfiguration;
@@ -117,7 +118,9 @@ public class SchemaGenMojo extends AbstractMojo{
             
             if (schemaFile != null){
                 if (!schemaFile.getParentFile().exists()){
-                    schemaFile.getParentFile().mkdirs();
+                    if (!schemaFile.getParentFile().mkdirs()){
+                        getLog().info("Creation of " + schemaFile.getParentFile().getPath() + " failed");
+                    }
                 }
                 SesameSchemaGen schemaGen = new SesameSchemaGen()
                     .setNamespace(prefix, namespace)
@@ -142,12 +145,22 @@ public class SchemaGenMojo extends AbstractMojo{
                 FileUtils.writeStringToFile(classListFile, builder.toString(), "UTF-8");
             }
             
-        } catch (Exception e) {
-            if (e instanceof RuntimeException){
-                throw (RuntimeException)e;
-            }else{
-                throw new RuntimeException(e);    
-            }            
+        } catch (IOException e) {
+            String error = "Caught " + e.getClass().getName();
+            getLog().error(error, e);
+            throw new MojoExecutionException(error, e);
+        } catch (OpenRDFException e) {
+            String error = "Caught " + e.getClass().getName();
+            getLog().error(error, e);
+            throw new MojoExecutionException(error, e);
+        } catch (DependencyResolutionRequiredException e) {
+            String error = "Caught " + e.getClass().getName();
+            getLog().error(error, e);
+            throw new MojoExecutionException(error, e);
+        } catch (ClassNotFoundException e) {
+            String error = "Caught " + e.getClass().getName();
+            getLog().error(error, e);
+            throw new MojoExecutionException(error, e);
         }               
     }
 
