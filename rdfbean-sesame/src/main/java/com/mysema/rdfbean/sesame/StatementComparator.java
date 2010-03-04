@@ -19,9 +19,10 @@ import org.openrdf.model.Value;
  * @author tiwe
  * @version $Id$
  */
-@SuppressWarnings("serial")
 public class StatementComparator implements Comparator<Statement>, Serializable{
     
+    private static final long serialVersionUID = 3827347034847500270L;
+
     @Override
     public int compare(Statement o1, Statement o2) {
         if (!o1.getSubject().equals(o2.getSubject())){

@@ -31,6 +31,13 @@ import com.mysema.rdfbean.model.UID;
  */
 public final class MappedClass {
     
+    private static final Comparator<MappedPath> mappedPathComparator = new Comparator<MappedPath>() {
+        @Override
+        public int compare(MappedPath o1, MappedPath o2) {
+            return o1.getOrder() - o2.getOrder();
+        }
+    };
+    
     public static String getClassNs(Class<?> clazz) {
         ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
         if (cmap != null) {
@@ -126,12 +133,7 @@ public final class MappedClass {
     void close() {
         MappedPath[] paths = properties.values().toArray(new MappedPath[properties.size()]);
         // Sort properties into bind order
-        Arrays.sort(paths, new Comparator<MappedPath>() {
-            @Override
-            public int compare(MappedPath o1, MappedPath o2) {
-                return o1.getOrder() - o2.getOrder();
-            }
-        });
+        Arrays.sort(paths, mappedPathComparator);
         // Rebuild properties map using bind ordering
         properties = new LinkedHashMap<String, MappedPath>();
         for (MappedPath path : paths) {

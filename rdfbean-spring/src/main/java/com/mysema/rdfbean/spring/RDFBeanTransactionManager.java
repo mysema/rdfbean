@@ -98,8 +98,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
      * @throws TransactionException in case of creation or system errors
      */
     @Override
-    protected void doBegin(Object transaction, TransactionDefinition definition)
-            throws TransactionException {
+    protected void doBegin(Object transaction, TransactionDefinition definition){
         try {            
             // session
             Session s = ((TransactionObject) transaction).getSession();
@@ -126,8 +125,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
      * @see DefaultTransactionStatus#getTransaction
      */
     @Override
-    protected void doCommit(DefaultTransactionStatus status)
-            throws TransactionException {        
+    protected void doCommit(DefaultTransactionStatus status){        
         TransactionObject txObj = (TransactionObject) status.getTransaction();
         RDFBeanTransaction tx = txObj.getTransaction();
         if (tx == null){
@@ -158,8 +156,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
      * @see DefaultTransactionStatus#getTransaction
      */
     @Override
-    protected void doRollback(DefaultTransactionStatus status)
-            throws TransactionException {
+    protected void doRollback(DefaultTransactionStatus status){
         TransactionObject txObj = (TransactionObject) status.getTransaction();
         RDFBeanTransaction tx = txObj.getTransaction();
         if (tx == null){
@@ -212,7 +209,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
      * @throws TransactionException in case of system errors
      */
     @Override
-    protected void doSetRollbackOnly(DefaultTransactionStatus status) throws TransactionException {
+    protected void doSetRollbackOnly(DefaultTransactionStatus status){
         TransactionObject txObj = (TransactionObject) status.getTransaction();
         try {
             txObj.setRollbackOnly();

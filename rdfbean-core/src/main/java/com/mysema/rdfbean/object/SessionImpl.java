@@ -37,6 +37,13 @@ import com.mysema.rdfbean.model.*;
  */
 public final class SessionImpl implements Session {
     
+    private static final Factory<List<Object>> listFactory = new Factory<List<Object>>() {
+        @Override
+        public List<Object> create() {
+            return new ArrayList<Object>();
+        }
+    };
+    
     public static final Set<UID> CONTAINER_TYPES = Collections.unmodifiableSet(
             new HashSet<UID>(Arrays.<UID>asList(
                     RDF.Alt, RDF.Seq, RDF.Bag, RDFS.Container
@@ -177,12 +184,7 @@ public final class SessionImpl implements Session {
     public void clear() {
         instanceCache = LazyMap.decorate(
                 new HashMap<ID, List<Object>>(DEFAULT_INITIAL_CAPACITY), 
-                new Factory<List<Object>>() {
-                    @Override
-                    public List<Object> create() {
-                        return new ArrayList<Object>();
-                    }
-                }
+                listFactory
         );
         resourceCache = new IdentityHashMap<Object, ID>(DEFAULT_INITIAL_CAPACITY);
         addedStatements = new LinkedHashSet<STMT>(DEFAULT_INITIAL_CAPACITY);

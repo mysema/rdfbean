@@ -91,6 +91,8 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     private static final String NOT = "NOT ";
 
     private static final String OFFSET = "\nOFFSET ";
+    
+    private static final String OPTIONAL = "OPTIONAL ( ";
 
     private static final String OR = " OR\n  ";
 
@@ -316,7 +318,8 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             fromPrinted = true;
         }
         node.getArg(0).visit(this);        
-        append( ".\n  OPTIONAL ( " );
+        append( ".\n ");
+        append(OPTIONAL );
         lastPattern = null;
         node.getArg(1).visit(this);
         append( " )" );
@@ -327,18 +330,11 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         append( MAX ).visit(node.getArg()).append( " )" );
     }
     
-//    @Override
-//    public void meet(Like node){
-//        node.getArg().visit(this);
-//        append( " LIKE '" ).append(node.getOpPattern()).append( "' " );
-//    }
-    
     @Override
     public void meet(Min node){
         append( MIN ).visit(node.getArg()).append( " )" );
     }
-    
-    
+        
     @Override
     public void meet(Not node){
         append( NOT ).visit(node.getArg());

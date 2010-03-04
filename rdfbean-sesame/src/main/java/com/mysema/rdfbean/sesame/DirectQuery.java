@@ -30,7 +30,7 @@ public final class DirectQuery {
     
     private DirectQuery(){}
     
-    private static ThreadLocal<QueryModel> QUERY_HOLDER = new ThreadLocal<QueryModel>();    
+    private static final ThreadLocal<QueryModel> QUERY_HOLDER = new ThreadLocal<QueryModel>();    
     
     private static final QueryLanguage DIRECTQUERY = new QueryLanguage("DIRECTQUERY");    
     

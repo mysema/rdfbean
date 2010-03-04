@@ -75,7 +75,7 @@ public class EqualsTransformer implements OperationTransformer{
                     && Ops.equalsOps.contains(operation.getOperator()) 
                     && !context.inNegation()
                     && !context.inOptionalPath()){
-                return pathEqPath(operation.getOperator(), (Path<?>)arg1, (Path<?>)arg2, context);                
+                return pathEqPath((Path<?>)arg1, (Path<?>)arg2, context);                
            
             }else if (arg2 instanceof Constant){
                 return pathEqNeConstant(operation.getOperator(), (Path<?>) arg1, arg2, context);
@@ -99,7 +99,7 @@ public class EqualsTransformer implements OperationTransformer{
     }    
     
     @Nullable
-    private ValueExpr pathEqPath(Operator<?> operator, Path<?> path, Path<?> otherPath, TransformerContext context) {
+    private ValueExpr pathEqPath(Path<?> path, Path<?> otherPath, TransformerContext context) {
         if (context.isKnown(path)){
             context.register(otherPath, context.toVar(path));
             context.toVar(otherPath);          
