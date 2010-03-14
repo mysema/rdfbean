@@ -87,12 +87,27 @@ public final class MappedClass {
 
     private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
     
+    private Map<Type, MappedProperties> dynamicProperties = new LinkedHashMap<Type, MappedProperties>();
+    
     @Nullable
     private final UID uid;
     
     MappedClass(Class<?> clazz) {
         this.clazz = clazz;
         uid = getUID(clazz);
+    }
+    
+    void addMappedProperties(MappedProperties properties) {
+        Type mappedKey = properties.getMappedKey();
+        
+        // FIXME How to handle mapped keys from superclass?
+        
+        if (dynamicProperties.containsKey(mappedKey)) {
+            throw new IllegalArgumentException("Duplicate properties-mapping. Key is: " + mappedKey);
+        }
+        else {
+            dynamicProperties.put(mappedKey, properties);
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -205,6 +220,10 @@ public final class MappedClass {
     
     public Iterable<MappedPath> getProperties() {
         return properties.values();
+    }
+    
+    public Iterable<MappedProperties> getDynamicProperties() {
+        return dynamicProperties.values();
     }
     
     @Nullable

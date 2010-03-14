@@ -82,6 +82,19 @@ public final class MappedClassFactory {
       }
   }
 
+  private static void collectFieldProperties(Class<?> clazz, MappedClass mappedClass) {
+      if (!clazz.isInterface()) {
+          MappedProperties properties;
+          String classNs = MappedClass.getClassNs(clazz);
+          for (Field field : clazz.getDeclaredFields()) {
+              properties = MappedProperties.getMapping(classNs, field, mappedClass);
+              if (properties != null) {
+                  mappedClass.addMappedProperties(properties);
+              }
+          }
+      }
+  }
+  
   private static void collectMethodPaths(Class<?> clazz, MappedClass mappedClass) {
       MappedPath path;
       String classNs = MappedClass.getClassNs(clazz);
@@ -117,6 +130,7 @@ public final class MappedClassFactory {
                 // Collect direct properties (merge with super properties)
                 collectFieldPaths(clazz, mappedClass);
                 collectMethodPaths(clazz, mappedClass);
+                collectFieldProperties(clazz, mappedClass);
                 assignConstructor(clazz, mappedClass);
                 mappedClass.close();
                 mappedClasses.put(clazz, mappedClass);
