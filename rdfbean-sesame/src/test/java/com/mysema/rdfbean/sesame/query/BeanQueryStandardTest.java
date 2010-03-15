@@ -6,13 +6,18 @@
 package com.mysema.rdfbean.sesame.query;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
+import com.mysema.commons.lang.Pair;
 import com.mysema.query.Module;
-import com.mysema.query.StandardTest;
+import com.mysema.query.Projectable;
+import com.mysema.query.QueryExecution;
 import com.mysema.query.Target;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.Expr;
@@ -39,20 +44,14 @@ public class BeanQueryStandardTest extends SessionTestBase {
         session = createSession(FI, SimpleType.class, SimpleType2.class);
     }
     
-    private StandardTest standardTest = new StandardTest(Module.RDFBEAN, Target.MEM){
+    private QueryExecution standardTest = new QueryExecution(Module.RDFBEAN, Target.MEM){        
         @Override
-        public int executeFilter(EBoolean f) {
-            if (f.toString().equals("size(v1.mapProperty) > 0") || // map size is not supported
-                f.toString().matches("com.*.SimpleType2@.* in v1.listProperty")){ // searching for items sequence is not supported
-                return 1;    
-            }else{                
-                return from(v1, v2).where(f).list(v1, v2).size();
-            }
-            
+        protected Pair<Projectable, List<Expr<?>>> createQuery() {
+            return Pair.of((Projectable)from(v1, v2), Collections.<Expr<?>>emptyList());
         }
         @Override
-        public int executeProjection(Expr<?> pr) {
-            return from(v1, v2).list(v1, v2).size();
+        protected Pair<Projectable, List<Expr<?>>> createQuery(EBoolean filter) {
+            return Pair.of((Projectable)from(v1, v2).where(filter), Arrays.<Expr<?>>asList(v1, v2));
         }        
     };
     
@@ -65,15 +64,15 @@ public class BeanQueryStandardTest extends SessionTestBase {
         other = new SimpleType2();        
         session.save(other);
         
-        standardTest.booleanTests(v1.directProperty.isNull(), v2.numericProperty.isNotNull());
-        standardTest.collectionTests(v1.setProperty, v2.setProperty, inSet, other);
+        standardTest.runBooleanTests(v1.directProperty.isNull(), v2.numericProperty.isNotNull());
+        standardTest.runCollectionTests(v1.setProperty, v2.setProperty, inSet, other);
 //        standardTest.dateTests(v1.dateProperty, v2.dateProperty, st.getDateProperty());
-        standardTest.dateTimeTests(v1.dateProperty, v2.dateProperty, st.getDateProperty());
-        standardTest.listTests(v1.listProperty, v2.listProperty, inList, other);
-        standardTest.mapTests(v1.mapProperty, v2.mapProperty, "target_idspace", inMap, "xxx", other);
-        standardTest.numericCasts(v1.numericProperty, v2.numericProperty, 1);
-        standardTest.numericTests(v1.numericProperty, v2.numericProperty, 10);
-        standardTest.stringTests(v1.directProperty, v2.directProperty, knownStringValue);
+        standardTest.runDateTimeTests(v1.dateProperty, v2.dateProperty, st.getDateProperty());
+        standardTest.runListTests(v1.listProperty, v2.listProperty, inList, other);
+        standardTest.runMapTests(v1.mapProperty, v2.mapProperty, "target_idspace", inMap, "xxx", other);
+        standardTest.runNumericCasts(v1.numericProperty, v2.numericProperty, 1);
+        standardTest.runNumericTests(v1.numericProperty, v2.numericProperty, 10);
+        standardTest.runStringTests(v1.directProperty, v2.directProperty, knownStringValue);
 //        standardTest.timeTests(null, null, null);
         
         // delay the report slightly

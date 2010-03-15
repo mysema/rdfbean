@@ -14,9 +14,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Mapping of multiple predicates to this property 
+ *
+ * @author tiwe
+ * @version $Id$
+ *
+ */
 @Documented
 @Target( { METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Properties {
+    /**
+     * include otherwise mapped properties or not
+     * 
+     * @return
+     */
     boolean includeMapped() default false;
 }

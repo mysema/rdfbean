@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.query;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -16,13 +17,14 @@ import org.apache.commons.collections15.IteratorUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.QueryMixin;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
 import com.mysema.query.collections.impl.LimitingIterator;
 import com.mysema.query.support.ProjectableQuery;
+import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.expr.Constant;
 import com.mysema.query.types.expr.EConstructor;
 import com.mysema.query.types.expr.Expr;
@@ -136,12 +138,12 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
     
     @Override
-    public Iterator<Object[]> iterate(final Expr<?>[] args) {
+    public CloseableIterator<Object[]> iterate(final Expr<?>[] args) {
         queryMixin.addToProjection(args);
         
         // TODO : add batch fetch functionality
         final Iterator<N[]> innerResults = getInnerResults();
-        return new Iterator<Object[]>(){
+        return new CloseableIterator<Object[]>(){
             public boolean hasNext() {
                 return innerResults.hasNext();
             }
@@ -155,18 +157,22 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
                 return rv;
                 
             }            
-            public void remove() {                
+            public void remove() {        
+                
+            }
+            public void close() throws IOException {
+                
             }            
         };
     }
 
     @Override
-    public <RT> Iterator<RT> iterate(final Expr<RT> expr) {
+    public <RT> CloseableIterator<RT> iterate(final Expr<RT> expr) {
         queryMixin.addToProjection(expr);
 
         // TODO : add batch fetch functionality
         final Iterator<N[]> innerResults = getInnerResults();
-        return new Iterator<RT>(){
+        return new CloseableIterator<RT>(){
             public boolean hasNext() {
                 return innerResults.hasNext();
             }
@@ -174,7 +180,11 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
                 N[] nodes = innerResults.next();
                 return getAsProjectionValue(expr, nodes, new MutableInt());                               
             }
-            public void remove() {                
+            public void remove() {
+                
+            }
+            public void close() throws IOException {
+                
             }            
         };
     }

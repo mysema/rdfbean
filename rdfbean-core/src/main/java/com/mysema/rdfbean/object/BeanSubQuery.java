@@ -7,14 +7,27 @@ package com.mysema.rdfbean.object;
 
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.Detachable;
-import com.mysema.query.QueryMixin;
 import com.mysema.query.support.DetachableMixin;
+import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.expr.EComparable;
+import com.mysema.query.types.expr.EDate;
+import com.mysema.query.types.expr.EDateTime;
+import com.mysema.query.types.expr.ENumber;
+import com.mysema.query.types.expr.EString;
+import com.mysema.query.types.expr.ETime;
 import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.query.BooleanSubQuery;
+import com.mysema.query.types.query.ComparableSubQuery;
+import com.mysema.query.types.query.DateSubQuery;
+import com.mysema.query.types.query.DateTimeSubQuery;
 import com.mysema.query.types.query.ListSubQuery;
+import com.mysema.query.types.query.NumberSubQuery;
 import com.mysema.query.types.query.ObjectSubQuery;
+import com.mysema.query.types.query.StringSubQuery;
+import com.mysema.query.types.query.TimeSubQuery;
 
 /**
  * BeanSubQuery is a subquery class for use in BeanQuery instances
@@ -83,7 +96,41 @@ public class BeanSubQuery implements Detachable {
         return queryMixin.orderBy(o);
     }
 
-    // TODO : provide any / all distinction ?!?
+    @Override
+    public BooleanSubQuery unique(EBoolean projection) {
+        return detachableMixin.unique(projection);
+    }
+
+    @Override
+    public <RT extends Comparable<?>> ComparableSubQuery<RT> unique(EComparable<RT> projection) {
+        return detachableMixin.unique(projection);
+    }
+
+    @Override
+    public <RT extends Comparable<?>> DateSubQuery<RT> unique(EDate<RT> projection) {
+        return detachableMixin.unique(projection);
+    }
+
+    @Override
+    public <RT extends Comparable<?>> DateTimeSubQuery<RT> unique(EDateTime<RT> projection) {
+        return detachableMixin.unique(projection);
+    }
+
+    @Override
+    public <RT extends Number & Comparable<?>> NumberSubQuery<RT> unique(ENumber<RT> projection) {
+        return detachableMixin.unique(projection);
+    }
+
+    @Override
+    public StringSubQuery unique(EString projection) {
+        return detachableMixin.unique(projection);
+    }
+
+    @Override
+    public <RT extends Comparable<?>> TimeSubQuery<RT> unique(ETime<RT> projection) {
+        return detachableMixin.unique(projection);
+    }
+
     @Override
     public ObjectSubQuery<Object[]> unique(Expr<?> first, Expr<?> second, Expr<?>... rest) {
         return detachableMixin.unique(first, second, rest);
@@ -94,7 +141,6 @@ public class BeanSubQuery implements Detachable {
         return detachableMixin.unique(args);
     }
 
-    // TODO : provide any / all distinction ?!?
     @Override
     public <RT> ObjectSubQuery<RT> unique(Expr<RT> projection) {
         return detachableMixin.unique(projection);

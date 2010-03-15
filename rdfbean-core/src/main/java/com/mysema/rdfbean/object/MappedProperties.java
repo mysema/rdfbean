@@ -19,6 +19,7 @@ import com.mysema.rdfbean.model.UID;
  * 
  */
 @Immutable
+@Deprecated
 public final class MappedProperties {
 
     private final MappedProperty<?> mappedProperty;
