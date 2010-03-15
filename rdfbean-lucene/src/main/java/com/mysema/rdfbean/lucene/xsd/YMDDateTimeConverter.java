@@ -33,7 +33,7 @@ public enum YMDDateTimeConverter implements Converter<DateTime>{
 
     YEAR("yyyy");
 
-    private transient final DateTimeFormatter formatter;
+    private final transient DateTimeFormatter formatter;
     
     YMDDateTimeConverter(String pattern) {
         this.formatter = DateTimeFormat.forPattern(pattern);

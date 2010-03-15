@@ -393,42 +393,19 @@ public final class SessionImpl implements Session {
                 }
                 // Enumerations
                 else if (targetClass.isEnum()) {
-                    if (value instanceof UID) {
-                        convertedValue = Enum.valueOf((Class<? extends Enum>) targetClass, ((UID) value).ln());
-                    } else if (value instanceof LIT) {
-                        convertedValue = Enum.valueOf((Class<? extends Enum>) targetClass, value.getValue());
-                    } else {
-                        throw new IllegalArgumentException("Cannot bind BNode into enum");
-                    }
+                    convertedValue = convertEnum(value, targetClass);
                 } 
                 // Class reference
                 else if (mappedProperty.isClassReference()) {
-                    if (value instanceof UID) {
-                        convertedValue =  convertClassReference((UID) value, mappedProperty.getComponentType());
-                    } else {
-                        throw new IllegalArgumentException("Cannot assign bnode or literal " + value
-                                + " into " + propertyPath);
-                    }
+                    convertedValue = convertClassReference(value, propertyPath, mappedProperty);
                 }
                 // Mapped class
                 else if (MappedPath.isMappedClass(targetClass) || mappedProperty.isInjection()) {
-                    if (value instanceof ID) {
-                        convertedValue = convertMappedObject((ID) value,
-                                targetClass, mappedProperty.isPolymorphic(), 
-                                mappedProperty.isInjection());
-                    } else {
-                        throw new IllegalArgumentException("Cannot assign " + value
-                                + " into " + propertyPath);
-                    }
+                    convertedValue = convertMappedClass(value, targetClass, propertyPath, mappedProperty);
                 }
                 // ID reference
                 else if (ID.class.isAssignableFrom(targetClass)) {
-                    if (value instanceof ID) {
-                        convertedValue = value;
-                    } else {
-                        throw new IllegalArgumentException("Cannot assign " + value
-                                + " into " + propertyPath);
-                    }
+                    convertedValue = convertIDReference(value, propertyPath);
                 }
                 // Use standard property editors for others
                 else {
@@ -449,6 +426,45 @@ public final class SessionImpl implements Session {
             }
         }
         return convertedValue;
+    }
+
+    private Object convertIDReference(NODE value, MappedPath propertyPath) {
+        if (value instanceof ID) {
+            return value;
+        } else {
+            throw new IllegalArgumentException("Cannot assign " + value + " into " + propertyPath);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object convertMappedClass(NODE value, Class<?> targetClass, MappedPath propertyPath, MappedProperty mappedProperty) {
+        if (value instanceof ID) {
+            return convertMappedObject((ID) value,
+                    targetClass, mappedProperty.isPolymorphic(), 
+                    mappedProperty.isInjection());
+        } else {
+            throw new IllegalArgumentException("Cannot assign " + value + " into " + propertyPath);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object convertClassReference(NODE value, MappedPath propertyPath, MappedProperty mappedProperty) {
+        if (value instanceof UID) {
+            return convertClassReference((UID) value, mappedProperty.getComponentType());
+        } else {
+            throw new IllegalArgumentException("Cannot assign bnode or literal " + value + " into " + propertyPath);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object convertEnum(NODE value, Class<?> targetClass) {
+        if (value instanceof UID) {
+            return Enum.valueOf((Class<? extends Enum>) targetClass, ((UID) value).ln());
+        } else if (value instanceof LIT) {
+            return Enum.valueOf((Class<? extends Enum>) targetClass, value.getValue());
+        } else {
+            throw new IllegalArgumentException("Cannot bind BNode into enum");
+        }
     }
 
     @Nullable

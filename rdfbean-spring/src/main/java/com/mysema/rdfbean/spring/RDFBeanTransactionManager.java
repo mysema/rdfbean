@@ -38,7 +38,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
     
     private static final long serialVersionUID = -4060513400839374983L;
 
-    private transient final SimpleSessionContext sessionContext;
+    private final transient SimpleSessionContext sessionContext;
         
     private boolean clearSessionOnRollback = false;
 

@@ -196,7 +196,6 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     @Nullable
     Class getGenericClass(@Nullable final Type gtype, int index, MappedClass owner, int typeVariableIndex) {
         Type type = gtype;
-//        Type gtype = getParametrizedType(member);
         if (type != null) {
             if (type instanceof Class) {
                 return (Class) type;
@@ -205,43 +204,50 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             }
             if (type instanceof Class) {
                 return (Class) type;
-            } else if (type instanceof WildcardType) {
-                WildcardType wildcardType = (WildcardType) type; 
-                if (wildcardType.getUpperBounds()[0] instanceof ParameterizedType) {
-                    return (Class) ((ParameterizedType) wildcardType.getUpperBounds()[0]).getRawType();
-                } else if (wildcardType.getUpperBounds()[0] instanceof Class) {
-                    return (Class) wildcardType.getUpperBounds()[0];
-                } else {
-                    //System.err.println("Unable to find out actual type of " + gtype);
-                    return Object.class;
-                }
+            } else if (type instanceof WildcardType) { 
+                return getGenericClass((WildcardType) type);
             } else if (type instanceof TypeVariable) {
-                Type upperBound = null;
-                if (owner == null || declaringClass.equals(owner)) {
-                    typeVariables[typeVariableIndex] = (TypeVariable) type;
-                    upperBound = typeVariables[typeVariableIndex].getBounds()[0]; 
-                } else if (typeVariables[typeVariableIndex] != null) {
-                    Type genericType = owner.resolveTypeVariable(typeVariables[typeVariableIndex].getName(), declaringClass);
-                    if (genericType instanceof TypeVariable) {
-                        // Nested TypeVariable in a sub class
-                        typeVariables[typeVariableIndex] = (TypeVariable<?>) genericType;
-                        upperBound = typeVariables[typeVariableIndex].getBounds()[0];
-                    } else {
-                        typeVariables[typeVariableIndex] = null;
-                        upperBound = genericType;
-                    } 
-                    declaringClass = owner;
-                }
-                return getGenericClass(upperBound, -1, owner, -1);
-//                return (Class) ((TypeVariable) type).getGenericDeclaration();
+                return getGenericClass(owner, typeVariableIndex, (TypeVariable) type);
             } else if (type instanceof ParameterizedType) {
                 return (Class) ((ParameterizedType) type).getRawType();
             } else {
-                throw new SessionException("Unable to get generic type [" + index + "] of " + gtype
-                        + " from " + owner);
+                throw new SessionException("Unable to get generic type [" + index + "] of " + gtype + " from " + owner);
             }
         }
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<?> getGenericClass(MappedClass owner, int typeVariableIndex, TypeVariable<?> type) {
+        Type upperBound = null;
+        if (owner == null || declaringClass.equals(owner)) {
+            typeVariables[typeVariableIndex] = type;
+            upperBound = typeVariables[typeVariableIndex].getBounds()[0]; 
+        } else if (typeVariables[typeVariableIndex] != null) {
+            Type genericType = owner.resolveTypeVariable(typeVariables[typeVariableIndex].getName(), declaringClass);
+            if (genericType instanceof TypeVariable) {
+                // Nested TypeVariable in a sub class
+                typeVariables[typeVariableIndex] = (TypeVariable<?>) genericType;
+                upperBound = typeVariables[typeVariableIndex].getBounds()[0];
+            } else {
+                typeVariables[typeVariableIndex] = null;
+                upperBound = genericType;
+            } 
+            declaringClass = owner;
+        }
+        return getGenericClass(upperBound, -1, owner, -1);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<?> getGenericClass(WildcardType wildcardType) {
+        if (wildcardType.getUpperBounds()[0] instanceof ParameterizedType) {
+            return (Class) ((ParameterizedType) wildcardType.getUpperBounds()[0]).getRawType();
+        } else if (wildcardType.getUpperBounds()[0] instanceof Class) {
+            return (Class) wildcardType.getUpperBounds()[0];
+        } else {
+            //System.err.println("Unable to find out actual type of " + gtype);
+            return Object.class;
+        }
     }
     
     @SuppressWarnings("unchecked")

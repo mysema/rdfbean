@@ -46,17 +46,17 @@ public class MappedClassTypeMapping implements TypeMapping {
     
     private final Configuration coreConfig;
     
-    private final Map<Pair<ID,UID>,PropertyConfig> propertyConfigs = new HashMap<Pair<ID,UID>,PropertyConfig>();
-    
-    private final Set<ID> types = new HashSet<ID>();
-    
     private final MultiMap<ID,ID> directSubtypes = MultiMapFactory.<ID,ID>createWithSet();
     
     private final MultiMap<ID,ID> directSupertypes = MultiMapFactory.<ID,ID>createWithSet();
     
+    private final Map<Pair<ID,UID>,PropertyConfig> propertyConfigs = new HashMap<Pair<ID,UID>,PropertyConfig>();
+    
     private final MultiMap<ID,ID> subtypes = MultiMapFactory.<ID,ID>createWithSet();
     
-    private final MultiMap<ID,ID> supertypes = MultiMapFactory.<ID,ID>createWithSet();    
+    private final MultiMap<ID,ID> supertypes = MultiMapFactory.<ID,ID>createWithSet();
+    
+    private final Set<ID> types = new HashSet<ID>();    
     
     public MappedClassTypeMapping(Configuration coreConfig){
         this.coreConfig = coreConfig;
@@ -70,6 +70,19 @@ public class MappedClassTypeMapping implements TypeMapping {
             }
         }        
         return null;
+    }
+
+    private void flattenHierarchy( Map<ID, Map<UID, PropertyConfig>> typeToConfigs) {
+        for (ID type : types){
+            Map<UID,PropertyConfig> configs = typeToConfigs.get(type);
+            if (configs != null && !configs.isEmpty()){
+                for (Map.Entry<UID, PropertyConfig> entry : configs.entrySet()){
+                    for (ID subtype : subtypes.get(type)){
+                        propertyConfigs.put(new Pair<ID,UID>(subtype, entry.getKey()), entry.getValue());
+                    }
+                }
+            }
+        }
     }
 
     public Set<UID> getComponentProperties() {
@@ -90,10 +103,7 @@ public class MappedClassTypeMapping implements TypeMapping {
         return rv != null ? rv : Collections.<ID>emptySet();
     }
 
-    public void initialize(Collection<UID> uids) {
-        Map<ID, Map<UID,PropertyConfig>> typeToConfigs = new HashMap<ID, Map<UID,PropertyConfig>>();
-        
-        // handle types
+    private void handleTypes(Collection<UID> uids, Map<ID, Map<UID, PropertyConfig>> typeToConfigs) {
         for (Class<?> javaClass : coreConfig.getMappedClasses()){
             MappedClass clazz = MappedClass.getMappedClass(javaClass);
             types.add(clazz.getUID());
@@ -117,57 +127,21 @@ public class MappedClassTypeMapping implements TypeMapping {
                 typeToConfigs.put(clazz.getUID(), configs);
             }
         }
+    }
+
+    public void initialize(Collection<UID> uids) {
+        Map<ID, Map<UID,PropertyConfig>> typeToConfigs = new HashMap<ID, Map<UID,PropertyConfig>>();
+        
+        // handle types
+        handleTypes(uids, typeToConfigs);
         
         // initialize subtype/supertype mappings               
         initializeTypeHierarchy();
         
         // flatten typeconfig structure
-        for (ID type : types){
-            Map<UID,PropertyConfig> configs = typeToConfigs.get(type);
-            if (configs != null && !configs.isEmpty()){
-                for (Map.Entry<UID, PropertyConfig> entry : configs.entrySet()){
-                    for (ID subtype : subtypes.get(type)){
-                        propertyConfigs.put(new Pair<ID,UID>(subtype, entry.getKey()), entry.getValue());
-                    }
-                }
-            }
-        }
+        flattenHierarchy(typeToConfigs);
     }
     
-    private void initializeTypeHierarchy(){
-        // populate mappings for transitive super and subtypes
-        for (ID type : types){
-            subtypes.put(type, type);
-            supertypes.put(type, type);
-            
-            // handle subtypes
-            if (directSubtypes.containsKey(type)){
-                Stack<ID> t = new Stack<ID>();
-                t.addAll(directSubtypes.get(type));
-                while (!t.isEmpty()){
-                    ID subtype = t.pop();
-                    subtypes.put(type, subtype);
-                    if (directSubtypes.containsKey(subtype)){
-                        t.addAll(directSubtypes.get(subtype));
-                    }
-                }
-            }
-            
-            // handle supertypes
-            if (directSupertypes.containsKey(type)){
-                Stack<ID> t = new Stack<ID>();
-                t.addAll(directSupertypes.get(type));
-                while (!t.isEmpty()){
-                    ID subtype = t.pop();
-                    supertypes.put(type, subtype);
-                    if (directSupertypes.containsKey(subtype)){
-                        t.addAll(directSupertypes.get(subtype));
-                    }
-                }
-            }
-        }
-    }
-
     private void initializeProperty(MappedPath mappedPath, Collection<UID> uids, Searchable searchable, Map<UID, PropertyConfig> configs) {
         MappedProperty<?> property = mappedPath.getMappedProperty();
         
@@ -203,6 +177,40 @@ public class MappedClassTypeMapping implements TypeMapping {
             // TODO : handle longer predicate paths
             MappedPredicate predicate = mappedPath.getPredicatePath().get(0);
             componentProperties.add(predicate.getUID());
+        }
+    }
+
+    private void initializeTypeHierarchy(){
+        // populate mappings for transitive super and subtypes
+        for (ID type : types){
+            subtypes.put(type, type);
+            supertypes.put(type, type);
+            
+            // handle subtypes
+            if (directSubtypes.containsKey(type)){
+                Stack<ID> t = new Stack<ID>();
+                t.addAll(directSubtypes.get(type));
+                while (!t.isEmpty()){
+                    ID subtype = t.pop();
+                    subtypes.put(type, subtype);
+                    if (directSubtypes.containsKey(subtype)){
+                        t.addAll(directSubtypes.get(subtype));
+                    }
+                }
+            }
+            
+            // handle supertypes
+            if (directSupertypes.containsKey(type)){
+                Stack<ID> t = new Stack<ID>();
+                t.addAll(directSupertypes.get(type));
+                while (!t.isEmpty()){
+                    ID subtype = t.pop();
+                    supertypes.put(type, subtype);
+                    if (directSupertypes.containsKey(subtype)){
+                        t.addAll(directSupertypes.get(subtype));
+                    }
+                }
+            }
         }
     }
 

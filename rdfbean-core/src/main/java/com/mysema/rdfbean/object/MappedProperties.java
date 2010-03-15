@@ -8,6 +8,8 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
+import javax.annotation.Nullable;
+
 import net.jcip.annotations.Immutable;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
@@ -71,6 +73,7 @@ public final class MappedProperties {
         return mappedKey;
     }
 
+    @Nullable
     public static MappedProperties getMapping(String classNs, Field field, MappedClass declaringClass) {
 
         FieldProperty property = new FieldProperty(field, declaringClass);

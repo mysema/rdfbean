@@ -96,25 +96,7 @@ class LuceneConnection implements RDFConnection{
         if (propertyConfig != null){           
             // index predicate
             if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
-                String predicateField = converter.toString(stmt.getPredicate());
-                if (component){
-                    predicateField = converter.toString(stmt.getSubject()) + " " + predicateField; 
-                }                
-                Property property = compass.getResourceFactory().createProperty(predicateField, objectValue, 
-                        propertyConfig.getStore(), propertyConfig.getIndex());
-                resource.addProperty(property);
-                
-                // index supertypes
-                if (conf.isIndexSupertypes() && stmt.getPredicate().equals(RDF.type) && stmt.getObject() instanceof ID){
-                    for (ID supertype : conf.getSupertypes((ID) stmt.getObject())){            
-                        if (!supertype.equals(stmt.getObject())){
-                            String supertypeValue = converter.toString(supertype);
-                            resource.addProperty(compass.getResourceFactory().createProperty(predicateField, supertypeValue, 
-                                    Store.NO, Index.NOT_ANALYZED));    
-                        }                        
-                    }
-                }
-                
+                indexPredicate(resource, component, stmt, objectValue, propertyConfig);                
             }     
             
             // index value into all field
@@ -134,6 +116,27 @@ class LuceneConnection implements RDFConnection{
             }            
         }
         
+    }
+
+    private void indexPredicate(Resource resource, boolean component, STMT stmt, String objectValue, PropertyConfig propertyConfig) {
+        String predicateField = converter.toString(stmt.getPredicate());
+        if (component){
+            predicateField = converter.toString(stmt.getSubject()) + " " + predicateField; 
+        }                
+        Property property = compass.getResourceFactory().createProperty(predicateField, objectValue, 
+                propertyConfig.getStore(), propertyConfig.getIndex());
+        resource.addProperty(property);
+        
+        // index supertypes
+        if (conf.isIndexSupertypes() && stmt.getPredicate().equals(RDF.type) && stmt.getObject() instanceof ID){
+            for (ID supertype : conf.getSupertypes((ID) stmt.getObject())){            
+                if (!supertype.equals(stmt.getObject())){
+                    String supertypeValue = converter.toString(supertype);
+                    resource.addProperty(compass.getResourceFactory().createProperty(predicateField, supertypeValue, 
+                            Store.NO, Index.NOT_ANALYZED));    
+                }                        
+            }
+        }
     }   
 
     @Override

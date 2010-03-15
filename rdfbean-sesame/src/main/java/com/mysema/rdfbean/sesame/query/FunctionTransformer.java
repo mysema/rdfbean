@@ -235,7 +235,7 @@ public class FunctionTransformer implements OperationTransformer{
         ops.put(op, function.getURI());
     }
 
-    private static abstract class BaseFunction implements Function {
+    private abstract static class BaseFunction implements Function {
 
         private final String uri;
         

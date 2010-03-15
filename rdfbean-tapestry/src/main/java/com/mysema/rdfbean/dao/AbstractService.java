@@ -38,12 +38,12 @@ public abstract class AbstractService {
       return new BeanListSourceBuilder(sessionFactory);
     }
     
-    protected <T> GridDataSource createGridDataSource(PEntity<T> entity, OrderSpecifier<?> defaultOrder){
-        return new BeanGridDataSource<T>(sessionFactory, entity, defaultOrder, null);
+    protected <T> GridDataSource createGridDataSource(PEntity<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive){
+        return new BeanGridDataSource<T>(sessionFactory, entity, defaultOrder, caseSensitive, null);
     }
     
-    protected <T> GridDataSource createGridDataSource(PEntity<T> entity, OrderSpecifier<?> defaultOrder, EBoolean conditions){
-        return new BeanGridDataSource<T>(sessionFactory, entity, defaultOrder, conditions);
+    protected <T> GridDataSource createGridDataSource(PEntity<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, EBoolean conditions){
+        return new BeanGridDataSource<T>(sessionFactory, entity, defaultOrder, caseSensitive, conditions);
     }
 
 }

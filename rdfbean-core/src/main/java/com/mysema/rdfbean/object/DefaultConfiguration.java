@@ -36,7 +36,7 @@ import com.mysema.rdfbean.owl.OWL;
  */
 public final class DefaultConfiguration implements Configuration {
     
-    private final static Set<String> buildinNamespaces = new HashSet<String>();
+    private static final Set<String> buildinNamespaces = new HashSet<String>();
 
     static {
         buildinNamespaces.add(RDF.NS);

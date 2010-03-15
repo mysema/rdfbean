@@ -42,9 +42,10 @@ public class BeanGridDataSourceTest {
     @ClassMapping(ns=TEST.NS)
     public static class User{
         @Predicate
-        String firstName;
+        private String firstName;
+        
         @Predicate
-        String lastName;
+        private String lastName;
         
         public User(){}
         
@@ -75,7 +76,12 @@ public class BeanGridDataSourceTest {
         try{
             for (char c = 'A'; c < 'Z'; c++){
                 for (int i = 0; i < 10; i++){
-                    session.save(new User(String.valueOf(c)+i, String.valueOf(c+i)+i));
+                    String firstName = String.valueOf(c)+i;
+                    String lastName = String.valueOf(c+i)+i;
+                    if (i % 2 == 0){
+                        firstName = firstName.toLowerCase();
+                    }
+                    session.save(new User(firstName, lastName));
                 }    
             }    
         }finally{
@@ -93,7 +99,7 @@ public class BeanGridDataSourceTest {
     @Before
     public void setUp(){
         User user = Alias.alias(User.class);        
-        dataSource = new BeanGridDataSource<User>(sessionFactory, $(user), $(user.getFirstName()).asc());
+        dataSource = new BeanGridDataSource<User>(sessionFactory, $(user), $(user.getFirstName()).asc(), true);
     }
 
     @Test
@@ -125,7 +131,9 @@ public class BeanGridDataSourceTest {
             dataSource.getRowValue(i);
         }
     }
-
+    
+    // TODO : proper test for case sensitivity
+    
     @Test
     public void testGetRowType() {
         assertEquals(User.class, dataSource.getRowType());

@@ -59,7 +59,8 @@ public class SessionIdentityService implements IdentityService{
                 Collections.singleton(new STMT(subject, predicate, object)));
     }
 
-    private @Nullable STMT find(
+    @Nullable
+    private STMT find(
             @Nullable ID subject, 
             @Nullable UID predicate, 
             @Nullable NODE object){

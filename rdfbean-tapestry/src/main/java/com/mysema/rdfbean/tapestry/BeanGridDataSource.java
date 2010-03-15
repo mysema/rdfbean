@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.path.PComparable;
+import com.mysema.query.types.expr.EComparable;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -49,6 +49,8 @@ public class BeanGridDataSource<T> implements GridDataSource {
     private final EBoolean conditions;
     
     private final OrderSpecifier<?> defaultOrder;
+    
+    private final boolean caseSensitive;
 
     /**
      * Create a new BeanGridDataSource instance with no filter conditions
@@ -56,9 +58,10 @@ public class BeanGridDataSource<T> implements GridDataSource {
      * @param sessionFactory
      * @param entity root entity of the query
      * @param defaultOrder default order for queries, if no order is specified
+     * @param caseSensitive case sensitive ordering
      */
-    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder) {
-        this(sessionFactory, entity, defaultOrder, null);
+    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive) {
+        this(sessionFactory, entity, defaultOrder, caseSensitive, null);
     }
     
     /**
@@ -67,15 +70,17 @@ public class BeanGridDataSource<T> implements GridDataSource {
      * @param sessionFactory
      * @param entity root entity of the query
      * @param defaultOrder default order for queries, if no order is specified
+     * @param caseSensitive case sensitive ordering
      * @param conditions filter conditions
      */
     @SuppressWarnings("unchecked")
-    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder, @Nullable EBoolean conditions) {
+    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, @Nullable EBoolean conditions) {
         this.sessionFactory = Assert.notNull(sessionFactory);
         this.entityType = (Class<T>) Assert.notNull(entity.getType());
         this.entityPath = new PathBuilder<T>(entity.getType(), entity.getMetadata());
         this.defaultOrder = Assert.notNull(defaultOrder);
         this.conditions = conditions;
+        this.caseSensitive = caseSensitive;
     }
     
     @Override
@@ -116,7 +121,13 @@ public class BeanGridDataSource<T> implements GridDataSource {
         for (SortConstraint constraint : sortConstraints) {
             String propertyName = constraint.getPropertyModel().getPropertyName();
             Class<? extends Comparable<?>> propertyType = constraint.getPropertyModel().getPropertyType();
-            PComparable<?> propertyPath = entityPath.getComparable(propertyName, propertyType);
+            EComparable<?> propertyPath;
+            if (!caseSensitive && propertyType.equals(String.class)){
+                propertyPath = entityPath.getString(propertyName).toLowerCase();
+            }else{
+                propertyPath = entityPath.getComparable(propertyName, propertyType);
+            }
+            
             switch (constraint.getColumnSort()) {
                 case ASCENDING:  beanQuery.orderBy(propertyPath.asc()); break; 
                 case DESCENDING: beanQuery.orderBy(propertyPath.desc()); break;
