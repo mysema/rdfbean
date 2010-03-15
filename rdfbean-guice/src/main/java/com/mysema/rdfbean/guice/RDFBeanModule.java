@@ -21,7 +21,6 @@ import com.google.inject.name.Names;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.IdentityService;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 

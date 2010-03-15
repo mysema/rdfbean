@@ -15,3 +15,4 @@
     RDFSResource.class})
 package com.mysema.rdfbean.rdfs;
 import com.mysema.rdfbean.annotations.MappedClasses;
+

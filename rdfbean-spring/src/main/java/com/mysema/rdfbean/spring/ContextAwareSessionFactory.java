@@ -7,7 +7,6 @@ package com.mysema.rdfbean.spring;
 
 import java.util.Collections;
 
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -32,8 +31,7 @@ public final class ContextAwareSessionFactory extends SpringSessionFactory imple
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext)
-            throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext){
         setObjectRepositories(Collections.<String,ObjectRepository>singletonMap(
                 namespace, 
                 new SpringObjectRepository(applicationContext)));

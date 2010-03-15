@@ -17,10 +17,6 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.ConfigurationOntology;
-import com.mysema.rdfbean.object.MappedClass;
 
 
 /**

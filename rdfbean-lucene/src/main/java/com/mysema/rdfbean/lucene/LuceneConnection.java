@@ -357,7 +357,7 @@ class LuceneConnection implements RDFConnection{
     }
         
     private void update(MultiMap<ID,ID> types, MultiMap<ID, STMT> rsAdded, MultiMap<ID, STMT> rsRemoved,
-            Set<ID> resources) throws IOException, CorruptIndexException {
+            Set<ID> resources) throws IOException {
 
         for (ID resource : resources) {
             String id = converter.toString(resource);

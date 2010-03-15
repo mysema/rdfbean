@@ -20,6 +20,7 @@ import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SimpleSessionContext;
+import com.mysema.rdfbean.object.TxException;
 
 /**
  * TransactionalAdvisorImpl provides
@@ -71,7 +72,7 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
                         } catch (IOException e) {
                             String error = "Caught " + e.getClass().getName();
                             logger.error(error, e);
-                            throw new RuntimeException(error, e);
+                            throw new TxException(error, e);
                         }
                     }                                    
                 }    

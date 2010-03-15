@@ -18,7 +18,13 @@ import com.mysema.rdfbean.annotations.Default;
 import com.mysema.rdfbean.annotations.InjectService;
 import com.mysema.rdfbean.annotations.Mixin;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.MiniRepository;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 

@@ -15,8 +15,6 @@ public class SessionException extends RuntimeException{
 
     private static final long serialVersionUID = 3452448298828566531L;
 
-    public SessionException() {}
-    
     SessionException(Throwable t) {
         super(t);
     }

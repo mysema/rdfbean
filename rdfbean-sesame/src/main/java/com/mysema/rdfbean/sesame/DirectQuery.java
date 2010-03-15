@@ -6,7 +6,6 @@
 package com.mysema.rdfbean.sesame;
 
 import org.openrdf.query.GraphQuery;
-import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.QueryModel;
@@ -59,7 +58,7 @@ public final class DirectQuery {
 
     public static TupleResult query(RepositoryConnection connection, 
             TupleQueryModel tupleQueryModel, 
-            boolean includeInferred) throws StoreException, MalformedQueryException{
+            boolean includeInferred) throws StoreException{
         QUERY_HOLDER.set(tupleQueryModel);
         TupleQuery tupleQuery = connection.prepareTupleQuery(DirectQuery.DIRECTQUERY, "");                      
         tupleQuery.setIncludeInferred(includeInferred);        
@@ -68,7 +67,7 @@ public final class DirectQuery {
     
     public static GraphResult query(RepositoryConnection connection, 
             GraphQueryModel graphQueryModel,
-            boolean includeInferred) throws StoreException, MalformedQueryException{
+            boolean includeInferred) throws StoreException{
         QUERY_HOLDER.set(graphQueryModel);
         GraphQuery graphQuery = connection.prepareGraphQuery(DirectQuery.DIRECTQUERY, "");
         graphQuery.setIncludeInferred(includeInferred);

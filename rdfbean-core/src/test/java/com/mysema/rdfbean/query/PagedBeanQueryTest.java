@@ -6,7 +6,7 @@
 package com.mysema.rdfbean.query;
 
 import static com.mysema.query.alias.Alias.$;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.Arrays;

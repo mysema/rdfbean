@@ -7,12 +7,11 @@ package com.mysema.rdfbean.model.io;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.mysema.commons.lang.Assert;
-
 import net.jcip.annotations.Immutable;
+
+import com.mysema.commons.lang.Assert;
 
 /**
  * RDFSource provides

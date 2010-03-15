@@ -85,8 +85,8 @@ public class SchemaGen {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    private RDFSClass<RDFSResource> processClass(Class<?> clazz, Session session, 
-            Map<UID, RDFSResource> resources) {
+    private RDFSClass<RDFSResource> processClass(Class<?> clazz, Session session, Map<UID, RDFSResource> resources) {
+        // TODO : simplify
 //        if (clazz == null) {
 //            return null;
 //        }
@@ -141,13 +141,11 @@ public class SchemaGen {
                             property = (RDFProperty) resources.get(puid);
                             if (mappedPath.isReference()) {
                                 if (!(property instanceof ObjectProperty)) {
-                                    throw new IllegalArgumentException("Expected ObjectProperty for: "
-                                            + mappedPath);
+                                    throw new IllegalArgumentException("Expected ObjectProperty for: " + mappedPath);
                                 }
                             } else  if (!mappedProperty.isAnyResource()){
                                 if (!(property instanceof DatatypeProperty)) {
-                                    throw new IllegalArgumentException("Expected DatatypeProperty for: "
-                                            + mappedPath);
+                                    throw new IllegalArgumentException("Expected DatatypeProperty for: " + mappedPath);
                                 }
                             }
                         } else {

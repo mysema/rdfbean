@@ -17,7 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.object.*;
+import com.mysema.rdfbean.object.FlushMode;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionFactory;
+import com.mysema.rdfbean.object.SimpleSessionContext;
+import com.mysema.rdfbean.object.TxException;
 
 
 /**
@@ -96,13 +100,13 @@ class TransactionalInterceptor implements MethodInterceptor{
             if (inTx){
                 return false;
             }else{
-                throw new RuntimeException("Tx propagation " + annotation.propagation() + " without transaction");
+                throw new TxException("Tx propagation " + annotation.propagation() + " without transaction");
             }
             
         case NOT_SUPPORTED:
         case NEVER:
             if (inTx){
-                throw new RuntimeException("Tx propagation " + annotation.propagation() + " in transaction");
+                throw new TxException("Tx propagation " + annotation.propagation() + " in transaction");
             }else{
                 return false;
             }

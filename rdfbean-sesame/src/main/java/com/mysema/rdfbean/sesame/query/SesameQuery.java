@@ -85,10 +85,12 @@ public class SesameQuery
     extends AbstractProjectingQuery<SesameQuery, Value, Resource, BNode, URI, Literal, Statement>  
     implements TransformerContext, BeanQuery, Closeable{
    
-    private static final Logger logger = LoggerFactory.getLogger(SesameQuery.class);
+    private static final boolean includeInferred = true;
     
-    private static final Logger queryTreeLogger = LoggerFactory.getLogger("com.mysema.rdfbean.sesame.queryTree");
+    private static final Logger logger = LoggerFactory.getLogger(SesameQuery.class);
    
+    private static final Logger queryTreeLogger = LoggerFactory.getLogger("com.mysema.rdfbean.sesame.queryTree");
+    
     private static final URI RDF_TYPE = org.openrdf.model.vocabulary.RDF.TYPE;
     
     private static final Map<Operator<?>,OperationTransformer> transformers = new HashMap<Operator<?>,OperationTransformer>();
@@ -116,17 +118,15 @@ public class SesameQuery
     private Map<Path<?>,Var> allPaths = new HashMap<Path<?>,Var>();
     
     private final Configuration conf;
-    
-    private final RepositoryConnection connection;
 
+    private final RepositoryConnection connection;
+    
     private final Map<Object,Var> constToVar = new HashMap<Object,Var>();
     
     private final VarNameIterator extNames = new VarNameIterator("_ext_");
     
     @Nullable
     private ValueExpr filterConditions;
-    
-    private final boolean includeInferred = true;
     
     private final Inference inference;
     

@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.xsd;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -16,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.rdfbean.query.QueryFunctions;
-import com.mysema.rdfbean.xsd.DateConverter;
 
 /**
  * DateTest provides

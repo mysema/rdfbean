@@ -11,6 +11,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.compass.annotations.SearchableAnalyzerProperty;
+
 /**
  * Searchable declares a type to be indexed into Lucene
  *

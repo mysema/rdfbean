@@ -9,13 +9,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
-import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionUtil;
 import com.mysema.rdfbean.sesame.query.QSimpleType;
 import com.mysema.rdfbean.sesame.query.SimpleType;
 import com.mysema.rdfbean.sesame.query.SimpleType2;

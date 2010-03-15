@@ -23,13 +23,11 @@ public class TestProperty<T> implements Property<T> {
     
     @Override
     public void add(LIT value) {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void add(Object value) {
-        // TODO Auto-generated method stub
         
     }
 
@@ -65,43 +63,36 @@ public class TestProperty<T> implements Property<T> {
 
     @Override
     public Value<T> getValue() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public int getValueCount() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public Collection<Value<T>> getValues() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void remove(LIT value) {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void remove(Object value) {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void removeAll() {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void setLiteral(LIT value) {
-        // TODO Auto-generated method stub
         
     }
 
@@ -116,13 +107,11 @@ public class TestProperty<T> implements Property<T> {
     
     @Override
     public void setReference(Object value) {
-        // TODO Auto-generated method stub
         
     }
 
     @Override
     public void setReferences(Collection<T> values) {
-        // TODO Auto-generated method stub
         
     }
 

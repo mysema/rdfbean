@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.query;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -87,7 +88,7 @@ public final class QueryFunctions {
     }
     
     public static String lower(String str){
-        return str.toLowerCase();
+        return str.toLowerCase(Locale.ENGLISH);
     }
     
     public static String matches(String str, String regex){
@@ -156,7 +157,7 @@ public final class QueryFunctions {
     }
     
     public static String upper(String str){
-        return str.toUpperCase();
+        return str.toUpperCase(Locale.ENGLISH);
     }
     
     public static String week(String str){

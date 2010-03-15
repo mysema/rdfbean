@@ -1216,7 +1216,7 @@ public final class SessionImpl implements Session {
                         if (property.isMap()) {
                             for (Map.Entry<Locale, String> entry : ((Map<Locale, String>) object).entrySet()) {
                                 if (entry.getValue() != null) {
-                                    LIT literal = new LIT(entry.getValue().toString(), entry.getKey());
+                                    LIT literal = new LIT(entry.getValue(), entry.getKey());
                                     recordAddStatement(subject, predicate, literal, context);
                                 }
                             }

@@ -3,10 +3,6 @@ package com.mysema.rdf.demo.foaf;
 import org.junit.Test;
 
 import com.mysema.rdf.demo.foaf.domain.Person;
-import com.mysema.rdf.demo.generic.Resource;
-import com.mysema.rdf.demo.generic.Property;
-import com.mysema.rdf.demo.generic.Value;
-import com.mysema.rdfbean.model.LIT;
 
 public class FullIntrospectionTest {
     
