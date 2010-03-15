@@ -1,0 +1,16 @@
+1. Wildcard-haku, kaikki statementit subjektille
+2. Iteroidaan statementit läpi (Iterointi on tyyppiä STMT) 
+2.1. Iteroidaan dynamic-properties-tapaukset läpi (tyyppi on MappedProperty)
+    Tarkistus, onko propertyllä include mapped päällä vai ei.
+     
+2.1.1. Keytype-tyyppinen kuvaus predikaatista  <T> T get(Class<T> clazz, ID subject); 
+2.1.2. Component-tyyppinen kuvaus objektista
+        - ID-tyyppinen objekti: <T> T Session.get(Class<T> clazz, ID subject);
+        - Literaali: SessionImpl: conf.getConverterRegistry().fromString(value.getValue(), targetClass)
+2.1.3. Menee kyseisen propertyn mappiin key/value-yhdistelmänä
+
+Apurakenteita:
+ - MappedClass-tasolla lista kaikista predikaateista (UID-tyypitettynä), 
+   jotka esiintyvät mappedPath instanssien ensimmäisenä elementtinä
+  
+  

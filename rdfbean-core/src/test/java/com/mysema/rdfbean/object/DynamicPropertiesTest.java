@@ -66,7 +66,9 @@ public class DynamicPropertiesTest {
         Map<UID, NODE> starter;
         
         @Properties
-        Map<UID, NODE> invalid; 
+        Map<UID, NODE> invalid;
+        // Käsitellään write-case myöhemmin
+        // ehkä käytetään read/write booleania
     }
     
     @ClassMapping(ns=TEST.NS)
