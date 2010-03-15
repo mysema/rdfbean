@@ -370,11 +370,9 @@ public final class SessionImpl implements Session {
     @SuppressWarnings("unchecked")
     private Object convertSingleValue(MappedPath propertyPath, Set<? extends NODE> values) {
         MappedProperty<?> propertyDefinition = propertyPath.getMappedProperty();
-        Object convertedValue;
         Class targetType = propertyDefinition.getType();
         NODE value = values.isEmpty() ? null : values.iterator().next();
-        convertedValue = convertValue(value, targetType, propertyPath);
-        return convertedValue;
+        return convertValue(value, targetType, propertyPath);
     }
     
     @SuppressWarnings("unchecked")
@@ -388,8 +386,7 @@ public final class SessionImpl implements Session {
             try {
                 // "Wildcard" type
                 if (MappedPath.isWildcard(targetClass) && value.isResource()) {
-                    convertedValue = convertMappedObject((ID) value,
-                            Object.class, true, mappedProperty.isInjection());
+                    convertedValue = convertMappedObject((ID) value, Object.class, true, mappedProperty.isInjection());
                 }
                 // Enumerations
                 else if (targetClass.isEnum()) {
