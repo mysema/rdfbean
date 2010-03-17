@@ -27,8 +27,20 @@ import java.lang.annotation.Target;
 public @interface Properties {
     /**
      * include otherwise mapped properties or not
-     * 
-     * @return
      */
     boolean includeMapped() default false;
+    
+    /**
+     * Include also compatible types.
+     * 
+     * For instance a map of doubles might also include floats, or supertype as Number 
+     * could contain all kind of number types
+     * 
+     */
+    boolean includeCompatible() default false;
+    
+    /**
+     * True if invalid values should be ignored.
+     */
+    boolean ignoreInvalid() default false;
 }

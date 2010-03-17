@@ -254,4 +254,13 @@ public final class MappedPath {
         return inherited;
     }
 
+    public UID getFirstPredicate() {
+        if (predicatePath.size() > 0) {
+            return predicatePath.get(0).getUID();
+        }
+        else {
+            return null;
+        }
+    }
+    
 }

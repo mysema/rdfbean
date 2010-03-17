@@ -14,9 +14,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -77,6 +80,8 @@ public final class MappedClass {
         return pack == null || !pack.getName().startsWith("java");
     }
     
+    private Set<UID> mappedUIDs = new HashSet<UID>();
+    
     private final Class<?> clazz;
     
     @Nullable
@@ -87,7 +92,7 @@ public final class MappedClass {
 
     private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
     
-    private Map<Type, MappedProperties> dynamicProperties = new LinkedHashMap<Type, MappedProperties>();
+    private Set<MappedProperty<?>> dynamicProperties = new LinkedHashSet<MappedProperty<?>>();
     
     @Nullable
     private final UID uid;
@@ -97,21 +102,17 @@ public final class MappedClass {
         uid = getUID(clazz);
     }
     
-    void addMappedProperties(MappedProperties properties) {
-        Type mappedKey = properties.getMappedKey();
-        
+    void addDynamicProperty(MappedProperty<?> property) {        
         // FIXME How to handle mapped keys from superclass?
-        
-        if (dynamicProperties.containsKey(mappedKey)) {
-            throw new IllegalArgumentException("Duplicate properties-mapping. Key is: " + mappedKey);
-        }
-        else {
-            dynamicProperties.put(mappedKey, properties);
-        }
+        dynamicProperties.add(property);
     }
     
     @SuppressWarnings("unchecked")
     void addMappedPath(MappedPath path) {
+        if (path.getFirstPredicate() != null) {
+            mappedUIDs.add(path.getFirstPredicate());
+        }
+        
         MappedProperty property = path.getMappedProperty();
         MappedPath existingPath = properties.get(property.getName());
         
@@ -222,8 +223,8 @@ public final class MappedClass {
         return properties.values();
     }
     
-    public Iterable<MappedProperties> getDynamicProperties() {
-        return dynamicProperties.values();
+    public Iterable<MappedProperty<?>> getDynamicProperties() {
+        return dynamicProperties;
     }
     
     @Nullable
@@ -278,6 +279,12 @@ public final class MappedClass {
         if (constructor == null && !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
             throw new IllegalArgumentException("Default or mapped constructor required for " + clazz);
         } else {
+            for (MappedPath path : constructor.getMappedArguments()) {
+                if (path.getFirstPredicate() != null) {
+                    mappedUIDs.add(path.getFirstPredicate());
+                }
+            }
+            
             this.constructor = constructor;
         }
     }
@@ -286,4 +293,8 @@ public final class MappedClass {
         return clazz.toString();
     }
 
+    public boolean isMappedPredicate(UID predicate) {
+        return mappedUIDs.contains(predicate);
+    }
+    
 }

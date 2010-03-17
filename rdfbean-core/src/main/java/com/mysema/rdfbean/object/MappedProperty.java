@@ -97,6 +97,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     private Map<Class<? extends Annotation>, Annotation> annotations =
         new HashMap<Class<? extends Annotation>, Annotation>();
 
+    private boolean includeMapped;
+
     @SuppressWarnings("unchecked")
     MappedProperty(@Nullable String name, Annotation[] annotations, MappedClass declaringClass) {
         this.name = name;
@@ -150,6 +152,11 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             this.componentType = getUpper(componentType, getGenericClass(genericType, 1, owner, 3));
         } else {
             this.componentType = null;
+        }
+        
+        Properties propertiesAnno = getAnnotation(Properties.class);
+        if (propertiesAnno != null) {
+            includeMapped = propertiesAnno.includeMapped();
         }
     }
     
@@ -481,5 +488,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     public boolean isClassReference() {
         return Class.class.isAssignableFrom(type);
     }
-    
+
+    public boolean isIncludeMapped() {
+        return includeMapped;
+    }
 }
