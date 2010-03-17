@@ -270,11 +270,12 @@ public final class MappedClass {
         if (constructor == null && !clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
             throw new IllegalArgumentException("Default or mapped constructor required for " + clazz);
         } else {
-            for (MappedPath path : constructor.getMappedArguments()) {
-                if (path.getFirstPredicate() != null) {
-                    mappedUIDs.add(path.getFirstPredicate());
-                }
-            }
+            // TODO Is this needed?
+//            for (MappedPath path : constructor.getMappedArguments()) {
+//                if (path.getFirstPredicate() != null) {
+//                    mappedUIDs.add(path.getFirstPredicate());
+//                }
+//            }
             
             this.constructor = constructor;
         }

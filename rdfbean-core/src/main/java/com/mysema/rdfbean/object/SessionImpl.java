@@ -190,6 +190,7 @@ public final class SessionImpl implements Session {
         }
     }
 
+    @Nullable
     private Object convertValue(NODE node, Class<?> targetClass) {
 
         UID targetType = conf.getConverterRegistry().getDatatype(targetClass);
@@ -986,11 +987,6 @@ public final class SessionImpl implements Session {
 
     public LID getLID(ID id) {
         return identityService.getLID(id);
-    }
-
-    private Set<NODE> getValues(ID subject, UID context) {
-        Set<NODE> values = findValues(subject, null, false, false, context);
-        return values;
     }
 
     private Set<NODE> getPathValue(MappedPath path, ID subject, UID context) {

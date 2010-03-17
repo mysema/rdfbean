@@ -254,6 +254,7 @@ public final class MappedPath {
         return inherited;
     }
 
+    @Nullable
     public UID getFirstPredicate() {
         if (predicatePath.size() > 0) {
             return predicatePath.get(0).getUID();
