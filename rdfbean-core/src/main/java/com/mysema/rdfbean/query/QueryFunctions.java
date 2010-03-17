@@ -59,7 +59,7 @@ public final class QueryFunctions {
     }
     
     public static String endsWithIc(String str1, String str2){
-        return endsWith(str1.toLowerCase(), str2.toLowerCase());
+        return endsWith(str1.toLowerCase(Locale.ENGLISH), str2.toLowerCase(Locale.ENGLISH));
     }
     
     public static String equalsIgnoreCase(String str1, String str2){
@@ -137,7 +137,7 @@ public final class QueryFunctions {
     }
     
     public static String stringContainsIc(String str, String str2){
-        return stringContains(str.toLowerCase(), str2.toLowerCase());
+        return stringContains(str.toLowerCase(Locale.ENGLISH), str2.toLowerCase(Locale.ENGLISH));
     }
     
     public static String stringLength(String str){
