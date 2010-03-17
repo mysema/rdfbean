@@ -203,7 +203,7 @@ public final class SessionImpl implements Session {
                 return conf.getConverterRegistry().fromString(node.getValue(), targetClass);
             }
         } else if (targetType == null && node.isURI()) {
-            return get(Object.class, node.asURI());
+            return get(targetClass, node.asURI());
         }
 
         return null;
