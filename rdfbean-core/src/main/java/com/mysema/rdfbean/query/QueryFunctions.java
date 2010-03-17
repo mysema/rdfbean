@@ -129,7 +129,7 @@ public final class QueryFunctions {
     }
     
     public static String startsWithIc(String str1, String str2){
-        return startsWith(str1.toLowerCase(), str2.toLowerCase());
+        return startsWith(str1.toLowerCase(Locale.ENGLISH), str2.toLowerCase(Locale.ENGLISH));
     }
     
     public static String stringContains(String str, String str2){
