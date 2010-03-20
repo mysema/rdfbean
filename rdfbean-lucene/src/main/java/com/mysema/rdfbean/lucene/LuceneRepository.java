@@ -29,7 +29,7 @@ public class LuceneRepository implements Repository{
     public LuceneRepository(){}
     
     public LuceneRepository(LuceneConfiguration configuration){
-        this.configuration = Assert.notNull(configuration);
+        this.configuration = Assert.notNull(configuration,"configuration");
     }
     
     @Override

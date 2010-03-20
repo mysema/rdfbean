@@ -32,8 +32,8 @@ public class LuceneEnhancedRepository implements Repository{
     public LuceneEnhancedRepository(){}
     
     public LuceneEnhancedRepository(Repository repository, LuceneConfiguration configuration) {
-        this.repository = Assert.notNull(repository);
-        this.configuration = Assert.notNull(configuration);
+        this.repository = Assert.notNull(repository,"repository");
+        this.configuration = Assert.notNull(configuration,"configuration");
     }
     
     @Override
@@ -71,7 +71,7 @@ public class LuceneEnhancedRepository implements Repository{
     }
 
     public void setRepository(Repository repository){
-        this.repository = Assert.notNull(repository);
+        this.repository = Assert.notNull(repository,"repository");
     }
 
     @Override

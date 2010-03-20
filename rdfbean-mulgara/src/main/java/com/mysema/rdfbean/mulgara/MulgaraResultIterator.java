@@ -41,8 +41,8 @@ public class MulgaraResultIterator implements CloseableIterator<STMT>{
     
     public MulgaraResultIterator(MulgaraDialect dialect, Answer answer, ID subject, UID predicate,
             NODE object, UID context) {
-        this.dialect = Assert.notNull(dialect);
-        this.answer = Assert.notNull(answer);
+        this.dialect = Assert.notNull(dialect,"dialect");
+        this.answer = Assert.notNull(answer,"answer");
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;

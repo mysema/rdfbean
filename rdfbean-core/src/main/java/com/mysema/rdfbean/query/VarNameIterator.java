@@ -31,7 +31,7 @@ public class VarNameIterator implements Iterator<String>{
     public VarNameIterator(){}
     
     public VarNameIterator(String prefix){
-        this.prefix = Assert.notNull(prefix);
+        this.prefix = Assert.notNull(prefix,"prefix");
     }
     
     public void disallow(String str){

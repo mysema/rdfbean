@@ -59,7 +59,7 @@ public class ExampleQuery <T>{
      */
     @SuppressWarnings("unchecked")
     public ExampleQuery(Session session, T entity){
-        this.session = Assert.notNull(session);
+        this.session = Assert.notNull(session,"session");
         this.entityPath = (PathBuilder) pathBuilderFactory.create(entity.getClass());
         this.conditions = new BooleanBuilder();
         BeanMap beanMap = new BeanMap(entity);        

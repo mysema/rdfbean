@@ -34,7 +34,7 @@ public class JoinBuilder{
     private TupleExpr tupleExpr;
     
     public JoinBuilder(Transformer<StatementPattern,TupleExpr> stmtTransformer){
-        this.stmtTransformer = Assert.notNull(stmtTransformer);
+        this.stmtTransformer = Assert.notNull(stmtTransformer,"stmtTransformer");
     }
 
     public JoinBuilder add(StatementPattern pattern){

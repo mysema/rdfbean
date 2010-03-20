@@ -21,7 +21,7 @@ public final class LID implements Identifier {
     private final String id;
 
     public LID(String id) {
-        this.id = Assert.hasText(id);
+        this.id = Assert.hasText(id,"id");
     }
 
     public LID(long id) {

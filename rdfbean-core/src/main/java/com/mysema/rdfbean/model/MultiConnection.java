@@ -35,7 +35,7 @@ public abstract class MultiConnection implements RDFConnection{
     private boolean readonlyTnx;
     
     public MultiConnection(RDFConnection... connections){
-        this.connections = Assert.notNull(connections);
+        this.connections = Assert.notNull(connections,"connections");
     }
     
     @Override

@@ -54,8 +54,8 @@ public class FetchOptimizer implements RDFConnection {
     }
     
     public FetchOptimizer(RDFConnection connection, List<FetchStrategy> fetchStrategies, boolean inverseCache) {
-        this.connection = Assert.notNull(connection);
-        this.fetchStrategies = Assert.notNull(fetchStrategies);
+        this.connection = Assert.notNull(connection,"connection");
+        this.fetchStrategies = Assert.notNull(fetchStrategies,"fetchStrategies");
         this.inverseCache = inverseCache;
         cache = new MiniRepository(DEFAULT_INITIAL_CAPACITY, this.inverseCache).openConnection();
     }

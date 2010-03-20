@@ -27,7 +27,7 @@ public final class BID extends ID {
     }
     
     public BID(String bnodeId) {
-        super(Assert.hasText(bnodeId));
+        super(Assert.hasText(bnodeId,"bnodeId"));
     }
     
     public String toString() {

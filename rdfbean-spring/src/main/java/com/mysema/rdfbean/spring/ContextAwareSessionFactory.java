@@ -39,7 +39,7 @@ public final class ContextAwareSessionFactory extends SpringSessionFactory imple
     }
 
     public void setNamespace(String namespace) {
-        this.namespace = Assert.hasText(namespace);
+        this.namespace = Assert.hasText(namespace,"namespace");
     }
     
 }

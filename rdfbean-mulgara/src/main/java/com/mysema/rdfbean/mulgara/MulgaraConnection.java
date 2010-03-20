@@ -60,7 +60,7 @@ public class MulgaraConnection implements RDFConnection{
     
     public MulgaraConnection(Connection connection) {        
         try {
-            this.connection = Assert.notNull(connection);
+            this.connection = Assert.notNull(connection,"connection");
             this.elementFactory = new GraphElementBuilder();
             this.dialect = new MulgaraDialect(elementFactory);
         } catch (GraphException e) {

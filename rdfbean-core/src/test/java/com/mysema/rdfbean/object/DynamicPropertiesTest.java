@@ -37,10 +37,12 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
 /**
- * @author sasa
+ * @author mala
  * 
  */
 public class DynamicPropertiesTest {
+    
+    // TODO Marko : add also inverse mapped predicates into the examples
 
     private static final String CREATOR_COMMENT = "Created under stress";
 

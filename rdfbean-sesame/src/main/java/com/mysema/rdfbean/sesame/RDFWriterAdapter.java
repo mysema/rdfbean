@@ -30,7 +30,7 @@ public class RDFWriterAdapter extends RDFHandlerWrapper implements RDFWriter {
 
     public RDFWriterAdapter(RDFWriter writer) {
         super(writer);
-        this.writer = Assert.notNull(writer);
+        this.writer = Assert.notNull(writer,"writer");
     }
     
     @Override

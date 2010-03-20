@@ -28,8 +28,8 @@ class LuceneTransaction implements RDFBeanTransaction{
     private final CompassTransaction tx;
     
     public LuceneTransaction(LuceneConnection conn, CompassTransaction tx) {
-        this.conn = Assert.notNull(conn);
-        this.tx = Assert.notNull(tx);
+        this.conn = Assert.notNull(conn,"conn");
+        this.tx = Assert.notNull(tx,"tx");
     }
 
     @Override

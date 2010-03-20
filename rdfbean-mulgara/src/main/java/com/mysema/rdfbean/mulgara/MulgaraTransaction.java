@@ -37,8 +37,8 @@ public class MulgaraTransaction implements RDFBeanTransaction{
     public MulgaraTransaction(MulgaraConnection mulgaraConnection, Connection connection, boolean readOnly,
             int txTimeout, int isolationLevel) {        
         try {
-            this.mulgaraConnection = Assert.notNull(mulgaraConnection);
-            this.connection = Assert.notNull(connection);
+            this.mulgaraConnection = Assert.notNull(mulgaraConnection,"mulgaraConnection");
+            this.connection = Assert.notNull(connection,"connection");
             connection.setAutoCommit(false);
             connection.getSession().setTransactionTimeout(txTimeout);
         } catch (QueryException e) {

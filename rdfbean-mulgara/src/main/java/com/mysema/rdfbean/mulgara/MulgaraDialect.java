@@ -54,7 +54,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
     private final Map<URIReference, UID> uriCache = new HashMap<URIReference, UID>(1024); 
     
     public MulgaraDialect(GraphElementFactory elementFactory){
-        this.elementFactory = Assert.notNull(elementFactory);
+        this.elementFactory = Assert.notNull(elementFactory,"elementFactory");
     }
     
     @Override

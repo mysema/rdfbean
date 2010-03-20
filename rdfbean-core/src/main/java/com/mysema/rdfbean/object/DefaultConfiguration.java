@@ -156,7 +156,7 @@ public final class DefaultConfiguration implements Configuration {
     }
 
     public List<Class<?>> getMappedClasses(UID uid) {
-        return type2classes.get(Assert.notNull(uid));
+        return type2classes.get(Assert.notNull(uid,"uid"));
     }
     
     @Override

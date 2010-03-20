@@ -40,9 +40,9 @@ public class LuceneQuery {
     private final Session session;
     
     public LuceneQuery(LuceneConfiguration conf, Session session, CompassSession compassSession) {
-        this.conf = Assert.notNull(conf);
-        this.session = Assert.notNull(session);
-        this.compassSession = Assert.notNull(compassSession);
+        this.conf = Assert.notNull(conf,"conf");
+        this.session = Assert.notNull(session,"session");
+        this.compassSession = Assert.notNull(compassSession,"compassSession");
     }
 
     private CompassHits doQuery(){
@@ -96,7 +96,7 @@ public class LuceneQuery {
     }
     
     public LuceneQuery query(String query) {
-        this.query = Assert.notNull(query);
+        this.query = Assert.notNull(query,"query");
         return this;        
     }
 

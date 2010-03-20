@@ -48,7 +48,7 @@ public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal,
     private final ValueFactory vf; 
 
     public SesameDialect(ValueFactory vf) {
-        Assert.notNull(vf);
+        Assert.notNull(vf,"vf");
         this.vf = vf;
     }
 

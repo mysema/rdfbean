@@ -51,7 +51,7 @@ public class NativeRepository extends SesameRepository {
 
     @Override
     protected Repository createRepository(boolean sesameInference) {
-        NativeStore store = new NativeStore(Assert.notNull(dataDir));
+        NativeStore store = new NativeStore(Assert.notNull(dataDir,"dataDir"));
         idSource = new FileIdSequence(new File(dataDir, "lastLocalId"));
         if (sesameInference){
             return new SailRepository(new ExtendedRDFSInferencer(store));

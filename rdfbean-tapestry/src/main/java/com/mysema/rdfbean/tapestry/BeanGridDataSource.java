@@ -75,10 +75,10 @@ public class BeanGridDataSource<T> implements GridDataSource {
      */
     @SuppressWarnings("unchecked")
     public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, @Nullable EBoolean conditions) {
-        this.sessionFactory = Assert.notNull(sessionFactory);
-        this.entityType = (Class<T>) Assert.notNull(entity.getType());
+        this.sessionFactory = Assert.notNull(sessionFactory,"sessionFactory");
+        this.entityType = (Class<T>) Assert.notNull(entity.getType(),"entity has no type");
         this.entityPath = new PathBuilder<T>(entity.getType(), entity.getMetadata());
-        this.defaultOrder = Assert.notNull(defaultOrder);
+        this.defaultOrder = Assert.notNull(defaultOrder,"defaultOrder");
         this.conditions = conditions;
         this.caseSensitive = caseSensitive;
     }
@@ -99,7 +99,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
 
     @Override
     public void prepare(final int start, final int end, final List<SortConstraint> sortConstraints) {
-        Assert.notNull(sortConstraints);   
+        Assert.notNull(sortConstraints,"sortContraints");   
         sessionFactory.execute(new SessionCallback<Void>(){
             @Override
             public Void doInSession(Session session) {

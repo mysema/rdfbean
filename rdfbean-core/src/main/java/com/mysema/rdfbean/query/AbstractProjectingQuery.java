@@ -60,8 +60,8 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     public AbstractProjectingQuery(Dialect<N,R,B,U,L,S> dialect, Session session) {
         super(new QueryMixin<SubType>(new DefaultQueryMetadata()));
         this.queryMixin.setSelf((SubType) this);
-        this.dialect = Assert.notNull(dialect);
-        this.session = Assert.notNull(session);
+        this.dialect = Assert.notNull(dialect,"dialect");
+        this.session = Assert.notNull(session,"session");
     }
     
     protected abstract <RT> RT convert(Class<RT> rt, L node);

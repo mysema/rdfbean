@@ -232,7 +232,7 @@ public final class MappedPath {
     }
 
     public void validate() {
-        Assert.notNull(mappedProperty);
+        Assert.notNull(mappedProperty,"mappedProperty");
         mappedProperty.validate(this);
     }
 
@@ -254,6 +254,7 @@ public final class MappedPath {
         return inherited;
     }
 
+    // TODO Marko : remember that first predicate can also be inverse mapped
     @Nullable
     public UID getFirstPredicate() {
         if (predicatePath.size() > 0) {

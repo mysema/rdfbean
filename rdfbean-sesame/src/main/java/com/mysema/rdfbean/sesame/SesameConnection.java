@@ -84,12 +84,12 @@ public class SesameConnection implements RDFConnection {
     private final SesameRepository repository;
     
     public SesameConnection(SesameRepository repository, RepositoryConnection connection, Ontology ontology, Inference inference) {
-        this.repository = Assert.notNull(repository);
-        this.connection = Assert.notNull(connection);
+        this.repository = Assert.notNull(repository,"repository");
+        this.connection = Assert.notNull(connection,"connection");
         this.vf = connection.getValueFactory();
         this.dialect = new SesameDialect(vf);
-        this.ontology = Assert.notNull(ontology);
-        this.inference = Assert.notNull(inference);
+        this.ontology = Assert.notNull(ontology,"ontology");
+        this.inference = Assert.notNull(inference,"inference");
     }
 
     @Override

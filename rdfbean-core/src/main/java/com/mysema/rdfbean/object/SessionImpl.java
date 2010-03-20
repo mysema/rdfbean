@@ -80,8 +80,8 @@ public final class SessionImpl implements Session {
     private RDFBeanTransaction transaction;
 
     public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales) {
-        this.conf = Assert.notNull(conf);
-        this.connection = Assert.notNull(connection);
+        this.conf = Assert.notNull(conf,"conf");
+        this.connection = Assert.notNull(connection,"connection");
         this.locales = locales;
 
         this.identityService = new SessionIdentityService(connection);
@@ -105,8 +105,8 @@ public final class SessionImpl implements Session {
 
     @Override
     public void addParent(String ns, ObjectRepository parent) {
-        Assert.hasText(ns);
-        Assert.notNull(parent);
+        Assert.hasText(ns,"ns");
+        Assert.notNull(parent,"parent");
         parentRepositories.put(ns, parent);
     }
 
@@ -118,7 +118,7 @@ public final class SessionImpl implements Session {
 
     @Override
     public void autowire(Object instance) {
-        Assert.notNull(instance);
+        Assert.notNull(instance,"instance");
         BeanMap beanMap = toBeanMap(instance);
         MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
         bind(getId(mappedClass, beanMap), beanMap);
@@ -138,30 +138,14 @@ public final class SessionImpl implements Session {
         return transaction;
     }
 
-    private void bindDynamicProperties(ID subject, BeanMap beanMap, MappedClass mappedClass) {
-
-        List<STMT> statements = new ArrayList<STMT>();
-        CloseableIterator<STMT> iterator = null;
-        try {
-            iterator = connection.findStatements(subject, null, null, null, false);
-            while (iterator.hasNext()) {
-                statements.add(iterator.next());
-            }
-
-        } finally {
-            try {
-                iterator.close();
-            } catch (IOException e) {
-                throw new SessionException(e);
-            }
-        }
+    private void bindDynamicProperties(ID subject, BeanMap beanMap, MappedClass mappedClass) {        
+        List<STMT> statements = findStatements(subject, null, null, null, false);        
         for (MappedProperty<?> property : mappedClass.getDynamicProperties()) {
             Map<UID, Object> values = new HashMap<UID, Object>();
 
             for (STMT stmt : statements) {
                 if (property.isIncludeMapped() || !mappedClass.isMappedPredicate(stmt.getPredicate())) {
                     Object value = convertValue(stmt.getObject(), property.getComponentType());
-
                     if (value != null) {
                         // if (property.isCollection()) {
 
@@ -307,7 +291,7 @@ public final class SessionImpl implements Session {
     }
 
     private Collection<NODE> convertContainer(ID node, UID context, boolean indexed) {
-        List<STMT> stmts = findStatements(node, null, null, false, context);
+        List<STMT> stmts = findStatements(node, null, null, context, false);
         Map<Integer, NODE> values = new LinkedHashMap<Integer, NODE>();
         int maxIndex = 0;
         int i = 0;
@@ -616,7 +600,7 @@ public final class SessionImpl implements Session {
         }
         if (subject != null) {
             // Delete own properties
-            for (STMT statement : findStatements(subject, null, null, false, context)) {
+            for (STMT statement : findStatements(subject, null, null, context, false)) {
                 recordRemoveStatement(statement);
                 NODE object = statement.getObject();
                 if (object.isResource()) {
@@ -625,7 +609,7 @@ public final class SessionImpl implements Session {
                 }
             }
             // Delete references
-            for (STMT statement : findStatements(null, null, subject, false, context)) {
+            for (STMT statement : findStatements(null, null, subject, context, false)) {
                 recordRemoveStatement(statement);
             }
             // Remove from primary cache
@@ -736,7 +720,7 @@ public final class SessionImpl implements Session {
 
     private List<ID> findMappedTypes(ID subject, UID context) {
         List<ID> types = new ArrayList<ID>();
-        List<STMT> statements = findStatements(subject, RDF.type, null, true, context);
+        List<STMT> statements = findStatements(subject, RDF.type, null, context, true);
         for (STMT stmt : statements) {
             NODE type = stmt.getObject();
             if (type instanceof UID && conf.getMappedClasses((UID) type) != null) {
@@ -766,15 +750,14 @@ public final class SessionImpl implements Session {
         return values;
     }
 
-    // FIXME: This should return a closable iterator
     protected List<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object,
-            boolean includeInferred, @Nullable UID context) {
+            @Nullable UID context, boolean includeInferred) {
         return IteratorAdapter.asList(connection.findStatements(subject, predicate, object, context, includeInferred));
     }
 
     private List<ID> findTypes(ID subject, UID context) {
         List<ID> types = new ArrayList<ID>();
-        List<STMT> statements = findStatements(subject, RDF.type, null, true, context);
+        List<STMT> statements = findStatements(subject, RDF.type, null, context, true);
         for (STMT stmt : statements) {
             types.add((ID) stmt.getObject());
         }
@@ -923,7 +906,7 @@ public final class SessionImpl implements Session {
 
     @Nullable
     private NODE getFunctionalValue(ID subject, UID predicate, boolean includeInferred, @Nullable UID context) {
-        List<STMT> statements = findStatements(subject, predicate, null, includeInferred, context);
+        List<STMT> statements = findStatements(subject, predicate, null, context, includeInferred);
         if (statements.size() > 1) {
             errorHandler.functionalValueError(subject, predicate, includeInferred, context);
             return statements.get(0).getObject();
@@ -1112,20 +1095,20 @@ public final class SessionImpl implements Session {
 
     private void removeContainer(ID node, UID context) {
         if (isContainer(node, context)) {
-            for (STMT stmt : findStatements(node, null, null, false, context)) {
+            for (STMT stmt : findStatements(node, null, null, context, false)) {
                 recordRemoveStatement(stmt);
             }
         }
     }
 
     private void removeList(ID node, UID context) {
-        if (findStatements(node, RDF.type, RDF.List, true, context).size() > 0) {
+        if (findStatements(node, RDF.type, RDF.List, context, true).size() > 0) {
             removeListInternal(node, context);
         }
     }
 
     private void removeListInternal(ID node, UID context) {
-        for (STMT statement : findStatements(node, null, null, false, context)) {
+        for (STMT statement : findStatements(node, null, null, context, false)) {
             recordRemoveStatement(statement);
             NODE object = statement.getObject();
             // Remove rdf:rest
@@ -1136,7 +1119,7 @@ public final class SessionImpl implements Session {
     }
 
     protected void removeStatements(ID subject, UID predicate, NODE object, UID context) {
-        for (STMT statement : findStatements(subject, predicate, object, false, context)) {
+        for (STMT statement : findStatements(subject, predicate, object, context, false)) {
             recordRemoveStatement(statement);
         }
     }
@@ -1233,7 +1216,7 @@ public final class SessionImpl implements Session {
                 UID predicate = mappedPredicate.getUID();
 
                 if (update) {
-                    for (STMT statement : findStatements(subject, predicate, null, false, context)) {
+                    for (STMT statement : findStatements(subject, predicate, null, context, false)) {
                         if (property.isLocalized() && String.class.equals(property.getType())) {
                             LIT lit = (LIT) statement.getObject();
                             if (ObjectUtils.equals(getCurrentLocale(), lit.getLang())) {
@@ -1302,7 +1285,7 @@ public final class SessionImpl implements Session {
     }
 
     private ID toRDF(Object instance, @Nullable UID parentContext) {
-        BeanMap beanMap = toBeanMap(Assert.notNull(instance));
+        BeanMap beanMap = toBeanMap(Assert.notNull(instance,"instance"));
         Class<?> clazz = getClass(instance);
         MappedClass mappedClass = MappedClass.getMappedClass(clazz);
         ID subject = resourceCache.get(instance);

@@ -30,8 +30,8 @@ public class Person extends Party {
     
     public Person(@InjectProperty("firstName") String firstName, 
                   @InjectProperty("lastName") String lastName) {
-        this.firstName = Assert.hasText(firstName);
-        this.lastName = Assert.hasText(lastName);
+        this.firstName = Assert.hasText(firstName,"firstName");
+        this.lastName = Assert.hasText(lastName,"lastName");
     }
     
     public String getFirstName() {

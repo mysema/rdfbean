@@ -32,6 +32,29 @@ public final class MappedClass {
         }
     };
     
+    private final Class<?> clazz;
+
+    @Nullable
+    private MappedConstructor constructor;
+    
+    private Set<MappedProperty<?>> dynamicProperties = new LinkedHashSet<MappedProperty<?>>();
+    
+    @Nullable
+    private MappedProperty<?> idProperty;
+    
+    // TODO Marko : change name - maybe mappedPredicates (UID is too general)
+    private Set<UID> mappedUIDs = new HashSet<UID>();
+    
+    private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
+    
+    @Nullable
+    private final UID uid;
+    
+    MappedClass(Class<?> clazz) {
+        this.clazz = clazz;
+        uid = getUID(clazz);
+    }
+    
     public static String getClassNs(Class<?> clazz) {
         ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
         if (cmap != null) {
@@ -69,28 +92,6 @@ public final class MappedClass {
     private static boolean isProcessedClass(Class<?> clazz) {
         Package pack = clazz.getPackage();
         return pack == null || !pack.getName().startsWith("java");
-    }
-    
-    private Set<UID> mappedUIDs = new HashSet<UID>();
-    
-    private final Class<?> clazz;
-    
-    @Nullable
-    private MappedConstructor constructor;
-    
-    @Nullable
-    private MappedProperty<?> idProperty;
-
-    private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
-    
-    private Set<MappedProperty<?>> dynamicProperties = new LinkedHashSet<MappedProperty<?>>();
-    
-    @Nullable
-    private final UID uid;
-    
-    MappedClass(Class<?> clazz) {
-        this.clazz = clazz;
-        uid = getUID(clazz);
     }
     
     void addDynamicProperty(MappedProperty<?> property) {        
@@ -174,10 +175,14 @@ public final class MappedClass {
         return constructor;
     }
 
+    public Iterable<MappedProperty<?>> getDynamicProperties() {
+        return dynamicProperties;
+    }
+
     public MappedProperty<?> getIdProperty() {
         return idProperty;
     }
-
+    
     public Class<?> getJavaClass() {
         return clazz;
     }
@@ -214,10 +219,6 @@ public final class MappedClass {
         return properties.values();
     }
     
-    public Iterable<MappedProperty<?>> getDynamicProperties() {
-        return dynamicProperties;
-    }
-    
     @Nullable
     public UID getUID() {
         return uid;
@@ -231,10 +232,15 @@ public final class MappedClass {
         return clazz.isEnum();
     }
 
+    // TODO Marko : should maybe be named isDirectlyMappedPredicate
+    public boolean isMappedPredicate(UID predicate) {
+        return mappedUIDs.contains(predicate);
+    }
+    
     public boolean isPolymorphic() {
         return isPolymorphic(clazz);        
     }
-    
+
     Type resolveTypeVariable(String typeVariableName, MappedClass declaringClass) {
         int i = 0;
         for (TypeVariable<?> typeParameter : declaringClass.clazz.getTypeParameters()) {
@@ -283,10 +289,6 @@ public final class MappedClass {
 
     public String toString() {
         return clazz.toString();
-    }
-
-    public boolean isMappedPredicate(UID predicate) {
-        return mappedUIDs.contains(predicate);
     }
     
 }

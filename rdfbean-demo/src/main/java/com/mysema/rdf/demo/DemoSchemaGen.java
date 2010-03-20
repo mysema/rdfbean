@@ -35,7 +35,7 @@ public class DemoSchemaGen {
     private Configuration configuration;
     
     public DemoSchemaGen(Configuration configuration) {
-        this.configuration = Assert.notNull(configuration);
+        this.configuration = Assert.notNull(configuration,"configuration");
     }
 
     public void generateBMSchema() throws RDFHandlerException, RDFParseException, IOException, StoreException {

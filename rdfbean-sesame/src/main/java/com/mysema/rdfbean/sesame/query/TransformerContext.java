@@ -105,7 +105,7 @@ public interface TransformerContext {
      * @param arg0
      * @return
      */
-    TupleExpr toTuples(SubQuery arg0);
+    TupleExpr toTuples(SubQuery<?> arg0);
 
     /**
      * Transform the given Expr to a ValueExpr

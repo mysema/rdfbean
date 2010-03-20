@@ -181,10 +181,10 @@ public class SesameQuery
             Ontology ontology,
             Inference inference) {
         super(dialect, session);        
-        this.connection = Assert.notNull(connection);
+        this.connection = Assert.notNull(connection,"connection");
         this.conf = session.getConfiguration();
-        this.ontology = Assert.notNull(ontology);
-        this.inference = Assert.notNull(inference);
+        this.ontology = Assert.notNull(ontology,"ontology");
+        this.inference = Assert.notNull(inference,"inference");
         this.patternScope = patternScope;
         this.valueFactory = dialect.getValueFactory();
         this.joinBuilder = new JoinBuilder(stmtTransformer);
@@ -470,7 +470,7 @@ public class SesameQuery
                 pattern.getContextVar());
     }
         
-    public TupleExpr toTuples(SubQuery subQuery){
+    public TupleExpr toTuples(SubQuery<?> subQuery){
         EBoolean where = subQuery.getMetadata().getWhere();
         
         JoinBuilder normalJoins = joinBuilder;
@@ -507,7 +507,7 @@ public class SesameQuery
         if (expr instanceof BooleanBuilder){
             return toValue(((BooleanBuilder)expr).getValue());            
         }else if (expr instanceof Path) {
-            return toVar((Path<?>) expr);            
+            return toVar((Path)expr);  
         } else if (expr instanceof Operation) {
             return  toValue((Operation<?,?>)expr);            
         } else if (expr instanceof Constant) {
@@ -661,6 +661,7 @@ public class SesameQuery
                     pathNode = parentNode;            
                 }
                 
+ 
             } else {
                 throw new UnsupportedOperationException(pathType + " not supported!");
 
@@ -668,6 +669,16 @@ public class SesameQuery
             pathToVar.put(path, pathNode);
             return pathNode;
 
+        }else if (path.getMetadata().getPathType().equals(PathType.DELEGATE)){
+            PathMetadata<?> md = path.getMetadata();
+            ValueExpr rv = toValue(md.getExpression());
+            if (rv instanceof Var){
+                pathToVar.put(path, (Var)rv);
+                return (Var)rv;
+            }else{
+                throw new IllegalArgumentException(md.getExpression() + " can't be converted into a Var");
+            }            
+            
         } else {
             throw new IllegalArgumentException("Undeclared path " + path);
         }

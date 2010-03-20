@@ -33,8 +33,8 @@ public class ModelResultIterator implements CloseableIterator<STMT>{
     private final boolean includeInferred;
     
     public ModelResultIterator(SesameDialect dialect, ModelResult statements, boolean includeInferred){
-        this.dialect = Assert.notNull(dialect);
-        this.statements = Assert.notNull(statements);
+        this.dialect = Assert.notNull(dialect,"dialect");
+        this.statements = Assert.notNull(statements,"statements");
         this.includeInferred = includeInferred;
     }
     

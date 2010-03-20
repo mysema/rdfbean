@@ -30,8 +30,8 @@ public final class MappedConstructor {
 
     public MappedConstructor(Constructor<?> constructor,
             List<MappedPath> mappedArguments) {
-        this.constructor = Assert.notNull(constructor);
-        this.mappedArguments = Assert.notNull(mappedArguments);
+        this.constructor = Assert.notNull(constructor,"constructor");
+        this.mappedArguments = Assert.notNull(mappedArguments,"mappedArguments");
         this.constructor.setAccessible(true);
         for (MappedPath path : mappedArguments) {
             path.setConstructorArgument(true);

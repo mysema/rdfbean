@@ -45,7 +45,7 @@ public final class UID extends ID {
     }
     
     public UID(String uri) {
-        super(Assert.hasText(uri).intern());
+        super(Assert.hasText(uri,"uri").intern());
         int tmp = uri.lastIndexOf('#');
         if (tmp < 0) {
             tmp = uri.lastIndexOf('/');
@@ -61,7 +61,7 @@ public final class UID extends ID {
     }
     
     public UID(String ns, String ln) {
-        super((Assert.hasText(ns) + Assert.notNull(ln)).intern());
+        super((Assert.hasText(ns,"ns") + Assert.notNull(ln,"ln")).intern());
         i = ns.length();
     }
     

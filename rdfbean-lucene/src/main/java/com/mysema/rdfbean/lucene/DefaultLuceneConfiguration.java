@@ -72,8 +72,8 @@ public class DefaultLuceneConfiguration implements LuceneConfiguration {
     public DefaultLuceneConfiguration(){}
     
     public DefaultLuceneConfiguration(CompassConfiguration compassConfig, Configuration coreConfig){
-        this.compassConfig = Assert.notNull(compassConfig);
-        this.coreConfig = Assert.notNull(coreConfig);
+        this.compassConfig = Assert.notNull(compassConfig,"compassConfig");
+        this.coreConfig = Assert.notNull(coreConfig,"coreConfig");
     }
 
     public LuceneConfiguration addPrefix(String prefix, String ns){

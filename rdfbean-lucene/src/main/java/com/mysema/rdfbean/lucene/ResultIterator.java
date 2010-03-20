@@ -32,7 +32,7 @@ public abstract class ResultIterator implements CloseableIterator<STMT>{
     private Iterator<STMT> results;
     
     public ResultIterator(CompassHits hits){
-        this.hits = Assert.notNull(hits);
+        this.hits = Assert.notNull(hits,"hits");
     }
 
     @Override

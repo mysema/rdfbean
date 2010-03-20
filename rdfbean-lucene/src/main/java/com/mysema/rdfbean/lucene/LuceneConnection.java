@@ -82,9 +82,9 @@ class LuceneConnection implements RDFConnection{
     private boolean readonlyTnx = false;
         
     public LuceneConnection(LuceneConfiguration configuration, CompassSession session) {
-        this.conf = Assert.notNull(configuration);
+        this.conf = Assert.notNull(configuration,"configuration");
         this.converter = conf.getConverter();
-        this.compassSession = Assert.notNull(session);
+        this.compassSession = Assert.notNull(session,"session");
         this.compass = conf.getCompass();
     }
     

@@ -81,7 +81,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     MappedProperty(@Nullable String name, Annotation[] annotations, MappedClass declaringClass) {
         this.name = name;
         this.declaringClass = declaringClass;
-        for (Annotation annotation : Assert.notNull(annotations)) {
+        for (Annotation annotation : Assert.notNull(annotations,"annotations")) {
             Class<? extends Annotation> aclass = (Class<? extends Annotation>) annotation.getClass().getInterfaces()[0];
             this.annotations.put(aclass, annotation);
         }

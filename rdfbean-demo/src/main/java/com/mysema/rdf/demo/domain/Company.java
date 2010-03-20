@@ -28,7 +28,7 @@ public class Company extends Party {
 
     @Required
     public void setOfficialName(String officialName) {
-        this.officialName = Assert.hasText(officialName);
+        this.officialName = Assert.hasText(officialName,"officialName");
     }
     
     public Set<Person> getEmployees() {

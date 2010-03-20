@@ -33,8 +33,8 @@ public final class LIT extends NODE {
     private final UID datatype; 
 
     public LIT(String value, UID datatype) {
-        this.value = Assert.notNull(value);
-        this.datatype = Assert.notNull(datatype);
+        this.value = Assert.notNull(value,"value");
+        this.datatype = Assert.notNull(datatype,"datatype");
         this.lang = null;
     }
 
@@ -43,8 +43,8 @@ public final class LIT extends NODE {
     }
 
     public LIT(String value, Locale lang) {
-        this.value = Assert.notNull(value);
-        this.lang = Assert.notNull(lang);
+        this.value = Assert.notNull(value,"value");
+        this.lang = Assert.notNull(lang,"lang");
         this.datatype = RDF.text;
     }
 

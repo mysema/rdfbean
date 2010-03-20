@@ -52,7 +52,7 @@ public class SesameTransaction implements RDFBeanTransaction{
     private boolean rollbackOnly;
     
     public SesameTransaction(SesameConnection connection, int isolationLevel) {
-        this.connection = Assert.notNull(connection);
+        this.connection = Assert.notNull(connection,"connection");
         this.isolationLevel = isolationLevels.containsKey(isolationLevel) 
             ? isolationLevels.get(isolationLevel) : null;
     }
