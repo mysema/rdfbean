@@ -17,7 +17,10 @@ import java.lang.annotation.Target;
 /**
  * Mapping of multiple predicates to this property 
  *
+ * <p>Note! This annotation is highly experimental. Should not be used in production.</p>
+ *
  * @author tiwe
+ * @author mala
  * @version $Id$
  *
  */

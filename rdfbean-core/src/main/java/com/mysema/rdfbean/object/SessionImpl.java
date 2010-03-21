@@ -145,28 +145,37 @@ public final class SessionImpl implements Session {
 
             for (STMT stmt : statements) {
                 if (property.isIncludeMapped() || !mappedClass.isMappedPredicate(stmt.getPredicate())) {
-                    Object value = convertValue(stmt.getObject(), property.getComponentType());
+                    
+                    Class<?> componentType;
+                    
+                    if (property.isDynamicCollection()) {
+                        componentType = property.getDynamicCollectionComponentType();
+                    }
+                    else {
+                        componentType = property.getComponentType();
+                    }
+                    
+                    Object value = convertValue(stmt.getObject(), componentType);
+                    
                     if (value != null) {
-                        // if (property.isCollection()) {
+                        if (property.isDynamicCollection()) {
 
-                        // Collection<Object> collection = (Collection<Object>)
-                        // values.get(stmt.getPredicate());
-                        // if (collection == null) {
-                        // try {
-                        // collection = (Collection<Object>)
-                        // property.getCollectionType().newInstance();
-                        // values.put(stmt.getPredicate(), collection);
-                        // } catch (InstantiationException e) {
-                        // throw new SessionException(e);
-                        // } catch (IllegalAccessException e) {
-                        // throw new SessionException(e);
-                        // }
-                        // }
-                        // collection.add(value);
-                        //                        
-                        // } else {
-                        values.put(stmt.getPredicate(), value);
-                        // }
+                            Collection<Object> collection = (Collection<Object>) values.get(stmt.getPredicate());
+                            if (collection == null) {
+                                try {
+                                    collection = (Collection<Object>) property.getDynamicCollectionType().newInstance();
+                                    values.put(stmt.getPredicate(), collection);
+                                } catch (InstantiationException e) {
+                                    throw new SessionException(e);
+                                } catch (IllegalAccessException e) {
+                                    throw new SessionException(e);
+                                }
+                            }
+                            collection.add(value);
+
+                        } else {
+                            values.put(stmt.getPredicate(), value);
+                        }
                     }
                 }
             }
@@ -175,21 +184,21 @@ public final class SessionImpl implements Session {
     }
 
     @Nullable
-    private Object convertValue(NODE node, Class<?> targetClass) {
-
-        UID targetType = conf.getConverterRegistry().getDatatype(targetClass);
-
-        if (node.getClass().equals(targetClass)) {
-            return node;
-        } else if (targetType != null && node.isLiteral()) {
-            if (((LIT) node).getDatatype().equals(targetType)) {
-
-                return conf.getConverterRegistry().fromString(node.getValue(), targetClass);
+    private Object convertValue(NODE node, @Nullable Class<?> targetClass) {
+        if (targetClass != null) {
+            UID targetType = conf.getConverterRegistry().getDatatype(targetClass);
+    
+            if (node.getClass().equals(targetClass)) {
+                return node;
+            } else if (targetType != null && node.isLiteral()) {
+                if (((LIT) node).getDatatype().equals(targetType)) {
+    
+                    return conf.getConverterRegistry().fromString(node.getValue(), targetClass);
+                }
+            } else if (targetType == null && node.isURI()) {
+                return get(targetClass, node.asURI());
             }
-        } else if (targetType == null && node.isURI()) {
-            return get(targetClass, node.asURI());
         }
-
         return null;
     }
 

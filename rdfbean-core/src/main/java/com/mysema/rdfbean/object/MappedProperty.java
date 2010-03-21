@@ -142,26 +142,36 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     @Nullable
     public Class<? extends Collection> getCollectionType() {
         if (isCollection()) {
-            Class collectionType = getType();
-            if (collectionType.isInterface()) {
-                if (List.class.isAssignableFrom(collectionType)) {
-                    collectionType = ArrayList.class;
-                } else if (SortedSet.class.isAssignableFrom(collectionType)) {
-                    collectionType = TreeSet.class;
-                } else if (Set.class.isAssignableFrom(collectionType)) {
-                    collectionType = LinkedHashSet.class;
-                } else if (Collection.class.equals(collectionType)) {
-                    collectionType = HashSet.class;
-                } else {
-                    throw new IllegalArgumentException("Unsupported Collection interface type: "+collectionType);
-                }
-            }
-            return collectionType;
+            return getConcreteCollectionType(getType());
         } else {
             return null;
         }
     } 
 
+    @Nullable
+    @SuppressWarnings("unchecked")
+    private Class<? extends Collection> getConcreteCollectionType(Class<?> collectionType) {
+        
+        if (collectionType.isInterface()) {
+            if (List.class.isAssignableFrom(collectionType)) {
+                return ArrayList.class;
+            } else if (SortedSet.class.isAssignableFrom(collectionType)) {
+                return TreeSet.class;
+            } else if (Set.class.isAssignableFrom(collectionType)) {
+                return LinkedHashSet.class;
+            } else if (Collection.class.equals(collectionType)) {
+                return HashSet.class;
+            } else {
+                throw new IllegalArgumentException("Unsupported Collection interface type: "+collectionType);
+            }
+        }
+        else if (Collection.class.isAssignableFrom(collectionType)) {
+            return (Class<? extends Collection>) collectionType;
+        }
+        
+        return null;
+    }
+    
     @Nullable
     public Class<?> getComponentType() {
         return componentType;
@@ -469,5 +479,33 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 
     public boolean isIncludeMapped() {
         return includeMapped;
+    }
+    
+    public boolean isDynamicCollection() {
+        return Collection.class.isAssignableFrom(componentType);
+    }
+    
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public Class<? extends Collection> getDynamicCollectionType() {
+        if (isDynamicCollection()) {
+            return getConcreteCollectionType(componentType);
+        }
+        else {
+            return null;
+        }
+    }
+    
+    @Nullable
+    public Class<?> getDynamicCollectionComponentType() {
+        Type type = getGenericType();
+        
+        if (type instanceof ParameterizedType) {
+            ParameterizedType componentType = (ParameterizedType) ((ParameterizedType) type).getActualTypeArguments()[1];
+            return (Class<?>) componentType.getActualTypeArguments()[0];
+        }
+        else {
+            return null;
+        }
     }
 }

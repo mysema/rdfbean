@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -46,8 +47,9 @@ public class DynamicPropertiesTest {
 
     private static final String CREATOR_COMMENT = "Created under stress";
 
-    private static final String DESCRIPTION = "Some description";
-
+    private static final String DESCRIPTION1 = "Some description 1";
+    private static final String DESCRIPTION2 = "Some description 2";
+    
     private static final LocalDate CREATED = new LocalDate();
     private static final LocalDate DEADLINE = CREATED.plusDays(1);
     
@@ -91,7 +93,7 @@ public class DynamicPropertiesTest {
         Map<UID, Person> participants;
 
         @Properties
-        Map<UID, String> infos;
+        Map<UID, Set<String>> infos;
         
         public Project() {
         }
@@ -199,7 +201,8 @@ public class DynamicPropertiesTest {
         repository.add(
                new STMT(UIDS.project, UIDS.owner, UIDS.person),
                new STMT(UIDS.project, UIDS.deadline, new LIT(DEADLINE.toString(), XSD.date)),
-               new STMT(UIDS.project, UIDS.description, new LIT(DESCRIPTION)),
+               new STMT(UIDS.project, UIDS.description, new LIT(DESCRIPTION1)),
+               new STMT(UIDS.project, UIDS.description, new LIT(DESCRIPTION2)),
                new STMT(UIDS.project, UIDS.creatorComment, new LIT(CREATOR_COMMENT))
         );
 
@@ -224,8 +227,9 @@ public class DynamicPropertiesTest {
         assertFalse(project.infos.containsKey(UIDS.name));
         
         assertEquals(person, project.participants.get(UIDS.owner));
-        assertEquals(DESCRIPTION, project.infos.get(UIDS.description));
-        assertEquals(CREATOR_COMMENT, project.infos.get(UIDS.creatorComment));
+        assertTrue(project.infos.get(UIDS.description).contains(DESCRIPTION1));
+        assertTrue(project.infos.get(UIDS.description).contains(DESCRIPTION2));
+        assertTrue(project.infos.get(UIDS.creatorComment).contains(CREATOR_COMMENT));
         assertEquals(CREATED, project.dates.get(UIDS.created));
         assertEquals(DEADLINE, project.dates.get(UIDS.deadline));
     }
@@ -246,7 +250,8 @@ public class DynamicPropertiesTest {
             if (property.isDynamic() && property.getName().equals("infos")) {
                 containsInfos = true;
                 assertEquals(UID.class, property.getKeyType());
-                assertEquals(String.class, property.getTargetType());
+                assertTrue(Set.class.isAssignableFrom(property.getDynamicCollectionType()));
+                assertEquals(String.class, property.getDynamicCollectionComponentType());
             }
         }
 
