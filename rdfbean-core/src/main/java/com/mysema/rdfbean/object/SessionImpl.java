@@ -138,6 +138,7 @@ public final class SessionImpl implements Session {
         return transaction;
     }
 
+    @SuppressWarnings("unchecked")
     private void bindDynamicProperties(ID subject, BeanMap beanMap, MappedClass mappedClass) {        
         List<STMT> statements = findStatements(subject, null, null, null, false);        
         for (MappedProperty<?> property : mappedClass.getDynamicProperties()) {
