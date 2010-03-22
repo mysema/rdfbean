@@ -31,8 +31,8 @@ import org.openrdf.store.StoreException;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.object.ObjectRepository;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.ontology.Ontology;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
 
 /**

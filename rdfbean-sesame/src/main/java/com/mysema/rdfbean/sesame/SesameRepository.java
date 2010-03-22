@@ -20,15 +20,15 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.store.StoreException;
 
-import com.mysema.rdfbean.model.EmptyOntology;
 import com.mysema.rdfbean.model.Inference;
-import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.RepositoryException;
-import com.mysema.rdfbean.model.RepositoryOntology;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
+import com.mysema.rdfbean.ontology.EmptyOntology;
+import com.mysema.rdfbean.ontology.Ontology;
+import com.mysema.rdfbean.ontology.RepositoryOntology;
 
 /**
  * SesameRepository provides a base class for Sesame repository based RDFBean repositories 

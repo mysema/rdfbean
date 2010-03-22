@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.model;
+package com.mysema.rdfbean.ontology;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -12,6 +12,12 @@ import java.util.Set;
 import org.apache.commons.collections15.MultiMap;
 
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.util.MultiMapFactory;
 

@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.model;
+package com.mysema.rdfbean.ontology;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,6 +15,13 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.model.MiniRepository;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.ontology.Ontology;
+import com.mysema.rdfbean.ontology.RepositoryOntology;
 import com.mysema.rdfbean.owl.OWL;
 
 /**

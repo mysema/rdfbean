@@ -3,10 +3,12 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.model;
+package com.mysema.rdfbean.ontology;
 
 import java.util.Collections;
 import java.util.Set;
+
+import com.mysema.rdfbean.model.UID;
 
 import net.jcip.annotations.Immutable;
 

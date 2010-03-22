@@ -17,7 +17,7 @@ import org.openrdf.sail.nativerdf.NativeStore;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.FileIdSequence;
 import com.mysema.rdfbean.model.IdSequence;
-import com.mysema.rdfbean.model.Ontology;
+import com.mysema.rdfbean.ontology.Ontology;
 
 
 /**

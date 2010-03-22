@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.model;
+package com.mysema.rdfbean.ontology;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +12,7 @@ import java.util.Stack;
 
 import org.apache.commons.collections15.MultiMap;
 
+import com.mysema.rdfbean.model.UID;
 import com.mysema.util.MultiMapFactory;
 
 /**

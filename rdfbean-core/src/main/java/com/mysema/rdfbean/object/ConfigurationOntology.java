@@ -10,8 +10,8 @@ import java.util.Set;
 
 import org.apache.commons.collections15.MultiMap;
 
-import com.mysema.rdfbean.model.AbstractOntology;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.ontology.AbstractOntology;
 import com.mysema.util.MultiMapFactory;
 
 /**

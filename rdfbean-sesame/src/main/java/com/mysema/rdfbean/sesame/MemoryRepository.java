@@ -17,7 +17,7 @@ import org.openrdf.sail.memory.MemoryStore;
 import com.mysema.rdfbean.model.FileIdSequence;
 import com.mysema.rdfbean.model.IdSequence;
 import com.mysema.rdfbean.model.MemoryIdSequence;
-import com.mysema.rdfbean.model.Ontology;
+import com.mysema.rdfbean.ontology.Ontology;
 
 /**
  * Implementation of the Repository interface using MemoryStore

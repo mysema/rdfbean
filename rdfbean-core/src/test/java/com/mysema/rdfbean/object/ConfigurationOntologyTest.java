@@ -15,8 +15,8 @@ import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.model.Ontology;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.ontology.Ontology;
 
 
 /**
