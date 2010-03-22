@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.lucene.internal;
+package com.mysema.rdfbean.lucene;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,11 +18,6 @@ import org.compass.core.Property.Index;
 import org.compass.core.Property.Store;
 
 import com.mysema.commons.lang.Pair;
-import com.mysema.rdfbean.lucene.PropertyConfig;
-import com.mysema.rdfbean.lucene.Searchable;
-import com.mysema.rdfbean.lucene.SearchableComponent;
-import com.mysema.rdfbean.lucene.SearchablePredicate;
-import com.mysema.rdfbean.lucene.SearchableText;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Configuration;

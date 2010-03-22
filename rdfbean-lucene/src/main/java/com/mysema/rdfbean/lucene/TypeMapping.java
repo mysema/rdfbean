@@ -3,12 +3,11 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.lucene.internal;
+package com.mysema.rdfbean.lucene;
 
 import java.util.Collection;
 import java.util.Set;
 
-import com.mysema.rdfbean.lucene.PropertyConfig;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
 

@@ -22,8 +22,6 @@ import org.compass.core.config.CompassConfiguration;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.lucene.internal.MappedClassTypeMapping;
-import com.mysema.rdfbean.lucene.internal.TypeMapping;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
