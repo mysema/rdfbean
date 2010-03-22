@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import com.mysema.rdfbean.model.UID;
 
 
+
 /**
  * Bean container that is able to return an instance of given class with given id.
  * 

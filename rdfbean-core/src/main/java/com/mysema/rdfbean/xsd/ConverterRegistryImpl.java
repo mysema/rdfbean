@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.object;
+package com.mysema.rdfbean.xsd;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -18,7 +18,6 @@ import org.joda.time.LocalTime;
 
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.xsd.*;
 
 /**
  * ConverterRegistryImpl provides

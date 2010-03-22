@@ -27,6 +27,8 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
+import com.mysema.rdfbean.xsd.ConverterRegistry;
+import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 /**
  * Default implementation of the Configuration interface

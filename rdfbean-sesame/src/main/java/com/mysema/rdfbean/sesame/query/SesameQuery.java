@@ -64,7 +64,6 @@ import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.ConverterRegistry;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
@@ -74,6 +73,7 @@ import com.mysema.rdfbean.query.AbstractProjectingQuery;
 import com.mysema.rdfbean.query.VarNameIterator;
 import com.mysema.rdfbean.sesame.DirectQuery;
 import com.mysema.rdfbean.sesame.SesameDialect;
+import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
  * SesameQuery provides a query implementation for Sesame Repository
@@ -174,7 +174,8 @@ public class SesameQuery
     
     private final VarNameIterator varNames = new VarNameIterator("_var_");
     
-    public SesameQuery(Session session, 
+    public SesameQuery(
+            Session session, 
             SesameDialect dialect,
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,

@@ -31,6 +31,8 @@ import com.mysema.rdfbean.rdfs.RDFProperty;
 import com.mysema.rdfbean.rdfs.RDFSClass;
 import com.mysema.rdfbean.rdfs.RDFSDatatype;
 import com.mysema.rdfbean.rdfs.RDFSResource;
+import com.mysema.rdfbean.xsd.ConverterRegistry;
+import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 
 /**

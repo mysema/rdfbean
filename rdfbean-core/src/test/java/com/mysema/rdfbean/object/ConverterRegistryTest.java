@@ -10,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
+import com.mysema.rdfbean.xsd.ConverterRegistry;
+import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 import com.mysema.rdfbean.xsd.Year;
 
 

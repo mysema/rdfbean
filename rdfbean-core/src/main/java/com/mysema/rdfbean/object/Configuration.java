@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
  * Configuration defines the main configuration interface for RDFBean

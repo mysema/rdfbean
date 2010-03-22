@@ -27,6 +27,7 @@ import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
  * Default implementation of the Session interface

@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.object.ObjectRepository;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleBeanQuery;
 import com.mysema.util.MultiMapFactory;
