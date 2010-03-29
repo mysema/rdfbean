@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-root</artifactId>
-  <version>1.2.9-SNAPSHOT</version>
+  <version>1.2.10</version>
   <packaging>pom</packaging>
   <name>RDFBean</name>
   <url>http://source.mysema.com/display/rdfbean</url>
