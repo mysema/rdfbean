@@ -48,9 +48,11 @@ public class DynamicPropertiesTest {
     private static final String CREATOR_COMMENT = "Created under stress";
 
     private static final String DESCRIPTION1 = "Some description 1";
+    
     private static final String DESCRIPTION2 = "Some description 2";
     
     private static final LocalDate CREATED = new LocalDate();
+    
     private static final LocalDate DEADLINE = CREATED.plusDays(1);
     
     private static class UIDS {
