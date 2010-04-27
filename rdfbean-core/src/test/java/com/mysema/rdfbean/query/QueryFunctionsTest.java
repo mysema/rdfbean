@@ -15,7 +15,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.Ops;
 
 
 /**

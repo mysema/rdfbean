@@ -5,11 +5,6 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import static com.mysema.query.types.operation.Ops.EQ_OBJECT;
-import static com.mysema.query.types.operation.Ops.EQ_PRIMITIVE;
-import static com.mysema.query.types.operation.Ops.NE_OBJECT;
-import static com.mysema.query.types.operation.Ops.NE_PRIMITIVE;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
@@ -28,14 +23,14 @@ import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.Compare.CompareOp;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
-import com.mysema.query.types.expr.Constant;
-import com.mysema.query.types.expr.Expr;
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.path.Path;
-import com.mysema.query.types.path.PathType;
-import com.mysema.query.types.query.SubQuery;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.Expr;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.PathType;
+import com.mysema.query.types.SubQuery;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.object.MappedPath;
 
@@ -52,10 +47,10 @@ public class EqualsTransformer implements OperationTransformer{
     private final OperationTransformer colSize = new ColSizeTransformer();
     
     static{
-        ops.put(EQ_OBJECT, CompareOp.EQ); 
-        ops.put(EQ_PRIMITIVE, CompareOp.EQ);
-        ops.put(NE_OBJECT,  CompareOp.NE);
-        ops.put(NE_PRIMITIVE, CompareOp.NE); 
+        ops.put(Ops.EQ_OBJECT, CompareOp.EQ); 
+        ops.put(Ops.EQ_PRIMITIVE, CompareOp.EQ);
+        ops.put(Ops.NE_OBJECT,  CompareOp.NE);
+        ops.put(Ops.NE_PRIMITIVE, CompareOp.NE); 
     }
 
     @Override
@@ -65,7 +60,7 @@ public class EqualsTransformer implements OperationTransformer{
 
     @SuppressWarnings("unchecked")
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Expr<?> arg1 = operation.getArg(0);
         Expr<?> arg2 = operation.getArg(1);
         

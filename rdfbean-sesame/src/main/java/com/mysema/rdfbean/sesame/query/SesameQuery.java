@@ -30,6 +30,7 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.algebra.*;
+import org.openrdf.query.algebra.Order;
 import org.openrdf.query.algebra.StatementPattern.Scope;
 import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
@@ -39,22 +40,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.query.BooleanBuilder;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.Constant;
+import com.mysema.query.types.*;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.expr.EConstructor;
-import com.mysema.query.types.expr.Expr;
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.path.Path;
-import com.mysema.query.types.path.PathMetadata;
-import com.mysema.query.types.path.PathType;
-import com.mysema.query.types.query.SubQuery;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.LID;
@@ -98,6 +88,7 @@ public class SesameQuery
     static{
         register(new FunctionTransformer());
         
+        register(new CoalesceTransformer());
         register(new BetweenTransformer());
         register(new BooleanTransformer());
         register(new CastTransformer());
@@ -505,16 +496,20 @@ public class SesameQuery
     @SuppressWarnings("unchecked")
     @Nullable
     public ValueExpr toValue(Expr<?> expr) {
-        if (expr instanceof BooleanBuilder){
-            return toValue(((BooleanBuilder)expr).getValue());            
-        }else if (expr instanceof Path) {
+        if (expr instanceof Path) {
             return toVar((Path)expr);  
         } else if (expr instanceof Operation) {
-            return  toValue((Operation<?,?>)expr);            
+            return  toValue((Operation<?>)expr);            
         } else if (expr instanceof Constant) {
             return toVar((Constant<?>)expr);            
         } else {
-            throw new IllegalArgumentException(expr.toString());
+            ExtractorVisitor visitor = new ExtractorVisitor();
+            expr.accept(visitor);
+            if (visitor.getExpression() != expr){
+                return toValue(visitor.getExpression());
+            }else{
+                throw new IllegalArgumentException(expr.toString());
+            }
         }
     }
 
@@ -524,7 +519,7 @@ public class SesameQuery
     }
 
     @Nullable
-    private ValueExpr toValue(Operation<?,?> operation) {
+    private ValueExpr toValue(Operation<?> operation) {
         boolean outerOptional = inOptionalPath();
         boolean innerOptional = false;
         Map<Path<?>,Var> _pathToVar = null;

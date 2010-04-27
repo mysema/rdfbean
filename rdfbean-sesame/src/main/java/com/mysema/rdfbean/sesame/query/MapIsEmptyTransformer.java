@@ -13,10 +13,10 @@ import org.openrdf.query.algebra.Not;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.path.Path;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.Path;
 
 /**
  * MapIsEmptyTransformer provides
@@ -33,7 +33,7 @@ public class MapIsEmptyTransformer implements OperationTransformer{
 
     @SuppressWarnings("unchecked")
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         if (operation.getArg(0) instanceof Path){
             Var arg = context.toVar((Path)operation.getArg(0));
             return new Not(new Bound(arg));    

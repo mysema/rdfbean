@@ -16,10 +16,10 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.Compare.CompareOp;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.path.Path;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.Path;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedProperty;
 
@@ -37,7 +37,7 @@ public class ContainsKeyValueTransformer implements OperationTransformer{
     }
 
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Path<?> path = (Path<?>) operation.getArg(0);
         Var pathVar = context.toVar(path);
         MappedPath mappedPath = context.getMappedPath(path); 

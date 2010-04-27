@@ -20,7 +20,7 @@ import org.joda.time.LocalTime;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.BooleanBuilder;
-import com.mysema.query.types.expr.Expr;
+import com.mysema.query.types.Expr;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.query.types.path.PathBuilderFactory;
 import com.mysema.rdfbean.model.BID;

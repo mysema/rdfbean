@@ -12,10 +12,10 @@ import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.path.Path;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.Path;
 import com.mysema.rdfbean.model.RDF;
 
 /**
@@ -32,7 +32,7 @@ public class ColIsEmptyTransformer implements OperationTransformer{
     }
 
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Var pathVar = context.toVar((Path<?>)operation.getArg(0));            
         if (context.inNegation()){
             return new Compare(pathVar, context.toVar(RDF.nil), Compare.CompareOp.EQ);    

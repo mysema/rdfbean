@@ -14,13 +14,13 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
 import com.mysema.query.BooleanBuilder;
-import com.mysema.query.types.expr.Constant;
-import com.mysema.query.types.expr.Expr;
-import com.mysema.query.types.operation.OSimple;
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.path.Path;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.Expr;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.expr.OBoolean;
 
 /**
  * InTransformer provides
@@ -39,7 +39,7 @@ public class InTransformer implements OperationTransformer{
 
     @SuppressWarnings("unchecked")
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Expr<?> arg1 = operation.getArg(0);
         Expr<?> arg2 = operation.getArg(1);
         
@@ -74,7 +74,7 @@ public class InTransformer implements OperationTransformer{
     }
 
     @Nullable
-    private ValueExpr constInPath(Operation<?, ?> operation,
+    private ValueExpr constInPath(Operation<?> operation,
             TransformerContext context, Expr<?> arg1, Expr<?> arg2) {
         // TODO : make const in path work for RDF sequences and containers
         if (!context.inNegation()){
@@ -83,13 +83,12 @@ public class InTransformer implements OperationTransformer{
             path.setValue(var.getValue());
             return null;    
         }else{
-            return equals.transform((Operation<?, ?>) 
-                    OSimple.create(operation.getType(), Ops.EQ_OBJECT, arg1, arg2), context);
+            return equals.transform((Operation<?>) OBoolean.create(Ops.EQ_OBJECT, arg1, arg2), context);
         }
     }
 
     @Nullable
-    private ValueExpr pathInPath(Operation<?, ?> operation,
+    private ValueExpr pathInPath(Operation<?> operation,
             TransformerContext context, Expr<?> arg1, Expr<?> arg2) {
         // TODO : make path in path work for RDF sequences and containers
         Path<?> path = (Path<?>) arg1;
@@ -99,8 +98,7 @@ public class InTransformer implements OperationTransformer{
             context.toVar(otherPath);
             return null;
         }else{
-            return equals.transform((Operation<?, ?>) 
-                    OSimple.create(operation.getType(), Ops.EQ_OBJECT, arg1, arg2), context);
+            return equals.transform((Operation<?>) OBoolean.create(Ops.EQ_OBJECT, arg1, arg2), context);
         }
     }
 

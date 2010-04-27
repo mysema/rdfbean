@@ -12,9 +12,9 @@ import org.openrdf.query.algebra.Regex;
 import org.openrdf.query.algebra.Str;
 import org.openrdf.query.algebra.ValueExpr;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 
 /**
  * RegexTransformer provides
@@ -30,7 +30,7 @@ public class RegexTransformer implements OperationTransformer{
     }
 
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         ValueExpr arg1 = context.toValue(operation.getArg(0));
         
         if (operation.getOperator() == Ops.STRING_IS_EMPTY){

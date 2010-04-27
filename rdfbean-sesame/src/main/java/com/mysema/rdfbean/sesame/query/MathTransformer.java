@@ -13,9 +13,9 @@ import org.openrdf.query.algebra.MathExpr;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 
 /**
  * MathTransformer provides
@@ -40,7 +40,7 @@ public class MathTransformer implements OperationTransformer {
     }
 
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         ValueExpr arg1 = context.toValue(operation.getArg(0));
         ValueExpr arg2 = context.toValue(operation.getArg(1));        
         return new MathExpr(arg1, arg2, ops.get(operation.getOperator()));

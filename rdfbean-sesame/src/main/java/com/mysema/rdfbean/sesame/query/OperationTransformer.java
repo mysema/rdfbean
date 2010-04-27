@@ -11,8 +11,8 @@ import javax.annotation.Nullable;
 
 import org.openrdf.query.algebra.ValueExpr;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
 
 /**
  * OperationTransformer provides
@@ -28,7 +28,7 @@ public interface OperationTransformer{
      * @return
      */
     @Nullable
-    ValueExpr transform(Operation<?,?> operation, TransformerContext context);
+    ValueExpr transform(Operation<?> operation, TransformerContext context);
 
     /**
      * @return

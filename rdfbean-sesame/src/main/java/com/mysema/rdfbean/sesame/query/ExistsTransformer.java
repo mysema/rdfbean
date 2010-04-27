@@ -12,10 +12,10 @@ import org.openrdf.query.algebra.Exists;
 import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.ValueExpr;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.query.SubQuery;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.SubQuery;
 
 /**
  * ExistsTransformer provides
@@ -25,8 +25,9 @@ import com.mysema.query.types.query.SubQuery;
  */
 public class ExistsTransformer implements OperationTransformer{
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ValueExpr transform(Operation<?,?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         if (operation.getArg(0) instanceof SubQuery){
             SubQuery subQuery = (SubQuery) operation.getArg(0);
             TupleExpr tupleExpr = context.toTuples(subQuery);

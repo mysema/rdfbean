@@ -15,9 +15,9 @@ import org.openrdf.query.algebra.Str;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 
 /**
  * StringContainsTransformer provides
@@ -39,7 +39,7 @@ public class StringContainsTransformer implements OperationTransformer{
     }
 
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         List<ValueExpr> args = Arrays.asList(
                 context.toValue(operation.getArg(0)), 
                 context.toValue(operation.getArg(1)));

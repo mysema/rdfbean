@@ -12,9 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
+import com.mysema.query.types.Expr;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EMap;
-import com.mysema.query.types.expr.Expr;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**

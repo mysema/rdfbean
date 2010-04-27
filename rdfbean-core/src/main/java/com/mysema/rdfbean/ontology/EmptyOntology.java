@@ -8,9 +8,9 @@ package com.mysema.rdfbean.ontology;
 import java.util.Collections;
 import java.util.Set;
 
-import com.mysema.rdfbean.model.UID;
-
 import net.jcip.annotations.Immutable;
+
+import com.mysema.rdfbean.model.UID;
 
 /**
  * EmptyOntology provides an empty implementation of the Ontology interface

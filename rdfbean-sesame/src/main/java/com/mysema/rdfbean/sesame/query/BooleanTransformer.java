@@ -14,10 +14,10 @@ import org.openrdf.query.algebra.Not;
 import org.openrdf.query.algebra.Or;
 import org.openrdf.query.algebra.ValueExpr;
 
-import com.mysema.query.types.expr.Expr;
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.Expr;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 
 /**
  * BooleanTransformer provides
@@ -34,7 +34,7 @@ public class BooleanTransformer implements OperationTransformer{
 
     @SuppressWarnings("unchecked")
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Operator<?> op = operation.getOperator();
         List<Expr<?>> args = operation.getArgs();
         

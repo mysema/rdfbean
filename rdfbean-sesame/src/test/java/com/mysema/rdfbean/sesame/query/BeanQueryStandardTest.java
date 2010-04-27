@@ -19,8 +19,8 @@ import com.mysema.query.Module;
 import com.mysema.query.Projectable;
 import com.mysema.query.QueryExecution;
 import com.mysema.query.Target;
+import com.mysema.query.types.Expr;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.expr.Expr;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**

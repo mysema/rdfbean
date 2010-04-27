@@ -13,9 +13,9 @@ import org.openrdf.query.algebra.Compare;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Compare.CompareOp;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 
 /**
  * BetweenTransformer provides
@@ -31,7 +31,7 @@ public class BetweenTransformer implements OperationTransformer{
     }
 
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         ValueExpr arg1 = context.toValue(operation.getArg(0));
         ValueExpr arg2 = context.toValue(operation.getArg(1));
         

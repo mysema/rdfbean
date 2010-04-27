@@ -13,9 +13,9 @@ import org.openrdf.query.algebra.Str;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 
 /**
  * CastTransformer provides
@@ -31,7 +31,7 @@ public class CastTransformer implements OperationTransformer{
     }
 
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         ValueExpr arg1 = context.toValue(operation.getArg(0));
         
         if (operation.getOperator() == Ops.STRING_CAST){

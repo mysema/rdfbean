@@ -13,9 +13,9 @@ import org.openrdf.query.algebra.StatementPattern;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 import com.mysema.rdfbean.model.RDF;
 
 /**
@@ -32,7 +32,7 @@ public class InstanceOfTransformer implements OperationTransformer{
     }
 
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         if (context.inNegation() || context.inOptionalPath()){
             StatementPattern pattern = new StatementPattern(
                     context.getPatternScope(),

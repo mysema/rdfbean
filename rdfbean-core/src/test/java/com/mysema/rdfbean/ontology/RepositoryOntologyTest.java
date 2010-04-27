@@ -20,8 +20,6 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.ontology.Ontology;
-import com.mysema.rdfbean.ontology.RepositoryOntology;
 import com.mysema.rdfbean.owl.OWL;
 
 /**

@@ -21,10 +21,10 @@ import org.openrdf.query.algebra.evaluation.ValueExprEvaluationException;
 import org.openrdf.query.algebra.evaluation.function.Function;
 import org.openrdf.query.algebra.evaluation.function.FunctionRegistry;
 
-import com.mysema.query.types.expr.Expr;
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
+import com.mysema.query.types.Expr;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.query.QueryFunctions;
 
@@ -223,7 +223,17 @@ public class FunctionTransformer implements OperationTransformer{
             protected String evaluate(Value[] args) {
                 return QueryFunctions.like(args[0].stringValue(), args[1].stringValue());
             }            
-        });
+        });        
+//        register(Ops.COALESCE, new BaseFunction("functions:coalesce"){
+//            public String evaluate(Value[] args) {
+//                for (Value arg : args){
+//                    if (arg != null){
+//                        return arg.stringValue();
+//                    }
+//                }
+//                return null;
+//            }            
+//        });
     }
 
     private void register(BaseFunction function) {
@@ -269,7 +279,7 @@ public class FunctionTransformer implements OperationTransformer{
     }
 
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         String functionName = ops.get(operation.getOperator());
         List<ValueExpr> args = new ArrayList<ValueExpr>(operation.getArgs().size());
         for (Expr<?> expr : operation.getArgs()){

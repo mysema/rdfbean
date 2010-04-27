@@ -6,9 +6,9 @@
 package com.mysema.rdfbean.object;
 
 import com.mysema.query.DefaultQueryMetadata;
-import com.mysema.query.Detachable;
 import com.mysema.query.support.DetachableMixin;
 import com.mysema.query.support.QueryMixin;
+import com.mysema.query.types.Expr;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EComparable;
@@ -17,17 +17,8 @@ import com.mysema.query.types.expr.EDateTime;
 import com.mysema.query.types.expr.ENumber;
 import com.mysema.query.types.expr.EString;
 import com.mysema.query.types.expr.ETime;
-import com.mysema.query.types.expr.Expr;
 import com.mysema.query.types.path.PEntity;
-import com.mysema.query.types.query.BooleanSubQuery;
-import com.mysema.query.types.query.ComparableSubQuery;
-import com.mysema.query.types.query.DateSubQuery;
-import com.mysema.query.types.query.DateTimeSubQuery;
-import com.mysema.query.types.query.ListSubQuery;
-import com.mysema.query.types.query.NumberSubQuery;
-import com.mysema.query.types.query.ObjectSubQuery;
-import com.mysema.query.types.query.StringSubQuery;
-import com.mysema.query.types.query.TimeSubQuery;
+import com.mysema.query.types.query.*;
 
 /**
  * BeanSubQuery is a subquery class for use in BeanQuery instances

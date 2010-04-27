@@ -5,15 +5,6 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import static com.mysema.query.types.operation.Ops.AFTER;
-import static com.mysema.query.types.operation.Ops.AOE;
-import static com.mysema.query.types.operation.Ops.BEFORE;
-import static com.mysema.query.types.operation.Ops.BOE;
-import static com.mysema.query.types.operation.Ops.GOE;
-import static com.mysema.query.types.operation.Ops.GT;
-import static com.mysema.query.types.operation.Ops.LOE;
-import static com.mysema.query.types.operation.Ops.LT;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,12 +15,12 @@ import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Compare.CompareOp;
 
-import com.mysema.query.types.expr.Constant;
-import com.mysema.query.types.expr.Expr;
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.query.SubQuery;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.Expr;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.SubQuery;
 
 /**
  * CompareTransformer provides
@@ -44,14 +35,14 @@ public class CompareTransformer implements OperationTransformer{
     private final OperationTransformer colSize = new ColSizeTransformer();
     
     static{
-        ops.put(LT, CompareOp.LT);
-        ops.put(BEFORE, CompareOp.LT);
-        ops.put(LOE, CompareOp.LE);
-        ops.put(BOE, CompareOp.LE);
-        ops.put(GT, CompareOp.GT);
-        ops.put(AFTER, CompareOp.GT);
-        ops.put(GOE, CompareOp.GE);
-        ops.put(AOE, CompareOp.GE);
+        ops.put(Ops.LT, CompareOp.LT);
+        ops.put(Ops.BEFORE, CompareOp.LT);
+        ops.put(Ops.LOE, CompareOp.LE);
+        ops.put(Ops.BOE, CompareOp.LE);
+        ops.put(Ops.GT, CompareOp.GT);
+        ops.put(Ops.AFTER, CompareOp.GT);
+        ops.put(Ops.GOE, CompareOp.GE);
+        ops.put(Ops.AOE, CompareOp.GE);
     }
 
     @Override
@@ -61,7 +52,7 @@ public class CompareTransformer implements OperationTransformer{
 
     @SuppressWarnings("unchecked")
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Expr<?> arg1 = operation.getArg(0);
         Expr<?> arg2 = operation.getArg(1);
         CompareOp op = ops.get(operation.getOperator());

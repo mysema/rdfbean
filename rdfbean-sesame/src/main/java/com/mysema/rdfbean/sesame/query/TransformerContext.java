@@ -16,10 +16,10 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.StatementPattern.Scope;
 
-import com.mysema.query.types.expr.Constant;
-import com.mysema.query.types.expr.Expr;
-import com.mysema.query.types.path.Path;
-import com.mysema.query.types.query.SubQuery;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.Expr;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.SubQuery;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.MappedPath;

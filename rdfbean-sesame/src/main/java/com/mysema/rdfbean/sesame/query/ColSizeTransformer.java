@@ -12,11 +12,11 @@ import org.openrdf.query.algebra.Not;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
 
-import com.mysema.query.types.expr.Constant;
-import com.mysema.query.types.operation.Operation;
-import com.mysema.query.types.operation.Operator;
-import com.mysema.query.types.operation.Ops;
-import com.mysema.query.types.path.Path;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.Path;
 import com.mysema.rdfbean.model.RDF;
 
 /**
@@ -34,7 +34,7 @@ public class ColSizeTransformer implements OperationTransformer{
 
     @SuppressWarnings("unchecked")
     @Override
-    public ValueExpr transform(Operation<?, ?> operation, TransformerContext context) {
+    public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Operator<?> op = operation.getOperator();
         int size = ((Constant<Integer>) operation.getArg(1)).getConstant().intValue();
         if (op == Ops.GOE){
@@ -47,7 +47,7 @@ public class ColSizeTransformer implements OperationTransformer{
         
         JoinBuilder builder = context.createJoinBuilder();
         // path from size operation
-        Path<?> path = (Path<?>)((Operation<?,?>)operation.getArg(0)).getArg(0); 
+        Path<?> path = (Path<?>)((Operation<?>)operation.getArg(0)).getArg(0); 
         Var pathVar = context.toVar(path);                                
         for (int i=0; i < size-1; i++){
             Var rest = context.createVar();
