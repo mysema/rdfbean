@@ -212,24 +212,24 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 
     @SuppressWarnings("unchecked")
     @Nullable
-    Class getGenericClass(@Nullable final Type gtype, int index, MappedClass owner, int typeVariableIndex) {
-        Type type = gtype;
-        if (type != null) {
-            if (type instanceof Class) {
-                return (Class) type;
-            } else if (type instanceof ParameterizedType && index >= 0) {
-                type = ((ParameterizedType) type).getActualTypeArguments()[index];
+    Class getGenericClass(@Nullable final Type t, int index, MappedClass owner, int typeVariableIndex) {
+        Type gtype = t;
+        if (gtype != null) {
+            if (gtype instanceof Class) {
+                return (Class) gtype;
+            } else if (gtype instanceof ParameterizedType && index >= 0) {
+                gtype = ((ParameterizedType) gtype).getActualTypeArguments()[index];
             }
-            if (type instanceof Class) {
-                return (Class) type;
-            } else if (type instanceof WildcardType) { 
-                return getGenericClass((WildcardType) type);
-            } else if (type instanceof TypeVariable) {
-                return getGenericClass(owner, typeVariableIndex, (TypeVariable) type);
-            } else if (type instanceof ParameterizedType) {
-                return (Class) ((ParameterizedType) type).getRawType();
+            if (gtype instanceof Class) {
+                return (Class) gtype;
+            } else if (gtype instanceof WildcardType) { 
+                return getGenericClass((WildcardType) gtype);
+            } else if (gtype instanceof TypeVariable) {
+                return getGenericClass(owner, typeVariableIndex, (TypeVariable) gtype);
+            } else if (gtype instanceof ParameterizedType) {
+                return (Class) ((ParameterizedType) gtype).getRawType();
             } else {
-                throw new SessionException("Unable to get generic type [" + index + "] of " + gtype + " from " + owner);
+                throw new SessionException("Unable to get generic type [" + index + "] of " + t + " from " + owner);
             }
         }
         return null;
@@ -498,11 +498,11 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     
     @Nullable
     public Class<?> getDynamicCollectionComponentType() {
-        Type type = getGenericType();
+        Type genericType = getGenericType();
         
-        if (type instanceof ParameterizedType) {
-            ParameterizedType componentType = (ParameterizedType) ((ParameterizedType) type).getActualTypeArguments()[1];
-            return (Class<?>) componentType.getActualTypeArguments()[0];
+        if (genericType instanceof ParameterizedType) {
+            ParameterizedType parameterizedComponentType = (ParameterizedType) ((ParameterizedType) genericType).getActualTypeArguments()[1];
+            return (Class<?>) parameterizedComponentType.getActualTypeArguments()[0];
         }
         else {
             return null;

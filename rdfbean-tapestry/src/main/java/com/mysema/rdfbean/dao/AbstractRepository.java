@@ -23,7 +23,7 @@ import com.mysema.rdfbean.object.SessionFactory;
 public abstract class AbstractRepository<T> extends AbstractService 
     implements Repository<T,String>{
     
-    private final PEntity<T> entity;
+    private final PEntity<T> entityPath;
     
     private final IDType idType;
     
@@ -33,13 +33,13 @@ public abstract class AbstractRepository<T> extends AbstractService
     
     protected AbstractRepository(SessionFactory sessionFactory, PEntity<T> entity, IDType idType){
         super(sessionFactory);
-        this.entity = entity;
+        this.entityPath = entity;
         this.idType = idType;
     }
     
     @SuppressWarnings("unchecked")
     protected Class<T> getType(){
-        return (Class<T>) entity.getType();
+        return (Class<T>) entityPath.getType();
     }
     
     @Override
@@ -53,9 +53,9 @@ public abstract class AbstractRepository<T> extends AbstractService
         if (idType == IDType.LOCAL){
             return session.getById(id, getType());    
         }else if (idType == IDType.RESOURCE){
-            return session.get(entity.getType(), new BID(id));
+            return session.get(entityPath.getType(), new BID(id));
         }else{
-            return session.get(entity.getType(), new UID(id));
+            return session.get(entityPath.getType(), new UID(id));
         }
         
     }
