@@ -55,15 +55,15 @@ public class DynamicPropertiesTest {
     
     private static final LocalDate DEADLINE = CREATED.plusDays(1);
     
-    private static class UIDS {
-        final static UID project = new UID(TEST.NS, "1");
-        final static UID person = new UID(TEST.NS, "2");
-        final static UID owner = new UID(TEST.NS, "owner");
-        final static UID name = new UID(TEST.NS, "name");
-        final static UID created = new UID(TEST.NS, "created");
-        final static UID description = new UID(TEST.NS, "description");
-        final static UID creatorComment = new UID(TEST.NS, "creatorComment");
-        final static UID deadline = new UID(TEST.NS, "deadline");
+    private interface UIDS {
+        UID project = new UID(TEST.NS, "1");
+        UID person = new UID(TEST.NS, "2");
+        UID owner = new UID(TEST.NS, "owner");
+        UID name = new UID(TEST.NS, "name");
+        UID created = new UID(TEST.NS, "created");
+        UID description = new UID(TEST.NS, "description");
+        UID creatorComment = new UID(TEST.NS, "creatorComment");
+        UID deadline = new UID(TEST.NS, "deadline");
     }
     
     @ClassMapping(ns = TEST.NS)
