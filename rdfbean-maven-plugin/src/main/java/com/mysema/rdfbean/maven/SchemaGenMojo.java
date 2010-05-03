@@ -146,21 +146,13 @@ public class SchemaGenMojo extends AbstractMojo{
             }
             
         } catch (IOException e) {
-            String error = "Caught " + e.getClass().getName();
-            getLog().error(error, e);
-            throw new MojoExecutionException(error, e);
+            throw new MojoExecutionException(e.getMessage(), e);
         } catch (OpenRDFException e) {
-            String error = "Caught " + e.getClass().getName();
-            getLog().error(error, e);
-            throw new MojoExecutionException(error, e);
+            throw new MojoExecutionException(e.getMessage(), e);
         } catch (DependencyResolutionRequiredException e) {
-            String error = "Caught " + e.getClass().getName();
-            getLog().error(error, e);
-            throw new MojoExecutionException(error, e);
+            throw new MojoExecutionException(e.getMessage(), e);
         } catch (ClassNotFoundException e) {
-            String error = "Caught " + e.getClass().getName();
-            getLog().error(error, e);
-            throw new MojoExecutionException(error, e);
+            throw new MojoExecutionException(e.getMessage(), e);
         }               
     }
 

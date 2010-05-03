@@ -71,9 +71,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
         try {
             return elementFactory.createResource();
         } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RepositoryException(error, e);
+            throw new RepositoryException(e);
         }
     }
     
@@ -83,9 +81,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
         try {
             return elementFactory.createTriple(subject, predicate, (ObjectNode) object);
         } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RepositoryException(error, e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -95,9 +91,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
         try {
             return elementFactory.createTriple(subject, predicate, (ObjectNode) object);
         } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RepositoryException(error, e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -172,9 +166,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
                 return elementFactory.createLiteral(lit.getValue(), getDatatypeURI(lit.getDatatype().getId()));
             }
         } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RepositoryException(error, e);
+            throw new RepositoryException(e);
         }        
     }
 
@@ -235,9 +227,7 @@ public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIRef
             URI uri = URI.create(uid.getValue());
             return elementFactory.createResource(uri);
         } catch (GraphElementFactoryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RepositoryException(error, e);
+            throw new RepositoryException(e);
         }
         
     }

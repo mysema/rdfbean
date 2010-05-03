@@ -84,9 +84,7 @@ public class MulgaraConnection implements RDFConnection{
             this.elementFactory = new GraphElementBuilder();
             this.dialect = new MulgaraDialect(elementFactory);
         } catch (GraphException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RepositoryException(error, e);
+            throw new RepositoryException( e);
         }
     }
 
@@ -182,13 +180,9 @@ public class MulgaraConnection implements RDFConnection{
             Answer answer = connection.execute(query);
             return new MulgaraResultIterator(dialect, answer, subject, predicate, object, context);
         } catch (QueryException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RepositoryException(error, e);
+            throw new RepositoryException(e);
         } catch (TuplesException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RepositoryException(error, e);
+            throw new RepositoryException(e);
         }
     }
 
@@ -217,9 +211,7 @@ public class MulgaraConnection implements RDFConnection{
                     connection.execute(new Insertion(entry.getKey(), (Set<Triple>)entry.getValue()));
                 }
             } catch (Exception e) {
-                String error = "Caught " + e.getClass().getName();
-                logger.error(error, e);
-                throw new RepositoryException(error, e);
+                throw new RepositoryException(e);
             }
         }
     }
