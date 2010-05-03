@@ -69,6 +69,7 @@ import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.PathType;
 import com.mysema.query.types.SubQuery;
 import com.mysema.query.types.expr.EBoolean;
+import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.LID;
@@ -190,7 +191,8 @@ public class SesameQuery
     
     public SesameQuery(
             Session session, 
-            SesameDialect dialect,
+            Dialect<Value, Resource, BNode, URI, Literal, Statement> dialect,
+            ValueFactory valueFactory,
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,
             Ontology ontology,
@@ -201,7 +203,7 @@ public class SesameQuery
         this.ontology = Assert.notNull(ontology,"ontology");
         this.inference = Assert.notNull(inference,"inference");
         this.patternScope = patternScope;
-        this.valueFactory = dialect.getValueFactory();
+        this.valueFactory = valueFactory;
         this.joinBuilder = new JoinBuilder(stmtTransformer);
     }
     

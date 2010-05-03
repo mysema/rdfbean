@@ -197,6 +197,7 @@ public class SesameConnection implements RDFConnection {
             SesameQuery query = new SesameQuery(
                     session, 
                     dialect, 
+                    dialect.getValueFactory(),
                     connection, 
                     StatementPattern.Scope.DEFAULT_CONTEXTS,
                     ontology,
