@@ -7,6 +7,9 @@ package com.mysema.rdfbean.tapestry;
 
 import org.apache.tapestry5.ioc.MethodAdviceReceiver;
 
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.object.Session;
+
 /**
  * TransactionalAdvisor provides
  *
@@ -15,9 +18,12 @@ import org.apache.tapestry5.ioc.MethodAdviceReceiver;
  */
 public interface TransactionalAdvisor {
 
-    /**
-     * @param receiver
-     */
     void addTransactionCommitAdvice(MethodAdviceReceiver receiver);
+    
+    RDFBeanTransaction doBegin(Session session);
+    
+    void doCommit(Session session, RDFBeanTransaction txn);
+
+    void doRollback(RDFBeanTransaction txn);
 
 }
