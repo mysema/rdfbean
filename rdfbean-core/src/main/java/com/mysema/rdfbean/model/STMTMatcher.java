@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 
 import net.jcip.annotations.Immutable;
 
+import org.apache.commons.lang.ObjectUtils;
+
 /**
  * @author sasa
  *
@@ -80,39 +82,17 @@ public final class STMTMatcher {
             STMTMatcher other = (STMTMatcher) obj;
             
             // s
-            if (subject == null) {
-                if (other.subject != null){
-                    return false;
-                }                    
-            } else if (!subject.equals(other.subject)){
-                return false;
-            }                
-
+            if (!ObjectUtils.equals(subject, other.subject)){
+        	return false;
             // p
-            if (predicate == null) {
-                if (other.predicate != null){
-                    return false;
-                }                    
-            } else if (!predicate.equals(other.predicate)){
-                return false;
-            }                
-
+            }else if (!ObjectUtils.equals(predicate, other.predicate)){
+        	return false;
             // o
-            if (object == null) {
-                if (other.object != null){
-                    return false;
-                }                    
-            } else if (!object.equals(other.object)){
-                return false;
-            }                
-
+            }else if (!ObjectUtils.equals(object, other.object)){
+        	return false;
             // c
-            if (context == null) {
-                if (other.context != null){
-                    return false;
-                }                    
-            } else if (!context.equals(other.context)){
-                return false;
+            }else if (!ObjectUtils.equals(context, other.context)){
+        	return false;
             }                
             
             if (includeInferred != other.includeInferred){
