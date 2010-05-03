@@ -463,48 +463,47 @@ public final class SessionImpl implements Session {
     @SuppressWarnings("unchecked")
     @Nullable
     private Object convertValue(@Nullable NODE value, Class<?> targetClass, MappedPath propertyPath) {
+	if (value == null){
+	    return null;
+	}	
         Object convertedValue;
-        if (value == null) {
-            convertedValue = null;
-        } else {
-            MappedProperty mappedProperty = propertyPath.getMappedProperty();
-            try {
-                // "Wildcard" type
-                if (MappedPath.isWildcard(targetClass) && value.isResource()) {
-                    convertedValue = convertMappedObject((ID) value, Object.class, true, mappedProperty.isInjection());
-                }
-                // Enumerations
-                else if (targetClass.isEnum()) {
-                    convertedValue = convertEnum(value, targetClass);
-                }
-                // Class reference
-                else if (mappedProperty.isClassReference()) {
-                    convertedValue = convertClassReference(value, propertyPath, mappedProperty);
-                }
-                // Mapped class
-                else if (MappedPath.isMappedClass(targetClass) || mappedProperty.isInjection()) {
-                    convertedValue = convertMappedClass(value, targetClass, propertyPath, mappedProperty);
-                }
-                // ID reference
-                else if (ID.class.isAssignableFrom(targetClass)) {
-                    convertedValue = convertIDReference(value, propertyPath);
-                }
-                // Use standard property editors for others
-                else {
-                    // UID datatype = null;
-                    // if (value instanceof LIT) {
-                    // datatype = ((LIT) value).getDatatype();
-                    // }
-                    convertedValue = conf.getConverterRegistry().fromString(value.getValue(), targetClass);
-                }
-            } catch (IllegalArgumentException e) {
-                if (propertyPath.isIgnoreInvalid()) {
-                    logger.debug(e.getMessage(), e);
-                    convertedValue = null;
-                } else {
-                    logger.error(e.getMessage(), e);
-                    convertedValue = errorHandler.conversionError(value, targetClass, propertyPath, e);
-                }
+        MappedProperty mappedProperty = propertyPath.getMappedProperty();
+        try {
+            // "Wildcard" type
+            if (MappedPath.isWildcard(targetClass) && value.isResource()) {
+                convertedValue = convertMappedObject((ID) value, Object.class, true, mappedProperty.isInjection());
+            }
+            // Enumerations
+            else if (targetClass.isEnum()) {
+                convertedValue = convertEnum(value, targetClass);
+            }
+            // Class reference
+            else if (mappedProperty.isClassReference()) {
+                convertedValue = convertClassReference(value, propertyPath, mappedProperty);
+            }
+            // Mapped class
+            else if (MappedPath.isMappedClass(targetClass) || mappedProperty.isInjection()) {
+                convertedValue = convertMappedClass(value, targetClass, propertyPath, mappedProperty);
+            }
+            // ID reference
+            else if (ID.class.isAssignableFrom(targetClass)) {
+                convertedValue = convertIDReference(value, propertyPath);
+            }
+            // Use standard property editors for others
+            else {
+                // UID datatype = null;
+                // if (value instanceof LIT) {
+                // datatype = ((LIT) value).getDatatype();
+                // }
+                convertedValue = conf.getConverterRegistry().fromString(value.getValue(), targetClass);
+            }
+        } catch (IllegalArgumentException e) {
+            if (propertyPath.isIgnoreInvalid()) {
+                logger.debug(e.getMessage(), e);
+                convertedValue = null;
+            } else {
+                logger.error(e.getMessage(), e);
+                convertedValue = errorHandler.conversionError(value, targetClass, propertyPath, e);
             }
         }
         return convertedValue;

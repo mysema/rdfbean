@@ -82,9 +82,9 @@ public final class QueryFunctions {
         return Integer.toString(str1.indexOf(str2, Integer.parseInt(start)), 10);
     }
     
-    public static String like(String str, String matches){
-        matches = matches.replace("%", ".*").replaceAll("_", ".");
-        return Boolean.toString(str.matches(matches));
+    public static String like(String str, String likeExpression){
+        String regex = likeExpression.replace("%", ".*").replaceAll("_", ".");
+        return Boolean.toString(str.matches(regex));
     }
     
     public static String lower(String str){

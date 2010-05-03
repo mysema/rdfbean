@@ -191,22 +191,10 @@ class LuceneConnection implements RDFConnection{
         if (subject != null || predicate != null || object != null || context != null){            
             CompassBooleanQueryBuilder boolBuilder = queryBuilder.bool();
             if (subject != null){
-                String subjectStr = converter.toString(subject);
-                if (conf.isEmbeddedIds()){
-                    boolBuilder.addMust(queryBuilder.term(EMBEDDED_ID_FIELD_NAME, subjectStr));    
-                }else{
-                    boolBuilder.addMust(queryBuilder.term(ID_FIELD_NAME, subjectStr));
-                }
+                handleSubject(subject, queryBuilder, boolBuilder);
             }   
             if (predicate != null){
-                String predicateField = converter.toString(predicate);
-                // TODO : component predicate matches need to be handled here
-                if (object != null){
-                    String value = converter.toString(object);
-                    boolBuilder.addMust(queryBuilder.term(predicateField, value));                        
-                }else{
-                    boolBuilder.addMust(queryBuilder.wildcard(predicateField, "*"));
-                }
+                handlePredicate(predicate, object, queryBuilder, boolBuilder);
                 
             }else if (object != null){
                 String value = converter.toString(object);
@@ -214,12 +202,7 @@ class LuceneConnection implements RDFConnection{
             }
             
             if (conf.isContextsStored()){
-                if (context != null){
-                    String value = converter.toString(context);
-                    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, value));
-                }else{
-                    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, CONTEXT_NULL));
-                }
+                handleContext(context, queryBuilder, boolBuilder);
             }
                                    
             return boolBuilder.toQuery();
@@ -227,6 +210,39 @@ class LuceneConnection implements RDFConnection{
         }else{
             return queryBuilder.matchAll();
         }
+    }
+
+    private void handleContext(UID context, CompassQueryBuilder queryBuilder,
+            CompassBooleanQueryBuilder boolBuilder) {
+	if (context != null){
+	    String value = converter.toString(context);
+	    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, value));
+	}else{
+	    boolBuilder.addMust(queryBuilder.term(CONTEXT_FIELD_NAME, CONTEXT_NULL));
+	}
+    }
+
+    private void handlePredicate(UID predicate, NODE object,
+            CompassQueryBuilder queryBuilder,
+            CompassBooleanQueryBuilder boolBuilder) {
+	String predicateField = converter.toString(predicate);
+	// TODO : component predicate matches need to be handled here
+	if (object != null){
+	    String value = converter.toString(object);
+	    boolBuilder.addMust(queryBuilder.term(predicateField, value));                        
+	}else{
+	    boolBuilder.addMust(queryBuilder.wildcard(predicateField, "*"));
+	}
+    }
+
+    private void handleSubject(ID subject, CompassQueryBuilder queryBuilder,
+            CompassBooleanQueryBuilder boolBuilder) {
+	String subjectStr = converter.toString(subject);
+	if (conf.isEmbeddedIds()){
+	    boolBuilder.addMust(queryBuilder.term(EMBEDDED_ID_FIELD_NAME, subjectStr));    
+	}else{
+	    boolBuilder.addMust(queryBuilder.term(ID_FIELD_NAME, subjectStr));
+	}
     }
 
     @SuppressWarnings("unchecked")
