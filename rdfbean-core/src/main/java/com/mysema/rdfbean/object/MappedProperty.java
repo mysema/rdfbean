@@ -13,7 +13,18 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.annotation.Nullable;
 
@@ -21,8 +32,19 @@ import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.lang.StringUtils;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.annotations.*;
+import com.mysema.rdfbean.annotations.ComponentType;
+import com.mysema.rdfbean.annotations.Container;
+import com.mysema.rdfbean.annotations.ContainerType;
+import com.mysema.rdfbean.annotations.Default;
+import com.mysema.rdfbean.annotations.Defaults;
+import com.mysema.rdfbean.annotations.Id;
+import com.mysema.rdfbean.annotations.InjectService;
+import com.mysema.rdfbean.annotations.Localized;
+import com.mysema.rdfbean.annotations.MapElements;
+import com.mysema.rdfbean.annotations.Mixin;
+import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.annotations.Properties;
+import com.mysema.rdfbean.annotations.Required;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.UID;
 
