@@ -513,7 +513,7 @@ public final class SessionImpl implements Session {
         if (value instanceof ID) {
             return value;
         } else {
-            throw new IllegalArgumentException("Cannot assign " + value + " into " + propertyPath);
+            throw new BindException(propertyPath, value);
         }
     }
 
@@ -524,7 +524,7 @@ public final class SessionImpl implements Session {
             return convertMappedObject((ID) value, targetClass, mappedProperty.isPolymorphic(), mappedProperty
                     .isInjection());
         } else {
-            throw new IllegalArgumentException("Cannot assign " + value + " into " + propertyPath);
+            throw new BindException(propertyPath, value);
         }
     }
 
@@ -533,7 +533,7 @@ public final class SessionImpl implements Session {
         if (value instanceof UID) {
             return convertClassReference((UID) value, mappedProperty.getComponentType());
         } else {
-            throw new IllegalArgumentException("Cannot assign bnode or literal " + value + " into " + propertyPath);
+            throw new BindException(propertyPath, "bnode or literal", value);
         }
     }
 
@@ -544,7 +544,7 @@ public final class SessionImpl implements Session {
         } else if (value instanceof LIT) {
             return Enum.valueOf((Class<? extends Enum>) targetClass, value.getValue());
         } else {
-            throw new IllegalArgumentException("Cannot bind BNode into enum");
+            throw new BindException("Cannot bind BNode into enum");
         }
     }
 
@@ -1228,7 +1228,7 @@ public final class SessionImpl implements Session {
                 } else if (Identifier.class.isAssignableFrom(type)) {
                     id = identifier;
                 } else {
-                    throw new SessionException("Cannot assign id of " + mappedClass + " into " + type);
+                    throw new BindException("Cannot assign id of " + mappedClass + " into " + type);
                 }
             }
             idProperty.setValue(instance, id);
