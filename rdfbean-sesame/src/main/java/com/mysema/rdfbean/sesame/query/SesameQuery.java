@@ -547,17 +547,17 @@ public class SesameQuery
     private ValueExpr toValue(Operation<?> operation) {
         boolean outerOptional = inOptionalPath();
         boolean innerOptional = false;
-        Map<Path<?>,Var> _pathToVar = null;
-        Map<Path<?>,Var> _pathToKnownVar = null;
+        Map<Path<?>,Var> origPathToVar = null;
+        Map<Path<?>,Var> origPathToKnownVar = null;
         operatorStack.push(operation.getOperator());        
         if (!outerOptional && inOptionalPath()){
             joinBuilder.setOptional();
             innerOptional = true;
             
-            _pathToVar = pathToVar;
-            _pathToKnownVar = pathToKnownVar;
-            pathToVar = new HashMap<Path<?>,Var>(_pathToVar);
-            pathToKnownVar = new HashMap<Path<?>,Var>(_pathToKnownVar);
+            origPathToVar = pathToVar;
+            origPathToKnownVar = pathToKnownVar;
+            pathToVar = new HashMap<Path<?>,Var>(origPathToVar);
+            pathToKnownVar = new HashMap<Path<?>,Var>(origPathToKnownVar);
         }                  
         try{
             OperationTransformer transformer = transformers.get(operation.getOperator());
@@ -572,8 +572,8 @@ public class SesameQuery
                 joinBuilder.setMandatory();
                 
                 allPaths.putAll(pathToVar);
-                pathToVar = _pathToVar;
-                pathToKnownVar = _pathToKnownVar;
+                pathToVar = origPathToVar;
+                pathToKnownVar = origPathToKnownVar;
             }
         }
         
