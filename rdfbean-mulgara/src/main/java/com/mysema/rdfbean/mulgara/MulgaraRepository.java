@@ -104,7 +104,7 @@ public class MulgaraRepository implements Repository{
     @Override
     public RDFConnection openConnection() {
         try {
-            Connection connection = connectionFactory.newConnection(database.newSession());
+            Connection connection = connectionFactory.newConnection(database.newSession()); //NOPMD
             return new MulgaraConnection(connection);
         } catch (ConnectionException e) {
             String error = "Caught " + e.getClass().getName();

@@ -1375,7 +1375,8 @@ public final class SessionImpl implements Session {
         ID currentNode = null;
         for (Object value : list) {
             if (currentNode == null) {
-                firstNode = currentNode = connection.createBNode();
+        	currentNode = connection.createBNode();
+                firstNode = currentNode;
             } else {
                 BID nextNode = connection.createBNode();
                 recordAddStatement(currentNode, RDF.rest, nextNode, context);

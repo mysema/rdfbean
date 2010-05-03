@@ -43,7 +43,8 @@ class TransactionalInterceptor implements MethodInterceptor{
         this.configuration = configuration;
     }
         
-    public Object invoke(MethodInvocation methodInvocation) throws Throwable {        
+    @Override
+    public Object invoke(MethodInvocation methodInvocation) throws Throwable { //NOSONAR        
         Transactional annotation = configuration.get().get(methodInvocation.getMethod());
         boolean inSession = false;
         boolean inTx = false;
