@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.sesame;
+package com.mysema.rdfbean.sesame.query;
 
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.QueryLanguage;

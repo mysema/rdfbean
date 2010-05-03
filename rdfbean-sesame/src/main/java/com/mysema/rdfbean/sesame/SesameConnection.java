@@ -54,6 +54,7 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
+import com.mysema.rdfbean.sesame.query.DirectQuery;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
 
 /**
