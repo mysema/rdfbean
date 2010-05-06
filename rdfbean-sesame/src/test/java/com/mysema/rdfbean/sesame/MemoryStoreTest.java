@@ -18,6 +18,8 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
@@ -65,6 +67,10 @@ public class MemoryStoreTest {
         }        
         repository.setSesameInference(false);
         repository.setDataDirName(DATA_DIR);
+        repository.setSources(
+            new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),
+            new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
+        );
         
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(configuration);
