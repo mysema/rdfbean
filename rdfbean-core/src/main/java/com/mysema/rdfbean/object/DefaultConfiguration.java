@@ -63,17 +63,7 @@ public final class DefaultConfiguration implements Configuration {
     private final Map<UID, List<Class<?>>> type2classes = new HashMap<UID, List<Class<?>>>();
     
     public DefaultConfiguration() {}
-    
-    public DefaultConfiguration(boolean asPackages, Class<?>... classes) {
-        if (asPackages) {
-            for (Class<?> clazz : classes) {
-                addPackages(clazz.getPackage());
-            }
-        } else {
-            addClasses(classes);
-        }
-    }
-    
+        
     public DefaultConfiguration(Class<?>... classes) {
         addClasses(classes);
     }

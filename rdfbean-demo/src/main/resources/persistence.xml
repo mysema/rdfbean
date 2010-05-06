@@ -39,9 +39,10 @@
   </bean>
  
   <bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">
-      <constructor-arg value="true"/>
       <constructor-arg>
           <list>
+          	  <value>com.mysema.rdf.demo.domain.Company</value>
+			  <value>com.mysema.rdf.demo.domain.Party</value>
               <value>com.mysema.rdf.demo.domain.Person</value>
           </list>
       </constructor-arg>
