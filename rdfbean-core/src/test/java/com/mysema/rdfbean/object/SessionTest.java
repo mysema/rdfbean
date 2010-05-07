@@ -7,6 +7,8 @@ package com.mysema.rdfbean.object;
 
 import org.junit.Test;
 
+import com.mysema.query.types.path.PathBuilder;
+
 /**
  * SessionTest provides
  *
@@ -42,6 +44,19 @@ public class SessionTest {
     @Test(expected=IllegalArgumentException.class)
     public void getId(){
         session.getId(value);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void findUnknown(){
+//        launchpad bug : #576846
+        session.findInstances(SessionTest.class);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void findUnknown2(){
+//        launchpad bug : #576846
+        PathBuilder<SessionTest> entity = new PathBuilder<SessionTest>(SessionTest.class, "var");
+        session.from(entity).list(entity);
     }
     
 }

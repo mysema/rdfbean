@@ -11,12 +11,14 @@ import static junit.framework.Assert.assertTrue;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.InjectService;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.UID;
 
 public class PropertyOverrideTest {
     
+    @ClassMapping(ns=TEST.NS)
     public static class WithinClass {
         @Predicate(ns=TEST.NS)
         private WithinClass reference;

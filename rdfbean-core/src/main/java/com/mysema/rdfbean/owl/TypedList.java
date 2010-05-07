@@ -23,7 +23,6 @@ import com.mysema.rdfbean.rdfs.RDFSResource;
  * @author sasa
  * 
  */
-@ClassMapping
 public class TypedList extends OWLClass {
 
     private static final RDFSClass<RDFSResource> List = new RDFSClass<RDFSResource>(RDF.List);

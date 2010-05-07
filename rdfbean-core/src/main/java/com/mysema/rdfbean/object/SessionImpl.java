@@ -717,10 +717,15 @@ public final class SessionImpl implements Session {
 
     @Override
     public <T> List<T> findInstances(Class<T> clazz) {
-        final Set<T> instances = new LinkedHashSet<T>();
         UID type = MappedClass.getMappedClass(clazz).getUID();
-        findInstances(clazz, type, instances);
-        return new ArrayList<T>(instances);
+        if (type != null){
+            Set<T> instances = new LinkedHashSet<T>();
+            findInstances(clazz, type, instances);
+            return new ArrayList<T>(instances);    
+        }else{
+            throw new IllegalArgumentException("No RDF type specified for " + clazz.getName());
+        }
+        
     }
 
     @Override
@@ -864,13 +869,14 @@ public final class SessionImpl implements Session {
 
     private <T> T getBean(Class<T> clazz, ID subject) {
         boolean polymorphic = true;
-        if (clazz != null) {
-            MappedClass mappedClass = MappedClass.getMappedClass(clazz);
-            if (mappedClass != null) {
-                polymorphic = mappedClass.isPolymorphic();
-            }
+        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        if (mappedClass != null) {
+            polymorphic = mappedClass.isPolymorphic();
+            return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
+        }else{
+            throw new IllegalArgumentException("No ClassMapping for " + clazz.getName());
         }
-        return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
+        
     }
 
     @Override

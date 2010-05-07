@@ -77,8 +77,7 @@ public final class MappedClassFactory {
         // }
     }
 
-    private static void collectFieldPaths(Class<?> clazz,
-            MappedClass mappedClass) {
+    private static void collectFieldPaths(Class<?> clazz, MappedClass mappedClass) {
         if (!clazz.isInterface()) {
             MappedPath path;
             String classNs = MappedClass.getClassNs(clazz);
@@ -91,8 +90,7 @@ public final class MappedClassFactory {
         }
     }
 
-    private static void collectDynamicFieldProperties(Class<?> clazz,
-            MappedClass mappedClass) {
+    private static void collectDynamicFieldProperties(Class<?> clazz, MappedClass mappedClass) {
         if (!clazz.isInterface()) {
             for (Field field : clazz.getDeclaredFields()) {
                 FieldProperty property = new FieldProperty(field, mappedClass);
@@ -115,8 +113,7 @@ public final class MappedClassFactory {
         }
     }
 
-    private static void collectMethodPaths(Class<?> clazz,
-            MappedClass mappedClass) {
+    private static void collectMethodPaths(Class<?> clazz, MappedClass mappedClass) {
         MappedPath path;
         String classNs = MappedClass.getClassNs(clazz);
         for (Method method : clazz.getDeclaredMethods()) {
@@ -135,17 +132,13 @@ public final class MappedClassFactory {
         if (mappedClass == null) {
             mappedClass = new MappedClass(clazz);
             if (!clazz.isEnum()) {
-                for (MappedClass mappedSuperClass : mappedClass
-                        .getMappedSuperClasses()) {
+                for (MappedClass mappedSuperClass : mappedClass.getMappedSuperClasses()) {
                     if (mappedSuperClass != null) {
                         for (MappedPath path : mappedSuperClass.getProperties()) {
-                            MappedProperty<?> property = (MappedProperty<?>) path
-                                    .getMappedProperty().clone();
+                            MappedProperty<?> property = (MappedProperty<?>) path.getMappedProperty().clone();
                             property.resolve(mappedClass);
                             mappedClass.addMappedPath(new MappedPath(property,
-                                    path.getPredicatePath(), !mappedClass
-                                            .equals(property
-                                                    .getDeclaringClass())));
+                                    path.getPredicatePath(), !mappedClass.equals(property.getDeclaringClass())));
                         }
                     }
                 }

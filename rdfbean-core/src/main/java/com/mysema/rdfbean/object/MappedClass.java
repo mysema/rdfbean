@@ -10,16 +10,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -86,9 +77,11 @@ public final class MappedClass {
             } else if (StringUtils.isNotEmpty(cmap.ns())) {
                 return new UID(cmap.ns(), clazz.getSimpleName());
             } else {
-                return null;
+                // if ClassMapping is used, then either ns or ln should be given, eitherwise the ClassMapping is incomplete
+                throw new IllegalArgumentException("Both ns and ln are empty for " + clazz.getName());
             }
         } else {
+            // NOTE : might be used for autowire etc, doesn't need ClassMapping for such cases
             return null;
         }
     }
