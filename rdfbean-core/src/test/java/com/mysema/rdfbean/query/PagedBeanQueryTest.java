@@ -17,7 +17,10 @@ import org.junit.Test;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
@@ -33,8 +36,13 @@ public class PagedBeanQueryTest {
     
     @ClassMapping(ns=TEST.NS)
     public static class User{
+        
+        @Id(IDType.RESOURCE)
+        ID id;
+                
         @Predicate
         String firstName;
+        
         @Predicate
         String lastName;
         

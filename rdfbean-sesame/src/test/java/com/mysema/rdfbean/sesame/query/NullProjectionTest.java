@@ -18,7 +18,10 @@ import org.openrdf.store.StoreException;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -32,6 +35,9 @@ public class NullProjectionTest extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class User{
+       
+        @Id(IDType.RESOURCE)
+        ID id;
         
         @Predicate
         private String firstName;

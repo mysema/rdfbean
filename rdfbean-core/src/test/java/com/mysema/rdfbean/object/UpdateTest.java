@@ -28,10 +28,13 @@ import com.mysema.commons.l10n.support.LocaleIterable;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.FetchStrategy;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
 
@@ -43,7 +46,10 @@ public class UpdateTest {
 
     @ClassMapping(ns=TEST.NS)
     public static class Employee {
-    
+        
+        @Id(IDType.RESOURCE)
+        ID id;
+            
         @Predicate
         String name;
         
@@ -79,7 +85,10 @@ public class UpdateTest {
     
     @ClassMapping(ns=TEST.NS)
     public static class Company {
-    
+       
+        @Id(IDType.RESOURCE)
+        ID id;
+       
         @Predicate(ln="company", inv=true)
         Set<Employee> employees = new LinkedHashSet<Employee>();
     
@@ -113,7 +122,10 @@ public class UpdateTest {
     
     @ClassMapping(ns=TEST.NS, ln="Employee")
     public static class EmployeeInfo {
-
+        
+        @Id(IDType.RESOURCE)
+        ID id;
+        
         @Predicate
         String name;
         

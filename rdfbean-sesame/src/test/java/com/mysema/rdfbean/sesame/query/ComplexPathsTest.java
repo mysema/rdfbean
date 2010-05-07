@@ -19,7 +19,10 @@ import com.mysema.query.alias.Alias;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -32,6 +35,9 @@ public class ComplexPathsTest extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class NoteRevision {
+        
+        @Id(IDType.RESOURCE)
+        ID id;
         
         @Predicate
         String lemma;
@@ -50,7 +56,11 @@ public class ComplexPathsTest extends SessionTestBase{
     }
     
     @ClassMapping(ns=TEST.NS)
-    public static class Note { 
+    public static class Note {
+        
+        @Id(IDType.RESOURCE)
+        ID id;
+        
         @Predicate
         Term term;
         
@@ -69,6 +79,9 @@ public class ComplexPathsTest extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class Term{
+        
+        @Id(IDType.RESOURCE)
+        ID id;
         
         @Predicate
         String basicForm;

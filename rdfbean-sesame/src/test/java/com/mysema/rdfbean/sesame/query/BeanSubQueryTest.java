@@ -23,7 +23,10 @@ import com.mysema.query.alias.Alias;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -38,6 +41,10 @@ public class BeanSubQueryTest extends SessionTestBase{
 
     @ClassMapping(ns=TEST.NS)
     public static class Entity {
+       
+        @Id(IDType.RESOURCE)
+        ID id;
+        
         @Predicate
         private long revision;
         

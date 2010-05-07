@@ -22,6 +22,8 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -35,6 +37,10 @@ public class BeanSubQuery2Test extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class Revision {
+        
+        @Id(IDType.RESOURCE)
+        ID id;
+        
         @Predicate
         long svnRevision;
         

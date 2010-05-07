@@ -14,8 +14,11 @@ import org.junit.Test;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.InjectProperty;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
@@ -24,7 +27,7 @@ public class VirtualPropertyTest {
     
     @ClassMapping(ns=TEST.NS)
     public static interface Party {
-
+                
         @Predicate
         String getDisplayName();
 
@@ -32,6 +35,9 @@ public class VirtualPropertyTest {
     
     @ClassMapping(ns=TEST.NS)
     public static class Person implements Party {
+
+        @Id(IDType.RESOURCE)
+        ID id;
         
         @Predicate
         String firstName;

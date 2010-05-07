@@ -17,7 +17,10 @@ import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -30,18 +33,27 @@ public class OptionalPathsTest extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class Note {
+        
+        @Id(IDType.RESOURCE)
+        ID id;
+        
         @Predicate
         String basicForm;        
+
         @Predicate
         String lemma;        
+        
         @Predicate
         Term term;
+        
         public String getBasicForm() {
             return basicForm;
         }
+        
         public String getLemma() {
             return lemma;
         }
+        
         public Term getTerm() {
             return term;
         }
@@ -50,8 +62,13 @@ public class OptionalPathsTest extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class Term{
+
+        @Id(IDType.RESOURCE)
+        ID id;
+        
         @Predicate
         String meaning;
+
         public String getMeaning() {
             return meaning;
         }                   

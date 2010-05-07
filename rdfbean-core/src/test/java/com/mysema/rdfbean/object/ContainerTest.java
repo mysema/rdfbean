@@ -20,7 +20,10 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Container;
 import com.mysema.rdfbean.annotations.ContainerType;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.STMT;
@@ -28,9 +31,12 @@ import com.mysema.rdfbean.model.STMT;
 @ClassMapping(ns=TEST.NS)
 public class ContainerTest {
 
+    @Id(IDType.RESOURCE)
+    ID id;
+    
     @Predicate
     @Container(ContainerType.SEQ)
-    private List<String> names = new ArrayList<String>();
+    List<String> names = new ArrayList<String>();
     
     @Test
     public void testContainer() {
@@ -58,5 +64,6 @@ public class ContainerTest {
         assertNull(test.names.get(1));
         assertEquals("Toka", test.names.get(2));
     }
+    
     
 }

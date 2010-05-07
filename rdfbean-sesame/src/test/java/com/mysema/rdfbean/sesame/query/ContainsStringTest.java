@@ -17,7 +17,10 @@ import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -30,6 +33,9 @@ public class ContainsStringTest extends SessionTestBase{
 
     @ClassMapping(ns=TEST.NS)
     public static class EntityRevision{
+        
+        @Id(IDType.RESOURCE)
+        ID id;
 
         @Predicate
         String text;
@@ -50,6 +56,9 @@ public class ContainsStringTest extends SessionTestBase{
     @ClassMapping(ns=TEST.NS)
     public static class Entity{
         
+        @Id(IDType.RESOURCE)
+        ID id;
+        
         @Predicate
         EntityRevision latestRevision;
                 
@@ -68,7 +77,10 @@ public class ContainsStringTest extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class Term{
-     
+
+        @Id(IDType.RESOURCE)
+        ID id;
+        
         @Predicate
         String text2;
      
