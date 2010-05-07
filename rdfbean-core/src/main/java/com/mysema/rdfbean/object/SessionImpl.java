@@ -1174,6 +1174,14 @@ public final class SessionImpl implements Session {
         }
         return instance;
     }
+    
+    private <T> T assertHasIdProperty(T instance){
+        MappedClass mappedClass = MappedClass.getMappedClass(instance.getClass());
+        if (mappedClass.getIdProperty() == null){
+            throw new IllegalArgumentException(instance.getClass().getName() + " as no id property");
+        }
+        return instance;
+    }
 
     @Override
     public LID save(Object instance) {
@@ -1182,7 +1190,9 @@ public final class SessionImpl implements Session {
             seen = new HashSet<Object>();
             flush = true;
         }
-        ID subject = toRDF(assertMapped(instance), null);
+        assertMapped(instance);
+        assertHasIdProperty(instance);
+        ID subject = toRDF(instance, null);
         if (flush) {
             seen = null;
             if (flushMode == FlushMode.ALWAYS) {

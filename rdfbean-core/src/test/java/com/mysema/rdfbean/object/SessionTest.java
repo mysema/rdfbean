@@ -66,9 +66,15 @@ public class SessionTest {
         session.from(entity).list(entity);
     }
     
-    @Test
-    public void saveNoId(){
+    @Test(expected=IllegalArgumentException.class)
+    public void saveEntityWithoutId(){
 //        #576836
+        session.save(new EntityWithoutId());
+    }
+    
+    @Test
+    public void findInstancesWithoutId(){
+        session.findInstances(EntityWithoutId.class);
     }
     
 }
