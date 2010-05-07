@@ -8,6 +8,8 @@ package com.mysema.rdfbean.object;
 import org.junit.Test;
 
 import com.mysema.query.types.path.PathBuilder;
+import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.annotations.ClassMapping;
 
 /**
  * SessionTest provides
@@ -17,9 +19,14 @@ import com.mysema.query.types.path.PathBuilder;
  */
 public class SessionTest {
     
+    @ClassMapping(ns=TEST.NS)
+    static class EntityWithoutId{
+        
+    }
+    
     private Long value = Long.valueOf(0l);
     
-    private Session session = SessionUtil.openSession();
+    private Session session = SessionUtil.openSession(EntityWithoutId.class);
     
     @Test(expected=IllegalArgumentException.class)
     public void save(){
@@ -57,6 +64,11 @@ public class SessionTest {
 //        launchpad bug : #576846
         PathBuilder<SessionTest> entity = new PathBuilder<SessionTest>(SessionTest.class, "var");
         session.from(entity).list(entity);
+    }
+    
+    @Test
+    public void saveNoId(){
+//        #576836
     }
     
 }
