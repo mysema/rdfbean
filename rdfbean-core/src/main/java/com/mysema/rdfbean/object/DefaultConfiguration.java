@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.CORE;
+import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.MappedClasses;
 import com.mysema.rdfbean.model.FetchStrategy;
@@ -74,17 +75,20 @@ public final class DefaultConfiguration implements Configuration {
 
     public void addClasses(Class<?>... classes) {
         for (Class<?> clazz : classes) {
-            UID uid = MappedClass.getUID(clazz);
-            if (uid != null) {
-                List<Class<?>> classList = type2classes.get(uid);
-                if (classList == null) {
-                    classList = new ArrayList<Class<?>>();
-                    type2classes.put(uid, classList);
-                }
-                classList.add(clazz);
-                this.classes.add(clazz);
+            if (clazz.getAnnotation(ClassMapping.class) != null){
+                UID uid = MappedClass.getUID(clazz);
+                if (uid != null) {
+                    List<Class<?>> classList = type2classes.get(uid);
+                    if (classList == null) {
+                        classList = new ArrayList<Class<?>>();
+                        type2classes.put(uid, classList);
+                    }
+                    classList.add(clazz);
+                    this.classes.add(clazz);
+                }    
+            }else{
+                throw new IllegalArgumentException("No @ClassMapping annotation for " + clazz.getName());
             }
-            
         }
     }
 
@@ -93,6 +97,8 @@ public final class DefaultConfiguration implements Configuration {
             MappedClasses mappedClasses = pack.getAnnotation(MappedClasses.class);
             if (mappedClasses != null) {
                 addClasses(mappedClasses.value());
+            }else{
+                throw new IllegalArgumentException("No @MappedClasses annotation for " + pack.getName());
             }
         }
     }
