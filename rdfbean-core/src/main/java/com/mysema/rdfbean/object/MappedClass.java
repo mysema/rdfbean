@@ -181,6 +181,7 @@ public final class MappedClass {
         return dynamicProperties;
     }
 
+    @Nullable
     public MappedProperty<?> getIdProperty() {
         return idProperty;
     }
