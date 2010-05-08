@@ -829,7 +829,7 @@ public final class SessionImpl implements Session {
 
     @Override
     public <T> T get(Class<T> clazz, ID subject) {
-        Assert.notNull(subject, "subject was null");
+        Assert.notNull(subject, "subject");
         return getBean(clazz, subject);
     }
 
