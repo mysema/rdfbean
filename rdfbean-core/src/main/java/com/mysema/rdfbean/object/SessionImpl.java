@@ -870,12 +870,8 @@ public final class SessionImpl implements Session {
     private <T> T getBean(Class<T> clazz, ID subject) {
         boolean polymorphic = true;
         MappedClass mappedClass = MappedClass.getMappedClass(clazz);
-        if (mappedClass != null) {
-            polymorphic = mappedClass.isPolymorphic();
-            return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
-        }else{
-            throw new IllegalArgumentException("No ClassMapping for " + clazz.getName());
-        }
+        polymorphic = mappedClass.isPolymorphic();
+        return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
         
     }
 
