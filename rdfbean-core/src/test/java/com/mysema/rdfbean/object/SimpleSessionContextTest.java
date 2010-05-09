@@ -3,6 +3,7 @@ package com.mysema.rdfbean.object;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -16,15 +17,22 @@ import com.mysema.rdfbean.model.MiniRepository;
  */
 public class SimpleSessionContextTest {
     
+    private SessionFactoryImpl sessionFactory;
+    
     private SimpleSessionContext sessionContext;
 
     @Before
     public void setUp(){
-        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
+        sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(new DefaultConfiguration());
         sessionFactory.setRepository(new MiniRepository());
         sessionFactory.initialize();
         sessionContext = new SimpleSessionContext(sessionFactory);
+    }
+    
+    @After
+    public void tearDown(){
+        sessionFactory.close();
     }
     
     @Test
