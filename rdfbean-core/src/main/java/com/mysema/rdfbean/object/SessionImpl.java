@@ -669,12 +669,7 @@ public final class SessionImpl implements Session {
                     return true;
                 }
             } finally {
-                try {
-                    stmts.close();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                    throw new SessionException(e);
-                }
+                close(stmts);
             }
         }
         return false;
@@ -688,11 +683,7 @@ public final class SessionImpl implements Session {
                 objects.add(statement.getObject());
             }
         } finally {
-            try {
-                statements.close();
-            } catch (IOException e) {
-                throw new SessionException(e);
-            }
+            close(statements);
         }
         return objects;
     }
@@ -706,13 +697,17 @@ public final class SessionImpl implements Session {
                 subjects.add((T) statement.getSubject());
             }
         } finally {
-            try {
-                statements.close();
-            } catch (IOException e) {
-                throw new SessionException(e);
-            }
+            close(statements);
         }
         return subjects;
+    }
+
+    private void close(CloseableIterator<STMT> statements) {
+        try {
+            statements.close();
+        } catch (IOException e) {
+            throw new SessionException(e);
+        }
     }
 
     @Override
