@@ -174,22 +174,34 @@ public final class SessionImpl implements Session {
             Map<UID, Object> values = new HashMap<UID, Object>();
 
             for (STMT stmt : statements) {
-                if (property.isIncludeMapped() || !mappedClass.isMappedPredicate(stmt.getPredicate())) {
-                    
-                    Class<?> componentType;
-                    
+                if (property.isIncludeMapped() || !mappedClass.isMappedPredicate(stmt.getPredicate())) {                    
+                    Class<?> componentType;                    
                     if (property.isDynamicCollection()) {
                         componentType = property.getDynamicCollectionComponentType();
-                    }
-                    else {
+                    } else {
                         componentType = property.getComponentType();
                     }
                     
-                    Object value = convertValue(stmt.getObject(), componentType);
+                    // skip value, if it is Resource and not matched in type
+                    // TODO : optimize this
+                    if (stmt.getObject().isResource()){
+                	List<STMT> types = findStatements(stmt.getObject().asResource(), null, null, null, false);
+                	if (!types.isEmpty()){
+                	    boolean matched = false;
+                	    for (Class<?> cl : conf.getMappedClasses(types.get(0).getObject().asURI())){
+                    	    	if (cl.isAssignableFrom(componentType)){
+                    	    	    matched = true;
+                    	    	}       	         	    
+                	    }
+                    	    if (!matched){
+                    	        continue;
+                    	    }    
+                	}                	
+                    }
                     
+                    Object value = convertValue(stmt.getObject(), componentType);                    
                     if (value != null) {
                         if (property.isDynamicCollection()) {
-
                             Collection<Object> collection = (Collection<Object>) values.get(stmt.getPredicate());
                             if (collection == null) {
                                 try {
@@ -221,8 +233,7 @@ public final class SessionImpl implements Session {
             if (node.getClass().equals(targetClass)) {
                 return node;
             } else if (targetType != null && node.isLiteral()) {
-                if (((LIT) node).getDatatype().equals(targetType)) {
-    
+                if (((LIT) node).getDatatype().equals(targetType)) {    
                     return conf.getConverterRegistry().fromString(node.getValue(), targetClass);
                 }
             } else if (targetType == null && node.isURI()) {
