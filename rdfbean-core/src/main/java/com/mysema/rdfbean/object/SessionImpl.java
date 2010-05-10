@@ -28,7 +28,6 @@ import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 
 /**
@@ -227,7 +226,7 @@ public final class SessionImpl implements Session {
         }
     }
 
-    protected <T> T bind(ID subject, T instance) {
+    private <T> T bind(ID subject, T instance) {
         if (instance instanceof LifeCycleAware) {
             ((LifeCycleAware) instance).beforeBinding();
         }
@@ -551,7 +550,7 @@ public final class SessionImpl implements Session {
     }
 
     @Nullable
-    protected <T> T createInstance(ID subject, Class<T> requiredType, Collection<ID> mappedTypes) {
+    private <T> T createInstance(ID subject, Class<T> requiredType, Collection<ID> mappedTypes) {
         T instance;
         Class<? extends T> actualType = matchType(mappedTypes, requiredType);
         if (actualType != null) {
@@ -603,7 +602,7 @@ public final class SessionImpl implements Session {
         return connection.createQuery(this, queryLanguage, null);
     }
 
-    protected ID createResource(BeanMap instance) {
+    private ID createResource(BeanMap instance) {
         ID id = conf.createURI(instance.getBean());
         if (id == null) {
             id = connection.createBNode();
@@ -788,7 +787,7 @@ public final class SessionImpl implements Session {
         return values;
     }
 
-    protected List<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object,
+    private List<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object,
             @Nullable UID context, boolean includeInferred) {
         return IteratorAdapter.asList(connection.findStatements(subject, predicate, object, context, includeInferred));
     }
@@ -878,6 +877,7 @@ public final class SessionImpl implements Session {
         return (T) get(clazz, subject);
     }
 
+    @Override
     public <T> T getByExample(T entity) {
         return new ExampleQuery<T>(this, entity).uniqueResult();
     }
@@ -887,7 +887,7 @@ public final class SessionImpl implements Session {
         return get(clazz, new LID(id));
     }
 
-    protected Class<?> getClass(Object object) {
+    private Class<?> getClass(Object object) {
         return object instanceof BeanMap ? ((BeanMap) object).getBean().getClass() : object.getClass();
     }
 
@@ -911,7 +911,7 @@ public final class SessionImpl implements Session {
         return constructorArguments;
     }
 
-    public UID getContext(Class<?> clazz, @Nullable ID subject, @Nullable UID defaultContext) {
+    private UID getContext(Class<?> clazz, @Nullable ID subject, @Nullable UID defaultContext) {
         UID contextUID = conf.getContext(clazz, subject);
         if (contextUID != null) {
             return contextUID;
@@ -920,14 +920,16 @@ public final class SessionImpl implements Session {
         }
     }
 
-    public UID getContext(Object instance, @Nullable ID subject, @Nullable UID defaultContext) {
+    private UID getContext(Object instance, @Nullable ID subject, @Nullable UID defaultContext) {
         return getContext(instance.getClass(), subject, defaultContext);
     }
 
-    public ConverterRegistry getConverterRegistry() {
-        return conf.getConverterRegistry();
-    }
+//    @Override
+//    public ConverterRegistry getConverterRegistry() {
+//        return conf.getConverterRegistry();
+//    }
 
+    @Override
     public Locale getCurrentLocale() {
         if (locales != null) {
             Iterator<Locale> liter = locales.iterator();
@@ -938,6 +940,7 @@ public final class SessionImpl implements Session {
         return Locale.ROOT;
     }
 
+    @Override
     public FlushMode getFlushMode() {
         return flushMode;
     }
@@ -987,6 +990,7 @@ public final class SessionImpl implements Session {
         return null;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public ID getId(Object instance) {
         if (instance instanceof LID) {
@@ -1002,10 +1006,11 @@ public final class SessionImpl implements Session {
         }
     }
 
-    public IdentityService getIdentityService() {
-        return identityService;
-    }
+//    public IdentityService getIdentityService() {
+//        return identityService;
+//    }
 
+    @Override
     public LID getLID(ID id) {
         return identityService.getLID(id);
     }
@@ -1083,7 +1088,7 @@ public final class SessionImpl implements Session {
 
     @Nullable
     @SuppressWarnings("unchecked")
-    protected <T> Class<? extends T> matchType(Collection<ID> types, Class<T> targetType) {
+    private <T> Class<? extends T> matchType(Collection<ID> types, Class<T> targetType) {
         if (types.isEmpty()) {
             return targetType;
         } else {
@@ -1154,11 +1159,11 @@ public final class SessionImpl implements Session {
         }
     }
 
-    protected void removeStatements(ID subject, UID predicate, NODE object, UID context) {
-        for (STMT statement : findStatements(subject, predicate, object, context, false)) {
-            recordRemoveStatement(statement);
-        }
-    }
+//    private void removeStatements(ID subject, UID predicate, NODE object, UID context) {
+//        for (STMT statement : findStatements(subject, predicate, object, context, false)) {
+//            recordRemoveStatement(statement);
+//        }
+//    }
 
     private <T> T assertMapped(T instance) {
         if (instance.getClass().getAnnotation(ClassMapping.class) == null) {
@@ -1208,6 +1213,7 @@ public final class SessionImpl implements Session {
         return ids;
     }
 
+    @Override
     public void setFlushMode(FlushMode flushMode) {
         this.flushMode = flushMode;
     }
@@ -1243,7 +1249,7 @@ public final class SessionImpl implements Session {
         }
     }
 
-    protected BeanMap toBeanMap(Object instance) {
+    private BeanMap toBeanMap(Object instance) {
         return instance instanceof BeanMap ? (BeanMap) instance : new BeanMap(instance);
     }
 
