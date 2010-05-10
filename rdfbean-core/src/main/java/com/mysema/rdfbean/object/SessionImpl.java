@@ -748,7 +748,7 @@ public final class SessionImpl implements Session {
         Set<ID> resources = new LinkedHashSet<ID>();
         resources.addAll(this.<ID> filterSubject(connection.findStatements(null, RDF.type, uri, context, true)));
         for (ID subject : resources) {
-            T instance = getBean(clazz, subject);
+            T instance = get(clazz, subject);
             if (instance != null) {
                 instances.add(instance);
             }
@@ -825,11 +825,14 @@ public final class SessionImpl implements Session {
     @Override
     public <T> T get(Class<T> clazz, ID subject) {
         Assert.notNull(subject, "subject");
-        return getBean(clazz, subject);
+        boolean polymorphic = true;
+        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        polymorphic = mappedClass.isPolymorphic();
+        return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
     }
 
     @Override
-    public <T> T get(Class<T> clazz, LID subject) {
+    public <T> T get(Class<T> clazz, LID subject) {        
         ID id = identityService.getID(subject);
         return id != null ? get(clazz, id) : null;
     }
@@ -862,13 +865,13 @@ public final class SessionImpl implements Session {
         return instances;
     }
 
-    private <T> T getBean(Class<T> clazz, ID subject) {
-        boolean polymorphic = true;
-        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
-        polymorphic = mappedClass.isPolymorphic();
-        return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
-        
-    }
+//    private <T> T getBean(Class<T> clazz, ID subject) {
+//        boolean polymorphic = true;
+//        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+//        polymorphic = mappedClass.isPolymorphic();
+//        return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
+//        
+//    }
 
     @Override
     public <T> T getBean(Class<T> clazz, UID subject) {
