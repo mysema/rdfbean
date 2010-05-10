@@ -177,7 +177,8 @@ public final class SessionImpl implements Session {
                         }    
                     // for literals, make sure that componentType is a literal type	
                     }else{
-                        if (!conf.getConverterRegistry().supports(componentType)){
+                        UID dataType = conf.getConverterRegistry().getDatatype(componentType);
+                        if (dataType == null || !stmt.getObject().asLiteral().getDatatype().equals(dataType)){
                             continue;
                         }
                     }
@@ -213,10 +214,11 @@ public final class SessionImpl implements Session {
         if (targetClass.isAssignableFrom(node.getClass())){
             return node;
         } else if (targetType != null && node.isLiteral()) {
+            // TODO : make sure this works also with untyped literals etc
             if (((LIT) node).getDatatype().equals(targetType)) {    
                 return conf.getConverterRegistry().fromString(node.getValue(), targetClass);
             }else{
-                return null;
+                throw new IllegalArgumentException("Literal " + node + " is not of type " + targetType);
             }
         } else if (targetType == null && node.isURI()) {
             return get(targetClass, node.asURI());
@@ -444,8 +446,10 @@ public final class SessionImpl implements Session {
             } else {
                 instance = createInstance(subject, requiredClass, Collections.<ID> emptyList());
             }
-            put(subject, instance);
-            bind(subject, instance);
+            if (instance != null){
+                put(subject, instance);
+                bind(subject, instance);    
+            }            
         }
         return (T) instance;
     }
@@ -1104,11 +1108,9 @@ public final class SessionImpl implements Session {
         }
     }
 
-    private void put(ID resource, @Nullable Object value) {
-        if (resource != null) {
-            instanceCache.get(resource).add(value);
-            resourceCache.put(value, resource);
-        }
+    private void put(ID resource, Object value) {
+        instanceCache.get(resource).add(value);
+        resourceCache.put(value, resource);
     }
 
     private void recordAddStatement(ID subject, UID predicate, NODE object, UID context) {
