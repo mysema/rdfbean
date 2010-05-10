@@ -201,9 +201,7 @@ public class DynamicPropertiesTest {
         Project project = session.get(Project.class, UIDS.project);
         assertEquals("TestProject", project.name);
         
-        // FIXME Contains http://semantics.mysema.com/core#localId.
-        // What to do about it
-        assertEquals(1, project.infos.size());
+        assertEquals(0, project.infos.size());
         
         assertEquals(1, project.dates.size());
         assertTrue(project.dates.containsKey(UIDS.created));
@@ -227,9 +225,7 @@ public class DynamicPropertiesTest {
         Person person = session.get(Person.class, UIDS.person);
         assertEquals("Foo Bar", person.name);
 
-        // FIXME Contains http://semantics.mysema.com/core#localId.
-        // What to do about it
-        assertEquals(3, project.infos.size());
+        assertEquals(2, project.infos.size());
         
         assertEquals(2, project.dates.size());
         

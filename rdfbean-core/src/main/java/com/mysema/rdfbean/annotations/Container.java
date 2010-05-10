@@ -21,5 +21,8 @@ import java.lang.annotation.Target;
 @Target( { METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Container {
+    /**
+     * @return
+     */
     ContainerType value();
 }

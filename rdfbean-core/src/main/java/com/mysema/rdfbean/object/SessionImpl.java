@@ -8,20 +8,7 @@ package com.mysema.rdfbean.object;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.annotation.Nullable;
 
@@ -37,25 +24,12 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.types.path.PEntity;
+import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.FetchOptimizer;
-import com.mysema.rdfbean.model.FetchStrategy;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
-import com.mysema.rdfbean.model.Identifier;
-import com.mysema.rdfbean.model.LID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RDFS;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
+
 
 /**
  * Default implementation of the Session interface
@@ -174,6 +148,11 @@ public final class SessionImpl implements Session {
             Map<UID, Object> values = new HashMap<UID, Object>();
 
             for (STMT stmt : statements) {
+                if (stmt.getPredicate().equals(CORE.localId)){
+                    // skip local ids
+                    continue;
+                }
+                
                 if (property.isIncludeMapped() || !mappedClass.isMappedPredicate(stmt.getPredicate())) {                    
                     Class<?> componentType;                    
                     if (property.isDynamicCollection()) {
@@ -182,21 +161,25 @@ public final class SessionImpl implements Session {
                         componentType = property.getComponentType();
                     }
                     
-                    // skip value, if it is Resource and not matched in type
-                    // TODO : optimize this
+                    // for resources make sure that componentType is compatible with the resource
                     if (stmt.getObject().isResource()){
-                	List<STMT> types = findStatements(stmt.getObject().asResource(), null, null, null, false);
-                	if (!types.isEmpty()){
-                	    boolean matched = false;
-                	    for (Class<?> cl : conf.getMappedClasses(types.get(0).getObject().asURI())){
-                    	    	if (cl.isAssignableFrom(componentType)){
-                    	    	    matched = true;
-                    	    	}       	         	    
-                	    }
-                    	    if (!matched){
-                    	        continue;
-                    	    }    
-                	}                	
+                	List<STMT> typeStmts = findStatements(stmt.getObject().asResource(), RDF.type, null, null, false);
+                	boolean matched = false;
+                        for (STMT typeStmt : typeStmts){
+                            for (Class<?> cl : conf.getMappedClasses(typeStmt.getObject().asURI())){
+                                if (componentType.isAssignableFrom(cl)){
+                                    matched = true;
+                                }                                   
+                            }    
+                        }                       
+                        if (!matched){
+                            continue;
+                        }    
+                    // for literals, make sure that componentType is a literal type	
+                    }else{
+                        if (!conf.getConverterRegistry().supports(componentType)){
+                            continue;
+                        }
                     }
                     
                     Object value = convertValue(stmt.getObject(), componentType);                    
@@ -225,60 +208,56 @@ public final class SessionImpl implements Session {
         }
     }
 
-    @Nullable
-    private Object convertValue(NODE node, @Nullable Class<?> targetClass) {
-        if (targetClass != null) {
-            UID targetType = conf.getConverterRegistry().getDatatype(targetClass);
-    
-            if (node.getClass().equals(targetClass)) {
-                return node;
-            } else if (targetType != null && node.isLiteral()) {
-                if (((LIT) node).getDatatype().equals(targetType)) {    
-                    return conf.getConverterRegistry().fromString(node.getValue(), targetClass);
-                }
-            } else if (targetType == null && node.isURI()) {
-                return get(targetClass, node.asURI());
+    private Object convertValue(NODE node, Class<?> targetClass) {
+        UID targetType = conf.getConverterRegistry().getDatatype(targetClass);        
+        if (targetClass.isAssignableFrom(node.getClass())){
+            return node;
+        } else if (targetType != null && node.isLiteral()) {
+            if (((LIT) node).getDatatype().equals(targetType)) {    
+                return conf.getConverterRegistry().fromString(node.getValue(), targetClass);
+            }else{
+                return null;
             }
+        } else if (targetType == null && node.isURI()) {
+            return get(targetClass, node.asURI());
+        }else{
+            throw new IllegalArgumentException("Node " + node + " could not be converted to " + targetClass.getName());
         }
-        return null;
     }
 
-    @Nullable
-    protected <T> T bind(ID subject, @Nullable T instance) {
-        if (instance != null) {
-            if (instance instanceof LifeCycleAware) {
-                ((LifeCycleAware) instance).beforeBinding();
-            }
-            // TODO: defaultContext parameter?
-            UID context = getContext(instance, subject, null);
-            BeanMap beanMap = toBeanMap(instance);
-            MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
-            setId(mappedClass, subject, beanMap);
-            // loadStack.add(instance);
+    protected <T> T bind(ID subject, T instance) {
+        if (instance instanceof LifeCycleAware) {
+            ((LifeCycleAware) instance).beforeBinding();
+        }
+        // TODO: defaultContext parameter?
+        UID context = getContext(instance, subject, null);
+        BeanMap beanMap = toBeanMap(instance);
+        MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
+        setId(mappedClass, subject, beanMap);
+        // loadStack.add(instance);
 
-            bindDynamicProperties(subject, beanMap, mappedClass);
+        bindDynamicProperties(subject, beanMap, mappedClass);
 
-            for (MappedPath path : mappedClass.getProperties()) {
-                if (!path.isConstructorParameter()) {
-                    MappedProperty<?> property = path.getMappedProperty();
-                    if (!property.isVirtual()) {
-                        Object convertedValue;
-                        try {
-                            convertedValue = getValue(path, getPathValue(path, subject, context), context);
-                        } catch (InstantiationException e) {
-                            throw new SessionException(e);
-                        } catch (IllegalAccessException e) {
-                            throw new SessionException(e);
-                        }
-                        if (convertedValue != null) {
-                            property.setValue(beanMap, convertedValue);
-                        }
+        for (MappedPath path : mappedClass.getProperties()) {
+            if (!path.isConstructorParameter()) {
+                MappedProperty<?> property = path.getMappedProperty();
+                if (!property.isVirtual()) {
+                    Object convertedValue;
+                    try {
+                        convertedValue = getValue(path, getPathValue(path, subject, context), context);
+                    } catch (InstantiationException e) {
+                        throw new SessionException(e);
+                    } catch (IllegalAccessException e) {
+                        throw new SessionException(e);
+                    }
+                    if (convertedValue != null) {
+                        property.setValue(beanMap, convertedValue);
                     }
                 }
             }
-            if (instance instanceof LifeCycleAware) {
-                ((LifeCycleAware) instance).afterBinding();
-            }
+        }
+        if (instance instanceof LifeCycleAware) {
+            ((LifeCycleAware) instance).afterBinding();
         }
         return instance;
     }
@@ -318,7 +297,6 @@ public final class SessionImpl implements Session {
     private Object convertCollection(MappedPath propertyPath, Collection<? extends NODE> values, UID context)
             throws InstantiationException, IllegalAccessException {
         MappedProperty<?> mappedProperty = propertyPath.getMappedProperty();
-        Object convertedValue;
         Class<?> targetType = mappedProperty.getComponentType();
         int size = values.size();
         if (size == 1) {
@@ -334,10 +312,14 @@ public final class SessionImpl implements Session {
         Class collectionType = mappedProperty.getCollectionType();
         Collection collection = (Collection) collectionType.newInstance();
         for (NODE value : values) {
-            collection.add(convertValue(value, targetType, propertyPath));
+            if (value != null){
+                collection.add(convertValue(value, targetType, propertyPath));    
+            }else{
+                collection.add(null);
+            }
+            
         }
-        convertedValue = collection;
-        return convertedValue;
+        return collection;
     }
 
     private Collection<NODE> convertContainer(ID node, UID context, boolean indexed) {
@@ -376,7 +358,12 @@ public final class SessionImpl implements Session {
     private Collection<NODE> convertList(ID subject, UID context) {
         List<NODE> list = new ArrayList<NODE>();
         while (subject != null && !subject.equals(RDF.nil)) {
-            list.add(getFunctionalValue(subject, RDF.first, false, context));
+            NODE value = getFunctionalValue(subject, RDF.first, false, context);
+            if (value != null){
+                list.add(value);    
+            }else{
+                list.add(null);
+            }
             subject = (ID) getFunctionalValue(subject, RDF.rest, false, context);
         }
         return list;
@@ -464,19 +451,20 @@ public final class SessionImpl implements Session {
     }
 
     @SuppressWarnings("unchecked")
+    @Nullable
     private Object convertSingleValue(MappedPath propertyPath, Set<? extends NODE> values) {
         MappedProperty<?> propertyDefinition = propertyPath.getMappedProperty();
         Class targetType = propertyDefinition.getType();
-        NODE value = values.isEmpty() ? null : values.iterator().next();
-        return convertValue(value, targetType, propertyPath);
+        if (!values.isEmpty()){
+            return convertValue(values.iterator().next(), targetType, propertyPath);
+        }else{
+            return null;
+        } 
     }
 
     @SuppressWarnings("unchecked")
     @Nullable
-    private Object convertValue(@Nullable NODE value, Class<?> targetClass, MappedPath propertyPath) {
-	if (value == null){
-	    return null;
-	}	
+    private Object convertValue(NODE value, Class<?> targetClass, MappedPath propertyPath) {
         Object convertedValue;
         MappedProperty mappedProperty = propertyPath.getMappedProperty();
         try {
@@ -532,8 +520,7 @@ public final class SessionImpl implements Session {
     private Object convertMappedClass(NODE value, Class<?> targetClass, MappedPath propertyPath,
             MappedProperty mappedProperty) {
         if (value instanceof ID) {
-            return convertMappedObject((ID) value, targetClass, mappedProperty.isPolymorphic(), mappedProperty
-                    .isInjection());
+            return convertMappedObject((ID) value, targetClass, mappedProperty.isPolymorphic(), mappedProperty.isInjection());
         } else {
             throw new BindException(propertyPath, value);
         }
@@ -784,9 +771,7 @@ public final class SessionImpl implements Session {
         if (predicate.context() != null) {
             context = new UID(predicate.context());
         }
-        Set<NODE> values = findValues(resource, predicate.getUID(), predicate.inv(), predicate.includeInferred(),
-                context);
-
+        Set<NODE> values = findValues(resource, predicate.getUID(), predicate.inv(), predicate.includeInferred(),context);
         if (path.size() > index + 1) {
             Set<NODE> nestedValues = new LinkedHashSet<NODE>();
             for (NODE value : values) {
@@ -1378,9 +1363,9 @@ public final class SessionImpl implements Session {
         ID container = connection.createBNode();
         recordAddStatement(container, RDF.type, containerType.getUID(), context);
         for (Object o : collection) {
-            i++;
-            NODE value = toRDFValue(o, context);
-            if (value != null) {
+            i++;            
+            if (o != null) {
+                NODE value = toRDFValue(o, context);
                 recordAddStatement(container, RDF.getContainerMembershipProperty(i), value, context);
             }
         }
@@ -1413,19 +1398,14 @@ public final class SessionImpl implements Session {
         return new LIT(conf.getConverterRegistry().toString(o), dataType);
     }
 
-    @Nullable
-    private NODE toRDFValue(@Nullable Object object, @Nullable UID context) {
-        if (object == null) {
-            return null;
+    private NODE toRDFValue(Object object, @Nullable UID context) {
+        Class<?> type = getClass(object);
+        if (type.isAnnotationPresent(ClassMapping.class)) {
+            return toRDF(object, context);
+        } else if (object instanceof UID) {
+            return (UID) object;
         } else {
-            Class<?> type = getClass(object);
-            if (type.isAnnotationPresent(ClassMapping.class)) {
-                return toRDF(object, context);
-            } else if (object instanceof UID) {
-                return (UID) object;
-            } else {
-                return toRDFLiteral(object);
-            }
+            return toRDFLiteral(object);
         }
     }
 
