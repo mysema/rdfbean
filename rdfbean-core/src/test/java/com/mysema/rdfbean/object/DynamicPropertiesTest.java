@@ -77,6 +77,16 @@ public class DynamicPropertiesTest {
     }
     
     @ClassMapping(ns = TEST.NS)
+    public static class Iteration {
+        
+        @Id
+        String id;
+        
+        @Predicate
+        String name;
+    }
+    
+    @ClassMapping(ns = TEST.NS)
     public static class Project {
 
         @Id
@@ -93,6 +103,9 @@ public class DynamicPropertiesTest {
         
         @Properties
         Map<UID, Person> participants;
+        
+        @Properties
+        Map<UID, Iteration> iterations;
 
         @Properties
         Map<UID, Set<String>> infos;
