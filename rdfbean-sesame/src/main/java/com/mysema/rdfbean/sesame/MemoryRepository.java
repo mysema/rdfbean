@@ -32,6 +32,13 @@ public class MemoryRepository extends SesameRepository {
     
     @Nullable
     private IdSequence idSource;
+    
+    /**
+     * the synchronization delay is specified by a number, indicating the time
+     * in milliseconds that the store will wait before it synchronizes changes
+     * to disk.
+     */
+    private long syncDelay;
         
     public MemoryRepository(){}
 
@@ -59,6 +66,10 @@ public class MemoryRepository extends SesameRepository {
             store = new MemoryStore();
             idSource = new MemoryIdSequence();
         }
+        if (syncDelay > 0){
+            store.setSyncDelay(syncDelay);
+        }
+        
         if (sesameInference){
             return new SailRepository(new ExtendedRDFSInferencer(store));
         }else{
@@ -81,4 +92,9 @@ public class MemoryRepository extends SesameRepository {
         }
     }
 
+    public void setSyncDelay(long syncDelay) {
+        this.syncDelay = syncDelay;
+    }
+
+    
 }
