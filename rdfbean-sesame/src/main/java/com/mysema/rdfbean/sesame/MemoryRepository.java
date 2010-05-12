@@ -41,6 +41,12 @@ public class MemoryRepository extends SesameRepository {
     private long syncDelay;
         
     public MemoryRepository(){}
+    
+    public MemoryRepository(@Nullable File dataDir, long syncDelay, boolean sesameInference) {
+        this.dataDir = dataDir;
+        setSyncDelay(syncDelay);
+        setSesameInference(sesameInference);
+    }
 
     public MemoryRepository(@Nullable File dataDir, boolean sesameInference) {
         this.dataDir = dataDir;

@@ -7,6 +7,7 @@ package com.mysema.rdfbean.sesame.load;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +45,8 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @version $Id$
  */
 public class LoadTest extends SessionTestBase{    
+    
+    private StringWriter writer = new StringWriter();
 
     @ClassMapping(ns=TEST.NS)
     public static class Document {        
@@ -55,13 +58,13 @@ public class LoadTest extends SessionTestBase{
     }        
     
     @ClassMapping(ns=TEST.NS)
-    public static class Entity {        
+    public static class Entity {
+	@Id
+        String id;
+	
         @Predicate
         Document document;
 
-        @Id
-        String id;
-        
         @Predicate
         String text;
                                 
@@ -69,6 +72,9 @@ public class LoadTest extends SessionTestBase{
     
     @ClassMapping(ns=TEST.NS)
     public static class Revision {
+	@Id
+        String id;
+	
         @Predicate
         long created;
         
@@ -98,44 +104,46 @@ public class LoadTest extends SessionTestBase{
     @Test
     @Ignore
     public void test() throws IOException{        
-        loadTest(MiniRepository.class.getSimpleName(), new MiniRepository());
+        loadTest("MiniRepository", new MiniRepository());
         
         // Sesame repositories
-        loadTest("MemoryStore, no inferencing", new DirectMemoryRepository());
-        loadTest("MemoryStore, basic inferencing", new InferencingMemoryRepository());
-        loadTest("MemoryStore, full inferencing", new MemoryRepository(null, true));        
-        loadTest("NativeStore, no inferencing", new NativeRepository(new File("target/native"), false));
+        loadTest("MemoryStore, local inference",          new MemoryRepository(null, false));
+        loadTest("MemoryStore, local inference, synced",  new MemoryRepository(new File("target/mem"), 10, false));
+        loadTest("NativeStore, local inference",          new NativeRepository(new File("target/native"), false));
+        
+//        loadTest("MemoryStore, sesame inference",         new MemoryRepository(null, true));               
+//        loadTest("MemoryStore, sesame inferencem, synced", new MemoryRepository(new File("target/mem"), 10, true));
+//        loadTest("NativeStore, sesame inference",         new NativeRepository(new File("target/native"), true));
+        
+        System.out.println(writer);
     }
     
     private void loadTest(String label, Repository repository) throws IOException{
-        System.out.println("testing " + label);
-        System.out.println();
+        writer.write("testing " + label + "\n");
         
         if (repository instanceof SesameRepository){
             ((SesameRepository)repository).setOntology(ontology);
         }
         
-        SessionFactoryImpl sessionFactory = new SessionFactoryImpl(Locale.ENGLISH);
-        sessionFactory.setConfiguration(configuration);
-        sessionFactory.setRepository(repository);
-        sessionFactory.initialize();
-        
-        Session localSession = sessionFactory.openSession();
-        
-        try{
-            loadTest(localSession, 10);
-            loadTest(localSession, 50);
-            loadTest(localSession, 100);
-            loadTest(localSession, 500);
-            loadTest(localSession, 1000);  
-        }finally{
-            localSession.close();
-            sessionFactory.close();
-        }            
+        for (int size : Arrays.asList(10, 50, 100, 500, 1000, 5000, 10000, 50000)){
+            SessionFactoryImpl sessionFactory = new SessionFactoryImpl(Locale.ENGLISH);
+            sessionFactory.setConfiguration(configuration);
+            sessionFactory.setRepository(repository);
+            sessionFactory.initialize();
+            
+            Session localSession = sessionFactory.openSession();
+            try{
+        	loadTest(localSession, size);
+            }finally{
+        	localSession.close();
+        	sessionFactory.close();
+        	FileUtils.deleteDirectory(new File("target/mem"));
+        	FileUtils.deleteDirectory(new File("target/native"));
+            }            
+        }        
+        writer.write("\n");
     }
-    
-
-    
+        
     private void loadTest(Session session, int size){
         session.setFlushMode(FlushMode.MANUAL);
         List<Object> objects = new ArrayList<Object>();
@@ -163,20 +171,18 @@ public class LoadTest extends SessionTestBase{
             session.save(o);
         }
         long t2 = System.currentTimeMillis();
+        
         session.flush();
         long t3 = System.currentTimeMillis();
-        System.out.println("  Save of " + objects.size() + " objects took " + (t2-t1)+"ms");
-        System.out.println("  Flush took " + (t3-t2)+"ms");
         
-        long t4 = System.currentTimeMillis();
         session.clear();
         session.findInstances(Document.class);
         session.findInstances(Entity.class);
         session.findInstances(Revision.class);
-        long t5 = System.currentTimeMillis();
-        System.out.println("  Load of all objects took " + (t5-t4) + "ms");
+        long t4 = System.currentTimeMillis();
         
-        System.out.println();
+        // size, save time, flush time, load time
+        writer.write(";"+objects.size()+";"+(t2-t1)+";"+(t3-t2)+";"+(t4-t3)+"\n");         
     }
 
 }
