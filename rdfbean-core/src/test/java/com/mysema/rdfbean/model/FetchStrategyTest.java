@@ -35,6 +35,11 @@ public class FetchStrategyTest {
         CloseableIterator<STMT> stmts = fetchOptimizer.findStatements(subject, null, null, null, true);
         assertTrue(stmts.hasNext());
         stmts.close();
+        
+        // fetch all
+        stmts = fetchOptimizer.findStatements(null, null, null, null, true);
+        assertTrue(stmts.hasNext());
+        stmts.close();
     }
     
     @Test
@@ -43,6 +48,11 @@ public class FetchStrategyTest {
         fullContextFetch.setContexts(Collections.singleton(RDFS.label));
         FetchOptimizer fetchOptimizer = new FetchOptimizer(repository.openConnection(), fullContextFetch);
         CloseableIterator<STMT> stmts = fetchOptimizer.findStatements(null, null, null, RDFS.label, true);
+        assertTrue(stmts.hasNext());
+        stmts.close();
+
+        // fetch all
+        stmts = fetchOptimizer.findStatements(null, null, null, null, true);
         assertTrue(stmts.hasNext());
         stmts.close();
     }
