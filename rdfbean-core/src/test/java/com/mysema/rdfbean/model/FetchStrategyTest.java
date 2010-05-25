@@ -32,7 +32,7 @@ public class FetchStrategyTest {
     @Test
     public void testPredicateWildcardFetch() throws IOException {
         FetchOptimizer fetchOptimizer = new FetchOptimizer(repository.openConnection(), new PredicateWildcardFetch());
-        CloseableIterator<STMT> stmts = fetchOptimizer.findStatements(subject, null, null, null, true);
+        CloseableIterator<STMT> stmts = fetchOptimizer.findStatements(subject, null, null, null, false);
         assertTrue(stmts.hasNext());
         stmts.close();
         
@@ -47,7 +47,22 @@ public class FetchStrategyTest {
         FullContextFetch fullContextFetch = new FullContextFetch();
         fullContextFetch.setContexts(Collections.singleton(RDFS.label));
         FetchOptimizer fetchOptimizer = new FetchOptimizer(repository.openConnection(), fullContextFetch);
-        CloseableIterator<STMT> stmts = fetchOptimizer.findStatements(null, null, null, RDFS.label, true);
+        CloseableIterator<STMT> stmts = fetchOptimizer.findStatements(null, null, null, RDFS.label, false);
+        assertTrue(stmts.hasNext());
+        stmts.close();
+
+        // fetch all
+        stmts = fetchOptimizer.findStatements(null, null, null, null, true);
+        assertTrue(stmts.hasNext());
+        stmts.close();
+    }
+    
+    @Test
+    public void testFullContextFetch_no_contexts_given() throws IOException {
+        FullContextFetch fullContextFetch = new FullContextFetch();
+//        fullContextFetch.setContexts(Collections.singleton(RDFS.label));
+        FetchOptimizer fetchOptimizer = new FetchOptimizer(repository.openConnection(), fullContextFetch);
+        CloseableIterator<STMT> stmts = fetchOptimizer.findStatements(null, null, null, RDFS.label, false);
         assertTrue(stmts.hasNext());
         stmts.close();
 

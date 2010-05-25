@@ -1,6 +1,10 @@
 package com.mysema.rdfbean.model;
 
+import org.easymock.EasyMock;
+import org.junit.Before;
 import org.junit.Test;
+
+import com.mysema.rdfbean.object.Session;
 
 /**
  * MultiTransactionTest provides
@@ -10,29 +14,47 @@ import org.junit.Test;
  */
 public class MultiTransactionTest {
     
+    private MultiTransaction tx;
+    
+    @Before
+    public void setUp(){
+	MiniRepository repository = new MiniRepository();
+        MultiConnection connection = new MultiConnection(
+                repository.openConnection(),
+                repository.openConnection()
+            ){
+                @Override
+                public <D, Q> Q createQuery(Session session,QueryLanguage<D, Q> queryLanguage, D definition) {
+                    throw new UnsupportedOperationException();
+                }};
+        
+        RDFBeanTransaction innerTx = EasyMock.createNiceMock(RDFBeanTransaction.class);        
+        tx = new MultiTransaction(connection, new RDFBeanTransaction[]{innerTx});
+    }
+    
     @Test
     public void testCommit() {
-        //TODO
+        tx.commit();
     }
 
     @Test
     public void testIsActive() {
-        //TODO
+        tx.isActive();
     }
 
     @Test
     public void testIsRollbackOnly() {
-        //TODO
+        tx.isRollbackOnly();
     }
 
     @Test
     public void testRollback() {
-        //TODO
+        tx.rollback();
     }
 
     @Test
     public void testSetRollbackOnly() {
-        //TODO
+        tx.setRollbackOnly();
     }
 
 }

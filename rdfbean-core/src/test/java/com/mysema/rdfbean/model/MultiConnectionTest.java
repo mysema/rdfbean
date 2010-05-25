@@ -51,8 +51,7 @@ public class MultiConnectionTest {
         stmts.close();
         
         // close
-        connection.close();
-        
+        connection.close();        
         
     }
     

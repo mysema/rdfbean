@@ -22,7 +22,15 @@ public class NamespacesTest {
     @Test
     public void testGetReadableURI() {
         assertEquals("rdf:type", Namespaces.getReadableURI(RDF.NS,"type"));
+        assertEquals("rdf:", Namespaces.getReadableURI(RDF.NS,null));
         assertEquals("<urn:test>", Namespaces.getReadableURI("urn:", "test"));
+        assertEquals("test", Namespaces.getReadableURI(null, "test"));        
+    }
+    
+    @Test
+    public void testRegister(){
+	Namespaces.register("test", TEST.NS);
+        assertEquals("test:test", Namespaces.getReadableURI(TEST.NS, "test"));	
     }
 
 }

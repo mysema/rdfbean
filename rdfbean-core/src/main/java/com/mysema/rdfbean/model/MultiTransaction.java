@@ -24,6 +24,9 @@ public class MultiTransaction implements RDFBeanTransaction{
     public MultiTransaction(MultiConnection connection, RDFBeanTransaction[] transactions){
         this.connection = Assert.notNull(connection,"connection");
         this.transactions = Assert.notNull(transactions,"transactions");
+        if (transactions.length == 0){
+            throw new IllegalArgumentException("No transactions given");
+        }
     }
     
     @Override
