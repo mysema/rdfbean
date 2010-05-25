@@ -29,6 +29,7 @@ import java.util.TreeSet;
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections15.BeanMap;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.mysema.commons.lang.Assert;
@@ -438,21 +439,12 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 
     public boolean isAssignableFrom(MappedProperty<?> other) {
         // Only methods may override...
-        if (MethodProperty.class.isInstance(other) && nullSafeEquals(name, other.name)) {
+        if (MethodProperty.class.isInstance(other) && ObjectUtils.equals(name, other.name)) {
             Class<?> domain = getMember().getDeclaringClass();
             Class<?> otherDomain = other.getMember().getDeclaringClass();
             return domain.isAssignableFrom(otherDomain);
         } else {
             return false;
-        }
-    }
-
-
-    public static boolean nullSafeEquals(Object o1, Object o2) {
-        if (o1 == null || o2 == null) {
-            return false;
-        } else {
-            return o1.equals(o2);
         }
     }
 

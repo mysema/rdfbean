@@ -19,16 +19,14 @@ import com.mysema.rdfbean.annotations.InjectProperty;
  * 
  */
 @Immutable
-public class ConstructorParameter extends MappedProperty<Constructor<?>> {
+public final class ConstructorParameter extends MappedProperty<Constructor<?>> {
 
     private final Constructor<?> constructor;
 
     private final int parameterIndex;
 
-    ConstructorParameter(Constructor<?> constructor, int parameterIndex,
-            MappedClass declaringClass) {
-        super(null, constructor.getParameterAnnotations()[parameterIndex],
-                declaringClass);
+    public ConstructorParameter(Constructor<?> constructor, int parameterIndex, MappedClass declaringClass) {
+        super(null, constructor.getParameterAnnotations()[parameterIndex], declaringClass);
         this.constructor = constructor;
         this.parameterIndex = parameterIndex;
     }
