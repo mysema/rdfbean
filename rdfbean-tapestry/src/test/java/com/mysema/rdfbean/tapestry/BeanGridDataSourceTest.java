@@ -115,6 +115,11 @@ public class BeanGridDataSourceTest {
     public void testPrepare() {
         dataSource.prepare(0, 10, Collections.<SortConstraint>emptyList());
     }
+    
+    @Test
+    public void testPrepare_with_sort() {
+	// TODO
+    }
 
     @Test
     public void testGetRowValue() {
