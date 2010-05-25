@@ -1,4 +1,4 @@
-package com.mysema.rdf.demo.generic;
+package com.mysema.rdf.demo.foaf;
 
 import java.util.Collection;
 

@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
-import com.mysema.rdf.demo.generic.Property;
-import com.mysema.rdf.demo.generic.Value;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.UID;
 

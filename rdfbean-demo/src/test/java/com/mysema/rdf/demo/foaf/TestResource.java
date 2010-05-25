@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mysema.rdf.demo.generic.Property;
-import com.mysema.rdf.demo.generic.Resource;
 import com.mysema.rdfbean.model.UID;
 
 public class TestResource<T> implements Resource<T> {
