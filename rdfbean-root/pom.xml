@@ -31,9 +31,11 @@
     <module>../rdfbean-core</module>    
     
     <!-- persistence -->
-    <module>../rdfbean-sesame</module>    
+    <module>../rdfbean-sesame</module>
+	<!--     
     <module>../rdfbean-lucene</module>
     <module>../rdfbean-mulgara</module>
+	-->
     
     <!-- integration -->
     <module>../rdfbean-spring</module>    
