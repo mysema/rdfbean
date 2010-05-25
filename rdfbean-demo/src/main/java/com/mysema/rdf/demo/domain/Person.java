@@ -7,7 +7,7 @@ import com.mysema.rdfbean.annotations.InjectProperty;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.annotations.Required;
 
-@ClassMapping(ns=DEMO.NS)
+@ClassMapping(ns = DEMO.NS)
 public class Person extends Party {
 
     @Predicate
@@ -17,58 +17,58 @@ public class Person extends Party {
     @Predicate
     @Required
     private String lastName;
-    
+
     @Predicate
     private int age;
-    
+
     @Predicate
     private Company company;
-    
-//    public String serviceResult() {
-//        return demoService.sayHello();
-//    }
-    
-    public Person(@InjectProperty("firstName") String firstName, 
-                  @InjectProperty("lastName") String lastName) {
-        this.firstName = Assert.hasText(firstName,"firstName");
-        this.lastName = Assert.hasText(lastName,"lastName");
+
+    // public String serviceResult() {
+    // return demoService.sayHello();
+    // }
+
+    public Person(@InjectProperty("firstName") String firstName,
+	    @InjectProperty("lastName") String lastName) {
+	this.firstName = Assert.hasText(firstName, "firstName");
+	this.lastName = Assert.hasText(lastName, "lastName");
     }
-    
+
     public String getFirstName() {
-        return firstName;
+	return firstName;
     }
-    
+
     public void setFirstName(String name) {
-        this.firstName = name;
+	this.firstName = name;
     }
 
     @Override
     public String getDisplayName() {
-        return "" + firstName + " " + lastName;
+	return "" + firstName + " " + lastName;
     }
 
     public String getLastName() {
-        return lastName;
+	return lastName;
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+	this.lastName = lastName;
     }
 
     public int getAge() {
-        return age;
+	return age;
     }
 
     public void setAge(int age) {
-        this.age = age;
+	this.age = age;
     }
 
     public Company getCompany() {
-        return company;
+	return company;
     }
 
     void setCompany(Company company) {
-        this.company = company;
+	this.company = company;
     }
-    
+
 }

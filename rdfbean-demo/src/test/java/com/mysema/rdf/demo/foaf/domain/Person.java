@@ -18,30 +18,30 @@ public class Person extends Agent {
     private Image img;
 
     public String getFirstName() {
-        return firstName;
+	return firstName;
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+	this.firstName = firstName;
     }
 
     public String getSurname() {
-        return surname;
+	return surname;
     }
 
     public void setSurname(String surname) {
-        this.surname = surname;
+	this.surname = surname;
     }
 
     public void setImg(Image img) {
-        this.img = img;
+	this.img = img;
     }
 
     public Image getImg() {
-        return img;
+	return img;
     }
 
     public Resource getGenericEntity() {
-        return null;
+	return null;
     }
 }

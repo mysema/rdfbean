@@ -5,12 +5,11 @@ public class Document {
     private String label;
 
     public String getLabel() {
-        return label;
+	return label;
     }
 
     public void setLabel(String label) {
-        this.label = label;
+	this.label = label;
     }
-    
-    
+
 }

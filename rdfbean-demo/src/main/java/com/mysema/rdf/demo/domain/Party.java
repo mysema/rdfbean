@@ -5,14 +5,14 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 
-@ClassMapping(ns=DEMO.NS)
+@ClassMapping(ns = DEMO.NS)
 public abstract class Party {
-    
+
     @Id
     private String id;
 
     public String getId() {
-        return id;
+	return id;
     }
 
     @Predicate

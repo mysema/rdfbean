@@ -9,39 +9,39 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.annotations.Required;
 
-@ClassMapping(ns=DEMO.NS)
+@ClassMapping(ns = DEMO.NS)
 public class Company extends Party {
-    
+
     private String officialName;
-    
-    @Predicate(ln="company", inv=true)
+
+    @Predicate(ln = "company", inv = true)
     private Set<Person> employees = new LinkedHashSet<Person>();
-    
+
     public Company() {
-        // Java Bean constructor
+	// Java Bean constructor
     }
 
     @Predicate
     public String getOfficialName() {
-        return officialName;
+	return officialName;
     }
 
     @Required
     public void setOfficialName(String officialName) {
-        this.officialName = Assert.hasText(officialName,"officialName");
+	this.officialName = Assert.hasText(officialName, "officialName");
     }
-    
+
     public Set<Person> getEmployees() {
-        return employees;
+	return employees;
     }
 
     public void addEmployee(Person employee) {
-        employee.setCompany(this);
-        this.employees.add(employee);
+	employee.setCompany(this);
+	this.employees.add(employee);
     }
 
     @Override
     public String getDisplayName() {
-        return officialName;
+	return officialName;
     }
 }
