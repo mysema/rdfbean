@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:data="http://www.mysema.com/rdfbean/demodata#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:demo="http://www.mysema.com/rdfbean/demo#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://www.mysema.com/rdfbean/demodata">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.mysema.com/rdfbean/demo"/>
+  </owl:Ontology>
+  <demo:Company rdf:ID="Mysema">
+    <demo:displayName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mysema</demo:displayName>
+    <demo:officialName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Mysema Oy</demo:officialName>
+  </demo:Company>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4, Build 533)  http://protege.stanford.edu -->

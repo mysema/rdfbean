@@ -17,7 +17,60 @@
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-core</artifactId>
       <version>${project.parent.version}</version>
-    </dependency>  
+    </dependency>
+	
+	<!-- Spring -->
+	<dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${spring.version}</version>
+	  <scope>provided</scope>
+    </dependency>        
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.version}</version>
+	  <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>${spring.version}</version>
+	  <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>${spring.version}</version>
+	  <scope>provided</scope>
+    </dependency>		
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>1.0.1B</version>
+	  <scope>provided</scope>
+    </dependency>        
+	
+	<!--test-->
+	<dependency>
+	  <groupId>org.aspectj</groupId>
+	  <artifactId>aspectjrt</artifactId>
+	  <version>1.6.1</version>
+	  <scope>test</scope>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.aspectj</groupId>
+	  <artifactId>aspectjweaver</artifactId>
+	  <version>1.6.1</version>
+	  <scope>test</scope>
+	</dependency>
+   <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-sesame</artifactId>
+      <version>${project.parent.version}</version>
+	  <scope>test</scope>
+   </dependency>
    <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-core</artifactId>
@@ -25,28 +78,6 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>       
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-core</artifactId>
-      <version>${spring.version}</version>
-    </dependency>        
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-tx</artifactId>
-      <version>${spring.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <version>1.0.1B</version>
-    </dependency>        
-    
-    <!--  test deps -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>

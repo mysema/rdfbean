@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+		  
+  <aop:aspectj-autoproxy proxy-target-class="true"/>		  
+		  
+  <tx:annotation-driven transaction-manager="transactionManager" />
+
+  <bean id="sesameRepository" class="com.mysema.rdfbean.sesame.MemoryRepository">
+    <property name="sources">
+        <list>
+            <bean class="com.mysema.rdfbean.model.io.RDFSource">
+                <constructor-arg value="classpath:demo.owl"/>
+                <constructor-arg value="RDFXML" />
+                <constructor-arg value="http://www.mysema.com/rdfbean/demo"/>
+            </bean>
+        </list>
+    </property>
+  </bean>
+ 
+  <bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">
+      <constructor-arg>
+          <list>
+          	  <value>com.mysema.rdfbean.domain.Company</value>
+			  <value>com.mysema.rdfbean.domain.Party</value>
+              <value>com.mysema.rdfbean.domain.Person</value>
+          </list>
+      </constructor-arg>
+      <property name="defaultContext" value="http://demo.mysema.com/rdfbean-demo"/>
+  </bean>
+  
+  <bean id="sessionFactory" class="com.mysema.rdfbean.spring.ContextAwareSessionFactory" init-method="initialize" destroy-method="close">
+    <property name="configuration" ref="configuration"/>
+    <property name="repository" ref="sesameRepository"/>
+  </bean>
+  
+  <bean id="transactionManager" class="com.mysema.rdfbean.spring.RDFBeanTransactionManager">
+    <constructor-arg ref="sessionFactory"/>
+  </bean>
+  
+  <bean id="demoService" class="com.mysema.rdfbean.spring.DemoService">
+  	 <property name="sessionFactory" ref="sessionFactory"/>
+  </bean>
+  
+</beans>
