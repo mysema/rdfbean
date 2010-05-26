@@ -37,12 +37,6 @@
     </dependency>
     
     <!-- test -->
-    <dependency>
-      <groupId>org.apache.tapestry</groupId>
-      <artifactId>tapestry-test</artifactId>
-      <version>${tapestry.version}</version>
-      <scope>test</scope>
-    </dependency>   
    <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-core</artifactId>
