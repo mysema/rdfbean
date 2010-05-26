@@ -6,8 +6,6 @@ import org.apache.tapestry5.PropertyConduit;
 import org.apache.tapestry5.beaneditor.BeanModel;
 import org.apache.tapestry5.beaneditor.PropertyModel;
 
-import com.mysema.rdfbean.sesame.query.ComplexPathsTest.NoteRevision;
-
 public class SimplePropertyModel implements PropertyModel {
     
     private final String propertyName;
@@ -65,7 +63,7 @@ public class SimplePropertyModel implements PropertyModel {
     }
 
     @Override
-    public BeanModel<NoteRevision> model() {
+    public BeanModel<?> model() {
         return null;
     }
 
