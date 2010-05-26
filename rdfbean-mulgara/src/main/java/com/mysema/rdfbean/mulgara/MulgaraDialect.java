@@ -20,8 +20,6 @@ import org.jrdf.graph.SubjectNode;
 import org.jrdf.graph.Triple;
 import org.jrdf.graph.URIReference;
 import org.mulgara.query.rdf.BlankNodeImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
@@ -44,8 +42,6 @@ import com.mysema.rdfbean.model.XSD;
  */
 public class MulgaraDialect extends Dialect<Node, SubjectNode, BlankNode, URIReference, Literal, Triple> {
 
-    private static final Logger logger = LoggerFactory.getLogger(MulgaraDialect.class);
-    
     private static final Map<String,URI> datatypeURICache = new HashMap<String,URI>();
     
     static{
