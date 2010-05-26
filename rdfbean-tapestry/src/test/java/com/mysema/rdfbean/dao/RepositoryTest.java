@@ -1,4 +1,4 @@
-package com.mysema.rdfbean.tapestry.dao;
+package com.mysema.rdfbean.dao;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
+import org.apache.tapestry5.grid.GridDataSource;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,7 +18,6 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.dao.AbstractRepository;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.object.DefaultConfiguration;
@@ -133,6 +133,29 @@ public class RepositoryTest {
         sessionFactory.getCurrentSession().clear();
         
         assertNull(repository.getById(user.id));
+    }
+    
+    @Test
+    public void testCreateGridDataSource(){
+        PathBuilder<User> userPath = new PathBuilder<User>(User.class,"user");
+        GridDataSource source = repository.createGridDataSource(userPath, userPath.getString("firstName").asc(), true);
+        assertNotNull(source);
+    }
+    
+    @Test
+    public void testCreateGridDataSource_with_conditions(){
+        PathBuilder<User> userPath = new PathBuilder<User>(User.class,"user");
+        GridDataSource source = repository.createGridDataSource(
+                userPath, 
+                userPath.getString("firstName").asc(), 
+                true, 
+                userPath.getString("firstName").isNotNull());
+        assertNotNull(source);
+    }
+    
+    @Test
+    public void testGetPagedQuery(){
+        assertNotNull(repository.getPagedQuery());
     }
 
 
