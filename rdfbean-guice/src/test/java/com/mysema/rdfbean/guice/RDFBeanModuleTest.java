@@ -74,4 +74,16 @@ public class RDFBeanModuleTest {
         ServiceD service = injector.getInstance(ServiceD.class); 
         service.txMethod();
     }
+    
+    @Test(expected=Exception.class)
+    public void txMethodWithException_commit() throws Exception{
+        ServiceA service = injector.getInstance(ServiceA.class);
+        service.txMethodWithException_commit();
+    }
+    
+    @Test(expected=Exception.class)
+    public void txMethodWithException_rollback() throws Exception{
+        ServiceA service = injector.getInstance(ServiceA.class);
+        service.txMethodWithException_rollback();
+    }
 }

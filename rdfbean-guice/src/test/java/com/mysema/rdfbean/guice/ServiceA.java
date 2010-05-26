@@ -55,4 +55,14 @@ public class ServiceA{
         assertTrue(sessionFactory.getCurrentSession() != null);
         assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
     }
+    
+    @Transactional
+    public void txMethodWithException_commit() throws Exception{
+        throw new Exception();
+    }
+    
+    @Transactional(rollbackFor=Exception.class)
+    public void txMethodWithException_rollback() throws Exception{
+        throw new Exception();
+    }
 }
