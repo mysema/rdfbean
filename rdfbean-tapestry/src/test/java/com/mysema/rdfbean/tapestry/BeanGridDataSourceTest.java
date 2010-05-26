@@ -11,6 +11,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Collections;
 
+import org.apache.tapestry5.beaneditor.PropertyModel;
+import org.apache.tapestry5.grid.ColumnSort;
 import org.apache.tapestry5.grid.GridDataSource;
 import org.apache.tapestry5.grid.SortConstraint;
 import org.junit.AfterClass;
@@ -118,7 +120,9 @@ public class BeanGridDataSourceTest {
     
     @Test
     public void testPrepare_with_sort() {
-	// TODO
+	PropertyModel firstName = new SimplePropertyModel("firstName",String.class);
+	SortConstraint constraint = new SortConstraint(firstName,ColumnSort.ASCENDING);
+	dataSource.prepare(0, 10, Collections.singletonList(constraint));
     }
 
     @Test

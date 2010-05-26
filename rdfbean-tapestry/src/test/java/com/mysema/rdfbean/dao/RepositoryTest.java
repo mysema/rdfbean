@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.tapestry5.grid.GridDataSource;
 import org.junit.After;
@@ -103,6 +104,11 @@ public class RepositoryTest {
         for (User user : repository.getAll()){
             assertNotNull(repository.getById(user.id));
         }
+    }
+    
+    @Test
+    public void testSaveAll(){
+        repository.saveAll(Arrays.asList(new User("John","Smith"),new User("Barbara","Smith")));
     }
 
     @Test
