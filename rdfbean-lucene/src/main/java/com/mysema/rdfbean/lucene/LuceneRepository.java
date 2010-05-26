@@ -11,6 +11,7 @@ import org.compass.core.Compass;
 import org.compass.core.CompassSession;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.model.Operation;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.io.Format;
 
@@ -70,6 +71,11 @@ public class LuceneRepository implements Repository{
     @Override
     public void export(Format format, OutputStream os) {
        throw new UnsupportedOperationException();        
+    }
+
+    @Override
+    public void execute(Operation operation) {
+        throw new UnsupportedOperationException();        
     }
 
 }

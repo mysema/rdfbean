@@ -42,5 +42,11 @@ public interface Repository {
      * @return
      */
     RDFConnection openConnection();
+    
+    /**
+     * @param operation
+     * @return
+     */
+    void execute(Operation operation);
            
 }

@@ -7,7 +7,7 @@ import java.util.Locale;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.UID;
 
-public class TestProperty<T> implements Property<T> {
+public class DummyProperty<T> implements Property<T> {
 
     private Collection<LIT> literals = new HashSet<LIT>();
 
@@ -15,7 +15,7 @@ public class TestProperty<T> implements Property<T> {
 
     private UID uid;
 
-    public TestProperty(UID uid) {
+    public DummyProperty(UID uid) {
 	this.uid = uid;
     }
 

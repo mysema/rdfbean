@@ -31,14 +31,14 @@ public class FreemarkerTest {
 
 	UID documentUID = new UID("foaf", "mypage");
 
-	TestResource resource = new TestResource();
+	DummyResource resource = new DummyResource();
 
-	TestProperty prop = new TestProperty<UID>(homepageUID);
+	DummyProperty prop = new DummyProperty<UID>(homepageUID);
 	prop.getLiteralsSet().add(new LIT("http://www.koti.com"));
 	resource.getPropertiesMap().put(homepageUID, prop);
 	prop.getReferencesSet().add(documentUID);
 
-	prop = new TestProperty<UID>(workpageUID);
+	prop = new DummyProperty<UID>(workpageUID);
 	prop.getLiteralsSet().add(new LIT("http://www.mysema.com"));
 	prop.getLiteralsSet().add(new LIT("http://www.mysema1.com"));
 	resource.getPropertiesMap().put(workpageUID, prop);

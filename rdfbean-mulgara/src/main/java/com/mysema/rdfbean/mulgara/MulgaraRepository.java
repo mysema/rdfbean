@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.model.Operation;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.RepositoryException;
@@ -125,6 +126,11 @@ public class MulgaraRepository implements Repository{
     public void export(Format format, OutputStream os) {
         throw new UnsupportedOperationException();
         
+    }
+
+    @Override
+    public void execute(Operation operation) {
+        throw new UnsupportedOperationException();        
     }
 
 }

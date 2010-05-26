@@ -9,6 +9,7 @@ import java.io.OutputStream;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.MultiConnection;
+import com.mysema.rdfbean.model.Operation;
 import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
@@ -77,6 +78,12 @@ public class LuceneEnhancedRepository implements Repository{
     @Override
     public void export(Format format, OutputStream os) {
         repository.export(format, os);        
+    }
+
+    @Override
+    public void execute(Operation operation) {
+        repository.execute(operation);
+        
     }
 
 }

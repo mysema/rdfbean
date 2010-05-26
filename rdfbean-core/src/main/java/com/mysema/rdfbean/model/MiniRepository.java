@@ -160,4 +160,19 @@ public final class MiniRepository implements Repository{
             }
         }
     }
+
+    @Override
+    public void execute(Operation operation) {
+        RDFConnection connection = openConnection();
+        try{
+            try{
+                operation.execute(connection);
+            }finally{
+                connection.close();
+            }    
+        }catch(IOException io){
+            throw new RepositoryException(io);
+        }
+    }
+    
 }

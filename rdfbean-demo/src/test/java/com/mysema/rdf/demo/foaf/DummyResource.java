@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.mysema.rdfbean.model.UID;
 
-public class TestResource<T> implements Resource<T> {
+public class DummyResource<T> implements Resource<T> {
 
     private Map<UID, Property<T>> properties = new HashMap<UID, Property<T>>();
 

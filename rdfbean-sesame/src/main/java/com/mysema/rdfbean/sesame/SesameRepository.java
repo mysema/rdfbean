@@ -8,6 +8,7 @@ package com.mysema.rdfbean.sesame;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.sql.Connection;
 
 import javax.annotation.Nullable;
 
@@ -21,6 +22,8 @@ import org.openrdf.rio.Rio;
 import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.model.Inference;
+import com.mysema.rdfbean.model.Operation;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.RepositoryException;
@@ -143,6 +146,26 @@ public abstract class SesameRepository implements Repository{
             repository.shutDown();
         } catch (StoreException e) {
             throw new RepositoryException(e);
+        }
+    }
+    
+    @Override
+    public void execute(Operation operation) {
+        RDFConnection connection = openConnection();
+        try{
+            try{
+                RDFBeanTransaction tx = connection.beginTransaction(false, 0, Connection.TRANSACTION_READ_COMMITTED);
+                try{
+                    operation.execute(connection);    
+                    tx.commit();
+                }catch(IOException io){
+                    tx.rollback();
+                }                
+            }finally{
+                connection.close();
+            }    
+        }catch(IOException io){
+            throw new RepositoryException(io);
         }
     }
 
