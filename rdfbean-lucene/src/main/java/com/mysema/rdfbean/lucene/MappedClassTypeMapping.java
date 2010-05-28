@@ -99,8 +99,8 @@ public class MappedClassTypeMapping implements TypeMapping {
     }
 
     private void handleTypes(Collection<UID> uids, Map<ID, Map<UID, PropertyConfig>> typeToConfigs) {
-        for (Class<?> javaClass : coreConfig.getMappedClasses()){
-            MappedClass clazz = MappedClass.getMappedClass(javaClass);
+        for (MappedClass clazz : coreConfig.getMappedClasses()){
+//            MappedClass clazz = MappedClass.getMappedClass(javaClass);
             types.add(clazz.getUID());
             uids.add(clazz.getUID());
             

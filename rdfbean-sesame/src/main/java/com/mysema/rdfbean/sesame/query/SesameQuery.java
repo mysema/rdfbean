@@ -197,7 +197,7 @@ public class SesameQuery
             StatementPattern.Scope patternScope,
             Ontology ontology,
             Inference inference) {
-        super(dialect, session);        
+        super(session.getConfiguration(),dialect, session);        
         this.connection = Assert.notNull(connection,"connection");
         this.conf = session.getConfiguration();
         this.ontology = Assert.notNull(ontology,"ontology");
@@ -429,7 +429,7 @@ public class SesameQuery
         Var var = new Var(path.getMetadata().getExpression().toString());
         varNames.disallow(var.getName());
         pathToVar.put(path, var);
-        MappedClass mappedClass = MappedClass.getMappedClass(path.getType());
+        MappedClass mappedClass = conf.getMappedClass(path.getType());
         UID rdfType = mappedClass.getUID();
         if (rdfType != null){
             match(var, RDF.type, toVar(rdfType));

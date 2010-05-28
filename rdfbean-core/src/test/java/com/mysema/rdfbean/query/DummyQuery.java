@@ -10,14 +10,15 @@ import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.Session;
 
 public class DummyQuery extends AbstractProjectingQuery<DummyQuery,NODE,ID,BID,UID,LIT,STMT>{
     
     private NODE[] nodes = new NODE[]{new BID(),new BID()};
 
-    public DummyQuery(Dialect<NODE, ID, BID, UID, LIT, STMT> dialect, Session session) {
-	super(dialect, session);
+    public DummyQuery(Configuration configuration, Dialect<NODE, ID, BID, UID, LIT, STMT> dialect, Session session) {
+	super(configuration, dialect, session);
     }
 
     @SuppressWarnings("unchecked")

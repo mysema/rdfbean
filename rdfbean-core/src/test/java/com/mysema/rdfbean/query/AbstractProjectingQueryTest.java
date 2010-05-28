@@ -8,9 +8,9 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniDialect;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
-
 
 public class AbstractProjectingQueryTest {
     
@@ -25,8 +25,8 @@ public class AbstractProjectingQueryTest {
     public void test(){
 	Session session = SessionUtil.openSession(Entity.class);
 	MiniDialect dialect = new MiniDialect();
-	PathBuilder<Object> entity = new PathBuilder<Object>(Object.class,"obj");
-	DummyQuery query = new DummyQuery(dialect,session).from(entity);
+	PathBuilder<Entity> entity = new PathBuilder<Entity>(Entity.class,"entity");
+	DummyQuery query = new DummyQuery(new DefaultConfiguration(Entity.class), dialect,session).from(entity);
 	query.count();
 	query.countDistinct();
 	query.iterate(entity);

@@ -58,12 +58,12 @@ public class ExampleQuery <T>{
      * @param entity
      */
     @SuppressWarnings("unchecked")
-    public ExampleQuery(Session session, T entity){
+    public ExampleQuery(Configuration configuration, Session session, T entity){
         this.session = Assert.notNull(session,"session");
         this.entityPath = (PathBuilder) pathBuilderFactory.create(entity.getClass());
         this.conditions = new BooleanBuilder();
         BeanMap beanMap = new BeanMap(entity);        
-        MappedClass mappedClass = MappedClass.getMappedClass(entity.getClass());        
+        MappedClass mappedClass = configuration.getMappedClass(entity.getClass());        
         for (MappedPath mappedPath : mappedClass.getProperties()){
             MappedProperty<?> property = mappedPath.getMappedProperty();
             Object value = property.getValue(beanMap);

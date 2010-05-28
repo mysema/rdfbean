@@ -122,7 +122,7 @@ public final class SessionImpl implements Session {
     public void autowire(Object instance) {
         Assert.notNull(instance,"instance");
         BeanMap beanMap = toBeanMap(instance);
-        MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
+        MappedClass mappedClass = conf.getMappedClass(getClass(instance));
         bind(getId(mappedClass, beanMap), beanMap);
     }
 
@@ -165,8 +165,8 @@ public final class SessionImpl implements Session {
                 	List<STMT> typeStmts = findStatements(stmt.getObject().asResource(), RDF.type, null, null, false);
                 	boolean matched = false;
                         for (STMT typeStmt : typeStmts){
-                            for (Class<?> cl : conf.getMappedClasses(typeStmt.getObject().asURI())){
-                                if (componentType.isAssignableFrom(cl)){
+                            for (MappedClass cl : conf.getMappedClasses(typeStmt.getObject().asURI())){
+                                if (componentType.isAssignableFrom(cl.getJavaClass())){
                                     matched = true;
                                 }                                   
                             }    
@@ -233,7 +233,7 @@ public final class SessionImpl implements Session {
         // TODO: defaultContext parameter?
         UID context = getContext(instance, subject, null);
         BeanMap beanMap = toBeanMap(instance);
-        MappedClass mappedClass = MappedClass.getMappedClass(getClass(instance));
+        MappedClass mappedClass = conf.getMappedClass(getClass(instance));
         setId(mappedClass, subject, beanMap);
         // loadStack.add(instance);
 
@@ -279,11 +279,12 @@ public final class SessionImpl implements Session {
 
     @Nullable
     private Class<?> convertClassReference(UID uid, Class<?> targetClass) {
-        List<Class<?>> mappedClasses = conf.getMappedClasses(uid);
+        List<MappedClass> mappedClasses = conf.getMappedClasses(uid);
         boolean foundMatch = false;
-        for (Class<?> mappedClass : mappedClasses) {
-            if (targetClass.isAssignableFrom(mappedClass)) {
-                targetClass = mappedClass;
+        for (MappedClass mappedClass : mappedClasses) {
+            Class<?> clazz = mappedClass.getJavaClass();
+            if (targetClass.isAssignableFrom(clazz)) {
+                targetClass = clazz;
                 foundMatch = true;
             }
         }
@@ -558,7 +559,7 @@ public final class SessionImpl implements Session {
                 instance = null;
             } else {
                 try {
-                    MappedClass mappedClass = MappedClass.getMappedClass(actualType);
+                    MappedClass mappedClass = conf.getMappedClass(actualType);
                     MappedConstructor mappedConstructor = mappedClass.getConstructor();
                     if (mappedConstructor == null) {
                         instance = actualType.newInstance();
@@ -632,7 +633,7 @@ public final class SessionImpl implements Session {
         BeanMap beanMap = toBeanMap(instance);
         ID subject = resourceCache.get(instance);
         Class<?> clazz = getClass(instance);
-        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        MappedClass mappedClass = conf.getMappedClass(clazz);
         UID context = getContext(instance, subject, null);
         if (subject == null) {
             subject = getId(mappedClass, beanMap);
@@ -713,7 +714,7 @@ public final class SessionImpl implements Session {
 
     @Override
     public <T> List<T> findInstances(Class<T> clazz) {
-        UID type = MappedClass.getMappedClass(clazz).getUID();
+        UID type = conf.getMappedClass(clazz).getUID();
         if (type != null){
             Set<T> instances = new LinkedHashSet<T>();
             findInstances(clazz, type, instances);
@@ -825,7 +826,7 @@ public final class SessionImpl implements Session {
     public <T> T get(Class<T> clazz, ID subject) {
         Assert.notNull(subject, "subject");
         boolean polymorphic = true;
-        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        MappedClass mappedClass = conf.getMappedClass(clazz);
         polymorphic = mappedClass.isPolymorphic();
         return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
     }
@@ -879,7 +880,7 @@ public final class SessionImpl implements Session {
 
     @Override
     public <T> T getByExample(T entity) {
-        return new ExampleQuery<T>(this, entity).uniqueResult();
+        return new ExampleQuery<T>(conf,this, entity).uniqueResult();
     }
 
     @Override
@@ -996,7 +997,7 @@ public final class SessionImpl implements Session {
         if (instance instanceof LID) {
             return identityService.getID((LID) instance);
         } else {
-            MappedClass mappedClass = MappedClass.getMappedClass(getClass(assertMapped(instance)));
+            MappedClass mappedClass = conf.getMappedClass(getClass(assertMapped(instance)));
             if (instance.getClass().isEnum()) {
                 return new UID(mappedClass.getUID().ns(), ((Enum) instance).name());
             } else {
@@ -1097,9 +1098,10 @@ public final class SessionImpl implements Session {
             for (ID type : types) {
                 if (type instanceof UID) {
                     UID uid = (UID) type;
-                    List<Class<?>> classes = conf.getMappedClasses(uid);
+                    List<MappedClass> classes = conf.getMappedClasses(uid);
                     if (classes != null) {
-                        for (Class<?> clazz : classes) {
+                        for (MappedClass mappedClass : classes) {
+                            Class<?> clazz = mappedClass.getJavaClass();
                             if ((result == null || result.isAssignableFrom(clazz)) && !clazz.isInterface()) {
                                 foundMatch = true;
                                 result = (Class<? extends T>) clazz;
@@ -1173,7 +1175,7 @@ public final class SessionImpl implements Session {
     }
     
     private <T> T assertHasIdProperty(T instance){
-        MappedClass mappedClass = MappedClass.getMappedClass(instance.getClass());
+        MappedClass mappedClass = conf.getMappedClass(instance.getClass());
         if (mappedClass.getIdProperty() == null){
             throw new IllegalArgumentException(instance.getClass().getName() + " as no id property");
         }
@@ -1330,7 +1332,7 @@ public final class SessionImpl implements Session {
                 Object object = property.getValue(beanMap);
                 if (object != null) {
                     UID subContext = getContext(object, subject, context);
-                    toRDF(object, subject, subContext, MappedClass.getMappedClass(getClass(object)), update);
+                    toRDF(object, subject, subContext, conf.getMappedClass(getClass(object)), update);
                 }
             }
         }
@@ -1339,7 +1341,7 @@ public final class SessionImpl implements Session {
     private ID toRDF(Object instance, @Nullable UID parentContext) {
         BeanMap beanMap = toBeanMap(Assert.notNull(instance,"instance"));
         Class<?> clazz = getClass(instance);
-        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        MappedClass mappedClass = conf.getMappedClass(clazz);
         ID subject = resourceCache.get(instance);
         if (subject == null) {
             subject = getId(mappedClass, beanMap);

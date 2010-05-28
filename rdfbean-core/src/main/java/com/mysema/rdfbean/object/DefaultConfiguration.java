@@ -49,7 +49,7 @@ public final class DefaultConfiguration implements Configuration {
         buildinNamespaces.add(CORE.NS);
     }
 
-    private final Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+    private final Set<MappedClass> classes = new LinkedHashSet<MappedClass>();
 
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
@@ -59,9 +59,13 @@ public final class DefaultConfiguration implements Configuration {
     @Nullable
     private List<FetchStrategy> fetchStrategies;
     
+    private final MappedClassFactory mappedClassFactory = new MappedClassFactory();
+    
     private final Set<String> restrictedResources = new HashSet<String>(buildinNamespaces);
     
-    private final Map<UID, List<Class<?>>> type2classes = new HashMap<UID, List<Class<?>>>();
+    private final Map<UID, List<MappedClass>> type2classes = new HashMap<UID, List<MappedClass>>();
+    
+    private final Map<Class<?>,MappedClass> class2MappedClass = new HashMap<Class<?>,MappedClass>();
     
     public DefaultConfiguration() {}
         
@@ -76,16 +80,17 @@ public final class DefaultConfiguration implements Configuration {
     public void addClasses(Class<?>... classes) {
         for (Class<?> clazz : classes) {
             if (clazz.getAnnotation(ClassMapping.class) != null){
-                UID uid = MappedClass.getUID(clazz);
-                if (uid != null) {
-                    List<Class<?>> classList = type2classes.get(uid);
+                MappedClass mappedClass = mappedClassFactory.getMappedClass(clazz);
+                if (mappedClass.getUID() != null) {
+                    List<MappedClass> classList = type2classes.get(mappedClass.getUID());
                     if (classList == null) {
-                        classList = new ArrayList<Class<?>>();
-                        type2classes.put(uid, classList);
-                    }
-                    classList.add(clazz);
-                    this.classes.add(clazz);
-                }    
+                        classList = new ArrayList<MappedClass>();
+                        type2classes.put(mappedClass.getUID(), classList);
+                    }                    
+                    classList.add(mappedClass);                    
+                }   
+                this.classes.add(mappedClass);
+                class2MappedClass.put(clazz, mappedClass);
             }else{
                 throw new IllegalArgumentException("No @ClassMapping annotation for " + clazz.getName());
             }
@@ -149,14 +154,22 @@ public final class DefaultConfiguration implements Configuration {
     }
 
     @Override
-    public Set<Class<?>> getMappedClasses() {
-        return classes;
+    public MappedClass getMappedClass(Class<?> javaClass) {
+        if (!class2MappedClass.containsKey(javaClass)){
+            throw new IllegalArgumentException(javaClass.getName() + " mapping is not available");
+        }
+        return class2MappedClass.get(javaClass);
     }
 
-    public List<Class<?>> getMappedClasses(UID uid) {
-        return type2classes.get(Assert.notNull(uid,"uid"));
+    @Override
+    public Set<MappedClass> getMappedClasses() {
+        return classes;
     }
     
+    public List<MappedClass> getMappedClasses(UID uid) {
+        return type2classes.get(Assert.notNull(uid,"uid"));
+    }
+
     @Override
     public boolean isRestricted(UID uid) {
         return restrictedResources.contains(uid.getId()) || restrictedResources.contains(uid.ns());

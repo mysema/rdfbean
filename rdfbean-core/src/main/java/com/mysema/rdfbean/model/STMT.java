@@ -94,20 +94,16 @@ public final class STMT {
         if (this == obj) {
             return true;
         } else if (obj instanceof STMT) {
-            STMT other = (STMT) obj;
-            
+            STMT other = (STMT) obj;            
             if (!subject.equals(other.subject)){
                 return false;
-            }                
-
+            }              
             if (!predicate.equals(other.predicate)){
                 return false;
-            }                
-            
+            }                           
             if (!object.equals(other.object)){
                 return false;
-            }                
-            
+            }                            
             if (context == null) {
                 if (other.context != null){
                     return false;
@@ -115,11 +111,9 @@ public final class STMT {
             } else if (!context.equals(other.context)){
                 return false;
             }                
-
             if (asserted != other.asserted){
                 return false;
             }                
-
             return true;
         } else {
             return false;

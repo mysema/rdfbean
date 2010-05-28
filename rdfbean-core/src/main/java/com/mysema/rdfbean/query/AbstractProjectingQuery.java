@@ -34,6 +34,7 @@ import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NodeType;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.Session;
@@ -54,11 +55,17 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     
     protected final Dialect<N,R,B,U,L,S> dialect;
     
+    protected final Configuration conf;
+    
     protected final Session session;
     
     @SuppressWarnings("unchecked")
-    public AbstractProjectingQuery(Dialect<N,R,B,U,L,S> dialect, Session session) {
+    public AbstractProjectingQuery(
+            Configuration configuration, 
+            Dialect<N,R,B,U,L,S> dialect, 
+            Session session) {
         super(new QueryMixin<SubType>(new DefaultQueryMetadata()));
+        this.conf = configuration;
         this.queryMixin.setSelf((SubType) this);
         this.dialect = Assert.notNull(dialect,"dialect");
         this.session = Assert.notNull(session,"session");
@@ -120,7 +127,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
 
     protected MappedPath getMappedPathForPropertyPath(Path<?> path){
         PathMetadata<?> md = path.getMetadata();
-        MappedClass mc = MappedClass.getMappedClass(md.getParent().getType());   
+        MappedClass mc = conf.getMappedClass(md.getParent().getType());   
         return mc.getMappedPath(md.getExpression().toString());    
     }
 
@@ -129,7 +136,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
     
     protected R getTypeForDomainClass(Class<?> clazz){        
-        MappedClass mc = MappedClass.getMappedClass(clazz);
+        MappedClass mc = conf.getMappedClass(clazz);
         if (mc.getUID() != null){
             return dialect.getResource(mc.getUID());
         }else{

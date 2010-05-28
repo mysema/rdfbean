@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.Session;
@@ -34,13 +35,16 @@ public class SeedEntityImpl implements SeedEntity{
     
     private final Map<Object,Object> persisted;
     
-    public SeedEntityImpl(SessionFactory sessionFactory, List<Object> entities) throws IOException {
+    public SeedEntityImpl(
+            Configuration configuration, 
+            SessionFactory sessionFactory, 
+            List<Object> entities) throws IOException {
         this.persisted = new HashMap<Object,Object>(entities.size());
         Session session = sessionFactory.openSession();        
         RDFBeanTransaction tx = session.beginTransaction();        
         try{
             for (Object entity : entities){
-                replaceReferences(entity);
+                replaceReferences(configuration, entity);
                 Object original = session.getByExample(entity);
                 if (original == null){
                     session.save(entity);    
@@ -63,9 +67,9 @@ public class SeedEntityImpl implements SeedEntity{
      * 
      * @param entity
      */
-    private void replaceReferences(Object entity) {
+    private void replaceReferences(Configuration configuration, Object entity) {
         BeanMap beanMap = new BeanMap(entity);
-        MappedClass mappedClass = MappedClass.getMappedClass(entity.getClass());
+        MappedClass mappedClass = configuration.getMappedClass(entity.getClass());
         for (MappedPath mappedPath : mappedClass.getProperties()){
             if (mappedPath.isReference() && mappedPath.isSimpleProperty()){
                 Object value = mappedPath.getMappedProperty().getValue(beanMap);

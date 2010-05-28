@@ -42,42 +42,44 @@ public class ConfigurationOntologyTest {
         
     }
     
+    private Configuration configuration;
+    
     private Ontology ontology;
     
     @Before
     public void setUp(){
-        Configuration configuration = new DefaultConfiguration(Entity1.class, Entity2.class, Entity3.class);
+        configuration = new DefaultConfiguration(Entity1.class, Entity2.class, Entity3.class);
         ontology = new ConfigurationOntology(configuration);
     }
     
     @Test
     public void getMappedSubtypes(){
-        MappedClass cl = MappedClass.getMappedClass(Entity1.class);
+        MappedClass cl = configuration.getMappedClass(Entity1.class);
         assertEquals(getUIDs(Entity1.class, Entity2.class, Entity3.class), ontology.getSubtypes(cl.getUID()));
         
-        cl = MappedClass.getMappedClass(Entity2.class);
+        cl = configuration.getMappedClass(Entity2.class);
         assertEquals(getUIDs(Entity2.class, Entity3.class), ontology.getSubtypes(cl.getUID()));
         
-        cl = MappedClass.getMappedClass(Entity3.class);
+        cl = configuration.getMappedClass(Entity3.class);
         assertEquals(getUIDs(Entity3.class), ontology.getSubtypes(cl.getUID()));
     }
     
     @Test
     public void getMappedSupertypes(){
-        MappedClass cl = MappedClass.getMappedClass(Entity3.class);
+        MappedClass cl = configuration.getMappedClass(Entity3.class);
         assertEquals(getUIDs(Entity1.class, Entity2.class), ontology.getSupertypes(cl.getUID()));
         
-        cl = MappedClass.getMappedClass(Entity2.class);
+        cl = configuration.getMappedClass(Entity2.class);
         assertEquals(getUIDs(Entity1.class), ontology.getSupertypes(cl.getUID()));
         
-        cl = MappedClass.getMappedClass(Entity1.class);
+        cl = configuration.getMappedClass(Entity1.class);
         assertEquals(getUIDs(), ontology.getSupertypes(cl.getUID()));
     }
 
-    private static Set<UID> getUIDs(Class<?>... classes){
+    private Set<UID> getUIDs(Class<?>... classes){
         Set<UID> uids = new HashSet<UID>();
         for (Class<?> cl : classes){
-            uids.add(MappedClass.getMappedClass(cl).getUID());
+            uids.add(configuration.getMappedClass(cl).getUID());
         }
         return uids;
     }

@@ -17,6 +17,7 @@ import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
@@ -29,6 +30,8 @@ import com.mysema.rdfbean.sesame.MemoryRepository;
  * @version $Id$
  */
 public class SeedEntityTest {
+    
+    private static Configuration configuration;
     
     private static SessionFactoryImpl sessionFactory;
     
@@ -61,8 +64,9 @@ public class SeedEntityTest {
     
     @BeforeClass
     public static void before() throws IOException{
+        configuration = new DefaultConfiguration(User.class, Article.class);
         sessionFactory = new SessionFactoryImpl();
-        sessionFactory.setConfiguration(new DefaultConfiguration(User.class, Article.class));
+        sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(new MemoryRepository());
         sessionFactory.initialize();        
     }
@@ -80,12 +84,12 @@ public class SeedEntityTest {
     @Test
     public void test() throws IOException{
         List<Object> entities = Arrays.<Object>asList(new User("John","Smith"), new User("Bob","Stewart"));
-        new SeedEntityImpl(sessionFactory, entities);
+        new SeedEntityImpl(configuration, sessionFactory, entities);
         
         session = sessionFactory.openSession();
         assertEquals(2, session.findInstances(User.class).size());
         
-        new SeedEntityImpl(sessionFactory, entities);
+        new SeedEntityImpl(configuration, sessionFactory, entities);
         assertEquals(2, session.findInstances(User.class).size());
         
     }

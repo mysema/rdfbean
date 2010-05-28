@@ -27,8 +27,7 @@ public class ConfigurationOntology extends AbstractOntology{
         MultiMap<UID,UID> directSubtypes = MultiMapFactory.<UID,UID>createWithSet();        
         MultiMap<UID,UID> directSupertypes = MultiMapFactory.<UID,UID>createWithSet();
         
-        for (Class<?> clazz : configuration.getMappedClasses()){
-            MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        for (MappedClass mappedClass : configuration.getMappedClasses()){
             types.add(mappedClass.getUID());
             for (MappedClass superClass : mappedClass.getMappedSuperClasses()){
                 directSupertypes.put(mappedClass.getUID(), superClass.getUID());

@@ -30,9 +30,11 @@ public interface Configuration {
     
     boolean allowRead(MappedPath path);
     
-    List<Class<?>> getMappedClasses(UID uid);
+    MappedClass getMappedClass(Class<?> javaClass);
     
-    Set<Class<?>> getMappedClasses();
+    List<MappedClass> getMappedClasses(UID uid);
+    
+    Set<MappedClass> getMappedClasses();
 
     @Nullable
     UID getContext(Class<?> javaClass, @Nullable ID subject);

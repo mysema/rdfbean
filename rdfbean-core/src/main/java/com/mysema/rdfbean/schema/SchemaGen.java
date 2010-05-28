@@ -86,8 +86,8 @@ public class SchemaGen {
         resources.put(RDFS.label, new RDFProperty(RDFS.label));
         resources.put(RDFS.comment, new RDFProperty(RDFS.comment));
         resources.put(RDFS.Resource, new RDFSClass<Object>(RDFS.Resource));
-        for (Class<?> clazz : configuration.getMappedClasses()) {
-            processClass(clazz, session, resources);
+        for (MappedClass mappedClass : configuration.getMappedClasses()) {
+            processClass(mappedClass.getJavaClass(), session, resources);
         }
         session.saveAll(resources.values().toArray());
     }
@@ -99,7 +99,7 @@ public class SchemaGen {
 //        if (clazz == null) {
 //            return null;
 //        }
-        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
+        MappedClass mappedClass = configuration.getMappedClass(clazz);
         OWLClass owlClass = null;
         UID cuid = mappedClass.getUID();
         if (cuid != null) {
@@ -118,7 +118,10 @@ public class SchemaGen {
                 }
     
                 // super class
-                addParent(clazz.getSuperclass(), owlClass, session, resources);
+                if (!clazz.getSuperclass().equals(Object.class)){
+                    addParent(clazz.getSuperclass(), owlClass, session, resources);    
+                }
+                
                 // interfaces
                 for (Class<?> iface : clazz.getInterfaces()) {
                     addParent(iface, owlClass, session, resources);
@@ -178,8 +181,7 @@ public class SchemaGen {
                             if (mappedProperty.isList()) {
                                 if (property.getRange().isEmpty()) {
                                     RDFSClass<?> componentType = 
-                                        processClass(mappedProperty.getComponentType(), session, 
-                                                resources);
+                                        processClass(mappedProperty.getComponentType(), session, resources);
                                     if (useTypedLists && componentType != null) {
                                         property.addRange(new TypedList(cuid.ns(), componentType));
                                         // Protege doesn't support typed lists using allValuesFrom

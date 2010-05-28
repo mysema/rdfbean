@@ -31,7 +31,8 @@ public class PropertyOverrideTest {
 
     @Test
     public void overrideWithinClass() {
-        MappedClass mappedClass = MappedClass.getMappedClass(WithinClass.class);
+        Configuration configuration = new DefaultConfiguration(WithinClass.class);
+        MappedClass mappedClass = configuration.getMappedClass(WithinClass.class);
         MappedPath path = mappedClass.getMappedPath("reference");
         assertEquals(new UID(TEST.NS, "reference"), path.get(0).getUID());
         MappedProperty<?> property = path.getMappedProperty();

@@ -14,8 +14,6 @@ import java.util.*;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.UID;
 
@@ -47,12 +45,15 @@ public final class MappedClass {
     
     private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
     
+    private final MappedClassFactory mappedClassFactory;
+    
     @Nullable
     private final UID uid;
     
-    MappedClass(Class<?> clazz) {
+    MappedClass(MappedClassFactory mappedClassFactory, Class<?> clazz, UID uid) {
+        this.mappedClassFactory = mappedClassFactory;
         this.clazz = clazz;
-        uid = getUID(clazz);
+        this.uid = uid;
     }
     
     public static String getClassNs(Class<?> clazz) {
@@ -63,29 +64,7 @@ public final class MappedClass {
             return "";
         }
     }
-
-    public static MappedClass getMappedClass(Class<?> clazz) {
-        return MappedClassFactory.getMappedClass(clazz);
-    }
-    
-    @Nullable
-    public static UID getUID(Class<?> clazz) {
-        ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
-        if (cmap != null) {
-            if (StringUtils.isNotEmpty(cmap.ln())) {
-                return new UID(cmap.ns(), cmap.ln());
-            } else if (StringUtils.isNotEmpty(cmap.ns())) {
-                return new UID(cmap.ns(), clazz.getSimpleName());
-            } else {
-                // if ClassMapping is used, then either ns or ln should be given, eitherwise the ClassMapping is incomplete
-                throw new IllegalArgumentException("Both ns and ln are empty for " + clazz.getName());
-            }
-        } else {
-            // NOTE : might be used for autowire etc, doesn't need ClassMapping for such cases
-            return null;
-        }
-    }
-    
+        
     public static boolean isPolymorphic(Class<?> clazz) {
         // TODO use configuration to check if there's any mapped subclasses 
         return !Modifier.isFinal(clazz.getModifiers());
@@ -205,13 +184,13 @@ public final class MappedClass {
         List<MappedClass> mappedSuperClasses = new ArrayList<MappedClass>(ifaces != null ? ifaces.length + 1 : 1);
         if (superClass != null && !Object.class.equals(superClass)) {
             if (isProcessedClass(superClass)) {
-                mappedSuperClasses.add(getMappedClass(superClass));
+                mappedSuperClasses.add(mappedClassFactory.getMappedClass(superClass));
             }
         }
         if (ifaces != null) {
             for (Class<?> iface : ifaces) {
                 if (isProcessedClass(iface)) {
-                    mappedSuperClasses.add(getMappedClass(iface));
+                    mappedSuperClasses.add(mappedClassFactory.getMappedClass(iface));
                 }
             }
         }

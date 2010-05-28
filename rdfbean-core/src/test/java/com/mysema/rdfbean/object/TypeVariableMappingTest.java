@@ -54,7 +54,9 @@ public class TypeVariableMappingTest {
     
     @Test
     public void testMappings() {
-        MappedClass mappedClass = MappedClass.getMappedClass(Parent.class);
+        Configuration configuration = new DefaultConfiguration(Parent.class, FirstChild.class, NestedChild.class, SecondChild.class);
+        
+        MappedClass mappedClass = configuration.getMappedClass(Parent.class);
 
         // Parent
         MappedPath path = mappedClass.getMappedPath("parent");
@@ -74,7 +76,7 @@ public class TypeVariableMappingTest {
         assertFalse(path.isInherited());
         
         // FirstChild
-        mappedClass = MappedClass.getMappedClass(FirstChild.class);
+        mappedClass = configuration.getMappedClass(FirstChild.class);
         path = mappedClass.getMappedPath("parent");
         assertEquals(FirstChild.class, path.getMappedProperty().getType());
         assertFalse(path.isInherited());
@@ -92,7 +94,7 @@ public class TypeVariableMappingTest {
         assertTrue(path.isInherited());
 
         // NestedChild
-        mappedClass = MappedClass.getMappedClass(NestedChild.class);
+        mappedClass = configuration.getMappedClass(NestedChild.class);
         path = mappedClass.getMappedPath("parent");
         assertEquals(NestedChild.class, path.getMappedProperty().getType());
         assertFalse(path.isInherited());
@@ -110,7 +112,7 @@ public class TypeVariableMappingTest {
         assertTrue(path.isInherited());
 
         // SecondChild
-        mappedClass = MappedClass.getMappedClass(SecondChild.class);
+        mappedClass = configuration.getMappedClass(SecondChild.class);
         path = mappedClass.getMappedPath("parent");
         assertEquals(SecondChild.class, path.getMappedProperty().getType());
         assertFalse(path.isInherited());
@@ -128,7 +130,7 @@ public class TypeVariableMappingTest {
         assertTrue(path.isInherited());
 
         // No changes to Parent
-        mappedClass = MappedClass.getMappedClass(Parent.class);
+        mappedClass = configuration.getMappedClass(Parent.class);
         path = mappedClass.getMappedPath("parent");
         assertEquals(Parent.class, path.getMappedProperty().getType());
         assertFalse(path.isInherited());

@@ -9,11 +9,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.UID;
 
 /**
@@ -22,16 +26,11 @@ import com.mysema.rdfbean.model.UID;
  * @author tiwe
  * @version $Id$
  */
-public final class MappedClassFactory {
+public class MappedClassFactory {
 
-    private MappedClassFactory() {
-    }
+    private final Map<Class<?>, MappedClass> mappedClasses = new LinkedHashMap<Class<?>, MappedClass>();
 
-    private static Map<Class<?>, MappedClass> mappedClasses = Collections
-            .synchronizedMap(new LinkedHashMap<Class<?>, MappedClass>());
-
-    private static void assignConstructor(Class<?> clazz,
-            MappedClass mappedClass) {
+    private void assignConstructor(Class<?> clazz, MappedClass mappedClass) {
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
         if (constructors.length == 0) {
             return;
@@ -77,20 +76,7 @@ public final class MappedClassFactory {
         // }
     }
 
-    private static void collectFieldPaths(Class<?> clazz, MappedClass mappedClass) {
-        if (!clazz.isInterface()) {
-            MappedPath path;
-            String classNs = MappedClass.getClassNs(clazz);
-            for (Field field : clazz.getDeclaredFields()) {
-                path = MappedPath.getPathMapping(classNs, field, mappedClass);
-                if (path != null) {
-                    mappedClass.addMappedPath(path);
-                }
-            }
-        }
-    }
-
-    private static void collectDynamicFieldProperties(Class<?> clazz, MappedClass mappedClass) {
+    private void collectDynamicFieldProperties(Class<?> clazz, MappedClass mappedClass) {
         if (!clazz.isInterface()) {
             for (Field field : clazz.getDeclaredFields()) {
                 FieldProperty property = new FieldProperty(field, mappedClass);
@@ -113,7 +99,20 @@ public final class MappedClassFactory {
         }
     }
 
-    private static void collectMethodPaths(Class<?> clazz, MappedClass mappedClass) {
+    private void collectFieldPaths(Class<?> clazz, MappedClass mappedClass) {
+        if (!clazz.isInterface()) {
+            MappedPath path;
+            String classNs = MappedClass.getClassNs(clazz);
+            for (Field field : clazz.getDeclaredFields()) {
+                path = MappedPath.getPathMapping(classNs, field, mappedClass);
+                if (path != null) {
+                    mappedClass.addMappedPath(path);
+                }
+            }
+        }
+    }
+
+    private void collectMethodPaths(Class<?> clazz, MappedClass mappedClass) {
         MappedPath path;
         String classNs = MappedClass.getClassNs(clazz);
         for (Method method : clazz.getDeclaredMethods()) {
@@ -124,13 +123,14 @@ public final class MappedClassFactory {
         }
     }
 
-    public static MappedClass getMappedClass(Class<?> clazz) {
+    public MappedClass getMappedClass(Class<?> clazz) {
         // NOTE: no need to further synchronize access to mappedPaths because
         // result is immutable and deterministic, i.e. it does't really matter
         // if it gets calculated multiple times
         MappedClass mappedClass = mappedClasses.get(clazz);
         if (mappedClass == null) {
-            mappedClass = new MappedClass(clazz);
+            UID uid = getUID(clazz);
+            mappedClass = new MappedClass(this,clazz,uid);
             if (!clazz.isEnum()) {
                 for (MappedClass mappedSuperClass : mappedClass.getMappedSuperClasses()) {
                     if (mappedSuperClass != null) {
@@ -153,6 +153,24 @@ public final class MappedClassFactory {
             }
         }
         return mappedClass;
+    }
+    
+    @Nullable
+    private static UID getUID(Class<?> clazz) {
+        ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
+        if (cmap != null) {
+            if (StringUtils.isNotEmpty(cmap.ln())) {
+                return new UID(cmap.ns(), cmap.ln());
+            } else if (StringUtils.isNotEmpty(cmap.ns())) {
+                return new UID(cmap.ns(), clazz.getSimpleName());
+            } else {
+                // if ClassMapping is used, then either ns or ln should be given, eitherwise the ClassMapping is incomplete
+                throw new IllegalArgumentException("Both ns and ln are empty for " + clazz.getName());
+            }
+        } else {
+            // NOTE : might be used for autowire etc, doesn't need ClassMapping for such cases
+            return null;
+        }
     }
 
 }

@@ -142,6 +142,8 @@ public class DynamicPropertiesTest {
         Map<String, String> nodes;
     }
 
+    private DefaultConfiguration configuration;
+    
     private MiniRepository repository;
 
     private Session session;
@@ -162,10 +164,8 @@ public class DynamicPropertiesTest {
 
         };
         sessionFactory.setRepository(repository);
-        DefaultConfiguration configuration = new DefaultConfiguration(
-                Project.class, Person.class);
-        configuration.setFetchStrategies(Collections
-                .<FetchStrategy> emptyList());
+        configuration = new DefaultConfiguration(Project.class, Person.class);
+        configuration.setFetchStrategies(Collections.<FetchStrategy> emptyList());
         sessionFactory.setConfiguration(configuration);
         sessionFactory.initialize();
 
@@ -253,8 +253,7 @@ public class DynamicPropertiesTest {
 
         assertNotNull(field);
 
-        MappedClass mappedClass = MappedClassFactory
-                .getMappedClass(Project.class);
+        MappedClass mappedClass = configuration.getMappedClass(Project.class);
         boolean containsInfos = false;
 
         for (MappedProperty<?> property : mappedClass.getDynamicProperties()) {
@@ -273,16 +272,16 @@ public class DynamicPropertiesTest {
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidProject1() {
         // TODO How to handle this case
-        MappedClassFactory.getMappedClass(InvalidProject1.class);
+        configuration.getMappedClass(InvalidProject1.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidProject2() {
-        MappedClassFactory.getMappedClass(InvalidProject2.class);
+        new DefaultConfiguration(InvalidProject2.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidProject3() {
-        MappedClassFactory.getMappedClass(InvalidProject3.class);
+        new DefaultConfiguration(InvalidProject3.class);
     }
 }
