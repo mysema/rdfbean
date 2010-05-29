@@ -40,9 +40,9 @@ public class BeanListSource<T> implements ListSource<T>{
     
     private final SessionFactory sessionFactory;
     
-    private final PEntity<?>[] sources;
-    
     private final long size;
+    
+    private final PEntity<?>[] sources;
     
     public BeanListSource(SessionFactory sessionFactory,  
             PEntity<?>[] sourceArray, 
@@ -65,6 +65,11 @@ public class BeanListSource<T> implements ListSource<T>{
         });   
     }
     
+    @Override
+    public T getResult(int index) {
+        return getResults(index, index+1).get(0);
+    }
+    
     public List<T> getResults(final int from, final int to){
         return sessionFactory.execute(new SessionCallback<List<T>>(){
             public List<T> doInSession(Session session){
@@ -76,7 +81,7 @@ public class BeanListSource<T> implements ListSource<T>{
             }
         });
     }
-    
+
     public final boolean isEmpty(){
         return size == 0l;
     }

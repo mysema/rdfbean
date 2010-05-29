@@ -30,9 +30,8 @@ public class BeanAnnotationProcessor extends AbstractProcessor{
     
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Running " + getClass().getSimpleName());
-        
-        Configuration configuration = new BeanConfiguration(roundEnv);        
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Running " + getClass().getSimpleName());        
+        Configuration configuration = new BeanConfiguration(roundEnv, processingEnv.getOptions());        
         new Processor(processingEnv, roundEnv, configuration).process();
         return true;
     }       

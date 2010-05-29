@@ -2,7 +2,6 @@ package com.mysema.rdfbean.sesame.query;
 
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.Custom;
-import com.mysema.query.types.EArrayConstructor;
 import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.Operation;
@@ -27,11 +26,6 @@ public class ExtractorVisitor implements Visitor{
 
     @Override
     public void visit(Custom<?> e) {
-        expr = e.asExpr();
-    }
-
-    @Override
-    public void visit(EArrayConstructor<?> e) {
         expr = e.asExpr();
     }
 

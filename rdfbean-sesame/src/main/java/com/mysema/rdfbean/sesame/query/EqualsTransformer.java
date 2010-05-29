@@ -42,11 +42,11 @@ import com.mysema.rdfbean.object.MappedPath;
  */
 public class EqualsTransformer implements OperationTransformer{
 
-    private static final Map<Operator<?>,CompareOp> ops = new HashMap<Operator<?>,CompareOp>();
+    private final Map<Operator<?>,CompareOp> ops = new HashMap<Operator<?>,CompareOp>();
     
     private final OperationTransformer colSize = new ColSizeTransformer();
     
-    static{
+    public EqualsTransformer() {
         ops.put(Ops.EQ_OBJECT, CompareOp.EQ); 
         ops.put(Ops.EQ_PRIMITIVE, CompareOp.EQ);
         ops.put(Ops.NE_OBJECT,  CompareOp.NE);

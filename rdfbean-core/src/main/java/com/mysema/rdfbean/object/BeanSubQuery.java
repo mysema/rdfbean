@@ -26,6 +26,7 @@ import com.mysema.query.types.query.*;
  * @author tiwe
  * @version $Id$
  */
+// TODO : use DetachableAdapter
 public class BeanSubQuery implements Detachable {
     
     private final DetachableMixin detachableMixin;

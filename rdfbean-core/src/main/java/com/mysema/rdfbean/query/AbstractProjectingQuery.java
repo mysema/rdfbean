@@ -100,11 +100,11 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
             EConstructor<?> constructor = (EConstructor<?>)expr;
             Object[] args = new Object[constructor.getArgs().size()];
             for (int i = 0; i < args.length; i++){
-                args[i] = getAsProjectionValue(constructor.getArg(i).getType(), nodes[offset.intValue() + i]);
+                args[i] = getAsProjectionValue(constructor.getArgs().get(i).getType(), nodes[offset.intValue() + i]);
             }
             offset.add(args.length);
             try {
-                return (RT) constructor.getJavaConstructor().newInstance(args);
+                return (RT) constructor.newInstance(args);
             } catch (Exception e) {            
                 throw new RuntimeException(e.getMessage(), e);
             }

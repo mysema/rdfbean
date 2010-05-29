@@ -30,11 +30,11 @@ import com.mysema.query.types.SubQuery;
  */
 public class CompareTransformer implements OperationTransformer{
     
-    private static final Map<Operator<?>,CompareOp> ops = new HashMap<Operator<?>,CompareOp>();
+    private final Map<Operator<?>,CompareOp> ops = new HashMap<Operator<?>,CompareOp>();
     
     private final OperationTransformer colSize = new ColSizeTransformer();
     
-    static{
+    public CompareTransformer(){
         ops.put(Ops.LT, CompareOp.LT);
         ops.put(Ops.BEFORE, CompareOp.LT);
         ops.put(Ops.LOE, CompareOp.LE);

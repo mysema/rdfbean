@@ -5,6 +5,9 @@
  */
 package com.mysema.rdfbean.query;
 
+import java.util.Collections;
+import java.util.Map;
+
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -27,8 +30,8 @@ import com.mysema.rdfbean.annotations.Predicate;
  */
 public class BeanConfiguration extends DefaultConfiguration {
     
-    public BeanConfiguration(RoundEnvironment roundEnv) {
-        super(roundEnv, ClassMapping.class, null, null, QueryTransient.class);
+    public BeanConfiguration(RoundEnvironment roundEnv,Map<String, String> options) {
+        super(roundEnv, options, ClassMapping.class, null, null, QueryTransient.class);
     }
     
     @Override

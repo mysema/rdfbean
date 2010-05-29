@@ -65,8 +65,6 @@ public final class DefaultConfiguration implements Configuration {
     
     private final Map<UID, List<MappedClass>> type2classes = new HashMap<UID, List<MappedClass>>();
     
-    private final Map<Class<?>,MappedClass> class2MappedClass = new HashMap<Class<?>,MappedClass>();
-    
     public DefaultConfiguration() {}
         
     public DefaultConfiguration(Class<?>... classes) {
@@ -90,7 +88,6 @@ public final class DefaultConfiguration implements Configuration {
                     classList.add(mappedClass);                    
                 }   
                 this.classes.add(mappedClass);
-                class2MappedClass.put(clazz, mappedClass);
             }else{
                 throw new IllegalArgumentException("No @ClassMapping annotation for " + clazz.getName());
             }
@@ -155,10 +152,7 @@ public final class DefaultConfiguration implements Configuration {
 
     @Override
     public MappedClass getMappedClass(Class<?> javaClass) {
-        if (!class2MappedClass.containsKey(javaClass)){
-            throw new IllegalArgumentException(javaClass.getName() + " mapping is not available");
-        }
-        return class2MappedClass.get(javaClass);
+        return mappedClassFactory.getMappedClass(javaClass);
     }
 
     @Override
