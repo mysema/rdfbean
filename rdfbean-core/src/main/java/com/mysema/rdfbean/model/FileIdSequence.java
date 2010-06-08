@@ -84,9 +84,7 @@ public class FileIdSequence implements Closeable, IdSequence{
         
     }
 
-    /* (non-Javadoc)
-     * @see com.mysema.rdfbean.model.IdSource#getNextId()
-     */
+    @Override
     public synchronized long getNextId() {                
         try {            
             if (nextId > maxId){                
