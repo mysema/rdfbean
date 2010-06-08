@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * FileIdSequence provides
+ * FileIdSequence provides a java.io.File based cacheing implementation of the IdSequence interface
  *
  * @author tiwe
  * @version $Id$
@@ -38,10 +38,21 @@ public class FileIdSequence implements Closeable, IdSequence{
     
     private volatile long maxId = 100l;
     
+    /**
+     * Use the give File for persistence with a cache of 100 increments
+     * 
+     * @param file
+     */
     public FileIdSequence(File file) {
         this(file, 100);
     }
     
+    /**
+     * Use the given File for persistence with a cache of 100 increments
+     * 
+     * @param file
+     * @param cache
+     */
     public FileIdSequence(File file, int cache) {
         try {
             if (!file.exists()){
