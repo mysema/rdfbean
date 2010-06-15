@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.query;
 
-import java.util.Collections;
 import java.util.Map;
 
 import javax.annotation.processing.RoundEnvironment;
