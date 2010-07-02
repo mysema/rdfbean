@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-root</artifactId>
-  <version>1.3.0</version>
+  <version>1.3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>RDFBean</name>
   <url>http://source.mysema.com/display/rdfbean</url>
@@ -33,7 +33,6 @@
     <!-- persistence -->
     <module>../rdfbean-sesame</module>
     <module>../rdfbean-lucene</module>
-    <module>../rdfbean-mulgara</module>
     
     <!-- integration -->
     <module>../rdfbean-spring</module>    
