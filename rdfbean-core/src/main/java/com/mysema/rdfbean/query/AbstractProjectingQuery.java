@@ -22,7 +22,6 @@ import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
-import com.mysema.query.collections.LimitingIterator;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.Constant;
@@ -38,6 +37,7 @@ import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.util.LimitingIterator;
 
 
 /**

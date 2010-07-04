@@ -8,6 +8,7 @@ import com.mysema.query.sql.Table;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.custom.CSimple;
+import com.mysema.query.types.path.PBoolean;
 import com.mysema.query.types.path.PDateTime;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PNumber;
@@ -23,6 +24,8 @@ public class QSymbol extends PEntity<QSymbol> {
 
     public static final QSymbol symbol = new QSymbol("SYMBOL");
 
+    public final PBoolean resource = createBoolean("RESOURCE");
+    
     public final PNumber<Long> datatype = createNumber("DATATYPE", Long.class);
 
     public final PDateTime<java.util.Date> datetime = createDateTime("DATETIME", java.util.Date.class);

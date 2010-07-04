@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -65,7 +66,7 @@ public class RDBConnection implements RDFConnection{
 
     @Override
     public BID createBNode() {
-        return new BID();
+        return new BID("_"+UUID.randomUUID());
     }
 
     @Override
@@ -75,11 +76,12 @@ public class RDBConnection implements RDFConnection{
     }
 
     @Override
+    @SuppressWarnings("serial")
     public CloseableIterator<STMT> findStatements(
-            ID subject, 
-            UID predicate, 
-            NODE object, 
-            UID model, boolean includeInferred) {
+            final ID subject, 
+            final UID predicate, 
+            final NODE object, 
+            final UID model, boolean includeInferred) {
         SQLQuery query = this.context.createQuery();
         query.from(statement);
         List<Expr<?>> exprs = new ArrayList<Expr<?>>();
@@ -87,7 +89,6 @@ public class RDBConnection implements RDFConnection{
             query.where(statement.subject.eq(getId(subject)));
         }else{
             query.innerJoin(statement.subjectFk, sub);
-            exprs.add(sub.id);
             exprs.add(sub.lexical);
         }
         if (predicate != null){
@@ -99,7 +100,7 @@ public class RDBConnection implements RDFConnection{
             query.where(statement.object.eq(getId(object)));
         }else{
             query.innerJoin(statement.objectFk, obj);
-            exprs.add(obj.id);
+            exprs.add(obj.resource);
             exprs.add(obj.lexical);
             exprs.add(obj.datatype);
             exprs.add(obj.lang);
@@ -113,9 +114,26 @@ public class RDBConnection implements RDFConnection{
         QSTMT stmt = new QSTMT(exprs.toArray(new Expr[exprs.size()])){
             @Override
             public STMT newInstance(Object... args) {
-                // TODO Auto-generated method stub
-                return null;
-            }            
+                ID s = subject;
+                UID p = predicate;
+                NODE o = object;
+                UID m = model;
+                int counter = 0;
+                if (s == null){
+                    s = getNode(true, (String)args[counter++], null, null).asResource();
+                }
+                if (p == null){
+                    p = getNode((Long) args[counter++]).asURI();
+                }                
+                if (o == null){
+                    o = getNode((Boolean)args[counter++], (String)args[counter++], (Long)args[counter++], (Integer)args[counter++]);
+                }
+                if (m == null && args[counter] != null){
+                    m = getNode((Long) args[counter]).asURI();
+                }
+                return new STMT(s, p, o, m);
+            }
+      
         };        
         return query.iterate(stmt);
     }
@@ -182,6 +200,7 @@ public class RDBConnection implements RDFConnection{
         SQLMergeClause merge = context.createMerge(symbol);
         merge.keys(symbol.id);
         merge.set(symbol.id, nodeId);
+        merge.set(symbol.resource, node.isResource());
         merge.set(symbol.lexical, node.getValue());
         if (node.isLiteral()){
             LIT literal = node.asLiteral();
@@ -248,6 +267,32 @@ public class RDBConnection implements RDFConnection{
             return null;
         }else{
             return context.getNodeId(node);            
+        }
+    }
+
+    private NODE getNode(long id) {
+        return context.getNode(id);
+    }
+    
+    private Locale getLocale(int id){
+        return context.getLang(id);
+    }
+    
+    private NODE getNode(boolean res, String lex, Long datatype, Integer lang){
+        if (res){
+            if (lex.startsWith("_")){
+                return new BID(lex);
+            }else{
+                return new UID(lex);
+            }
+        }else{
+            if (lang != null){
+                return new LIT(lex, getLocale(lang));
+            }else if (datatype != null){
+                return new LIT(lex, getNode(datatype).asURI());
+            }else{
+                return new LIT(lex);
+            }
         }
     }
 

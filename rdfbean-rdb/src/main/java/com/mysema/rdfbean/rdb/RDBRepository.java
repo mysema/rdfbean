@@ -7,16 +7,16 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
 import net.jcip.annotations.Immutable;
 
+import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -37,9 +37,9 @@ public class RDBRepository implements Repository{
     
     private final IdFactory idFactory = new MD5IdFactory();
     
-    private final Map<NODE,Long> nodeCache = new HashMap<NODE,Long>();
+    private final BidiMap<NODE,Long> nodeCache = new DualHashBidiMap<NODE,Long>();
     
-    private final Map<Locale,Integer> langCache = new HashMap<Locale,Integer>();
+    private final BidiMap<Locale,Integer> langCache = new DualHashBidiMap<Locale,Integer>();
     
     private final DataSource dataSource;
     
@@ -136,6 +136,7 @@ public class RDBRepository implements Repository{
             nodes.addAll(XSD.ALL);
             nodes.addAll(OWL.ALL);   
             // commons literals
+            nodes.add(new LIT(""));
             nodes.add(new LIT("true",XSD.booleanType));
             nodes.add(new LIT("false",XSD.booleanType));
             for (int i = -128; i < 128; i++){
@@ -154,7 +155,10 @@ public class RDBRepository implements Repository{
             }    
             
             // init languages
-            // TODO
+            for (Locale locale : Locale.getAvailableLocales()){
+                // TODO
+            }
+            
         }finally{
             conn.close();
         }                

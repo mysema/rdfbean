@@ -6,6 +6,7 @@ CREATE TABLE language(
 
 CREATE TABLE symbol(
   id BIGINT NOT NULL,
+  resource BOOLEAN NOT NULL, 
   lexical VARCHAR(1024) NOT NULL,
   datatype BIGINT NULL,
   lang INT NULL, 

@@ -6,10 +6,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+
+import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
@@ -43,17 +44,17 @@ public class RDBContext implements Closeable{
     
     private final IdSequence idSequence;
     
-    private final Map<Locale,Integer> langCache;
+    private final BidiMap<Locale,Integer> langCache;
     
-    private final Map<NODE,Long> nodeCache;
+    private final BidiMap<NODE,Long> nodeCache;
     
-    private final Map<NODE,Long> localNodeCache = new HashMap<NODE,Long>();
-    
+    private final BidiMap<NODE,Long> localCache = new DualHashBidiMap<NODE,Long>();
+        
     private final SQLTemplates templates;
     
     public RDBContext(IdFactory idFactory,
-            Map<NODE,Long> nodeCache,  
-            Map<Locale,Integer> langCache,
+            BidiMap<NODE,Long> nodeCache,  
+            BidiMap<Locale,Integer> langCache,
             IdSequence idSequence,
             Connection connection, 
             SQLTemplates templates) {
@@ -77,7 +78,7 @@ public class RDBContext implements Closeable{
     }
 
     public void clear() {
-        localNodeCache.clear();
+        localCache.clear();
     }
     
     @Override
@@ -116,14 +117,13 @@ public class RDBContext implements Closeable{
     public Long getNodeId(NODE node) {
         if (nodeCache.containsKey(node)){
             return nodeCache.get(node);
-        }else if (localNodeCache.containsKey(node)){    
-            return localNodeCache.get(node);
+        }else if (localCache.containsKey(node)){    
+            return localCache.get(node);
         }else{
             Long id = idFactory.getId(node);
-            localNodeCache.put(node, id);
+            localCache.put(node, id);
             return id;
-        }
-        
+        }        
     }
 
     public Collection<NODE> getNodes() {
@@ -144,6 +144,14 @@ public class RDBContext implements Closeable{
     
     public boolean isIntegerType(UID uid) {
         return integerTypes.contains(uid);
+    }
+
+    public NODE getNode(long id) {
+        return nodeCache.getKey(id);
+    }
+
+    public Locale getLang(int id) {
+        return langCache.getKey(id);
     }
 
 }

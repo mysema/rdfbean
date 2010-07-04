@@ -13,7 +13,7 @@ import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.collections.ColQuery;
 import com.mysema.query.collections.ColQueryImpl;
-import com.mysema.query.collections.ExprEvaluatorFactory;
+import com.mysema.query.collections.QueryEngine;
 import com.mysema.query.support.ProjectableAdapter;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
@@ -36,7 +36,7 @@ public class SimpleBeanQuery extends ProjectableAdapter<ColQueryImpl> implements
     }
     
     protected SimpleBeanQuery(Session session, QueryMetadata metadata){
-        super(new ColQueryImpl(metadata, ExprEvaluatorFactory.DEFAULT));
+        super(new ColQueryImpl(metadata, QueryEngine.DEFAULT));
         this.session = session;
         this.colQuery = (ColQuery) super.getProjectable();
     }
