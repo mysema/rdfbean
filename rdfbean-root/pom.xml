@@ -15,7 +15,7 @@
   </parent>
   
   <properties>
-    <querydsl.version>1.7.2</querydsl.version>
+    <querydsl.version>1.7.8</querydsl.version>
     <spring.version>2.5.5</spring.version>
   </properties>
   
@@ -31,9 +31,10 @@
     <module>../rdfbean-core</module>    
     
     <!-- persistence -->
+    <module>../rdfbean-rdb</module>
     <module>../rdfbean-sesame</module>
     <module>../rdfbean-lucene</module>
-    
+        
     <!-- integration -->
     <module>../rdfbean-spring</module>    
     <module>../rdfbean-guice</module>
