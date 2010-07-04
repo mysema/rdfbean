@@ -1,0 +1,28 @@
+CREATE TABLE language(
+  id INT NOT NULL AUTO_INCREMENT,
+  text VARCHAR(256) NOT NULL,  
+  PRIMARY KEY(id)
+);
+
+CREATE TABLE symbol(
+  id BIGINT NOT NULL,
+  lexical VARCHAR(1024) NOT NULL,
+  datatype BIGINT NULL,
+  lang INT NULL, 
+  integer BIGINT NULL,
+  floating DOUBLE NULL,
+  datetime TIMESTAMP NULL,  
+  PRIMARY KEY(id),
+  CONSTRAINT FK_LANG FOREIGN KEY(lang) REFERENCES language(id)
+);
+
+CREATE TABLE statement(
+  model BIGINT NULL,
+  subject BIGINT NOT NULL,
+  predicate BIGINT NOT NULL,
+  object BIGINT NOT NULL,  
+  CONSTRAINT FK_MODEL FOREIGN KEY(model) REFERENCES symbol(id),
+  CONSTRAINT FK_SUBJECT FOREIGN KEY(subject) REFERENCES symbol(id),
+  CONSTRAINT FK_PREDICATE FOREIGN KEY(predicate) REFERENCES symbol(id),
+  CONSTRAINT FK_OBJECT FOREIGN KEY(object) REFERENCES symbol(id)  
+);
