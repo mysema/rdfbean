@@ -75,10 +75,10 @@ public class RDBConnection implements RDFConnection{
                 merge.set(symbol.floating, Double.valueOf(literal.getValue()));
             }
             if (context.isDateType(literal.getDatatype())){
-                // TODO
+                merge.set(symbol.datetime, context.toDate(literal));                
             }
             if (context.isDateTimeType(literal.getDatatype())){
-                // TODO
+                merge.set(symbol.datetime, context.toTimestamp(literal));
             }
         }
         merge.execute();

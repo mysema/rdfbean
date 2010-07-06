@@ -20,11 +20,13 @@ import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.model.IdSequence;
+import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.xsd.DateConverter;
 
 /**
  * RDBContext provides
@@ -33,6 +35,8 @@ import com.mysema.rdfbean.model.XSD;
  * @version $Id$
  */
 public class RDBContext implements Closeable{
+    
+    private static final DateConverter dateConverter = new DateConverter();
     
     private static final List<UID> decimalTypes = Arrays.asList(XSD.decimalType, XSD.doubleType, XSD.floatType);
     
@@ -152,6 +156,14 @@ public class RDBContext implements Closeable{
 
     public Locale getLang(int id) {
         return langCache.getKey(id);
+    }
+    
+    public java.sql.Date toDate(LIT literal){
+        return new java.sql.Date(dateConverter.fromString(literal.getValue()).getTime());
+    }
+    
+    public java.sql.Timestamp toTimestamp(LIT literal){
+        return new java.sql.Timestamp(dateConverter.fromString(literal.getValue()).getTime());
     }
 
 }
