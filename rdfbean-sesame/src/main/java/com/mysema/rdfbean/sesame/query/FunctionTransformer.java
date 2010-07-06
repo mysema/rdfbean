@@ -224,6 +224,13 @@ public class FunctionTransformer implements OperationTransformer{
                 return QueryFunctions.like(args[0].stringValue(), args[1].stringValue());
             }            
         });        
+        
+        register(Ops.MOD, new BaseFunction("functions:modulo"){
+            public String evaluate(Value[] args) {
+                return QueryFunctions.modulo(args[0].stringValue(), args[1].stringValue());
+            }
+            
+        });
 //        register(Ops.COALESCE, new BaseFunction("functions:coalesce"){
 //            public String evaluate(Value[] args) {
 //                for (Value arg : args){

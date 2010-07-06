@@ -23,12 +23,10 @@ public final class QueryFunctions {
     
     private static DateTimeConverter dateTime = new DateTimeConverter();
     
-    private QueryFunctions(){}
-
     public static String abs(String str){
         return str.startsWith("-") ? str.substring(1) : str;
     }
-    
+
     public static String ceil(String str){
         return String.valueOf(Math.ceil(Double.valueOf(str)));
     }
@@ -103,13 +101,12 @@ public final class QueryFunctions {
         return String.valueOf(dateTime.fromString(str).getMinuteOfHour());
     }
     
-    public static String month(String str){
-        return String.valueOf(dateTime.fromString(str).getMonthOfYear());
+    public static String modulo(String first, String second){
+        return String.valueOf(Long.valueOf(first) % Long.valueOf(second));
     }
     
-    public static String yearMonth(String str){
-        DateTime date = dateTime.fromString(str);
-        return String.valueOf(date.getYear() * 100 + date.getMonthOfYear());
+    public static String month(String str){
+        return String.valueOf(dateTime.fromString(str).getMonthOfYear());
     }
     
     public static String second(String str){
@@ -167,5 +164,12 @@ public final class QueryFunctions {
     public static String year(String str){
         return String.valueOf(dateTime.fromString(str).getYear());
     }
+    
+    public static String yearMonth(String str){
+        DateTime date = dateTime.fromString(str);
+        return String.valueOf(date.getYear() * 100 + date.getMonthOfYear());
+    }
+    
+    private QueryFunctions(){}
     
 }
