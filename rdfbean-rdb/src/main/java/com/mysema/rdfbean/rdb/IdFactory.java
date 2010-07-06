@@ -1,5 +1,7 @@
 package com.mysema.rdfbean.rdb;
 
+import java.util.Locale;
+
 import com.mysema.rdfbean.model.NODE;
 
 /**
@@ -9,7 +11,17 @@ import com.mysema.rdfbean.model.NODE;
  * @version $Id$
  */
 public interface IdFactory {
+    
+    /**
+     * @param locale
+     * @return
+     */
+    Integer getId(Locale locale);
 
+    /**
+     * @param node
+     * @return
+     */
     Long getId(NODE node);
 
 }

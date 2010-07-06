@@ -61,14 +61,13 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     
     @SuppressWarnings("unchecked")
     public AbstractProjectingQuery(
-            Configuration configuration, 
             Dialect<N,R,B,U,L,S> dialect, 
             Session session) {
         super(new QueryMixin<SubType>(new DefaultQueryMetadata()));
-        this.conf = configuration;
+        this.conf = session.getConfiguration();
         this.queryMixin.setSelf((SubType) this);
-        this.dialect = Assert.notNull(dialect,"dialect");
-        this.session = Assert.notNull(session,"session");
+        this.dialect = dialect;
+        this.session = session;
     }
     
     protected abstract <RT> RT convert(Class<RT> rt, L node);

@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -90,6 +91,22 @@ public class MD5IdFactory implements IdFactory {
             throw new RepositoryException(e);
         }
         
+    }
+
+    @Override
+    public Integer getId(Locale locale) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            digest.update(locale.toString().getBytes("UTF-8"));
+            byte[] hash = digest.digest();
+            byte[] intBytes = new byte[4];
+            System.arraycopy(hash, 0, intBytes, 0, intBytes.length);
+            return new BigInteger(intBytes).intValue();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RepositoryException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RepositoryException(e);
+        }
     }
 
 }

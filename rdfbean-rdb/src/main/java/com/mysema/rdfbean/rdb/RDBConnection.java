@@ -16,20 +16,13 @@ import javax.annotation.Nullable;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.dml.SQLDeleteClause;
-import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
+import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -54,6 +47,69 @@ public class RDBConnection implements RDFConnection{
         this.context = context;
     }
 
+    public Integer addLang(Locale locale){
+        Integer langId = getId(locale);
+        SQLMergeClause merge = context.createMerge(language);
+        merge.keys(language.id);
+        merge.set(language.id, langId);
+        merge.set(language.text, LocaleUtil.toLang(locale));
+        merge.execute();
+        return langId;
+    }
+
+    public Long addNode(NODE node) {
+        Long nodeId = getId(node);
+        SQLMergeClause merge = context.createMerge(symbol);
+        merge.keys(symbol.id);
+        merge.set(symbol.id, nodeId);
+        merge.set(symbol.resource, node.isResource());
+        merge.set(symbol.lexical, node.getValue());
+        if (node.isLiteral()){
+            LIT literal = node.asLiteral();
+            merge.set(symbol.datatype, getId(literal.getDatatype()));    
+            merge.set(symbol.lang, getLangId(literal.getLang()));
+            if (context.isIntegerType(literal.getDatatype())){
+                merge.set(symbol.integer, Long.valueOf(literal.getValue()));
+            }
+            if (context.isDecimalType(literal.getDatatype())){
+                merge.set(symbol.floating, Double.valueOf(literal.getValue()));
+            }
+            if (context.isDateType(literal.getDatatype())){
+                // TODO
+            }
+            if (context.isDateTimeType(literal.getDatatype())){
+                // TODO
+            }
+        }
+        merge.execute();
+        return nodeId;
+    }
+
+    public void addStatement(STMT stmt) {
+        // TODO : fix merge clause behaviour in Querydsl SQL
+        SQLQuery query = context.createQuery();
+        query.from(statement);
+        if (stmt.getContext() != null){
+            query.where(statement.model.eq(getId(stmt.getContext())));    
+        }else{
+            query.where(statement.model.isNull());
+        }        
+        query.where(statement.subject.eq(getId(stmt.getSubject())));
+        query.where(statement.predicate.eq(getId(stmt.getPredicate())));
+        query.where(statement.object.eq(getId(stmt.getObject())));
+        if (query.count() > 0l){
+            return;
+        }
+        
+        SQLMergeClause merge = context.createMerge(statement);
+        merge.keys(statement.model, statement.subject, statement.predicate, statement.object);
+        merge.set(statement.model, getId(stmt.getContext()));
+        merge.set(statement.subject, getId(stmt.getSubject()));
+        merge.set(statement.predicate, getId(stmt.getPredicate()));
+        merge.set(statement.object, getId(stmt.getObject()));
+        merge.execute();
+    }
+
     @Override
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
         return context.beginTransaction(readOnly, txTimeout, isolationLevel);
@@ -63,16 +119,29 @@ public class RDBConnection implements RDFConnection{
     public void clear() {
         context.clear();        
     }
+    
+    @Override
+    public void close() throws IOException {
+        context.close();
+    }
 
     @Override
     public BID createBNode() {
         return new BID("_"+UUID.randomUUID());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
-        // TODO Auto-generated method stub
-        return null;
+        if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
+            return (Q)new RDBQuery(session);            
+        }else{
+            throw new UnsupportedQueryLanguageException(queryLanguage);
+        }
+    }
+    
+    public List<STMT> find(ID subject, UID predicate, NODE object, UID model, boolean includeInferred) {
+        return IteratorAdapter.asList(findStatements(subject, predicate, object, model, includeInferred));
     }
 
     @Override
@@ -111,7 +180,7 @@ public class RDBConnection implements RDFConnection{
             exprs.add(statement.model);
         }
         
-        QSTMT stmt = new QSTMT(exprs.toArray(new Expr[exprs.size()])){
+        EConstructor<STMT> stmt = new EConstructor<STMT>(STMT.class, new Class[0],exprs.toArray(new Expr[exprs.size()])){
             @Override
             public STMT newInstance(Object... args) {
                 ID s = subject;
@@ -128,7 +197,7 @@ public class RDBConnection implements RDFConnection{
                 if (o == null){
                     o = getNode((Boolean)args[counter++], (String)args[counter++], (Long)args[counter++], (Integer)args[counter++]);
                 }
-                if (m == null && args[counter] != null){
+                if (m == null && args[counter] != null && !args[counter].equals(Long.valueOf(0l))){
                     m = getNode((Long) args[counter]).asURI();
                 }
                 return new STMT(s, p, o, m);
@@ -137,10 +206,89 @@ public class RDBConnection implements RDFConnection{
         };        
         return query.iterate(stmt);
     }
+    
+    @Nullable
+    private Integer getId(Locale locale){
+        if (locale == null){
+            return null;
+        }else{
+            return context.getLangId(locale);
+        }
+    }
+    
+    @Nullable
+    private Long getId(NODE node) {
+        if (node == null){
+            return null;
+        }else{
+            return context.getNodeId(node);            
+        }
+    }
 
+    @Nullable
+    private Integer getLangId(@Nullable Locale lang) {
+        if (lang == null){
+            return null;
+        }else{
+            return addLang(lang);    
+        }
+    }
+
+    private Locale getLocale(int id){
+        return context.getLang(id);
+    }
+    
     @Override
     public long getNextLocalId() {
         return context.getNextLocalId();
+    }
+
+    private NODE getNode(boolean res, String lex, Long datatype, Integer lang){
+        if (res){
+            if (lex.startsWith("_")){
+                return new BID(lex);
+            }else{
+                return new UID(lex);
+            }
+        }else{
+            if (lang != null && !lang.equals(Integer.valueOf(0))){
+                return new LIT(lex, getLocale(lang));
+            }else if (datatype != null && !datatype.equals(Long.valueOf(0l))){
+                return new LIT(lex, getNode(datatype).asURI());
+            }else{
+                return new LIT(lex);
+            }
+        }
+    }
+    
+    private NODE getNode(long id) {
+        NODE node = context.getNode(id);
+        if (node == null){
+            SQLQuery query = context.createQuery();
+            query.from(symbol);
+            query.where(symbol.id.eq(id));
+            Object[] result = query.uniqueResult(symbol.resource, symbol.lexical, symbol.datatype, symbol.lang);
+            if (result != null){
+                return getNode((Boolean)result[0], (String)result[1], (Long)result[2], (Integer)result[3]);
+            }else{
+                throw new IllegalArgumentException("Found no node for id " + id);
+            }
+            
+        }
+        return node;
+    }
+    
+    public void removeStatement(STMT stmt) {
+        SQLDeleteClause delete = context.createDelete(statement);
+        if (stmt.getContext() == null){
+            delete.where(statement.model.isNull());
+        }else{
+            delete.where(statement.model.eq(getId(stmt.getContext())));
+        }
+        delete.where(statement.subject.eq(getId(stmt.getSubject())));
+        delete.where(statement.predicate.eq(getId(stmt.getPredicate())));
+        delete.where(statement.object.eq(getId(stmt.getObject())));
+        delete.execute();
     }
 
     @Override
@@ -193,112 +341,6 @@ public class RDBConnection implements RDFConnection{
             addStatement(stmt);
         }
         
-    }
-
-    public Long addNode(NODE node) {
-        Long nodeId = getId(node);
-        SQLMergeClause merge = context.createMerge(symbol);
-        merge.keys(symbol.id);
-        merge.set(symbol.id, nodeId);
-        merge.set(symbol.resource, node.isResource());
-        merge.set(symbol.lexical, node.getValue());
-        if (node.isLiteral()){
-            LIT literal = node.asLiteral();
-            merge.set(symbol.datatype, getId(literal.getDatatype()));    
-            merge.set(symbol.lang, getLangId(literal.getLang()));
-            if (context.isIntegerType(literal.getDatatype())){
-                merge.set(symbol.integer, Long.valueOf(literal.getValue()));
-            }
-            if (context.isDecimalType(literal.getDatatype())){
-                merge.set(symbol.floating, Double.valueOf(literal.getValue()));
-            }
-            if (context.isDateType(literal.getDatatype())){
-                // TODO
-            }
-            if (context.isDateTimeType(literal.getDatatype())){
-                // TODO
-            }
-        }
-        merge.execute();
-        return nodeId;
-    }
-    
-    public void addStatement(STMT stmt) {
-        SQLMergeClause merge = context.createMerge(statement);
-        merge.keys(statement.model, statement.subject, statement.predicate, statement.object);
-        merge.set(statement.model, getId(stmt.getContext()));
-        merge.set(statement.subject, getId(stmt.getSubject()));
-        merge.set(statement.predicate, getId(stmt.getPredicate()));
-        merge.set(statement.object, getId(stmt.getObject()));
-        merge.execute();
-    }
-    
-    public void removeStatement(STMT stmt) {
-        SQLDeleteClause delete = context.createDelete(statement);
-        if (stmt.getContext() == null){
-            delete.where(statement.model.isNull());
-        }else{
-            delete.where(statement.model.eq(getId(stmt.getContext())));
-        }
-        delete.where(statement.subject.eq(getId(stmt.getSubject())));
-        delete.where(statement.predicate.eq(getId(stmt.getPredicate())));
-        delete.where(statement.object.eq(getId(stmt.getObject())));
-        delete.execute();
-    }
-
-    @Nullable
-    private Integer getLangId(@Nullable Locale lang) {
-        if (lang == null){
-            return null;
-        }else{
-            Integer langId = context.getLangId(lang);
-            if (langId == null){
-                SQLInsertClause insert = context.createInsert(language);
-                insert.set(language.text, LocaleUtil.toLang(lang));
-                langId = insert.executeWithKey(language.id);    
-            }
-            return langId;            
-        }
-    }
-
-    @Nullable
-    private Long getId(NODE node) {
-        if (node == null){
-            return null;
-        }else{
-            return context.getNodeId(node);            
-        }
-    }
-
-    private NODE getNode(long id) {
-        return context.getNode(id);
-    }
-    
-    private Locale getLocale(int id){
-        return context.getLang(id);
-    }
-    
-    private NODE getNode(boolean res, String lex, Long datatype, Integer lang){
-        if (res){
-            if (lex.startsWith("_")){
-                return new BID(lex);
-            }else{
-                return new UID(lex);
-            }
-        }else{
-            if (lang != null){
-                return new LIT(lex, getLocale(lang));
-            }else if (datatype != null){
-                return new LIT(lex, getNode(datatype).asURI());
-            }else{
-                return new LIT(lex);
-            }
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        context.close();
     }
 
 }

@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -21,6 +23,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.query.sql.SQLQuery;
+import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
@@ -66,9 +70,7 @@ public class RDBRepository implements Repository{
         RDFConnection connection = openConnection();
         try{
             try{
-                RDFBeanTransaction tx = connection.beginTransaction(
-                        false, 
-                        0, 
+                RDFBeanTransaction tx = connection.beginTransaction(false, 0, 
                         Connection.TRANSACTION_READ_COMMITTED);
                 try{
                     operation.execute(connection);    
@@ -103,11 +105,10 @@ public class RDBRepository implements Repository{
 
     private void initSchema() throws IOException, SQLException {
         Connection conn = dataSource.getConnection();
-        PreparedStatement stmt = null;
+        SQLQuery query = new SQLQueryImpl(conn, templates).from(QLanguage.language);        
         try{
-            stmt = conn.prepareStatement("select count(*) from statement");
-            stmt.execute();    
-        } catch (SQLException e) {
+            query.count();
+        } catch (Exception e) {
             // TODO make the schema source customizable
             InputStream is = getClass().getResourceAsStream("/h2.sql");
             String schema = IOUtils.toString(is, "UTF-8");
@@ -119,10 +120,6 @@ public class RDBRepository implements Repository{
                     stmt2.close();    
                 }
             }
-        }finally{
-            if (stmt != null){
-                stmt.close();    
-            }                
         }
     }
     
@@ -155,8 +152,12 @@ public class RDBRepository implements Repository{
             }    
             
             // init languages
-            for (Locale locale : Locale.getAvailableLocales()){
-                // TODO
+            List<Locale> locales = new ArrayList<Locale>(Arrays.asList(Locale.getAvailableLocales()));
+            locales.add(new Locale("fi"));
+            locales.add(new Locale("sv"));
+            for (Locale locale : locales){
+                Integer langId = conn.addLang(locale);
+                langCache.put(locale, langId);
             }
             
         }finally{

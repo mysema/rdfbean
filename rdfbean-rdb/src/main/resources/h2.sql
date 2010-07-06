@@ -1,5 +1,5 @@
 CREATE TABLE language(
-  id INT NOT NULL AUTO_INCREMENT,
+  id INT NOT NULL,
   text VARCHAR(256) NOT NULL,  
   PRIMARY KEY(id)
 );

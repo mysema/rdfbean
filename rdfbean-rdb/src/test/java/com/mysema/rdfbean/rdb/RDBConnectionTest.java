@@ -7,9 +7,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.sql.SQLQuery;
@@ -55,15 +55,25 @@ public class RDBConnectionTest extends AbstractRDBTest{
     
     @Test
     public void testFindStatements() {
-        // TODO
+        Set<STMT> additions = new HashSet<STMT>();
+        additions.add(new STMT(RDF.type, RDF.type, RDF.Property));
+        additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
+        additions.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));     
+        Set<STMT> removals = new HashSet<STMT>();       
+        conn.update(removals, additions);
+        
+        assertEquals(3, conn.find(RDF.type, null, null, null, false).size());
+        assertEquals(1, conn.find(RDF.type, RDF.type, null, null, false).size());
+        assertEquals(2, conn.find(RDF.type, RDFS.label, null, null, false).size());
+        assertEquals(1, conn.find(RDF.type, RDFS.label, new LIT("type"), null, false).size());
     }
 
     @Test
-    @Ignore
     public void testUpdate() throws SQLException {
        Set<STMT> additions = new HashSet<STMT>();
        additions.add(new STMT(RDF.type, RDF.type, RDF.Property));
-       additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));       
+       additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
+       additions.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));     
        Set<STMT> removals = new HashSet<STMT>();       
        conn.update(removals, additions);
        
@@ -86,7 +96,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
        assertEquals(1l, from(symbol).where(symbol.id.eq(id(RDFS.label))).count());
        assertEquals(1l, from(symbol).where(symbol.id.eq(id(new LIT("type")))).count());
        
-       assertEquals(2l, from(stmt).where(stmt.subject.eq(id(RDF.type))).count());
+       assertEquals((long)additions.size(), from(stmt).where(stmt.subject.eq(id(RDF.type))).count());
        
     }
     

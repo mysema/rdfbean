@@ -173,7 +173,7 @@ public class SesameQuery
             StatementPattern.Scope patternScope,
             Ontology ontology,
             Inference inference) {
-        super(session.getConfiguration(),dialect, session);        
+        super(dialect, session);        
         this.connection = Assert.notNull(connection,"connection");
         this.conf = session.getConfiguration();
         this.ontology = Assert.notNull(ontology,"ontology");
