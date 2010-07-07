@@ -11,8 +11,10 @@ import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -23,11 +25,14 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
 
     private final RDBContext context;
     
+    private final Configuration configuration;
+    
     private final Session session;
     
     public RDBQuery(RDBContext context, Session session) {
         super(new QueryMixin<RDBQuery>());
         this.context = context;
+        this.configuration = session.getConfiguration();
         this.session = session;
     }
 
@@ -36,28 +41,30 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         return createQuery().count();
     }
 
+    @SuppressWarnings("unchecked")
     private SQLQuery createQuery(){
         SQLQuery query = context.createQuery();
         QueryMetadata md = queryMixin.getMetadata();
         // from
         for (JoinExpression join : md.getJoins()){
+            // TODO : transform joins
             query.from(join.getTarget());
         }
         // where
         if (md.getWhere() != null){
-            query.where(md.getWhere());
+            query.where(transform(query, md.getWhere()));
         }
         // group by
         for (Expr<?> expr : md.getGroupBy()){
-            query.groupBy(expr);
+            query.groupBy(transform(query, expr));
         }
         // having
         if (md.getHaving() != null){
-            query.having(md.getHaving());
+            query.having(transform(query,md.getHaving()));
         }
         // order
         for (OrderSpecifier<?> order : md.getOrderBy()){
-            query.orderBy(order);
+            query.orderBy(new OrderSpecifier(order.getOrder(), transform(query,order.getTarget())));
         }        
         // paging
         if (md.getModifiers() != null){
@@ -65,6 +72,29 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         }        
         // select
         return query;
+    }
+
+    private Expr<?> transform(SQLQuery query, Expr<?> expr) {
+        // TODO transform
+        return expr;
+    }
+
+    private EBoolean transform(SQLQuery query, EBoolean filter) {
+        // TODO transform
+        return filter;
+    }
+    
+    private <T> Expr<T> projection(SQLQuery query, Expr<T> expr) {
+        // TODO transform
+        return expr;
+    }
+    
+    private Expr<?>[] projection(SQLQuery query, Expr<?>[] exprs) {
+        Expr<?>[] rv = new Expr[exprs.length];
+        for (int i = 0; i < rv.length; i++){
+            rv[i] = projection(query, exprs[i]);
+        }
+        return rv;
     }
 
     @Override
@@ -75,37 +105,44 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
 
     @Override
     public CloseableIterator<Object[]> iterate(Expr<?>[] args) {
-        return createQuery().iterate(args);
+        SQLQuery query = createQuery();
+        return query.iterate(projection(query,args));
     }
 
     @Override
     public <RT> CloseableIterator<RT> iterate(Expr<RT> projection) {
-        return createQuery().iterate(projection);
+        SQLQuery query = createQuery();
+        return query.iterate(projection(query,projection));
     }
     
     @Override
     public List<Object[]> list(Expr<?>[] args) {
-        return createQuery().list(args);
+        SQLQuery query = createQuery();
+        return query.list(projection(query,args));
     }
 
     @Override
     public <RT> List<RT> list(Expr<RT> projection) {
-        return createQuery().list(projection);
+        SQLQuery query = createQuery();
+        return query.list(projection(query,projection));
     }
     
     @Override
     public <RT> SearchResults<RT> listResults(Expr<RT> projection) {
-        return createQuery().listResults(projection);
+        SQLQuery query = createQuery();
+        return query.listResults(projection(query,projection));
     }
 
     @Override
     public Object[] uniqueResult(Expr<?>[] args) {
-        return createQuery().uniqueResult(args);
+        SQLQuery query = createQuery();
+        return query.uniqueResult(projection(query,args));
     }
     
     @Override
-    public <RT> RT uniqueResult(Expr<RT> expr) {
-        return createQuery().uniqueResult(expr);
+    public <RT> RT uniqueResult(Expr<RT> projection) {
+        SQLQuery query = createQuery();
+        return (RT) query.uniqueResult(projection(query,projection));
     }
 
 }
