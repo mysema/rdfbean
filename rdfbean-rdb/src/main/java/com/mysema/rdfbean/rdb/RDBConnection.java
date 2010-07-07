@@ -134,7 +134,7 @@ public class RDBConnection implements RDFConnection{
     @Override
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
-            return (Q)new RDBQuery(session);            
+            return (Q)new RDBQuery(context,session);            
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);
         }

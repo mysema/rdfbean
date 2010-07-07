@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections15.IteratorUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 
-import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryMetadata;
