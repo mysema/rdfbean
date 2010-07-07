@@ -105,7 +105,7 @@ public class RDBRepository implements Repository{
         }
     }
 
-    @SuppressWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
+    @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     private void initSchema() throws IOException, SQLException {
         Connection conn = dataSource.getConnection();
         SQLQuery query = new SQLQueryImpl(conn, templates).from(QLanguage.language);        
