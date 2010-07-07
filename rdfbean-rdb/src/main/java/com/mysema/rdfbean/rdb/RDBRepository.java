@@ -30,6 +30,8 @@ import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.owl.OWL;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 /**
  * RDBRepository provides
  *
@@ -103,6 +105,7 @@ public class RDBRepository implements Repository{
         }
     }
 
+    @SuppressWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
     private void initSchema() throws IOException, SQLException {
         Connection conn = dataSource.getConnection();
         SQLQuery query = new SQLQueryImpl(conn, templates).from(QLanguage.language);        
