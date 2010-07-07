@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.h2.jdbcx.JdbcDataSource;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import com.mysema.query.sql.H2Templates;
@@ -24,7 +23,7 @@ public abstract class AbstractRDBTest {
     
     protected static SQLTemplates templates = new H2Templates();
     
-    protected RDBRepository repository;
+    protected static RDBRepository repository;
     
     @BeforeClass
     public static void setUpClass(){
@@ -32,16 +31,13 @@ public abstract class AbstractRDBTest {
         dataSource.setURL("jdbc:h2:target/h2");
         dataSource.setUser("sa");
         dataSource.setPassword("");
-    }
-    
-    @Before
-    public void setUp() throws SQLException{
+        
         repository = new RDBRepository(dataSource, templates, new MemoryIdSequence());
         repository.initialize();
     }
     
-    @After
-    public void tearDown() throws IOException, SQLException{
+    @AfterClass
+    public static void tearDownClass() throws IOException, SQLException{
         if (repository != null){
             repository.close();    
         }        

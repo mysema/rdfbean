@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.query.sql.SQLQuery;
@@ -42,14 +44,13 @@ public class RDBConnectionTest extends AbstractRDBTest{
     
     private Connection jdbcConn;
     
-    @Override
+    @Before
     public void setUp() throws SQLException{
-        super.setUp();
         conn = repository.openConnection();
         jdbcConn = dataSource.getConnection();
     }
     
-    @Override
+    @After
     public void tearDown() throws IOException, SQLException{
         if (conn != null){
             conn.close();    
@@ -57,7 +58,6 @@ public class RDBConnectionTest extends AbstractRDBTest{
         if (jdbcConn != null){
             jdbcConn.close();
         }
-        super.tearDown();
     }
     
     @Test

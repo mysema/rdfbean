@@ -103,7 +103,11 @@ public class RDBConnection implements RDFConnection{
         
         SQLMergeClause merge = context.createMerge(statement);
         merge.keys(statement.model, statement.subject, statement.predicate, statement.object);
-        merge.set(statement.model, getId(stmt.getContext()));
+        if (stmt.getContext() != null){
+            merge.set(statement.model, getId(stmt.getContext()));    
+        }else{
+            merge.set(statement.model, null);
+        }        
         merge.set(statement.subject, getId(stmt.getSubject()));
         merge.set(statement.predicate, getId(stmt.getPredicate()));
         merge.set(statement.object, getId(stmt.getObject()));
@@ -208,7 +212,7 @@ public class RDBConnection implements RDFConnection{
     }
     
     @Nullable
-    private Integer getId(Locale locale){
+    private Integer getId(@Nullable Locale locale){
         if (locale == null){
             return null;
         }else{
@@ -216,13 +220,8 @@ public class RDBConnection implements RDFConnection{
         }
     }
     
-    @Nullable
     private Long getId(NODE node) {
-        if (node == null){
-            return null;
-        }else{
-            return context.getNodeId(node);            
-        }
+        return context.getNodeId(node);
     }
 
     @Nullable
