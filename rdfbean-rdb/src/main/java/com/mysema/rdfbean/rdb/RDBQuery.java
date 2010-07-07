@@ -59,6 +59,10 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         for (OrderSpecifier<?> order : md.getOrderBy()){
             query.orderBy(order);
         }        
+        // paging
+        if (md.getModifiers() != null){
+            query.restrict(md.getModifiers());
+        }        
         // select
         return query;
     }
