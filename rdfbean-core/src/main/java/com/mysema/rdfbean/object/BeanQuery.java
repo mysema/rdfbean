@@ -8,9 +8,7 @@ package com.mysema.rdfbean.object;
 import java.io.Closeable;
 
 import com.mysema.query.Projectable;
-import com.mysema.query.QueryModifiers;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.Query;
 import com.mysema.query.types.path.PEntity;
 
 /**
@@ -19,7 +17,7 @@ import com.mysema.query.types.path.PEntity;
  * @author tiwe
  * @version $Id$
  */
-public interface BeanQuery extends Projectable, Closeable{
+public interface BeanQuery extends Query<BeanQuery>, Projectable, Closeable{
     
     /**
      * Defines the sources of the query
@@ -28,45 +26,5 @@ public interface BeanQuery extends Projectable, Closeable{
      * @return
      */
     BeanQuery from(PEntity<?>... o);
-    
-    /**
-     * Defines the order of the query results
-     * 
-     * @param o
-     * @return
-     */
-    BeanQuery orderBy(OrderSpecifier<?>... o);
-    
-    /**
-     * Defines the filters of the query
-     * 
-     * @param o multiple mandatory fileters
-     * @return
-     */
-    BeanQuery where(EBoolean... o);
-    
-    /**
-     * Maximum number of results
-     * 
-     * @param limit
-     * @return
-     */
-    BeanQuery limit(long limit);
-    
-    /**
-     * Offset of results
-     * 
-     * @param offset
-     * @return
-     */
-    BeanQuery offset(long offset);
-    
-    /**
-     * Defines limit and offset
-     * 
-     * @param mod
-     * @return
-     */
-    BeanQuery restrict(QueryModifiers mod);
-   
+       
 }

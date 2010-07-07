@@ -15,7 +15,9 @@ import com.mysema.query.collections.ColQuery;
 import com.mysema.query.collections.ColQueryImpl;
 import com.mysema.query.collections.QueryEngine;
 import com.mysema.query.support.ProjectableAdapter;
+import com.mysema.query.types.Expr;
 import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.Param;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.path.PEntity;
 
@@ -82,6 +84,22 @@ public class SimpleBeanQuery extends ProjectableAdapter<ColQueryImpl> implements
     @Override
     public BeanQuery where(EBoolean... o) {
         colQuery.where(o);
+        return this;
+    }
+
+    @Override
+    public BeanQuery groupBy(Expr<?>... o) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BeanQuery having(EBoolean... o) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <T> BeanQuery set(Param<T> param, T value) {
+        colQuery.set(param, value);
         return this;
     }
 
