@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 
@@ -150,10 +152,12 @@ public class RDBContext implements Closeable{
         return integerTypes.contains(uid);
     }
 
+    @Nullable
     public NODE getNode(long id) {
         return nodeCache.getKey(id);
     }
 
+    @Nullable
     public Locale getLang(int id) {
         return langCache.getKey(id);
     }
