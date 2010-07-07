@@ -3,11 +3,14 @@ package com.mysema.rdfbean.rdb;
 import java.util.List;
 
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.query.JoinExpression;
+import com.mysema.query.QueryMetadata;
 import com.mysema.query.SearchResults;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.Expr;
+import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
@@ -34,13 +37,30 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     }
 
     private SQLQuery createQuery(){
+        SQLQuery query = context.createQuery();
+        QueryMetadata md = queryMixin.getMetadata();
         // from
+        for (JoinExpression join : md.getJoins()){
+            query.from(join.getTarget());
+        }
         // where
+        if (md.getWhere() != null){
+            query.where(md.getWhere());
+        }
         // group by
+        for (Expr<?> expr : md.getGroupBy()){
+            query.groupBy(expr);
+        }
         // having
+        if (md.getHaving() != null){
+            query.having(md.getHaving());
+        }
         // order
+        for (OrderSpecifier<?> order : md.getOrderBy()){
+            query.orderBy(order);
+        }        
         // select
-        return context.createQuery();
+        return query;
     }
 
     @Override
