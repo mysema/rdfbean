@@ -152,7 +152,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
     public void testRemoveStatement() {
         // TODO
     }
-
+    
     private Long id(NODE node){
         return idFactory.getId(node);
     }
