@@ -166,12 +166,12 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
 
     private Expr<?>[] projection(Expr<?>[] exprs) {
         // TODO
-        return null;
+        return exprs;
     }
 
     private <T> Expr<T> projection(Expr<T> expr) {
         // TODO
-        return null;
+        return expr;
     }
     
     private EBoolean transform(EBoolean filter) {
