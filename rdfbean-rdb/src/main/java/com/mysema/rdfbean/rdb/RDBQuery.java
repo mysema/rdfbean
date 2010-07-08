@@ -175,7 +175,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     private EBoolean transform(SQLQuery query, EBoolean filter) {
         if (filter instanceof Path<?>){
             // TODO
-            return null;
+            return filter;
         }else if (filter instanceof Operation<?>){
             Operation<?> op = (Operation<?>)filter;
             return OBoolean.create((Operator)op.getOperator(), transform(query, op.getArgs()));
