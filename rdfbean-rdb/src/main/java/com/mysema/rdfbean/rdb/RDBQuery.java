@@ -17,7 +17,6 @@ import com.mysema.query.types.Custom;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
-import com.mysema.query.types.Ops;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathType;
@@ -27,6 +26,7 @@ import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.OBoolean;
 import com.mysema.query.types.expr.OSimple;
 import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.PSimple;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -61,6 +61,15 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         this.context = context;
         this.configuration = session.getConfiguration();
         this.session = session;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <S,T> Expr<T> cast(Path<S> path, Class<T> type) {
+        if (path.getType().equals(type)){
+            return (Expr<T>)path.asExpr();
+        }else{
+            return new PSimple<T>(type, path.getMetadata());
+        }
     }
 
     @Override
@@ -100,17 +109,17 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         // select
         return query;
     }
-
+    
     @Override
     public BeanQuery from(PEntity<?>... o) {
         queryMixin.from(o);
         return this;
     }
-    
+
     private Long getId(NODE node) {
         return context.getNodeId(node);
     }
-
+    
     private QStatement getProperty(SQLQuery query, Path<?> parent, Path<?> target){
         if (!properties.containsKey(target)){
             MappedClass mc = configuration.getMappedClass(parent.getType());
@@ -139,21 +148,20 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             query.innerJoin(stmt.objectFk, symbol);
             Expr<?> expr;
             if (context.isDecimalClass(path.getType())){
-                expr = symbol.floating;
+                expr = cast(symbol.floating,path.getType());
             }else if (Number.class.isAssignableFrom(path.getType())){
-                expr = symbol.integer;
+                expr = cast(symbol.integer,path.getType());
             }else if (Date.class.isAssignableFrom(path.getType())){
                 expr = symbol.datetime;
             }else{
                 expr = symbol.lexical;
-            }
-            symbols.put(path, expr);
+            }symbols.put(path, expr);
             return expr;
         }else{
             return symbols.get(path);
         }
     }
-    
+
     private QStatement getVariable(SQLQuery query, Path<?> target) {
         if (!variables.containsKey(target)){
             MappedClass mc = configuration.getMappedClass(target.getType());

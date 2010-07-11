@@ -19,8 +19,6 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
@@ -43,26 +41,14 @@ public class RDBQueryTest extends AbstractRDBTest {
             return id;
         }
 
-        public void setId(String id) {
-            this.id = id;
-        }
-
         public Department getDepartment() {
             return department;
-        }
-
-        public void setDepartment(Department department) {
-            this.department = department;
         }
 
         public String getUserName() {
             return userName;
         }
 
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }      
-                
     }
     
     @ClassMapping(ns=TEST.NS)
@@ -78,16 +64,8 @@ public class RDBQueryTest extends AbstractRDBTest {
             return id;
         }
 
-        public void setId(String id) {
-            this.id = id;
-        }
-
         public Company getCompany() {
             return company;
-        }
-
-        public void setCompany(Company company) {
-            this.company = company;
         }
         
     }
@@ -100,10 +78,6 @@ public class RDBQueryTest extends AbstractRDBTest {
 
         public String getId() {
             return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
         }
         
     }
@@ -121,7 +95,7 @@ public class RDBQueryTest extends AbstractRDBTest {
         
         for (int i = 0; i < users.length; i++){
             users[i] = new User();
-            users[i].setUserName(UUID.randomUUID().toString());
+            users[i].userName = UUID.randomUUID().toString();
             session.save(users[i]);
         }
     }
@@ -133,28 +107,24 @@ public class RDBQueryTest extends AbstractRDBTest {
         }
     }
     
-    private BeanQuery query(){
-        return session.createQuery(QueryLanguage.QUERYDSL);
-    }
-    
     @Test
     public void fromUser_list(){
         List<String> names = MiniApi.from(u, Arrays.asList(users)).list($(u.getUserName()));
-        List<String> queriedNames = query().from($(u)).list($(u.getUserName()));
+        List<String> queriedNames = session.from($(u)).list($(u.getUserName()));
         assertTrue(queriedNames.containsAll(names));
     }
     
     @Test
     public void fromUser_count(){
-        long count = query().from($(u)).count();
+        long count = session.from($(u)).count();
         session.save(new User());
-        assertEquals(count + 1l, query().from($(u)).count());
+        assertEquals(count + 1l, session.from($(u)).count());
     }
     
     @Test
     public void fromUser_where_userName_eq_constant(){        
         for (int i = 0; i < users.length; i++){
-            assertEquals(users[i].getUserName(), query().from($(u))
+            assertEquals(users[i].getUserName(), session.from($(u))
                 .where($(u.getUserName()).eq(users[i].getUserName()))
                 .uniqueResult($(u.getUserName())));    
         }        
@@ -163,7 +133,7 @@ public class RDBQueryTest extends AbstractRDBTest {
     @Test
     public void fromUser_where_userName_startsWith_constant(){
         for (int i = 0; i < users.length; i++){
-            assertEquals(users[i].getUserName(), query().from($(u))
+            assertEquals(users[i].getUserName(), session.from($(u))
                 .where($(u.getUserName()).startsWith(users[i].getUserName().substring(0,users[i].getUserName().length()-1)))
                 .uniqueResult($(u.getUserName())));    
         }        
@@ -172,7 +142,7 @@ public class RDBQueryTest extends AbstractRDBTest {
     @Test
     public void fromUser_where_userName_endsWith_constant(){
         for (int i = 0; i < users.length; i++){
-            assertEquals(users[i].getUserName(), query().from($(u))
+            assertEquals(users[i].getUserName(), session.from($(u))
                 .where($(u.getUserName()).endsWith(users[i].getUserName().substring(1)))
                 .uniqueResult($(u.getUserName())));    
         }        
