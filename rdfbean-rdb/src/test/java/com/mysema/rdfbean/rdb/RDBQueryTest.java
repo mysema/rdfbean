@@ -1,39 +1,67 @@
 package com.mysema.rdfbean.rdb;
 
-import static org.junit.Assert.*;
+import static com.mysema.query.alias.Alias.$;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Locale;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
-import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.mysema.query.sql.H2Templates;
-import com.mysema.query.types.path.PathBuilder;
-import com.mysema.query.types.path.PathBuilderFactory;
+import com.mysema.query.alias.Alias;
+import com.mysema.query.collections.MiniApi;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.MemoryIdSequence;
-import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 
-public class RDBQueryTest {
+public class RDBQueryTest extends AbstractRDBTest {
     
     @ClassMapping(ns=TEST.NS)
     public static class User {
         
         @Id
-        String id;
+        private String id;
      
         @Predicate
-        Department department;
+        private Department department;
         
         @Predicate
-        String userName;      
+        private String userName;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public Department getDepartment() {
+            return department;
+        }
+
+        public void setDepartment(Department department) {
+            this.department = department;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+
+        public void setUserName(String userName) {
+            this.userName = userName;
+        }      
                 
     }
     
@@ -41,80 +69,113 @@ public class RDBQueryTest {
     public static class Department {
         
         @Id
-        String id;
+        private String id;
         
         @Predicate
-        Company company;
+        private Company company;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public Company getCompany() {
+            return company;
+        }
+
+        public void setCompany(Company company) {
+            this.company = company;
+        }
+        
     }
     
     @ClassMapping(ns=TEST.NS)
     public static class Company {
         
         @Id
-        String id;
+        private String id;
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
         
     }
     
-    private static PathBuilderFactory pathBuilderFactory = new PathBuilderFactory();
+    private Session session;
     
-    private static RDBContext context;
+    private User[] users = new User[10];
     
-    private static Session session;
-    
-    private RDBQuery query;
-    
-    private PathBuilder<User> user = pathBuilderFactory.create(User.class);    
-    private PathBuilder<Department> department = pathBuilderFactory.create(Department.class);    
-    private PathBuilder<Company> company = pathBuilderFactory.create(Company.class);
-    
-    @BeforeClass
-    public static void setUpClass(){
-        context = new RDBContext(
-                new MD5IdFactory(),
-                new DualHashBidiMap<NODE,Long>(),
-                new DualHashBidiMap<Locale,Integer>(),
-                new MemoryIdSequence(),
-                null,
-                new H2Templates().newLineToSingleSpace());    
-        session = SessionUtil.openSession(User.class, Department.class, Company.class);
-    }
+    private User u = Alias.alias(User.class);
     
     @Before
     public void setUp(){
-        query = new RDBQuery(context, session);
-    }
-    
-    @Test
-    public void fromUser(){
-        query.from(user);
-        assertEquals("from STATEMENT user " +
-        	     "where user.PREDICATE = ? and user.OBJECT = ?", query.toString());
-    }
-    
-    @Test
-    public void fromUser_and_Department(){
-        query.from(user, department);
-        assertEquals("from STATEMENT user, STATEMENT department " +
-        	     "where user.PREDICATE = ? and user.OBJECT = ? and " +
-        	     "department.PREDICATE = ? and department.OBJECT = ?", query.toString());
+        session = SessionUtil.openSession(repository, User.class, Department.class, Company.class);
+        session.setFlushMode(FlushMode.ALWAYS);
         
+        for (int i = 0; i < users.length; i++){
+            users[i] = new User();
+            users[i].setUserName(UUID.randomUUID().toString());
+            session.save(users[i]);
+        }
+    }
+    
+    @After
+    public void tearDown() throws IOException{
+        if (session != null){
+            session.close();
+        }
+    }
+    
+    private BeanQuery query(){
+        return session.createQuery(QueryLanguage.QUERYDSL);
     }
     
     @Test
-    public void fromUser_and_Department_is_not_null(){
-        query.from(user).where(user.get("department", Department.class).isNotNull());
-        assertEquals("from STATEMENT user inner join STATEMENT user_department on user.SUBJECT = user_department.SUBJECT " +
-        	     "where user.PREDICATE = ? and user.OBJECT = ? and " +
-        	     "user_department.PREDICATE = ? and " +
-        	     "user_department is not null", query.toString());
+    public void fromUser_list(){
+        List<String> names = MiniApi.from(u, Arrays.asList(users)).list($(u.getUserName()));
+        List<String> queriedNames = query().from($(u)).list($(u.getUserName()));
+        assertTrue(queriedNames.containsAll(names));
     }
     
     @Test
-    public void fromUser_and_Department_is_null(){
-        query.from(user).where(user.get("department", Department.class).isNull());
-        assertEquals("from STATEMENT user inner join STATEMENT user_department on user.SUBJECT = user_department.SUBJECT " +
-        	     "where user.PREDICATE = ? and user.OBJECT = ? and " +
-        	     "user_department.PREDICATE = ? and user_department is null", query.toString());
+    public void fromUser_count(){
+        long count = query().from($(u)).count();
+        session.save(new User());
+        assertEquals(count + 1l, query().from($(u)).count());
+    }
+    
+    @Test
+    public void fromUser_where_userName_eq_constant(){        
+        for (int i = 0; i < users.length; i++){
+            assertEquals(users[i].getUserName(), query().from($(u))
+                .where($(u.getUserName()).eq(users[i].getUserName()))
+                .uniqueResult($(u.getUserName())));    
+        }        
     }
 
+    @Test
+    public void fromUser_where_userName_startsWith_constant(){
+        for (int i = 0; i < users.length; i++){
+            assertEquals(users[i].getUserName(), query().from($(u))
+                .where($(u.getUserName()).startsWith(users[i].getUserName().substring(0,users[i].getUserName().length()-1)))
+                .uniqueResult($(u.getUserName())));    
+        }        
+    }
+    
+    @Test
+    public void fromUser_where_userName_endsWith_constant(){
+        for (int i = 0; i < users.length; i++){
+            assertEquals(users[i].getUserName(), query().from($(u))
+                .where($(u.getUserName()).endsWith(users[i].getUserName().substring(1)))
+                .uniqueResult($(u.getUserName())));    
+        }        
+    }
+    
 }

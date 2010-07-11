@@ -2,12 +2,14 @@ package com.mysema.rdfbean.rdb;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
@@ -40,9 +42,15 @@ public class RDBContext implements Closeable{
     
     private static final DateConverter dateConverter = new DateConverter();
     
-    private static final List<UID> decimalTypes = Arrays.asList(XSD.decimalType, XSD.doubleType, XSD.floatType);
+    public static <T> Set<T> asSet(T... args){
+        return new HashSet<T>(Arrays.asList(args));
+    }    
     
-    private static final List<UID> integerTypes = Arrays.asList(XSD.integerType, XSD.intType, XSD.byteType, XSD.longType);
+    private static final Set<Class<?>> decimalClasses = RDBContext.<Class<?>>asSet(Double.class, Float.class, BigDecimal.class);
+    
+    private static final Set<UID> decimalTypes = asSet(XSD.decimalType, XSD.doubleType, XSD.floatType);
+    
+    private static final Set<UID> integerTypes = asSet(XSD.integerType, XSD.intType, XSD.byteType, XSD.longType);
     
     private final Connection connection;
     
@@ -144,6 +152,10 @@ public class RDBContext implements Closeable{
         return uid.equals(XSD.date);
     }
 
+    public boolean isDecimalClass(Class<?> cl){
+        return decimalClasses.contains(cl);
+    }
+    
     public boolean isDecimalType(UID uid) {
         return decimalTypes.contains(uid);
     }
