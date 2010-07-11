@@ -23,6 +23,8 @@ import com.mysema.query.sql.dml.SQLDeleteClause;
 import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.path.PEntity;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IdSequence;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
@@ -42,15 +44,15 @@ public class RDBContext implements Closeable{
     
     private static final DateConverter dateConverter = new DateConverter();
     
-    public static <T> Set<T> asSet(T... args){
-        return new HashSet<T>(Arrays.asList(args));
-    }    
-    
-    private static final Set<Class<?>> decimalClasses = RDBContext.<Class<?>>asSet(Double.class, Float.class, BigDecimal.class);
+    private static final Set<Class<?>> decimalClasses = RDBContext.<Class<?>>asSet(Double.class, Float.class, BigDecimal.class);    
     
     private static final Set<UID> decimalTypes = asSet(XSD.decimalType, XSD.doubleType, XSD.floatType);
     
     private static final Set<UID> integerTypes = asSet(XSD.integerType, XSD.intType, XSD.byteType, XSD.longType);
+    
+    public static <T> Set<T> asSet(T... args){
+        return new HashSet<T>(Arrays.asList(args));
+    }
     
     private final Connection connection;
     
@@ -120,12 +122,22 @@ public class RDBContext implements Closeable{
         return new SQLQueryImpl(connection, templates);
     }
 
+    @Nullable
+    public Locale getLang(int id) {
+        return langCache.getKey(id);
+    }
+
     public Integer getLangId(Locale lang) {
         return langCache.get(lang);
     }
 
     public long getNextLocalId() {
         return idSequence.getNextId();
+    }
+
+    @Nullable
+    public NODE getNode(long id) {
+        return nodeCache.getKey(id);
     }
 
     public Long getNodeId(NODE node) {
@@ -147,31 +159,21 @@ public class RDBContext implements Closeable{
     public boolean isDateTimeType(UID uid){
         return uid.equals(XSD.dateTime);
     }
-
+    
     public boolean isDateType(UID uid) {
         return uid.equals(XSD.date);
     }
-
+    
     public boolean isDecimalClass(Class<?> cl){
         return decimalClasses.contains(cl);
     }
-    
+
     public boolean isDecimalType(UID uid) {
         return decimalTypes.contains(uid);
     }
-    
+
     public boolean isIntegerType(UID uid) {
         return integerTypes.contains(uid);
-    }
-
-    @Nullable
-    public NODE getNode(long id) {
-        return nodeCache.getKey(id);
-    }
-
-    @Nullable
-    public Locale getLang(int id) {
-        return langCache.getKey(id);
     }
     
     public java.sql.Date toDate(LIT literal){
@@ -180,6 +182,10 @@ public class RDBContext implements Closeable{
     
     public java.sql.Timestamp toTimestamp(LIT literal){
         return new java.sql.Timestamp(dateConverter.fromString(literal.getValue()).getTime());
+    }
+    
+    public ID getID(String lexical, boolean resource){
+        return resource ? new UID(lexical) : new BID(lexical);
     }
 
 }

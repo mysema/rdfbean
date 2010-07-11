@@ -14,6 +14,7 @@ import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.Custom;
+import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
@@ -27,6 +28,7 @@ import com.mysema.query.types.expr.OBoolean;
 import com.mysema.query.types.expr.OSimple;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PSimple;
+import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -145,7 +147,11 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     private Expr<?> getSymbol(SQLQuery query, QStatement stmt, Path<?> path) {
         if (!symbols.containsKey(path)){
             QSymbol symbol = new QSymbol(stmt + "_symbol_");
-            query.innerJoin(stmt.objectFk, symbol);
+            if (path.getMetadata().isRoot()){
+                query.innerJoin(stmt.subjectFk, symbol);
+            }else{
+                query.innerJoin(stmt.objectFk, symbol);    
+            }            
             Expr<?> expr;
             if (context.isDecimalClass(path.getType())){
                 expr = cast(symbol.floating,path.getType());
@@ -214,12 +220,19 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         return rv;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> Expr<T> projection(SQLQuery query, Expr<T> expr) {
-        if (expr instanceof Path<?>){
-            return (Expr<T>) transform(query, (Path<?>)expr, true);
+    @SuppressWarnings({ "unchecked", "serial" })
+    private <T> Expr<T> projection(SQLQuery query, final Expr<T> expr) {
+        if (expr instanceof Path<?> && expr.getType().getAnnotation(ClassMapping.class) != null){
+            Expr<?> source = (Expr<T>) transform(query, (Path<?>)expr, true);
+            return new EConstructor<T>((Class)expr.getType(), new Class[0], source){
+                @Override
+                public T newInstance(Object... args){
+                    String id = args[0].toString();
+                    return session.get(expr.getType(), context.getID(id, !id.startsWith("_")));
+                }
+            };
         }else{
-            throw new IllegalArgumentException("Illegal projection type " + expr.getClass().getName());
+            return (Expr<T>) transform(query, expr, true);
         }
     }
     
@@ -231,8 +244,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     @SuppressWarnings("unchecked")
     private EBoolean transform(SQLQuery query, EBoolean filter) {
         if (filter instanceof Path<?>){
-            // TODO
-            return filter;
+            throw new IllegalArgumentException(filter.toString());
         }else if (filter instanceof Operation<?>){
             Operation<?> op = (Operation<?>)filter;
 //            boolean realType = !Ops.equalsOps.contains(op.getOperator()) && !Ops.notEqualsOps.contains(op.getOperator());
@@ -278,7 +290,12 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     private Expr<?> transform(SQLQuery query, Path<?> path, boolean realType){
         PathType pathType = path.getMetadata().getPathType();
         if (pathType == PathType.VARIABLE){
-            return getVariable(query,path);
+            QStatement stmt = getVariable(query,path);
+            if (realType){
+                return getSymbol(query,stmt, path);
+            }else{
+                return stmt;
+            }
         }else if (pathType == PathType.PROPERTY){
             transform(query,path.getMetadata().getParent().asExpr(), realType);
             QStatement stmt = getProperty(query,path.getMetadata().getParent(), path);
