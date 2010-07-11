@@ -13,10 +13,6 @@ import java.io.IOException;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
-import com.mysema.rdfbean.sesame.query.QSimpleType;
-import com.mysema.rdfbean.sesame.query.SimpleType;
-import com.mysema.rdfbean.sesame.query.SimpleType2;
-
 /**
  * PlainLiteralTest provides
  *

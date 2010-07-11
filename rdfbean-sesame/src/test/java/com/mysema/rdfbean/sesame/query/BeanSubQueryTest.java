@@ -21,12 +21,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.path.PEntity;
-import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.domains.BeanSubQueryDomain;
 import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -36,57 +31,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class BeanSubQueryTest extends SessionTestBase{
-    
-
-    @ClassMapping(ns=TEST.NS)
-    public static class Entity {
-       
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        private long revision;
-        
-        @Predicate
-        private DateTime created;
-        
-        @Predicate
-        private String text;
-        
-        public Entity(){}
-        
-        public Entity(long rev, String t, DateTime c){
-            revision = rev;
-            text = t;
-            created = c;
-        }
-
-        public long getRevision() {
-            return revision;
-        }
-
-        public void setRevision(long revision) {
-            this.revision = revision;
-        }
-
-        public String getText() {
-            return text;
-        }
-
-        public void setText(String text) {
-            this.text = text;
-        }
-
-        public DateTime getCreated() {
-            return created;
-        }
-
-        public void setCreated(DateTime created) {
-            this.created = created;
-        }       
-                                
-    }
+public class BeanSubQueryTest extends SessionTestBase implements BeanSubQueryDomain{
     
     private List<DateTime> dateTimes = new ArrayList<DateTime>();
 

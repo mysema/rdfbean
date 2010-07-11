@@ -15,12 +15,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.domains.OptionalPathsDomain;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -29,50 +24,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class OptionalPathsTest extends SessionTestBase{
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Note {
-        
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        String basicForm;        
-
-        @Predicate
-        String lemma;        
-        
-        @Predicate
-        Term term;
-        
-        public String getBasicForm() {
-            return basicForm;
-        }
-        
-        public String getLemma() {
-            return lemma;
-        }
-        
-        public Term getTerm() {
-            return term;
-        }
-        
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Term{
-
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        String meaning;
-
-        public String getMeaning() {
-            return meaning;
-        }                   
-    }
+public class OptionalPathsTest extends SessionTestBase implements OptionalPathsDomain{
     
     @Test
     public void test() throws StoreException, IOException{

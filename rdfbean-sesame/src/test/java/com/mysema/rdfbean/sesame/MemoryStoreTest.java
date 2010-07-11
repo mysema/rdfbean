@@ -12,11 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.domains.ItemDomain;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
@@ -25,36 +21,10 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 
-public class MemoryStoreTest {
+public class MemoryStoreTest implements ItemDomain{
     
     private static final String DATA_DIR = "target/MemoryStoreTest";
 
-    @ClassMapping(ns=TEST.NS,ln="MemoryStoreTest_Item")
-    public static class Item {
-	
-	@Id(IDType.RESOURCE)
-	private ID resource;
-	
-	@Predicate(ln="path")
-	private String path;
-
-	public String getPath() {
-            return path;
-        }
-
-	public void setPath(String id) {
-            this.path = id;
-        }
-
-	public ID getResource() {
-            return resource;
-        }
-
-	public void setResource(ID resource) {
-            this.resource = resource;
-        }
-	
-    }
     
     private SessionFactoryImpl sessionFactory;
     
@@ -95,7 +65,7 @@ public class MemoryStoreTest {
         session.close();
         
         session = sessionFactory.openSession();
-        QMemoryStoreTest_Item itemVar = QMemoryStoreTest_Item.item;
+        QItem itemVar = QItem.item;
         try{
             assertEquals(1, session.from(itemVar).list(itemVar).size());
             Item i = session.from(itemVar).list(itemVar).get(0);

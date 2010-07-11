@@ -15,12 +15,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.domains.ContainsStringDomain;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -29,66 +24,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class ContainsStringTest extends SessionTestBase{
-
-    @ClassMapping(ns=TEST.NS)
-    public static class EntityRevision{
-        
-        @Id(IDType.RESOURCE)
-        ID id;
-
-        @Predicate
-        String text;
-        
-        @Predicate
-        Entity revisionOf;
-
-        public Entity getRevisionOf() {
-            return revisionOf;
-        }
-        
-        public String getText(){
-            return text;
-        }
-
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Entity{
-        
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        EntityRevision latestRevision;
-                
-        @Predicate
-        Term term;
-        
-        public Term getTerm() {
-            return term;
-        }
-
-        public EntityRevision getLatestRevision() {
-            return latestRevision;
-        }
-        
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Term{
-
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        String text2;
-     
-        public String getText2(){
-            return text2;
-        }
-   
-    }
+public class ContainsStringTest extends SessionTestBase implements ContainsStringDomain{
     
     @Before
     public void setUp() throws StoreException{

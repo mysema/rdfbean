@@ -17,12 +17,7 @@ import org.openrdf.store.StoreException;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.domains.ComplexPathsDomain;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -31,73 +26,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class ComplexPathsTest extends SessionTestBase{
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class NoteRevision {
-        
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        String lemma;
-        
-        @Predicate
-        Note note;
-        
-        public String getLemma() {
-            return lemma;
-        }
-        
-        public Note getNote() {
-            return note;
-        }        
-        
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Note {
-        
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        Term term;
-        
-        @Predicate
-        NoteRevision latestRevision;
-        
-        public Term getTerm() {
-            return term;
-        }
-
-        public NoteRevision getLatestRevision() {
-            return latestRevision;
-        }
-        
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Term{
-        
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        String basicForm;
-        
-        @Predicate
-        String meaning;
-        
-        public String getBasicForm(){
-            return basicForm;
-        }
-        
-        public String getMeaning() {
-            return meaning;
-        }                   
-    }
-    
+public class ComplexPathsTest extends SessionTestBase implements ComplexPathsDomain{
     
     @Test
     public void optionalPaths() throws StoreException, IOException{

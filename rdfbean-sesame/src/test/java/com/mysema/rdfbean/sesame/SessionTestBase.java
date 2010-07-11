@@ -21,6 +21,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.domains.SimpleDomain;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -30,14 +31,12 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
-import com.mysema.rdfbean.sesame.query.QSimpleType;
-import com.mysema.rdfbean.sesame.query.QSimpleType2;
 
 /**
  * @author sasa
  *
  */
-public class SessionTestBase {
+public class SessionTestBase implements SimpleDomain{
     
     protected static final QSimpleType var = new QSimpleType("var");
     

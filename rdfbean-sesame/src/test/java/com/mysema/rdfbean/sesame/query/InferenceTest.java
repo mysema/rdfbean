@@ -12,9 +12,7 @@ import org.junit.Test;
 import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
+import com.mysema.rdfbean.domains.InferenceDomain;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -23,23 +21,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class InferenceTest extends SessionTestBase{
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Entity1{
-        @Id
-        String id;
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Entity2 extends Entity1{
-        
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Entity3 extends Entity2{
-        
-    }
+public class InferenceTest extends SessionTestBase implements InferenceDomain{
     
     @Test
     public void subClassOf() throws StoreException{

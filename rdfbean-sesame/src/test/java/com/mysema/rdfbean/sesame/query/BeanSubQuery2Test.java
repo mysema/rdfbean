@@ -18,12 +18,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.path.PEntity;
-import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
+import com.mysema.rdfbean.domains.BeanSubQuery2Domain;
 import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -33,68 +28,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class BeanSubQuery2Test extends SessionTestBase{
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Revision {
-        
-        @Id(IDType.RESOURCE)
-        ID id;
-        
-        @Predicate
-        long svnRevision;
-        
-        @Predicate
-        long created;
-                
-        @Predicate
-        Entity revisionOf;
-
-        public long getSvnRevision() {
-            return svnRevision;
-        }
-
-        public long getCreated() {
-            return created;
-        }
-
-        public Entity getRevisionOf() {
-            return revisionOf;
-        }
-                                        
-    }
-    
-
-    @ClassMapping(ns=TEST.NS)
-    public static class Entity {
-        
-        @Id
-        String id;
-
-        @Predicate
-        Document document;
-        
-        public String getId() {
-            return id;
-        }
-
-        public Document getDocument() {
-            return document;
-        }
-                                
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Document {
-        
-        @Id
-        String id;
-
-        public String getId() {
-            return id;
-        }
-                                
-    }
+public class BeanSubQuery2Test extends SessionTestBase implements BeanSubQuery2Domain{
     
     private Revision rev1 = Alias.alias(Revision.class,"rev1");
     
