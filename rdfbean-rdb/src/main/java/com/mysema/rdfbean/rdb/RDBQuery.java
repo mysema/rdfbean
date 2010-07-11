@@ -294,7 +294,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             if (realType){
                 return getSymbol(query,stmt, path);
             }else{
-                return stmt;
+                return stmt.subject;
             }
         }else if (pathType == PathType.PROPERTY){
             transform(query,path.getMetadata().getParent().asExpr(), realType);
@@ -302,7 +302,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             if (realType){
                 return getSymbol(query,stmt, path);
             }else{
-                return stmt;
+                return stmt.object;
             }            
         }else{
             throw new IllegalArgumentException("Unsupported path type " + pathType);
