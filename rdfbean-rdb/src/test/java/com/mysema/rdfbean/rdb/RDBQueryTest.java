@@ -4,83 +4,24 @@ import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.query.collections.MiniApi;
-import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.object.FlushMode;
+import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain;
+import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Company;
+import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Department;
+import com.mysema.rdfbean.domains.UserDomain.User;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionUtil;
+import com.mysema.rdfbean.testutil.TestConfig;
 
-public class RDBQueryTest extends AbstractRDBTest {
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class User {
-        
-        @Id
-        private String id;
-     
-        @Predicate
-        private Department department;
-        
-        @Predicate
-        private String userName;
-
-        public String getId() {
-            return id;
-        }
-
-        public Department getDepartment() {
-            return department;
-        }
-
-        public String getUserName() {
-            return userName;
-        }
-
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Department {
-        
-        @Id
-        private String id;
-        
-        @Predicate
-        private Company company;
-
-        public String getId() {
-            return id;
-        }
-
-        public Company getCompany() {
-            return company;
-        }
-        
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Company {
-        
-        @Id
-        private String id;
-
-        public String getId() {
-            return id;
-        }
-        
-    }
+@TestConfig({User.class, Department.class, Company.class})
+public class RDBQueryTest extends AbstractRDBTest implements UserDepartmentCompanyDomain{
     
     private Session session;
     
@@ -90,20 +31,10 @@ public class RDBQueryTest extends AbstractRDBTest {
     
     @Before
     public void setUp(){
-        session = SessionUtil.openSession(repository, User.class, Department.class, Company.class);
-        session.setFlushMode(FlushMode.ALWAYS);
-        
         for (int i = 0; i < users.length; i++){
             users[i] = new User();
             users[i].userName = UUID.randomUUID().toString();
             session.save(users[i]);
-        }
-    }
-    
-    @After
-    public void tearDown() throws IOException{
-        if (session != null){
-            session.close();
         }
     }
     
