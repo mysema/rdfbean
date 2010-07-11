@@ -13,7 +13,7 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-public interface OrderDomain {
+public interface UserDomain {
     
 
     @ClassMapping(ns=TEST.NS)
@@ -37,7 +37,7 @@ public interface OrderDomain {
                 
     }
     
-    public class QUser extends PEntity<OrderDomain.User> {
+    public class QUser extends PEntity<UserDomain.User> {
 
         private static final long serialVersionUID = 790171466;
 
@@ -48,15 +48,15 @@ public interface OrderDomain {
         public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
 
         public QUser(String variable) {
-            super(OrderDomain.User.class, forVariable(variable));
+            super(UserDomain.User.class, forVariable(variable));
         }
 
-        public QUser(PEntity<? extends OrderDomain.User> entity) {
+        public QUser(PEntity<? extends UserDomain.User> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
         public QUser(PathMetadata<?> metadata) {
-            super(OrderDomain.User.class, metadata);
+            super(UserDomain.User.class, metadata);
         }
 
     }

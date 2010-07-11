@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
-import com.mysema.rdfbean.domains.QueryByExampleDomain;
+import com.mysema.rdfbean.domains.UserProfileDomain;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -19,7 +19,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class QueryByExampleTest extends SessionTestBase implements QueryByExampleDomain{
+public class QueryByExampleTest extends SessionTestBase implements UserProfileDomain{
         
     @Test
     public void test() throws StoreException{

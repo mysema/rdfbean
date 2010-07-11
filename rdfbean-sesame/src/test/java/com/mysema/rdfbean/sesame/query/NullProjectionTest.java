@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.domains.NullProjectionDomain;
+import com.mysema.rdfbean.domains.UserProjectionDomain;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -26,7 +26,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class NullProjectionTest extends SessionTestBase implements NullProjectionDomain{
+public class NullProjectionTest extends SessionTestBase implements UserProjectionDomain{
     
     @Test
     public void testOrderBy() throws StoreException, IOException{

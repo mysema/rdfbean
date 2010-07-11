@@ -16,7 +16,7 @@ import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.IDType;
 
-public interface QueryByExampleDomain {
+public interface UserProfileDomain {
     
     @ClassMapping(ns=TEST.NS)
     public abstract class Identifiable {
@@ -94,7 +94,7 @@ public interface QueryByExampleDomain {
         Admin        
     }
     
-    public class QIdentifiable extends PEntity<QueryByExampleDomain.Identifiable> {
+    public class QIdentifiable extends PEntity<UserProfileDomain.Identifiable> {
 
         private static final long serialVersionUID = -1841937934;
 
@@ -103,40 +103,40 @@ public interface QueryByExampleDomain {
         public final PString id = createString("id");
 
         public QIdentifiable(String variable) {
-            super(QueryByExampleDomain.Identifiable.class, forVariable(variable));
+            super(UserProfileDomain.Identifiable.class, forVariable(variable));
         }
 
-        public QIdentifiable(PEntity<? extends QueryByExampleDomain.Identifiable> entity) {
+        public QIdentifiable(PEntity<? extends UserProfileDomain.Identifiable> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
         public QIdentifiable(PathMetadata<?> metadata) {
-            super(QueryByExampleDomain.Identifiable.class, metadata);
+            super(UserProfileDomain.Identifiable.class, metadata);
         }
 
     }
     
-    public class QProfile extends PEntity<QueryByExampleDomain.Profile> {
+    public class QProfile extends PEntity<UserProfileDomain.Profile> {
 
         private static final long serialVersionUID = 1043504269;
 
         public static final QProfile profile = new QProfile("profile");
 
         public QProfile(String variable) {
-            super(QueryByExampleDomain.Profile.class, forVariable(variable));
+            super(UserProfileDomain.Profile.class, forVariable(variable));
         }
 
-        public QProfile(PEntity<? extends QueryByExampleDomain.Profile> entity) {
+        public QProfile(PEntity<? extends UserProfileDomain.Profile> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
         public QProfile(PathMetadata<?> metadata) {
-            super(QueryByExampleDomain.Profile.class, metadata);
+            super(UserProfileDomain.Profile.class, metadata);
         }
 
     }
     
-    public class QUser extends PEntity<QueryByExampleDomain.User> {
+    public class QUser extends PEntity<UserProfileDomain.User> {
 
         private static final long serialVersionUID = -1810734233;
 
@@ -146,7 +146,7 @@ public interface QueryByExampleDomain {
 
         public final QIdentifiable _super = new QIdentifiable(this);
 
-        public final PSet<QueryByExampleDomain.User> buddies = createSet("buddies", QueryByExampleDomain.User.class);
+        public final PSet<UserProfileDomain.User> buddies = createSet("buddies", UserProfileDomain.User.class);
 
         public final PString email = createString("email");
 
@@ -164,7 +164,7 @@ public interface QueryByExampleDomain {
         public final PString username = createString("username");
 
         public QUser(String variable) {
-            this(QueryByExampleDomain.User.class, forVariable(variable), INITS);
+            this(UserProfileDomain.User.class, forVariable(variable), INITS);
         }
 
         public QUser(PathMetadata<?> metadata) {
@@ -172,10 +172,10 @@ public interface QueryByExampleDomain {
         }
 
         public QUser(PathMetadata<?> metadata, PathInits inits) {
-            this(QueryByExampleDomain.User.class, metadata, inits);
+            this(UserProfileDomain.User.class, metadata, inits);
         }
 
-        public QUser(Class<? extends QueryByExampleDomain.User> type, PathMetadata<?> metadata, PathInits inits) {
+        public QUser(Class<? extends UserProfileDomain.User> type, PathMetadata<?> metadata, PathInits inits) {
             super(type, metadata, inits);
             this.profile = inits.isInitialized("profile") ? new QProfile(forProperty("profile")) : null;
         }

@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.rdb.query;
 
 import static com.mysema.query.alias.Alias.$;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -12,52 +13,62 @@ import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
-import com.mysema.rdfbean.object.FlushMode;
+import com.mysema.rdfbean.domains.ResourceDomain;
+import com.mysema.rdfbean.domains.ResourceDomain.Resource;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionUtil;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
+import com.mysema.rdfbean.rdb.RDBConnection;
+import com.mysema.rdfbean.testutil.TestConfig;
 
-public class ResourcesTest extends AbstractRDBTest{
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Resource {
+@TestConfig(Resource.class)
+public class ResourcesTest extends AbstractRDBTest implements ResourceDomain{
         
-        @Id(IDType.RESOURCE)
-        private ID id;
-
-        public ID getId() {
-            return id;
-        }
-        
-    }
-    
     private Session session;
+    
+    private Resource r = Alias.alias(Resource.class);
+    
+    private int count;
+    
+    private Resource resource;
+    
+    private RDBConnection connection;
     
     @Before
     public void setUp(){
-        session = SessionUtil.openSession(repository, Resource.class);
-        session.setFlushMode(FlushMode.ALWAYS);        
+        count = session.from($(r)).list($(r)).size();        
+        resource = new Resource();
+        session.save(resource);    
     }
     
     @After
     public void tearDown() throws IOException{
-        if (session != null){
-            session.close();
+        if (connection != null){
+            connection.close();
         }
     }
     
     @Test
-    public void test(){
-        Resource resource = new Resource();
-        session.save(resource);
-        
-        Resource r = Alias.alias(Resource.class);
+    public void from_Resource_list(){
         List<Resource> resources = session.from($(r)).list($(r)); 
+        assertEquals(count + 1, resources.size());
         assertTrue(resources.contains(resource));        
     }
+    
+    @Test
+    public void rdfType_count_via_Repository(){
+        connection = repository.openConnection();
+        List<STMT> typeStmts = connection.find(null, RDF.type, new UID(TEST.NS,Resource.class.getSimpleName()), null, false);
+        assertEquals(count + 1, typeStmts.size());
+        for (STMT typeStmt : typeStmts){            
+            assertEquals(1, connection.find(typeStmt.getSubject(), RDF.type, null, null, false).size());
+        }                   
+    }
 
+    @Test
+    public void findInstances(){
+        assertEquals(count + 1, session.findInstances(Resource.class).size());
+    }
 }

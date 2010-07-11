@@ -18,7 +18,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.path.PEntity;
-import com.mysema.rdfbean.domains.BeanSubQuery2Domain;
+import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain;
 import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -28,7 +28,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class BeanSubQuery2Test extends SessionTestBase implements BeanSubQuery2Domain{
+public class BeanSubQuery2Test extends SessionTestBase implements EntityDocumentRevisionDomain{
     
     private Revision rev1 = Alias.alias(Revision.class,"rev1");
     

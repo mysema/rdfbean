@@ -17,7 +17,7 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-public interface BeanSubQueryDomain {
+public interface EntityDomain {
     
     @ClassMapping(ns=TEST.NS)
     public static class Entity {
@@ -33,6 +33,27 @@ public interface BeanSubQueryDomain {
         
         @Predicate
         public String text;
+        
+        @Predicate
+        public String property;
+        
+        @Predicate
+        public String text1;
+        
+        @Predicate
+        public String text2;
+        
+        public String getProperty(){
+            return property;
+        }
+        
+        public String getText1() {
+            return text1;
+        }
+
+        public String getText2() {
+            return text2;
+        }
         
         public Entity(){}
         
@@ -68,7 +89,7 @@ public interface BeanSubQueryDomain {
                                 
     }
     
-    public class QEntity extends PEntity<BeanSubQueryDomain.Entity> {
+    public class QEntity extends PEntity<EntityDomain.Entity> {
 
         private static final long serialVersionUID = 582395858;
 
@@ -81,17 +102,23 @@ public interface BeanSubQueryDomain {
         public final PNumber<Long> revision = createNumber("revision", Long.class);
 
         public final PString text = createString("text");
+        
+        public final PString property = createString("property");
+        
+        public final PString text1 = createString("text1");
+
+        public final PString text2 = createString("text2");
 
         public QEntity(String variable) {
-            super(BeanSubQueryDomain.Entity.class, forVariable(variable));
+            super(EntityDomain.Entity.class, forVariable(variable));
         }
 
-        public QEntity(PEntity<? extends BeanSubQueryDomain.Entity> entity) {
+        public QEntity(PEntity<? extends EntityDomain.Entity> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
         public QEntity(PathMetadata<?> metadata) {
-            super(BeanSubQueryDomain.Entity.class, metadata);
+            super(EntityDomain.Entity.class, metadata);
         }
 
     }

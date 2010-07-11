@@ -13,7 +13,7 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-public interface NullProjectionDomain {
+public interface UserProjectionDomain {
     
     @ClassMapping(ns=TEST.NS)
     public static class User{
@@ -36,7 +36,7 @@ public interface NullProjectionDomain {
                 
     }    
     
-    public class QUser extends PEntity<NullProjectionDomain.User> {
+    public class QUser extends PEntity<UserProjectionDomain.User> {
 
         private static final long serialVersionUID = -784296836;
 
@@ -47,15 +47,15 @@ public interface NullProjectionDomain {
         public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
 
         public QUser(String variable) {
-            super(NullProjectionDomain.User.class, forVariable(variable));
+            super(UserProjectionDomain.User.class, forVariable(variable));
         }
 
-        public QUser(PEntity<? extends NullProjectionDomain.User> entity) {
+        public QUser(PEntity<? extends UserProjectionDomain.User> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
         public QUser(PathMetadata<?> metadata) {
-            super(NullProjectionDomain.User.class, metadata);
+            super(UserProjectionDomain.User.class, metadata);
         }
 
     }

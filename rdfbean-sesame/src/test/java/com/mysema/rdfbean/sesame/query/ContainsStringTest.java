@@ -15,7 +15,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.domains.ContainsStringDomain;
+import com.mysema.rdfbean.domains.EntityRevisionTermDomain;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -24,7 +24,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class ContainsStringTest extends SessionTestBase implements ContainsStringDomain{
+public class ContainsStringTest extends SessionTestBase implements EntityRevisionTermDomain{
     
     @Before
     public void setUp() throws StoreException{

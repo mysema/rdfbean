@@ -21,7 +21,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.path.PEntity;
-import com.mysema.rdfbean.domains.BeanSubQueryDomain;
+import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -31,7 +31,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class BeanSubQueryTest extends SessionTestBase implements BeanSubQueryDomain{
+public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     
     private List<DateTime> dateTimes = new ArrayList<DateTime>();
 

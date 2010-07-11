@@ -15,7 +15,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.domains.OptionalPathsDomain;
+import com.mysema.rdfbean.domains.NoteTermDomain;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -24,7 +24,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class OptionalPathsTest extends SessionTestBase implements OptionalPathsDomain{
+public class OptionalPathsTest extends SessionTestBase implements NoteTermDomain{
     
     @Test
     public void test() throws StoreException, IOException{

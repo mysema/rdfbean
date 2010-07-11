@@ -17,7 +17,7 @@ import org.openrdf.store.StoreException;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.rdfbean.domains.ComplexPathsDomain;
+import com.mysema.rdfbean.domains.NoteRevisionTermDomain;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 /**
@@ -26,7 +26,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class ComplexPathsTest extends SessionTestBase implements ComplexPathsDomain{
+public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTermDomain{
     
     @Test
     public void optionalPaths() throws StoreException, IOException{

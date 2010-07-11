@@ -18,7 +18,7 @@ import org.openrdf.store.StoreException;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.domains.PagingDomain;
+import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
@@ -28,7 +28,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class PagingTest extends SessionTestBase implements PagingDomain {
+public class PagingTest extends SessionTestBase implements EntityDomain {
 
     private static final Entity entity = Alias.alias(Entity.class);
     

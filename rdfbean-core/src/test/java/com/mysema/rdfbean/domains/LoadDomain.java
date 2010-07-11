@@ -5,104 +5,80 @@ import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PNumber;
-import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathInits;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
-public interface BeanSubQuery2Domain {
+public interface LoadDomain {
     
     @ClassMapping(ns=TEST.NS)
-    public static class Revision {
-        
-        @Id(IDType.RESOURCE)
-        public ID id;
+    public class Document {        
+        @Id
+        public String id;
         
         @Predicate
-        public long svnRevision;
+        public String text;                   
+    }        
+    
+    @ClassMapping(ns=TEST.NS)
+    public class Entity {
+        @Id
+        public String id;
+        
+        @Predicate
+        public Document document;
+
+        @Predicate
+        public String text;
+                                
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    public class Revision {
+        @Id
+        public String id;
         
         @Predicate
         public long created;
-                
+        
         @Predicate
         public Entity revisionOf;
-
-        public long getSvnRevision() {
-            return svnRevision;
-        }
-
-        public long getCreated() {
-            return created;
-        }
-
-        public Entity getRevisionOf() {
-            return revisionOf;
-        }
+                
+        @Predicate
+        public long svnRevision;
                                         
     }
     
+    public class QDocument extends PEntity<Document> {
 
-    @ClassMapping(ns=TEST.NS)
-    public static class Entity {
-        
-        @Id
-        public String id;
-
-        @Predicate
-        public Document document;
-        
-        public String getId() {
-            return id;
-        }
-
-        public Document getDocument() {
-            return document;
-        }
-                                
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Document {
-        
-        @Id
-        public String id;
-
-        public String getId() {
-            return id;
-        }
-                                
-    }
-    
-    public class QDocument extends PEntity<BeanSubQuery2Domain.Document> {
-
-        private static final long serialVersionUID = 539301614;
+        private static final long serialVersionUID = 1255113926;
 
         public static final QDocument document = new QDocument("document");
 
         public final PString id = createString("id");
 
+        public final PString text = createString("text");
+
         public QDocument(String variable) {
-            super(BeanSubQuery2Domain.Document.class, forVariable(variable));
+            super(Document.class, forVariable(variable));
         }
 
-        public QDocument(PEntity<? extends BeanSubQuery2Domain.Document> entity) {
+        public QDocument(PEntity<? extends Document> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
         public QDocument(PathMetadata<?> metadata) {
-            super(BeanSubQuery2Domain.Document.class, metadata);
+            super(Document.class, metadata);
         }
 
     }
     
-    public class QEntity extends PEntity<BeanSubQuery2Domain.Entity> {
+    public class QEntity extends PEntity<Entity> {
 
-        private static final long serialVersionUID = -1236041098;
+        private static final long serialVersionUID = -672168370;
 
         private static final PathInits INITS = PathInits.DIRECT;
 
@@ -112,8 +88,10 @@ public interface BeanSubQuery2Domain {
 
         public final PString id = createString("id");
 
+        public final PString text = createString("text");
+
         public QEntity(String variable) {
-            this(BeanSubQuery2Domain.Entity.class, forVariable(variable), INITS);
+            this(Entity.class, forVariable(variable), INITS);
         }
 
         public QEntity(PathMetadata<?> metadata) {
@@ -121,19 +99,19 @@ public interface BeanSubQuery2Domain {
         }
 
         public QEntity(PathMetadata<?> metadata, PathInits inits) {
-            this(BeanSubQuery2Domain.Entity.class, metadata, inits);
+            this(Entity.class, metadata, inits);
         }
 
-        public QEntity(Class<? extends BeanSubQuery2Domain.Entity> type, PathMetadata<?> metadata, PathInits inits) {
+        public QEntity(Class<? extends Entity> type, PathMetadata<?> metadata, PathInits inits) {
             super(type, metadata, inits);
             this.document = inits.isInitialized("document") ? new QDocument(forProperty("document")) : null;
         }
 
     }
+    
+    public class QRevision extends PEntity<Revision> {
 
-    public class QRevision extends PEntity<BeanSubQuery2Domain.Revision> {
-
-        private static final long serialVersionUID = -583205458;
+        private static final long serialVersionUID = 132606854;
 
         private static final PathInits INITS = PathInits.DIRECT;
 
@@ -141,14 +119,14 @@ public interface BeanSubQuery2Domain {
 
         public final PNumber<Long> created = createNumber("created", Long.class);
 
-        public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
+        public final PString id = createString("id");
 
         public final QEntity revisionOf;
 
         public final PNumber<Long> svnRevision = createNumber("svnRevision", Long.class);
 
         public QRevision(String variable) {
-            this(BeanSubQuery2Domain.Revision.class, forVariable(variable), INITS);
+            this(Revision.class, forVariable(variable), INITS);
         }
 
         public QRevision(PathMetadata<?> metadata) {
@@ -156,14 +134,15 @@ public interface BeanSubQuery2Domain {
         }
 
         public QRevision(PathMetadata<?> metadata, PathInits inits) {
-            this(BeanSubQuery2Domain.Revision.class, metadata, inits);
+            this(Revision.class, metadata, inits);
         }
 
-        public QRevision(Class<? extends BeanSubQuery2Domain.Revision> type, PathMetadata<?> metadata, PathInits inits) {
+        public QRevision(Class<? extends Revision> type, PathMetadata<?> metadata, PathInits inits) {
             super(type, metadata, inits);
             this.revisionOf = inits.isInitialized("revisionOf") ? new QEntity(forProperty("revisionOf"), inits.get("revisionOf")) : null;
         }
 
     }
     
+
 }

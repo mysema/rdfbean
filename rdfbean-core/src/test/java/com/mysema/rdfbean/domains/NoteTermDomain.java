@@ -14,7 +14,7 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-public interface OptionalPathsDomain {
+public interface NoteTermDomain {
     
     @ClassMapping(ns=TEST.NS)
     public static class Note {
@@ -59,7 +59,7 @@ public interface OptionalPathsDomain {
         }                   
     }
 
-    public class QNote extends PEntity<OptionalPathsDomain.Note> {
+    public class QNote extends PEntity<NoteTermDomain.Note> {
 
         private static final long serialVersionUID = 1879011921;
 
@@ -76,7 +76,7 @@ public interface OptionalPathsDomain {
         public final QTerm term;
 
         public QNote(String variable) {
-            this(OptionalPathsDomain.Note.class, forVariable(variable), INITS);
+            this(NoteTermDomain.Note.class, forVariable(variable), INITS);
         }
 
         public QNote(PathMetadata<?> metadata) {
@@ -84,17 +84,17 @@ public interface OptionalPathsDomain {
         }
 
         public QNote(PathMetadata<?> metadata, PathInits inits) {
-            this(OptionalPathsDomain.Note.class, metadata, inits);
+            this(NoteTermDomain.Note.class, metadata, inits);
         }
 
-        public QNote(Class<? extends OptionalPathsDomain.Note> type, PathMetadata<?> metadata, PathInits inits) {
+        public QNote(Class<? extends NoteTermDomain.Note> type, PathMetadata<?> metadata, PathInits inits) {
             super(type, metadata, inits);
             this.term = inits.isInitialized("term") ? new QTerm(forProperty("term")) : null;
         }
 
     }
     
-    public class QTerm extends PEntity<OptionalPathsDomain.Term> {
+    public class QTerm extends PEntity<NoteTermDomain.Term> {
 
         private static final long serialVersionUID = 1879181003;
 
@@ -105,15 +105,15 @@ public interface OptionalPathsDomain {
         public final PString meaning = createString("meaning");
 
         public QTerm(String variable) {
-            super(OptionalPathsDomain.Term.class, forVariable(variable));
+            super(NoteTermDomain.Term.class, forVariable(variable));
         }
 
-        public QTerm(PEntity<? extends OptionalPathsDomain.Term> entity) {
+        public QTerm(PEntity<? extends NoteTermDomain.Term> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
         public QTerm(PathMetadata<?> metadata) {
-            super(OptionalPathsDomain.Term.class, metadata);
+            super(NoteTermDomain.Term.class, metadata);
         }
 
     }

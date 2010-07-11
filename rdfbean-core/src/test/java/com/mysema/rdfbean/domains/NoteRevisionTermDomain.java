@@ -14,7 +14,7 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-public interface ComplexPathsDomain {
+public interface NoteRevisionTermDomain {
 
 
     @ClassMapping(ns=TEST.NS)
@@ -82,7 +82,7 @@ public interface ComplexPathsDomain {
         }                   
     }
     
-    public class QNote extends PEntity<ComplexPathsDomain.Note> {
+    public class QNote extends PEntity<NoteRevisionTermDomain.Note> {
 
         private static final long serialVersionUID = 1496561659;
 
@@ -97,7 +97,7 @@ public interface ComplexPathsDomain {
         public final QTerm term;
 
         public QNote(String variable) {
-            this(ComplexPathsDomain.Note.class, forVariable(variable), INITS);
+            this(NoteRevisionTermDomain.Note.class, forVariable(variable), INITS);
         }
 
         public QNote(PathMetadata<?> metadata) {
@@ -105,10 +105,10 @@ public interface ComplexPathsDomain {
         }
 
         public QNote(PathMetadata<?> metadata, PathInits inits) {
-            this(ComplexPathsDomain.Note.class, metadata, inits);
+            this(NoteRevisionTermDomain.Note.class, metadata, inits);
         }
 
-        public QNote(Class<? extends ComplexPathsDomain.Note> type, PathMetadata<?> metadata, PathInits inits) {
+        public QNote(Class<? extends NoteRevisionTermDomain.Note> type, PathMetadata<?> metadata, PathInits inits) {
             super(type, metadata, inits);
             this.latestRevision = inits.isInitialized("latestRevision") ? new QNoteRevision(forProperty("latestRevision"), inits.get("latestRevision")) : null;
             this.term = inits.isInitialized("term") ? new QTerm(forProperty("term")) : null;
@@ -116,7 +116,7 @@ public interface ComplexPathsDomain {
 
     }
     
-    public class QNoteRevision extends PEntity<ComplexPathsDomain.NoteRevision> {
+    public class QNoteRevision extends PEntity<NoteRevisionTermDomain.NoteRevision> {
 
         private static final long serialVersionUID = -1259034378;
 
@@ -131,7 +131,7 @@ public interface ComplexPathsDomain {
         public final QNote note;
 
         public QNoteRevision(String variable) {
-            this(ComplexPathsDomain.NoteRevision.class, forVariable(variable), INITS);
+            this(NoteRevisionTermDomain.NoteRevision.class, forVariable(variable), INITS);
         }
 
         public QNoteRevision(PathMetadata<?> metadata) {
@@ -139,17 +139,17 @@ public interface ComplexPathsDomain {
         }
 
         public QNoteRevision(PathMetadata<?> metadata, PathInits inits) {
-            this(ComplexPathsDomain.NoteRevision.class, metadata, inits);
+            this(NoteRevisionTermDomain.NoteRevision.class, metadata, inits);
         }
 
-        public QNoteRevision(Class<? extends ComplexPathsDomain.NoteRevision> type, PathMetadata<?> metadata, PathInits inits) {
+        public QNoteRevision(Class<? extends NoteRevisionTermDomain.NoteRevision> type, PathMetadata<?> metadata, PathInits inits) {
             super(type, metadata, inits);
             this.note = inits.isInitialized("note") ? new QNote(forProperty("note"), inits.get("note")) : null;
         }
 
     }
     
-    public class QTerm extends PEntity<ComplexPathsDomain.Term> {
+    public class QTerm extends PEntity<NoteRevisionTermDomain.Term> {
 
         private static final long serialVersionUID = 1496730741;
 
@@ -162,15 +162,15 @@ public interface ComplexPathsDomain {
         public final PString meaning = createString("meaning");
 
         public QTerm(String variable) {
-            super(ComplexPathsDomain.Term.class, forVariable(variable));
+            super(NoteRevisionTermDomain.Term.class, forVariable(variable));
         }
 
-        public QTerm(PEntity<? extends ComplexPathsDomain.Term> entity) {
+        public QTerm(PEntity<? extends NoteRevisionTermDomain.Term> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
         public QTerm(PathMetadata<?> metadata) {
-            super(ComplexPathsDomain.Term.class, metadata);
+            super(NoteRevisionTermDomain.Term.class, metadata);
         }
 
     }

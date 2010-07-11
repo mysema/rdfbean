@@ -6,10 +6,12 @@ import java.sql.SQLException;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 
 import com.mysema.query.sql.H2Templates;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.rdfbean.model.MemoryIdSequence;
+import com.mysema.rdfbean.testutil.SessionRule;
 
 /**
  * AbstractRepositoryTest provides
@@ -24,6 +26,9 @@ public abstract class AbstractRDBTest {
     protected static SQLTemplates templates = new H2Templates();
     
     protected static RDBRepository repository;
+    
+    @Rule
+    public SessionRule sessionRule = new SessionRule(repository);
     
     @BeforeClass
     public static void setUpClass(){

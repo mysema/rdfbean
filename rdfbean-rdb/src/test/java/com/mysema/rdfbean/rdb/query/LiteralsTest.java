@@ -1,116 +1,23 @@
 package com.mysema.rdfbean.rdb.query;
 
-import java.io.IOException;
+import static com.mysema.query.alias.Alias.$;
+import static org.junit.Assert.assertEquals;
+
 import java.util.Date;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import static com.mysema.query.alias.Alias.$;
-import static org.junit.Assert.*;
-
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.object.FlushMode;
+import com.mysema.rdfbean.domains.LiteralsDomain;
+import com.mysema.rdfbean.domains.LiteralsDomain.Literals;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionUtil;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
+import com.mysema.rdfbean.testutil.TestConfig;
 
-public class LiteralsTest extends AbstractRDBTest{
-        
-    @ClassMapping(ns=TEST.NS)
-    public static class Literals {
-        
-        @Id
-        private String id;
-        
-        @Predicate
-        private int intValue;
-        
-        @Predicate
-        private long longValue;
-        
-        @Predicate
-        private double doubleValue;
-        
-        @Predicate
-        private float floatValue;
-        
-        @Predicate
-        private byte byteValue;
-        
-        @Predicate
-        private short shortValue;
-        
-        @Predicate
-        private Date dateValue;
-        
-        @Predicate
-        private String stringValue;
-        
-        @Predicate
-        private boolean booleanValue;
-
-        public String getId() {
-            return id;
-        }
-
-        public int getIntValue() {
-            return intValue;
-        }
-
-        public long getLongValue() {
-            return longValue;
-        }
-
-        public double getDoubleValue() {
-            return doubleValue;
-        }
-        
-        public float getFloatValue() {
-            return floatValue;
-        }
-
-        public byte getByteValue() {
-            return byteValue;
-        }
-
-        public short getShortValue() {
-            return shortValue;
-        }
-
-        public Date getDateValue() {
-            return dateValue;
-        }
-
-        public String getStringValue() {
-            return stringValue;
-        }
-
-        public boolean isBooleanValue() {
-            return booleanValue;
-        }
-                
-    }
-    
+@TestConfig(Literals.class)
+public class LiteralsTest extends AbstractRDBTest implements LiteralsDomain{
+     
     private Session session;
-    
-    @Before
-    public void setUp(){
-        session = SessionUtil.openSession(repository, Literals.class);
-        session.setFlushMode(FlushMode.ALWAYS);        
-    }
-    
-    @After
-    public void tearDown() throws IOException{
-        if (session != null){
-            session.close();
-        }
-    }
     
     @Test
     public void test(){

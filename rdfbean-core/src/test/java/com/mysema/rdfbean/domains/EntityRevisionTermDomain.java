@@ -14,7 +14,7 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-public interface ContainsStringDomain {
+public interface EntityRevisionTermDomain {
     
 
     @ClassMapping(ns=TEST.NS)
@@ -76,7 +76,7 @@ public interface ContainsStringDomain {
    
     }
     
-    public class QEntity extends PEntity<ContainsStringDomain.Entity> {
+    public class QEntity extends PEntity<EntityRevisionTermDomain.Entity> {
 
         private static final long serialVersionUID = -1998702918;
 
@@ -91,7 +91,7 @@ public interface ContainsStringDomain {
         public final QTerm term;
 
         public QEntity(String variable) {
-            this(ContainsStringDomain.Entity.class, forVariable(variable), INITS);
+            this(EntityRevisionTermDomain.Entity.class, forVariable(variable), INITS);
         }
 
         public QEntity(PathMetadata<?> metadata) {
@@ -99,10 +99,10 @@ public interface ContainsStringDomain {
         }
 
         public QEntity(PathMetadata<?> metadata, PathInits inits) {
-            this(ContainsStringDomain.Entity.class, metadata, inits);
+            this(EntityRevisionTermDomain.Entity.class, metadata, inits);
         }
 
-        public QEntity(Class<? extends ContainsStringDomain.Entity> type, PathMetadata<?> metadata, PathInits inits) {
+        public QEntity(Class<? extends EntityRevisionTermDomain.Entity> type, PathMetadata<?> metadata, PathInits inits) {
             super(type, metadata, inits);
             this.latestRevision = inits.isInitialized("latestRevision") ? new QEntityRevision(forProperty("latestRevision"), inits.get("latestRevision")) : null;
             this.term = inits.isInitialized("term") ? new QTerm(forProperty("term")) : null;
@@ -110,7 +110,7 @@ public interface ContainsStringDomain {
 
     }
     
-    public class QEntityRevision extends PEntity<ContainsStringDomain.EntityRevision> {
+    public class QEntityRevision extends PEntity<EntityRevisionTermDomain.EntityRevision> {
 
         private static final long serialVersionUID = -397412171;
 
@@ -125,7 +125,7 @@ public interface ContainsStringDomain {
         public final PString text = createString("text");
 
         public QEntityRevision(String variable) {
-            this(ContainsStringDomain.EntityRevision.class, forVariable(variable), INITS);
+            this(EntityRevisionTermDomain.EntityRevision.class, forVariable(variable), INITS);
         }
 
         public QEntityRevision(PathMetadata<?> metadata) {
@@ -133,17 +133,17 @@ public interface ContainsStringDomain {
         }
 
         public QEntityRevision(PathMetadata<?> metadata, PathInits inits) {
-            this(ContainsStringDomain.EntityRevision.class, metadata, inits);
+            this(EntityRevisionTermDomain.EntityRevision.class, metadata, inits);
         }
 
-        public QEntityRevision(Class<? extends ContainsStringDomain.EntityRevision> type, PathMetadata<?> metadata, PathInits inits) {
+        public QEntityRevision(Class<? extends EntityRevisionTermDomain.EntityRevision> type, PathMetadata<?> metadata, PathInits inits) {
             super(type, metadata, inits);
             this.revisionOf = inits.isInitialized("revisionOf") ? new QEntity(forProperty("revisionOf"), inits.get("revisionOf")) : null;
         }
 
     }
 
-    public class QTerm extends PEntity<ContainsStringDomain.Term> {
+    public class QTerm extends PEntity<EntityRevisionTermDomain.Term> {
 
         private static final long serialVersionUID = 1196122371;
 
@@ -154,15 +154,15 @@ public interface ContainsStringDomain {
         public final PString text2 = createString("text2");
 
         public QTerm(String variable) {
-            super(ContainsStringDomain.Term.class, forVariable(variable));
+            super(EntityRevisionTermDomain.Term.class, forVariable(variable));
         }
 
-        public QTerm(PEntity<? extends ContainsStringDomain.Term> entity) {
+        public QTerm(PEntity<? extends EntityRevisionTermDomain.Term> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
         public QTerm(PathMetadata<?> metadata) {
-            super(ContainsStringDomain.Term.class, metadata);
+            super(EntityRevisionTermDomain.Term.class, metadata);
         }
 
     }

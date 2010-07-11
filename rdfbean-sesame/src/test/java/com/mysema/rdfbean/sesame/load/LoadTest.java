@@ -20,10 +20,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.domains.LoadDomain;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
@@ -44,48 +41,10 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class LoadTest extends SessionTestBase{    
+public class LoadTest extends SessionTestBase implements LoadDomain{    
     
     private StringWriter writer = new StringWriter();
 
-    @ClassMapping(ns=TEST.NS)
-    public static class Document {        
-        @Id
-        String id;
-        
-        @Predicate
-        String text;                   
-    }        
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Entity {
-	@Id
-        String id;
-	
-        @Predicate
-        Document document;
-
-        @Predicate
-        String text;
-                                
-    }
-    
-    @ClassMapping(ns=TEST.NS)
-    public static class Revision {
-	@Id
-        String id;
-	
-        @Predicate
-        long created;
-        
-        @Predicate
-        Entity revisionOf;
-                
-        @Predicate
-        long svnRevision;
-                                        
-    }
-    
     private Configuration configuration;
     
     private Ontology ontology;

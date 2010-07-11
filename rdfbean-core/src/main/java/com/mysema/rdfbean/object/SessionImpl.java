@@ -804,7 +804,7 @@ public final class SessionImpl implements Session {
 
     private Set<NODE> findValues(ID resource, UID predicate, boolean inverse, boolean includeInferred, UID context) {
         if (inverse) {
-            return (Set<NODE>) filterSubject(connection.findStatements(null, predicate, resource, context,
+            return this.<NODE>filterSubject(connection.findStatements(null, predicate, resource, context,
                     includeInferred));
         } else {
             return filterObjects(connection.findStatements(resource, predicate, null, context, includeInferred));

@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.domains.OrderDomain;
+import com.mysema.rdfbean.domains.UserDomain;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 
@@ -27,7 +27,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
-public class OrderTest extends SessionTestBase implements OrderDomain{
+public class OrderTest extends SessionTestBase implements UserDomain{
     
     @Test
     public void testOrderBy() throws StoreException, IOException{
