@@ -9,14 +9,18 @@ import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain;
+import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Entity;
+import com.mysema.rdfbean.domains.EntityRevisionTermDomain.EntityRevision;
+import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Term;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
  * ContainsStringTest provides
@@ -24,12 +28,10 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig({Entity.class, EntityRevision.class, Term.class})
 public class ContainsStringTest extends SessionTestBase implements EntityRevisionTermDomain{
     
-    @Before
-    public void setUp() throws StoreException{
-        session = createSession(Entity.class, EntityRevision.class, Term.class);   
-    }
+    private Session session;
     
     @Test
     public void test() throws StoreException{

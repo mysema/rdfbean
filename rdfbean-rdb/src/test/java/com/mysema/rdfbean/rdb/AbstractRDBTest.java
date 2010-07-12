@@ -1,6 +1,5 @@
 package com.mysema.rdfbean.rdb;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 

@@ -7,11 +7,13 @@ package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
  * PathInPathTest provides
@@ -19,18 +21,15 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig({SimpleType.class, SimpleType2.class})
 public class PathInPathTest extends SessionTestBase {
 
-
-    @Before
-    public void setUp() throws StoreException{
-        session = createSession(FI, SimpleType.class, SimpleType2.class);
-    }
+    private Session session;
     
     @Test
     public void pathInPath(){
-        int count1 = from(var2, var).where(var2.in(var.setProperty)).list(var, var2).size();
-        int count2 = from(var2, var).where(var2.in(var.setProperty)).listDistinct(var, var2).size();
+        int count1 = session.from(var2, var).where(var2.in(var.setProperty)).list(var, var2).size();
+        int count2 = session.from(var2, var).where(var2.in(var.setProperty)).listDistinct(var, var2).size();
         assertEquals(count1, count2);
         assertEquals(4, count1);
     }

@@ -26,7 +26,17 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.IdSequence;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.Operation;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.owl.OWL;
 

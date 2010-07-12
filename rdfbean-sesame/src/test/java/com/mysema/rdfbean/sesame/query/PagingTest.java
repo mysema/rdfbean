@@ -19,8 +19,11 @@ import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.EntityDomain;
+import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
  * PagingTest provides
@@ -28,13 +31,15 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig(Entity.class)
 public class PagingTest extends SessionTestBase implements EntityDomain {
 
     private static final Entity entity = Alias.alias(Entity.class);
     
+    private Session session;
+    
     @Before
     public void setUp() throws StoreException{
-        session = createSession(FI, Entity.class);
         for (int i = 0; i < 9; i++){
             Entity entity = new Entity();
             entity.property = String.valueOf(i);
@@ -72,7 +77,7 @@ public class PagingTest extends SessionTestBase implements EntityDomain {
     }
     
     private BeanQuery createQuery(@Nullable QueryModifiers modifiers){
-        BeanQuery beanQuery = from($(entity)).orderBy($(entity.getProperty()).asc());
+        BeanQuery beanQuery = session.from($(entity)).orderBy($(entity.getProperty()).asc());
         if (modifiers != null) beanQuery.restrict(modifiers);
         return beanQuery;
     }

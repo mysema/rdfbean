@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.testutil;
 
 import java.lang.reflect.Field;
+import java.util.Locale;
 
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
@@ -26,7 +27,7 @@ public class SessionRule implements MethodRule{
             return new Statement(){
                 @Override
                 public void evaluate() throws Throwable {
-                    Session session = SessionUtil.openSession(repository, config.value());
+                    Session session = SessionUtil.openSession(repository, new Locale("fi"), config.value());
                     RDFBeanTransaction tx = session.beginTransaction();                   
                     try{
                         Field field = target.getClass().getDeclaredField("session");

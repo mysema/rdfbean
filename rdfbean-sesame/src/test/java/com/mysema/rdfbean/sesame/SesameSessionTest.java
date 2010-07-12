@@ -1,10 +1,10 @@
 package com.mysema.rdfbean.sesame;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.types.path.PathBuilder;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 
 /**
@@ -13,12 +13,10 @@ import com.mysema.query.types.path.PathBuilder;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig({})
 public class SesameSessionTest extends SessionTestBase {
     
-    @Before
-    public void setUp() throws StoreException{
-        session = createSession(new Class<?>[0]);
-    }
+    private Session session;
     
     @Test(expected=IllegalArgumentException.class)
     public void findUnknown(){

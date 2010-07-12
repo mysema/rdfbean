@@ -18,7 +18,12 @@ import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain;
+import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Note;
+import com.mysema.rdfbean.domains.NoteRevisionTermDomain.NoteRevision;
+import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Term;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
  * OptionalPathsTest provides
@@ -26,12 +31,13 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig({NoteRevision.class, Note.class, Term.class})
 public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTermDomain{
+    
+    private Session session;
     
     @Test
     public void optionalPaths() throws StoreException, IOException{
-        session = createSession(NoteRevision.class, Note.class, Term.class);
-        
         Note note = new Note();
         session.save(note);        
         NoteRevision rev = new NoteRevision();
@@ -82,9 +88,7 @@ public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTer
     }
     
     @Test
-    public void deepPaths() throws StoreException{
-        session = createSession(NoteRevision.class, Note.class, Term.class);
-        
+    public void deepPaths() throws StoreException{        
         NoteRevision rev1 = new NoteRevision();
         NoteRevision rev2 = new NoteRevision();
         Note note = new Note();

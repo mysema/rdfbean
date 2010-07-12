@@ -7,11 +7,13 @@ package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
  * DateTimeTest provides
@@ -19,20 +21,17 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig({SimpleType.class, SimpleType2.class})
 public class DateTimeTest extends SessionTestBase{
     
-
-    @Before
-    public void setUp() throws StoreException{
-        session = createSession(FI, SimpleType.class, SimpleType2.class);
-    }
+    private Session session;
     
     @Test
     public void test(){
         QSimpleType v1 = new QSimpleType("v1");
-        SimpleType st = from(v1).uniqueResult(v1);
+        SimpleType st = session.from(v1).uniqueResult(v1);
         System.out.println(st.getDateProperty());
-        assertTrue(from(v1).where(v1.dateProperty.eq(st.getDateProperty())).count() > 0);
+        assertTrue(session.from(v1).where(v1.dateProperty.eq(st.getDateProperty())).count() > 0);
     }
 
 }

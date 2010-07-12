@@ -11,7 +11,12 @@ import org.junit.Test;
 import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.domains.UserProfileDomain;
+import com.mysema.rdfbean.domains.UserProfileDomain.Identifiable;
+import com.mysema.rdfbean.domains.UserProfileDomain.Profile;
+import com.mysema.rdfbean.domains.UserProfileDomain.User;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
  * QueryByExampleTest provides
@@ -19,11 +24,13 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig({User.class, Profile.class, Identifiable.class})
 public class QueryByExampleTest extends SessionTestBase implements UserProfileDomain{
         
+    private Session session;
+    
     @Test
     public void test() throws StoreException{
-        session = createSession(User.class, Profile.class, Identifiable.class);
         User user = new User();
         user.email = "a@b.com";
         user.firstName = "Anton";

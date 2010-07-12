@@ -13,20 +13,26 @@ import java.io.IOException;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.testutil.TestConfig;
+
 /**
  * PlainLiteralTest provides
  *
  * @author tiwe
  * @version $Id$
  */
+@TestConfig({SimpleType.class, SimpleType2.class})
 public class PlainLiteralTest extends SessionTestBase{
     
     private final QSimpleType simpleType = QSimpleType.simpleType;
     
+    private Session session;
+    
     @Test
-    public void test() throws StoreException, IOException{        
-        session = createSession(FI, SimpleType.class, SimpleType2.class);
-        
+    public void test() throws StoreException, IOException{                
         // get instance with plain literal value
         SimpleType instance = session
             .from(simpleType)
@@ -38,10 +44,9 @@ public class PlainLiteralTest extends SessionTestBase{
         instance.setDirectProperty("new value");
         session.save(instance);
         session.flush();
-        session.close();
+        session.clear();
         
         // reload it
-        session = createSession(FI, SimpleType.class, SimpleType2.class);
         instance = session
             .from(simpleType)
             .where(simpleType.directProperty.eq("new value"))

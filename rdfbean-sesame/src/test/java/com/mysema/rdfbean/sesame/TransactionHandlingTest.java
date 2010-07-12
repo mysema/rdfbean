@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Locale;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.rio.RDFParseException;
@@ -20,6 +21,7 @@ import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PathMetadataFactory;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.object.DefaultConfiguration;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.Restriction;
@@ -40,6 +42,8 @@ public class TransactionHandlingTest extends SessionTestBase{
     
     private SessionFactoryImpl sessionFactory;
     
+    private Session session;
+    
     @Before
     public void setUp() throws StoreException, RDFParseException, IOException{
         sessionFactory = new SessionFactoryImpl();
@@ -47,6 +51,13 @@ public class TransactionHandlingTest extends SessionTestBase{
         sessionFactory.setRepository(repository);
         sessionFactory.setLocales(Collections.singleton(FI));
         sessionFactory.initialize();
+    }
+    
+    @After
+    public void tearDown() throws IOException{
+        if (session != null){
+            session.close();
+        }
     }
     
     @Test
@@ -59,13 +70,13 @@ public class TransactionHandlingTest extends SessionTestBase{
         tx.commit();
         session.close();
         
-        session = createSession(FI, OWL.class.getPackage());
+        session = sessionFactory.openSession();
         assertEquals(count + 2, session.from(restriction).list(restriction).size());
     }
         
     @Test
     public void rollback() throws StoreException, ClassNotFoundException, IOException{
-        session = createSession(FI, OWL.class.getPackage());
+        session = sessionFactory.openSession();
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
         session.save(new Restriction());
@@ -73,7 +84,7 @@ public class TransactionHandlingTest extends SessionTestBase{
         tx.rollback();
         session.close();
         
-        session = createSession(FI, OWL.class.getPackage());
+        session = sessionFactory.openSession();
         assertEquals(count, session.from(restriction).list(restriction).size());       
     }
 

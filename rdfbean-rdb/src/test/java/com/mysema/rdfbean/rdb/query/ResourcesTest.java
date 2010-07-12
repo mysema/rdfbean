@@ -12,12 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.ResourceDomain;
 import com.mysema.rdfbean.domains.ResourceDomain.Resource;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.rdb.RDBConnection;
@@ -57,16 +53,6 @@ public class ResourcesTest extends AbstractRDBTest implements ResourceDomain{
         assertTrue(resources.contains(resource));        
     }
     
-    @Test
-    public void rdfType_count_via_Repository(){
-        connection = repository.openConnection();
-        List<STMT> typeStmts = connection.find(null, RDF.type, new UID(TEST.NS,Resource.class.getSimpleName()), null, false);
-        assertEquals(count + 1, typeStmts.size());
-        for (STMT typeStmt : typeStmts){            
-            assertEquals(1, connection.find(typeStmt.getSubject(), RDF.type, null, null, false).size());
-        }                   
-    }
-
     @Test
     public void findInstances(){
         assertEquals(count + 1, session.findInstances(Resource.class).size());

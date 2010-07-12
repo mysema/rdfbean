@@ -22,8 +22,11 @@ import org.openrdf.store.StoreException;
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.domains.EntityDomain;
+import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.object.BeanSubQuery;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
  * SubQueryTest provides
@@ -31,6 +34,7 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig(Entity.class)
 public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     
     private List<DateTime> dateTimes = new ArrayList<DateTime>();
@@ -39,9 +43,10 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     
     private Entity var2 = Alias.alias(Entity.class, "var2");
     
+    private Session session;
+    
     @Before
     public void setUp() throws StoreException{
-        session = createSession(Entity.class);
         DateTime dateTime = new DateTime();   
         dateTime = dateTime.minus(dateTime.getMillisOfSecond());
         for (Long rev : Arrays.asList(5l, 10l, 15l, 20l, 25l, 30l)){

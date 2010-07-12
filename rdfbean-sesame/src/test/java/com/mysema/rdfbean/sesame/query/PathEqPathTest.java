@@ -13,7 +13,10 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.EntityDomain;
+import com.mysema.rdfbean.domains.EntityDomain.Entity;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
  * PathEqPathTest provides
@@ -21,12 +24,13 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig(Entity.class)
 public class PathEqPathTest extends SessionTestBase implements EntityDomain {
+    
+    private Session session;
     
     @Test
     public void test() throws StoreException{
-        session = createSession(Entity.class);
-        
         Entity entity = new Entity();
         entity.text1 = "a";
         entity.text2 = "a";

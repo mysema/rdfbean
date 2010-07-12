@@ -12,14 +12,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.types.expr.EBoolean;
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 
 
@@ -29,34 +31,31 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig({SimpleType.class, SimpleType2.class})
 public class SimpleQueriesTest extends SessionTestBase{
          
+    private Session session;
+    
     private SimpleType instance;
     
     private List<SimpleType> instances;
     
     private BeanQuery where(EBoolean... conditions) {
-        return from(var).where(conditions);
+        return session.from(var).where(conditions);
     }
-    
-
-    @Before
-    public void setUp() throws StoreException{
-        session = createSession(FI, SimpleType.class, SimpleType2.class);
-    }
-    
+        
     @Test
     public void allIds(){
         System.out.println("allIds");
-        instances = from(var).list(var);
+        instances = session.from(var).list(var);
         List<String> ids = Arrays.asList(instances.get(0).getId(), instances.get(1).getId());        
-        assertEquals(ids, from(var).list(var.id)); 
+        assertEquals(ids, session.from(var).list(var.id)); 
     }
     
     @Test
     public void allInstances(){
         System.out.println("allInstances");
-        instances = from(var).list(var);
+        instances = session.from(var).list(var);
         assertEquals(2, instances.size());
         for (SimpleType i : instances){
             System.out.println(i.getId() + ", " + i.getDirectProperty());
@@ -66,13 +65,13 @@ public class SimpleQueriesTest extends SessionTestBase{
     @Test
     public void allDistinctInstances(){
         System.out.println("allDistinctInstances");
-        assertEquals(2, from(var).listDistinct(var).size());
+        assertEquals(2, session.from(var).listDistinct(var).size());
     }
     
     @Test
     public void byId(){
         System.out.println("byId");
-        String id = from(var).list(var.id).get(0);
+        String id = session.from(var).list(var.id).get(0);
         instance = where(var.id.eq(id)).uniqueResult(var);
         assertNotNull(instance);
         assertEquals(id, instance.getId());
@@ -81,7 +80,7 @@ public class SimpleQueriesTest extends SessionTestBase{
     @Test
     public void byIdNegated(){
         System.out.println("byIdNegated");
-        instances = from(var).list(var);
+        instances = session.from(var).list(var);
         instance = where(var.id.ne(instances.get(0).getId())).uniqueResult(var);
         assertNotNull(instance);
         assertEquals(instances.get(1).getId(), instance.getId());
@@ -119,7 +118,7 @@ public class SimpleQueriesTest extends SessionTestBase{
     @Test
     public void idAndDirectProperties(){        
         System.out.println("idAndDirectProperties");
-        from(var).list(var.id, var.directProperty);        
+        session.from(var).list(var.id, var.directProperty);        
     }
  
     @Test

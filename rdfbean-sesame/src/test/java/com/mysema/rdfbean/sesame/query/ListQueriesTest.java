@@ -9,15 +9,17 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.ENumber;
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.object.BeanQuery;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
  * ListQueriesTest provides
@@ -25,16 +27,13 @@ import com.mysema.rdfbean.sesame.SessionTestBase;
  * @author tiwe
  * @version $Id$
  */
+@TestConfig({SimpleType.class, SimpleType2.class})
 public class ListQueriesTest extends SessionTestBase{
     
+    private Session session;
+    
     private ENumber<Integer> size = var.listProperty.size();
-    
-
-    @Before
-    public void setUp() throws StoreException{
-        session = createSession(FI, SimpleType.class, SimpleType2.class);
-    }
-    
+        
     @Test
     public void in(){
         where(var.listProperty.contains(var.listProperty.get(0))).count();
@@ -43,7 +42,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
     
     private BeanQuery where(EBoolean... conditions) {
-        return from(var).where(conditions);
+        return session.from(var).where(conditions);
     }
 
     @Test
