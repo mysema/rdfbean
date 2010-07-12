@@ -30,7 +30,7 @@ public class SessionRule implements MethodRule{
                     Session session = SessionUtil.openSession(repository, new Locale("fi"), config.value());
                     RDFBeanTransaction tx = session.beginTransaction();                   
                     try{
-                        Field field = target.getClass().getDeclaredField("session");
+                        Field field = target.getClass().getField("session");
                         field.setAccessible(true);
                         field.set(target, session);
                         base.evaluate();    

@@ -15,7 +15,6 @@ import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.object.BeanQuery;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -23,8 +22,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
 public class PagingTest extends AbstractRDBTest implements EntityDomain{
 
     private static final Entity entity = Alias.alias(Entity.class);
-    
-    private Session session;
     
     @Before
     public void setUp(){

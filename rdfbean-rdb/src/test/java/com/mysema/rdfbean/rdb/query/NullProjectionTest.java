@@ -12,14 +12,11 @@ import org.junit.Test;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.UserProjectionDomain;
 import com.mysema.rdfbean.domains.UserProjectionDomain.User;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.TestConfig;
 
 @TestConfig(User.class)
 public class NullProjectionTest extends AbstractRDBTest implements UserProjectionDomain{
-
-    private Session session;
     
     @Test
     public void testOrderBy() throws IOException{

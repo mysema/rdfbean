@@ -18,14 +18,11 @@ import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain.Document;
 import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain.Entity;
 import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain.Revision;
 import com.mysema.rdfbean.object.BeanSubQuery;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.TestConfig;
 
 @TestConfig({Document.class, Entity.class, Revision.class})
 public class BeanSubQuery2Test extends AbstractRDBTest implements EntityDocumentRevisionDomain{
-    
-    private Session session;
     
     private Revision rev1 = Alias.alias(Revision.class,"rev1");
     

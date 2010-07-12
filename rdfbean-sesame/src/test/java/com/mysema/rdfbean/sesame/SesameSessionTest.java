@@ -3,7 +3,6 @@ package com.mysema.rdfbean.sesame;
 import org.junit.Test;
 
 import com.mysema.query.types.path.PathBuilder;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.testutil.TestConfig;
 
 
@@ -15,8 +14,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
  */
 @TestConfig({})
 public class SesameSessionTest extends SessionTestBase {
-    
-    private Session session;
     
     @Test(expected=IllegalArgumentException.class)
     public void findUnknown(){

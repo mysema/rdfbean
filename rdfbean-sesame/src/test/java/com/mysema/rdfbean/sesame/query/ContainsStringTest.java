@@ -18,7 +18,6 @@ import com.mysema.rdfbean.domains.EntityRevisionTermDomain;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Entity;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.EntityRevision;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Term;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -30,8 +29,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
  */
 @TestConfig({Entity.class, EntityRevision.class, Term.class})
 public class ContainsStringTest extends SessionTestBase implements EntityRevisionTermDomain{
-    
-    private Session session;
     
     @Test
     public void test() throws StoreException{

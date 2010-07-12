@@ -20,7 +20,6 @@ import com.mysema.query.types.Expr;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -40,8 +39,6 @@ public class BeanQueryStandardTest extends SessionTestBase {
     protected QSimpleType v2 = new QSimpleType("v2");
     
     private SimpleType2 other;
-    
-    private Session session;
     
     private QueryExecution standardTest = new QueryExecution(Module.RDFBEAN, Target.MEM){        
         @Override

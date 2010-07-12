@@ -24,7 +24,6 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 public class MemoryStoreTest implements ItemDomain{
     
     private static final String DATA_DIR = "target/MemoryStoreTest";
-
     
     private SessionFactoryImpl sessionFactory;
     

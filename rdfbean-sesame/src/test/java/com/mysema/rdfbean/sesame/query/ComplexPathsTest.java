@@ -21,7 +21,6 @@ import com.mysema.rdfbean.domains.NoteRevisionTermDomain;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Note;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.NoteRevision;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Term;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -33,8 +32,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
  */
 @TestConfig({NoteRevision.class, Note.class, Term.class})
 public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTermDomain{
-    
-    private Session session;
     
     @Test
     public void optionalPaths() throws StoreException, IOException{

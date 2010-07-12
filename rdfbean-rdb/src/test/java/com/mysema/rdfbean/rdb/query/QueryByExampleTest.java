@@ -8,14 +8,11 @@ import com.mysema.rdfbean.domains.UserProfileDomain;
 import com.mysema.rdfbean.domains.UserProfileDomain.Identifiable;
 import com.mysema.rdfbean.domains.UserProfileDomain.Profile;
 import com.mysema.rdfbean.domains.UserProfileDomain.User;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.TestConfig;
 
 @TestConfig({User.class, Profile.class, Identifiable.class})
 public class QueryByExampleTest extends AbstractRDBTest implements UserProfileDomain{
-    
-    private Session session;
     
     @Test
     public void test(){

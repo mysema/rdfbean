@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -24,8 +23,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
  */
 @TestConfig({SimpleType.class, SimpleType2.class})
 public class CountTest extends SessionTestBase{
-
-    private Session session;
         
     @Test
     public void test(){

@@ -23,7 +23,6 @@ import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain.Document;
 import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain.Entity;
 import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain.Revision;
 import com.mysema.rdfbean.object.BeanSubQuery;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -39,8 +38,6 @@ public class BeanSubQuery2Test extends SessionTestBase implements EntityDocument
     private Revision rev1 = Alias.alias(Revision.class,"rev1");
     
     private Revision rev2 = Alias.alias(Revision.class,"rev2");
-
-    private Session session;
     
     @Before
     public void setUp() throws StoreException{

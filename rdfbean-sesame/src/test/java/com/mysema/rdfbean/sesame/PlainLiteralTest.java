@@ -15,7 +15,6 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.testutil.TestConfig;
 
 /**
@@ -28,8 +27,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
 public class PlainLiteralTest extends SessionTestBase{
     
     private final QSimpleType simpleType = QSimpleType.simpleType;
-    
-    private Session session;
     
     @Test
     public void test() throws StoreException, IOException{                

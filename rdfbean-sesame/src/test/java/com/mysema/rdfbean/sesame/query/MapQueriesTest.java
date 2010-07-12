@@ -17,7 +17,6 @@ import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EMap;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -36,8 +35,6 @@ public class MapQueriesTest extends SessionTestBase{
 
     private SimpleType2 instance;
     
-    private Session session;
-
     @Before
     public void setUp() throws StoreException{
         instance = session.from(QSimpleType2.simpleType2).uniqueResult(QSimpleType2.simpleType2);    

@@ -40,6 +40,8 @@ public class SessionTestBase implements SimpleDomain{
     @Rule
     public SessionRule sessionRule = new SessionRule(repository);
     
+    public Session session;
+    
     private List<Session> openSessions = new ArrayList<Session>();
         
     @BeforeClass

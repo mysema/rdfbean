@@ -138,11 +138,11 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         }
                 
         // order
-        for (OrderSpecifier<?> order : metadata.getOrderBy()){
-            optional = true;
-            query.orderBy(new OrderSpecifier(order.getOrder(), transform(query,order.getTarget(),true)));
-            optional = false;
+        optional = true;
+        for (OrderSpecifier<?> order : metadata.getOrderBy()){            
+            query.orderBy(new OrderSpecifier(order.getOrder(), transform(query,order.getTarget(),true)));            
         }
+        optional = false;
         
         // paging
         if (metadata.getModifiers() != null){

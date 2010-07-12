@@ -18,7 +18,6 @@ import org.openrdf.store.StoreException;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.UserProjectionDomain;
 import com.mysema.rdfbean.domains.UserProjectionDomain.User;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -30,8 +29,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
  */
 @TestConfig(User.class)
 public class NullProjectionTest extends SessionTestBase implements UserProjectionDomain{
-    
-    private Session session;
     
     @Test
     public void testOrderBy() throws StoreException, IOException{

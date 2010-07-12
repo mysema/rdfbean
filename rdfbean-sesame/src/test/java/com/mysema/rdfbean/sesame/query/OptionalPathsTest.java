@@ -18,7 +18,6 @@ import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.NoteTermDomain;
 import com.mysema.rdfbean.domains.NoteTermDomain.Note;
 import com.mysema.rdfbean.domains.NoteTermDomain.Term;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -30,8 +29,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
  */
 @TestConfig({Note.class, Term.class})
 public class OptionalPathsTest extends SessionTestBase implements NoteTermDomain{
-    
-    private Session session;
     
     @Test
     public void test() throws StoreException, IOException{

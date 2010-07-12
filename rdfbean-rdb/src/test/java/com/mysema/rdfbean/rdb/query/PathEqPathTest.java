@@ -8,14 +8,11 @@ import org.junit.Test;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.domains.EntityDomain.Entity;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.TestConfig;
 
 @TestConfig({Entity.class})
 public class PathEqPathTest extends AbstractRDBTest implements EntityDomain{
-    
-    private Session session;
     
     @Test
     public void test(){

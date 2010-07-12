@@ -15,7 +15,6 @@ import com.mysema.query.types.path.PString;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.object.BeanQuery;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -31,8 +30,6 @@ public class StringHandlingTest extends SessionTestBase{
     
     private PString stringPath = var.listProperty.get(1).directProperty;
     
-    private Session session;
-
     private BeanQuery where(EBoolean... conditions) {
         return session.from(var).where(conditions);
     }

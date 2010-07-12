@@ -13,7 +13,6 @@ import org.junit.Test;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.UserDomain;
 import com.mysema.rdfbean.domains.UserDomain.User;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -21,8 +20,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
 public class OrderTest extends AbstractRDBTest implements UserDomain{
     
     private User user = Alias.alias(User.class, "u");
-    
-    private Session session;
     
     @Test
     public void testOrderBy() throws  IOException{

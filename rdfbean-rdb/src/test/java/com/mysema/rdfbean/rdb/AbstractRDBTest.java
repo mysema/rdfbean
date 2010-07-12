@@ -11,6 +11,7 @@ import org.junit.Rule;
 import com.mysema.query.sql.H2Templates;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.rdfbean.model.MemoryIdSequence;
+import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.testutil.SessionRule;
 
 /**
@@ -29,6 +30,8 @@ public abstract class AbstractRDBTest {
     
     @Rule
     public SessionRule sessionRule = new SessionRule(repository);
+    
+    public Session session;
     
     @BeforeClass
     public static void setUpClass(){

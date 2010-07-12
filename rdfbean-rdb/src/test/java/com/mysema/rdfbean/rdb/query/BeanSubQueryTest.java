@@ -18,7 +18,6 @@ import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.object.BeanSubQuery;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.TestConfig;
 
@@ -30,8 +29,6 @@ public class BeanSubQueryTest extends AbstractRDBTest implements EntityDomain{
     private Entity var1 = Alias.alias(Entity.class, "var1");
     
     private Entity var2 = Alias.alias(Entity.class, "var2");
-    
-    private Session session;
     
     @Before
     public void setUp(){

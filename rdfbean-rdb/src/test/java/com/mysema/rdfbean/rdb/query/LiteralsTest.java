@@ -10,15 +10,12 @@ import org.junit.Test;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.LiteralsDomain;
 import com.mysema.rdfbean.domains.LiteralsDomain.Literals;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.TestConfig;
 
 @TestConfig(Literals.class)
 public class LiteralsTest extends AbstractRDBTest implements LiteralsDomain{
      
-    private Session session;
-    
     @Test
     public void test(){
        Literals literals = new Literals();
