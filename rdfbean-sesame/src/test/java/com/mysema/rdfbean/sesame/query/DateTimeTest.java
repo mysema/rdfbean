@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.sesame.SessionTestBase;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
 /**
  * DateTimeTest provides
@@ -20,7 +20,7 @@ import com.mysema.rdfbean.testutil.TestConfig;
  * @author tiwe
  * @version $Id$
  */
-@TestConfig({SimpleType.class, SimpleType2.class})
+@SessionConfig({SimpleType.class, SimpleType2.class})
 public class DateTimeTest extends SessionTestBase{
     
     @Test

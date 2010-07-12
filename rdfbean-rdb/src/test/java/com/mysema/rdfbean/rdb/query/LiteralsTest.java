@@ -11,9 +11,9 @@ import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.LiteralsDomain;
 import com.mysema.rdfbean.domains.LiteralsDomain.Literals;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig(Literals.class)
+@SessionConfig(Literals.class)
 public class LiteralsTest extends AbstractRDBTest implements LiteralsDomain{
      
     @Test

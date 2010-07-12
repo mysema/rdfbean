@@ -16,9 +16,9 @@ import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Note;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.NoteRevision;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Term;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig({Note.class, NoteRevision.class, Term.class})
+@SessionConfig({Note.class, NoteRevision.class, Term.class})
 public class ComplexPathsTest extends AbstractRDBTest implements NoteRevisionTermDomain{
     
     @Test

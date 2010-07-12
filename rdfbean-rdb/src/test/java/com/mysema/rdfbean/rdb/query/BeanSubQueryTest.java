@@ -19,9 +19,9 @@ import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig(Entity.class)
+@SessionConfig(Entity.class)
 public class BeanSubQueryTest extends AbstractRDBTest implements EntityDomain{
     
     private List<DateTime> dateTimes = new ArrayList<DateTime>();

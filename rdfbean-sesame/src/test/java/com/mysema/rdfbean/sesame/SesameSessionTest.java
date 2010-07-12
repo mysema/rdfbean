@@ -3,7 +3,7 @@ package com.mysema.rdfbean.sesame;
 import org.junit.Test;
 
 import com.mysema.query.types.path.PathBuilder;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
 
 /**
@@ -12,7 +12,7 @@ import com.mysema.rdfbean.testutil.TestConfig;
  * @author tiwe
  * @version $Id$
  */
-@TestConfig({})
+@SessionConfig({})
 public class SesameSessionTest extends SessionTestBase {
     
     @Test(expected=IllegalArgumentException.class)

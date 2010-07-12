@@ -9,9 +9,9 @@ import com.mysema.rdfbean.domains.UserProfileDomain.Identifiable;
 import com.mysema.rdfbean.domains.UserProfileDomain.Profile;
 import com.mysema.rdfbean.domains.UserProfileDomain.User;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig({User.class, Profile.class, Identifiable.class})
+@SessionConfig({User.class, Profile.class, Identifiable.class})
 public class QueryByExampleTest extends AbstractRDBTest implements UserProfileDomain{
     
     @Test

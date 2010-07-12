@@ -16,9 +16,9 @@ import com.mysema.rdfbean.domains.ResourceDomain;
 import com.mysema.rdfbean.domains.ResourceDomain.Resource;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.rdb.RDBConnection;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig(Resource.class)
+@SessionConfig(Resource.class)
 public class ResourcesTest extends AbstractRDBTest implements ResourceDomain{
         
     private Resource r = Alias.alias(Resource.class);

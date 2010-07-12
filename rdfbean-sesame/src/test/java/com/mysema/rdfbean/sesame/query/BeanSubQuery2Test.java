@@ -24,7 +24,7 @@ import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain.Entity;
 import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain.Revision;
 import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
 /**
  * BeanSubQuery2Test provides
@@ -32,7 +32,7 @@ import com.mysema.rdfbean.testutil.TestConfig;
  * @author tiwe
  * @version $Id$
  */
-@TestConfig({Document.class, Entity.class, Revision.class})
+@SessionConfig({Document.class, Entity.class, Revision.class})
 public class BeanSubQuery2Test extends SessionTestBase implements EntityDocumentRevisionDomain{
     
     private Revision rev1 = Alias.alias(Revision.class,"rev1");

@@ -12,9 +12,9 @@ import com.mysema.rdfbean.domains.InferenceDomain.Entity1;
 import com.mysema.rdfbean.domains.InferenceDomain.Entity2;
 import com.mysema.rdfbean.domains.InferenceDomain.Entity3;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig({Entity1.class, Entity2.class, Entity3.class})
+@SessionConfig({Entity1.class, Entity2.class, Entity3.class})
 public class InferenceTest extends AbstractRDBTest implements InferenceDomain{
         
     @Test

@@ -16,7 +16,7 @@ import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
 
 /**
@@ -25,7 +25,7 @@ import com.mysema.rdfbean.testutil.TestConfig;
  * @author tiwe
  * @version $Id$
  */
-@TestConfig({SimpleType.class, SimpleType2.class})
+@SessionConfig({SimpleType.class, SimpleType2.class})
 public class StringHandlingTest extends SessionTestBase{
     
     private PString stringPath = var.listProperty.get(1).directProperty;

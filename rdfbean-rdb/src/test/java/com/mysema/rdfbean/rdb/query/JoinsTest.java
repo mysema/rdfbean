@@ -16,9 +16,9 @@ import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Department;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.User;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.rdb.RDBQuery;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig({User.class, Department.class, Company.class})
+@SessionConfig({User.class, Department.class, Company.class})
 public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyDomain{
     
     private User u = Alias.alias(User.class);

@@ -13,9 +13,9 @@ import com.mysema.rdfbean.domains.NoteTermDomain;
 import com.mysema.rdfbean.domains.NoteTermDomain.Note;
 import com.mysema.rdfbean.domains.NoteTermDomain.Term;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig({Note.class, Term.class})
+@SessionConfig({Note.class, Term.class})
 public class OptionalPathsTest extends AbstractRDBTest implements NoteTermDomain{
     
     @Test

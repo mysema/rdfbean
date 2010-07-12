@@ -13,9 +13,9 @@ import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.UserProjectionDomain;
 import com.mysema.rdfbean.domains.UserProjectionDomain.User;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig(User.class)
+@SessionConfig(User.class)
 public class NullProjectionTest extends AbstractRDBTest implements UserProjectionDomain{
     
     @Test

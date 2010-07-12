@@ -22,7 +22,7 @@ public class SessionRule implements MethodRule{
 
     @Override
     public Statement apply(final Statement base, FrameworkMethod method, final Object target) {
-        final TestConfig config = target.getClass().getAnnotation(TestConfig.class);
+        final SessionConfig config = target.getClass().getAnnotation(SessionConfig.class);
         if (config != null){
             return new Statement(){
                 @Override

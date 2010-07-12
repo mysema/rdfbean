@@ -13,7 +13,7 @@ import org.junit.Ignore;
 @Documented
 @Target( TYPE )
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TestConfig {
+public @interface SessionConfig {
 
     Class<?>[] value();
     

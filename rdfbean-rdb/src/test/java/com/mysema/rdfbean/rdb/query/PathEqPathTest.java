@@ -9,9 +9,9 @@ import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig({Entity.class})
+@SessionConfig({Entity.class})
 public class PathEqPathTest extends AbstractRDBTest implements EntityDomain{
     
     @Test

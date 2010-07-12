@@ -14,9 +14,9 @@ import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.UserDomain;
 import com.mysema.rdfbean.domains.UserDomain.User;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
-@TestConfig(User.class)
+@SessionConfig(User.class)
 public class OrderTest extends AbstractRDBTest implements UserDomain{
     
     private User user = Alias.alias(User.class, "u");

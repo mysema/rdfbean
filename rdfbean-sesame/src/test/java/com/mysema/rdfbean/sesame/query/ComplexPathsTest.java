@@ -22,7 +22,7 @@ import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Note;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.NoteRevision;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Term;
 import com.mysema.rdfbean.sesame.SessionTestBase;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
 /**
  * OptionalPathsTest provides
@@ -30,7 +30,7 @@ import com.mysema.rdfbean.testutil.TestConfig;
  * @author tiwe
  * @version $Id$
  */
-@TestConfig({NoteRevision.class, Note.class, Term.class})
+@SessionConfig({NoteRevision.class, Note.class, Term.class})
 public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTermDomain{
     
     @Test

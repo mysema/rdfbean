@@ -20,7 +20,7 @@ import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.UserDomain;
 import com.mysema.rdfbean.domains.UserDomain.User;
 import com.mysema.rdfbean.sesame.SessionTestBase;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
 
 /**
@@ -29,7 +29,7 @@ import com.mysema.rdfbean.testutil.TestConfig;
  * @author tiwe
  * @version $Id$
  */
-@TestConfig(User.class)
+@SessionConfig(User.class)
 public class OrderTest extends SessionTestBase implements UserDomain{
     
     @Test

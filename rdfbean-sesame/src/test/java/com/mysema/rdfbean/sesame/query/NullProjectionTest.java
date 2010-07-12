@@ -19,7 +19,7 @@ import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.UserProjectionDomain;
 import com.mysema.rdfbean.domains.UserProjectionDomain.User;
 import com.mysema.rdfbean.sesame.SessionTestBase;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
 /**
  * NullProjectionTest provides
@@ -27,7 +27,7 @@ import com.mysema.rdfbean.testutil.TestConfig;
  * @author tiwe
  * @version $Id$
  */
-@TestConfig(User.class)
+@SessionConfig(User.class)
 public class NullProjectionTest extends SessionTestBase implements UserProjectionDomain{
     
     @Test

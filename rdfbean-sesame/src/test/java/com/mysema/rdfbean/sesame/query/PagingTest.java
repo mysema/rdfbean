@@ -22,7 +22,7 @@ import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
-import com.mysema.rdfbean.testutil.TestConfig;
+import com.mysema.rdfbean.testutil.SessionConfig;
 
 /**
  * PagingTest provides
@@ -30,7 +30,7 @@ import com.mysema.rdfbean.testutil.TestConfig;
  * @author tiwe
  * @version $Id$
  */
-@TestConfig(Entity.class)
+@SessionConfig(Entity.class)
 public class PagingTest extends SessionTestBase implements EntityDomain {
 
     private static final Entity entity = Alias.alias(Entity.class);
