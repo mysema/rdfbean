@@ -6,8 +6,8 @@ import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
+import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionUtil;
 
@@ -27,13 +27,14 @@ public class SessionRule implements MethodRule{
                 @Override
                 public void evaluate() throws Throwable {
                     Session session = SessionUtil.openSession(repository, config.value());
-                    session.setFlushMode(FlushMode.ALWAYS);                    
+                    RDFBeanTransaction tx = session.beginTransaction();                   
                     try{
                         Field field = target.getClass().getDeclaredField("session");
                         field.setAccessible(true);
                         field.set(target, session);
                         base.evaluate();    
                     }finally{
+                        tx.rollback();
                         session.close();
                     }
                     

@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.rdb;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -32,6 +33,8 @@ public abstract class AbstractRDBTest {
     
     @BeforeClass
     public static void setUpClass(){
+//        new File("target/h2.h2.db").delete();
+//        new File("target/h2.trace.db").delete();        
         dataSource = new JdbcDataSource();
         dataSource.setURL("jdbc:h2:target/h2");
         dataSource.setUser("sa");

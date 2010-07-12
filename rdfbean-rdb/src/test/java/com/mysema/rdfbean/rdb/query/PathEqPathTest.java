@@ -19,10 +19,6 @@ public class PathEqPathTest extends AbstractRDBTest implements EntityDomain{
     
     @Test
     public void test(){
-        for (Entity entity : session.findInstances(Entity.class)){
-            session.delete(entity);
-        }
-        
         Entity entity = new Entity();
         entity.text1 = "a";
         entity.text2 = "a";

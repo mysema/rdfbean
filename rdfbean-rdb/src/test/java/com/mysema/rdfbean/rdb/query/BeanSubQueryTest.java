@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -24,7 +23,6 @@ import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.TestConfig;
 
 @TestConfig(Entity.class)
-@Ignore
 public class BeanSubQueryTest extends AbstractRDBTest implements EntityDomain{
     
     private List<DateTime> dateTimes = new ArrayList<DateTime>();

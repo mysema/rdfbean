@@ -6,7 +6,6 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.query.BooleanBuilder;
@@ -24,13 +23,6 @@ import com.mysema.rdfbean.testutil.TestConfig;
 public class ComplexPathsTest extends AbstractRDBTest implements NoteRevisionTermDomain{
     
     private Session session;
-    
-    @Before
-    public void setUp(){
-        session.deleteAll(session.findInstances(Note.class).toArray());
-        session.deleteAll(session.findInstances(NoteRevision.class).toArray());
-        session.deleteAll(session.findInstances(Term.class).toArray());
-    }
     
     @Test
     public void optionalPaths() throws IOException{

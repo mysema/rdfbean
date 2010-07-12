@@ -3,7 +3,6 @@ package com.mysema.rdfbean.rdb.query;
 import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -20,14 +19,7 @@ import com.mysema.rdfbean.testutil.TestConfig;
 public class InferenceTest extends AbstractRDBTest implements InferenceDomain{
     
     private Session session;
-    
-    @Before
-    public void setUp(){
-        session.deleteAll(session.findInstances(Entity1.class).toArray());
-        session.deleteAll(session.findInstances(Entity2.class).toArray());
-        session.deleteAll(session.findInstances(Entity3.class).toArray());
-    }
-    
+        
     @Test
     @Ignore         // FIXME
     public void subClassOf() {
