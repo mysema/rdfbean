@@ -3,3 +3,5 @@ TODO : inference in RDBConnection
 TODO : support for list and map
 
 TODO : support for deep predicate paths
+
+TODO : support for JodaTime
