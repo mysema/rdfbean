@@ -19,6 +19,7 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.dml.SQLDeleteClause;
+import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
@@ -95,7 +96,6 @@ public class RDBConnection implements RDFConnection{
     }
 
     public void addStatement(STMT stmt) {
-        // TODO : fix merge clause behaviour in Querydsl SQL
         SQLQuery query = context.createQuery();
         query.from(statement);
         if (stmt.getContext() != null){
@@ -110,17 +110,19 @@ public class RDBConnection implements RDFConnection{
             return;
         }
         
-        SQLMergeClause merge = context.createMerge(statement);
-        merge.keys(statement.model, statement.subject, statement.predicate, statement.object);
+        // TODO : fix merge clause behaviour in Querydsl SQL
+//        SQLMergeClause merge = context.createMerge(statement);
+//        merge.keys(statement.model, statement.subject, statement.predicate, statement.object);
+        SQLInsertClause insert = context.createInsert(statement);
         if (stmt.getContext() != null){
-            merge.set(statement.model, getId(stmt.getContext()));    
+            insert.set(statement.model, getId(stmt.getContext()));    
         }else{
-            merge.set(statement.model, null);
+            insert.set(statement.model, null);
         }        
-        merge.set(statement.subject, getId(stmt.getSubject()));
-        merge.set(statement.predicate, getId(stmt.getPredicate()));
-        merge.set(statement.object, getId(stmt.getObject()));
-        merge.execute();
+        insert.set(statement.subject, getId(stmt.getSubject()));
+        insert.set(statement.predicate, getId(stmt.getPredicate()));
+        insert.set(statement.object, getId(stmt.getObject()));
+        insert.execute();
     }
 
     @Override
