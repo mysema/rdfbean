@@ -28,6 +28,8 @@ import com.mysema.commons.l10n.support.LocaleIterable;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Container;
+import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.Path;
@@ -93,6 +95,7 @@ public class UpdateTest {
         Set<Employee> employees = new LinkedHashSet<Employee>();
     
         @Predicate
+        @Container(ContainerType.LIST)
         List<Employee> managers = new ArrayList<Employee>();
         
         @Predicate

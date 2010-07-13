@@ -18,6 +18,8 @@ import com.mysema.query.types.path.PSet;
 import com.mysema.query.types.path.PString;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Container;
+import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.MapElements;
@@ -48,7 +50,8 @@ public interface SimpleDomain {
         @Predicate
         public int numericProperty;
         
-        @Predicate(ln="listProperty") 
+        @Predicate(ln="listProperty")
+        @Container(ContainerType.LIST)
         public List<SimpleType2> listProperty;
         
         @Predicate(ln="setProperty") 

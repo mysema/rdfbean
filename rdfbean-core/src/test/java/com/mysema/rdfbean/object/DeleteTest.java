@@ -39,6 +39,7 @@ public class DeleteTest {
     private String name;
     
     @Predicate
+    @Container(ContainerType.LIST)
     private List<DeleteTest> listReference = new ArrayList<DeleteTest>();
     
     @Predicate

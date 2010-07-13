@@ -372,11 +372,12 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     
     public boolean isList() {
         Container container = (Container) getAnnotation(Container.class);
-        if (container != null) {
-            return ContainerType.LIST == container.value();
-        } else {
-            return List.class.isAssignableFrom(getType());
-        }
+        return container != null && ContainerType.LIST == container.value();
+//        if (container != null) {
+//            return ContainerType.LIST == container.value();
+//        }else {
+//            return List.class.isAssignableFrom(getType());
+//        }
     }
     
     public boolean isLocalized() {
