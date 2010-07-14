@@ -20,6 +20,22 @@ public interface CompanyDepartmentEmployeeDomain {
         
         @Predicate(ln="company", inv=true)
         public List<Department> departments;
+
+        @Predicate(ln="company", inv=true)
+        public Department department;
+        
+        public ID getId() {
+            return id;
+        }
+
+        public List<Department> getDepartments() {
+            return departments;
+        }
+
+        public Department getDepartment() {
+            return department;
+        }
+        
     }
     
     @ClassMapping(ns=TEST.NS)
@@ -33,6 +49,20 @@ public interface CompanyDepartmentEmployeeDomain {
         
         @Predicate(ln="department", inv=true)
         public Set<Employee> employees;
+
+        public ID getId() {
+            return id;
+        }
+
+        public Company getCompany() {
+            return company;
+        }
+
+        public Set<Employee> getEmployees() {
+            return employees;
+        }
+        
+        
     }
     
     @ClassMapping(ns=TEST.NS)
@@ -43,6 +73,16 @@ public interface CompanyDepartmentEmployeeDomain {
         
         @Predicate
         public Department department;
+
+        public ID getId() {
+            return id;
+        }
+
+        public Department getDepartment() {
+            return department;
+        }
+        
+        
         
     }
     
