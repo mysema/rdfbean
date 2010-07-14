@@ -5,6 +5,9 @@
  */
 package com.mysema.rdfbean.xsd;
 
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
+
 
 /**
  * LongConverter provides
@@ -17,6 +20,16 @@ public class LongConverter extends AbstractConverter<Long> {
     @Override
     public Long fromString(String str) {
         return Long.valueOf(str);
+    }
+
+    @Override
+    public Class<Long> getJavaType() {
+        return Long.class;
+    }
+
+    @Override
+    public UID getType() {
+        return XSD.longType;
     }
 
 }

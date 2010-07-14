@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,7 +16,11 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 
+import com.mysema.query.sql.Configuration;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
@@ -32,7 +37,11 @@ import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.rdb.support.DateTimeType;
+import com.mysema.rdfbean.rdb.support.LocalDateType;
+import com.mysema.rdfbean.rdb.support.LocalTimeType;
 import com.mysema.rdfbean.xsd.DateConverter;
+import com.mysema.rdfbean.xsd.TimestampConverter;
 
 /**
  * RDBContext provides
@@ -44,7 +53,15 @@ public class RDBContext implements Closeable{
     
     private static final DateConverter dateConverter = new DateConverter();
     
+    private static final TimestampConverter timestampConverter = new TimestampConverter();
+    
     private static final Set<Class<?>> decimalClasses = RDBContext.<Class<?>>asSet(Double.class, Float.class, BigDecimal.class);    
+
+    private static final Set<Class<?>> dateClasses = RDBContext.<Class<?>>asSet(java.sql.Date.class, LocalDate.class);
+    
+    private static final Set<Class<?>> dateTimeClasses = RDBContext.<Class<?>>asSet(java.util.Date.class, Timestamp.class, DateTime.class);
+    
+    private static final Set<Class<?>> timeClasses = RDBContext.<Class<?>>asSet(java.sql.Time.class, LocalTime.class);
     
     private static final Set<UID> decimalTypes = asSet(XSD.decimalType, XSD.doubleType, XSD.floatType);
     
@@ -66,7 +83,7 @@ public class RDBContext implements Closeable{
     
     private final BidiMap<NODE,Long> localCache = new DualHashBidiMap<NODE,Long>();
         
-    private final SQLTemplates templates;
+    private final Configuration configuration;
     
     public RDBContext(IdFactory idFactory,
             BidiMap<NODE,Long> nodeCache,  
@@ -79,7 +96,10 @@ public class RDBContext implements Closeable{
         this.nodeCache = nodeCache;
         this.langCache = langCache;
         this.connection = connection;
-        this.templates = templates;
+        this.configuration = new Configuration(templates);
+        configuration.register(new DateTimeType());
+        configuration.register(new LocalDateType());
+        configuration.register(new LocalTimeType());
     }
     
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
@@ -107,19 +127,19 @@ public class RDBContext implements Closeable{
     }
     
     public SQLDeleteClause createDelete(PEntity<?> entity){
-        return new SQLDeleteClause(connection, templates, entity);
+        return new SQLDeleteClause(connection, configuration, entity);
     }
     
     public SQLInsertClause createInsert(PEntity<?> entity){
-        return new SQLInsertClause(connection, templates, entity);
+        return new SQLInsertClause(connection, configuration, entity);
     }
     
     public SQLMergeClause createMerge(PEntity<?> entity){
-        return new SQLMergeClause(connection, templates, entity);
+        return new SQLMergeClause(connection, configuration, entity);
     }
 
     public SQLQuery createQuery(){
-        return new SQLQueryImpl(connection, templates);
+        return new SQLQueryImpl(connection, configuration);
     }
 
     @Nullable
@@ -167,6 +187,18 @@ public class RDBContext implements Closeable{
     public boolean isDecimalClass(Class<?> cl){
         return decimalClasses.contains(cl);
     }
+    
+    public boolean isDateClass(Class<?> cl){
+        return dateClasses.contains(cl);
+    }
+    
+    public boolean isTimeClass(Class<?> cl){
+        return timeClasses.contains(cl);
+    }
+    
+    public boolean isDateTimeClass(Class<?> cl){
+        return dateTimeClasses.contains(cl);
+    }
 
     public boolean isDecimalType(UID uid) {
         return decimalTypes.contains(uid);
@@ -177,11 +209,11 @@ public class RDBContext implements Closeable{
     }
     
     public java.sql.Date toDate(LIT literal){
-        return new java.sql.Date(dateConverter.fromString(literal.getValue()).getTime());
+        return dateConverter.fromString(literal.getValue());
     }
     
     public java.sql.Timestamp toTimestamp(LIT literal){
-        return new java.sql.Timestamp(dateConverter.fromString(literal.getValue()).getTime());
+        return timestampConverter.fromString(literal.getValue());
     }
     
     public ID getID(String lexical, boolean resource){

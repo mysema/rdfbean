@@ -1,6 +1,5 @@
 package com.mysema.rdfbean.rdb;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,9 +35,12 @@ import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.ENumberConst;
 import com.mysema.query.types.expr.OBoolean;
 import com.mysema.query.types.expr.OSimple;
+import com.mysema.query.types.path.PDate;
+import com.mysema.query.types.path.PDateTime;
 import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PNumber;
 import com.mysema.query.types.path.PSimple;
+import com.mysema.query.types.path.PTime;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
@@ -169,8 +171,14 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
                 expr = cast(symbol.floating,path.getType());
             }else if (Number.class.isAssignableFrom(path.getType())){
                 expr = cast(symbol.integer,path.getType());
-            }else if (Date.class.isAssignableFrom(path.getType())){
+            }else if (path.getType().equals(java.util.Date.class)){    
                 expr = symbol.datetime;
+            }else if (context.isDateClass(path.getType())){
+                expr = new PDate(path.getType(), symbol.datetime.getMetadata()); 
+            }else if (context.isDateTimeClass(path.getType())){    
+                expr = new PDateTime(path.getType(), symbol.datetime.getMetadata());
+            }else if (context.isTimeClass(path.getType())){
+                expr = new PTime(path.getType(), symbol.datetime.getMetadata());
             }else{
                 expr = symbol.lexical;
             }symbols.put(path, expr);

@@ -12,6 +12,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import com.mysema.rdfbean.model.UID;
+
 /**
  * DateConverter provides
  *
@@ -40,5 +42,16 @@ public class CalendarConverter implements Converter<Calendar>{
     @Override
     public String toString(Calendar object) {
         return formatter.print(new DateTime(object.getTimeInMillis()));
+    }
+
+    @Override
+    public Class<Calendar> getJavaType() {
+        return Calendar.class;
+    }
+
+    @Override
+    public UID getType() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

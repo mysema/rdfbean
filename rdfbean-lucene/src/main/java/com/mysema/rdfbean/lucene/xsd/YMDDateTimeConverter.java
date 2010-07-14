@@ -9,6 +9,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.xsd.Converter;
 
 /**
@@ -47,6 +49,16 @@ public enum YMDDateTimeConverter implements Converter<DateTime>{
     @Override
     public String toString(DateTime object) {
         return formatter.print(object);
+    }
+
+    @Override
+    public Class<DateTime> getJavaType() {
+        return DateTime.class;
+    }
+
+    @Override
+    public UID getType() {
+        return XSD.dateTime;
     }
 
 }

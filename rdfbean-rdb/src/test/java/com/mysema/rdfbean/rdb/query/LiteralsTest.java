@@ -31,7 +31,7 @@ public class LiteralsTest extends AbstractRDBTest implements LiteralsDomain{
         
        Literals l = Alias.alias(Literals.class);
        assertEquals(Byte.valueOf(literals.getByteValue()), session.from($(l)).uniqueResult($(l.getByteValue())));
-//       assertEquals(literals.getDateValue(), session.from($(l)).uniqueResult($(l.getDateValue())));
+       assertEquals(literals.getDateValue(), session.from($(l)).uniqueResult($(l.getDateValue())));
        assertEquals(Double.valueOf(literals.getDoubleValue()), session.from($(l)).uniqueResult($(l.getDoubleValue())));
        assertEquals(Float.valueOf(literals.getFloatValue()), session.from($(l)).uniqueResult($(l.getFloatValue())));
        assertEquals(Integer.valueOf(literals.getIntValue()), session.from($(l)).uniqueResult($(l.getIntValue())));

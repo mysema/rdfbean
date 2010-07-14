@@ -7,15 +7,12 @@ package com.mysema.rdfbean.xsd;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.sql.Date;
 import java.util.Locale;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.mysema.rdfbean.query.QueryFunctions;
 
 /**
  * DateTest provides
@@ -40,15 +37,11 @@ public class DateConverterTest {
     
     @Test
     public void test(){
-        Date date = new Date();
+        Date date = new Date(0);
         DateConverter converter = new DateConverter();
         String str = converter.toString(date);
-        
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        assertEquals(
-            String.valueOf(cal.get(Calendar.WEEK_OF_YEAR)), 
-            QueryFunctions.week(str));
+        assertEquals(new java.util.Date(date.getTime()), new java.util.Date(converter.fromString(str).getTime()));
+        assertEquals(date, converter.fromString(str));
     }
 
 }

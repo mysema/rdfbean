@@ -165,4 +165,14 @@ public class NodeConverter implements Converter<NODE>{
         }
     }
 
+    @Override
+    public Class<NODE> getJavaType() {
+        return NODE.class;
+    }
+
+    @Override
+    public UID getType() {
+        return XSD.stringType;
+    }
+
 }

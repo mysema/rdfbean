@@ -9,6 +9,8 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.xsd.Converter;
 
 /**
@@ -39,6 +41,16 @@ public enum YMDLocalDateConverter implements Converter<LocalDate>{
     @Override
     public String toString(LocalDate object) {
         return formatter.print(object);
+    }
+
+    @Override
+    public Class<LocalDate> getJavaType() {
+        return LocalDate.class;
+    }
+
+    @Override
+    public UID getType() {
+        return XSD.date;
     }
 
 }

@@ -8,6 +8,9 @@ package com.mysema.rdfbean.xsd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
+
 /**
  * ClassConverter provides
  *
@@ -32,6 +35,17 @@ public class ClassConverter implements Converter<Class<?>>{
     @Override
     public String toString(Class<?> cl) {
         return cl.getName();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class<Class<?>> getJavaType() {
+        return (Class)Class.class;
+    }
+
+    @Override
+    public UID getType() {
+        return XSD.stringType;
     }
 
 }

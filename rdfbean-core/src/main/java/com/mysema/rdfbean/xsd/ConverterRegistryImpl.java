@@ -5,16 +5,10 @@
  */
 package com.mysema.rdfbean.xsd;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.ClassUtils;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
@@ -32,29 +26,32 @@ public class ConverterRegistryImpl implements ConverterRegistry{
     private final Map<Class<?>,UID> classToType = new HashMap<Class<?>,UID>();
 
     public ConverterRegistryImpl(){                
-        register(XSD.anyURI, URI.class, new URIConverter());
-        register(XSD.booleanType, Boolean.class, new BooleanConverter());
-        register(XSD.byteType, Byte.class, new ByteConverter());
-        register(XSD.date, LocalDate.class, new LocalDateConverter());
-        register(XSD.dateTime, DateTime.class, new DateTimeConverter());        
-        register(XSD.dateTime, java.util.Date.class, new DateConverter());
-        register(XSD.decimalType, BigDecimal.class, new BigDecimalConverter());
-        register(XSD.doubleType, Double.class, new DoubleConverter());
+        register(new URIConverter());
+        register(new BooleanConverter());
+        register(new ByteConverter());
+        register(new LocalDateConverter());
+        register(new DateConverter());
+        register(new DateTimeConverter());
+        register(new TimestampConverter());
+        register(new UtilDateConverter());
+        register(new BigDecimalConverter());
+        register(new DoubleConverter());
         // duration
-        register(XSD.floatType, Float.class, new FloatConverter());
+        register(new FloatConverter());
         // gDay
         // gMonth
         // gMonthDay
         // gYear
-        register(XSD.gYear, Year.class, new YearConverter());
+        register(new YearConverter());
         // gYearMonth
-        register(XSD.integerType, BigInteger.class, new BigIntegerConverter());
-        register(XSD.intType, Integer.class, new IntegerConverter());
-        register(XSD.longType, Long.class, new LongConverter());
-        register(XSD.shortType, Short.class, new ShortConverter());
+        register(new BigIntegerConverter());
+        register(new IntegerConverter());
+        register(new LongConverter());
+        register(new ShortConverter());
         register(XSD.stringType, String.class);
-        register(XSD.stringType, Character.class, new CharacterConverter());
-        register(XSD.time, LocalTime.class, new LocalTimeConverter());        
+        register(new CharacterConverter());
+        register(new LocalTimeConverter());   
+        register(new TimeConverter());
     }
 
     @Override
@@ -80,12 +77,12 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         classToType.put(clazz, type);     
     }
 
-    private <T> void register(UID type, Class<T> clazz, Converter<T> converter) {        
-        register(type, clazz);
-        classToConverter.put(clazz, converter);    
-        Class<?> primitiveType = ClassUtils.wrapperToPrimitive(clazz);
+    private <T> void register(Converter<T> converter) {        
+        register(converter.getType(), converter.getJavaType());
+        classToConverter.put(converter.getJavaType(), converter);    
+        Class<?> primitiveType = ClassUtils.wrapperToPrimitive(converter.getJavaType());
         if (primitiveType != null){
-            register(type, primitiveType);
+            register(converter.getType(), primitiveType);
             classToConverter.put(primitiveType, converter);
         }    
     }

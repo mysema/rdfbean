@@ -27,7 +27,7 @@ public class QSymbol extends PEntity<QSymbol> {
     public final PBoolean resource = createBoolean("RESOURCE");
     
     public final PNumber<Long> datatype = createNumber("DATATYPE", Long.class);
-
+    
     public final PDateTime<java.util.Date> datetime = createDateTime("DATETIME", java.util.Date.class);
 
     public final PNumber<Double> floating = createNumber("FLOATING", Double.class);

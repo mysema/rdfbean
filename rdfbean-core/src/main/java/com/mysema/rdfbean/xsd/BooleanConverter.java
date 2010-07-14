@@ -5,6 +5,9 @@
  */
 package com.mysema.rdfbean.xsd;
 
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
+
 
 /**
  * BooleanConverter provides
@@ -17,6 +20,16 @@ public class BooleanConverter extends AbstractConverter<Boolean> {
     @Override
     public Boolean fromString(String str) {
         return Boolean.valueOf(str);
+    }
+
+    @Override
+    public Class<Boolean> getJavaType() {
+        return Boolean.class;
+    }
+
+    @Override
+    public UID getType() {
+        return XSD.booleanType;
     }
 
 }

@@ -9,6 +9,8 @@ import java.util.Calendar;
 
 import org.joda.time.format.DateTimeFormat;
 
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.xsd.CalendarConverter;
 import com.mysema.rdfbean.xsd.Converter;
 
@@ -49,6 +51,16 @@ public enum YMDCalendarConverter implements Converter<Calendar>{
     @Override
     public String toString(Calendar date) {
         return converter.toString(date);
+    }
+
+    @Override
+    public Class<Calendar> getJavaType() {
+        return Calendar.class;
+    }
+
+    @Override
+    public UID getType() {
+        return XSD.dateTime;
     }
 
 }

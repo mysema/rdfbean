@@ -28,7 +28,7 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.xsd.DateConverter;
+import com.mysema.rdfbean.xsd.UtilDateConverter;
 
 /**
  * RDBConnectionTest provides
@@ -78,7 +78,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
     
     @Test
     public void testDateTime(){
-        DateConverter converter = new DateConverter();
+        UtilDateConverter converter = new UtilDateConverter();
         ID subject = new BID();
         LIT object = new LIT(converter.toString(new Date()), XSD.date);
         Set<STMT> additions = new HashSet<STMT>();

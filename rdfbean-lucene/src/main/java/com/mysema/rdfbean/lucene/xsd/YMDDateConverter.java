@@ -5,12 +5,15 @@
  */
 package com.mysema.rdfbean.lucene.xsd;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.joda.time.format.DateTimeFormat;
 
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.xsd.Converter;
-import com.mysema.rdfbean.xsd.DateConverter;
+import com.mysema.rdfbean.xsd.UtilDateConverter;
 
 
 /**
@@ -36,10 +39,10 @@ public enum YMDDateConverter implements Converter<Date>{
 
     YEAR("yyyy");
     
-    private final DateConverter converter;
+    private final UtilDateConverter converter;
     
     YMDDateConverter(String pattern) {
-        this.converter = new DateConverter(DateTimeFormat.forPattern(pattern));
+        this.converter = new UtilDateConverter(DateTimeFormat.forPattern(pattern));
     }
     
     @Override
@@ -51,5 +54,16 @@ public enum YMDDateConverter implements Converter<Date>{
     public String toString(Date date) {
         return converter.toString(date);
     }
+    
+    @Override
+    public Class<Date> getJavaType() {
+        return Date.class;
+    }
+
+    @Override
+    public UID getType() {
+        return XSD.dateTime;
+    }
+       
 
 }
