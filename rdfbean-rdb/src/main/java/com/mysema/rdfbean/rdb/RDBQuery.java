@@ -17,17 +17,7 @@ import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLSubQuery;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
-import com.mysema.query.types.Constant;
-import com.mysema.query.types.Custom;
-import com.mysema.query.types.EConstructor;
-import com.mysema.query.types.Expr;
-import com.mysema.query.types.Operation;
-import com.mysema.query.types.Operator;
-import com.mysema.query.types.Ops;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.Path;
-import com.mysema.query.types.PathType;
-import com.mysema.query.types.SubQuery;
+import com.mysema.query.types.*;
 import com.mysema.query.types.custom.CBoolean;
 import com.mysema.query.types.custom.CSimple;
 import com.mysema.query.types.expr.EBoolean;
@@ -35,6 +25,7 @@ import com.mysema.query.types.expr.ENumberConst;
 import com.mysema.query.types.expr.OBoolean;
 import com.mysema.query.types.expr.OSimple;
 import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.PNumber;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.ID;
@@ -177,18 +168,20 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     private QStatement getProperty(SQLCommonQuery<?> query, Path<?> parent, Path<?> target){
         if (!properties.containsKey(target)){
             MappedClass mc = configuration.getMappedClass(parent.getType());
+            MappedPath mp = mc.getMappedPath(target.getMetadata().getExpression().toString());
             QStatement statement = new QStatement(target.toString().replace('.', '_'));
             properties.put(target, statement);
             BooleanBuilder joinCondition = new BooleanBuilder();
+            PNumber<Long> propSymbol = mp.isInverse(0) ? statement.object : statement.subject;
             if (variables.containsKey(parent)){
                 // property of variable            
-                joinCondition.and(variables.get(parent).subject.eq(statement.subject));                            
+                joinCondition.and(variables.get(parent).subject.eq(propSymbol));                            
             }else if (properties.containsKey(parent)){
-                joinCondition.and(properties.get(parent).object.eq(statement.subject));
+                joinCondition.and(properties.get(parent).object.eq(propSymbol));
             }else{
                 throw new IllegalStateException();
             }
-            MappedPath mp = mc.getMappedPath(target.getMetadata().getExpression().toString());
+            
             // TODO : support longer paths
             joinCondition.and(statement.predicate.eq(getId(mp.getPredicatePath().get(0).getUID())));
             if (inOptionalPath()){
