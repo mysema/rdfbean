@@ -32,6 +32,7 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         register(new LocalDateConverter());
         register(new DateConverter());
         register(new DateTimeConverter());
+        register(new CalendarConverter());
         register(new TimestampConverter());
         register(new UtilDateConverter());
         register(new BigDecimalConverter());

@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.xsd;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import org.joda.time.DateTime;
@@ -13,6 +14,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 
 /**
  * DateConverter provides
@@ -22,7 +24,9 @@ import com.mysema.rdfbean.model.UID;
  */
 public class CalendarConverter implements Converter<Calendar>{
     
-    private static final DateTimeFormatter DEFAULT_FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
+    private static final DateTimeFormatter DEFAULT_FORMATTER = ISODateTimeFormat.dateTime();
+    
+    private static final DateTimeFormatter FALLBACK = ISODateTimeFormat.dateTimeNoMillis();
     
     private final DateTimeFormatter formatter;
     
@@ -36,12 +40,21 @@ public class CalendarConverter implements Converter<Calendar>{
     
     @Override
     public Calendar fromString(String str) {
-        return formatter.parseDateTime(str).toCalendar(Locale.getDefault());        
+        try{
+            return formatter.parseDateTime(str).toCalendar(Locale.getDefault());       
+        }catch(IllegalArgumentException e){
+            return FALLBACK.parseDateTime(str).toCalendar(Locale.getDefault());       
+        }        
     }
 
     @Override
     public String toString(Calendar object) {
-        return formatter.print(new DateTime(object.getTimeInMillis()));
+        DateTime dateTime = new DateTime(object.getTimeInMillis());
+        if (dateTime.getMillisOfSecond() != 0){
+            return formatter.print(dateTime);
+        }else{
+            return FALLBACK.print(dateTime);
+        }
     }
 
     @Override
@@ -51,7 +64,6 @@ public class CalendarConverter implements Converter<Calendar>{
 
     @Override
     public UID getType() {
-        // TODO Auto-generated method stub
-        return null;
+        return XSD.dateTime;
     }
 }
