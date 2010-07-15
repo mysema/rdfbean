@@ -172,10 +172,13 @@ public class RDBRepository implements Repository{
             for (int i = -128; i < 128; i++){
                 String str = String.valueOf(i);
                 nodes.add(new LIT(str, XSD.byteType));
-                nodes.add(new LIT(str, XSD.intType));
+                nodes.add(new LIT(str, XSD.shortType));
+                nodes.add(new LIT(str, XSD.intType));                
                 nodes.add(new LIT(str, XSD.longType));
-                nodes.add(new LIT(str+".0", XSD.doubleType));
+                nodes.add(new LIT(str, XSD.integerType));
                 nodes.add(new LIT(str+".0", XSD.floatType));
+                nodes.add(new LIT(str+".0", XSD.doubleType));                
+                nodes.add(new LIT(str+".0", XSD.decimalType));
             }
             
             for (NODE node : nodes){

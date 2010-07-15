@@ -35,8 +35,6 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDomain {
     
-    private String knownStringValue = "propertymap";
-    
     protected QSimpleType v1 = new QSimpleType("v1");
     
     protected QSimpleType v2 = new QSimpleType("v2");
@@ -56,24 +54,22 @@ public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDoma
     
     @Test
     public void test() throws InterruptedException{
-        SimpleType st = session.from(v1).uniqueResult(v1);
-        SimpleType2 inMap = st.getMapProperty().values().iterator().next();
-        SimpleType2 inList = st.getListProperty().iterator().next();
-        SimpleType2 inSet = st.getSetProperty().iterator().next();
+        SimpleType simpleType = new SimpleType();
+        simpleType.dateProperty = new java.util.Date();
+        simpleType.localizedProperty = "str";
+        simpleType.directProperty = "XXX";
+        simpleType.numericProperty = 2;
+        session.save(simpleType);
+        
         other = new SimpleType2();        
         session.save(other);
         
         standardTest.runBooleanTests(v1.directProperty.isNull(), v2.numericProperty.isNotNull());
-        standardTest.runCollectionTests(v1.setProperty, v2.setProperty, inSet, other);
-//        standardTest.dateTests(v1.dateProperty, v2.dateProperty, st.getDateProperty());
-        standardTest.runDateTimeTests(v1.dateProperty, v2.dateProperty, st.getDateProperty());
-        standardTest.runListTests(v1.listProperty, v2.listProperty, inList, other);
-        standardTest.runMapTests(v1.mapProperty, v2.mapProperty, "target_idspace", inMap, "xxx", other);
-        standardTest.runNumericCasts(v1.numericProperty, v2.numericProperty, 1);
-        standardTest.runNumericTests(v1.numericProperty, v2.numericProperty, 10);
-        standardTest.runStringTests(v1.directProperty, v2.directProperty, knownStringValue);
-//        standardTest.timeTests(null, null, null);
-        
+        standardTest.runDateTimeTests(v1.dateProperty, v2.dateProperty, simpleType.getDateProperty());
+        standardTest.runNumericCasts(v1.numericProperty, v2.numericProperty, simpleType.numericProperty);
+        standardTest.runNumericTests(v1.numericProperty, v2.numericProperty, simpleType.numericProperty);
+        standardTest.runStringTests(v1.directProperty, v2.directProperty, simpleType.directProperty);
+
         // delay the report slightly
         Thread.sleep(10);
         standardTest.report();        

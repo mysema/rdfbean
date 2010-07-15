@@ -69,7 +69,7 @@ public class RDBContext implements Closeable{
     
     private static final Set<UID> decimalTypes = asSet(XSD.decimalType, XSD.doubleType, XSD.floatType);
     
-    private static final Set<UID> integerTypes = asSet(XSD.integerType, XSD.intType, XSD.byteType, XSD.longType);
+    private static final Set<UID> integerTypes = asSet(XSD.integerType, XSD.longType, XSD.intType, XSD.shortType, XSD.byteType);
     
     public static <T> Set<T> asSet(T... args){
         return new HashSet<T>(Arrays.asList(args));

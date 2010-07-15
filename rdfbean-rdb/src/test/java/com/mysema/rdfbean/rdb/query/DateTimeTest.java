@@ -22,6 +22,7 @@ public class DateTimeTest extends AbstractRDBTest implements DateTimeDomain{
     
     @Test
     public void test(){
+        // FIXME
         Literals literals = new Literals();
         literals.date = new java.util.Date();
         literals.date2 = new java.sql.Date(0);

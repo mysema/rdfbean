@@ -193,7 +193,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             if (context.isDecimalClass(path.getType())){
                 expr = cast(symbol.floating,path.getType());
             }else if (Number.class.isAssignableFrom(path.getType())){
-                expr = cast(symbol.integer,path.getType());
+                expr = cast(symbol.integer, path.getType());
             }else if (path.getType().equals(java.util.Date.class)){    
                 expr = symbol.datetime;
             }else if (context.isDateClass(path.getType())){
@@ -480,6 +480,9 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             }else{
                 return inversePaths.contains(path) ? stmt.subject : stmt.object;
             }
+        }else if (pathType == PathType.DELEGATE){       
+            return transform(query, path.getMetadata().getExpression(), realType);
+            
         }else{
             throw new IllegalArgumentException("Unsupported path type " + pathType);
         }
