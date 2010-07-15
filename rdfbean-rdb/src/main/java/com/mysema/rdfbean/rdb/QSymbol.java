@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2010 Mysema Ltd.
+ * All rights reserved.
+ *
+ */
 package com.mysema.rdfbean.rdb;
 
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
