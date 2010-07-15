@@ -38,8 +38,10 @@ public class PathEqPathTest extends SessionTestBase implements EntityDomain {
         
         session.saveAll(entity, entity2);
         
-        Entity var = Alias.alias(Entity.class);
-        assertEquals(1l, session.from($(var)).where($(var.getText1()).eq($(var.getText2()))).count());
+        Entity e1 = Alias.alias(Entity.class,"e1");
+        Entity e2 = Alias.alias(Entity.class,"e2");
+        assertEquals(1l, session.from($(e1)).where($(e1.getText1()).eq($(e1.getText2()))).count());
+        assertEquals(2l, session.from($(e1),$(e2)).where($(e1.getText1()).eq($(e2.getText1())), $(e1).ne($(e2))).count());
         
     }
 }
