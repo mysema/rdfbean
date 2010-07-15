@@ -115,7 +115,11 @@ public class RDBContext implements Closeable{
         try {
             connection.setAutoCommit(false);
             connection.setReadOnly(readOnly);
-            connection.setTransactionIsolation(isolationLevel);
+            if (isolationLevel != -1){
+                connection.setTransactionIsolation(isolationLevel);    
+            }else{
+                connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            }            
             return new RDBTransaction(connection);
         } catch (SQLException e) {
             throw new RepositoryException(e);
