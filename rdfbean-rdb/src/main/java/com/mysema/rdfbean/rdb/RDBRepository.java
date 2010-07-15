@@ -26,18 +26,14 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
-import com.mysema.rdfbean.model.IdSequence;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.Operation;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RDFS;
-import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.model.RepositoryException;
-import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.CORE;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.MappedClass;
+import com.mysema.rdfbean.object.MappedPath;
+import com.mysema.rdfbean.object.MappedPredicate;
+import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.owl.OWL;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
@@ -57,6 +53,8 @@ public class RDBRepository implements Repository{
     
     private final BidiMap<Locale,Integer> langCache = new DualHashBidiMap<Locale,Integer>();
     
+    private final Configuration configuration; 
+    
     private final DataSource dataSource;
     
     private final SQLTemplates templates;
@@ -64,9 +62,11 @@ public class RDBRepository implements Repository{
     private final IdSequence idSequence;
     
     public RDBRepository(
+            Configuration configuration,
             DataSource dataSource, 
             SQLTemplates templates, 
             IdSequence idSequence) {
+        this.configuration = Assert.notNull(configuration,"configuration");
         this.dataSource = Assert.notNull(dataSource,"dataSource");
         this.templates = Assert.notNull(templates,"templates");
         this.idSequence = Assert.notNull(idSequence, "idSequence");
@@ -140,11 +140,31 @@ public class RDBRepository implements Repository{
         RDBConnection conn = openConnection();
         try{
             Set<NODE> nodes = new HashSet<NODE>();
+            
+            // ontology resources
+            for (MappedClass mappedClass : configuration.getMappedClasses()){
+                nodes.add(mappedClass.getUID());
+                for (MappedPath path : mappedClass.getProperties()){
+                    MappedProperty<?> property = path.getMappedProperty();
+                    if (property.getKeyPredicate() != null){
+                        nodes.add(property.getKeyPredicate());
+                    }
+                    if (property.getValuePredicate() != null){
+                        nodes.add(property.getValuePredicate());
+                    }
+                    for (MappedPredicate predicate : path.getPredicatePath()){
+                        nodes.add(predicate.getUID());
+                    }
+                }
+            }
+            
             // common resources
+            nodes.add(CORE.localId);
             nodes.addAll(RDF.ALL);
             nodes.addAll(RDFS.ALL);
             nodes.addAll(XSD.ALL);
             nodes.addAll(OWL.ALL);   
+            
             // commons literals
             nodes.add(new LIT(""));
             nodes.add(new LIT("true",XSD.booleanType));
@@ -157,7 +177,6 @@ public class RDBRepository implements Repository{
                 nodes.add(new LIT(str+".0", XSD.doubleType));
                 nodes.add(new LIT(str+".0", XSD.floatType));
             }
-            // TODO ontology types and properties
             
             for (NODE node : nodes){
                 Long nodeId = conn.addNode(node);

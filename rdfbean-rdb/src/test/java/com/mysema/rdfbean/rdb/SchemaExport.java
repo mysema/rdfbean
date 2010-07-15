@@ -11,6 +11,8 @@ import com.mysema.query.sql.MetaDataExporter;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.rdfbean.model.MemoryIdSequence;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 
 /**
  * SchemaExport provides
@@ -29,8 +31,9 @@ public class SchemaExport {
         
         // export
         try{
+            Configuration configuration = new DefaultConfiguration();
             SQLTemplates templates = new H2Templates();
-            Repository repository = new RDBRepository(ds, templates, new MemoryIdSequence());
+            Repository repository = new RDBRepository(configuration, ds, templates, new MemoryIdSequence());
             repository.initialize();
             
             MetaDataExporter exporter = new MetaDataExporter("Q", "com.mysema.rdfbean.rdb.schema", null, null, new File("src/main/java"));

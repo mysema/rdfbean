@@ -86,8 +86,7 @@ public class EqualsTransformer implements OperationTransformer{
             && arg2 instanceof Constant){
             return colSize.transform(operation, context);
         }
-        
-                
+                        
         ValueExpr lhs = context.toValue(arg1);
         ValueExpr rhs = context.toValue(arg2);
         return new Compare(lhs, rhs, ops.get(operation.getOperator()));        
@@ -138,7 +137,12 @@ public class EqualsTransformer implements OperationTransformer{
                
             }                                
         }else{
-            ID id = context.getResourceForLID((Constant<String>)constant);
+            ID id;
+            if (ID.class.isAssignableFrom(constant.getType())){
+                id = (ID) ((Constant)constant).getConstant();
+            }else{
+                id = context.getResourceForLID((Constant<String>)constant);
+            }
             constValue = context.toValue(id);
         }
         

@@ -18,17 +18,7 @@ import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLSubQuery;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
-import com.mysema.query.types.Constant;
-import com.mysema.query.types.Custom;
-import com.mysema.query.types.EConstructor;
-import com.mysema.query.types.Expr;
-import com.mysema.query.types.Operation;
-import com.mysema.query.types.Operator;
-import com.mysema.query.types.Ops;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.Path;
-import com.mysema.query.types.PathType;
-import com.mysema.query.types.SubQuery;
+import com.mysema.query.types.*;
 import com.mysema.query.types.custom.CBoolean;
 import com.mysema.query.types.custom.CSimple;
 import com.mysema.query.types.expr.EBoolean;
@@ -41,6 +31,7 @@ import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PNumber;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PTime;
+import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
@@ -49,6 +40,7 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
+import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -123,35 +115,66 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         if (!properties.containsKey(target)){
             MappedClass mc = configuration.getMappedClass(parent.getType());
             MappedPath mp = mc.getMappedPath(target.getMetadata().getExpression().toString());
-            QStatement statement = new QStatement(target.toString().replace('.', '_'));
-            properties.put(target, statement);
-            BooleanBuilder joinCondition = new BooleanBuilder();
-            PNumber<Long> propSymbol = mp.isInverse(0) ? statement.object : statement.subject;
-            if (mp.isInverse(0)){
-                inversePaths.add(target);
-            }
-            if (variables.containsKey(parent)){
-                // property of variable            
-                joinCondition.and(variables.get(parent).subject.eq(propSymbol));                            
-            }else if (properties.containsKey(parent)){
-                joinCondition.and(properties.get(parent).object.eq(propSymbol));
+            // id property
+            if (mp.getPredicatePath().isEmpty()){
+                // local
+                if (mp.getMappedProperty().getType().equals(String.class)){
+                    QStatement statement = new QStatement(target.toString().replace('.', '_'));
+                    properties.put(target, statement);
+                    BooleanBuilder joinCondition = new BooleanBuilder();
+                    if (variables.containsKey(parent)){
+                        joinCondition.and(variables.get(parent).subject.eq(statement.subject));                            
+                    }else if (properties.containsKey(parent)){
+                        joinCondition.and(properties.get(parent).object.eq(statement.subject));
+                    }else{
+                        throw new IllegalStateException();
+                    }                    
+                    joinCondition.and(statement.predicate.eq(getId(CORE.localId)));
+                    if (inOptionalPath()){
+                        query.leftJoin(statement).on(joinCondition);
+                    }else{
+                        query.innerJoin(statement).on(joinCondition);    
+                    }                            
+                    return statement;
+                    
+                // resource    
+                }else{
+                    throw new IllegalStateException();
+                }
+                
+            // other property 
             }else{
-                throw new IllegalStateException();
-            }
-            
-            // TODO : support longer paths
-            joinCondition.and(statement.predicate.eq(getId(mp.getPredicatePath().get(0).getUID())));
-            if (inOptionalPath()){
-                query.leftJoin(statement).on(joinCondition);
-            }else{
-                query.innerJoin(statement).on(joinCondition);    
-            }                            
-            return statement;    
+                QStatement statement = new QStatement(target.toString().replace('.', '_'));
+                properties.put(target, statement);
+                BooleanBuilder joinCondition = new BooleanBuilder();
+                PNumber<Long> propSymbol = mp.isInverse(0) ? statement.object : statement.subject;
+                if (mp.isInverse(0)){
+                    inversePaths.add(target);
+                }
+                if (variables.containsKey(parent)){
+                    // property of variable            
+                    joinCondition.and(variables.get(parent).subject.eq(propSymbol));                            
+                }else if (properties.containsKey(parent)){
+                    joinCondition.and(properties.get(parent).object.eq(propSymbol));
+                }else{
+                    throw new IllegalStateException();
+                }
+                
+                // TODO : support longer paths
+                joinCondition.and(statement.predicate.eq(getId(mp.getPredicatePath().get(0).getUID())));
+                if (inOptionalPath()){
+                    query.leftJoin(statement).on(joinCondition);
+                }else{
+                    query.innerJoin(statement).on(joinCondition);    
+                }                            
+                return statement;    
+            }                
         }else{
             return properties.get(target);
         }        
     }
     
+    @SuppressWarnings("unchecked")
     private Expr<?> getSymbol(SQLCommonQuery<?> query, QStatement stmt, Path<?> path) {
         if (!symbols.containsKey(path)){
             QSymbol symbol = new QSymbol(stmt + "_symbol_");
@@ -188,11 +211,17 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         }
     }
     
+    @SuppressWarnings("unchecked")
     private QStatement getVariable(SQLCommonQuery<?> query, Path<?> target) {
         if (!variables.containsKey(target)){
-            MappedClass mc = configuration.getMappedClass(target.getType());
+            MappedClass mc = configuration.getMappedClass(target.getType());            
             QStatement statement = new QStatement(target.toString());
             variables.put(target, statement);
+            MappedProperty<?> idProperty = mc.getIdProperty();
+            if (idProperty != null && ID.class.isAssignableFrom(idProperty.getType())){
+                PSimple<?> idPath = new PSimple(idProperty.getType(), target, idProperty.getName());
+                variables.put(idPath, statement);
+            }
             query.from(statement);
             query.where(statement.predicate.eq(getId(RDF.type)));
             query.where(statement.object.eq(getId(mc.getUID())));
@@ -210,7 +239,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     
     private boolean isEntityType(Class<?> cl){
         // TODO : replace with proper check
-        return cl.getAnnotation(ClassMapping.class) != null;
+        return ID.class.isAssignableFrom(cl) || cl.getAnnotation(ClassMapping.class) != null;
     }
 
     @Override
@@ -359,7 +388,10 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     }
     
     private Expr<?> transform(SQLCommonQuery<?> query, Constant<?> constant, boolean realType){
-        if (isEntityType(constant.getConstant().getClass())){
+        if (NODE.class.isAssignableFrom(constant.getConstant().getClass())){
+            NODE node = (NODE)constant.getConstant();
+            return ENumberConst.create(getId(node));
+        }else if (isEntityType(constant.getConstant().getClass())){
             ID id = session.getId(constant.getConstant());
             return ENumberConst.create(getId(id));
         }else{
@@ -428,17 +460,20 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         }        
     }
     
-    private Expr<?> transform(SQLCommonQuery<?> query, Path<?> path, boolean realType){
+    private Expr<?> transform(SQLCommonQuery<?> query, Path<?> path, boolean realType){        
         PathType pathType = path.getMetadata().getPathType();
-        if (pathType == PathType.VARIABLE){
+        if (path.getMetadata().getParent() != null){
+            transform(query,path.getMetadata().getParent().asExpr(), false);
+        }        
+        if (pathType == PathType.VARIABLE || variables.containsKey(path)){
             QStatement stmt = getVariable(query,path);
             if (realType){
                 return getSymbol(query,stmt, path);
             }else{
                 return stmt.subject;
             }
-        }else if (pathType == PathType.PROPERTY){
-            transform(query,path.getMetadata().getParent().asExpr(), false);
+            
+        }else if (pathType == PathType.PROPERTY){            
             QStatement stmt = getProperty(query,path.getMetadata().getParent(), path);
             if (realType){
                 return getSymbol(query,stmt, path);

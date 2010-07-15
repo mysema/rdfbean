@@ -1,5 +1,7 @@
 package com.mysema.rdfbean.rdb;
 
+import static com.mysema.rdfbean.rdb.QLanguage.language;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -15,11 +17,13 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections15.BidiMap;
+import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
+import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.query.sql.Configuration;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
@@ -147,8 +151,18 @@ public class RDBContext implements Closeable{
         return langCache.getKey(id);
     }
 
-    public Integer getLangId(Locale lang) {
-        return langCache.get(lang);
+    public Integer getLangId(Locale locale) {
+        Integer id =  langCache.get(locale);
+        if (id == null){
+            id = idFactory.getId(locale);
+            SQLMergeClause merge = createMerge(language);
+            merge.keys(language.id);
+            merge.set(language.id, id);
+            merge.set(language.text, LocaleUtil.toLang(locale));
+            merge.execute();
+            langCache.put(locale, id);
+        }
+        return id;
     }
 
     public long getNextLocalId() {
@@ -156,8 +170,16 @@ public class RDBContext implements Closeable{
     }
 
     @Nullable
-    public NODE getNode(long id) {
-        return nodeCache.getKey(id);
+    public NODE getNode(long id, Transformer<Long,NODE> t) {
+        if (nodeCache.containsValue(id)){
+            return nodeCache.getKey(id);
+        }else if (localCache.containsValue(id)){
+            return localCache.getKey(id);
+        }else{
+            NODE node = t.transform(id);
+            localCache.put(node, id);
+            return node;
+        }
     }
 
     public Long getNodeId(NODE node) {

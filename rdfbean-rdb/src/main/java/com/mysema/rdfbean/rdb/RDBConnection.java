@@ -1,6 +1,5 @@
 package com.mysema.rdfbean.rdb;
 
-import static com.mysema.rdfbean.rdb.QLanguage.language;
 import static com.mysema.rdfbean.rdb.QStatement.statement;
 import static com.mysema.rdfbean.rdb.QSymbol.symbol;
 
@@ -14,7 +13,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.mysema.commons.l10n.support.LocaleUtil;
+import org.apache.commons.collections15.Transformer;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.sql.SQLQuery;
@@ -23,16 +23,7 @@ import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -53,20 +44,29 @@ public class RDBConnection implements RDFConnection{
     
     private final RDBContext context;
     
+    private final Transformer<Long,NODE> nodeTransformer = new Transformer<Long,NODE>(){
+        @Override
+        public NODE transform(Long id) {
+            SQLQuery query = context.createQuery();
+            query.from(symbol);
+            query.where(symbol.id.eq(id));
+            Object[] result = query.uniqueResult(symbol.resource, symbol.lexical, symbol.datatype, symbol.lang);
+            if (result != null){
+                return getNode((Boolean)result[0], (String)result[1], (Long)result[2], (Integer)result[3]);
+            }else{
+                throw new IllegalArgumentException("Found no node for id " + id);
+            }
+        }        
+    };
+    
     public RDBConnection(RDBContext context) {
         this.context = context;
     }
 
     public Integer addLang(Locale locale){
-        Integer langId = getId(locale);
-        SQLMergeClause merge = context.createMerge(language);
-        merge.keys(language.id);
-        merge.set(language.id, langId);
-        merge.set(language.text, LocaleUtil.toLang(locale));
-        merge.execute();
-        return langId;
+        return context.getLangId(locale);
     }
-
+    
     public Long addNode(NODE node) {
         Long nodeId = getId(node);
         SQLMergeClause merge = context.createMerge(symbol);
@@ -221,16 +221,7 @@ public class RDBConnection implements RDFConnection{
         };        
         return query.iterate(stmt);
     }
-    
-    @Nullable
-    private Integer getId(@Nullable Locale locale){
-        if (locale == null){
-            return null;
-        }else{
-            return context.getLangId(locale);
-        }
-    }
-    
+
     private Long getId(NODE node) {
         return context.getNodeId(node);
     }
@@ -240,7 +231,7 @@ public class RDBConnection implements RDFConnection{
         if (lang == null){
             return null;
         }else{
-            return addLang(lang);    
+            return context.getLangId(lang);    
         }
     }
 
@@ -272,20 +263,7 @@ public class RDBConnection implements RDFConnection{
     }
     
     private NODE getNode(long id) {
-        NODE node = context.getNode(id);
-        if (node == null){
-            SQLQuery query = context.createQuery();
-            query.from(symbol);
-            query.where(symbol.id.eq(id));
-            Object[] result = query.uniqueResult(symbol.resource, symbol.lexical, symbol.datatype, symbol.lang);
-            if (result != null){
-                return getNode((Boolean)result[0], (String)result[1], (Long)result[2], (Integer)result[3]);
-            }else{
-                throw new IllegalArgumentException("Found no node for id " + id);
-            }
-            
-        }
-        return node;
+        return context.getNode(id, nodeTransformer);
     }
     
     public void removeStatement(STMT stmt) {

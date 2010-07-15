@@ -11,6 +11,8 @@ import org.junit.Rule;
 import com.mysema.query.sql.H2Templates;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.rdfbean.model.MemoryIdSequence;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.testutil.SessionRule;
 
@@ -42,7 +44,9 @@ public abstract class AbstractRDBTest {
         dataSource.setUser("sa");
         dataSource.setPassword("");
         
-        repository = new RDBRepository(dataSource, templates, new MemoryIdSequence());
+        Configuration configuration = new DefaultConfiguration();
+        
+        repository = new RDBRepository(configuration, dataSource, templates, new MemoryIdSequence());
         repository.initialize();
     }
     
