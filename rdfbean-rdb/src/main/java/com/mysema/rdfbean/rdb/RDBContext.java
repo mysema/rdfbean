@@ -60,6 +60,10 @@ import com.mysema.rdfbean.xsd.TimestampConverter;
  */
 public class RDBContext implements Closeable{
     
+    public static <T> Set<T> asSet(T... args){
+        return new HashSet<T>(Arrays.asList(args));
+    }
+    
     private static final DateConverter dateConverter = new DateConverter();
     
     private static final TimestampConverter timestampConverter = new TimestampConverter();
@@ -75,11 +79,7 @@ public class RDBContext implements Closeable{
     private static final Set<UID> decimalTypes = asSet(XSD.decimalType, XSD.doubleType, XSD.floatType);
     
     private static final Set<UID> integerTypes = asSet(XSD.integerType, XSD.longType, XSD.intType, XSD.shortType, XSD.byteType);
-    
-    public static <T> Set<T> asSet(T... args){
-        return new HashSet<T>(Arrays.asList(args));
-    }
-    
+        
     private final Connection connection;
     
     private final IdFactory idFactory;
