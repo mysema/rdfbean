@@ -7,6 +7,7 @@ package com.mysema.rdfbean.sesame.query;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Ignore;
@@ -31,6 +32,20 @@ public class ListQueriesTest extends SessionTestBase{
     
     private ENumber<Integer> size = var.listProperty.size();
         
+    @Test
+    public void persist(){
+        SimpleType simpleType = new SimpleType();
+        simpleType.listProperty = Arrays.asList(new SimpleType2(), new SimpleType2());
+        session.save(simpleType);
+        session.clear();
+        
+        SimpleType other = session.getById(simpleType.id, SimpleType.class);
+        assertEquals(simpleType.listProperty.size(), other.listProperty.size());
+        assertEquals(simpleType.listProperty.get(0).id, other.listProperty.get(0).id);
+        assertEquals(simpleType.listProperty.get(1).id, other.listProperty.get(1).id);
+        
+    }
+    
     @Test
     public void in(){
         where(var.listProperty.contains(var.listProperty.get(0))).count();

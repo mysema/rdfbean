@@ -11,8 +11,11 @@ import java.sql.SQLException;
 
 import org.h2.jdbcx.JdbcDataSource;
 
+import com.mysema.query.sql.DefaultNamingStrategy;
 import com.mysema.query.sql.H2Templates;
 import com.mysema.query.sql.MetaDataExporter;
+import com.mysema.query.sql.MetaDataSerializer;
+import com.mysema.query.sql.NamingStrategy;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.rdfbean.model.MemoryIdSequence;
 import com.mysema.rdfbean.model.Repository;
@@ -41,7 +44,9 @@ public class SchemaExport {
             Repository repository = new RDBRepository(configuration, ds, templates, new MemoryIdSequence());
             repository.initialize();
             
-            MetaDataExporter exporter = new MetaDataExporter("Q", "com.mysema.rdfbean.rdb.schema", null, null, new File("src/main/java"));
+            NamingStrategy namingStrategy = new DefaultNamingStrategy();
+            MetaDataSerializer serializer = new MetaDataSerializer("Q",namingStrategy);            
+            MetaDataExporter exporter = new MetaDataExporter("Q", "com.mysema.rdfbean.rdb.schema", new File("src/main/java"), namingStrategy, serializer);
             exporter.export(conn.getMetaData());    
         }finally{
             conn.close();
