@@ -15,10 +15,13 @@ import org.junit.Rule;
 
 import com.mysema.query.sql.H2Templates;
 import com.mysema.query.sql.SQLTemplates;
-import com.mysema.rdfbean.domains.EntityDomain;
-import com.mysema.rdfbean.domains.InferenceDomain;
-import com.mysema.rdfbean.domains.SimpleDomain;
+import com.mysema.rdfbean.domains.InferenceDomain.Entity1;
+import com.mysema.rdfbean.domains.InferenceDomain.Entity2;
+import com.mysema.rdfbean.domains.InferenceDomain.Entity3;
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
+import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.model.MemoryIdSequence;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.testutil.SessionRule;
@@ -51,10 +54,7 @@ public abstract class AbstractRDBTest {
         dataSource.setUser("sa");
         dataSource.setPassword("");
         
-        DefaultConfiguration configuration = new DefaultConfiguration();
-        configuration.addClasses(EntityDomain.class.getClasses());
-        configuration.addClasses(InferenceDomain.class.getClasses());
-        configuration.addClasses(SimpleDomain.class.getClasses());
+        Configuration configuration = new DefaultConfiguration(Entity1.class, Entity2.class, Entity3.class, SimpleType.class, SimpleType2.class);
         
         repository = new RDBRepository(configuration, dataSource, templates, new MemoryIdSequence());
         repository.initialize();
