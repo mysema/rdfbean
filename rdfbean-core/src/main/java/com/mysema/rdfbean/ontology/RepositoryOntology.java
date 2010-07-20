@@ -28,7 +28,7 @@ import com.mysema.util.MultiMapFactory;
  * @author tiwe
  * @version $Id$
  */
-public class RepositoryOntology extends AbstractOntology{
+public class RepositoryOntology extends AbstractOntology<UID> implements Ontology{
     
     public RepositoryOntology(Repository repository) throws IOException{
         Set<UID> types = new HashSet<UID>();                

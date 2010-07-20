@@ -60,6 +60,8 @@ public class RDBRepository implements Repository{
     
     private final Configuration configuration; 
     
+    private final RDBOntology ontology;
+    
     private final DataSource dataSource;
     
     private final SQLTemplates templates;
@@ -72,6 +74,7 @@ public class RDBRepository implements Repository{
             SQLTemplates templates, 
             IdSequence idSequence) {
         this.configuration = Assert.notNull(configuration,"configuration");
+        this.ontology = new RDBOntology(idFactory,configuration);
         this.dataSource = Assert.notNull(dataSource,"dataSource");
         this.templates = Assert.notNull(templates,"templates");
         this.idSequence = Assert.notNull(idSequence, "idSequence");
@@ -209,7 +212,7 @@ public class RDBRepository implements Repository{
     public RDBConnection openConnection() {
         try {
             Connection connection = dataSource.getConnection();
-            RDBContext context = new RDBContext(idFactory, nodeCache, langCache, idSequence, connection, templates); 
+            RDBContext context = new RDBContext(ontology, idFactory, nodeCache, langCache, idSequence, connection, templates); 
             return new RDBConnection(context);
         } catch (SQLException e) {
             throw new RepositoryException(e);

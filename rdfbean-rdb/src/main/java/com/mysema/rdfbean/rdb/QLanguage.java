@@ -20,7 +20,7 @@ import com.mysema.query.types.path.PString;
 /**
  * QLanguage is a Querydsl query type for QLanguage
  */
-@Table(value="LANGUAGE")
+@Table("LANGUAGE")
 public class QLanguage extends PEntity<QLanguage> {
 
     private static final long serialVersionUID = -1756160653;

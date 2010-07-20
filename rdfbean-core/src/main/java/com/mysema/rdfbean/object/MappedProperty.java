@@ -299,10 +299,10 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     
     @Nullable
     public UID getKeyPredicate() {
-        MapElements mapKey = getAnnotation(MapElements.class);
-        String parentNs = getParentNs(mapKey, getMember());
+        MapElements mapKey = getAnnotation(MapElements.class);        
         if (mapKey != null) {
             Predicate predicate = mapKey.key(); 
+            String parentNs = getParentNs(mapKey, getMember());
             return UID.create(parentNs, predicate.ns(), predicate.ln(), null);
         } else {
             return null;
@@ -331,11 +331,11 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     
     @Nullable
     public UID getValuePredicate() {
-        MapElements mapKey = getAnnotation(MapElements.class);
-        String parentNs = getParentNs(mapKey, getMember());
+        MapElements mapKey = getAnnotation(MapElements.class);        
         if (mapKey != null) {
             Predicate predicate = mapKey.value();
             try {
+                String parentNs = getParentNs(mapKey, getMember());
                 return UID.create(parentNs, predicate.ns(), predicate.ln(), null);
             } catch (IllegalArgumentException e) {
                 return null;

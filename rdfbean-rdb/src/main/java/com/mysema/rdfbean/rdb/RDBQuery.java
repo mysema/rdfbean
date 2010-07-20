@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.rdb;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -229,7 +230,9 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             }
             query.from(statement);
             query.where(statement.predicate.eq(getId(RDF.type)));
-            query.where(statement.object.eq(getId(mc.getUID())));
+            Long type = getId(mc.getUID());
+            Collection<Long> subtypes = context.getOntology().getSubtypes(type);
+            query.where(statement.object.in(subtypes));
             return statement;            
         }else{
             return variables.get(target);    

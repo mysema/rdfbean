@@ -19,7 +19,7 @@ import com.mysema.query.types.path.PNumber;
 /**
  * QStatement is a Querydsl query type for QStatement
  */
-@Table(value="STATEMENT")
+@Table("STATEMENT")
 public class QStatement extends PEntity<QStatement> {
 
     private static final long serialVersionUID = 2085085876;

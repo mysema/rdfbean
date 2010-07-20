@@ -22,7 +22,7 @@ import com.mysema.query.types.path.PString;
 /**
  * QSymbol is a Querydsl query type for QSymbol
  */
-@Table(value="SYMBOL")
+@Table("SYMBOL")
 public class QSymbol extends PEntity<QSymbol> {
 
     private static final long serialVersionUID = 1776011891;

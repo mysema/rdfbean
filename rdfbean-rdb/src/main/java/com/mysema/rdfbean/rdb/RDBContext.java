@@ -80,6 +80,8 @@ public class RDBContext implements Closeable{
     
     private static final Set<UID> integerTypes = asSet(XSD.integerType, XSD.longType, XSD.intType, XSD.shortType, XSD.byteType);
         
+    private final RDBOntology ontology;
+    
     private final Connection connection;
     
     private final IdFactory idFactory;
@@ -94,12 +96,15 @@ public class RDBContext implements Closeable{
         
     private final Configuration configuration;
     
-    public RDBContext(IdFactory idFactory,
+    public RDBContext(
+            RDBOntology ontology,
+            IdFactory idFactory,
             BidiMap<NODE,Long> nodeCache,  
             BidiMap<Locale,Integer> langCache,
             IdSequence idSequence,
             Connection connection, 
             SQLTemplates templates) {
+        this.ontology = ontology;
         this.idFactory = idFactory;
         this.idSequence = idSequence;
         this.nodeCache = nodeCache;
@@ -251,4 +256,9 @@ public class RDBContext implements Closeable{
         return resource ? new UID(lexical) : new BID(lexical);
     }
 
+    public RDBOntology getOntology() {
+        return ontology;
+    }
+    
+    
 }

@@ -10,6 +10,7 @@ import static com.mysema.rdfbean.rdb.QSymbol.symbol;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -186,7 +187,12 @@ public class RDBConnection implements RDFConnection{
             exprs.add(statement.predicate);
         }
         if (object != null){
-            query.where(statement.object.eq(getId(object)));
+            if (RDF.type.equals(predicate) && includeInferred){
+                Collection<Long> ids = context.getOntology().getSubtypes(getId(object));
+                query.where(statement.object.in(ids));
+            }else{
+                query.where(statement.object.eq(getId(object)));    
+            }            
         }else{
             query.innerJoin(statement.objectFk, obj);
             exprs.add(obj.resource);
