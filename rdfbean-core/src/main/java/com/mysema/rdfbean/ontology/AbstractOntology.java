@@ -20,7 +20,7 @@ import com.mysema.util.MultiMapFactory;
  * @author tiwe
  * @version $Id$
  */
-public abstract class AbstractOntology<T>{
+public abstract class AbstractOntology<T> implements Ontology<T>{
 
     private final MultiMap<T, T> subtypes = MultiMapFactory.<T, T>createWithSet();
     

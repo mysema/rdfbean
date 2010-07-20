@@ -12,7 +12,6 @@ import org.apache.commons.collections15.MultiMap;
 
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.ontology.AbstractOntology;
-import com.mysema.rdfbean.ontology.Ontology;
 import com.mysema.util.MultiMapFactory;
 
 /**
@@ -21,7 +20,7 @@ import com.mysema.util.MultiMapFactory;
  * @author tiwe
  * @version $Id$
  */
-public class ConfigurationOntology extends AbstractOntology<UID> implements Ontology{
+public class ConfigurationOntology extends AbstractOntology<UID>{
 
     public ConfigurationOntology(Configuration configuration){
         Set<UID> types = new HashSet<UID>();

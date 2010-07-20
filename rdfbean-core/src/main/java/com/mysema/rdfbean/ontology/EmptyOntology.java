@@ -21,11 +21,11 @@ import com.mysema.rdfbean.model.UID;
  * @version $Id$
  */
 @Immutable
-public final class EmptyOntology implements Ontology{
+public final class EmptyOntology implements Ontology<UID>{
 
     private EmptyOntology(){}
     
-    public static final Ontology DEFAULT = new EmptyOntology();
+    public static final Ontology<UID> DEFAULT = new EmptyOntology();
     
     @Override
     public Set<UID> getSubtypes(UID uid) {
