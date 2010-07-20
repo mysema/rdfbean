@@ -11,7 +11,9 @@ import static com.mysema.rdfbean.rdb.QSymbol.symbol;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -29,6 +31,7 @@ import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
+import com.mysema.query.types.path.PNumber;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
@@ -39,6 +42,8 @@ import com.mysema.rdfbean.object.Session;
  * @version $Id$
  */
 public class RDBConnection implements RDFConnection{
+   
+    public static final PNumber<Integer> one = new PNumber<Integer>(Integer.class,"1");
     
     public static final QSymbol sub = new QSymbol("subject");
     
@@ -206,6 +211,10 @@ public class RDBConnection implements RDFConnection{
             exprs.add(statement.model);
         }
         
+        if (exprs.isEmpty()){
+            exprs.add(one);
+        }
+        
         EConstructor<STMT> stmt = new EConstructor<STMT>(STMT.class, new Class[0],exprs.toArray(new Expr[exprs.size()])){
             @Override
             public STMT newInstance(Object... args) {
@@ -231,6 +240,8 @@ public class RDBConnection implements RDFConnection{
       
         };        
         return query.iterate(stmt);
+        
+
     }
 
     private Long getId(NODE node) {

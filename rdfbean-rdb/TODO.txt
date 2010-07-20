@@ -1,3 +1,6 @@
+TODO : use id for eq and ne
+
 TODO : support for list and map
 
 TODO : support for deep predicate paths
+

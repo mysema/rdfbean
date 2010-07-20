@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
@@ -145,7 +146,16 @@ public class RDBConnectionTest extends AbstractRDBTest{
 
     @Test
     public void testAddStatement() {
-        // TODO
+        Set<STMT> additions = new HashSet<STMT>();
+        additions.add(new STMT(RDF.type, RDF.type, RDF.Property));
+        additions.add(new STMT(RDF.subject, RDF.type, RDF.Property, new UID(RDF.NS)));
+        additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
+        additions.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));     
+        conn.update(Collections.<STMT>emptySet(), additions);        
+        
+        for (STMT stmt : additions){
+            assertEquals(1, conn.find(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext(), false).size());
+        }
     }
 
     @Test
@@ -155,7 +165,16 @@ public class RDBConnectionTest extends AbstractRDBTest{
 
     @Test
     public void testRemoveStatement() {
-        // TODO
+        Set<STMT> removals = new HashSet<STMT>();
+        removals.add(new STMT(RDF.type, RDF.type, RDF.Property));
+        removals.add(new STMT(RDF.subject, RDF.type, RDF.Property, new UID(RDF.NS)));
+        removals.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
+        removals.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));     
+        conn.update(removals, Collections.<STMT>emptySet());        
+        
+        for (STMT stmt : removals){
+            assertEquals(0, conn.find(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext(), false).size());
+        }
     }
     
     private Long id(NODE node){
