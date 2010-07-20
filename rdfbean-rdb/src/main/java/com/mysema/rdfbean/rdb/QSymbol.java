@@ -27,7 +27,7 @@ public class QSymbol extends PEntity<QSymbol> {
 
     private static final long serialVersionUID = 1776011891;
 
-    public static final QSymbol symbol = new QSymbol("SYMBOL");
+    public static final QSymbol symbol = new QSymbol("symbol");
 
     public final PBoolean resource = createBoolean("RESOURCE");
     

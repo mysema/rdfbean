@@ -25,7 +25,7 @@ public class QLanguage extends PEntity<QLanguage> {
 
     private static final long serialVersionUID = -1756160653;
 
-    public static final QLanguage language = new QLanguage("LANGUAGE");
+    public static final QLanguage language = new QLanguage("lang");
 
     public final PNumber<Integer> id = createNumber("ID", Integer.class);
 

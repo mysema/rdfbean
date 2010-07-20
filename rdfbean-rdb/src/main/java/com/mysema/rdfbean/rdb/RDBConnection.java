@@ -39,7 +39,7 @@ import com.mysema.rdfbean.object.Session;
  * @version $Id$
  */
 public class RDBConnection implements RDFConnection{
-   
+    
     public static final QSymbol sub = new QSymbol("subject");
     
     public static final QSymbol pre = new QSymbol("predicate");

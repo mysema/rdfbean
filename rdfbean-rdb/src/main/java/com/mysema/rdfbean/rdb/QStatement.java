@@ -24,7 +24,7 @@ public class QStatement extends PEntity<QStatement> {
 
     private static final long serialVersionUID = 2085085876;
 
-    public static final QStatement statement = new QStatement("STATEMENT");
+    public static final QStatement statement = new QStatement("stmt");
 
     public final PNumber<Long> model = createNumber("MODEL", Long.class);
 
