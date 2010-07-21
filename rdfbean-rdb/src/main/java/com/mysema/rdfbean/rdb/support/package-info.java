@@ -4,9 +4,6 @@
  *
  */
 
-/**
- * DML operations support for Querydsl SQL
- */
 @DefaultAnnotation( { Nonnull.class })
 package com.mysema.rdfbean.rdb.support;
 
