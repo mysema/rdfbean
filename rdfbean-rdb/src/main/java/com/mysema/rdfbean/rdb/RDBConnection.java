@@ -190,7 +190,7 @@ public class RDBConnection implements RDFConnection{
         query.where(statement.subject.eq(getId(stmt.getSubject())));
         query.where(statement.predicate.eq(getId(stmt.getPredicate())));
         query.where(statement.object.eq(getId(stmt.getObject())));
-        if (query.count() > 0l){
+        if (query.uniqueResult(one) != null){
             return;
         }
         

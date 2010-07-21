@@ -32,10 +32,14 @@ CREATE TABLE statement(
   CONSTRAINT FK_OBJECT FOREIGN KEY(object) REFERENCES symbol(id)  
 );
 
-CREATE INDEX statement_ms ON statement(model, subject);
-
-CREATE INDEX statement_mo ON statement(model, object);
+CREATE INDEX statement_ms  ON statement(model, subject);
 
 CREATE INDEX statement_msp ON statement(model, subject, predicate);
 
+CREATE INDEX statement_mspo ON statement(model, subject, predicate, object);
+
 CREATE INDEX statement_mpo ON statement(model, predicate, object);
+
+CREATE INDEX statement_mo  ON statement(model, object);
+
+

@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -59,16 +61,18 @@ public class RDBContext implements Closeable{
     
     private final BidiMap<Locale,Integer> langCache;
     
+    private final Map<Object,Long> idCache = new HashMap<Object,Long>();
+    
     private final BidiMap<NODE,Long> nodeCache;
     
-    private final BidiMap<NODE,Long> localCache = new DualHashBidiMap<NODE,Long>();
+    private final BidiMap<NODE,Long> localNodeCache = new DualHashBidiMap<NODE,Long>();
         
     private final Configuration configuration;
     
     public RDBContext(
             ConverterRegistry converterRegistry,
             RDBOntology ontology,
-            IdFactory idFactory,
+            IdFactory idFactory, 
             BidiMap<NODE,Long> nodeCache,  
             BidiMap<Locale,Integer> langCache,
             IdSequence idSequence,
@@ -103,7 +107,7 @@ public class RDBContext implements Closeable{
     }
 
     public void clear() {
-        localCache.clear();
+        localNodeCache.clear();
     }
     
     @Override
@@ -131,11 +135,18 @@ public class RDBContext implements Closeable{
         return new SQLQueryImpl(connection, configuration);
     }
 
-    public Long getId(Object constant) {
-        // TODO : cache
-        UID type = converterRegistry.getDatatype(constant.getClass());
-        String lexical = converterRegistry.toString(constant);
-        return getNodeId(new LIT(lexical, type));
+    public Long getId(Object constant) {        
+        Long id = idCache.get(constant);
+        if (id == null){
+            UID type = converterRegistry.getDatatype(constant.getClass());
+            String lexical = converterRegistry.toString(constant);
+            id = getNodeId(new LIT(lexical, type));
+            // Date is not immutable, so it can't be cached safely
+            if (!java.util.Date.class.isAssignableFrom(constant.getClass())){
+                idCache.put(constant, id);    
+            }            
+        }
+        return id;
     }
 
     public ID getID(String lexical, boolean resource){
@@ -162,27 +173,27 @@ public class RDBContext implements Closeable{
 
     @Nullable
     public NODE getNode(long id, Transformer<Long,NODE> t) {
-        if (nodeCache.containsValue(id)){
-            return nodeCache.getKey(id);
-        }else if (localCache.containsValue(id)){
-            return localCache.getKey(id);
-        }else{
-            NODE node = t.transform(id);
-            localCache.put(node, id);
-            return node;
-        }
+        NODE node = nodeCache.getKey(id);
+        if (node == null){
+            node = localNodeCache.getKey(id);
+            if (node == null){
+                node = t.transform(id);
+                localNodeCache.put(node, id);
+            }
+        }        
+        return node;
     }
 
     public Long getNodeId(NODE node) {
-        if (nodeCache.containsKey(node)){
-            return nodeCache.get(node);
-        }else if (localCache.containsKey(node)){    
-            return localCache.get(node);
-        }else{
-            Long id = idFactory.getId(node);
-            localCache.put(node, id);
-            return id;
-        }        
+        Long id = nodeCache.get(node);
+        if (id == null){
+            id = localNodeCache.get(node);
+            if (id == null){
+                id = idFactory.getId(node);
+                localNodeCache.put(node, id);
+            }
+        }
+        return id;
     }
     
     public Collection<NODE> getNodes() {

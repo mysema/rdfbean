@@ -175,12 +175,26 @@ public class RDBRepository implements Repository{
             nodes.addAll(XSD.ALL);
             nodes.addAll(OWL.ALL);   
             
-            // commons literals
+            // common literals
             nodes.add(new LIT(""));
             nodes.add(new LIT("true",XSD.booleanType));
             nodes.add(new LIT("false",XSD.booleanType));
+            
+            // dates
+            nodes.add(new LIT(converterRegistry.toString(new java.sql.Date(0)), XSD.date));
+            nodes.add(new LIT(converterRegistry.toString(new java.util.Date(0)), XSD.dateTime));
+            
+            // letters
+            for (char c = 'a'; c <= 'z'; c++){
+                String str = String.valueOf(c);
+                nodes.add(new LIT(str));
+                nodes.add(new LIT(str.toUpperCase()));   
+            }            
+            
+            // numbers
             for (int i = -128; i < 128; i++){
                 String str = String.valueOf(i);
+                nodes.add(new LIT(str));
                 nodes.add(new LIT(str, XSD.byteType));
                 nodes.add(new LIT(str, XSD.shortType));
                 nodes.add(new LIT(str, XSD.intType));                
@@ -192,7 +206,7 @@ public class RDBRepository implements Repository{
             }
             
             conn.addNodes(nodes, nodeCache);
-            
+                        
             // init languages
             Set<Locale> locales = new HashSet<Locale>(Arrays.asList(Locale.getAvailableLocales()));
             locales.add(new Locale("fi"));
@@ -209,7 +223,14 @@ public class RDBRepository implements Repository{
     public RDBConnection openConnection() {
         try {
             Connection connection = dataSource.getConnection();
-            RDBContext context = new RDBContext(converterRegistry, ontology, idFactory, nodeCache, langCache, idSequence, connection, templates); 
+            RDBContext context = new RDBContext(
+                    converterRegistry, 
+                    ontology, 
+                    idFactory, 
+                    nodeCache, langCache, 
+                    idSequence, 
+                    connection, 
+                    templates); 
             return new RDBConnection(context);
         } catch (SQLException e) {
             throw new RepositoryException(e);
