@@ -38,6 +38,8 @@ import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.owl.OWL;
+import com.mysema.rdfbean.xsd.ConverterRegistry;
+import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
@@ -49,6 +51,8 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  */
 @Immutable
 public class RDBRepository implements Repository{
+    
+    private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
     private final IdFactory idFactory = new MD5IdFactory();
     
@@ -205,7 +209,7 @@ public class RDBRepository implements Repository{
     public RDBConnection openConnection() {
         try {
             Connection connection = dataSource.getConnection();
-            RDBContext context = new RDBContext(ontology, idFactory, nodeCache, langCache, idSequence, connection, templates); 
+            RDBContext context = new RDBContext(converterRegistry, ontology, idFactory, nodeCache, langCache, idSequence, connection, templates); 
             return new RDBConnection(context);
         } catch (SQLException e) {
             throw new RepositoryException(e);

@@ -196,21 +196,22 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
                 query.innerJoin(fk, symbol);    
             }            
             Expr<?> expr;
-            if (context.isDecimalClass(path.getType())){
+            if (Constants.decimalClasses.contains(path.getType())){
                 expr = cast(symbol.floating,path.getType());
             }else if (Number.class.isAssignableFrom(path.getType())){
                 expr = cast(symbol.integer, path.getType());
             }else if (path.getType().equals(java.util.Date.class)){    
                 expr = symbol.datetime;
-            }else if (context.isDateClass(path.getType())){
+            }else if (Constants.dateClasses.contains(path.getType())){
                 expr = new PDate(path.getType(), symbol.datetime.getMetadata()); 
-            }else if (context.isDateTimeClass(path.getType())){    
+            }else if (Constants.dateTimeClasses.contains(path.getType())){    
                 expr = new PDateTime(path.getType(), symbol.datetime.getMetadata());
-            }else if (context.isTimeClass(path.getType())){
+            }else if (Constants.timeClasses.contains(path.getType())){
                 expr = new PTime(path.getType(), symbol.datetime.getMetadata());
             }else{
                 expr = symbol.lexical;
-            }symbols.put(path, expr);
+            }
+            symbols.put(path, expr);
             return expr;
         }else{
             return symbols.get(path);
@@ -284,16 +285,9 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     }
 
     private boolean needsSymbolResolving(Operation<?> op) {
-        if (Ops.equalsOps.contains(op.getOperator()) || Ops.notEqualsOps.contains(op.getOperator())){
-            if (isEntityType(op.getArg(0).getType())){
-                return false;
-            }
-        }else if (op.getOperator().equals(Ops.IN)){
-            if (isEntityType(op.getArg(0).getType())){
-                return false;
-            }
-        }
-        return true;
+        return (!Ops.equalsOps.contains(op.getOperator()) 
+                && !Ops.notEqualsOps.contains(op.getOperator())
+                && op.getOperator() != Ops.IN);
     }
 
     private Expr<?>[] populate(SQLCommonQuery<?> query, Expr<?>... projection){
@@ -399,9 +393,13 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         if (NODE.class.isAssignableFrom(constant.getConstant().getClass())){
             NODE node = (NODE)constant.getConstant();
             return ENumberConst.create(getId(node));
-        }else if (isEntityType(constant.getConstant().getClass())){
-            ID id = session.getId(constant.getConstant());
-            return ENumberConst.create(getId(id));
+        }else if (!realType){    
+            if (isEntityType(constant.getConstant().getClass())){
+                ID id = session.getId(constant.getConstant());
+                return ENumberConst.create(getId(id));
+            }else{
+                return ENumberConst.create(context.getId(constant.getConstant()));    
+            }                        
         }else{
             return constant.asExpr();
         }

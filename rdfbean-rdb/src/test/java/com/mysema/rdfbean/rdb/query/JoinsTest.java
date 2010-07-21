@@ -71,10 +71,9 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
     
     @Test
     public void from_where2_list(){                
-        assertEquals(4, countJoins(from($(u)).where($(u.getUserName()).eq("Bobby")).createQuery($(u))));
+        assertEquals(3, countJoins(from($(u)).where($(u.getUserName()).eq("Bobby")).createQuery($(u))));
         // u rdf:type  :User
         // u :userName  username
-        // username-symbol
         // u-symbol
     }    
     

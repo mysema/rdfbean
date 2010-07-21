@@ -129,16 +129,16 @@ public class RDBConnection implements RDFConnection{
             LIT literal = node.asLiteral();
             merge.set(symbol.datatype, getId(literal.getDatatype()));    
             merge.set(symbol.lang, getLangId(literal.getLang()));
-            if (context.isIntegerType(literal.getDatatype())){
+            if (Constants.integerTypes.contains(literal.getDatatype())){
                 merge.set(symbol.integer, Long.valueOf(literal.getValue()));
             }
-            if (context.isDecimalType(literal.getDatatype())){
+            if (Constants.decimalTypes.contains(literal.getDatatype())){
                 merge.set(symbol.floating, Double.valueOf(literal.getValue()));
             }
-            if (context.isDateType(literal.getDatatype())){
+            if (Constants.dateTypes.contains(literal.getDatatype())){
                 merge.set(symbol.datetime, context.toDate(literal));                
             }
-            if (context.isDateTimeType(literal.getDatatype())){
+            if (Constants.dateTimeTypes.contains(literal.getDatatype())){
                 merge.set(symbol.datetime, context.toTimestamp(literal));
             }
         }
