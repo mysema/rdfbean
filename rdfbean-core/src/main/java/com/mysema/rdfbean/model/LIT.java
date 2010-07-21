@@ -110,12 +110,6 @@ public final class LIT extends NODE {
 
     @Override
     public int hashCode() {
-//        final int prime = 31;
-//        int result = 1;
-//        result = prime * result + value.hashCode();
-//        result = prime * result + datatype.hashCode();
-//        result = prime * result + ((lang == null) ? 0 : lang.hashCode());
-//        return result;
         return value.hashCode();
     }
 
