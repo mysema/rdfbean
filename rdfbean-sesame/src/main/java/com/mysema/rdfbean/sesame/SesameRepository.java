@@ -27,6 +27,7 @@ import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.ontology.EmptyOntology;
@@ -43,7 +44,7 @@ import com.mysema.rdfbean.ontology.RepositoryOntology;
 public abstract class SesameRepository implements Repository{
     
     @Nullable
-    private Ontology ontology;
+    private Ontology<UID> ontology;
     
     private RDFSource[] sources;
     
