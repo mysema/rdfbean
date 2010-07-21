@@ -11,10 +11,8 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -189,19 +187,14 @@ public class RDBRepository implements Repository{
                 nodes.add(new LIT(str+".0", XSD.decimalType));
             }
             
-            for (NODE node : nodes){
-                Long nodeId = conn.addNode(node);
-                nodeCache.put(node, nodeId);
-            }    
+            conn.addNodes(nodes, nodeCache);
             
             // init languages
-            List<Locale> locales = new ArrayList<Locale>(Arrays.asList(Locale.getAvailableLocales()));
+            Set<Locale> locales = new HashSet<Locale>(Arrays.asList(Locale.getAvailableLocales()));
             locales.add(new Locale("fi"));
             locales.add(new Locale("sv"));
-            for (Locale locale : locales){
-                Integer langId = conn.addLang(locale);
-                langCache.put(locale, langId);
-            }
+            
+            conn.addLocales(locales, langCache);
             
         }finally{
             conn.close();

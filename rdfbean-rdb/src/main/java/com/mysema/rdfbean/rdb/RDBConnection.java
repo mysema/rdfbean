@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.rdb;
 
+import static com.mysema.rdfbean.rdb.QLanguage.language;
 import static com.mysema.rdfbean.rdb.QStatement.statement;
 import static com.mysema.rdfbean.rdb.QSymbol.symbol;
 
@@ -19,8 +20,10 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.Transformer;
 
+import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.sql.SQLQuery;
@@ -40,6 +43,8 @@ import com.mysema.rdfbean.object.Session;
  * @version $Id$
  */
 public class RDBConnection implements RDFConnection{
+    
+    private static final int ADD_BATCH = 50;
    
     public static final PNumber<Integer> one = new PNumber<Integer>(Integer.class,"1");
     
@@ -71,13 +76,50 @@ public class RDBConnection implements RDFConnection{
     public RDBConnection(RDBContext context) {
         this.context = context;
     }
+    
+    private void addLocale(Integer id, Locale locale ){
+        SQLMergeClause merge = context.createMerge(language);
+        merge.keys(language.id);
+        merge.set(language.id, id);
+        merge.set(language.text, LocaleUtil.toLang(locale));
+        merge.execute();
+    }
 
-    public Integer addLang(Locale locale){
-        return context.getLangId(locale);
+    private void addLocales(List<Integer> ids, List<Locale> locales){
+        List<Integer> persisted = context.createQuery()
+            .from(language)
+            .where(language.id.in(ids))
+            .list(language.id);
+        for (int i = 0; i < ids.size(); i++){
+            Integer id = ids.get(i);
+            if (!persisted.contains(id)){
+                addLocale(id, locales.get(i));
+            }       
+        }
+        ids.clear();
+        locales.clear();
     }
     
-    public Long addNode(NODE node) {
-        Long nodeId = getId(node);
+    public void addLocales(Set<Locale> l, @Nullable BidiMap<Locale,Integer> cache){
+        List<Integer> ids = new ArrayList<Integer>(ADD_BATCH);
+        List<Locale> locales = new ArrayList<Locale>(ADD_BATCH);
+        for (Locale locale : l){
+            Integer id = context.getLangId(locale);
+            ids.add(id);
+            locales.add(locale);
+            if (cache != null){
+                cache.put(locale, id);
+            }
+            if (ids.size() == ADD_BATCH){
+                addLocales(ids, locales);
+            }
+        }
+        if (!ids.isEmpty()){
+            addLocales(ids, locales);
+        }
+    }
+    
+    private void addNode(Long nodeId, NODE node) {
         SQLMergeClause merge = context.createMerge(symbol);
         merge.keys(symbol.id);
         merge.set(symbol.id, nodeId);
@@ -101,10 +143,43 @@ public class RDBConnection implements RDFConnection{
             }
         }
         merge.execute();
-        return nodeId;
+    }
+    
+    private void addNodes(List<Long> ids, List<NODE> nodes){
+        List<Long> persisted = context.createQuery()
+            .from(symbol)
+            .where(symbol.id.in(ids))
+            .list(symbol.id);
+        for (int i = 0; i < ids.size(); i++){
+            Long id = ids.get(i);
+            if (!persisted.contains(id)){
+                addNode(id, nodes.get(i));
+            }
+        }
+        ids.clear();
+        nodes.clear();
+    }
+    
+    public void addNodes(Set<NODE> n, @Nullable BidiMap<NODE,Long> cache) {
+        List<Long> ids = new ArrayList<Long>(ADD_BATCH);
+        List<NODE> nodes = new ArrayList<NODE>(ADD_BATCH);
+        for (NODE node : n){
+            Long nodeId = getId(node);
+            ids.add(nodeId);
+            nodes.add(node);
+            if (cache != null){
+                cache.put(node, nodeId);
+            }
+            if (ids.size() == ADD_BATCH){
+                addNodes(ids, nodes);
+            }
+        }
+        if (!ids.isEmpty()){
+            addNodes(ids, nodes);
+        }
     }
 
-    public void addStatement(STMT stmt) {
+    private void addStatement(STMT stmt) {
         SQLQuery query = context.createQuery();
         query.from(statement);
         if (stmt.getContext() != null){
@@ -209,6 +284,7 @@ public class RDBConnection implements RDFConnection{
             exprs.add(statement.model);
         }
         
+        // add dummy projection if none is specified
         if (exprs.isEmpty()){
             exprs.add(one);
         }
@@ -286,7 +362,7 @@ public class RDBConnection implements RDFConnection{
         return context.getNode(id, nodeTransformer);
     }
     
-    public void removeStatement(STMT stmt) {
+    private void removeStatement(STMT stmt) {
         SQLDeleteClause delete = context.createDelete(statement);
         if (stmt.getContext() == null){
             delete.where(statement.model.isNull());
@@ -315,7 +391,6 @@ public class RDBConnection implements RDFConnection{
         
         // insert
         Set<NODE> newNodes = new HashSet<NODE>();
-        Set<UID> newDatatypes = new HashSet<UID>();
         for (STMT stmt : addedStatements){
             if (stmt.getContext() != null){
                 newNodes.add(stmt.getContext());
@@ -326,23 +401,15 @@ public class RDBConnection implements RDFConnection{
             if (stmt.getObject().isLiteral()){
                 LIT lit = stmt.getObject().asLiteral();
                 if (lit.getDatatype() != null){
-                    newDatatypes.add(lit.getDatatype());
+                    newNodes.add(lit.getDatatype());
                 }
             }
         }
         
-        // insert datatypes
-        newDatatypes.removeAll(context.getNodes());
-        for (UID uid : newDatatypes){
-            addNode(uid);
-        }
-        
         // insert nodes
         newNodes.removeAll(oldNodes);
-        newNodes.removeAll(context.getNodes());        
-        for (NODE node : newNodes){
-            addNode(node);
-        }
+        newNodes.removeAll(context.getNodes());
+        addNodes(newNodes, null);
         
         // insert stmts
         for (STMT stmt : addedStatements){

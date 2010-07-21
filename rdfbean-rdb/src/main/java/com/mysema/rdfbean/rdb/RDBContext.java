@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.rdb;
 
-import static com.mysema.rdfbean.rdb.QLanguage.language;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -28,7 +26,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
-import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.query.sql.Configuration;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
@@ -166,14 +163,9 @@ public class RDBContext implements Closeable{
     }
 
     public Integer getLangId(Locale locale) {
-        Integer id =  langCache.get(locale);
+        Integer id = langCache.get(locale);
         if (id == null){
             id = idFactory.getId(locale);
-            SQLMergeClause merge = createMerge(language);
-            merge.keys(language.id);
-            merge.set(language.id, id);
-            merge.set(language.text, LocaleUtil.toLang(locale));
-            merge.execute();
             langCache.put(locale, id);
         }
         return id;
