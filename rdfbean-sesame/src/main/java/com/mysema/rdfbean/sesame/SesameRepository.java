@@ -170,7 +170,7 @@ public abstract class SesameRepository implements Repository{
         }
     }
 
-    public void setOntology(Ontology ontology) {
+    public void setOntology(Ontology<UID> ontology) {
         this.ontology = ontology;
     }
     

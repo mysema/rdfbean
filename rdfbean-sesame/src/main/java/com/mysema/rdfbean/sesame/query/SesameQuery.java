@@ -147,7 +147,7 @@ public class SesameQuery
     
     private JoinBuilder joinBuilder; 
 
-    private final Ontology ontology;
+    private final Ontology<UID> ontology;
 
     private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
     
@@ -195,7 +195,7 @@ public class SesameQuery
             ValueFactory valueFactory,
             RepositoryConnection connection, 
             StatementPattern.Scope patternScope,
-            Ontology ontology,
+            Ontology<UID> ontology,
             Inference inference) {
         super(dialect, session);        
         this.connection = Assert.notNull(connection,"connection");
