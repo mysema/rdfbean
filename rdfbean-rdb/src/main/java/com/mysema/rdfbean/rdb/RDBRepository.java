@@ -202,7 +202,7 @@ public class RDBRepository implements Repository{
                 nodes.add(new LIT(str, XSD.integerType));
                 nodes.add(new LIT(str+".0", XSD.floatType));
                 nodes.add(new LIT(str+".0", XSD.doubleType));                
-                nodes.add(new LIT(str+".0", XSD.decimalType));
+                nodes.add(new LIT(str+".0", XSD.decimalType));                
             }
             
             conn.addNodes(nodes, nodeCache);
