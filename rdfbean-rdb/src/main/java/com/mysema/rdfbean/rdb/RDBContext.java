@@ -131,6 +131,17 @@ public class RDBContext implements Closeable{
         return new SQLQueryImpl(connection, configuration);
     }
 
+    public Long getId(Object constant) {
+        // TODO : cache
+        UID type = converterRegistry.getDatatype(constant.getClass());
+        String lexical = converterRegistry.toString(constant);
+        return getNodeId(new LIT(lexical, type));
+    }
+
+    public ID getID(String lexical, boolean resource){
+        return resource ? new UID(lexical) : new BID(lexical);
+    }
+
     @Nullable
     public Locale getLang(int id) {
         return langCache.getKey(id);
@@ -173,32 +184,21 @@ public class RDBContext implements Closeable{
             return id;
         }        
     }
-
+    
     public Collection<NODE> getNodes() {
         return nodeCache.keySet();
+    }
+    
+    public RDBOntology getOntology() {
+        return ontology;
     }
 
     public java.sql.Date toDate(LIT literal){
         return converterRegistry.fromString(literal.getValue(), java.sql.Date.class);
     }
-    
+
     public java.sql.Timestamp toTimestamp(LIT literal){
         return converterRegistry.fromString(literal.getValue(), java.sql.Timestamp.class);
-    }
-    
-    public ID getID(String lexical, boolean resource){
-        return resource ? new UID(lexical) : new BID(lexical);
-    }
-
-    public RDBOntology getOntology() {
-        return ontology;
-    }
-
-    public Long getId(Object constant) {
-        // TODO : cache
-        UID type = converterRegistry.getDatatype(constant.getClass());
-        String lexical = converterRegistry.toString(constant);
-        return getNodeId(new LIT(lexical, type));
     }
     
     
