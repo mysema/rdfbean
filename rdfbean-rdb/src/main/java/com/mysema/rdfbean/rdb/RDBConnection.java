@@ -131,14 +131,11 @@ public class RDBConnection implements RDFConnection{
             merge.set(symbol.lang, getLangId(literal.getLang()));
             if (Constants.integerTypes.contains(literal.getDatatype())){
                 merge.set(symbol.integer, Long.valueOf(literal.getValue()));
-            }
-            if (Constants.decimalTypes.contains(literal.getDatatype())){
+            }else if (Constants.decimalTypes.contains(literal.getDatatype())){
                 merge.set(symbol.floating, Double.valueOf(literal.getValue()));
-            }
-            if (Constants.dateTypes.contains(literal.getDatatype())){
+            }else if (Constants.dateTypes.contains(literal.getDatatype())){
                 merge.set(symbol.datetime, context.toDate(literal));                
-            }
-            if (Constants.dateTimeTypes.contains(literal.getDatatype())){
+            }else if (Constants.dateTimeTypes.contains(literal.getDatatype())){
                 merge.set(symbol.datetime, context.toTimestamp(literal));
             }
         }
@@ -180,16 +177,21 @@ public class RDBConnection implements RDFConnection{
     }
 
     private void addStatement(STMT stmt) {
+        Long c = stmt.getContext() != null ? getId(stmt.getContext()) : null;
+        Long s = getId(stmt.getSubject());
+        Long p = getId(stmt.getPredicate());
+        Long o = getId(stmt.getObject());
+        
         SQLQuery query = context.createQuery();
         query.from(statement);
         if (stmt.getContext() != null){
-            query.where(statement.model.eq(getId(stmt.getContext())));    
+            query.where(statement.model.eq(c));    
         }else{
             query.where(statement.model.isNull());
         }        
-        query.where(statement.subject.eq(getId(stmt.getSubject())));
-        query.where(statement.predicate.eq(getId(stmt.getPredicate())));
-        query.where(statement.object.eq(getId(stmt.getObject())));
+        query.where(statement.subject.eq(s));
+        query.where(statement.predicate.eq(p));
+        query.where(statement.object.eq(o));
         if (query.uniqueResult(one) != null){
             return;
         }
@@ -198,14 +200,10 @@ public class RDBConnection implements RDFConnection{
 //        SQLMergeClause merge = context.createMerge(statement);
 //        merge.keys(statement.model, statement.subject, statement.predicate, statement.object);
         SQLInsertClause insert = context.createInsert(statement);
-        if (stmt.getContext() != null){
-            insert.set(statement.model, getId(stmt.getContext()));    
-        }else{
-            insert.set(statement.model, null);
-        }        
-        insert.set(statement.subject, getId(stmt.getSubject()));
-        insert.set(statement.predicate, getId(stmt.getPredicate()));
-        insert.set(statement.object, getId(stmt.getObject()));
+        insert.set(statement.model, c);
+        insert.set(statement.subject, s);
+        insert.set(statement.predicate, p);
+        insert.set(statement.object, o);
         insert.execute();
     }
 
