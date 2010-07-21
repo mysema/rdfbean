@@ -86,10 +86,10 @@ public class RDBConnection implements RDFConnection{
     }
 
     private void addLocales(List<Integer> ids, List<Locale> locales){
-        List<Integer> persisted = context.createQuery()
+        Set<Integer> persisted = new HashSet<Integer>(context.createQuery()
             .from(language)
             .where(language.id.in(ids))
-            .list(language.id);
+            .list(language.id));
         for (int i = 0; i < ids.size(); i++){
             Integer id = ids.get(i);
             if (!persisted.contains(id)){
@@ -143,10 +143,10 @@ public class RDBConnection implements RDFConnection{
     }
     
     private void addNodes(List<Long> ids, List<NODE> nodes){
-        List<Long> persisted = context.createQuery()
+        Set<Long> persisted = new HashSet<Long>(context.createQuery()
             .from(symbol)
             .where(symbol.id.in(ids))
-            .list(symbol.id);
+            .list(symbol.id));
         for (int i = 0; i < ids.size(); i++){
             Long id = ids.get(i);
             if (!persisted.contains(id)){

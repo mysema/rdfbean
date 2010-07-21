@@ -47,7 +47,7 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
  * @author tiwe
  * @version $Id$
  */
-public class RDBContext implements Closeable{
+public final class RDBContext implements Closeable{
     
     private final ConverterRegistry converterRegistry;
     

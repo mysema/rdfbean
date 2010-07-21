@@ -153,7 +153,17 @@ public class RDBRepository implements Repository{
             
             // ontology resources
             for (MappedClass mappedClass : configuration.getMappedClasses()){
+                // class id
                 nodes.add(mappedClass.getUID());
+                
+                // enum constants
+                if (mappedClass.isEnum()){
+                    for (Object e : mappedClass.getJavaClass().getEnumConstants()){
+                        nodes.add(new UID(mappedClass.getUID().ns(), ((Enum<?>)e).name()));
+                    }
+                }
+                
+                // property predicates
                 for (MappedPath path : mappedClass.getProperties()){
                     MappedProperty<?> property = path.getMappedProperty();
                     if (property.getKeyPredicate() != null){
