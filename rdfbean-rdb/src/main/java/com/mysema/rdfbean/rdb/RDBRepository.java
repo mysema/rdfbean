@@ -125,9 +125,9 @@ public class RDBRepository implements Repository{
 
     @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     private void initSchema() throws IOException, SQLException {
-        Connection conn = dataSource.getConnection();
-        SQLQuery query = new SQLQueryImpl(conn, templates).from(QLanguage.language);        
+        Connection conn = dataSource.getConnection();                
         try{
+            SQLQuery query = new SQLQueryImpl(conn, templates).from(QLanguage.language);
             query.count();
         } catch (Exception e) {
             // language
@@ -162,7 +162,10 @@ public class RDBRepository implements Repository{
             .foreignKey("fk_predicate", "predicate").references("symbol", "id")
             .foreignKey("fk_object", "object").references("symbol", "id")
             .execute();
+        }finally{
+            conn.close();
         }
+        
     }
     
     private void initTables() throws IOException {
