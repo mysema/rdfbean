@@ -27,6 +27,10 @@ public final class UID extends ID {
 
     private final int i;
     
+    private transient String ns;
+    
+    private transient String ln;
+    
     public static UID create(@Nullable String parentNs, String ns, String ln, @Nullable String elementName) {
         if (isBlank(ns)) {
             if (isNotBlank(parentNs)) {
@@ -66,19 +70,26 @@ public final class UID extends ID {
     }
     
     public String ln() {
-        if (i < id.length()) {
-            return id.substring(i);
-        } else {
-            return "";
+        if (ln == null){
+            if (i < id.length()) {
+                ln = id.substring(i);
+            } else {
+                ln = "";
+            }    
         }
+        return ln;        
     }
 
     public String ns() {
-        if (i > 0) {
-            return id.substring(0, i);
-        } else {
-            return id;
+        if (ns == null){
+            if (i > 0) {
+                ns = id.substring(0, i);
+            } else {
+                ns = id;
+            } 
         }
+        return ns;
+        
     }
     
     public String getNamespace() {
@@ -90,9 +101,9 @@ public final class UID extends ID {
     }
     
     @Override
-	public NodeType getNodeType() {
-		return NodeType.URI;
-	}
+    public NodeType getNodeType() {
+	return NodeType.URI;
+    }
 
     @Override
     public boolean isBNode() {

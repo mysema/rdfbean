@@ -9,13 +9,10 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
@@ -34,38 +31,35 @@ import com.mysema.rdfbean.owl.OWL;
  */
 public class MD5IdFactory implements IdFactory {
     
-    private final Map<String, String> ns2prefix = new HashMap<String, String>();
+    private final Map<UID,String> uid2string = new HashMap<UID,String>();
     
     public MD5IdFactory() {
-        ns2prefix.put(RDF.NS,  "rdf");
-        ns2prefix.put(RDFS.NS, "rdfs");
-        ns2prefix.put(OWL.NS,  "owl");
-        ns2prefix.put(XSD.NS,  "xsd");
+        register("rdf",RDF.ALL);
+        register("rdfs",RDFS.ALL);
+        register("owl",OWL.ALL);
+        register("xsd",XSD.ALL);
     }
     
-    private String getReadableURI(String ns, @Nullable String ln) {
-        if (ln == null) {
-            ln = "";
+    private void register(String prefix, Collection<UID> all) {
+        for (UID id : all){
+            uid2string.put(id, prefix+":"+id.ln());
         }
-        if (StringUtils.isNotEmpty(ns)) {
-            String prefix = ns2prefix.get(ns);
-            if (prefix != null) {
-                return prefix+":"+ln;
-            } else {
-                return "<"+ns+ln+">";
-            }
-        } else {
-            return ln;
+    }
+
+    private String getReadableURI(UID uid) {
+        String rv = uid2string.get(uid);
+        if (rv == null){
+            rv = "<"+uid.getId()+">";
         }
+        return rv;
     }
     
     @Override
-    public Long getId(NODE node) {        
-        StringBuilder builder = new StringBuilder();
+    public Long getId(NODE node) {      
+        StringBuilder builder = new StringBuilder(node.getValue().length()+10);
         builder.append(node.getNodeType().name().charAt(0));
         if (node.isURI()){
-            UID uid = node.asURI();
-            builder.append(getReadableURI(uid.ns(), uid.ln()));
+            builder.append(getReadableURI(node.asURI()));
             
         }else if (node.isBNode()){    
             builder.append(node.getValue());
@@ -74,13 +68,10 @@ public class MD5IdFactory implements IdFactory {
             builder.append(node.getValue());
             LIT literal = node.asLiteral();
             if (literal.getDatatype() != null){
-                builder.append("^");
-                UID type = literal.getDatatype();
-                builder.append(getReadableURI(type.ns(), type.ln()));                
+                builder.append("^").append(getReadableURI(literal.getDatatype()));    
             }
             if (literal.getLang() != null){
-                builder.append("@");
-                builder.append(literal.getLang());
+                builder.append("@").append(literal.getLang());
             }
         }
         try {
