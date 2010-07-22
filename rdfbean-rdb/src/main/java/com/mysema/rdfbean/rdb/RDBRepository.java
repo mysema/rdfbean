@@ -108,7 +108,7 @@ public class RDBRepository implements Repository{
 
     @Override
     public void export(Format format, OutputStream os) {
-        // TODO Auto-generated method stub        
+        throw new UnsupportedOperationException();
     }
 
     @Override
