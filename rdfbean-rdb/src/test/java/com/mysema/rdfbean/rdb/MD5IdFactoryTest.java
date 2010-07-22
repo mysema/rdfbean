@@ -51,6 +51,9 @@ public class MD5IdFactoryTest {
         nodes.add(new LIT("true", XSD.booleanType));
         nodes.add(new LIT("false", XSD.booleanType));
         
+        nodes.add(new LIT("1"+Locale.ENGLISH));
+        nodes.add(new LIT("1"+XSD.stringType));
+        
         for (int i = -128; i < 128; i++){
             String str = String.valueOf(i);
             nodes.add(new LIT(str, XSD.byteType));

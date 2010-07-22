@@ -31,6 +31,13 @@ import com.mysema.rdfbean.owl.OWL;
  */
 public class MD5IdFactory implements IdFactory {
     
+    public static void main(String[] args){
+        System.out.println(Integer.toBinaryString(255)); // 11 111111
+        System.out.println(Integer.toBinaryString(191)); // 10 111111
+        System.out.println(Integer.toBinaryString(127)); // 01 111111
+        System.out.println(Integer.toBinaryString(63));  // 00 111111
+    }
+    
     private final Map<UID,String> uid2string = new HashMap<UID,String>();
     
     public MD5IdFactory() {
@@ -49,36 +56,40 @@ public class MD5IdFactory implements IdFactory {
     private String getReadableURI(UID uid) {
         String rv = uid2string.get(uid);
         if (rv == null){
-            rv = "<"+uid.getId()+">";
+            rv = uid.getId();
         }
         return rv;
     }
     
     @Override
-    public Long getId(NODE node) {      
-        StringBuilder builder = new StringBuilder(node.getValue().length()+10);
-        builder.append(node.getNodeType().name().charAt(0));
-        if (node.isURI()){
-            builder.append(getReadableURI(node.asURI()));
-            
-        }else if (node.isBNode()){    
-            builder.append(node.getValue());
-            
-        }else if (node.isLiteral()){
-            builder.append(node.getValue());
-            LIT literal = node.asLiteral();
-            if (literal.getDatatype() != null){
-                builder.append("^").append(getReadableURI(literal.getDatatype()));    
-            }
+    public Long getId(NODE node) {
+        int mask;
+        String value;
+        if (node.isLiteral()){
+            LIT literal = node.asLiteral();            
             if (literal.getLang() != null){
-                builder.append("@").append(literal.getLang());
+                mask = 255;
+                value = literal.getValue() + literal.getLang();
+            }else if (literal.getDatatype() != null){
+                mask = 255;
+                value = literal.getValue() + getReadableURI(literal.getDatatype());
+            }else{
+                mask = 191;
+                value = literal.getValue();
             }
+        }else if (node.isBNode()){
+            mask = 127;
+            value = node.getValue();
+        }else{
+            mask = 63;
+            value = getReadableURI(node.asURI());
         }
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
-            digest.update(builder.toString().getBytes("UTF-8"));
+            digest.update(value.getBytes("UTF-8"));
             byte[] hash = digest.digest();
             byte[] longBytes = new byte[8];
+            longBytes[0] = (byte)(longBytes[0] & mask);
             System.arraycopy(hash, 0, longBytes, 0, longBytes.length);
             return new BigInteger(longBytes).longValue();
         } catch (NoSuchAlgorithmException e) {
