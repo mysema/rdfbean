@@ -233,7 +233,7 @@ public final class MappedClass {
             }
         }
         int j = 0;
-        boolean found = false;;
+        boolean found = false;
         for (MappedClass superClass : getMappedSuperClasses()) {
             if (declaringClass.equals(superClass)) {
                 found = true;
