@@ -27,9 +27,8 @@ public final class UID extends ID {
 
     private final int i;
     
-    private transient String ns;
-    
-    private transient String ln;
+    @Nullable
+    private transient String ns, ln;
     
     public static UID create(@Nullable String parentNs, String ns, String ln, @Nullable String elementName) {
         if (isBlank(ns)) {
@@ -64,9 +63,11 @@ public final class UID extends ID {
         this.i = tmp;
     }
     
-    public UID(String ns, String ln) {
-        super((Assert.hasText(ns,"ns") + Assert.notNull(ln,"ln")).intern());
+    public UID(String namespace, String localeName) {
+        super((Assert.hasText(namespace,"ns") + Assert.notNull(localeName,"ln")).intern());
         i = ns.length();
+        this.ns = namespace;
+        this.ln = localeName;
     }
     
     public String ln() {
