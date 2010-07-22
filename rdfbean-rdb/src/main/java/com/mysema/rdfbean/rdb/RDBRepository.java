@@ -6,11 +6,10 @@
 package com.mysema.rdfbean.rdb;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
@@ -22,13 +21,12 @@ import net.jcip.annotations.Immutable;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
+import com.mysema.query.sql.ddl.CreateTableClause;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
@@ -132,17 +130,38 @@ public class RDBRepository implements Repository{
         try{
             query.count();
         } catch (Exception e) {
-            // TODO make the schema source customizable
-            InputStream is = getClass().getResourceAsStream("/h2.sql");
-            String schema = IOUtils.toString(is, "UTF-8");
-            for (String clause : StringUtils.split(schema, ";")){
-                Statement stmt2 = conn.createStatement();
-                try{
-                    stmt2.execute(clause);    
-                }finally{
-                    stmt2.close();    
-                }
-            }
+            // language
+            new CreateTableClause(conn,templates,"language")
+            .column("id", Integer.class).notNull()
+            .column("text", String.class).size(256).notNull()
+            .primaryKey("pk_language", "id")
+            .execute();
+            
+            // symbol
+            new CreateTableClause(conn,templates,"symbol")
+            .column("id", Long.class).notNull()
+            .column("resource", Boolean.class).notNull()
+            .column("lexical", String.class).size(1024).notNull()
+            .column("datatype", Long.class)
+            .column("lang", Integer.class)
+            .column("integer", Long.class)
+            .column("floating", Double.class)
+            .column("datetime", Timestamp.class)
+            .primaryKey("pk_symbol", "id")
+            .foreignKey("fk_lang", "lang").references("language", "id")
+            .execute();
+            
+            // statement
+             new CreateTableClause(conn,templates,"statement")
+            .column("model", Long.class)
+            .column("subject",Long.class).notNull()
+            .column("predicate", Long.class).notNull()
+            .column("object", Long.class).notNull()
+            .foreignKey("fk_model", "model").references("symbol", "id")
+            .foreignKey("fk_subject", "subject").references("symbol", "id")
+            .foreignKey("fk_predicate", "predicate").references("symbol", "id")
+            .foreignKey("fk_object", "object").references("symbol", "id")
+            .execute();
         }
     }
     
