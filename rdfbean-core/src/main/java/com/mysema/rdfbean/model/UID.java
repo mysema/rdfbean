@@ -65,7 +65,7 @@ public final class UID extends ID {
     
     public UID(String namespace, String localeName) {
         super((Assert.hasText(namespace,"ns") + Assert.notNull(localeName,"ln")).intern());
-        i = ns.length();
+        i = namespace.length();
         this.ns = namespace;
         this.ln = localeName;
     }
