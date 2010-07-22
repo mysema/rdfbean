@@ -1,9 +1,9 @@
 package com.mysema.rdfbean.sesame.query;
 
-import org.junit.Test;
+import static com.mysema.query.alias.Alias.$;
+import static org.junit.Assert.assertEquals;
 
-import static com.mysema.query.alias.Alias.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.path.PSimple;

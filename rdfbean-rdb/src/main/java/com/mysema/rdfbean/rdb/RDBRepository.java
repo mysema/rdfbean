@@ -220,7 +220,7 @@ public class RDBRepository implements Repository{
             for (char c = 'a'; c <= 'z'; c++){
                 String str = String.valueOf(c);
                 nodes.add(new LIT(str));
-                nodes.add(new LIT(str.toUpperCase()));   
+                nodes.add(new LIT(str.toUpperCase(Locale.ENGLISH)));   
             }            
             
             // numbers

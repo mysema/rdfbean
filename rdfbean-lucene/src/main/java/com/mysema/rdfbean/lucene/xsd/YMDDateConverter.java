@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.lucene.xsd;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import org.joda.time.format.DateTimeFormat;

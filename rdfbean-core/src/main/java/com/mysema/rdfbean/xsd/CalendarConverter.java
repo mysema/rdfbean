@@ -6,7 +6,6 @@
 package com.mysema.rdfbean.xsd;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import org.joda.time.DateTime;

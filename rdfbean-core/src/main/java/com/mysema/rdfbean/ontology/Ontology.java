@@ -7,8 +7,6 @@ package com.mysema.rdfbean.ontology;
 
 import java.util.Collection;
 
-import com.mysema.rdfbean.model.UID;
-
 /**
  * Ontology provides access to type and property hierarchies
  *
