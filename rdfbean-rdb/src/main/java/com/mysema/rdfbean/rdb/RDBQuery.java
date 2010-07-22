@@ -50,6 +50,8 @@ import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.Session;
 
 /**
+ * RDBQuery is a BeanQuery implementation for the RDB module
+ * 
  * @author tiwe
  *
  */

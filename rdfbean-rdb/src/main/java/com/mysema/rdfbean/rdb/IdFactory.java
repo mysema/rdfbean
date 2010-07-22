@@ -10,7 +10,7 @@ import java.util.Locale;
 import com.mysema.rdfbean.model.NODE;
 
 /**
- * IDFactory provides
+ * IDFactory defines id creation for NODE and Locale instances
  *
  * @author tiwe
  * @version $Id$

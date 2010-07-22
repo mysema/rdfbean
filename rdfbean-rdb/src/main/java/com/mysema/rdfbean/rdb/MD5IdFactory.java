@@ -24,7 +24,7 @@ import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
 
 /**
- * MD5IdFactory provides
+ * MD5IdFactory is a MD5 hash based implementation of the IdFactory interface
  *
  * @author tiwe
  * @version $Id$

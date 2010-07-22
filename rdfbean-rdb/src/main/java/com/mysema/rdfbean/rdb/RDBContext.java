@@ -42,7 +42,7 @@ import com.mysema.rdfbean.rdb.support.LocalTimeType;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
- * RDBContext provides
+ * RDBContext provides shared state and functionality for RDBCOnnection and RDBQuery
  *
  * @author tiwe
  * @version $Id$

@@ -42,7 +42,7 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 /**
- * RDBRepository provides
+ * RDBRepository is a Repository implementation for the RDB module
  *
  * @author tiwe
  * @version $Id$

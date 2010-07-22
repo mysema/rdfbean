@@ -13,7 +13,7 @@ import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RepositoryException;
 
 /**
- * RDBTransaction provides
+ * RDBTransaction is an RDFBeanTransaction implementation for the RDB module
  *
  * @author tiwe
  * @version $Id$

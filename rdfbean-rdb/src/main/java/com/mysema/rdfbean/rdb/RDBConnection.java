@@ -37,7 +37,7 @@ import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
 /**
- * RDBConnection provides
+ * RDBConnection is the RDFConnection implementation for the RDB module
  *
  * @author tiwe
  * @version $Id$
