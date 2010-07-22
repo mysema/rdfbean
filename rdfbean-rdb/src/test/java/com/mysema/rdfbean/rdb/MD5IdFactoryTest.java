@@ -7,8 +7,10 @@ package com.mysema.rdfbean.rdb;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -33,7 +35,7 @@ public class MD5IdFactoryTest {
     
     @Test
     public void testNode() throws UnsupportedEncodingException, NoSuchAlgorithmException{        
-        Set<Long> seen = new HashSet<Long>();        
+        Map<Long,NODE> seen = new HashMap<Long,NODE>();        
         Set<NODE> nodes = new HashSet<NODE>();
         // UID
         nodes.addAll(RDF.ALL);
@@ -63,25 +65,30 @@ public class MD5IdFactoryTest {
             nodes.add(new LIT(str+".0", XSD.floatType));
         }
         
-        for (int i = 128; i < 10000; i++){
+        for (int i = 0; i < 10000; i++){
             String str = String.valueOf(i);
             nodes.add(new LIT(str, XSD.intType));
             nodes.add(new LIT("-"+str, XSD.intType));
             nodes.add(new LIT(str, XSD.longType));
             nodes.add(new LIT("-"+str, XSD.longType));
-            nodes.add(new LIT(str+".0", XSD.doubleType));
-            nodes.add(new LIT("-"+str+".0", XSD.doubleType));
-            nodes.add(new LIT(str+".0", XSD.floatType));
-            nodes.add(new LIT("-"+str+".0", XSD.floatType));
+            
+            for (int j = 0; j < 10; j++){
+                nodes.add(new LIT(str+"."+j, XSD.doubleType));
+                nodes.add(new LIT("-"+str+"."+j, XSD.doubleType));
+                nodes.add(new LIT(str+"."+j, XSD.floatType));
+                nodes.add(new LIT("-"+str+"."+j, XSD.floatType));    
+            }            
         }
         
+        long start = System.currentTimeMillis();
         for (NODE node : nodes){
             Long id = idFactory.getId(node);
-            if (seen.contains(id)){
-                throw new IllegalStateException(id + " already used");
+            if (seen.containsKey(id)){                
+                throw new IllegalStateException("Clash : " + node + " and " + seen.get(id));
             }            
-            seen.add(id);
+            seen.put(id, node);
         }    
+        System.out.println(System.currentTimeMillis()-start);
     }
     
     @Test

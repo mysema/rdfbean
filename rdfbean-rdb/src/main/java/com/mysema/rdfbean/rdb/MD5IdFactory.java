@@ -31,12 +31,7 @@ import com.mysema.rdfbean.owl.OWL;
  */
 public class MD5IdFactory implements IdFactory {
     
-    public static void main(String[] args){
-        System.out.println(Integer.toBinaryString(255)); // 11 111111
-        System.out.println(Integer.toBinaryString(191)); // 10 111111
-        System.out.println(Integer.toBinaryString(127)); // 01 111111
-        System.out.println(Integer.toBinaryString(63));  // 00 111111
-    }
+    private final int[] masks = new int[]{-128,191,127,63};
     
     private final Map<UID,String> uid2string = new HashMap<UID,String>();
     
@@ -68,20 +63,17 @@ public class MD5IdFactory implements IdFactory {
         if (node.isLiteral()){
             LIT literal = node.asLiteral();            
             if (literal.getLang() != null){
-                mask = 255;
+                mask = masks[0];
                 value = literal.getValue() + literal.getLang();
-            }else if (literal.getDatatype() != null){
-                mask = 255;
-                value = literal.getValue() + getReadableURI(literal.getDatatype());
             }else{
-                mask = 191;
-                value = literal.getValue();
+                mask = masks[1];
+                value = literal.getValue() + getReadableURI(literal.getDatatype());
             }
         }else if (node.isBNode()){
-            mask = 127;
+            mask = masks[2];
             value = node.getValue();
         }else{
-            mask = 63;
+            mask = masks[3];
             value = getReadableURI(node.asURI());
         }
         try {
@@ -89,8 +81,8 @@ public class MD5IdFactory implements IdFactory {
             digest.update(value.getBytes("UTF-8"));
             byte[] hash = digest.digest();
             byte[] longBytes = new byte[8];
-            longBytes[0] = (byte)(longBytes[0] & mask);
             System.arraycopy(hash, 0, longBytes, 0, longBytes.length);
+            longBytes[0] = (byte)(longBytes[0] & mask);            
             return new BigInteger(longBytes).longValue();
         } catch (NoSuchAlgorithmException e) {
             throw new RepositoryException(e);
