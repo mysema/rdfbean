@@ -170,7 +170,7 @@ public abstract class SesameRepository implements Repository{
         }
     }
 
-    public void setOntology(Ontology<UID> ontology) {
+    public final void setOntology(Ontology<UID> ontology) {
         this.ontology = ontology;
     }
     
@@ -178,7 +178,7 @@ public abstract class SesameRepository implements Repository{
         return inference;
     }
 
-    public void setSesameInference(boolean sesameInference) {
+    public final void setSesameInference(boolean sesameInference) {
         this.sesameInference = sesameInference;
         this.inference = sesameInference ? Inference.LITERAL : Inference.FULL;
     }

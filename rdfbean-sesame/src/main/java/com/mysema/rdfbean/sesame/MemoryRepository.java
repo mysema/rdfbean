@@ -89,17 +89,17 @@ public class MemoryRepository extends SesameRepository {
         return idSource.getNextId();
     }
    
-    public void setDataDir(File dataDir) {
+    public final void setDataDir(File dataDir) {
         this.dataDir = dataDir;
     }
     
-    public void setDataDirName(String dataDirName) {
+    public final void setDataDirName(String dataDirName) {
         if (StringUtils.isNotEmpty(dataDirName)) {
             this.dataDir = new File(dataDirName);
         }
     }
 
-    public void setSyncDelay(long syncDelay) {
+    public final void setSyncDelay(long syncDelay) {
         this.syncDelay = syncDelay;
     }
 
