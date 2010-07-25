@@ -29,6 +29,7 @@ import com.mysema.rdfbean.owl.OWL;
  * @author tiwe
  * @version $Id$
  */
+// FIXME
 public class MD5IdFactory implements IdFactory {
     
     private final int[] masks = new int[]{-128,191,127,63};
