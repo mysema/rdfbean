@@ -45,15 +45,15 @@ public final class MappedClass {
     
     private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
     
-    private final MappedClassFactory mappedClassFactory;
+    private final List<MappedClass> mappedSuperClasses;
     
     @Nullable
     private final UID uid;
     
-    MappedClass(MappedClassFactory mappedClassFactory, Class<?> clazz, UID uid) {
-        this.mappedClassFactory = mappedClassFactory;
+    MappedClass(Class<?> clazz, UID uid, List<MappedClass> mappedSuperClasses) {
         this.clazz = clazz;
         this.uid = uid;
+        this.mappedSuperClasses = mappedSuperClasses;
     }
     
     public static String getClassNs(Class<?> clazz) {
@@ -68,11 +68,6 @@ public final class MappedClass {
     public static boolean isPolymorphic(Class<?> clazz) {
         // TODO use configuration to check if there's any mapped subclasses 
         return !Modifier.isFinal(clazz.getModifiers());
-    }
-    
-    private static boolean isProcessedClass(Class<?> clazz) {
-        Package pack = clazz.getPackage();
-        return pack == null || !pack.getName().startsWith("java");
     }
     
     void addDynamicProperty(MappedProperty<?> property) {        
@@ -179,21 +174,6 @@ public final class MappedClass {
     }
     
     public List<MappedClass> getMappedSuperClasses() {
-        Class<?> superClass = clazz.getSuperclass();
-        Class<?>[] ifaces = clazz.getInterfaces();
-        List<MappedClass> mappedSuperClasses = new ArrayList<MappedClass>(ifaces != null ? ifaces.length + 1 : 1);
-        if (superClass != null && !Object.class.equals(superClass)) {
-            if (isProcessedClass(superClass)) {
-                mappedSuperClasses.add(mappedClassFactory.getMappedClass(superClass));
-            }
-        }
-        if (ifaces != null) {
-            for (Class<?> iface : ifaces) {
-                if (isProcessedClass(iface)) {
-                    mappedSuperClasses.add(mappedClassFactory.getMappedClass(iface));
-                }
-            }
-        }
         return mappedSuperClasses;
     }
     

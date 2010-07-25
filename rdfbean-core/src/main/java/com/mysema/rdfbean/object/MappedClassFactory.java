@@ -130,7 +130,8 @@ public class MappedClassFactory {
         MappedClass mappedClass = mappedClasses.get(clazz);
         if (mappedClass == null) {
             UID uid = getUID(clazz);
-            mappedClass = new MappedClass(this,clazz,uid);
+            List<MappedClass> superclasses = getMappedSuperClasses(clazz);
+            mappedClass = new MappedClass(clazz, uid, superclasses);
             if (!clazz.isEnum()) {
                 for (MappedClass mappedSuperClass : mappedClass.getMappedSuperClasses()) {
                     if (mappedSuperClass != null) {
@@ -172,5 +173,30 @@ public class MappedClassFactory {
             return null;
         }
     }
+    
+    private List<MappedClass> getMappedSuperClasses(Class<?> clazz) {
+        Class<?> superClass = clazz.getSuperclass();
+        Class<?>[] ifaces = clazz.getInterfaces();
+        List<MappedClass> mappedSuperClasses = new ArrayList<MappedClass>(ifaces != null ? ifaces.length + 1 : 1);
+        if (superClass != null && !Object.class.equals(superClass)) {
+            if (isProcessedClass(superClass)) {
+                mappedSuperClasses.add(getMappedClass(superClass));
+            }
+        }
+        if (ifaces != null) {
+            for (Class<?> iface : ifaces) {
+                if (isProcessedClass(iface)) {
+                    mappedSuperClasses.add(getMappedClass(iface));
+                }
+            }
+        }
+        return mappedSuperClasses;
+    }
+    
+    private static boolean isProcessedClass(Class<?> clazz) {
+        Package pack = clazz.getPackage();
+        return pack == null || !pack.getName().startsWith("java");
+    }
+    
 
 }
