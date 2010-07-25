@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.object;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
@@ -22,6 +23,10 @@ public final class FieldProperty extends MappedProperty<Field> {
     private final Field field;
 
     public FieldProperty(Field field, MappedClass declaringClass) {
+        this(field, field.getAnnotations(), declaringClass);
+    }
+    
+    public FieldProperty(Field field, Annotation[] annotations, MappedClass declaringClass) {
         super(field.getName(), field.getAnnotations(), declaringClass);
         this.field = field;
         this.field.setAccessible(true);

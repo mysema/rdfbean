@@ -1,11 +1,9 @@
 package com.mysema.rdfbean.object;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
 
-@Ignore
 public class ConfigurationBuilderTest {
     
     public static class Person {
@@ -20,6 +18,7 @@ public class ConfigurationBuilderTest {
     }
     
     public static class Department {
+        
         String id;
         
         String name;
@@ -28,6 +27,7 @@ public class ConfigurationBuilderTest {
     }
     
     public static class Company {
+        
         String id;
         
         String name;
@@ -36,9 +36,9 @@ public class ConfigurationBuilderTest {
     @Test
     public void test(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
-        builder.addClass(TEST.NS, Person.class);        
-        builder.addClass(TEST.NS, "Dept", Department.class);
-        builder.addClass(TEST.NS, Company.class);
+        builder.addClass(TEST.NS, Person.class).addId("id").addProperties();
+        builder.addClass(TEST.NS, "Dept", Department.class).addId("id").addProperties();
+        builder.addClass(TEST.NS, Company.class).addId("id").addProperties();
         Configuration configuration = builder.build();
         
         // person

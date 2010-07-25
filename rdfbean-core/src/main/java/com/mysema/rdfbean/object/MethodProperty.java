@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.object;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
@@ -56,6 +57,10 @@ public final class MethodProperty extends MappedProperty<Method> {
     private final Method method;
 
     public MethodProperty(Method method, MappedClass declaringClass) {
+        this(method, method.getAnnotations(), declaringClass);
+    }
+    
+    public MethodProperty(Method method, Annotation[] annotations, MappedClass declaringClass) {
         super(getPropertyName(method), method.getAnnotations(), declaringClass);
         this.method = method;
         if (method.getName().startsWith("set")) {
@@ -93,7 +98,6 @@ public final class MethodProperty extends MappedProperty<Method> {
 
     @Override
     public void setValue(BeanMap beanMap, Object value) {
-//        beanWrapper.setPropertyValue(getName(), value);
         beanMap.put(getName(), value);
     }
 
