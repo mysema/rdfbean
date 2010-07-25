@@ -23,7 +23,6 @@ public interface ListDomain {
     public class Elements extends Identifiable{
      
         @Predicate
-        @Container(ContainerType.LIST)
         public List<Element> elements;
         
     }

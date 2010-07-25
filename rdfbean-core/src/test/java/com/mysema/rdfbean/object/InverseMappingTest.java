@@ -3,7 +3,6 @@ package com.mysema.rdfbean.object;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -24,7 +23,7 @@ public class InverseMappingTest {
         ID id;
         
         @Predicate(ln="company", inv=true)
-        List<Department> departments;
+        Set<Department> departments;
     }
     
     @ClassMapping(ns=TEST.NS)

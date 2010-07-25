@@ -51,7 +51,6 @@ public interface SimpleDomain {
         public int numericProperty;
         
         @Predicate(ln="listProperty")
-        @Container(ContainerType.LIST)
         public List<SimpleType2> listProperty;
         
         @Predicate(ln="setProperty") 
