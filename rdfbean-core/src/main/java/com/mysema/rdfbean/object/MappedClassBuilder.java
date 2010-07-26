@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.UID;
 
@@ -36,7 +38,15 @@ public class MappedClassBuilder {
         try {
             handled.add(propertyName);
             Field field = mappedClass.getJavaClass().getDeclaredField(propertyName);
-            return addMappedPath(field, Collections.<MappedPredicate>emptyList(), new IdImpl(IDType.LOCAL));
+            Id id;
+            if (field.getType().equals(ID.class)){
+                id = new IdImpl(IDType.RESOURCE);
+            }else if (field.getType().equals(UID.class)){
+                id = new IdImpl(IDType.URI);
+            }else{
+                id = new IdImpl(IDType.LOCAL);
+            }
+            return addMappedPath(field, Collections.<MappedPredicate>emptyList(),id);
         } catch (SecurityException e) {
             throw new ConfigurationException(e);
         } catch (NoSuchFieldException e) {
