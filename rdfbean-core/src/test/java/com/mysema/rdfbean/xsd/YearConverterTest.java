@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2010 Mysema Ltd.
+ * All rights reserved.
+ *
+ */
 package com.mysema.rdfbean.xsd;
 
 public class YearConverterTest extends AbstractConverterTest<Year>{
