@@ -88,7 +88,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void ddProperty(){
+    public void addProperty(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Person.class)
             .addId("id")
