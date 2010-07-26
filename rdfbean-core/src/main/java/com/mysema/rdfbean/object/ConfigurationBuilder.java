@@ -52,7 +52,6 @@ public class ConfigurationBuilder {
     public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
         this.fetchStrategies = fetchStrategies;
     }
-    
-    
+   
 
 }
