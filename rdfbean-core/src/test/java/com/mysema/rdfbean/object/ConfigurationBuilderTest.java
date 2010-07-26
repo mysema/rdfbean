@@ -8,6 +8,8 @@ package com.mysema.rdfbean.object;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
+
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -41,6 +43,8 @@ public class ConfigurationBuilderTest {
         String id;
         
         String name;
+        
+        Set<Department> departments;
     }
     
     public static class Labeled {
@@ -51,7 +55,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void test_namespaces(){
+    public void namespaces(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Labeled.class)
             .addProperty("label", RDFS.label)
@@ -67,7 +71,24 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void test_addProperty(){
+    public void inverse(){
+        ConfigurationBuilder builder = new ConfigurationBuilder();        
+        builder.addClass(TEST.NS, Company.class)
+            .addId("id")
+            .addProperty("departments", new UID(TEST.NS,"company"),true)
+            .addProperties();
+        Configuration configuration = builder.build();
+        
+        // company
+        MappedClass company = configuration.getMappedClass(Company.class);
+        MappedPath company_departments = company.getMappedPath("departments");
+        assertEquals(TEST.NS, company_departments.getPredicatePath().get(0).getUID().ns());
+        assertEquals("company", company_departments.getPredicatePath().get(0).getUID().ln());
+        assertTrue(company_departments.getPredicatePath().get(0).inv());
+    }
+    
+    @Test
+    public void ddProperty(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Person.class)
             .addId("id")
@@ -93,7 +114,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void test_addProperties(){
+    public void addProperties(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Person.class).addId("id").addProperties();
         builder.addClass(new UID(TEST.NS, "Dept"), Department.class).addId("id").addProperties();

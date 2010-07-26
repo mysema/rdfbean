@@ -64,14 +64,18 @@ public class MappedClassBuilder {
     }
 
     public MappedClassBuilder addProperty(String propertyName) {
-        return addProperty(propertyName, new UID(defaultNamespace, propertyName));        
+        return addProperty(propertyName, new UID(defaultNamespace, propertyName), false);        
     }    
 
     public MappedClassBuilder addProperty(String propertyName, UID uid) {
+        return addProperty(propertyName, uid, false);
+    }
+    
+    public MappedClassBuilder addProperty(String propertyName, UID uid, boolean inv) {
         try {
             handled.add(propertyName);
             Field field = mappedClass.getJavaClass().getDeclaredField(propertyName);
-            Predicate predicate = new PredicateImpl("",uid.ns(),uid.ln(),false);
+            Predicate predicate = new PredicateImpl("",uid.ns(),uid.ln(),inv);
             MappedPredicate mappedPredicate = new MappedPredicate(defaultNamespace, predicate, null);
             return addMappedPath(field, Collections.singletonList(mappedPredicate), predicate);
         } catch (SecurityException e) {
