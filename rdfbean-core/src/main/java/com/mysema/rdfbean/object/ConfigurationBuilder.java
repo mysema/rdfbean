@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
@@ -24,6 +26,7 @@ public class ConfigurationBuilder {
         
     private final Set<MappedClass> mappedClasses = new HashSet<MappedClass>();
     
+    @Nullable
     private ConverterRegistry converterRegistry;
     
     private List<FetchStrategy> fetchStrategies = Collections.emptyList();
