@@ -93,7 +93,7 @@ public class ConfigurationBuilderTest {
         builder.addClass(TEST.NS, Person.class)
             .addId("id")
             .addProperty("firstName")
-            .addProperty("lastName", new UID(TEST.NS, "lastName"))
+            .addProperty("lastName", new UID(TEST.NS, "surName"))
             .addProperty("superior")
             .addProperty("department");
         Configuration configuration = builder.build();    
@@ -106,7 +106,7 @@ public class ConfigurationBuilderTest {
         assertEquals(TEST.NS, person_firstName.getPredicatePath().get(0).getUID().ns());
         assertEquals("firstName", person_firstName.getPredicatePath().get(0).getUID().ln());
         MappedPath person_lastName = person.getMappedPath("lastName");
-        assertEquals("lastName", person_lastName.getPredicatePath().get(0).getUID().ln());
+        assertEquals("surName", person_lastName.getPredicatePath().get(0).getUID().ln());
         MappedPath person_superior = person.getMappedPath("superior");
         assertEquals("superior", person_superior.getPredicatePath().get(0).getUID().ln());
         MappedPath person_department = person.getMappedPath("department");
