@@ -5,11 +5,12 @@
  */
 package com.mysema.rdfbean.model.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.LIT;
@@ -19,10 +20,12 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.XSD;
 
 
-public class TurtleWriterTest {
+public class TurtleWriterTest extends AbstractWriterTest{
 
-    StringWriter w = new StringWriter();
-    RDFWriter writer = new TurtleWriter(w);
+    @Before
+    public void setUp(){
+        writer = new TurtleWriter(w);
+    }
     
     @Test
     public void test(){
@@ -46,5 +49,7 @@ public class TurtleWriterTest {
             "rdfs:Resource rdf:type rdfs:Class ; rdfs:label \"Resource\"^xsd:string .";
         assertEquals(expected, w.toString());
     }
+    
+
 
 }

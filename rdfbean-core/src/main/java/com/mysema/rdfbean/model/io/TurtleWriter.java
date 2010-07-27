@@ -23,6 +23,7 @@ import com.mysema.rdfbean.model.UID;
  * @author tiwe
  *
  */
+// TODO : blank node support
 public class TurtleWriter implements RDFWriter{
 
     private final Writer writer;

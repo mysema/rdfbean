@@ -19,6 +19,7 @@ import com.mysema.rdfbean.model.STMT;
  * @author tiwe
  *
  */
+// TODO : blank node support
 public class NTriplesWriter implements RDFWriter{
 
     private final Writer writer;

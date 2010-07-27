@@ -5,11 +5,11 @@
  */
 package com.mysema.rdfbean.model.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.StringWriter;
 import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.LIT;
@@ -18,10 +18,12 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.STMT;
 
 
-public class NTriplesWriterTest {
+public class NTriplesWriterTest extends AbstractWriterTest{
     
-    StringWriter w = new StringWriter();
-    RDFWriter writer = new NTriplesWriter(w);
+    @Before
+    public void setUp(){
+        writer = new NTriplesWriter(w);
+    }
     
     @Test
     public void test(){
@@ -36,5 +38,6 @@ public class NTriplesWriterTest {
             "<"+RDF.type+"> <"+RDFS.label+"> " + new LIT("tyyppi", new Locale("fi")) +" .\n";
         assertEquals(expected, w.toString());
     }
+    
 
 }
