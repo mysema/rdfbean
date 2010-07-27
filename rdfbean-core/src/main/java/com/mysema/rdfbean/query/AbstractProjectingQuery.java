@@ -18,6 +18,7 @@ import org.apache.commons.lang.mutable.MutableInt;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.DefaultQueryMetadata;
+import com.mysema.query.QueryException;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
@@ -104,7 +105,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
             try {
                 return (RT) constructor.newInstance(args);
             } catch (Exception e) {            
-                throw new RuntimeException(e.getMessage(), e);
+                throw new QueryException(e.getMessage(), e);
             }
         }else{
             N node = nodes[offset.intValue()];

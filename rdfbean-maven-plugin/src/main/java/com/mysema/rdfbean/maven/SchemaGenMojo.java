@@ -184,13 +184,14 @@ public class SchemaGenMojo extends AbstractMojo{
         return entityClasses;
     }
     
+    @SuppressWarnings("unchecked")
     protected URLClassLoader getProjectClassLoader() throws DependencyResolutionRequiredException, MalformedURLException {
         List<String> classpathElements = project.getCompileClasspathElements();
         List<URL> urls = new ArrayList<URL>(classpathElements.size());
         for (String element : classpathElements){
             File file = new File(element);
             if (file.exists()){
-                urls.add(file.toURL());
+                urls.add(file.toURI().toURL());
             }
         }
         return new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());       

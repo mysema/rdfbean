@@ -257,12 +257,14 @@ public class SesameQuery
                 Assert.notNull(o, "object is null"));
     }
 
-    private TupleExpr createTupleExpr(TupleExpr tupleExpr, 
+    private TupleExpr createTupleExpr(TupleExpr from, 
             ValueExpr filterConditions, 
             List<OrderElem> orderElements,
             List<ExtensionElem> extensions,
             ProjectionElemList projection,
             QueryModifiers modifiers){
+        
+        TupleExpr tupleExpr = from;
         
         if (filterConditions != null){
             tupleExpr = new Filter(tupleExpr, filterConditions);
