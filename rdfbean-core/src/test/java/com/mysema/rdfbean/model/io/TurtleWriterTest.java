@@ -7,7 +7,6 @@ package com.mysema.rdfbean.model.io;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.StringWriter;
 import java.util.Locale;
 
 import org.junit.Before;
