@@ -10,7 +10,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
 
+import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
@@ -19,10 +22,11 @@ import com.mysema.rdfbean.model.STMT;
  * @author tiwe
  *
  */
-// TODO : blank node support
 public class NTriplesWriter implements RDFWriter{
 
     private final Writer writer;
+    
+    private final Map<BID,String> nodeIds = new HashMap<BID,String>();
     
     public NTriplesWriter(OutputStream out) {
         try {
@@ -71,6 +75,13 @@ public class NTriplesWriter implements RDFWriter{
     protected String toString(NODE node){
         if (node.isURI()){
             return "<" + node.getValue() + ">";
+        }else if (node.isBNode()){    
+            String nodeID = nodeIds.get(node);
+            if (nodeID == null){
+                nodeID = "node" + (nodeIds.size()+1);
+                nodeIds.put(node.asBNode(), nodeID);
+            }
+            return "_:" + nodeID;
         }else{
             return node.toString();
         }

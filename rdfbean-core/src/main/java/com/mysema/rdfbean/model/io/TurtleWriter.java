@@ -13,6 +13,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RepositoryException;
@@ -23,7 +24,6 @@ import com.mysema.rdfbean.model.UID;
  * @author tiwe
  *
  */
-// TODO : blank node support
 public class TurtleWriter implements RDFWriter{
 
     private final Writer writer;
@@ -31,6 +31,8 @@ public class TurtleWriter implements RDFWriter{
     private STMT previous;
     
     private final Map<String,String> nsToPrefix = new HashMap<String,String>();
+    
+    private final Map<BID,String> nodeIds = new HashMap<BID,String>();
     
     public TurtleWriter(OutputStream out) {
         try {
@@ -117,7 +119,12 @@ public class TurtleWriter implements RDFWriter{
                 return "<" + uid.getId() + ">";
             }
         }else if (node.isBNode()){
-            return node.getValue();
+            String nodeID = nodeIds.get(node);
+            if (nodeID == null){
+                nodeID = "node" + (nodeIds.size()+1);
+                nodeIds.put(node.asBNode(), nodeID);
+            }
+            return "_:" + nodeID;
         }else{
             LIT lit = node.asLiteral();
             if (lit.getLang() != null){
@@ -127,7 +134,7 @@ public class TurtleWriter implements RDFWriter{
             }
         }
     }
-
+    
     protected String toString(STMT stmt){
         return toString(stmt.getSubject()) + " " 
             + toString(stmt.getPredicate()) + " " 
