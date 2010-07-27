@@ -23,6 +23,7 @@ import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
@@ -30,6 +31,7 @@ import com.mysema.query.sql.ddl.CreateTableClause;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.io.RDFWriter;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
@@ -49,7 +51,7 @@ import edu.umd.cs.findbugs.annotations.SuppressWarnings;
  */
 @Immutable
 public class RDBRepository implements Repository{
-    
+        
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
     private final IdFactory idFactory = new MD5IdFactory();
@@ -107,8 +109,26 @@ public class RDBRepository implements Repository{
     }
 
     @Override
-    public void export(Format format, OutputStream os) {
-        throw new UnsupportedOperationException();
+    public void export(Format format, OutputStream out) {        
+        try {                        
+            RDFWriter writer = format.createWriter(out);
+            RDBConnection conn = openConnection();
+            CloseableIterator<STMT> iterator = conn.findStatements(null, null, null, null, false);
+            try{
+                writer.start();
+                while (iterator.hasNext()){
+                    writer.handle(iterator.next());
+                }
+                writer.end();
+            }finally{
+                iterator.close();                
+                conn.close();
+                writer.close();
+            }
+
+        } catch (IOException e) {
+            throw new RepositoryException(e.getMessage(), e);
+        }   
     }
 
     @Override

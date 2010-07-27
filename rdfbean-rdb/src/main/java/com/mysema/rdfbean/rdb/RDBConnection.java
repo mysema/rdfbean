@@ -34,6 +34,7 @@ import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.path.PNumber;
 import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.io.RDFWriter;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -236,7 +237,7 @@ public class RDBConnection implements RDFConnection{
             throw new UnsupportedQueryLanguageException(queryLanguage);
         }
     }
-    
+       
     public List<STMT> find(ID subject, UID predicate, NODE object, UID model, boolean includeInferred) {
         return IteratorAdapter.asList(findStatements(subject, predicate, object, model, includeInferred));
     }
@@ -280,6 +281,14 @@ public class RDBConnection implements RDFConnection{
             query.where(statement.model.eq(getId(model)));
         }else{
             exprs.add(statement.model);
+        }
+        
+        // return ordered result, if all triples are queried
+        if (subject == null && predicate == null && object == null && context == null){
+            query.orderBy(statement.model.asc());
+            query.orderBy(statement.subject.asc());
+            query.orderBy(statement.predicate.asc());
+            query.orderBy(statement.object.asc());
         }
         
         // add dummy projection if none is specified
@@ -415,5 +424,6 @@ public class RDBConnection implements RDFConnection{
         }
         
     }
+
 
 }
