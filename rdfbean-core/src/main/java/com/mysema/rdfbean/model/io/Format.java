@@ -29,7 +29,7 @@ public enum Format {
     /**
      * 
      */
-    RDFXML("application/rdf+xml", null),
+    RDFXML("application/rdf+xml", RDFXMLWriter.class),
     /**
      * 
      */
