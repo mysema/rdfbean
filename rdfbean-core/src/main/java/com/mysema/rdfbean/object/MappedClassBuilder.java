@@ -5,13 +5,17 @@ package com.mysema.rdfbean.object;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.annotations.Id;
+import com.mysema.rdfbean.annotations.Mixin;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
@@ -54,13 +58,21 @@ public class MappedClassBuilder {
         }            
     }
     
-    private MappedClassBuilder addMappedPath(Field field, List<MappedPredicate> predicates, Annotation... annotations){
-        FieldProperty fieldProperty = new FieldProperty(field, annotations, mappedClass);
-        MappedPath mappedPath = new MappedPath(fieldProperty, predicates, false);
-        mappedClass.addMappedPath(mappedPath);
-        return this;
+
+    public MappedClassBuilder addMixin(String propertyName) {
+        try{            
+            handled.add(propertyName);
+            Field field = mappedClass.getJavaClass().getDeclaredField(propertyName);
+            Mixin mixin = new MixinImpl();
+            return addMappedPath(field, Collections.<MappedPredicate>emptyList(), mixin);
+        } catch (SecurityException e) {
+            throw new ConfigurationException(e);
+        } catch (NoSuchFieldException e) {
+            throw new ConfigurationException(e);
+        }   
     }
 
+    
     public MappedClassBuilder addProperties() {
         String ns = mappedClass.getUID().getNamespace();
         for (Field field : mappedClass.getJavaClass().getDeclaredFields()){
@@ -72,27 +84,62 @@ public class MappedClassBuilder {
         }
         return this;
     }
+    
+    public MappedClassBuilder addLocalized(String propertyName){
+        return add(propertyName, new UID(defaultNamespace, propertyName), false, new LocalizedImpl());
+    }
 
+    public MappedClassBuilder addLocalized(String propertyName, UID uid) {
+        return add(propertyName, uid, false, new LocalizedImpl());
+    }
+        
     public MappedClassBuilder addProperty(String propertyName) {
-        return addProperty(propertyName, new UID(defaultNamespace, propertyName), false);        
+        return add(propertyName, new UID(defaultNamespace, propertyName), false);        
     }    
 
-    public MappedClassBuilder addProperty(String propertyName, UID uid) {
-        return addProperty(propertyName, uid, false);
+    public MappedClassBuilder addProperty(String propertyName, ContainerType container) {
+        return add(propertyName, new UID(defaultNamespace, propertyName), false, new ContainerImpl(container));
     }
     
+    public MappedClassBuilder addProperty(String propertyName, UID uid) {
+        return add(propertyName, uid, false);
+    }    
+
     public MappedClassBuilder addProperty(String propertyName, UID uid, boolean inv) {
+        return add(propertyName, uid, inv);
+    }
+    
+    public MappedClassBuilder addProperty(String propertyName, UID uid, ContainerType container) {
+        return add(propertyName, uid, false, new ContainerImpl(container));
+    }
+    
+    private MappedClassBuilder add(String propertyName, UID uid, boolean inv, Annotation... ann) {
         try {
             handled.add(propertyName);
             Field field = mappedClass.getJavaClass().getDeclaredField(propertyName);
+            List<Annotation> annotations = new ArrayList<Annotation>();
             Predicate predicate = new PredicateImpl("",uid.ns(),uid.ln(),inv);
+            annotations.add(predicate);
+            annotations.addAll(Arrays.asList(ann));
             MappedPredicate mappedPredicate = new MappedPredicate(defaultNamespace, predicate, null);
-            return addMappedPath(field, Collections.singletonList(mappedPredicate), predicate);
+            return addMappedPath(field, 
+                    Collections.singletonList(mappedPredicate), 
+                    annotations.toArray(new Annotation[annotations.size()]));
         } catch (SecurityException e) {
             throw new ConfigurationException(e);
         } catch (NoSuchFieldException e) {
             throw new ConfigurationException(e);
         }
     }
+    
+    private MappedClassBuilder addMappedPath(Field field, List<MappedPredicate> predicates, Annotation... annotations){
+        FieldProperty fieldProperty = new FieldProperty(field, annotations, mappedClass);
+        fieldProperty.resolve(mappedClass);
+        MappedPath mappedPath = new MappedPath(fieldProperty, predicates, false);
+        mappedClass.addMappedPath(mappedPath);
+        return this;
+    }
+
+
         
 }

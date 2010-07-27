@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.object;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Set;
@@ -13,12 +14,15 @@ import java.util.Set;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 
 public class ConfigurationBuilderTest {
     
     public static class Person {
+        
+        Labeled labeled;
         
         String id;
         
@@ -52,6 +56,59 @@ public class ConfigurationBuilderTest {
         String label;
         
         String comment;
+    }
+    
+    @Test
+    public void path(){
+        // TODO
+    }
+    
+    @Test
+    public void mixin(){
+        ConfigurationBuilder builder = new ConfigurationBuilder();        
+        builder.addClass(TEST.NS, Person.class)
+            .addMixin("labeled");
+        Configuration configuration = builder.build();    
+        
+        // labeled
+        MappedClass person = configuration.getMappedClass(Person.class);
+        MappedPath person_labeled = person.getMappedPath("labeled");
+        assertTrue(person_labeled.getMappedProperty().isMixin());
+    }
+    
+    @Test
+    public void container(){
+        ConfigurationBuilder builder = new ConfigurationBuilder();        
+        builder.addClass(TEST.NS, Company.class)
+            .addId("id")
+            .addProperty("departments", new UID(TEST.NS,"company"), ContainerType.SEQ)
+            .addProperties();
+        Configuration configuration = builder.build();
+        
+        // company
+        MappedClass company = configuration.getMappedClass(Company.class);
+        MappedPath company_departments = company.getMappedPath("departments");
+        assertEquals(TEST.NS, company_departments.getPredicatePath().get(0).getUID().ns());
+        assertEquals("company", company_departments.getPredicatePath().get(0).getUID().ln());
+        assertEquals(ContainerType.SEQ, company_departments.getMappedProperty().getContainerType());
+    }
+    
+    @Test
+    public void localized(){
+        ConfigurationBuilder builder = new ConfigurationBuilder();        
+        builder.addClass(TEST.NS, Labeled.class)
+            .addLocalized("label", RDFS.label)
+            .addProperty("comment", RDFS.comment);
+        Configuration configuration = builder.build();    
+        
+        // labeled
+        MappedClass labeled = configuration.getMappedClass(Labeled.class);
+        MappedPath labeled_label = labeled.getMappedPath("label");
+        assertTrue(labeled_label.getMappedProperty().isLocalized());
+        assertEquals(RDFS.label,labeled_label.getPredicatePath().get(0).getUID());
+        MappedPath labeled_comment = labeled.getMappedPath("comment");
+        assertFalse(labeled_comment.getMappedProperty().isLocalized());
+        assertEquals(RDFS.comment,labeled_comment.getPredicatePath().get(0).getUID());
     }
     
     @Test

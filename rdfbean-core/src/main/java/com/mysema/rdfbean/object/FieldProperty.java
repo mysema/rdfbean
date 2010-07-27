@@ -27,7 +27,7 @@ public final class FieldProperty extends MappedProperty<Field> {
     }
     
     public FieldProperty(Field field, Annotation[] annotations, MappedClass declaringClass) {
-        super(field.getName(), field.getAnnotations(), declaringClass);
+        super(field.getName(), annotations, declaringClass);
         this.field = field;
         this.field.setAccessible(true);
     }

@@ -8,6 +8,7 @@ package com.mysema.rdfbean.object;
 import java.lang.annotation.Annotation;
 
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
@@ -18,6 +19,10 @@ public class PredicateImpl implements Predicate{
     private final boolean ignoreInvalid, includeInferred, inv;
     
     private final String context, ns, ln;
+    
+    public PredicateImpl(String context, UID uid, boolean inv) {
+        this(context, uid.ns(), uid.ln(), inv);
+    }
     
     public PredicateImpl(String context, String ns, String ln, boolean inv) {
         this.context = context;

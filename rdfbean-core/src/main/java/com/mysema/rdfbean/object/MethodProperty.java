@@ -61,7 +61,7 @@ public final class MethodProperty extends MappedProperty<Method> {
     }
     
     public MethodProperty(Method method, Annotation[] annotations, MappedClass declaringClass) {
-        super(getPropertyName(method), method.getAnnotations(), declaringClass);
+        super(getPropertyName(method), annotations, declaringClass);
         this.method = method;
         if (method.getName().startsWith("set")) {
             getter = false;
