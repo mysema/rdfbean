@@ -1161,14 +1161,8 @@ public final class SessionImpl implements Session {
         }
     }
 
-//    private void removeStatements(ID subject, UID predicate, NODE object, UID context) {
-//        for (STMT statement : findStatements(subject, predicate, object, context, false)) {
-//            recordRemoveStatement(statement);
-//        }
-//    }
-
     private <T> T assertMapped(T instance) {
-        if (instance.getClass().getAnnotation(ClassMapping.class) == null) {
+        if (!conf.isMapped(instance.getClass())){
             throw new IllegalArgumentException(instance.getClass().getName() + " is not mapped");
         }
         return instance;
@@ -1177,7 +1171,7 @@ public final class SessionImpl implements Session {
     private <T> T assertHasIdProperty(T instance){
         MappedClass mappedClass = conf.getMappedClass(instance.getClass());
         if (mappedClass.getIdProperty() == null){
-            throw new IllegalArgumentException(instance.getClass().getName() + " as no id property");
+            throw new IllegalArgumentException(instance.getClass().getName() + " has no id property");
         }
         return instance;
     }

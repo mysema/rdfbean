@@ -30,6 +30,8 @@ public interface Configuration {
     
     boolean allowRead(MappedPath path);
     
+    boolean isMapped(Class<?> javaClass);
+    
     MappedClass getMappedClass(Class<?> javaClass);
     
     List<MappedClass> getMappedClasses(UID uid);

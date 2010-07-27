@@ -7,14 +7,20 @@ package com.mysema.rdfbean.object;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Test;
 
+import com.mysema.query.types.path.PathBuilder;
+import com.mysema.query.types.path.PathBuilderFactory;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ContainerType;
+import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 
@@ -31,6 +37,15 @@ public class ConfigurationBuilderTest {
         Person superior;
         
         Department department;
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+        
     }
     
     public static class Department {
@@ -208,4 +223,31 @@ public class ConfigurationBuilderTest {
         assertEquals("name", company_name.getPredicatePath().get(0).getUID().ln());
     }
 
+    @Test
+    public void query(){
+        ConfigurationBuilder builder = new ConfigurationBuilder();        
+        builder.addClass(TEST.NS, Person.class).addId("id").addProperties();
+        builder.addClass(new UID(TEST.NS, "Dept"), Department.class).addId("id").addProperties();
+        builder.addClass(TEST.NS, Company.class).addId("id").addProperties();
+        Configuration configuration = builder.build();
+        
+        Session session = SessionUtil.openSession(new MiniRepository(), Collections.<Locale>emptySet(), configuration);
+        Person person = new Person();
+        person.firstName = "Bob";
+        person.lastName = "Smith";
+        session.save(person);
+        session.clear();
+        
+        // getById
+        Person other = session.getById(person.id, Person.class);
+        assertNotNull(other.id);
+        assertEquals(person.firstName, other.firstName);
+        assertEquals(person.lastName, other.lastName);
+        
+        // query
+        PathBuilder<Person> personPath = new PathBuilderFactory().create(Person.class);
+        assertEquals(other, session.from(personPath).where(personPath.getString("firstName").eq("Bob")).uniqueResult(personPath));
+        assertEquals(other, session.from(personPath).where(personPath.getString("lastName").eq("Smith")).uniqueResult(personPath));
+    }
+    
 }

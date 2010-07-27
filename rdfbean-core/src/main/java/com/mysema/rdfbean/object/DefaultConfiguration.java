@@ -164,6 +164,10 @@ public final class DefaultConfiguration implements Configuration {
         return type2classes.get(Assert.notNull(uid,"uid"));
     }
 
+    public boolean isMapped(Class<?> clazz){
+        return clazz.getAnnotation(ClassMapping.class) != null;
+    }
+    
     @Override
     public boolean isRestricted(UID uid) {
         return restrictedResources.contains(uid.getId()) || restrictedResources.contains(uid.ns());

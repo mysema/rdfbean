@@ -116,6 +116,10 @@ class SimpleConfiguration implements Configuration{
         return mappedClasses;
     }
 
+    public boolean isMapped(Class<?> clazz){
+        return classToMappedClass.containsKey(clazz);
+    }
+    
     @Override
     public boolean isRestricted(UID uid) {
         return restrictedResources.contains(uid.getId()) || restrictedResources.contains(uid.ns());
