@@ -78,7 +78,7 @@ public class TurtleWriter implements RDFWriter{
             }            
             builder.append(toString(stmt));
             
-        }else if (previous == null || !previous.getPredicate().equals(stmt.getPredicate())){
+        }else if (!previous.getPredicate().equals(stmt.getPredicate())){
             builder.append(" ; ");
             builder.append(toString(stmt.getPredicate()));
             builder.append(" ");
