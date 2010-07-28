@@ -34,7 +34,6 @@ import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.path.PNumber;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.model.io.RDFWriter;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -284,7 +283,7 @@ public class RDBConnection implements RDFConnection{
         }
         
         // return ordered result, if all triples are queried
-        if (subject == null && predicate == null && object == null && context == null){
+        if (subject == null && predicate == null && object == null && model == null){
             query.orderBy(statement.model.asc());
             query.orderBy(statement.subject.asc());
             query.orderBy(statement.predicate.asc());
