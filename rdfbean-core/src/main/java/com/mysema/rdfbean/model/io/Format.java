@@ -33,7 +33,7 @@ public enum Format {
     /**
      * 
      */
-    TRIG("application/x-trig", null),
+    TRIG("application/x-trig", TrigWriter.class),
     /**
      * 
      */
