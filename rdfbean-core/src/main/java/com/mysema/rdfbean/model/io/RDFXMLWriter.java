@@ -13,6 +13,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
@@ -34,6 +36,7 @@ public class RDFXMLWriter implements RDFWriter{
     
     private final Map<BID,String> nodeIds = new HashMap<BID,String>();
     
+    @Nullable
     private STMT previous;
     
     public RDFXMLWriter(OutputStream out) {
@@ -96,7 +99,7 @@ public class RDFXMLWriter implements RDFWriter{
         if (prefix != null){
             builder.append("        <"+prefix+":"+stmt.getPredicate().ln());
         }else{
-            // TODO
+            throw new IllegalStateException("No prefix for " + stmt.getPredicate().ns());
         }
         
         // object

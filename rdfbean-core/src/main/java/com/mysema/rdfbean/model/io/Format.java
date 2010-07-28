@@ -25,7 +25,7 @@ public enum Format {
     /**
      * 
      */
-    RDFA("application/xhtml+xml", null),
+    RDFA("application/xhtml+xml", RDFAWriter.class),
     /**
      * 
      */

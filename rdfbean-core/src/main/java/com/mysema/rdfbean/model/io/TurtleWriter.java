@@ -13,6 +13,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
@@ -28,6 +30,7 @@ public class TurtleWriter implements RDFWriter{
 
     private final Writer writer;
     
+    @Nullable
     private STMT previous;
     
     private final Map<String,String> nsToPrefix = new HashMap<String,String>();
