@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.mysema.commons.fluxml.XMLWriter;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
@@ -27,10 +28,11 @@ import com.mysema.rdfbean.model.XSD;
  * @author tiwe
  *
  */
-// TODO : consider using fluxml
 public class RDFXMLWriter implements RDFWriter{
 
-    private final Writer writer;
+    private final Writer w;
+    
+    private final XMLWriter writer;
     
     private final Map<String,String> nsToPrefix = new HashMap<String,String>(); 
     
@@ -41,7 +43,8 @@ public class RDFXMLWriter implements RDFWriter{
     
     public RDFXMLWriter(OutputStream out) {
         try {
-            writer = new OutputStreamWriter(out, "UTF-8");
+            w = new OutputStreamWriter(out, "UTF-8");
+            writer = new XMLWriter(w);
             nsToPrefix.put(RDF.NS,"rdf");
         } catch (UnsupportedEncodingException e) {
             throw new RepositoryException(e);
@@ -49,24 +52,25 @@ public class RDFXMLWriter implements RDFWriter{
     }
     
     public RDFXMLWriter(Writer writer) {
-        this.writer = writer;
+        this.w = writer;
+        this.writer = new XMLWriter(w);
         nsToPrefix.put(RDF.NS,"rdf");
     }
     
     
     @Override
     public void close() throws IOException {
-        writer.flush();
-        writer.close();
+        w.flush();
+        w.close();
     }
 
     @Override
     public void end() {
         try {
-            if (previous == null){
-                writer.write("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n");
+            if (previous == null){                
+                writer.begin("rdf:RDF").attribute("xmlns:rdf", RDF.NS);
             }
-            writer.write("</rdf:RDF>");
+            writer.end("rdf:RDF");
         } catch (IOException e) {
             throw new RepositoryException(e);
         }        
@@ -74,52 +78,47 @@ public class RDFXMLWriter implements RDFWriter{
 
     @Override
     public void handle(STMT stmt) {
-        StringBuilder builder = new StringBuilder();
-        // prolog
-        if (previous == null){
-            builder.append("<rdf:RDF ");
-            for (Map.Entry<String,String> entry : nsToPrefix.entrySet()){
-                if (builder.length() > 9){
-                    builder.append("\n    ");
-                }
-                builder.append("xmlns:"+entry.getValue()+"=\""+entry.getKey()+"\"");
-            }
-            builder.append(">\n\n");
-        }        
-        
-        // subject
-        if (stmt.getSubject().isBNode()){
-            builder.append("    <rdf:Description rdf:nodeID=\""+ getNodeID(stmt.getSubject().asBNode())+"\">\n");   
-        }else{
-            builder.append("    <rdf:Description rdf:about=\""+stmt.getSubject().getId()+"\">\n");    
-        }     
-        
-        // predicate
-        String prefix = nsToPrefix.get(stmt.getPredicate().ns());
-        if (prefix != null){
-            builder.append("        <"+prefix+":"+stmt.getPredicate().ln());
-        }else{
-            throw new IllegalStateException("No prefix for " + stmt.getPredicate().ns());
-        }
-        
-        // object
-        if (stmt.getObject().isBNode()){
-            builder.append(" rdf:nodeID=\"" + getNodeID(stmt.getObject().asBNode()) + "\"/>\n");
-        }else if (stmt.getObject().isURI()){
-            builder.append(" rdf:resource=\"" + stmt.getObject().getValue() + "\"/>\n");
-        }else{
-            LIT obj = stmt.getObject().asLiteral();
-            if (obj.getLang() != null){
-                builder.append(" xml:lang=\"" + LocaleUtil.toLang(obj.getLang())+ "\"");
-            }else if (!obj.getDatatype().equals(XSD.stringType)){
-                builder.append(" rdf:datatype=\"" + obj.getDatatype().getId() + "\"");
-            }
-            builder.append(">" + stmt.getObject().getValue() + "</" + prefix + ":" + stmt.getPredicate().ln()+">\n");
-        }
-        builder.append("    </rdf:Description>\n\n");
-        
         try {
-            writer.write(builder.toString());
+            // prolog
+            if (previous == null){
+                writer.begin("rdf:RDF");
+                for (Map.Entry<String,String> entry : nsToPrefix.entrySet()){
+                    writer.attribute("xmlns:"+ entry.getValue(), entry.getKey());
+                }
+            }        
+
+            // subject
+            writer.begin("rdf:Description");
+            if (stmt.getSubject().isBNode()){
+                writer.attribute("rdf:nodeID", getNodeID(stmt.getSubject().asBNode()));   
+            }else{
+                writer.attribute("rdf:about", stmt.getSubject().getId());    
+            }     
+
+            // predicate
+            String prefix = nsToPrefix.get(stmt.getPredicate().ns());
+            if (prefix != null){
+                writer.begin(prefix+":"+stmt.getPredicate().ln());
+            }else{
+                throw new IllegalStateException("No prefix for " + stmt.getPredicate().ns());
+            }
+
+            // object
+            if (stmt.getObject().isBNode()){
+                writer.attribute("rdf:nodeID", getNodeID(stmt.getObject().asBNode()));
+            }else if (stmt.getObject().isURI()){
+                writer.attribute("rdf:resource", stmt.getObject().getValue());
+            }else{
+                LIT obj = stmt.getObject().asLiteral();
+                if (obj.getLang() != null){
+                    writer.attribute("xml:lang", LocaleUtil.toLang(obj.getLang()));
+                }else if (!obj.getDatatype().equals(XSD.stringType)){
+                    writer.attribute("rdf:datatype", obj.getDatatype().getId());
+                }
+                writer.print(stmt.getObject().getValue());                
+            }
+            writer.end(prefix +":"+stmt.getPredicate().ln());
+            writer.end("rdf:Description");
             previous = stmt;
         } catch (IOException e) {
             throw new RepositoryException(e);

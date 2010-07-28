@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.model.io;
 
+import static org.junit.Assert.*;
+
 import java.io.StringWriter;
 import java.util.Locale;
 
@@ -38,9 +40,26 @@ public class RDFXMLWriterTest {
         writer.handle(new STMT(RDFS.Resource, RDFS.label, new LIT("Resource")));
         writer.end();
         
-        System.out.println(w);
-//        String expected = "";
-//        assertEquals(expected, w.toString());
+        assertEquals(
+            "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" " +
+            "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\" " +
+            "xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\">" +
+            "<rdf:Description rdf:about=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\">" +
+            "<rdf:type rdf:resource=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#Property\"/>" +
+            "</rdf:Description>" +
+            "<rdf:Description rdf:about=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\">" +
+            "<rdfs:label>type</rdfs:label>" +
+            "</rdf:Description>" +
+            "<rdf:Description rdf:about=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\">" +
+            "<rdfs:label xml:lang=\"fi\">tyyppi</rdfs:label>" +
+            "</rdf:Description>" +
+            "<rdf:Description rdf:about=\"http://www.w3.org/2000/01/rdf-schema#Resource\">" +
+            "<rdf:type rdf:resource=\"http://www.w3.org/2000/01/rdf-schema#Class\"/>" +
+            "</rdf:Description>" +
+            "<rdf:Description rdf:about=\"http://www.w3.org/2000/01/rdf-schema#Resource\">" +
+            "<rdfs:label>Resource</rdfs:label>" +
+            "</rdf:Description>" +
+            "</rdf:RDF>", w.toString());
     }
     
     @Test
@@ -62,7 +81,29 @@ public class RDFXMLWriterTest {
         writer.handle(new STMT(subject, predicate, new LIT("1",XSD.integerType)));
         writer.end();
         
-        System.out.println(w);
+        assertEquals(
+            "<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" " +
+            "xmlns:test=\"http://semantics.mysema.com/test#\" " +
+            "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\" " +
+            "xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\">" +
+            "<rdf:Description rdf:nodeID=\"node1\">" +
+            "<test:predicate rdf:nodeID=\"node2\"/>" +
+            "</rdf:Description>" +
+            "<rdf:Description rdf:about=\"http://semantics.mysema.com/test#subject\">" +
+            "<test:predicate rdf:nodeID=\"node2\"/>" +
+            "</rdf:Description>" +
+            "<rdf:Description rdf:about=\"http://semantics.mysema.com/test#subject\">" +
+            "<test:predicate>str</test:predicate>" +
+            "</rdf:Description>" +
+            "<rdf:Description rdf:about=\"http://semantics.mysema.com/test#subject\">" +
+            "<test:predicate xml:lang=\"fr-ca\">str</test:predicate>" +
+            "</rdf:Description>" +
+            "<rdf:Description rdf:about=\"http://semantics.mysema.com/test#subject\">" +
+            "<test:predicate rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">1</test:predicate>" +
+            "</rdf:Description>" +
+            "</rdf:RDF>",
+            w.toString());
+            
     }
     
 }

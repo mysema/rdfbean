@@ -31,6 +31,13 @@
       <artifactId>mysema-commons-l10n</artifactId>
       <version>0.1.5</version>
     </dependency>
+	<!-- Mysema Source component -->
+   <dependency>
+     <groupId>com.mysema.commons</groupId>
+	 <artifactId>mysema-commons-fluxml</artifactId>
+	 <version>0.2.7</version>
+   </dependency>
+   	
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
