@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -39,6 +40,11 @@ public class SimpleQueriesTest extends SessionTestBase{
     
     private BeanQuery where(EBoolean... conditions) {
         return session.from(var).where(conditions);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void in_empty(){
+        where(var.directProperty.in(Collections.<String>emptySet())).list(var);
     }
         
     @Test

@@ -66,6 +66,9 @@ public class InTransformer implements OperationTransformer{
         Expr<Object> expr = (Expr<Object>)arg1;
         Constant<?> constant = (Constant<?>)arg2;
         Collection<?> collection = (Collection<?>)constant.getConstant();
+        if (collection.isEmpty()){
+            throw new IllegalArgumentException("Empty collection not allowed : " + arg1 + " in {}"); 
+        }
         BooleanBuilder bo = new BooleanBuilder();
         for (Object elem : collection){
             bo.or(expr.eq(elem));
