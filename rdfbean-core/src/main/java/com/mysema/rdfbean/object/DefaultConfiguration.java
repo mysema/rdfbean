@@ -5,14 +5,13 @@
  */
 package com.mysema.rdfbean.object;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -38,6 +37,8 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
  * 
  */
 public final class DefaultConfiguration implements Configuration {
+    
+    private static final Pattern jarUrlSeparator = Pattern.compile("!");
     
     private static final Set<String> buildinNamespaces = new HashSet<String>();
 
@@ -172,6 +173,65 @@ public final class DefaultConfiguration implements Configuration {
     public boolean isRestricted(UID uid) {
         return restrictedResources.contains(uid.getId()) || restrictedResources.contains(uid.ns());
     }
+    
+    public void scanPackages(Package... packages){
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        for (Package pkg : packages){
+            try {
+                for (Class<?> cl : scanPackage(classLoader, pkg)){
+                    if (cl.getAnnotation(ClassMapping.class) != null){
+                        addClasses(cl);
+                    }
+                }
+            } catch (IOException e) {
+                throw new ConfigurationException(e);
+            } catch (ClassNotFoundException e) {
+                throw new ConfigurationException(e);
+            }
+        }
+    }
+
+    Set<Class<?>> scanPackage(ClassLoader classLoader, Package pkg) throws IOException, ClassNotFoundException {
+        Enumeration<URL> urls = classLoader.getResources(pkg.getName().replace('.', '/'));
+        Set<Class<?>> classes = new HashSet<Class<?>>();
+        while (urls.hasMoreElements()){
+            URL url = urls.nextElement();
+            if (url.getProtocol().equals("jar")){
+                String[] fileAndPath = jarUrlSeparator.split(url.getFile().substring(5));
+                JarFile jarFile = new JarFile(fileAndPath[0]);
+                Enumeration<JarEntry> entries = jarFile.entries();
+                while (entries.hasMoreElements()){
+                    JarEntry entry = entries.nextElement();
+                    if (entry.getName().endsWith(".class") && entry.getName().startsWith(fileAndPath[1].substring(1))){
+                        String className = entry.getName().substring(0, entry.getName().length()-6).replace('/', '.');
+                        classes.add(Class.forName(className));
+
+                    }                    
+                }
+                
+            }else if (url.getProtocol().equals("file")){
+                Deque<File> files = new ArrayDeque<File>();
+                files.add(new File(url.getPath()));
+                while (!files.isEmpty()){
+                    File file = files.pop();
+                    for (File child : file.listFiles()){
+                        if (child.getName().endsWith(".class")){
+                            String fileName = child.getPath().substring(url.getPath().length()+1).replace('/', '.');
+                            String className = pkg.getName() + "." + fileName.substring(0, fileName.length()-6);
+                            classes.add(Class.forName(className));
+                        }else if (child.isDirectory()){
+                            files.add(child);
+                        }
+                    }    
+                }                
+                
+            }else{
+                throw new IllegalArgumentException("Illegal url : " + url); 
+            }
+        }
+        return classes;
+    }
+    
 
     public void setDefaultContext(String ctx) {
         this.defaultContext = new UID(ctx);
