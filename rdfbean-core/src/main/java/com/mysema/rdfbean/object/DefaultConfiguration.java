@@ -97,9 +97,9 @@ public final class DefaultConfiguration implements Configuration {
 
     public void addPackages(Package... packages) {
         for (Package pack : packages) {
-            MappedClasses mappedClasses = pack.getAnnotation(MappedClasses.class);
-            if (mappedClasses != null) {
-                addClasses(mappedClasses.value());
+            MappedClasses classes = pack.getAnnotation(MappedClasses.class);
+            if (classes != null) {
+                addClasses(classes.value());
             }else{
                 throw new IllegalArgumentException("No @MappedClasses annotation for " + pack.getName());
             }
