@@ -70,7 +70,7 @@ public final class RDFBeanModule {
     private static <T> ValueEncoderFactory<T> createValueEncoder(
             final MappedProperty<?> idProperty,
             final SessionFactory sessionFactory, 
-            final Class<T> cl) {
+            final Class<T> clazz) {
         
         return new ValueEncoderFactory<T>(){
             @Override
@@ -85,12 +85,12 @@ public final class RDFBeanModule {
                     public T toValue(String id) {
                         // thread bound session 
                         if (sessionFactory.getCurrentSession() != null){
-                            return sessionFactory.getCurrentSession().getById(id, cl);
+                            return sessionFactory.getCurrentSession().getById(id, clazz);
                         // new session
                         }else{
                             Session session = sessionFactory.openSession();
                             try{
-                                return session.getById(id, cl);                                
+                                return session.getById(id, clazz);                                
                             }finally{
                                 close(session);
                             }
