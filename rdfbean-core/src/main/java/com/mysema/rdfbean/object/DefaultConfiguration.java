@@ -50,7 +50,7 @@ public final class DefaultConfiguration implements Configuration {
         buildinNamespaces.add(CORE.NS);
     }
 
-    private final Set<MappedClass> classes = new LinkedHashSet<MappedClass>();
+    private final Set<MappedClass> mappedClasses = new LinkedHashSet<MappedClass>();
 
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
@@ -88,7 +88,7 @@ public final class DefaultConfiguration implements Configuration {
                     }                    
                     classList.add(mappedClass);                    
                 }   
-                this.classes.add(mappedClass);
+                mappedClasses.add(mappedClass);
             }else{
                 throw new IllegalArgumentException("No @ClassMapping annotation for " + clazz.getName());
             }
@@ -158,7 +158,7 @@ public final class DefaultConfiguration implements Configuration {
 
     @Override
     public Set<MappedClass> getMappedClasses() {
-        return classes;
+        return mappedClasses;
     }
     
     public List<MappedClass> getMappedClasses(UID uid) {
