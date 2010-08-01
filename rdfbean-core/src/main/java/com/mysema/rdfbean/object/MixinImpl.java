@@ -13,6 +13,7 @@ import com.mysema.rdfbean.annotations.Mixin;
  * @author tiwe
  *
  */
+@SuppressWarnings("all")
 public class MixinImpl implements Mixin {
 
     @Override

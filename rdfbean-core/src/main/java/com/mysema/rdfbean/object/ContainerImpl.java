@@ -14,6 +14,7 @@ import com.mysema.rdfbean.annotations.ContainerType;
  * @author tiwe
  *
  */
+@SuppressWarnings("all")
 public class ContainerImpl implements Container{
 
     private final ContainerType containerType;

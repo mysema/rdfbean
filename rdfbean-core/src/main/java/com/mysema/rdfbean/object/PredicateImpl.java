@@ -14,6 +14,7 @@ import com.mysema.rdfbean.model.UID;
  * @author tiwe
  *
  */
+@SuppressWarnings("all")
 public class PredicateImpl implements Predicate{
 
     private final boolean ignoreInvalid, includeInferred, inv;

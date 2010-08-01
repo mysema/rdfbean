@@ -14,6 +14,7 @@ import com.mysema.rdfbean.model.IDType;
  * @author tiwe
  *
  */
+@SuppressWarnings("all")
 public class IdImpl implements Id{
 
     private final IDType idType;
