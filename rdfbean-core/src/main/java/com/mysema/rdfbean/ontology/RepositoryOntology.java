@@ -66,8 +66,9 @@ public class RepositoryOntology extends AbstractOntology<UID>{
         try{
             while (stmts.hasNext()){
                 STMT stmt = stmts.next();
-                types.add((UID) stmt.getSubject());
-                
+                if (stmt.getSubject().isURI()){
+                    types.add(stmt.getSubject().asURI());    
+                }                                
             }   
         }finally{
             stmts.close();    
