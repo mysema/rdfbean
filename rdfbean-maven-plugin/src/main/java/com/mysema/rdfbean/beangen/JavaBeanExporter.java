@@ -26,18 +26,19 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 
 import com.mysema.codegen.JavaWriter;
+import com.mysema.codegen.model.SimpleType;
+import com.mysema.codegen.model.Type;
+import com.mysema.codegen.model.TypeCategory;
+import com.mysema.codegen.model.Types;
 import com.mysema.query.codegen.BeanSerializer;
-import com.mysema.query.codegen.ClassType;
 import com.mysema.query.codegen.EntityType;
 import com.mysema.query.codegen.Property;
 import com.mysema.query.codegen.SimpleSerializerConfig;
-import com.mysema.query.codegen.SimpleType;
-import com.mysema.query.codegen.Type;
-import com.mysema.query.codegen.TypeCategory;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.ClassMappingImpl;
+import com.mysema.rdfbean.object.PredicateImpl;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.OWLClass;
@@ -130,7 +131,7 @@ public class JavaBeanExporter {
         UID id = rdfType.getId().asURI();
         String pkgName = getPackage(id);
         String simpleName = getClassName(id);
-        Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false);
+        Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
         EntityType entityType = new EntityType("Q", type);
         entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
         
@@ -193,7 +194,7 @@ public class JavaBeanExporter {
         UID id = rdfType.getId().asURI();
         String pkgName = getPackage(id);
         String simpleName = getClassName(id);
-        Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false);
+        Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
         EntityType entityType = new EntityType("Q", type);
         entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
         return entityType;
@@ -204,11 +205,11 @@ public class JavaBeanExporter {
         Type propertyType = getPropertyType(rdfProperty, range);
         String propertyName = getPropertyName(propertyId);        
         Property property = new Property(entityType, propertyName, propertyType, new String[0]);
-//        if (propertyId.getNamespace().equals(entityId.getNamespace())){
-//            property.addAnnotation(new PredicateImpl("","",propertyId.getLocalName(),false));
-//        }else{
-//            property.addAnnotation(new PredicateImpl("",propertyId,false));
-//        }
+        if (propertyId.getNamespace().equals(entityId.getNamespace())){
+            property.addAnnotation(new PredicateImpl("","",propertyId.getLocalName(),false));
+        }else{
+            property.addAnnotation(new PredicateImpl("",propertyId,false));
+        }
         return property;
     }
     
@@ -283,13 +284,13 @@ public class JavaBeanExporter {
                 UID id = (UID)range.getId();
                 String pkgName = getPackage(id);
                 String simpleName = getClassName(id);
-                propertyType = new SimpleType(TypeCategory.SIMPLE, pkgName+"."+simpleName, pkgName, simpleName, false );
+                propertyType = new SimpleType(TypeCategory.SIMPLE, pkgName+"."+simpleName, pkgName, simpleName, false, false);
             }
         }        
         if (propertyAsList.contains(rdfProperty.getId())){
-            propertyType = new ClassType(TypeCategory.LIST, List.class, propertyType);
+            propertyType = new SimpleType(Types.LIST, propertyType);
         }else if (propertyAsSet.contains(rdfProperty.getId())){
-            propertyType = new ClassType(TypeCategory.SET, Set.class, propertyType);
+            propertyType = new SimpleType(Types.LIST, propertyType);
         }        
         return propertyType;
     }
