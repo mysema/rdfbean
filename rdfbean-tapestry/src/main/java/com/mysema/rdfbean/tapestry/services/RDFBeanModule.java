@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.tapestry.services;
 
@@ -34,19 +34,19 @@ import com.mysema.rdfbean.tapestry.TransactionalAdvisorImpl;
  * @version $Id$
  */
 public final class RDFBeanModule {
-    
+
     private RDFBeanModule(){}
-    
+
     public static void bind(ServiceBinder binder){
         binder.bind(TransactionalAdvisor.class, TransactionalAdvisorImpl.class);
         binder.bind(SeedEntity.class, SeedEntityImpl.class);
     }
 
     public static SessionFactory buildSessionFactory(
-            Configuration configuration, 
-            Repository repository, 
-            Map<String,ObjectRepository> objectRepositories){        
-        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();        
+            Configuration configuration,
+            Repository repository,
+            Map<String,ObjectRepository> objectRepositories){
+        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setObjectRepositories(objectRepositories);
         sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
@@ -54,53 +54,53 @@ public final class RDFBeanModule {
         return sessionFactory;
     }
 
-    public static void contributeValueEncoderSource(
-            MappedConfiguration<Class<?>, ValueEncoderFactory<?>> configuration,
-            com.mysema.rdfbean.object.Configuration rdfBeanConfiguration,
-            SessionFactory sessionFactory){
-        
-        for (MappedClass mappedClass : rdfBeanConfiguration.getMappedClasses()){
-            if (mappedClass.getIdProperty() != null){
-                Class<?> clazz = mappedClass.getJavaClass();
-                configuration.add(clazz, createValueEncoder(mappedClass.getIdProperty(), sessionFactory, clazz));
-            }
-        }                
-    }
+//    public static void contributeValueEncoderSource(
+//            MappedConfiguration<Class<?>, ValueEncoderFactory<?>> configuration,
+//            com.mysema.rdfbean.object.Configuration rdfBeanConfiguration,
+//            SessionFactory sessionFactory){
+//
+//        for (MappedClass mappedClass : rdfBeanConfiguration.getMappedClasses()){
+//            if (mappedClass.getIdProperty() != null){
+//                Class<?> clazz = mappedClass.getJavaClass();
+//                configuration.add(clazz, createValueEncoder(mappedClass.getIdProperty(), sessionFactory, clazz));
+//            }
+//        }
+//    }
 
-    private static <T> ValueEncoderFactory<T> createValueEncoder(
-            final MappedProperty<?> idProperty,
-            final SessionFactory sessionFactory, 
-            final Class<T> clazz) {
-        
-        return new ValueEncoderFactory<T>(){
-            @Override
-            public ValueEncoder<T> create(Class<T> type) {                    
-                return new ValueEncoder<T>(){
-                    @Override
-                    public String toClient(T value) {
-                        // TODO : handle other id types as well
-                        return idProperty.getValue(new BeanMap(value)).toString();
-                    }
-                    @Override
-                    public T toValue(String id) {
-                        // thread bound session 
-                        if (sessionFactory.getCurrentSession() != null){
-                            return sessionFactory.getCurrentSession().getById(id, clazz);
-                        // new session
-                        }else{
-                            Session session = sessionFactory.openSession();
-                            try{
-                                return session.getById(id, clazz);                                
-                            }finally{
-                                close(session);
-                            }
-                        }                            
-                    }                    
-                };
-            }            
-        };
-    }
-    
+//    private static <T> ValueEncoderFactory<T> createValueEncoder(
+//            final MappedProperty<?> idProperty,
+//            final SessionFactory sessionFactory,
+//            final Class<T> clazz) {
+//
+//        return new ValueEncoderFactory<T>(){
+//            @Override
+//            public ValueEncoder<T> create(Class<T> type) {
+//                return new ValueEncoder<T>(){
+//                    @Override
+//                    public String toClient(T value) {
+//                        // TODO : handle other id types as well
+//                        return idProperty.getValue(new BeanMap(value)).toString();
+//                    }
+//                    @Override
+//                    public T toValue(String id) {
+//                        // thread bound session
+//                        if (sessionFactory.getCurrentSession() != null){
+//                            return sessionFactory.getCurrentSession().getById(id, clazz);
+//                        // new session
+//                        }else{
+//                            Session session = sessionFactory.openSession();
+//                            try{
+//                                return session.getById(id, clazz);
+//                            }finally{
+//                                close(session);
+//                            }
+//                        }
+//                    }
+//                };
+//            }
+//        };
+//    }
+
     private static void close(Closeable closeable){
         try {
             closeable.close();
@@ -108,5 +108,5 @@ public final class RDFBeanModule {
             throw new RepositoryException(e);
         }
     }
-    
+
 }
