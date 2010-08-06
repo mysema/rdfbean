@@ -59,7 +59,13 @@ public class BooleanTransformer implements OperationTransformer{
         }else if (op == Ops.OR){
             ValueExpr arg1 = context.toValue(args.get(0));
             ValueExpr arg2 = context.toValue(args.get(1));
-            return new Or(arg1, arg2);
+            if (arg1 == null){
+                return arg2;                
+            }else if (arg2 == null){
+                return arg1;                
+            }else{
+                return new Or(arg1, arg2);  
+            }  
             
         }else if (op == Ops.NOT){
             return new Not(context.toValue(args.get(0)));
