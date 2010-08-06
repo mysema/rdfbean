@@ -10,6 +10,7 @@ import java.lang.annotation.Annotation;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.UID;
 
+@SuppressWarnings("all")
 public class DummyPredicate implements Predicate{
 
     private final UID uid;
