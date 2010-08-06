@@ -24,10 +24,13 @@ public class EnumTest extends AbstractRDBTest implements NoteTypeDomain{
     
     @Before
     public void setUp(){
+        // note with types
         Note note = new Note();
         note.type = NoteType.TYPE1;
         note.types = Collections.singleton(NoteType.TYPE1);
-        session.save(note);   
+        session.save(note);
+        // note without types
+        session.save(new Note());
         session.flush();
     }
     
@@ -61,4 +64,12 @@ public class EnumTest extends AbstractRDBTest implements NoteTypeDomain{
         assertEquals(1, query.where(filter).list($(n)).size());
     }
     
+    @Test
+    public void test4(){        
+        BeanQuery query = session.from($(n));
+        BooleanBuilder filter = new BooleanBuilder();
+        filter.or($(n.getType()).eq(NoteType.TYPE1));
+        filter.or($(n.getType()).eq(NoteType.TYPE2));
+        assertEquals(1, query.where(filter).list($(n)).size());
+    }
 }

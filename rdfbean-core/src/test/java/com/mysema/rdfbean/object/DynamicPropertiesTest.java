@@ -9,10 +9,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 
 import org.joda.time.LocalDate;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -68,14 +72,20 @@ public class DynamicPropertiesTest implements PropertiesDomain{
                 new STMT(_person, RDF.type, new UID(TEST.NS, "Person")),
                 new STMT(_person,  _name, new LIT("Foo Bar"))
         );             
-    }
-
-    @Test
-    public void testDynamicPropertyRead() {
-        
-        // Checking preconditions 
         
         session = sessionFactory.openSession();
+    }
+
+    @After
+    public void tearDown() throws IOException{
+        session.close();
+    }
+    
+    @Test
+    public void testRead() throws IOException {
+        
+        // Checking preconditions
+        
         Project project = session.get(Project.class, _project);
         assertEquals("TestProject", project.name);
         
@@ -84,11 +94,10 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         assertEquals(1, project.dates.size());
         assertTrue(project.dates.containsKey(_created));
         assertEquals(0, project.participants.size());
-
+        session.close();
+        
         // Adding dynamic data
         
-        session = sessionFactory.openSession();
-
         repository.add(
                new STMT(_project, _owner, _person),
                new STMT(_project, _deadline, new LIT(DEADLINE.toString(), XSD.date)),
@@ -99,6 +108,7 @@ public class DynamicPropertiesTest implements PropertiesDomain{
 
         // Checking dynamic data
         
+        session = sessionFactory.openSession();
         project = session.get(Project.class, _project);
         Person person = session.get(Person.class, _person);
         assertEquals("Foo Bar", person.name);
@@ -121,6 +131,20 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         assertTrue(project.infos.get(_creatorComment).contains(CREATOR_COMMENT));
         assertEquals(CREATED, project.dates.get(_created));
         assertEquals(DEADLINE, project.dates.get(_deadline));
+    }
+    
+    @Test
+    @Ignore
+    public void testWrite(){
+        Project project = new Project();
+        project.dates = new HashMap<UID,LocalDate>();
+        project.dates.put(_created, CREATED);
+        project.dates.put(_deadline, DEADLINE);
+        session.save(project);
+        session.clear();
+        
+        Project project2 = session.getById(project.id, Project.class);
+        assertEquals(project.dates, project2.dates);
     }
 
     

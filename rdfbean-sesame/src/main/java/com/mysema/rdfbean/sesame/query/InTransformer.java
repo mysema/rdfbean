@@ -80,7 +80,7 @@ public class InTransformer implements OperationTransformer{
     private ValueExpr constInPath(Operation<?> operation,
             TransformerContext context, Expr<?> arg1, Expr<?> arg2) {
         // TODO : make const in path work for RDF sequences and containers
-        if (!context.inNegation()){
+        if (!context.inNegation() && !context.inOptionalPath()){
             Var var = context.toVar((Constant<?>) arg1);
             Var path = context.toVar((Path<?>) arg2);
             path.setValue(var.getValue());
@@ -95,7 +95,7 @@ public class InTransformer implements OperationTransformer{
             TransformerContext context, Expr<?> arg1, Expr<?> arg2) {
         // TODO : make path in path work for RDF sequences and containers
         Path<?> path = (Path<?>) arg1;
-        if (!context.inNegation()){
+        if (!context.inNegation() && !context.inOptionalPath()){
             Path<?> otherPath = (Path<?>) arg2;
             context.register(otherPath, context.toVar(path));
             context.toVar(otherPath);
