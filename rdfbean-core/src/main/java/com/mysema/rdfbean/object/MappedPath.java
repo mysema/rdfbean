@@ -251,16 +251,5 @@ public final class MappedPath {
     public boolean isInherited() {
         return inherited;
     }
-
-    // TODO Marko : remember that first predicate can also be inverse mapped
-    @Nullable
-    public UID getFirstPredicate() {
-        if (predicatePath.size() > 0) {
-            return predicatePath.get(0).getUID();
-        }
-        else {
-            return null;
-        }
-    }
     
 }

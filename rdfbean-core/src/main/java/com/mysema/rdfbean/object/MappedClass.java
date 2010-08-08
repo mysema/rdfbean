@@ -35,13 +35,12 @@ public final class MappedClass {
     @Nullable
     private MappedConstructor constructor;
     
-    private Set<MappedProperty<?>> dynamicProperties = new LinkedHashSet<MappedProperty<?>>();
+    private final Set<MappedProperty<?>> dynamicProperties = new LinkedHashSet<MappedProperty<?>>();
     
     @Nullable
     private MappedProperty<?> idProperty;
     
-    // TODO Marko : change name - maybe mappedPredicates (UID is too general)
-    private Set<UID> mappedUIDs = new HashSet<UID>();
+    private final Set<UID> mappedPredicates = new HashSet<UID>();
     
     private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
     
@@ -77,8 +76,8 @@ public final class MappedClass {
     
     @SuppressWarnings("unchecked")
     void addMappedPath(MappedPath path) {
-        if (path.getFirstPredicate() != null) {
-            mappedUIDs.add(path.getFirstPredicate());
+        if (path.getPredicatePath().size() == 1 && !path.getPredicatePath().get(0).inv()) {
+            mappedPredicates.add(path.getPredicatePath().get(0).getUID());
         }
         
         MappedProperty property = path.getMappedProperty();
@@ -196,7 +195,7 @@ public final class MappedClass {
 
     // TODO Marko : should maybe be named isDirectlyMappedPredicate
     public boolean isMappedPredicate(UID predicate) {
-        return mappedUIDs.contains(predicate);
+        return mappedPredicates.contains(predicate);
     }
     
     public boolean isPolymorphic() {
