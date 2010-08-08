@@ -105,15 +105,15 @@ public final class MappedPath {
         }
     }
 
-    private boolean ignoreInvalid;
+    private final boolean ignoreInvalid;
 
-    private List<MappedPredicate> predicatePath;
-    
     private final MappedProperty<?> mappedProperty;
+    
+    private List<MappedPredicate> predicatePath;
     
     private boolean constructorArgument;
     
-    private boolean inherited = false;
+    private boolean inherited;
     
     public MappedPath(MappedProperty<?> property, 
             List<MappedPredicate> predicatePath, 
@@ -127,6 +127,8 @@ public final class MappedPath {
         } else {
             if (predicatePath.size() > 0) {
                 this.ignoreInvalid = predicatePath.get(0).ignoreInvalid();
+            }else{
+                this.ignoreInvalid = false;
             }
         }
         validate();
