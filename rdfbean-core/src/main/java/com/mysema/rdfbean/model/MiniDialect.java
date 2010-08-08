@@ -12,7 +12,7 @@ package com.mysema.rdfbean.model;
  * @author sasa
  * 
  */
-public final class MiniDialect extends Dialect<NODE, ID, BID, UID, LIT, STMT> {
+public final class MiniDialect extends AbstractDialect<NODE, ID, BID, UID, LIT, STMT> {
 
     @Override
     public BID createBNode() {
@@ -92,6 +92,11 @@ public final class MiniDialect extends Dialect<NODE, ID, BID, UID, LIT, STMT> {
     @Override
     public NODE getNODE(NODE node) {
         return node;
+    }
+   
+    @Override
+    public ID getResource(ID id) {
+        return id;        
     }
    
 }

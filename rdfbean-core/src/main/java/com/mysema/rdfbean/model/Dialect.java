@@ -1,92 +1,47 @@
-/*
- * Copyright (c) 2010 Mysema Ltd.
- * All rights reserved.
- * 
- */ 
 package com.mysema.rdfbean.model;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
 /**
  * Dialect provides a generic service for RDF node creation and conversion
- * 
+ *  
  * @author Samppa
  * @author Timo
  */
-public abstract class Dialect
-    <N, 
-     R extends N, 
-     B extends R, 
-     U extends R, 
-     L extends N, 
-     S> {
+public interface Dialect<N, R extends N, B extends R, U extends R, L extends N, S> {
 
-    private static final Map<String,UID> datatypeUIDCache = new HashMap<String,UID>();
-    
-    static{
-        for (UID uid : XSD.ALL){
-            datatypeUIDCache.put(uid.getId(), uid);
-        }
-    }
-    
-    public abstract B createBNode();
-    
-    public abstract S createStatement(R subject, U predicate, N object);
-    
-    public abstract S createStatement(R subject, U predicate, N object, @Nullable U context);
+    B createBNode();
 
-    public abstract BID getBID(B bnode);
-    
-    public abstract B getBNode(BID bid);
-    
-    protected UID getDatatypeUID(String datatype){
-        UID uid = datatypeUIDCache.get(datatype);
-        if (uid == null){
-            uid = new UID(datatype);
-            datatypeUIDCache.put(datatype, uid);            
-        }
-        return uid;
-    }
+    S createStatement(R subject, U predicate, N object);
 
-    public abstract ID getID(R resource);
-    
-    public abstract LIT getLIT(L literal);
-    
-    public abstract L getLiteral(LIT lit);
+    S createStatement(R subject, U predicate, N object, @Nullable U context);
 
-    public N getNode(NODE node){
-        if (node.isLiteral()){
-            return getLiteral(node.asLiteral());
-        }else if (node.isBNode()){
-            return getBNode(node.asBNode());
-        }else{
-            return getURI(node.asURI());
-        }
-    }
-    
-    public abstract NODE getNODE(N node);
-    
-    public abstract NodeType getNodeType(N node); 
+    BID getBID(B bnode);
 
-    public abstract N getObject(S statement); 
-    
-    public abstract U getPredicate(S statement);
+    B getBNode(BID bid);
 
-    public final R getResource(ID id) {
-        if (id.isURI()){
-            return getURI(id.asURI());
-        }else{
-            return getBNode(id.asBNode());
-        }        
-    }
-        
-    public abstract R getSubject(S statement);
-    
-    public abstract UID getUID(U resource);
-    
-    public abstract U getURI(UID uid);
-    
+    ID getID(R resource);
+
+    LIT getLIT(L literal);
+
+    L getLiteral(LIT lit);
+
+    N getNode(NODE node);
+
+    NODE getNODE(N node);
+
+    NodeType getNodeType(N node);
+
+    N getObject(S statement);
+
+    U getPredicate(S statement);
+
+    R getResource(ID id);
+
+    R getSubject(S statement);
+
+    UID getUID(U resource);
+
+    U getURI(UID uid);
+
 }

@@ -22,7 +22,7 @@ import org.openrdf.model.ValueFactory;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.Dialect;
+import com.mysema.rdfbean.model.AbstractDialect;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
@@ -37,7 +37,7 @@ import com.mysema.rdfbean.model.XSD;
  * @author sasa
  *
  */
-public class SesameDialect extends Dialect<Value, Resource, BNode, URI, Literal, Statement> {
+public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, Literal, Statement> {
     
     private final Map<BNode, BID> bnodeCache = new HashMap<BNode, BID>(1024);
     

@@ -53,7 +53,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     U extends R, 
     L extends N, S> extends ProjectableQuery<SubType>{
     
-    protected final Dialect<N,R,B,U,L,S> dialect;
+    protected final Dialect<N, R, B, U, L, S> dialect;
     
     protected final Configuration conf;
     
@@ -61,7 +61,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     
     @SuppressWarnings("unchecked")
     public AbstractProjectingQuery(
-            Dialect<N,R,B,U,L,S> dialect, 
+            Dialect<N, R, B, U, L, S> dialect, 
             Session session) {
         super(new QueryMixin<SubType>(new DefaultQueryMetadata()));
         this.conf = session.getConfiguration();
