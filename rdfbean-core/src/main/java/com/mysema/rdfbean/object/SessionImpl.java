@@ -53,24 +53,24 @@ public final class SessionImpl implements Session {
 
     private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
 
-    private Set<STMT> addedStatements;
-
     private final Configuration conf;
 
-    private RDFConnection connection;
+    private final RDFConnection connection;
 
-    private DefaultErrorHandler errorHandler = new DefaultErrorHandler();
-
-    private FlushMode flushMode = FlushMode.ALWAYS;
+    private final DefaultErrorHandler errorHandler = new DefaultErrorHandler();
 
     private final IdentityService identityService;
 
+    private final Iterable<Locale> locales;
+
+    private final Map<String, ObjectRepository> parentRepositories = new HashMap<String, ObjectRepository>();
+
+    private FlushMode flushMode = FlushMode.ALWAYS;
+    
     private Map<ID, List<Object>> instanceCache;
 
-    private Iterable<Locale> locales;
-
-    private Map<String, ObjectRepository> parentRepositories = new HashMap<String, ObjectRepository>();
-
+    private Set<STMT> addedStatements;
+    
     private Set<STMT> removedStatements;
 
     private Map<Object, ID> resourceCache;
@@ -83,19 +83,21 @@ public final class SessionImpl implements Session {
 
     public SessionImpl(Configuration conf, RDFConnection connection, Iterable<Locale> locales) {
         this.conf = Assert.notNull(conf,"conf");
-        this.connection = Assert.notNull(connection,"connection");
+        Assert.notNull(connection,"connection");        
         this.locales = locales;
-
         this.identityService = new SessionIdentityService(connection);
 
         // TODO : do this in SessionFactory ?!?
         List<FetchStrategy> fetchStrategies = conf.getFetchStrategies();
         if (fetchStrategies != null) {
             if (this.connection instanceof FetchOptimizer) {
+                this.connection = connection;    
                 ((FetchOptimizer) this.connection).addFetchStrategies(fetchStrategies);
             } else {
-                this.connection = new FetchOptimizer(this.connection, fetchStrategies);
+                this.connection = new FetchOptimizer(connection, fetchStrategies);
             }
+        }else{
+            this.connection = connection;    
         }
 
         clear();
@@ -865,14 +867,6 @@ public final class SessionImpl implements Session {
         return instances;
     }
 
-//    private <T> T getBean(Class<T> clazz, ID subject) {
-//        boolean polymorphic = true;
-//        MappedClass mappedClass = MappedClass.getMappedClass(clazz);
-//        polymorphic = mappedClass.isPolymorphic();
-//        return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
-//        
-//    }
-
     @Override
     public <T> T getBean(Class<T> clazz, UID subject) {
         return (T) get(clazz, subject);
@@ -924,11 +918,6 @@ public final class SessionImpl implements Session {
     private UID getContext(Object instance, @Nullable ID subject, @Nullable UID defaultContext) {
         return getContext(instance.getClass(), subject, defaultContext);
     }
-
-//    @Override
-//    public ConverterRegistry getConverterRegistry() {
-//        return conf.getConverterRegistry();
-//    }
 
     @Override
     public Locale getCurrentLocale() {
@@ -1006,10 +995,6 @@ public final class SessionImpl implements Session {
             }
         }
     }
-
-//    public IdentityService getIdentityService() {
-//        return identityService;
-//    }
 
     @Override
     public LID getLID(ID id) {
@@ -1256,9 +1241,8 @@ public final class SessionImpl implements Session {
             recordAddStatement(subject, RDF.type, uri, context);
         }
         BeanMap beanMap = toBeanMap(instance);
-        MappedProperty<?> property;
         for (MappedPath path : mappedClass.getProperties()) {
-            property = path.getMappedProperty();
+            MappedProperty<?> property = path.getMappedProperty();
             if (path.isSimpleProperty()) {
                 MappedPredicate mappedPredicate = path.get(0);
                 UID predicate = mappedPredicate.getUID();
@@ -1322,6 +1306,7 @@ public final class SessionImpl implements Session {
                         }
                     }
                 }
+                
             } else if (property.isMixin()) {
                 Object object = property.getValue(beanMap);
                 if (object != null) {
@@ -1330,9 +1315,30 @@ public final class SessionImpl implements Session {
                 }
             }
         }
+        
+        for (MappedProperty<?> property : mappedClass.getDynamicProperties()){
+            Map<?,?> properties = (Map) property.getValue(beanMap);
+            if (properties != null){
+                for (Map.Entry<?,?> entry : properties.entrySet()){
+                    UID predicate = toRDF(entry.getKey(), context).asURI();
+                    if (entry.getValue() instanceof Collection){
+                        for (Object value : ((Collection)entry.getValue())){
+                            NODE object = toRDFValue(value, context);    
+                            recordAddStatement(subject, predicate, object, context);
+                        }
+                    }else{
+                        NODE object = toRDFValue(entry.getValue(), context);    
+                        recordAddStatement(subject, predicate, object, context);
+                    }                        
+                }
+            }
+        }
     }
 
     private ID toRDF(Object instance, @Nullable UID parentContext) {
+        if (instance instanceof ID){
+            return (ID)instance;
+        }
         BeanMap beanMap = toBeanMap(Assert.notNull(instance,"instance"));
         Class<?> clazz = getClass(instance);
         MappedClass mappedClass = conf.getMappedClass(clazz);
@@ -1401,18 +1407,24 @@ public final class SessionImpl implements Session {
     }
 
     private LIT toRDFLiteral(Object o) {
+        if (o instanceof LIT){
+            return (LIT)o;
+        }
         UID dataType = conf.getConverterRegistry().getDatatype(o.getClass());
         return new LIT(conf.getConverterRegistry().toString(o), dataType);
     }
 
-    private NODE toRDFValue(Object object, @Nullable UID context) {
-        Class<?> type = getClass(object);
+    private NODE toRDFValue(Object o, @Nullable UID context) {
+        if (o instanceof NODE){
+            return (NODE)o;
+        }
+        Class<?> type = getClass(o);
         if (type.isAnnotationPresent(ClassMapping.class)) {
-            return toRDF(object, context);
-        } else if (object instanceof UID) {
-            return (UID) object;
+            return toRDF(o, context);
+        } else if (o instanceof UID) {
+            return (UID) o;
         } else {
-            return toRDFLiteral(object);
+            return toRDFLiteral(o);
         }
     }
 

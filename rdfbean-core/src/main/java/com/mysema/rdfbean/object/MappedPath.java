@@ -187,14 +187,12 @@ public final class MappedPath {
     }
 
     public boolean isSimpleProperty() {
-        return predicatePath.size() == 1 
-            && !get(0).inv() && !get(0).includeInferred();
+        return predicatePath.size() == 1 && !get(0).inv() && !get(0).includeInferred();
     }
 
     void setConstructorArgument(boolean constructorArgument) {
         this.constructorArgument = constructorArgument;
     }
-
     
     void merge(MappedPath other) {
         mappedProperty.addAnnotations(other.mappedProperty);

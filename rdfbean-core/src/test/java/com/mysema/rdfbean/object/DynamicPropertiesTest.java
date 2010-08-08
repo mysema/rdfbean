@@ -16,7 +16,6 @@ import java.util.HashMap;
 import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -134,7 +133,6 @@ public class DynamicPropertiesTest implements PropertiesDomain{
     }
     
     @Test
-    @Ignore
     public void testWrite(){
         Project project = new Project();
         project.dates = new HashMap<UID,LocalDate>();
