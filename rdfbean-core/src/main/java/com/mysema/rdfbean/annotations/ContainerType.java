@@ -13,9 +13,21 @@ import com.mysema.rdfbean.model.UID;
  *
  */
 public enum ContainerType {
+    /**
+     * 
+     */
     LIST(RDF.List), 
+    /**
+     * 
+     */
     SEQ(RDF.Seq), 
+    /**
+     * 
+     */
     BAG(RDF.Bag), 
+    /**
+     * 
+     */
     ALT(RDF.Alt);
 
     private final UID uid;

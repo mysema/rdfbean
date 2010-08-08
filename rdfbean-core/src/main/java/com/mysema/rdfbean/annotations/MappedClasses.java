@@ -24,6 +24,9 @@ import com.mysema.rdfbean.object.Configuration;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MappedClasses {
 
+    /**
+     * @return
+     */
     Class<?>[] value();
     
 }

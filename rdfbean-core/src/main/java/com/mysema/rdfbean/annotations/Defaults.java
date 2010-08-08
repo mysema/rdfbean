@@ -26,6 +26,9 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Defaults {
     
+    /**
+     * @return
+     */
     Default[] value();
 
 }
