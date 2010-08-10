@@ -5,23 +5,13 @@
  */
 package com.mysema.rdfbean.tapestry.services;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.Map;
 
-import org.apache.commons.collections15.BeanMap;
-import org.apache.tapestry5.ValueEncoder;
-import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.ServiceBinder;
-import org.apache.tapestry5.services.ValueEncoderFactory;
 
 import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.MappedClass;
-import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.ObjectRepository;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.tapestry.TransactionalAdvisor;
@@ -101,12 +91,12 @@ public final class RDFBeanModule {
 //        };
 //    }
 
-    private static void close(Closeable closeable){
-        try {
-            closeable.close();
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        }
-    }
+//    private static void close(Closeable closeable){
+//        try {
+//            closeable.close();
+//        } catch (IOException e) {
+//            throw new RepositoryException(e);
+//        }
+//    }
 
 }

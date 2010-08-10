@@ -89,7 +89,7 @@ public final class SessionImpl implements Session {
 
         // TODO : do this in SessionFactory ?!?
         List<FetchStrategy> fetchStrategies = conf.getFetchStrategies();
-        if (fetchStrategies != null) {
+        if (!fetchStrategies.isEmpty()) {
             if (this.connection instanceof FetchOptimizer) {
                 this.connection = connection;    
                 ((FetchOptimizer) this.connection).addFetchStrategies(fetchStrategies);
