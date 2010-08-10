@@ -57,8 +57,7 @@ public final class DefaultConfiguration implements Configuration {
     @Nullable
     private UID defaultContext;
     
-    @Nullable
-    private List<FetchStrategy> fetchStrategies;
+    private List<FetchStrategy> fetchStrategies = Collections.emptyList();
     
     private final MappedClassFactory mappedClassFactory = new MappedClassFactory();
     
