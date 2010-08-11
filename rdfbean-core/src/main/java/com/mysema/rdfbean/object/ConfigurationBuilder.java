@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.object;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +30,7 @@ public class ConfigurationBuilder {
     @Nullable
     private ConverterRegistry converterRegistry;
     
-    private List<FetchStrategy> fetchStrategies = Collections.emptyList();
+    private List<FetchStrategy> fetchStrategies = new ArrayList<FetchStrategy>();
     
     public Configuration build() {
         if (converterRegistry == null){
@@ -48,6 +49,11 @@ public class ConfigurationBuilder {
         return new MappedClassBuilder(mappedClass);
     }
 
+    public ConfigurationBuilder addFetchStrategy(FetchStrategy fetchStrategy){
+        fetchStrategies.add(fetchStrategy);
+        return this;
+    }
+    
     public void setConverterRegistry(ConverterRegistry converterRegistry) {
         this.converterRegistry = converterRegistry;
     }
