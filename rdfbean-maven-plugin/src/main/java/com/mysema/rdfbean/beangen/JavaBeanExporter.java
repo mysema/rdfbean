@@ -147,8 +147,6 @@ public class JavaBeanExporter {
                         range = rdfProperty.getRange().iterator().next();
                     }
                     properties.put(rdfProperty, createProperty(entityType, id, rdfProperty, range));
-                }else{
-                    // ?!?
                 }
             }                    
         }
