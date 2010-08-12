@@ -34,6 +34,7 @@ import com.mysema.query.codegen.BeanSerializer;
 import com.mysema.query.codegen.EntityType;
 import com.mysema.query.codegen.Property;
 import com.mysema.query.codegen.SimpleSerializerConfig;
+import com.mysema.query.codegen.Supertype;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
@@ -162,12 +163,8 @@ public class JavaBeanExporter {
                                     
                 // handle other supertypes
                 }else if (superType.getId().isURI()){
-//                    UID superTypeId = (UID)superType.getId();
-//                    beanType.addSuperType(new Type(
-//                            superTypeId,
-//                            getPackage(superTypeId),
-//                            getClassName(superTypeId)
-//                    ));    
+                    UID superTypeId = (UID)superType.getId();
+                    entityType.addSupertype(new Supertype(getJavaType(superTypeId)));
                 }                    
             }
         }
@@ -244,6 +241,12 @@ public class JavaBeanExporter {
             }            
             
         }
+    }
+    
+    private Type getJavaType(UID id){
+        String typePackage = getPackage(id);
+        String typeName = getClassName(id);
+        return new SimpleType(TypeCategory.ENTITY, typePackage + "." + typeName, typePackage, typeName, false, false);
     }
 
     private String getClassName(UID classId) {
@@ -331,14 +334,15 @@ public class JavaBeanExporter {
                 }
             }
 
-            for (Integer cardinality : Arrays.asList(
-                    restriction.getCardinality(), 
-                    restriction.getMinCardinality(), 
-                    restriction.getMaxCardinality())){
-                if (cardinality != null){
+            // FIXME
+//            for (Integer cardinality : Arrays.asList(
+//                    restriction.getCardinality(), 
+//                    restriction.getMinCardinality(), 
+//                    restriction.getMaxCardinality())){
+//                if (cardinality != null){
 //                    property.setMultipleValues(true);
-                }
-            }
+//                }
+//            }
         }
     }
     
