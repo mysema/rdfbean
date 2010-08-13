@@ -1,53 +1,51 @@
 package com.mysema.rdfbean.beangen;
 
-import java.io.File;
-import java.io.IOException;
+import static org.junit.Assert.*;
 
+import java.util.List;
+
+import org.junit.Before;
 import org.junit.Test;
 
-import com.mysema.rdfbean.beangen.JavaBeanExporter;
-import com.mysema.rdfbean.model.io.Format;
-import com.mysema.rdfbean.model.io.RDFSource;
-import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionFactoryImpl;
-import com.mysema.rdfbean.owl.OWLClass;
+import com.mysema.query.codegen.EntityType;
+import com.mysema.rdfbean.owl.Restriction;
 import com.mysema.rdfbean.rdfs.RDFSClass;
-import com.mysema.rdfbean.sesame.MemoryRepository;
 
-public class JavaBeanExporterTest {
 
+public class JavaBeanExporterTest extends AbstractExportTest{
+    
+    private JavaBeanExporter exporter;
+    
+    @Before
+    public void setUp(){
+        exporter = new JavaBeanExporter(true);
+        exporter.addPackage("http://www.mysema.com/semantics/blog/#", "com.mysema.blog");
+        exporter.addPackage("http://purl.org/dc/elements/1.1/", "com.mysema.dc");
+        exporter.addPackage("http://purl.org/dc/terms/", "com.mysema.dc");
+        exporter.addPackage("http://www.mysema.com/rdfbean/demo#", "com.mysema.demo");
+        exporter.addPackage("http://www.w3.org/TR/2003/PR-owl-guide-20031209/wine#", "com.mysema.wine");
+    }
+    
+    @SuppressWarnings("unchecked")
     @Test
-    public void testExport() throws IOException {
-        MemoryRepository repository = new MemoryRepository();
-        repository.setSources(
-                new RDFSource("classpath:/blog.owl",Format.RDFXML, "http://www.mysema.com/semantics/blog/#"),
-                new RDFSource("classpath:/dc.rdf", Format.RDFXML, "http://purl.org/dc/elements/1.1/"),
-                new RDFSource("classpath:/demo.owl",Format.RDFXML, "http://www.mysema.com/rdfbean/demo"),
-                new RDFSource("classpath:/wine.owl",Format.RDFXML, "http://www.w3.org/TR/2003/PR-owl-guide-20031209/wine#"));                
-        
-        DefaultConfiguration configuration = new DefaultConfiguration();
-        configuration.addPackages(RDFSClass.class.getPackage(), OWLClass.class.getPackage());
-        
-        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
-        sessionFactory.setConfiguration(configuration);
-        sessionFactory.setRepository(repository);
-        sessionFactory.initialize();
-        Session session = sessionFactory.openSession();
-        
-        try{
-            JavaBeanExporter exporter = new JavaBeanExporter(true);
-            exporter.addPackage("http://www.mysema.com/semantics/blog/#", "com.mysema.blog");
-            exporter.addPackage("http://purl.org/dc/elements/1.1/", "com.mysema.dc");
-            exporter.addPackage("http://www.mysema.com/rdfbean/demo#", "com.mysema.demo");
-            exporter.addPackage("http://www.w3.org/TR/2003/PR-owl-guide-20031209/wine#", "com.mysema.wine");
-            exporter.export(session, new File("target/export"));
-        }finally{
-            try {
-                session.close();
-            }finally{
-                sessionFactory.close();
+    public void createBeanType(){                
+        List<RDFSClass> rdfTypes = session.findInstances(RDFSClass.class);
+        assertFalse(rdfTypes.isEmpty());
+        for (RDFSClass<?> rdfType : rdfTypes){
+            EntityType entityType = exporter.createBeanType(rdfType);
+            
+            // supertype count
+            int supertypes = 0;
+            for (RDFSClass<?> superClass : rdfType.getSuperClasses()){
+                if (superClass != null && !superClass.getClass().equals(Restriction.class)){
+                    supertypes++;
+                }
             }
+            assertEquals(supertypes, entityType.getSuperTypes().size());
+            
+            // property count
+            assertTrue(entityType.getProperties().size() >= rdfType.getProperties().size());
+           
         }
     }
 

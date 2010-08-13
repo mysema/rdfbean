@@ -72,6 +72,8 @@ public class JavaBeanExporter {
     
     private final Set<UID> propertyAsList = new HashSet<UID>();
     
+    private final Map<UID,Type> uidToType = new HashMap<UID,Type>();
+    
     private boolean oneOfAsEnum = true;
     
     private boolean stripHasOff = true;
@@ -127,12 +129,13 @@ public class JavaBeanExporter {
         return this;
     }        
     
-    private EntityType createBeanType(RDFSClass<?> rdfType) {
+    EntityType createBeanType(RDFSClass<?> rdfType) {
         // type
         UID id = rdfType.getId().asURI();
         String pkgName = getPackage(id);
         String simpleName = getClassName(id);
         Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
+        uidToType.put(id, type);
         EntityType entityType = new EntityType("Q", type);
         entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
         
@@ -190,6 +193,7 @@ public class JavaBeanExporter {
         String pkgName = getPackage(id);
         String simpleName = getClassName(id);
         Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
+        uidToType.put(id, type);
         EntityType entityType = new EntityType("Q", type);
         entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
         return entityType;
@@ -242,9 +246,15 @@ public class JavaBeanExporter {
     }
     
     private Type getJavaType(UID id){
-        String typePackage = getPackage(id);
-        String typeName = getClassName(id);
-        return new SimpleType(TypeCategory.ENTITY, typePackage + "." + typeName, typePackage, typeName, false, false);
+        Type type = uidToType.get(id);
+        if (type == null){
+            String typePackage = getPackage(id);
+            String typeName = getClassName(id);
+            type = new SimpleType(TypeCategory.ENTITY, typePackage + "." + typeName, typePackage, typeName, false, false);
+            uidToType.put(id, type);
+        }
+        return type;
+        
     }
 
     private String getClassName(UID classId) {
