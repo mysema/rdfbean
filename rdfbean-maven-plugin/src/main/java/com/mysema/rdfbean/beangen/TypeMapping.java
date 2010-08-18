@@ -32,10 +32,13 @@ import com.mysema.rdfbean.xsd.Year;
  */
 public class TypeMapping {
     
+    // TODO : take from Types
     private static final Type LOCAL_DATE = new ClassType<LocalDate>(TypeCategory.DATE, LocalDate.class);
-    
+
+    // TODO : take from Types
     private static final Type DATE_TIME = new ClassType<DateTime>(TypeCategory.DATETIME, DateTime.class);
     
+    // TODO : take from Types
     private static final Type LOCAL_TIME = new ClassType<LocalTime>(TypeCategory.TIME, LocalTime.class);
 
     private static final Type YEAR = new ClassType<Year>(TypeCategory.COMPARABLE, Year.class);
