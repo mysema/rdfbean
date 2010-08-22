@@ -30,6 +30,20 @@ import com.mysema.rdfbean.model.XSD;
  */
 public class RDFXMLWriter implements RDFWriter{
 
+    private static final String RDF_ABOUT = "rdf:about";
+
+    private static final String RDF_DATATYPE = "rdf:datatype";
+
+    private static final String RDF_DESCRIPTION = "rdf:Description";
+
+    private static final String RDF_NODE_ID = "rdf:nodeID";
+    
+    private static final String RDF_RDF = "rdf:RDF";
+    
+    private static final String RDF_RESOURCE = "rdf:resource";
+
+    private static final String XML_LANG = "xml:lang";
+    
     private final Writer w;
     
     private final XMLWriter writer;
@@ -68,9 +82,9 @@ public class RDFXMLWriter implements RDFWriter{
     public void end() {
         try {
             if (previous == null){                
-                writer.begin("rdf:RDF").attribute("xmlns:rdf", RDF.NS);
+                writer.begin(RDF_RDF).attribute("xmlns:rdf", RDF.NS);
             }
-            writer.end("rdf:RDF");
+            writer.end(RDF_RDF);
         } catch (IOException e) {
             throw new RepositoryException(e);
         }        
@@ -81,18 +95,18 @@ public class RDFXMLWriter implements RDFWriter{
         try {
             // prolog
             if (previous == null){
-                writer.begin("rdf:RDF");
+                writer.begin(RDF_RDF);
                 for (Map.Entry<String,String> entry : nsToPrefix.entrySet()){
                     writer.attribute("xmlns:"+ entry.getValue(), entry.getKey());
                 }
             }        
 
             // subject
-            writer.begin("rdf:Description");
+            writer.begin(RDF_DESCRIPTION);
             if (stmt.getSubject().isBNode()){
-                writer.attribute("rdf:nodeID", getNodeID(stmt.getSubject().asBNode()));   
+                writer.attribute(RDF_NODE_ID, getNodeID(stmt.getSubject().asBNode()));   
             }else{
-                writer.attribute("rdf:about", stmt.getSubject().getId());    
+                writer.attribute(RDF_ABOUT, stmt.getSubject().getId());    
             }     
 
             // predicate
@@ -105,20 +119,20 @@ public class RDFXMLWriter implements RDFWriter{
 
             // object
             if (stmt.getObject().isBNode()){
-                writer.attribute("rdf:nodeID", getNodeID(stmt.getObject().asBNode()));
+                writer.attribute(RDF_NODE_ID, getNodeID(stmt.getObject().asBNode()));
             }else if (stmt.getObject().isURI()){
-                writer.attribute("rdf:resource", stmt.getObject().getValue());
+                writer.attribute(RDF_RESOURCE, stmt.getObject().getValue());
             }else{
                 LIT obj = stmt.getObject().asLiteral();
                 if (obj.getLang() != null){
-                    writer.attribute("xml:lang", LocaleUtil.toLang(obj.getLang()));
+                    writer.attribute(XML_LANG, LocaleUtil.toLang(obj.getLang()));
                 }else if (!obj.getDatatype().equals(XSD.stringType)){
-                    writer.attribute("rdf:datatype", obj.getDatatype().getId());
+                    writer.attribute(RDF_DATATYPE, obj.getDatatype().getId());
                 }
                 writer.print(stmt.getObject().getValue());                
             }
             writer.end(prefix +":"+stmt.getPredicate().ln());
-            writer.end("rdf:Description");
+            writer.end(RDF_DESCRIPTION);
             previous = stmt;
         } catch (IOException e) {
             throw new RepositoryException(e);
