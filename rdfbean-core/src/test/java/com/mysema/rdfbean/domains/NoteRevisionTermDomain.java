@@ -8,7 +8,7 @@ package com.mysema.rdfbean.domains;
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathInits;
@@ -87,7 +87,7 @@ public interface NoteRevisionTermDomain {
         }                   
     }
     
-    public class QNote extends PEntity<NoteRevisionTermDomain.Note> {
+    public class QNote extends EntityPathBase<NoteRevisionTermDomain.Note> {
 
         private static final long serialVersionUID = 1496561659;
 
@@ -121,7 +121,7 @@ public interface NoteRevisionTermDomain {
 
     }
     
-    public class QNoteRevision extends PEntity<NoteRevisionTermDomain.NoteRevision> {
+    public class QNoteRevision extends EntityPathBase<NoteRevisionTermDomain.NoteRevision> {
 
         private static final long serialVersionUID = -1259034378;
 
@@ -154,7 +154,7 @@ public interface NoteRevisionTermDomain {
 
     }
     
-    public class QTerm extends PEntity<NoteRevisionTermDomain.Term> {
+    public class QTerm extends EntityPathBase<NoteRevisionTermDomain.Term> {
 
         private static final long serialVersionUID = 1496730741;
 
@@ -170,7 +170,7 @@ public interface NoteRevisionTermDomain {
             super(NoteRevisionTermDomain.Term.class, forVariable(variable));
         }
 
-        public QTerm(PEntity<? extends NoteRevisionTermDomain.Term> entity) {
+        public QTerm(EntityPathBase<? extends NoteRevisionTermDomain.Term> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 

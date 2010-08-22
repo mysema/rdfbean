@@ -23,7 +23,7 @@ import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
@@ -820,7 +820,7 @@ public final class SessionImpl implements Session {
     }
 
     @Override
-    public BeanQuery from(PEntity<?>... expr) {
+    public BeanQuery from(EntityPath<?>... expr) {
         return connection.createQuery(this, QueryLanguage.QUERYDSL, null).from(expr);
     }
 

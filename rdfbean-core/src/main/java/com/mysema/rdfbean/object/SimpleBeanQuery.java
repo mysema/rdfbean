@@ -15,11 +15,11 @@ import com.mysema.query.collections.ColQuery;
 import com.mysema.query.collections.ColQueryImpl;
 import com.mysema.query.collections.QueryEngine;
 import com.mysema.query.support.ProjectableAdapter;
+import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Param;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.path.PEntity;
 
 /**
  * Non-optimized Memory based BeanQuery implementation
@@ -50,8 +50,8 @@ public class SimpleBeanQuery extends ProjectableAdapter<ColQueryImpl> implements
 
     @SuppressWarnings("unchecked")
     @Override
-    public BeanQuery from(PEntity<?>... o) {
-        for (PEntity<?> path : o){
+    public BeanQuery from(EntityPath<?>... o) {
+        for (EntityPath<?> path : o){
             colQuery.from(path, (Collection)session.findInstances(path.getType()));
         }
         return this;

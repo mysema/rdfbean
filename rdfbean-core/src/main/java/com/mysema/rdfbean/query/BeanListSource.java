@@ -12,11 +12,10 @@ import javax.annotation.Nullable;
 import net.jcip.annotations.Immutable;
 
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.paging.ListSource;
+import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionCallback;
@@ -29,7 +28,8 @@ import com.mysema.rdfbean.object.SessionFactory;
  * @version $Id$
  */
 @Immutable
-public class BeanListSource<T> implements ListSource<T>{
+public class BeanListSource<T>{
+//public class BeanListSource<T> implements ListSource<T>{
     
     @Nullable
     private final EBoolean condition;
@@ -42,10 +42,10 @@ public class BeanListSource<T> implements ListSource<T>{
     
     private final long size;
     
-    private final PEntity<?>[] sources;
+    private final EntityPath<?>[] sources;
     
     public BeanListSource(SessionFactory sessionFactory,  
-            PEntity<?>[] sourceArray, 
+            EntityPath<?>[] sourceArray, 
             QueryMetadata metadata,
             Path<T> projection){
         this.sessionFactory = sessionFactory;
@@ -65,7 +65,6 @@ public class BeanListSource<T> implements ListSource<T>{
         });   
     }
     
-    @Override
     public T getResult(int index) {
         return getResults(index, index+1).get(0);
     }

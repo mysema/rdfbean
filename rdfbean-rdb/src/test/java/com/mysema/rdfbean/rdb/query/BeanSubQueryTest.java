@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.object.BeanSubQuery;
@@ -71,7 +71,7 @@ public class BeanSubQueryTest extends AbstractRDBTest implements EntityDomain{
         assertEquals(dateTimes.get(dateTimes.size()-1), result.getCreated());
     }
     
-    private BeanSubQuery sub(PEntity<?> entity){
+    private BeanSubQuery sub(EntityPath<?> entity){
         return new BeanSubQuery().from(entity);
     }
     

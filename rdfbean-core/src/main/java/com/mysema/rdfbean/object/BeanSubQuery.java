@@ -8,6 +8,7 @@ package com.mysema.rdfbean.object;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.support.DetachableMixin;
 import com.mysema.query.support.QueryMixin;
+import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
@@ -17,7 +18,6 @@ import com.mysema.query.types.expr.EDateTime;
 import com.mysema.query.types.expr.ENumber;
 import com.mysema.query.types.expr.EString;
 import com.mysema.query.types.expr.ETime;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.query.*;
 
 /**
@@ -54,7 +54,7 @@ public class BeanSubQuery implements Detachable {
      * @param o
      * @return
      */
-    public BeanSubQuery from(PEntity<?>... o) {
+    public BeanSubQuery from(EntityPath<?>... o) {
         return queryMixin.from(o);
     }
 

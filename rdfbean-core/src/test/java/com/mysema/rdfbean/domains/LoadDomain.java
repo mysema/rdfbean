@@ -8,7 +8,7 @@ package com.mysema.rdfbean.domains;
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PNumber;
 import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathInits;
@@ -57,7 +57,7 @@ public interface LoadDomain {
                                         
     }
     
-    public class QDocument extends PEntity<Document> {
+    public class QDocument extends EntityPathBase<Document> {
 
         private static final long serialVersionUID = 1255113926;
 
@@ -71,7 +71,7 @@ public interface LoadDomain {
             super(Document.class, forVariable(variable));
         }
 
-        public QDocument(PEntity<? extends Document> entity) {
+        public QDocument(EntityPathBase<? extends Document> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
@@ -81,7 +81,7 @@ public interface LoadDomain {
 
     }
     
-    public class QEntity extends PEntity<Entity> {
+    public class QEntity extends EntityPathBase<Entity> {
 
         private static final long serialVersionUID = -672168370;
 
@@ -114,7 +114,7 @@ public interface LoadDomain {
 
     }
     
-    public class QRevision extends PEntity<Revision> {
+    public class QRevision extends EntityPathBase<Revision> {
 
         private static final long serialVersionUID = 132606854;
 

@@ -21,13 +21,13 @@ import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 
 import com.mysema.query.sql.Configuration;
+import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.query.sql.dml.SQLDeleteClause;
 import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IdSequence;
@@ -119,15 +119,15 @@ public final class RDBContext implements Closeable{
         }
     }
     
-    public SQLDeleteClause createDelete(PEntity<?> entity){
+    public SQLDeleteClause createDelete(RelationalPath<?> entity){
         return new SQLDeleteClause(connection, configuration, entity);
     }
     
-    public SQLInsertClause createInsert(PEntity<?> entity){
+    public SQLInsertClause createInsert(RelationalPath<?> entity){
         return new SQLInsertClause(connection, configuration, entity);
     }
     
-    public SQLMergeClause createMerge(PEntity<?> entity){
+    public SQLMergeClause createMerge(RelationalPath<?> entity){
         return new SQLMergeClause(connection, configuration, entity);
     }
 

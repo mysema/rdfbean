@@ -15,7 +15,7 @@
   </parent>
   
   <properties>
-    <querydsl.version>1.8.5</querydsl.version>
+    <querydsl.version>1.9.0</querydsl.version>
     <spring.version>2.5.5</spring.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

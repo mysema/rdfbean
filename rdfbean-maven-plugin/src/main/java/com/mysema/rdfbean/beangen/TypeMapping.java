@@ -8,10 +8,6 @@ package com.mysema.rdfbean.beangen;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-
 import com.mysema.codegen.model.ClassType;
 import com.mysema.codegen.model.SimpleType;
 import com.mysema.codegen.model.Type;
@@ -31,17 +27,8 @@ import com.mysema.rdfbean.xsd.Year;
  * @version $Id$
  */
 public class TypeMapping {
-    
-    // TODO : take from Types
-    private static final Type LOCAL_DATE = new ClassType<LocalDate>(TypeCategory.DATE, LocalDate.class);
 
-    // TODO : take from Types
-    private static final Type DATE_TIME = new ClassType<DateTime>(TypeCategory.DATETIME, DateTime.class);
-    
-    // TODO : take from Types
-    private static final Type LOCAL_TIME = new ClassType<LocalTime>(TypeCategory.TIME, LocalTime.class);
-
-    private static final Type YEAR = new ClassType<Year>(TypeCategory.COMPARABLE, Year.class);
+    private static final Type YEAR = new ClassType(TypeCategory.COMPARABLE, Year.class);
     
     private final Map<UID,Type> datatypeToType = new HashMap<UID,Type>();
     
@@ -72,9 +59,9 @@ public class TypeMapping {
         register(XSD.stringType, Types.STRING);               
         register(RDFS.Literal, Types.STRING);
         
-        register(XSD.date, LOCAL_DATE); // joda-time
-        register(XSD.dateTime, DATE_TIME); // joda-time
-        register(XSD.time, LOCAL_TIME); // joda-time
+        register(XSD.date, Types.LOCAL_DATE); // joda-time
+        register(XSD.dateTime, Types.DATE_TIME); // joda-time
+        register(XSD.time, Types.LOCAL_TIME); // joda-time
         
         defaultType = datatypeToType.get(XSD.stringType);
     }

@@ -7,7 +7,7 @@ package com.mysema.rdfbean.object;
 
 import com.mysema.query.Projectable;
 import com.mysema.query.Query;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.EntityPath;
 
 /**
  * BeanQuery is a Query interface for Java Bean based RDF data projections
@@ -23,6 +23,6 @@ public interface BeanQuery extends Query<BeanQuery>, Projectable {
      * @param o
      * @return
      */
-    BeanQuery from(PEntity<?>... o);
+    BeanQuery from(EntityPath<?>... o);
        
 }

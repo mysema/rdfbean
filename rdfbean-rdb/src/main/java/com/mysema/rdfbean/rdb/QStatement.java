@@ -7,20 +7,25 @@ package com.mysema.rdfbean.rdb;
 
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import com.mysema.query.sql.ForeignKey;
 import com.mysema.query.sql.PrimaryKey;
+import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.Table;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.custom.CSimple;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.BeanPath;
 import com.mysema.query.types.path.PNumber;
 
 /**
  * QStatement is a Querydsl query type for QStatement
  */
 @Table("STATEMENT")
-public class QStatement extends PEntity<QStatement> {
+public class QStatement extends BeanPath<QStatement> implements RelationalPath<QStatement>{
 
     private static final long serialVersionUID = 2085085876;
 
@@ -48,7 +53,7 @@ public class QStatement extends PEntity<QStatement> {
         super(QStatement.class, forVariable(variable));
     }
 
-    public QStatement(PEntity<? extends QStatement> entity) {
+    public QStatement(BeanPath<? extends QStatement> entity) {
         super(entity.getType(),entity.getMetadata());
     }
 
@@ -60,5 +65,19 @@ public class QStatement extends PEntity<QStatement> {
         return CSimple.create(Object[].class, "{0}.*", this);
     }
 
+    @Override
+    public Collection<ForeignKey<?>> getForeignKeys() {
+        return Arrays.<ForeignKey<?>>asList(subjectFk, predicateFk, objectFk, modelFk);
+    }
+
+    @Override
+    public Collection<ForeignKey<?>> getInverseForeignKeys() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public PrimaryKey<QStatement> getPrimaryKey() {
+        return primaryKey;
+    }
 }
 

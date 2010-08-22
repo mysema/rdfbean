@@ -7,7 +7,7 @@ package com.mysema.rdfbean.dao;
 
 import java.util.Collection;
 
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.UID;
@@ -23,15 +23,15 @@ import com.mysema.rdfbean.object.SessionFactory;
 public abstract class AbstractRepository<T> extends AbstractService 
     implements Repository<T,String>{
     
-    private final PEntity<T> entityPath;
+    private final EntityPath<T> entityPath;
     
     private final IDType idType;
     
-    protected AbstractRepository(SessionFactory sessionFactory, PEntity<T> entity){
+    protected AbstractRepository(SessionFactory sessionFactory, EntityPath<T> entity){
         this(sessionFactory, entity, IDType.LOCAL);
     }
     
-    protected AbstractRepository(SessionFactory sessionFactory, PEntity<T> entity, IDType idType){
+    protected AbstractRepository(SessionFactory sessionFactory, EntityPath<T> entity, IDType idType){
         super(sessionFactory);
         this.entityPath = entity;
         this.idType = idType;

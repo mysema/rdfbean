@@ -26,10 +26,10 @@ import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.EConstructor;
+import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NodeType;
@@ -72,7 +72,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     
     protected abstract <RT> RT convert(Class<RT> rt, L node);
         
-    public SubType from(PEntity<?>... args){
+    public SubType from(EntityPath<?>... args){
         return queryMixin.from(args);
     }
     

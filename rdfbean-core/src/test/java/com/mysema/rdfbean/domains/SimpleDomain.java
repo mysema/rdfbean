@@ -14,8 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PDateTime;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PList;
 import com.mysema.query.types.path.PMap;
 import com.mysema.query.types.path.PNumber;
@@ -23,8 +23,6 @@ import com.mysema.query.types.path.PSet;
 import com.mysema.query.types.path.PString;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Container;
-import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.MapElements;
@@ -182,7 +180,7 @@ public interface SimpleDomain {
         
     }
     
-    public class QSimpleType extends PEntity<SimpleDomain.SimpleType> {
+    public class QSimpleType extends EntityPathBase<SimpleDomain.SimpleType> {
 
         private static final long serialVersionUID = -243400857;
 
@@ -212,7 +210,7 @@ public interface SimpleDomain {
             super(SimpleDomain.SimpleType.class, forVariable(variable));
         }
 
-        public QSimpleType(PEntity<? extends SimpleDomain.SimpleType> entity) {
+        public QSimpleType(EntityPathBase<? extends SimpleDomain.SimpleType> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
@@ -222,7 +220,7 @@ public interface SimpleDomain {
 
     }
     
-    public class QSimpleType2 extends PEntity<SimpleDomain.SimpleType2> {
+    public class QSimpleType2 extends EntityPathBase<SimpleDomain.SimpleType2> {
 
         private static final long serialVersionUID = 1044508075;
 
@@ -238,7 +236,7 @@ public interface SimpleDomain {
             super(SimpleDomain.SimpleType2.class, forVariable(variable));
         }
 
-        public QSimpleType2(PEntity<? extends SimpleDomain.SimpleType2> entity) {
+        public QSimpleType2(EntityPathBase<? extends SimpleDomain.SimpleType2> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 

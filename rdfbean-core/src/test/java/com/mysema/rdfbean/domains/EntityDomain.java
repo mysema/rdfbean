@@ -10,8 +10,8 @@ import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 import org.joda.time.DateTime;
 
 import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PDateTime;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PNumber;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PString;
@@ -94,7 +94,7 @@ public interface EntityDomain {
                                 
     }
     
-    public class QEntity extends PEntity<EntityDomain.Entity> {
+    public class QEntity extends EntityPathBase<EntityDomain.Entity> {
 
         private static final long serialVersionUID = 582395858;
 
@@ -118,7 +118,7 @@ public interface EntityDomain {
             super(EntityDomain.Entity.class, forVariable(variable));
         }
 
-        public QEntity(PEntity<? extends EntityDomain.Entity> entity) {
+        public QEntity(EntityPathBase<? extends EntityDomain.Entity> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 

@@ -8,7 +8,7 @@ package com.mysema.rdfbean.domains;
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathInits;
@@ -81,7 +81,7 @@ public interface EntityRevisionTermDomain {
    
     }
     
-    public class QEntity extends PEntity<EntityRevisionTermDomain.Entity> {
+    public class QEntity extends EntityPathBase<EntityRevisionTermDomain.Entity> {
 
         private static final long serialVersionUID = -1998702918;
 
@@ -115,7 +115,7 @@ public interface EntityRevisionTermDomain {
 
     }
     
-    public class QEntityRevision extends PEntity<EntityRevisionTermDomain.EntityRevision> {
+    public class QEntityRevision extends EntityPathBase<EntityRevisionTermDomain.EntityRevision> {
 
         private static final long serialVersionUID = -397412171;
 
@@ -148,7 +148,7 @@ public interface EntityRevisionTermDomain {
 
     }
 
-    public class QTerm extends PEntity<EntityRevisionTermDomain.Term> {
+    public class QTerm extends EntityPathBase<EntityRevisionTermDomain.Term> {
 
         private static final long serialVersionUID = 1196122371;
 
@@ -162,7 +162,7 @@ public interface EntityRevisionTermDomain {
             super(EntityRevisionTermDomain.Term.class, forVariable(variable));
         }
 
-        public QTerm(PEntity<? extends EntityRevisionTermDomain.Term> entity) {
+        public QTerm(EntityPathBase<? extends EntityRevisionTermDomain.Term> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 

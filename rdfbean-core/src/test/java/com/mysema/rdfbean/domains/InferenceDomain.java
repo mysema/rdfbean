@@ -8,7 +8,7 @@ package com.mysema.rdfbean.domains;
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PString;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
@@ -32,7 +32,7 @@ public interface InferenceDomain {
         
     }
     
-    public class QEntity1 extends PEntity<InferenceDomain.Entity1> {
+    public class QEntity1 extends EntityPathBase<InferenceDomain.Entity1> {
 
         private static final long serialVersionUID = -1404735526;
 
@@ -44,7 +44,7 @@ public interface InferenceDomain {
             super(InferenceDomain.Entity1.class, forVariable(variable));
         }
 
-        public QEntity1(PEntity<? extends InferenceDomain.Entity1> entity) {
+        public QEntity1(EntityPathBase<? extends InferenceDomain.Entity1> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
@@ -54,7 +54,7 @@ public interface InferenceDomain {
 
     }
     
-    public class QEntity2 extends PEntity<InferenceDomain.Entity2> {
+    public class QEntity2 extends EntityPathBase<InferenceDomain.Entity2> {
 
         private static final long serialVersionUID = -1404735525;
 
@@ -69,7 +69,7 @@ public interface InferenceDomain {
             super(InferenceDomain.Entity2.class, forVariable(variable));
         }
 
-        public QEntity2(PEntity<? extends InferenceDomain.Entity2> entity) {
+        public QEntity2(EntityPathBase<? extends InferenceDomain.Entity2> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
@@ -79,7 +79,7 @@ public interface InferenceDomain {
 
     }
     
-    public class QEntity3 extends PEntity<InferenceDomain.Entity3> {
+    public class QEntity3 extends EntityPathBase<InferenceDomain.Entity3> {
 
         private static final long serialVersionUID = -1404735524;
 
@@ -94,7 +94,7 @@ public interface InferenceDomain {
             super(InferenceDomain.Entity3.class, forVariable(variable));
         }
 
-        public QEntity3(PEntity<? extends InferenceDomain.Entity3> entity) {
+        public QEntity3(EntityPathBase<? extends InferenceDomain.Entity3> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 

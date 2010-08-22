@@ -10,11 +10,10 @@ import java.util.List;
 
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.paging.ListSource;
+import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**
@@ -27,7 +26,7 @@ public class BeanListSourceBuilder{
 
     private final SessionFactory sessionFactory;
     
-    private final List<PEntity<?>> sources = new ArrayList<PEntity<?>>();
+    private final List<EntityPath<?>> sources = new ArrayList<EntityPath<?>>();
     
     private final QueryMetadata metadata = new DefaultQueryMetadata();
     
@@ -35,8 +34,8 @@ public class BeanListSourceBuilder{
         this.sessionFactory = sessionFactory;
     }
     
-    public BeanListSourceBuilder from(PEntity<?>... from){
-        for (PEntity<?> source : from){
+    public BeanListSourceBuilder from(EntityPath<?>... from){
+        for (EntityPath<?> source : from){
             sources.add(source);    
         }        
         return this;
@@ -54,8 +53,8 @@ public class BeanListSourceBuilder{
         return this;
     }
     
-    public <T> ListSource<T> list(Path<T> projection){ 
-        PEntity<?>[] sourceArray = sources.toArray(new PEntity[sources.size()]);        
+    public <T> BeanListSource<T> list(Path<T> projection){ 
+        EntityPath<?>[] sourceArray = sources.toArray(new EntityPath[sources.size()]);        
         return new BeanListSource<T>(sessionFactory, sourceArray, metadata, projection);
     }
 

@@ -11,7 +11,7 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
@@ -141,7 +141,7 @@ public interface Session extends ObjectRepository, Closeable {
      * @param exprs     Querydsl source expressions.
      * @return
      */
-    BeanQuery from(PEntity<?>... exprs);
+    BeanQuery from(EntityPath<?>... exprs);
     
     /**
      * Prepare a query of the given queryLanguage with the given definition

@@ -7,15 +7,19 @@ package com.mysema.rdfbean.rdb;
 
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import com.mysema.query.sql.ForeignKey;
 import com.mysema.query.sql.PrimaryKey;
+import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.Table;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.custom.CSimple;
+import com.mysema.query.types.path.BeanPath;
 import com.mysema.query.types.path.PBoolean;
 import com.mysema.query.types.path.PDateTime;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PNumber;
 import com.mysema.query.types.path.PString;
 
@@ -23,7 +27,7 @@ import com.mysema.query.types.path.PString;
  * QSymbol is a Querydsl query type for QSymbol
  */
 @Table("SYMBOL")
-public class QSymbol extends PEntity<QSymbol> {
+public class QSymbol extends BeanPath<QSymbol> implements RelationalPath<QSymbol>{
 
     private static final long serialVersionUID = 1776011891;
 
@@ -61,7 +65,7 @@ public class QSymbol extends PEntity<QSymbol> {
         super(QSymbol.class, forVariable(variable));
     }
 
-    public QSymbol(PEntity<? extends QSymbol> entity) {
+    public QSymbol(BeanPath<? extends QSymbol> entity) {
         super(entity.getType(),entity.getMetadata());
     }
 
@@ -73,5 +77,19 @@ public class QSymbol extends PEntity<QSymbol> {
         return CSimple.create(Object[].class, "{0}.*", this);
     }
 
+    @Override
+    public Collection<ForeignKey<?>> getForeignKeys() {
+        return Arrays.<ForeignKey<?>>asList(langKeyFk);
+    }
+
+    @Override
+    public Collection<ForeignKey<?>> getInverseForeignKeys() {
+        return Arrays.<ForeignKey<?>>asList(_subjectKeyFk, _predicateKeyFk, _objectKeyFk, _modelKeyFk);
+    }
+
+    @Override
+    public PrimaryKey<QSymbol> getPrimaryKey() {
+        return primaryKey;
+    }
 }
 

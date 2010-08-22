@@ -8,7 +8,7 @@ package com.mysema.rdfbean.domains;
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathInits;
@@ -64,7 +64,7 @@ public interface NoteTermDomain {
         }                   
     }
 
-    public class QNote extends PEntity<NoteTermDomain.Note> {
+    public class QNote extends EntityPathBase<NoteTermDomain.Note> {
 
         private static final long serialVersionUID = 1879011921;
 
@@ -99,7 +99,7 @@ public interface NoteTermDomain {
 
     }
     
-    public class QTerm extends PEntity<NoteTermDomain.Term> {
+    public class QTerm extends EntityPathBase<NoteTermDomain.Term> {
 
         private static final long serialVersionUID = 1879181003;
 
@@ -113,7 +113,7 @@ public interface NoteTermDomain {
             super(NoteTermDomain.Term.class, forVariable(variable));
         }
 
-        public QTerm(PEntity<? extends NoteTermDomain.Term> entity) {
+        public QTerm(EntityPathBase<? extends NoteTermDomain.Term> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 

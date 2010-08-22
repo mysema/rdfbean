@@ -33,7 +33,6 @@ import com.mysema.query.types.expr.OBoolean;
 import com.mysema.query.types.expr.OSimple;
 import com.mysema.query.types.path.PDate;
 import com.mysema.query.types.path.PDateTime;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PNumber;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PTime;
@@ -110,7 +109,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     }
     
     @Override
-    public BeanQuery from(PEntity<?>... o) {
+    public BeanQuery from(EntityPath<?>... o) {
         queryMixin.from(o);
         return this;
     }
@@ -231,7 +230,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
                 PSimple<?> idPath = new PSimple(idProperty.getType(), target, idProperty.getName());
                 variables.put(idPath, statement);
             }
-            query.from(statement);
+            query.from(statement);            
             query.where(statement.predicate.eq(getId(RDF.type)));
             Long type = getId(mc.getUID());
             Collection<Long> subtypes = context.getOntology().getSubtypes(type);

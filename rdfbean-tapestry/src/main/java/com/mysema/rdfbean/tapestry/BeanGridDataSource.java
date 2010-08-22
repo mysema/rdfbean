@@ -15,10 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.EComparable;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
@@ -60,7 +60,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
      * @param defaultOrder default order for queries, if no order is specified
      * @param caseSensitive case sensitive ordering
      */
-    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive) {
+    public BeanGridDataSource(SessionFactory sessionFactory, EntityPath<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive) {
         this(sessionFactory, entity, defaultOrder, caseSensitive, null);
     }
     
@@ -74,7 +74,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
      * @param conditions filter conditions
      */
     @SuppressWarnings("unchecked")
-    public BeanGridDataSource(SessionFactory sessionFactory, PEntity<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, @Nullable EBoolean conditions) {
+    public BeanGridDataSource(SessionFactory sessionFactory, EntityPath<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, @Nullable EBoolean conditions) {
         this.sessionFactory = Assert.notNull(sessionFactory,"sessionFactory");
         this.entityType = (Class<T>) Assert.notNull(entity.getType(),"entity has no type");
         this.entityPath = new PathBuilder<T>(entity.getType(), entity.getMetadata());

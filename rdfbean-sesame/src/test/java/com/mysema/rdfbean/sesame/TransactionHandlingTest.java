@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.store.StoreException;
 
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PathMetadataFactory;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.object.DefaultConfiguration;
@@ -36,7 +36,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     
     private static final Locale FI = new Locale("fi");
     
-    private PEntity<Restriction> restriction = new PEntity<Restriction>(
+    private EntityPathBase<Restriction> restriction = new EntityPathBase<Restriction>(
             Restriction.class, 
             PathMetadataFactory.forVariable("var"));
     

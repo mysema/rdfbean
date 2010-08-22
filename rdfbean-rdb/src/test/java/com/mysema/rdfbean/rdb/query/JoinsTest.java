@@ -14,7 +14,7 @@ import org.junit.Test;
 import com.mysema.query.alias.Alias;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Company;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Department;
@@ -102,7 +102,7 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
     }
     
     
-    private RDBQuery from(PEntity<?> entity){
+    private RDBQuery from(EntityPath<?> entity){
         return (RDBQuery) session.from(entity);
     }
     

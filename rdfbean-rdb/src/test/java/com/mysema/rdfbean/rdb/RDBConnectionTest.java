@@ -21,9 +21,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
-import com.mysema.query.types.path.PEntity;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
@@ -181,8 +181,8 @@ public class RDBConnectionTest extends AbstractRDBTest{
         return idFactory.getId(node);
     }
 
-    private SQLQuery from(PEntity<?> entity){
-        return new SQLQueryImpl(jdbcConn, templates).from(entity);
+    private SQLQuery from(RelationalPath<?> entity){
+        return new SQLQueryImpl(jdbcConn, templates).from(entity.asExpr());
     }
 
 }

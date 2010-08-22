@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PSet;
 import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathInits;
@@ -99,7 +99,7 @@ public interface UserProfileDomain {
         Admin        
     }
     
-    public class QIdentifiable extends PEntity<UserProfileDomain.Identifiable> {
+    public class QIdentifiable extends EntityPathBase<UserProfileDomain.Identifiable> {
 
         private static final long serialVersionUID = -1841937934;
 
@@ -111,7 +111,7 @@ public interface UserProfileDomain {
             super(UserProfileDomain.Identifiable.class, forVariable(variable));
         }
 
-        public QIdentifiable(PEntity<? extends UserProfileDomain.Identifiable> entity) {
+        public QIdentifiable(EntityPathBase<? extends UserProfileDomain.Identifiable> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
@@ -121,7 +121,7 @@ public interface UserProfileDomain {
 
     }
     
-    public class QProfile extends PEntity<UserProfileDomain.Profile> {
+    public class QProfile extends EntityPathBase<UserProfileDomain.Profile> {
 
         private static final long serialVersionUID = 1043504269;
 
@@ -131,7 +131,7 @@ public interface UserProfileDomain {
             super(UserProfileDomain.Profile.class, forVariable(variable));
         }
 
-        public QProfile(PEntity<? extends UserProfileDomain.Profile> entity) {
+        public QProfile(EntityPathBase<? extends UserProfileDomain.Profile> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
@@ -141,7 +141,7 @@ public interface UserProfileDomain {
 
     }
     
-    public class QUser extends PEntity<UserProfileDomain.User> {
+    public class QUser extends EntityPathBase<UserProfileDomain.User> {
 
         private static final long serialVersionUID = -1810734233;
 

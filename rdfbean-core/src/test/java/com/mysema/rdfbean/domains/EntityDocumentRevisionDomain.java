@@ -8,7 +8,7 @@ package com.mysema.rdfbean.domains;
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.PEntity;
+import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PNumber;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PString;
@@ -83,7 +83,7 @@ public interface EntityDocumentRevisionDomain {
                                 
     }
     
-    public class QDocument extends PEntity<EntityDocumentRevisionDomain.Document> {
+    public class QDocument extends EntityPathBase<EntityDocumentRevisionDomain.Document> {
 
         private static final long serialVersionUID = 539301614;
 
@@ -95,7 +95,7 @@ public interface EntityDocumentRevisionDomain {
             super(EntityDocumentRevisionDomain.Document.class, forVariable(variable));
         }
 
-        public QDocument(PEntity<? extends EntityDocumentRevisionDomain.Document> entity) {
+        public QDocument(EntityPathBase<? extends EntityDocumentRevisionDomain.Document> entity) {
             super(entity.getType(),entity.getMetadata());
         }
 
@@ -105,7 +105,7 @@ public interface EntityDocumentRevisionDomain {
 
     }
     
-    public class QEntity extends PEntity<EntityDocumentRevisionDomain.Entity> {
+    public class QEntity extends EntityPathBase<EntityDocumentRevisionDomain.Entity> {
 
         private static final long serialVersionUID = -1236041098;
 
@@ -136,7 +136,7 @@ public interface EntityDocumentRevisionDomain {
 
     }
 
-    public class QRevision extends PEntity<EntityDocumentRevisionDomain.Revision> {
+    public class QRevision extends EntityPathBase<EntityDocumentRevisionDomain.Revision> {
 
         private static final long serialVersionUID = -583205458;
 
