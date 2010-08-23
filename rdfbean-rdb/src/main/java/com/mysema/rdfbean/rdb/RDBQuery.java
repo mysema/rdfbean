@@ -374,8 +374,13 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             return new EConstructor<T>((Class)expr.getType(), new Class[0], source){
                 @Override
                 public T newInstance(Object... args){
-                    String id = args[0].toString();
-                    return session.get(expr.getType(), context.getID(id, !id.startsWith("_")));
+                    if (args[0] != null){
+                        String id = args[0].toString();
+                        return session.get(expr.getType(), context.getID(id, !id.startsWith("_")));    
+                    }else{
+                        return null;
+                    }
+                    
                 }
             };
         }else{
