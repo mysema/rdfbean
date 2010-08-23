@@ -23,6 +23,12 @@ public interface NoteTypeDomain {
         @Predicate
         public Set<NoteType> types;
 
+        public Note() {}
+        
+        public Note(NoteType type) {
+            this.type = type;
+        }
+        
         public ID getId() {
             return id;
         }
@@ -40,7 +46,9 @@ public interface NoteTypeDomain {
     @ClassMapping(ns=TEST.NS)
     public enum NoteType {
         TYPE1,
-        TYPE2
+        TYPE2,
+        A,
+        B
     }
 
 }
