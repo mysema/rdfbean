@@ -54,59 +54,59 @@ public final class RDFBeanModule {
         return sessionFactory;
     }
 
-    public static void contributeValueEncoderSource(
-            MappedConfiguration<Class<?>, ValueEncoderFactory<?>> configuration,
-            com.mysema.rdfbean.object.Configuration rdfBeanConfiguration,
-            SessionFactory sessionFactory){
-
-        for (MappedClass mappedClass : rdfBeanConfiguration.getMappedClasses()){
-            if (mappedClass.getIdProperty() != null){
-                Class<?> clazz = mappedClass.getJavaClass();
-                configuration.add(clazz, createValueEncoder(mappedClass.getIdProperty(), sessionFactory, clazz));
-            }
-        }
-    }
-
-    private static <T> ValueEncoderFactory<T> createValueEncoder(
-            final MappedProperty<?> idProperty,
-            final SessionFactory sessionFactory,
-            final Class<T> clazz) {
-
-        return new ValueEncoderFactory<T>(){
-            @Override
-            public ValueEncoder<T> create(Class<T> type) {
-                return new ValueEncoder<T>(){
-                    @Override
-                    public String toClient(T value) {
-                        // TODO : handle other id types as well
-                        return idProperty.getValue(new BeanMap(value)).toString();
-                    }
-                    @Override
-                    public T toValue(String id) {
-                        // thread bound session
-                        if (sessionFactory.getCurrentSession() != null){
-                            return sessionFactory.getCurrentSession().getById(id, clazz);
-                        // new session
-                        }else{
-                            Session session = sessionFactory.openSession();
-                            try{
-                                return session.getById(id, clazz);
-                            }finally{
-                                close(session);
-                            }
-                        }
-                    }
-                };
-            }
-        };
-    }
-
-    private static void close(Closeable closeable){
-        try {
-            closeable.close();
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        }
-    }
+//    public static void contributeValueEncoderSource(
+//            MappedConfiguration<Class<?>, ValueEncoderFactory<?>> configuration,
+//            com.mysema.rdfbean.object.Configuration rdfBeanConfiguration,
+//            SessionFactory sessionFactory){
+//
+//        for (MappedClass mappedClass : rdfBeanConfiguration.getMappedClasses()){
+//            if (mappedClass.getIdProperty() != null){
+//                Class<?> clazz = mappedClass.getJavaClass();
+//                configuration.add(clazz, createValueEncoder(mappedClass.getIdProperty(), sessionFactory, clazz));
+//            }
+//        }
+//    }
+//
+//    private static <T> ValueEncoderFactory<T> createValueEncoder(
+//            final MappedProperty<?> idProperty,
+//            final SessionFactory sessionFactory,
+//            final Class<T> clazz) {
+//
+//        return new ValueEncoderFactory<T>(){
+//            @Override
+//            public ValueEncoder<T> create(Class<T> type) {
+//                return new ValueEncoder<T>(){
+//                    @Override
+//                    public String toClient(T value) {
+//                        // TODO : handle other id types as well
+//                        return idProperty.getValue(new BeanMap(value)).toString();
+//                    }
+//                    @Override
+//                    public T toValue(String id) {
+//                        // thread bound session
+//                        if (sessionFactory.getCurrentSession() != null){
+//                            return sessionFactory.getCurrentSession().getById(id, clazz);
+//                        // new session
+//                        }else{
+//                            Session session = sessionFactory.openSession();
+//                            try{
+//                                return session.getById(id, clazz);
+//                            }finally{
+//                                close(session);
+//                            }
+//                        }
+//                    }
+//                };
+//            }
+//        };
+//    }
+//
+//    private static void close(Closeable closeable){
+//        try {
+//            closeable.close();
+//        } catch (IOException e) {
+//            throw new RepositoryException(e);
+//        }
+//    }
 
 }
