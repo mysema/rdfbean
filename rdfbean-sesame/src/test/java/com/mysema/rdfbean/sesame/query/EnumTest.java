@@ -4,6 +4,7 @@ import static com.mysema.query.alias.Alias.$;
 import static com.mysema.query.alias.Alias.alias;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Before;
@@ -29,9 +30,21 @@ public class EnumTest extends SessionTestBase implements NoteTypeDomain{
         note.type = NoteType.TYPE1;
         note.types = Collections.singleton(NoteType.TYPE1);
         session.save(note);
+        
         // note without types
         session.save(new Note());
         session.flush();
+    }
+    
+    @Test
+    public void order(){
+        session.save(new Note(NoteType.A));
+        session.save(new Note(NoteType.B));
+        session.flush();
+        
+        assertEquals(
+            Arrays.asList(null, NoteType.A, NoteType.B, NoteType.TYPE1), 
+            session.from($(n)).orderBy($(n.getType()).asc()).list($(n.getType())));
     }
     
     @Test
