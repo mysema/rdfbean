@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.JoinExpression;
@@ -373,6 +375,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             Expr<?> source = (Expr<T>) transform(query, (Path<?>)expr, true);
             return new EConstructor<T>((Class)expr.getType(), new Class[0], source){
                 @Override
+                @Nullable
                 public T newInstance(Object... args){
                     if (args[0] != null){
                         String id = args[0].toString();
