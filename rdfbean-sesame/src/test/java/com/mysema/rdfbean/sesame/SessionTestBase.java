@@ -8,15 +8,25 @@ package com.mysema.rdfbean.sesame;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 
+import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.SimpleDomain;
+import com.mysema.rdfbean.domains.NoteTypeDomain.NoteType;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.Session;
@@ -45,13 +55,25 @@ public class SessionTestBase implements SimpleDomain{
     private List<Session> openSessions = new ArrayList<Session>();
         
     @BeforeClass
-    public static void before(){
+    public static void before() throws IOException{
         repository = new MemoryRepository();
         repository.setSources(
                 new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),
                 new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
         );
         repository.initialize();
+        
+        // enums
+        Set<STMT> added = new HashSet<STMT>();
+        for (NoteType nt : NoteType.values()){
+            added.add(new STMT(
+                    new UID(TEST.NS, nt.name()), 
+                    CORE.enumOrdinal, 
+                    new LIT(String.valueOf(nt.ordinal()), XSD.integerType)));
+        }
+        RDFConnection connection = repository.openConnection();
+        connection.update(Collections.<STMT>emptySet(), added);
+        connection.close();
     }
     
     @AfterClass

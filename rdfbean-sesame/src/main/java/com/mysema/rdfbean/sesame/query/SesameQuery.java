@@ -104,6 +104,7 @@ public class SesameQuery
         register(new MathTransformer());
         register(new RegexTransformer());
         register(new StringContainsTransformer());
+        register(new OrdinalTransformer());
     }
     
     private Map<Path<?>,Var> allPaths = new HashMap<Path<?>,Var>();

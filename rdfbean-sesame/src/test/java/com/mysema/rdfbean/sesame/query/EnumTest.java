@@ -4,6 +4,7 @@ import static com.mysema.query.alias.Alias.$;
 import static com.mysema.query.alias.Alias.alias;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -45,6 +46,16 @@ public class EnumTest extends SessionTestBase implements NoteTypeDomain{
         assertEquals(
             Arrays.asList(null, NoteType.A, NoteType.B, NoteType.TYPE1), 
             session.from($(n)).orderBy($(n.getType()).asc()).list($(n.getType())));
+    }
+    
+    @Test
+    public void order_by_ordinal() throws IOException{
+        session.save(new Note(NoteType.A));
+        session.save(new Note(NoteType.B));
+        session.flush();
+        assertEquals(
+            Arrays.asList(null, NoteType.TYPE1, NoteType.A, NoteType.B), 
+            session.from($(n)).orderBy($(n.getType()).ordinal().asc()).list($(n.getType())));
     }
     
     @Test
