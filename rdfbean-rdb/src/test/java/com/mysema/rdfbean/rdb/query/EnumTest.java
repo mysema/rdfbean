@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.BooleanBuilder;
@@ -49,9 +48,7 @@ public class EnumTest extends AbstractRDBTest implements NoteTypeDomain{
     }
     
     @Test
-    @Ignore
     public void order_by_ordinal() throws IOException{
-        // FIXME
         session.save(new Note(NoteType.A));
         session.save(new Note(NoteType.B));
         session.flush();

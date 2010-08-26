@@ -296,7 +296,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     private boolean needsSymbolResolving(Operation<?> op) {
         return (!Ops.equalsOps.contains(op.getOperator()) 
                 && !Ops.notEqualsOps.contains(op.getOperator())
-                && op.getOperator() != Ops.IN);
+                && op.getOperator() != Ops.IN
+                && op.getOperator() != Ops.ORDINAL);
     }
 
     private Expr<?>[] populate(SQLCommonQuery<?> query, Expr<?>... projection){
@@ -463,8 +464,6 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         return rv;
     }
     
-//    private QStatement getProperty(SQLCommonQuery<?> query, Path<?> parent, Path<?> target, List<MappedPredicate> predicates) {
-    
     @SuppressWarnings("unchecked")
     private Expr<?> transform(SQLCommonQuery<?> query, Operation<?> operation, boolean realType){
         Operator operator = operation.getOperator();
@@ -474,11 +473,13 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         if (operator == Ops.IN && !rt){
             operator = Ops.EQ_OBJECT;
             args = new Expr[]{args[1],args[0]};
+            
         }else if (operator == Ops.ORDINAL){
-            MappedPredicate predicate = new MappedPredicate(CORE.enumOrdinal, false);
-            PSimple ordinalPath = new PSimple(Integer.class, (Path)args[0], "ordinal");
+            List<MappedPredicate> predicates = Collections.singletonList(new MappedPredicate(CORE.enumOrdinal, false));
+            PSimple ordinalPath = new PSimple(Integer.class, (Path)operation.getArg(0), "ordinal");
             operatorStack.pop();
-            return getProperty(query, (Path)args[0], ordinalPath, Collections.singletonList(predicate));
+            QStatement stmt = getProperty(query, (Path)operation.getArg(0), ordinalPath, predicates);
+            return getSymbol(query, stmt, ordinalPath);
         }
         operatorStack.pop();
         if (operation.getType().equals(Boolean.class)){
@@ -491,12 +492,12 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     private Expr<?> transform(SQLCommonQuery<?> query, Path<?> path, boolean realType){        
         PathType pathType = path.getMetadata().getPathType();
         if (path.getMetadata().getParent() != null){
-            transform(query,path.getMetadata().getParent().asExpr(), false);
+            transform(query, path.getMetadata().getParent().asExpr(), false);
         }        
         if (pathType == PathType.VARIABLE || variables.containsKey(path)){
-            QStatement stmt = getVariable(query,path);
+            QStatement stmt = getVariable(query, path);
             if (realType){
-                return getSymbol(query,stmt, path);
+                return getSymbol(query, stmt, path);
             }else{
                 return stmt.subject;
             }
