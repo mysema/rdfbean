@@ -129,9 +129,9 @@ public class SchemaGen {
                 
                 if (mappedClass.isEnum()) {
                     List<RDFSResource> oneOf = new ArrayList<RDFSResource>();
-                    for (Object enumValue: clazz.getEnumConstants()) {
-                        oneOf.add(new AnyThing(new UID(cuid.ns(), ((Enum) enumValue).name()),
-                                owlClass));
+                    for (Object constant: clazz.getEnumConstants()) {
+                        Enum enumValue = (Enum)constant;
+                        oneOf.add(new AnyThing(new UID(cuid.ns(), enumValue.name()), owlClass, enumValue.ordinal()));
                     }
                     owlClass.setOneOf(oneOf);
                 }

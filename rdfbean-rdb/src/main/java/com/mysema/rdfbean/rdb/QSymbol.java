@@ -9,6 +9,7 @@ import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import com.mysema.query.sql.ForeignKey;
 import com.mysema.query.sql.PrimaryKey;
@@ -90,6 +91,11 @@ public class QSymbol extends BeanPath<QSymbol> implements RelationalPath<QSymbol
     @Override
     public PrimaryKey<QSymbol> getPrimaryKey() {
         return primaryKey;
+    }
+
+    @Override
+    public List<Expr<?>> getColumns() {
+        return Arrays.<Expr<?>>asList(resource, datatype, datetime, floating, id, integer, lang, lexical);
     }
 }
 

@@ -17,6 +17,8 @@ public final class CORE {
     public static final String NS = "http://semantics.mysema.com/core#";
     
     public static final UID localId = new UID(NS, "localId");
+    
+    public static final UID enumOrdinal = new UID(NS, "enumOrdinal");
         
     private CORE() {}
 }

@@ -10,6 +10,7 @@ import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import com.mysema.query.sql.ForeignKey;
 import com.mysema.query.sql.PrimaryKey;
@@ -78,6 +79,11 @@ public class QStatement extends BeanPath<QStatement> implements RelationalPath<Q
     @Override
     public PrimaryKey<QStatement> getPrimaryKey() {
         return primaryKey;
+    }
+
+    @Override
+    public List<Expr<?>> getColumns() {
+        return Arrays.<Expr<?>>asList(model, subject, predicate, object);
     }
 }
 
