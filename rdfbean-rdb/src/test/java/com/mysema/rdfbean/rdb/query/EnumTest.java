@@ -4,10 +4,12 @@ import static com.mysema.query.alias.Alias.$;
 import static com.mysema.query.alias.Alias.alias;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.BooleanBuilder;
@@ -44,6 +46,18 @@ public class EnumTest extends AbstractRDBTest implements NoteTypeDomain{
         assertEquals(
             Arrays.asList(null, NoteType.A, NoteType.B, NoteType.TYPE1), 
             session.from($(n)).orderBy($(n.getType()).asc()).list($(n.getType())));
+    }
+    
+    @Test
+    @Ignore
+    public void order_by_ordinal() throws IOException{
+        // FIXME
+        session.save(new Note(NoteType.A));
+        session.save(new Note(NoteType.B));
+        session.flush();
+        assertEquals(
+            Arrays.asList(null, NoteType.TYPE1, NoteType.A, NoteType.B), 
+            session.from($(n)).orderBy($(n.getType()).ordinal().asc()).list($(n.getType())));
     }
     
     @Test

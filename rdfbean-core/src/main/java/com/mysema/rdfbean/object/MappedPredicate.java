@@ -31,6 +31,14 @@ public final class MappedPredicate {
     @Nullable
     private final String context;
     
+    public MappedPredicate(UID uid, boolean inv) {
+        this.uid = uid;
+        this.inv = inv;
+        this.ignoreInvalid = false;
+        this.includeInferred = false;
+        this.context = null;
+    }
+    
     public MappedPredicate(String parentNs, Predicate predicate, @Nullable String elementName) {
         this.uid = UID.create(parentNs, predicate.ns(), predicate.ln(), elementName);
         this.inv = predicate.inv();

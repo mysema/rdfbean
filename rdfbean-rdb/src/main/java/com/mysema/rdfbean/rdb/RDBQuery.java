@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.rdb;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +48,7 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
+import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.Session;
 
@@ -153,34 +155,38 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
                 
             // other property 
             }else{
-                QStatement statement = new QStatement(target.toString().replace('.', '_'));
-                properties.put(target, statement);
-                BooleanBuilder joinCondition = new BooleanBuilder();
-                PNumber<Long> propSymbol = mp.isInverse(0) ? statement.object : statement.subject;
-                if (mp.isInverse(0)){
-                    inversePaths.add(target);
-                }
-                if (variables.containsKey(parent)){
-                    // property of variable            
-                    joinCondition.and(variables.get(parent).subject.eq(propSymbol));                            
-                }else if (properties.containsKey(parent)){
-                    joinCondition.and(properties.get(parent).object.eq(propSymbol));
-                }else{
-                    throw new IllegalStateException();
-                }
-                
-                // TODO : support longer paths
-                joinCondition.and(statement.predicate.eq(getId(mp.getPredicatePath().get(0).getUID())));
-                if (inOptionalPath()){
-                    query.leftJoin(statement).on(joinCondition);
-                }else{
-                    query.innerJoin(statement).on(joinCondition);    
-                }                            
-                return statement;    
+                return getProperty(query, parent, target, mp.getPredicatePath());    
             }                
         }else{
             return properties.get(target);
         }        
+    }
+
+    private QStatement getProperty(SQLCommonQuery<?> query, Path<?> parent, Path<?> target, List<MappedPredicate> predicates) {
+        QStatement statement = new QStatement(target.toString().replace('.', '_'));
+        properties.put(target, statement);
+        BooleanBuilder joinCondition = new BooleanBuilder();
+        PNumber<Long> propSymbol = predicates.get(0).inv() ? statement.object : statement.subject;
+        if (predicates.get(0).inv()){
+            inversePaths.add(target);
+        }
+        if (variables.containsKey(parent)){
+            // property of variable            
+            joinCondition.and(variables.get(parent).subject.eq(propSymbol));                            
+        }else if (properties.containsKey(parent)){
+            joinCondition.and(properties.get(parent).object.eq(propSymbol));
+        }else{
+            throw new IllegalStateException();
+        }
+        
+        // TODO : support longer paths
+        joinCondition.and(statement.predicate.eq(getId(predicates.get(0).getUID())));
+        if (inOptionalPath()){
+            query.leftJoin(statement).on(joinCondition);
+        }else{
+            query.innerJoin(statement).on(joinCondition);    
+        }                            
+        return statement;
     }
     
     @SuppressWarnings("unchecked")
@@ -457,6 +463,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         return rv;
     }
     
+//    private QStatement getProperty(SQLCommonQuery<?> query, Path<?> parent, Path<?> target, List<MappedPredicate> predicates) {
+    
     @SuppressWarnings("unchecked")
     private Expr<?> transform(SQLCommonQuery<?> query, Operation<?> operation, boolean realType){
         Operator operator = operation.getOperator();
@@ -466,6 +474,11 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         if (operator == Ops.IN && !rt){
             operator = Ops.EQ_OBJECT;
             args = new Expr[]{args[1],args[0]};
+        }else if (operator == Ops.ORDINAL){
+            MappedPredicate predicate = new MappedPredicate(CORE.enumOrdinal, false);
+            PSimple ordinalPath = new PSimple(Integer.class, (Path)args[0], "ordinal");
+            operatorStack.pop();
+            return getProperty(query, (Path)args[0], ordinalPath, Collections.singletonList(predicate));
         }
         operatorStack.pop();
         if (operation.getType().equals(Boolean.class)){
@@ -489,7 +502,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             }
             
         }else if (pathType == PathType.PROPERTY){            
-            QStatement stmt = getProperty(query,path.getMetadata().getParent(), path);
+            QStatement stmt = getProperty(query, path.getMetadata().getParent(), path);
             if (realType){
                 return getSymbol(query,stmt, path);
             }else{
