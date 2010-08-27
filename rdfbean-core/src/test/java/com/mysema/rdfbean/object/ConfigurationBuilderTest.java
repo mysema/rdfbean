@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
@@ -89,6 +90,20 @@ public class ConfigurationBuilderTest {
         MappedClass person = configuration.getMappedClass(Person.class);
         MappedPath person_labeled = person.getMappedPath("labeled");
         assertTrue(person_labeled.getMappedProperty().isMixin());
+    }
+    
+    @Test
+    public void without_namespace(){
+        ConfigurationBuilder builder = new ConfigurationBuilder();
+        for (Class<?> cl : Arrays.<Class<?>>asList(Person.class, Department.class, Company.class, Labeled.class)){
+            builder.addClass(cl).addProperties();    
+        }        
+        Configuration configuration = builder.build();
+        
+        MappedClass person = configuration.getMappedClass(Person.class);
+        String ns = "java:com.mysema.rdfbean.object.ConfigurationBuilderTest.Person#";
+        assertEquals(new UID(ns,"Person"), person.getUID());
+        assertEquals(new UID(ns,"labeled"), person.getMappedPath("labeled").getPredicatePath().get(0).getUID());
     }
     
     @Test

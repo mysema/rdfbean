@@ -39,6 +39,10 @@ public class ConfigurationBuilder {
         return new SimpleConfiguration(converterRegistry, fetchStrategies, mappedClasses);
     }
 
+    public MappedClassBuilder addClass(Class<?> clazz) {
+        return addClass("java:"+clazz.getName().replace('$', '.')+"#", clazz);
+    }
+        
     public MappedClassBuilder addClass(String ns, Class<?> clazz) {
         return addClass(new UID(ns, clazz.getSimpleName()), clazz);
     }
@@ -48,6 +52,8 @@ public class ConfigurationBuilder {
         mappedClasses.add(mappedClass);
         return new MappedClassBuilder(mappedClass);
     }
+    
+    
 
     public ConfigurationBuilder addFetchStrategy(FetchStrategy fetchStrategy){
         fetchStrategies.add(fetchStrategy);
