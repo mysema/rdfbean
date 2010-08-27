@@ -20,7 +20,7 @@ import com.mysema.query.types.Expr;
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
-import com.mysema.query.types.SubQuery;
+import com.mysema.query.types.SubQueryExpression;
 
 /**
  * CompareTransformer provides
@@ -57,9 +57,9 @@ public class CompareTransformer implements OperationTransformer{
         Expr<?> arg2 = operation.getArg(1);
         CompareOp op = ops.get(operation.getOperator());
         
-        if (arg2 instanceof SubQuery){
+        if (arg2 instanceof SubQueryExpression){
             ValueExpr lhs = context.toValue(arg1);
-            TupleExpr rhs = context.toTuples((SubQuery) arg2);
+            TupleExpr rhs = context.toTuples((SubQueryExpression) arg2);
             return new CompareAll(lhs, rhs, op);
             
         }else if (arg1 instanceof Operation

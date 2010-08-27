@@ -19,7 +19,7 @@ import org.openrdf.query.algebra.StatementPattern.Scope;
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.Expr;
 import com.mysema.query.types.Path;
-import com.mysema.query.types.SubQuery;
+import com.mysema.query.types.SubQueryExpression;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.MappedPath;
@@ -105,7 +105,7 @@ public interface TransformerContext {
      * @param arg0
      * @return
      */
-    TupleExpr toTuples(SubQuery<?> arg0);
+    TupleExpr toTuples(SubQueryExpression<?> arg0);
 
     /**
      * Transform the given Expr to a ValueExpr

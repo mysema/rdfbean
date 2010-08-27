@@ -466,7 +466,7 @@ public class SesameQuery
                 pattern.getContextVar());
     }
         
-    public TupleExpr toTuples(SubQuery<?> subQuery){
+    public TupleExpr toTuples(SubQueryExpression<?> subQuery){
         EBoolean where = subQuery.getMetadata().getWhere();
         
         Map<Path<?>,Var> normalPathToVar = pathToVar;        

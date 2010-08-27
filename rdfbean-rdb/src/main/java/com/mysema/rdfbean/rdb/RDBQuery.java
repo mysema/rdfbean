@@ -446,8 +446,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             return transform(query, (Constant<?>)expr, realType);
         }else if (expr instanceof Custom<?>){
             return transform(query, (Custom<?>)expr);                 
-        }else if (expr instanceof SubQuery){    
-            return transform(query, (SubQuery<?>)expr, realType);
+        }else if (expr instanceof SubQueryExpression){    
+            return transform(query, (SubQueryExpression<?>)expr, realType);
         }else if (expr instanceof BooleanBuilder){
             BooleanBuilder bb = (BooleanBuilder)expr;
             return transform(query, bb.getValue(), realType);
@@ -517,8 +517,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         }
     }
 
-    private Expr<?> transform(SQLCommonQuery<?> query, SubQuery<?> expr, boolean realType) {
-        SubQuery<?> q = (SubQuery<?>)expr;
+    private Expr<?> transform(SQLCommonQuery<?> query, SubQueryExpression<?> expr, boolean realType) {
+        SubQueryExpression<?> q = (SubQueryExpression<?>)expr;
         List<? extends Expr<?>> p = q.getMetadata().getProjection();
         SQLSubQuery sq = new SQLSubQuery();
         Expr<?>[] projection = populate(sq, q.getMetadata(), p.toArray(new Expr[p .size()]));

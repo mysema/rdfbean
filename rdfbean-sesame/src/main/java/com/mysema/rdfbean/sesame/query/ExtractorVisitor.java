@@ -7,7 +7,7 @@ import com.mysema.query.types.FactoryExpression;
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.Param;
 import com.mysema.query.types.Path;
-import com.mysema.query.types.SubQuery;
+import com.mysema.query.types.SubQueryExpression;
 import com.mysema.query.types.Visitor;
 
 /**
@@ -46,7 +46,7 @@ public class ExtractorVisitor implements Visitor{
     }
 
     @Override
-    public void visit(SubQuery<?> e) {
+    public void visit(SubQueryExpression<?> e) {
         expr = e.asExpr();
     }
 

@@ -30,7 +30,7 @@ import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathType;
-import com.mysema.query.types.SubQuery;
+import com.mysema.query.types.SubQueryExpression;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.object.MappedPath;
 
@@ -75,9 +75,9 @@ public class EqualsTransformer implements OperationTransformer{
             }else if (arg2 instanceof Constant){
                 return pathEqNeConstant(operation.getOperator(), (Path<?>) arg1, arg2, context);
             
-            }else if (arg2 instanceof SubQuery){
+            }else if (arg2 instanceof SubQueryExpression){
                 ValueExpr lhs = context.toValue(arg1);
-                TupleExpr rhs = context.toTuples((SubQuery) arg2);
+                TupleExpr rhs = context.toTuples((SubQueryExpression) arg2);
                 return new CompareAll(lhs, rhs, ops.get(operation.getOperator()));            
             }     
             
