@@ -47,7 +47,7 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
         DateTime dateTime = new DateTime();   
         dateTime = dateTime.minus(dateTime.getMillisOfSecond());
         for (Long rev : Arrays.asList(5l, 10l, 15l, 20l, 25l, 30l)){
-            Entity entity = new Entity(rev, "text", dateTime.plusMinutes(rev.intValue()));
+            Entity entity = new Entity(rev, "text" + rev, dateTime.plusMinutes(rev.intValue()));
             dateTimes.add(entity.getCreated());
             session.save(entity);
         }
@@ -76,6 +76,18 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
             .uniqueResult($(var1));
         assertNotNull(result);
         assertEquals(dateTimes.get(dateTimes.size()-1), result.getCreated());
+    }
+    
+    @Test
+    public void pathVisibility(){
+        int count = session.from($(var1))
+            .where(
+                sub($(var2))
+                .where(
+                       $(var1.getText()).ne($(var2.getText())))
+                .exists())
+            .list($(var1.getText())).size();
+        assertEquals(6, count);
     }
     
     private BeanSubQuery sub(EntityPath<?> entity){

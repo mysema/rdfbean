@@ -469,6 +469,10 @@ public class SesameQuery
     public TupleExpr toTuples(SubQuery<?> subQuery){
         EBoolean where = subQuery.getMetadata().getWhere();
         
+        Map<Path<?>,Var> normalPathToVar = pathToVar;        
+        pathToVar = new HashMap<Path<?>,Var>(pathToVar);
+        Map<Path<?>,Var> normalPathToKnownVar = pathToKnownVar;
+        pathToKnownVar = new HashMap<Path<?>,Var>(pathToKnownVar);
         JoinBuilder normalJoins = joinBuilder;
         joinBuilder = createJoinBuilder();
         for (JoinExpression join : subQuery.getMetadata().getJoins()){            
@@ -494,6 +498,8 @@ public class SesameQuery
                 subQuery.getMetadata().getModifiers()); // paging
                 
         joinBuilder = normalJoins;
+        pathToVar = normalPathToVar;
+        pathToKnownVar = normalPathToKnownVar;
         return tupleExpr;
     }
     
