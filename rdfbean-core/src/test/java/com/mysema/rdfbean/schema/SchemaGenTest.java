@@ -5,9 +5,10 @@
  */
 package com.mysema.rdfbean.schema;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -21,6 +22,10 @@ import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionUtil;
+import com.mysema.rdfbean.owl.OWLClass;
+import com.mysema.rdfbean.rdfs.RDFSClass;
 
 
 public class SchemaGenTest {
@@ -56,9 +61,34 @@ public class SchemaGenTest {
         MALE, FEMALE
     }
     
+    @ClassMapping(ns=TEST.NS)
+    public static class Various {
+        
+        @Predicate
+        String strProp;
+        
+        @Predicate
+        int intProp;
+        
+        @Predicate
+        List<String> stringList;
+        
+        @Predicate
+        List<Various> variousList;
+        
+        @Predicate
+        Set<String> stringSet;
+        
+        @Predicate
+        Set<Various> variousSet;
+        
+        @Predicate
+        Various various;
+    }
+    
     @Test
     public void test() throws IOException{
-	Configuration configuration = new DefaultConfiguration(User.class, Project.class, Gender.class);
+	Configuration configuration = new DefaultConfiguration(User.class, Project.class, Gender.class, Various.class);
 	MiniRepository repository = new MiniRepository();
 	
 	SchemaGen schemaGen = new SchemaGen();
@@ -75,6 +105,9 @@ public class SchemaGenTest {
 	}finally{
 	    stmts.close();
 	}
+	
+	Session session = SessionUtil.openSession(repository, OWLClass.class.getPackage(), RDFSClass.class.getPackage());
+	session.findInstances(RDFSClass.class);
 	
     }
 
