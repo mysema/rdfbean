@@ -96,7 +96,7 @@ public class User {
     <para>A good practice is to use <emphasis>MappedClasses</emphasis> in the domain package package-info.java to 
     declare the annotated types in the package.</para>
     
-    <para>This way you can use <emphasis>DefaultConfiguration.addPackages</emphasis> to configure the annoteated
+    <para>This way you can use <emphasis>DefaultConfiguration.addPackages</emphasis> to configure the annotated
      types. </para>
     
 <programlisting language="java"><![CDATA[      
@@ -152,7 +152,7 @@ import com.mysema.rdfbean.annotations.MappedClasses;
     
       <title>Path</title>
     
-      <para><emphasis>Path</emphasis> defines a chain of predicates for readonly properties. The value accessible
+      <para><emphasis>Path</emphasis> defines a chain of predicates for read-only properties. The value accessible
       by the predicate path is bound to the property. Path can contain both direct and inverse predicates. </para>
     
     </sect2>
