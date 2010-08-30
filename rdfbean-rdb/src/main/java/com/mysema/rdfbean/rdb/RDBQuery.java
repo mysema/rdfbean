@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.rdb;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import com.mysema.query.types.custom.CBoolean;
 import com.mysema.query.types.custom.CSimple;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.ENumberConst;
+import com.mysema.query.types.expr.ExprConst;
 import com.mysema.query.types.expr.OBoolean;
 import com.mysema.query.types.expr.OSimple;
 import com.mysema.query.types.path.PDate;
@@ -413,6 +415,16 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             if (isEntityType(constant.getConstant().getClass())){
                 ID id = session.getId(constant.getConstant());
                 return ENumberConst.create(getId(id));
+            }else if (Collection.class.isAssignableFrom(constant.getConstant().getClass())){    
+                List<Object> ids = new ArrayList<Object>();
+                for (Object o : (Collection<?>)constant.getConstant()){
+                    if (isEntityType(o.getClass())){
+                        ids.add(getId(session.getId(o)));
+                    }else{
+                        ids.add(context.getId(o));    
+                    }                    
+                }
+                return ExprConst.create(ids);
             }else{
                 return ENumberConst.create(context.getId(constant.getConstant()));    
             }                        
@@ -470,7 +482,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         boolean rt = needsSymbolResolving(operation);
         operatorStack.push(operator);        
         Expr<?>[] args = transform(query, operation.getArgs(), rt);
-        if (operator == Ops.IN && !rt){
+        if (operator == Ops.IN && !rt && operation.getArg(1) instanceof Path){
             operator = Ops.EQ_OBJECT;
             args = new Expr[]{args[1],args[0]};
             

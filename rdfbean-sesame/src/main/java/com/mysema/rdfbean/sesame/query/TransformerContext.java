@@ -22,6 +22,7 @@ import com.mysema.query.types.Path;
 import com.mysema.query.types.SubQueryExpression;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 
 /**
@@ -41,11 +42,17 @@ public interface TransformerContext {
      * Get the Locale
      */
     Locale getLocale();
+    
+    /**
+     * @param javaClass
+     * @return
+     */
+    MappedClass getMappedClass(Class<?> javaClass);
 
     /**
      * Get the mapped path for the given path
      */
-    MappedPath getMappedPath(Path<?> parent);
+    MappedPath getMappedPath(Path<?> path);
 
     /**
      * Get the pattern scope
@@ -55,7 +62,7 @@ public interface TransformerContext {
     /**
      * Get the resource for the given expression
      */
-    ID getResourceForLID(Constant<String> arg);
+    ID getResourceForLID(String arg);
 
     /**
      * Get the ValueFactory

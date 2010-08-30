@@ -385,8 +385,15 @@ public class SesameQuery
         return session.getCurrentLocale();
     }
     
+
+    @Override
+    public MappedClass getMappedClass(Class<?> javaClass) {
+        return conf.getMappedClass(javaClass);
+    }
+    
     @Override
     public MappedPath getMappedPath(Path<?> path) {
+        Assert.notNull(path, "path");
         return this.getMappedPathForPropertyPath(path);
     }
     
@@ -395,8 +402,8 @@ public class SesameQuery
         return patternScope;
     }
         
-    public ID getResourceForLID(Constant<String> arg) {
-        return session.getId(new LID(arg.getConstant()));
+    public ID getResourceForLID(String arg) {
+        return session.getId(new LID(arg));
     }
 
     @Override
@@ -744,5 +751,7 @@ public class SesameQuery
             return pattern;
         }        
     }
+
+
 
 }

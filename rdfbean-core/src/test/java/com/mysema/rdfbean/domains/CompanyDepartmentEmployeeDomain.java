@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.domains;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +26,7 @@ public interface CompanyDepartmentEmployeeDomain {
         public ID id;
         
         @Predicate(ln="company", inv=true)
-        public List<Department> departments;
+        public List<Department> departments = new ArrayList<Department>();
 
         @Predicate(ln="company", inv=true)
         public Department department;
@@ -53,7 +55,7 @@ public interface CompanyDepartmentEmployeeDomain {
         public Company company;
         
         @Predicate(ln="department", inv=true)
-        public Set<Employee> employees;
+        public Set<Employee> employees = new HashSet<Employee>();
 
         public ID getId() {
             return id;

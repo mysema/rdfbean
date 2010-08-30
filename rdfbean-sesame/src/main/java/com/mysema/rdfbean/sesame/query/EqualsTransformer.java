@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections15.BeanMap;
 import org.openrdf.model.Value;
 import org.openrdf.query.algebra.And;
 import org.openrdf.query.algebra.Compare;
@@ -32,6 +33,7 @@ import com.mysema.query.types.Path;
 import com.mysema.query.types.PathType;
 import com.mysema.query.types.SubQueryExpression;
 import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 
 /**
@@ -112,13 +114,15 @@ public class EqualsTransformer implements OperationTransformer{
         
         MappedPath mappedPath;
         PathType pathType = path.getMetadata().getPathType();
-        if (pathType.equals(PathType.PROPERTY)) {
+        if (pathType.equals(PathType.VARIABLE)){
+            mappedPath = null;
+        }else if (pathType.equals(PathType.PROPERTY)) {
             mappedPath = context.getMappedPath(path);   
         }else{
             mappedPath = context.getMappedPath(path.getMetadata().getParent());
         }
         Locale locale = null;
-        if (!mappedPath.getPredicatePath().isEmpty()){
+        if (mappedPath != null && !mappedPath.getPredicatePath().isEmpty()){
             if (mappedPath.getMappedProperty().isLocalized()){
                 String value = constant.toString();
                 if (pathType.equals(PathType.PROPERTY)){
@@ -140,8 +144,16 @@ public class EqualsTransformer implements OperationTransformer{
             ID id;
             if (ID.class.isAssignableFrom(constant.getType())){
                 id = (ID) ((Constant)constant).getConstant();
+            }else if (constant.getType().equals(String.class)){
+                id = context.getResourceForLID(((Constant<String>)constant).getConstant());
             }else{
-                id = context.getResourceForLID((Constant<String>)constant);
+                MappedClass mappedClass = context.getMappedClass(constant.getType());
+                BeanMap beanMap = new BeanMap(((Constant)constant).getConstant());
+                if (ID.class.isAssignableFrom(mappedClass.getIdProperty().getType())){
+                    id = (ID) mappedClass.getIdProperty().getValue(beanMap);
+                }else{
+                    id = context.getResourceForLID((String)mappedClass.getIdProperty().getValue(beanMap));
+                }
             }
             constValue = context.toValue(id);
         }

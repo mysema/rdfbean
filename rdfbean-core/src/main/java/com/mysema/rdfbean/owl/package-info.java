@@ -16,8 +16,7 @@
     Ontology.class,
     OWLClass.class, 
     Restriction.class, 
-    Thing.class,
-    TypedList.class})
+    Thing.class})
 package com.mysema.rdfbean.owl;
 
 import com.mysema.rdfbean.annotations.MappedClasses;

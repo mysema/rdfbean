@@ -19,6 +19,7 @@ import com.mysema.query.Query;
 import com.mysema.query.types.Expr;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.owl.OWL;
+import com.mysema.rdfbean.owl.TypedList;
 
 /**
  * ConfigurationTest provides
@@ -42,6 +43,7 @@ public class ConfigurationTest {
     public void scanPackages() throws IOException, ClassNotFoundException{
         DefaultConfiguration conf1 = new DefaultConfiguration();
         conf1.addPackages(OWL.class.getPackage());
+        conf1.addClasses(TypedList.class);
         
         DefaultConfiguration conf2 = new DefaultConfiguration();
         conf2.scanPackages(OWL.class.getPackage());
