@@ -1,5 +1,0 @@
-TODO : support for list and map
-
-TODO : support for deep predicate paths
-
-TODO : long text support
