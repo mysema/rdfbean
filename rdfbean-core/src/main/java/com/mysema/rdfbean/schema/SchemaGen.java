@@ -118,7 +118,7 @@ public class SchemaGen {
                 }
     
                 // super class
-                if (!clazz.getSuperclass().equals(Object.class)){
+                if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class)){
                     addParent(clazz.getSuperclass(), owlClass, session, resources);    
                 }
                 
