@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
@@ -22,6 +23,7 @@ import com.mysema.rdfbean.rdfs.RDFSResource;
  * @author sasa
  * 
  */
+@ClassMapping(ns = OWL.NS, ln = "Class")
 public class TypedList extends OWLClass {
 
     private static final RDFSClass<RDFSResource> List = new RDFSClass<RDFSResource>(RDF.List);
