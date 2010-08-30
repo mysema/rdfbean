@@ -7,7 +7,7 @@
     
       <title>Basic wiring</title>
     
-      <para>TODO</para>
+      <para>The following Spring XML configuration demonstrates a basic configuration for RDFBean persistence in Spring.</para>
     
 <programlisting language="xml">
 <![CDATA[    
@@ -30,7 +30,7 @@
     </property>
   </bean>  
   
-  <bean id="sesameRepository" class="com.mysema.rdfbean.sesame.MemoryRepository">
+  <bean id="repository" class="com.mysema.rdfbean.sesame.MemoryRepository">
     <property name="sources">
         <list>
             <bean class="com.mysema.rdfbean.model.io.RDFSource">
@@ -48,10 +48,6 @@
      <property name="sesameInference" value="true"/>
   </bean>
  
-  <bean id="identityService" class="com.mysema.rdfbean.object.identity.DerbyIdentityService">
-      <constructor-arg value="${identityService.derby.databaseName}"/>
-  </bean>
- 
   <bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">
       <constructor-arg value="true"/>
       <constructor-arg>
@@ -60,13 +56,12 @@
           </list>
       </constructor-arg>
       <property name="defaultContext" value="http://demo.mysema.com/rdfbean-demo"/>
-    <property name="identityService" ref="identityService"/>
   </bean>
   
   <bean id="sessionFactory" class="com.mysema.rdfbean.spring.ContextAwareSessionFactory"
         init-method="initialize" destroy-method="close">
     <property name="configuration" ref="configuration"/>
-    <property name="repository" ref="sesameRepository"/>
+    <property name="repository" ref="repository"/>
   </bean>
   
   <bean id="transactionManager" class="com.mysema.rdfbean.spring.RDFBeanTransactionManager">
@@ -85,16 +80,27 @@
     
       <title>Transactional services</title>
     
-      <para>TODO</para>
+      <para>To create transactional services you can annotate your services with Spring's transactional annotations.</para>
+	  
+	  <para>Here is a minimal example :</para>
+	  
+<programlisting language="java">
+<![CDATA[    
+public interface UserService {
+    
+    @Transactional(readOnly = true)
+    User getUser(long id);
+    
+    @Transactional
+    void saveUser(User user);
+	
+}	  
+]]>
+</programlisting>    
+
+	<para>For details on how to enable Spring AOP with transactions refer to the Spring Reference Documentation.</para>
     
     </sect2>
     
-    <sect2>
-    
-      <title>Integrating Spring dependency injection into RDFBean</title>
-    
-      <para>TODO</para>
-    
-    </sect2>    
     
 </sect1>    
