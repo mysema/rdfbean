@@ -208,7 +208,152 @@ public class User {
     
       <title>Basic RDF persistence</title>
       
-      <para>TODO</para>
+      <para>The API for RDF persistence via JavaBean objects is the com.mysema.rdfbean.object.Session interface.</para>
+      
+      <para>To obtain a Session you need a Repository instance which acts as an abstraction layer for the actual RDF data persistence
+      and a SessionFactory instance to create Session instances. See the integration guides on how to get started with RDFBean for Sesame or
+      own of the included persistence providers.</para>
+      
+	  <sect2>
+	  	
+		<title>Minimal example</title>
+	  
+      <para>Here is a minimal setup for testing : </para>
+      
+      <programlisting language="java"><![CDATA[      
+Repository repository = new MiniRepository();
+Configuration configuration = new DefaultConfiguration(User.class, Department.class, Company.class);
+SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
+sessionFactory.setConfiguration(configuration);
+sessionFactory.setRepository(repository);
+sessionFactory.initialize();
+]]></programlisting>      
+
+    <para>The given Java classes could be for example the following :</para>
+    
+<programlisting language="java"><![CDATA[          
+    @ClassMapping(ns=TEST.NS)
+    public static class User {
+        
+        @Id
+        private String id;
+     
+        @Predicate
+        private Department department;
+        
+        @Predicate
+        private String userName;
+
+        public String getId() {
+            return id;
+        }
+
+        public Department getDepartment() {
+            return department;
+        }
+
+        public String getUserName() {
+            return userName;
+        }
+        
+        public void setDepartment(Department department){
+            this.department = department;
+        }
+        
+        public void setUserName(String userName){
+            this.userName = userName;
+        }
+
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    public static class Department {
+        
+        @Id
+        private String id;
+        
+        @Predicate
+        private Company company;
+
+        public String getId() {
+            return id;
+        }
+
+        public Company getCompany() {
+            return company;
+        }
+        
+        public void setCompany(Company company){
+            this.company = company;
+        }
+        
+    }
+    
+    @ClassMapping(ns=TEST.NS)
+    public static class Company {
+        
+        @Id
+        private String id;
+        
+        @Predicate
+        private String companyName;
+
+        public String getId() {
+            return id;
+        }
+        
+        public String getCompanyName(){
+            return companyName;
+        }
+        
+        public void setCompanyName(String name){
+            this.companyName = name;
+        }
+        
+    }    
+]]></programlisting>          
+
+    <para>Now you can obtain a Session instance from the SessionFactory like this :</para>
+    
+    <programlisting language="java"><![CDATA[
+Session session = sessionFactory.openSession();    
+]]></programlisting>
+
+    <para>And the basic CRUD operations available are these :</para>
+    
+    <programlisting language="java"><![CDATA[
+// create
+User user = new User();
+user.setUserName("johnsmith");
+session.save(user);
+assertNotNull(user.getId());
+
+// update
+Department department = new Department();
+user.setDepartment(department);
+session.save(user);
+assertNotNull(department.getId());
+session.flush();
+session.clear();
+
+// retrieve
+User other = session.getById(user.getId(), User.class);
+assertEquals(user.getId(), other.getId());
+
+// delete
+session.delete(user);
+    
+]]></programlisting>
+
+      </sect2>
+	  
+	  <sect2>
+	  	
+		<title>RDF I/O</title>
+		
+		<para>TODO</para>
+	  	
+	  </sect2>
     
     </sect1>
     

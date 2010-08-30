@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
-        <!ENTITY versionNumber "1.3.2">
+        <!ENTITY versionNumber "1.3.5">
         <!ENTITY copyrightYear "2009-2010">
         <!ENTITY copyrightHolder "Mysema Ltd.">
 ]>
@@ -53,8 +53,8 @@
     
       <!-- Sesame integration -->
       <xi:include href="content/persistence/sesame-integration.xml" />
-      <xi:include href="content/persistence/mulgara-integration.xml" />
-      <xi:include href="content/persistence/lucene-integration.xml" />
+	  
+	  <xi:include href="content/persistence/rdb-integration.xml" />
     
     </chapter>
     
