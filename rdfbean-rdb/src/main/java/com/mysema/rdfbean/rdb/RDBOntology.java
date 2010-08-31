@@ -34,8 +34,10 @@ public class RDBOntology extends AbstractOntology<Long>{
             Long id = getId(mappedClass.getUID());
             types.add(id);
             for (MappedClass superClass : mappedClass.getMappedSuperClasses()){
-                directSupertypes.put(id, getId(superClass.getUID()));
-                directSubtypes.put(getId(superClass.getUID()), id);
+                if (superClass.getUID() != null){
+                    directSupertypes.put(id, getId(superClass.getUID()));
+                    directSubtypes.put(getId(superClass.getUID()), id);    
+                }                
             }
         }        
         initializeTypeHierarchy(types, directSubtypes, directSupertypes);               
