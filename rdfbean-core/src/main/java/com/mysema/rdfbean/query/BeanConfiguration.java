@@ -30,7 +30,7 @@ import com.mysema.rdfbean.annotations.Predicate;
 public class BeanConfiguration extends DefaultConfiguration {
     
     public BeanConfiguration(RoundEnvironment roundEnv,Map<String, String> options) {
-        super(roundEnv, options, ClassMapping.class, null, null, QueryTransient.class);
+        super(roundEnv, options, null, ClassMapping.class, null, null, QueryTransient.class);
     }
     
     @Override
