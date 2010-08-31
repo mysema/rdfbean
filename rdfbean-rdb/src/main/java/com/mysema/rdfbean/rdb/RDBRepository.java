@@ -181,6 +181,8 @@ public class RDBRepository implements Repository{
             .foreignKey("fk_subject", "subject").references("symbol", "id")
             .foreignKey("fk_predicate", "predicate").references("symbol", "id")
             .foreignKey("fk_object", "object").references("symbol", "id")
+            .index("spo", "subject","predicate","object")
+            .index("ops", "object","predicate","subject")
             .execute();
         }finally{
             conn.close();
