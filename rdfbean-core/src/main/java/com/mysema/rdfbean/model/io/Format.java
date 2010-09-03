@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.model.io;
 
-import java.io.OutputStream;
 
 /**
  * Format provides
@@ -17,46 +16,36 @@ public enum Format {
     /**
      * 
      */
-    N3("application/n3", TurtleWriter.class),
+    N3("application/n3"),
     /**
      * 
      */
-    NTRIPLES("text/plain", NTriplesWriter.class),
+    NTRIPLES("text/plain"),
     /**
      * 
      */
-    RDFA("application/xhtml+xml", RDFAWriter.class),
+    RDFA("application/xhtml+xml"),
     /**
      * 
      */
-    RDFXML("application/rdf+xml", RDFXMLWriter.class),
+    RDFXML("application/rdf+xml"),
     /**
      * 
      */
-    TRIG("application/x-trig", TrigWriter.class),
+    TRIG("application/x-trig"),
     /**
      * 
      */
-    TURTLE("text/turtle", TurtleWriter.class); // application/x-turtle
+    TURTLE("text/turtle"); // application/x-turtle
     
     private final String mimetype;
     
-    private final Class<? extends RDFWriter> writerClass;
-    
-    private Format(String mime, Class<? extends RDFWriter> writerClass){
+    private Format(String mime){
         this.mimetype = mime;
-        this.writerClass = writerClass;
     }
     
     public String getMimetype(){
         return mimetype;
     }
 
-    public RDFWriter createWriter(OutputStream out) {
-        try {
-            return writerClass.getConstructor(OutputStream.class).newInstance(out);
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
 }

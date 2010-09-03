@@ -18,7 +18,6 @@ import org.apache.commons.collections15.iterators.IteratorChain;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.io.Format;
-import com.mysema.rdfbean.model.io.RDFWriter;
 
 /**
  * MiniRepository is a lightweight implementation of the Repository interface
@@ -89,23 +88,7 @@ public final class MiniRepository implements Repository{
     
     @Override
     public void export(Format format, OutputStream out) {        
-        try {                        
-            RDFWriter writer = format.createWriter(out);
-            CloseableIterator<STMT> iterator = findStatements(null, null, null, null, false);
-            try{
-                writer.start();
-                while (iterator.hasNext()){
-                    writer.handle(iterator.next());
-                }
-                writer.end();
-            }finally{
-                iterator.close();                
-                writer.close();
-            }
-
-        } catch (IOException e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }   
+        throw new UnsupportedOperationException();
     }
     
     public CloseableIterator<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context, boolean includeInferred) {

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.io.Format;
@@ -16,6 +17,7 @@ public class MiniRepositoryTest {
     private MiniRepository repository = new MiniRepository();
     
     @Test
+    @Ignore
     public void export() throws UnsupportedEncodingException{
         List<STMT> stmts = new ArrayList<STMT>();
         stmts.add(new STMT(RDF.type, RDF.type, RDF.Property));
