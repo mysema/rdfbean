@@ -381,6 +381,12 @@ public class RDBConnection implements RDFConnection{
         delete.execute();
     }
 
+    public void deleteFromContext(UID model) {
+        SQLDeleteClause delete = context.createDelete(statement);
+        delete.where(statement.model.eq(getId(model)));
+        delete.execute();
+    }
+    
     @Override
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
         // remove
@@ -423,6 +429,7 @@ public class RDBConnection implements RDFConnection{
         }
         
     }
+
 
 
 }

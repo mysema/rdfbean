@@ -183,21 +183,22 @@ public class RDBRepository implements Repository{
                 try{
                     ValueFactory valueFactory = new ValueFactoryImpl();
                     final SesameDialect dialect = new SesameDialect(valueFactory);
-                    for (RDFSource source : sources){
+                    for (RDFSource source : sources){                        
                         final Set<STMT> stmts = new HashSet<STMT>();
                         RDFFormat format = getRioFormat(source.getFormat());
                         RDFParser parser = Rio.createParser(format);
+                        final UID context = new UID(source.getContext());
                         parser.setRDFHandler(new RDFHandlerBase(){
                             @Override
                             public void handleStatement(Statement stmt) throws RDFHandlerException {
                                 ID sub = dialect.getID(stmt.getSubject());
                                 UID pre = dialect.getUID(stmt.getPredicate());
                                 NODE obj = dialect.getNODE(stmt.getObject());
-                                UID context  = stmt.getContext() != null ? (UID)dialect.getID(stmt.getContext()) : null;
                                 stmts.add(new STMT(sub, pre, obj, context));                                                              
                             }                            
                         });
                         parser.parse(source.openStream(), source.getContext());
+                        connection.deleteFromContext(context);
                         connection.update(Collections.<STMT>emptySet(), stmts);
                     }
                 } catch (RDFParseException e) {
