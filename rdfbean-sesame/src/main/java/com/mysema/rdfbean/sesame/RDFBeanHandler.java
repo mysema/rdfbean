@@ -26,7 +26,7 @@ public class RDFBeanHandler extends RDFHandlerWrapper {
     @Override
     public void handleStatement(Statement st) throws RDFHandlerException {
         URI predicate = st.getPredicate();
-        if (!CORE.NS.equals(predicate.getNamespace())) {
+        if (!CORE.NS.equals(predicate.getNamespace()) || !predicate.getLocalName().equals("localId")){
             super.handleStatement(st);
         }
     }
