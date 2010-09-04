@@ -6,10 +6,10 @@
 package com.mysema.rdfbean.rdb.query;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.commons.lang.Pair;
@@ -31,7 +31,6 @@ import com.mysema.rdfbean.testutil.SessionConfig;
  * @author tiwe
  * @version $Id$
  */
-@Ignore
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDomain {
     
@@ -41,7 +40,7 @@ public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDoma
     
     private SimpleType2 other;
     
-    private QueryExecution standardTest = new QueryExecution(Module.RDFBEAN, Target.MEM){        
+    private QueryExecution standardTest = new QueryExecution(Module.SQL, Target.H2){        
         @Override
         protected Pair<Projectable, List<Expr<?>>> createQuery() {
             return Pair.of((Projectable)session.from(v1, v2), Collections.<Expr<?>>emptyList());
@@ -55,13 +54,22 @@ public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDoma
     @Test
     public void test() throws InterruptedException{
         SimpleType simpleType = new SimpleType();
-        simpleType.dateProperty = new java.util.Date();
-        simpleType.localizedProperty = "str";
-        simpleType.directProperty = "XXX";
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        simpleType.dateProperty = cal.getTime();
+        simpleType.localizedProperty = "ABCDE";
+        simpleType.directProperty = "abcde";
         simpleType.numericProperty = 2;
         session.save(simpleType);
         
-        other = new SimpleType2();        
+        SimpleType simpleType2 = new SimpleType();
+        simpleType2.dateProperty = new java.util.Date(0);
+        simpleType2.localizedProperty = "ABCDEF";
+        simpleType2.directProperty = "abcdef";
+        simpleType2.numericProperty = 3;
+        session.save(simpleType2);
+        
+        other = new SimpleType2();              
         session.save(other);
         
         standardTest.runBooleanTests(v1.directProperty.isNull(), v2.numericProperty.isNotNull());

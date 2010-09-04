@@ -31,11 +31,13 @@ import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.*;
 import com.mysema.query.types.custom.CBoolean;
 import com.mysema.query.types.custom.CSimple;
+import com.mysema.query.types.custom.CString;
 import com.mysema.query.types.expr.EBoolean;
 import com.mysema.query.types.expr.ENumberConst;
 import com.mysema.query.types.expr.ExprConst;
 import com.mysema.query.types.expr.OBoolean;
 import com.mysema.query.types.expr.OSimple;
+import com.mysema.query.types.expr.OString;
 import com.mysema.query.types.path.PDate;
 import com.mysema.query.types.path.PDateTime;
 import com.mysema.query.types.path.PNumber;
@@ -53,6 +55,7 @@ import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.rdb.support.ExtractorVisitor;
 
 /**
  * RDBQuery is a BeanQuery implementation for the RDB module
@@ -296,10 +299,19 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     }
 
     private boolean needsSymbolResolving(Operation<?> op) {
-        return (!Ops.equalsOps.contains(op.getOperator()) 
-                && !Ops.notEqualsOps.contains(op.getOperator())
-                && op.getOperator() != Ops.IN
-                && op.getOperator() != Ops.ORDINAL);
+        if (Ops.equalsOps.contains(op.getOperator()) 
+         || Ops.notEqualsOps.contains(op.getOperator())
+         || op.getOperator() == Ops.IN
+         || op.getOperator() == Ops.ORDINAL){
+            for (Expr<?> arg : op.getArgs()){
+                if (!(arg instanceof Path<?>) && !(arg instanceof Constant<?>)){
+                    return true;
+                }
+            }
+            return false;
+        }else{
+            return true;
+        }
     }
 
     private Expr<?>[] populate(SQLCommonQuery<?> query, Expr<?>... projection){
@@ -436,6 +448,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     private Expr<?> transform(SQLCommonQuery<?> query, Custom<?> custom) {
         if (custom.getType().equals(Boolean.class)){
             return CBoolean.create(custom.getTemplate(), transform(query, custom.getArgs(), true));
+        }else if (custom.getType().equals(String.class)){
+            return CString.create(custom.getTemplate(), transform(query, custom.getArgs(), true));
         }else{
             return CSimple.create(custom.getType(), custom.getTemplate(), transform(query, custom.getArgs(), true));    
         }               
@@ -449,7 +463,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
      * main transformation method
      */
     @SuppressWarnings("unchecked")
-    private Expr<?> transform(SQLCommonQuery<?> query, Expr<?> expr, boolean realType) {
+    private Expr<?> transform(SQLCommonQuery<?> query, Expr<?> e, boolean realType) {
+        Expr<?> expr = new ExtractorVisitor(e).getExpr();
         if (expr instanceof Path<?>){
             return transform(query, (Path<?>)expr, realType);
         }else if (expr instanceof Operation<?>){
@@ -460,11 +475,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             return transform(query, (Custom<?>)expr);                 
         }else if (expr instanceof SubQueryExpression){    
             return transform(query, (SubQueryExpression<?>)expr, realType);
-        }else if (expr instanceof BooleanBuilder){
-            BooleanBuilder bb = (BooleanBuilder)expr;
-            return transform(query, bb.getValue(), realType);
         }else{
-            return expr;    
+            throw new IllegalArgumentException(e.toString());
         }
     }
 
@@ -496,6 +508,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         operatorStack.pop();
         if (operation.getType().equals(Boolean.class)){
             return OBoolean.create(operator, args);
+        }else if (operation.getType().equals(String.class)){
+            return OString.create(operator, args);
         }else{
             return OSimple.create(operation.getType(), operator, args);    
         }        
