@@ -205,7 +205,11 @@ public class JavaBeanExporter {
         String propertyName = getPropertyName(propertyId);        
         Property property = new Property(entityType, propertyName, propertyType, new String[0]);
         if (propertyId.getNamespace().equals(entityId.getNamespace())){
-            property.addAnnotation(new PredicateImpl("","",propertyId.getLocalName(),false));
+            if (propertyName.equals(propertyId.getLocalName())){
+                property.addAnnotation(new PredicateImpl("","","",false));   
+            }else{
+                property.addAnnotation(new PredicateImpl("","",propertyId.getLocalName(),false));    
+            }            
         }else{
             property.addAnnotation(new PredicateImpl("",propertyId,false));
         }
