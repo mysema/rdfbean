@@ -32,7 +32,7 @@ public class ContainsStringTest extends AbstractRDBTest implements EntityRevisio
         session.clear();
         
         EntityRevision var = Alias.alias(EntityRevision.class);
-        assertNotNull(session.from($(var)).where($(var.getText()).contains("a bcd e", false)).uniqueResult($(var)));
+        assertNotNull(session.from($(var)).where($(var.getText()).containsIgnoreCase("a bcd e")).uniqueResult($(var)));
     }
     
     @Test
@@ -68,16 +68,16 @@ public class ContainsStringTest extends AbstractRDBTest implements EntityRevisio
         
         EntityRevision var = Alias.alias(EntityRevision.class);
         BooleanBuilder builder = new BooleanBuilder();
-        builder.or($(var.getText()).contains("abc",false));
-        builder.or($(var.getRevisionOf().getTerm().getText2()).contains("abc",false));
+        builder.or($(var.getText()).containsIgnoreCase("abc"));
+        builder.or($(var.getRevisionOf().getTerm().getText2()).containsIgnoreCase("abc"));
         builder.and($(var).eq($(var.getRevisionOf().getLatestRevision())));        
         assertEquals(1, session.from($(var)).where(builder.getValue()).list($(var)).size());
         
         // query 2
         
         builder = new BooleanBuilder();
-        builder.or($(var.getText()).contains("def",false));
-        builder.or($(var.getRevisionOf().getTerm().getText2()).contains("def",false));
+        builder.or($(var.getText()).containsIgnoreCase("def"));
+        builder.or($(var.getRevisionOf().getTerm().getText2()).containsIgnoreCase("def"));
         builder.and($(var).eq($(var.getRevisionOf().getLatestRevision())));        
         assertEquals(1, session.from($(var)).where(builder.getValue()).list($(var)).size());
     }

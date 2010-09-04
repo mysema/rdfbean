@@ -51,32 +51,32 @@ public class ComplexPathsTest extends AbstractRDBTest implements NoteRevisionTer
         
         NoteRevision noteVar = Alias.alias(NoteRevision.class);
         BooleanBuilder builder = new BooleanBuilder();
-        builder.or($(noteVar.getLemma()).contains("a", false));
-        builder.or($(noteVar.getNote().getTerm().getMeaning()).contains("a",false));
+        builder.or($(noteVar.getLemma()).containsIgnoreCase("a"));
+        builder.or($(noteVar.getNote().getTerm().getMeaning()).containsIgnoreCase("a"));
         assertEquals(1, session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).size());
         System.out.println();
         
         builder = new BooleanBuilder();
-        builder.or($(noteVar.getLemma()).isNotNull().and($(noteVar.getLemma()).contains("c",false)));
-        builder.or($(noteVar.getNote().getTerm()).isNotNull().and($(noteVar.getNote().getTerm().getMeaning()).contains("c",false)));
+        builder.or($(noteVar.getLemma()).isNotNull().and($(noteVar.getLemma()).containsIgnoreCase("c")));
+        builder.or($(noteVar.getNote().getTerm()).isNotNull().and($(noteVar.getNote().getTerm().getMeaning()).containsIgnoreCase("c")));
         assertEquals(1, session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).size());
         System.out.println();
         
         builder = new BooleanBuilder();
-        builder.or($(noteVar.getLemma()).contains("c",false));
-        builder.or($(noteVar.getNote().getTerm().getMeaning()).contains("c",false));
+        builder.or($(noteVar.getLemma()).containsIgnoreCase("c"));
+        builder.or($(noteVar.getNote().getTerm().getMeaning()).containsIgnoreCase("c"));
         assertEquals(1, session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).size());
         System.out.println();
         
         builder = new BooleanBuilder();
         builder.and($(noteVar.getNote().getLatestRevision()).eq($(noteVar)));
-        builder.or($(noteVar.getLemma()).contains("c",false));
-        builder.or($(noteVar.getNote().getTerm().getMeaning()).contains("c",false));
+        builder.or($(noteVar.getLemma()).containsIgnoreCase("c"));
+        builder.or($(noteVar.getNote().getTerm().getMeaning()).containsIgnoreCase("c"));
         assertFalse(session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).isEmpty());      
         
         builder = new BooleanBuilder();
-        builder.or($(noteVar.getNote().getTerm().getBasicForm()).contains("c", false));
-        builder.or($(noteVar.getNote().getTerm().getMeaning()).contains("c", false));        
+        builder.or($(noteVar.getNote().getTerm().getBasicForm()).containsIgnoreCase("c"));
+        builder.or($(noteVar.getNote().getTerm().getMeaning()).containsIgnoreCase("c"));        
         assertEquals(1, session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).size());
     }
     
