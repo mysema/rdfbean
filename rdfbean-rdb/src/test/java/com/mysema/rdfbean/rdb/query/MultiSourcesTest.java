@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -36,7 +35,6 @@ public class MultiSourcesTest extends AbstractRDBTest implements UserDepartmentC
     }
     
     @Test
-    @Ignore
     public void test(){
         User u = Alias.alias(User.class,"u");
         User u2 = Alias.alias(User.class,"u2");

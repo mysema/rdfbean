@@ -12,8 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
+import com.mysema.query.sql.AbstractSQLQuery;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Company;
@@ -107,6 +107,6 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
     }
     
     private int countJoins(SQLQuery query){
-        return ((SQLQueryImpl)query).getMetadata().getJoins().size();
+        return ((AbstractSQLQuery<?>)query).getMetadata().getJoins().size();
     }
 }
