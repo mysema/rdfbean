@@ -20,11 +20,10 @@ import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 
-import com.mysema.query.QueryMetadata;
-import com.mysema.query.sql.AbstractSQLQuery;
 import com.mysema.query.sql.Configuration;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
+import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.query.sql.dml.SQLDeleteClause;
 import com.mysema.query.sql.dml.SQLInsertClause;
@@ -50,23 +49,6 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
  * @version $Id$
  */
 public final class RDBContext implements Closeable{
-    
-    public static class RDBSQLQuery extends AbstractSQLQuery<RDBSQLQuery> implements SQLQuery{
-
-        public RDBSQLQuery(Connection conn, Configuration configuration) {
-            super(conn, configuration, new SortableQueryMetadata());
-        }
-        
-        public RDBSQLQuery(Connection conn, Configuration configuration, QueryMetadata metadata) {
-            super(conn, configuration, metadata);
-        }
-
-        @Override
-        public SQLQuery clone(Connection conn) {
-            return new RDBSQLQuery(conn, getConfiguration(), getMetadata().clone());
-        }
-
-    }
     
     private final ConverterRegistry converterRegistry;
     
@@ -151,7 +133,7 @@ public final class RDBContext implements Closeable{
     }
 
     public SQLQuery createQuery(){
-        return new RDBSQLQuery(connection, configuration);
+        return new SQLQueryImpl(connection, configuration, new SortableQueryMetadata());
     }
 
     public Long getId(Object constant) {        
