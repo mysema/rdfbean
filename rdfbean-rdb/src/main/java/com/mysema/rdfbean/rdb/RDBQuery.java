@@ -55,7 +55,6 @@ import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.rdb.support.ExtractorVisitor;
 
 /**
  * RDBQuery is a BeanQuery implementation for the RDB module
