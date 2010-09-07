@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.sesame;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -8,7 +9,6 @@ import java.io.InputStream;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -57,7 +57,7 @@ public class LoadTest {
     }
     
     @Test
-    public void testLoad_withContext_replace(){
+    public void load_withContext_replace(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, true);
@@ -71,7 +71,7 @@ public class LoadTest {
     }
     
     @Test
-    public void testLoad_withContext_withoutReplace(){
+    public void load_withContext_withoutReplace(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, false);
@@ -85,8 +85,7 @@ public class LoadTest {
     }
     
     @Test
-    @Ignore
-    public void testLoad_withoutContext(){
+    public void load_withoutContext(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, null, false);
         assertTrue(repository.execute(countOp) > 0);

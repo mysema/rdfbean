@@ -23,6 +23,7 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.store.StoreException;
 
+import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.Operation;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
@@ -180,10 +181,12 @@ public abstract class SesameRepository implements Repository{
                 if (context != null && replace){
                     connection.removeMatch(null, null, null, contextURI);
                 }                
-                connection.add(is, 
-                        context != null ? context.getId() : null, 
-                        FormatHelper.getFormat(format), 
-                        contextURI);    
+                if (context == null){
+                    connection.add(is, TEST.NS, FormatHelper.getFormat(format));    
+                }else{
+                    connection.add(is, context.getId(), FormatHelper.getFormat(format), contextURI);
+                }
+                    
             }finally {
                 connection.close();    
             }

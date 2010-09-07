@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -32,18 +31,18 @@ public class RDBRepositoryTest extends AbstractRDBTest{
     private Operation<Long> countOp = new CountOperation(); 
     
     @Test
-    public void testExecute() {
+    public void execute() {
         repository.execute(countOp);
     }
 
     @Test
-    public void testExport() {
+    public void export() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         repository.export(Format.TURTLE, baos);
     }
 
     @Test
-    public void testLoad_withContext_replace(){
+    public void load_withContext_replace(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, true);
@@ -57,7 +56,7 @@ public class RDBRepositoryTest extends AbstractRDBTest{
     }
     
     @Test
-    public void testLoad_withContext_withoutReplace(){
+    public void load_withContext_withoutReplace(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, false);
@@ -71,15 +70,14 @@ public class RDBRepositoryTest extends AbstractRDBTest{
     }
     
     @Test
-    @Ignore
-    public void testLoad_withoutContext(){
+    public void load_withoutContext(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, null, false);
         assertTrue(repository.execute(countOp) > 0);
     }
     
     @Test
-    public void testOpenConnection() throws IOException {
+    public void open_Connection() throws IOException {
         repository.initialize();
         RDFConnection conn = repository.openConnection();
         assertNotNull(conn);

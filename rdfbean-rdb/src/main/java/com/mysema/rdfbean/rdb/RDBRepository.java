@@ -46,6 +46,7 @@ import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.query.sql.ddl.CreateTableClause;
 import com.mysema.rdfbean.CORE;
+import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
@@ -190,8 +191,8 @@ public class RDBRepository implements Repository{
                 }
             }
             RDFParser parser = Rio.createParser(getRioFormat(format));
-            parser.setRDFHandler(createHandler(context, dialect, stmts));
-            parser.parse(is, context != null ? context.getValue() : null);
+            parser.setRDFHandler(createHandler(dialect, stmts, context));
+            parser.parse(is, context != null ? context.getValue() : TEST.NS);
             if (context != null && replace){
                 connection.deleteFromContext(context);    
             }            
@@ -227,7 +228,7 @@ public class RDBRepository implements Repository{
                         RDFFormat format = getRioFormat(source.getFormat());
                         RDFParser parser = Rio.createParser(format);
                         UID context = new UID(source.getContext());
-                        parser.setRDFHandler(createHandler(context, dialect, stmts));
+                        parser.setRDFHandler(createHandler(dialect, stmts, context));
                         parser.parse(source.openStream(), source.getContext());
                         connection.deleteFromContext(context);
                         connection.update(Collections.<STMT>emptySet(), stmts);
@@ -247,7 +248,7 @@ public class RDBRepository implements Repository{
         }
     }
     
-    private RDFHandler createHandler(final UID context, final SesameDialect dialect, final Set<STMT> stmts) {
+    private RDFHandler createHandler(final SesameDialect dialect, final Set<STMT> stmts, final UID context) {
         return new RDFHandlerBase(){
             @Override
             public void handleStatement(Statement stmt) throws RDFHandlerException {
