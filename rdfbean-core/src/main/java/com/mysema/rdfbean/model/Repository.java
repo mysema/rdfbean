@@ -27,8 +27,12 @@ public interface Repository {
     void close();
     
     /**
-     * @param format
-     * @param is
+     * Load the contents to the Repository
+     * 
+     * @param format Format to be used
+     * @param is input stream
+     * @param context target context or null for default
+     * @param replace whether to replace the contents of the target context
      */
     void load(Format format, InputStream is, @Nullable UID context, boolean replace);
     
