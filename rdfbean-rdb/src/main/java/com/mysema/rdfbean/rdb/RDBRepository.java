@@ -122,17 +122,19 @@ public class RDBRepository implements Repository{
     }
 
     @Override
-    public void execute(Operation operation) {
+    public <RT> RT execute(Operation<RT> operation) {
         RDFConnection connection = openConnection();
         try{
             try{
                 RDFBeanTransaction tx = connection.beginTransaction(false, 0, 
                         Connection.TRANSACTION_READ_COMMITTED);
                 try{
-                    operation.execute(connection);    
+                    RT retVal = operation.execute(connection);    
                     tx.commit();
+                    return retVal;
                 }catch(IOException io){
                     tx.rollback();
+                    throw io;
                 }                
             }finally{
                 connection.close();
@@ -190,7 +192,7 @@ public class RDBRepository implements Repository{
             RDFParser parser = Rio.createParser(getRioFormat(format));
             parser.setRDFHandler(createHandler(context, dialect, stmts));
             parser.parse(is, context != null ? context.getValue() : null);
-            if (context != null){
+            if (context != null && replace){
                 connection.deleteFromContext(context);    
             }            
             connection.update(Collections.<STMT>emptySet(), stmts);    

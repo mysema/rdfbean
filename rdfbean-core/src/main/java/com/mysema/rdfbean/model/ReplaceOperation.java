@@ -16,7 +16,7 @@ import com.mysema.commons.lang.CloseableIterator;
  * @author tiwe
  * 
  */
-public class ReplaceOperation implements Operation {
+public class ReplaceOperation implements Operation<Void> {
 
     private final Map<UID, UID> replacements;
 
@@ -25,7 +25,7 @@ public class ReplaceOperation implements Operation {
     }
 
     @Override
-    public void execute(RDFConnection connection) throws IOException {
+    public Void execute(RDFConnection connection) throws IOException {
         for (Map.Entry<UID, UID> entry : replacements.entrySet()) {
             Set<STMT> added = new HashSet<STMT>();
             Set<STMT> removed = new HashSet<STMT>();
@@ -57,6 +57,7 @@ public class ReplaceOperation implements Operation {
             // update
             connection.update(removed, added);
         }
+        return null;
     }
-
+    
 }

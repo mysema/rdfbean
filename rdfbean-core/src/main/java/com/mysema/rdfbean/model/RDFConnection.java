@@ -71,7 +71,7 @@ public interface RDFConnection extends Closeable{
             @Nullable UID predicate, 
             @Nullable NODE object, 
             @Nullable UID context, boolean includeInferred);
-
+    
     /**
      * Get a unallocated local id for use in a ID/LID mapping
      * 

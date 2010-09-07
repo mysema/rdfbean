@@ -77,16 +77,18 @@ public abstract class SesameRepository implements Repository{
     protected abstract org.openrdf.repository.Repository createRepository(boolean sesameInference);
     
     @Override
-    public void execute(Operation operation) {
+    public <RT> RT execute(Operation<RT> operation) {
         RDFConnection connection = openConnection();
         try{
             try{
                 RDFBeanTransaction tx = connection.beginTransaction(false, 0, Connection.TRANSACTION_READ_COMMITTED);
                 try{
-                    operation.execute(connection);    
+                    RT retVal = operation.execute(connection);    
                     tx.commit();
+                    return retVal;
                 }catch(IOException io){
                     tx.rollback();
+                    return null;
                 }                
             }finally{
                 connection.close();
@@ -175,6 +177,9 @@ public abstract class SesameRepository implements Repository{
                         return;
                     }
                 }
+                if (context != null && replace){
+                    connection.removeMatch(null, null, null, contextURI);
+                }                
                 connection.add(is, 
                         context != null ? context.getId() : null, 
                         FormatHelper.getFormat(format), 

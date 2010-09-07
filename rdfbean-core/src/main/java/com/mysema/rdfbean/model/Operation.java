@@ -11,12 +11,12 @@ import java.io.IOException;
  * @author tiwe
  *
  */
-public interface Operation {
+public interface Operation<RT> {
 
     /**
      * @return
      * @throws IOException 
      */
-    void execute(RDFConnection connection) throws IOException;
+    RT execute(RDFConnection connection) throws IOException;
     
 }

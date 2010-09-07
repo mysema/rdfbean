@@ -56,6 +56,6 @@ public interface Repository {
      * @param operation
      * @return
      */
-    void execute(Operation operation);
+    <RT> RT execute(Operation<RT> operation);
            
 }

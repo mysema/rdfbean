@@ -47,7 +47,7 @@ public class LuceneRepository implements Repository{
     }
 
     @Override
-    public void execute(Operation operation) {
+    public <RT> RT execute(Operation<RT> operation) {
         throw new UnsupportedOperationException();        
     }
 

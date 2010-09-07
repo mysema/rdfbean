@@ -85,8 +85,8 @@ public class LuceneEnhancedRepository implements Repository{
     }
 
     @Override
-    public void execute(Operation operation) {
-        repository.execute(operation);        
+    public <RT> RT execute(Operation<RT> operation) {
+        return repository.execute(operation);        
     }
 
     @Override

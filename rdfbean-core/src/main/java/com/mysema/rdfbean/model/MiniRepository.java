@@ -168,11 +168,11 @@ public final class MiniRepository implements Repository{
     }
 
     @Override
-    public void execute(Operation operation) {
+    public <RT> RT execute(Operation<RT> operation) {
         RDFConnection connection = openConnection();
         try{
             try{
-                operation.execute(connection);
+                return operation.execute(connection);
             }finally{
                 connection.close();
             }    

@@ -5,7 +5,9 @@
  */
 package com.mysema.rdfbean.rdb;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,9 +18,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
 
 /**
@@ -29,16 +29,17 @@ import com.mysema.rdfbean.model.io.Format;
  */
 public class RDBRepositoryTest extends AbstractRDBTest{
     
+    private Operation<Long> countOp = new CountOperation(); 
+    
     @Test
     public void testExecute() {
-        // TODO
+        repository.execute(countOp);
     }
 
     @Test
     public void testExport() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         repository.export(Format.TURTLE, baos);
-        System.out.println(new String(baos.toByteArray()));
     }
 
     @Test
@@ -46,13 +47,27 @@ public class RDBRepositoryTest extends AbstractRDBTest{
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, true);
+        long count1 = repository.execute(countOp);
+        repository.execute(new Addition(new STMT(new BID(), RDF.type, RDFS.Resource, context)));
+        
+        // reload with replace
+        is = getClass().getResourceAsStream("/test.ttl");
+        repository.load(Format.TURTLE, is, context, true);
+        assertEquals(count1, repository.execute(countOp).longValue());
     }
     
     @Test
-    public void testLoad_withContext_noReplace(){
+    public void testLoad_withContext_withoutReplace(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, false);
+        long count1 = repository.execute(countOp);
+        repository.execute(new Addition(new STMT(new BID(), RDF.type, RDFS.Resource, context)));
+        
+        // reload without replace
+        is = getClass().getResourceAsStream("/test.ttl");
+        repository.load(Format.TURTLE, is, context, false);
+        assertEquals(count1 + 1, repository.execute(countOp).longValue());
     }
     
     @Test
@@ -60,6 +75,7 @@ public class RDBRepositoryTest extends AbstractRDBTest{
     public void testLoad_withoutContext(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, null, false);
+        assertTrue(repository.execute(countOp) > 0);
     }
     
     @Test
