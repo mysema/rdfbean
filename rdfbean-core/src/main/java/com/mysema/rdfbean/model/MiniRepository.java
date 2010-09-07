@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.model;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,6 +85,12 @@ public final class MiniRepository implements Repository{
 
     @Override
     public void close() {
+
+    }
+    
+    @Override
+    public void load(Format format, InputStream is, @Nullable UID context, boolean replace) {
+        throw new UnsupportedOperationException();
     }
     
     @Override

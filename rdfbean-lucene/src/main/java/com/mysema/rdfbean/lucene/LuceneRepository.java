@@ -5,7 +5,10 @@
  */
 package com.mysema.rdfbean.lucene;
 
+import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.annotation.Nullable;
 
 import org.compass.core.Compass;
 import org.compass.core.CompassSession;
@@ -13,6 +16,7 @@ import org.compass.core.CompassSession;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.Operation;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.Format;
 
 /**
@@ -43,6 +47,16 @@ public class LuceneRepository implements Repository{
     }
 
     @Override
+    public void execute(Operation operation) {
+        throw new UnsupportedOperationException();        
+    }
+
+    @Override
+    public void export(Format format, OutputStream os) {
+       throw new UnsupportedOperationException();        
+    }
+
+    @Override
     public void initialize() {
         if (compass == null){
             Assert.notNull(configuration, "configuration has not been set");
@@ -51,6 +65,11 @@ public class LuceneRepository implements Repository{
         }else{
             throw new IllegalStateException("Compass has already been initialized!");
         }                
+    }
+    
+    @Override
+    public void load(Format format, InputStream is, @Nullable UID context, boolean replace) {
+        throw new UnsupportedOperationException();         
     }
 
     @Override
@@ -66,16 +85,6 @@ public class LuceneRepository implements Repository{
 
     public void setConfiguration(LuceneConfiguration configuration) {
         this.configuration = configuration;
-    }
-
-    @Override
-    public void export(Format format, OutputStream os) {
-       throw new UnsupportedOperationException();        
-    }
-
-    @Override
-    public void execute(Operation operation) {
-        throw new UnsupportedOperationException();        
     }
 
 }

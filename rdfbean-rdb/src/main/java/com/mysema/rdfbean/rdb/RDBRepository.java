@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.rdb;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,6 +17,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.sql.DataSource;
 
 import net.jcip.annotations.Immutable;
@@ -29,6 +31,7 @@ import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
@@ -171,6 +174,40 @@ public class RDBRepository implements Repository{
             throw new RepositoryException(e.getMessage(), e);
         }
     }
+    
+    @Override
+    public void load(Format format, InputStream is, @Nullable UID context, boolean replace){
+        ValueFactory valueFactory = new ValueFactoryImpl();
+        SesameDialect dialect = new SesameDialect(valueFactory);
+        RDBConnection connection = openConnection();
+        try{
+            Set<STMT> stmts = new HashSet<STMT>();
+            if (!replace && context != null){
+                if (!connection.find(null, null, null, context, false).isEmpty()){
+                    return;
+                }
+            }
+            RDFParser parser = Rio.createParser(getRioFormat(format));
+            parser.setRDFHandler(createHandler(context, dialect, stmts));
+            parser.parse(is, context != null ? context.getValue() : null);
+            if (context != null){
+                connection.deleteFromContext(context);    
+            }            
+            connection.update(Collections.<STMT>emptySet(), stmts);    
+        } catch (RDFParseException e) {
+            throw new RepositoryException(e);
+        } catch (RDFHandlerException e) {
+            throw new RepositoryException(e);
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }finally{
+            try {
+                connection.close();
+            } catch (IOException e) {
+                throw new RepositoryException(e);
+            }
+        }        
+    }
 
     @Override
     public void initialize() {        
@@ -182,21 +219,13 @@ public class RDBRepository implements Repository{
                 RDBConnection connection = openConnection();
                 try{
                     ValueFactory valueFactory = new ValueFactoryImpl();
-                    final SesameDialect dialect = new SesameDialect(valueFactory);
+                    SesameDialect dialect = new SesameDialect(valueFactory);
                     for (RDFSource source : sources){                        
-                        final Set<STMT> stmts = new HashSet<STMT>();
+                        Set<STMT> stmts = new HashSet<STMT>();
                         RDFFormat format = getRioFormat(source.getFormat());
                         RDFParser parser = Rio.createParser(format);
-                        final UID context = new UID(source.getContext());
-                        parser.setRDFHandler(new RDFHandlerBase(){
-                            @Override
-                            public void handleStatement(Statement stmt) throws RDFHandlerException {
-                                ID sub = dialect.getID(stmt.getSubject());
-                                UID pre = dialect.getUID(stmt.getPredicate());
-                                NODE obj = dialect.getNODE(stmt.getObject());
-                                stmts.add(new STMT(sub, pre, obj, context));                                                              
-                            }                            
-                        });
+                        UID context = new UID(source.getContext());
+                        parser.setRDFHandler(createHandler(context, dialect, stmts));
                         parser.parse(source.openStream(), source.getContext());
                         connection.deleteFromContext(context);
                         connection.update(Collections.<STMT>emptySet(), stmts);
@@ -214,6 +243,18 @@ public class RDBRepository implements Repository{
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }
+    }
+    
+    private RDFHandler createHandler(final UID context, final SesameDialect dialect, final Set<STMT> stmts) {
+        return new RDFHandlerBase(){
+            @Override
+            public void handleStatement(Statement stmt) throws RDFHandlerException {
+                ID sub = dialect.getID(stmt.getSubject());
+                UID pre = dialect.getUID(stmt.getPredicate());
+                NODE obj = dialect.getNODE(stmt.getObject());
+                stmts.add(new STMT(sub, pre, obj, context));                                                              
+            }                            
+        };
     }
 
     @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")

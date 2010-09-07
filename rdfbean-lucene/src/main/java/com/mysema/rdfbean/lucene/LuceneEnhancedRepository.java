@@ -5,7 +5,10 @@
  */
 package com.mysema.rdfbean.lucene;
 
+import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.annotation.Nullable;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.MultiConnection;
@@ -13,6 +16,7 @@ import com.mysema.rdfbean.model.Operation;
 import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.object.Session;
 
@@ -82,8 +86,12 @@ public class LuceneEnhancedRepository implements Repository{
 
     @Override
     public void execute(Operation operation) {
-        repository.execute(operation);
-        
+        repository.execute(operation);        
     }
 
+    @Override
+    public void load(Format format, InputStream is, @Nullable UID context, boolean replace) {
+        repository.load(format, is, context, replace);
+    }
+    
 }

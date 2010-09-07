@@ -5,7 +5,10 @@
  */
 package com.mysema.rdfbean.model;
 
+import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.annotation.Nullable;
 
 import com.mysema.rdfbean.model.io.Format;
 
@@ -22,6 +25,12 @@ public interface Repository {
      * Close the Repository and release related resources
      */
     void close();
+    
+    /**
+     * @param format
+     * @param is
+     */
+    void load(Format format, InputStream is, @Nullable UID context, boolean replace);
     
     /**
      * Export the contents of the Repository 
