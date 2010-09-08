@@ -248,7 +248,7 @@ public class RDBRepository implements Repository{
         }
     }
     
-    private RDFHandler createHandler(final SesameDialect dialect, final Set<STMT> stmts, @Nullable final UID context) {
+    private RDFHandler createHandler(final SesameDialect dialect, final Set<STMT> stmts, final UID context) {
         return new RDFHandlerBase(){
             @Override
             public void handleStatement(Statement stmt) throws RDFHandlerException {
