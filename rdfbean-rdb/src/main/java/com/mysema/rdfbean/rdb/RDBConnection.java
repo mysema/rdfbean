@@ -237,17 +237,21 @@ public class RDBConnection implements RDFConnection{
         }
     }
        
-    public List<STMT> find(ID subject, UID predicate, NODE object, UID model, boolean includeInferred) {
+    public List<STMT> find(
+            @Nullable ID subject, 
+            @Nullable UID predicate, 
+            @Nullable NODE object, 
+            @Nullable UID model, boolean includeInferred) {
         return IteratorAdapter.asList(findStatements(subject, predicate, object, model, includeInferred));
     }
 
     @Override
     @SuppressWarnings("serial")
     public CloseableIterator<STMT> findStatements(
-            final ID subject, 
-            final UID predicate, 
-            final NODE object, 
-            final UID model, boolean includeInferred) {
+            @Nullable final ID subject, 
+            @Nullable final UID predicate, 
+            @Nullable final NODE object, 
+            @Nullable final UID model, boolean includeInferred) {
         SQLQuery query = this.context.createQuery();
         query.from(statement);
         List<Expr<?>> exprs = new ArrayList<Expr<?>>();
