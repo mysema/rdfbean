@@ -1,4 +1,4 @@
-package com.mysema.rdfbean.sesame;
+package com.mysema.rdfbean.rdb;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,22 +7,25 @@ import java.io.ByteArrayOutputStream;
 import java.sql.Time;
 import java.sql.Timestamp;
 
+import org.h2.jdbcx.JdbcConnectionPool;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.junit.After;
 import org.junit.Test;
 
+import com.mysema.query.sql.H2Templates;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Addition;
-import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.CountOperation;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.MemoryIdSequence;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.xsd.DateConverter;
 import com.mysema.rdfbean.xsd.DateTimeConverter;
 import com.mysema.rdfbean.xsd.LocalDateConverter;
@@ -33,7 +36,7 @@ import com.mysema.rdfbean.xsd.UtilDateConverter;
 
 public class DateTimePersistenceTest {
     
-    private MemoryRepository repository;
+    private RDBRepository repository;
     
     @After
     public void tearDown(){
@@ -44,7 +47,9 @@ public class DateTimePersistenceTest {
     
     @Test
     public void Round_Trip(){
-        repository = new MemoryRepository();
+        JdbcConnectionPool dataSource = JdbcConnectionPool.create("jdbc:h2:mem:test", "sa", "");   
+        dataSource.setMaxConnections(30);
+        repository = new RDBRepository(new DefaultConfiguration(), dataSource, new H2Templates(), new MemoryIdSequence());
         repository.initialize();
         
         DateTimeConverter dateTime = new DateTimeConverter();
@@ -56,7 +61,7 @@ public class DateTimePersistenceTest {
         TimestampConverter timestamp = new TimestampConverter();
         
         // load data
-        ID sub = new BID();
+        ID sub = new UID(TEST.NS);
         repository.execute(new Addition(
                 new STMT(sub, pre(1), new LIT(dateTime.toString(new DateTime()), XSD.dateTime)),
                 new STMT(sub, pre(2), new LIT(localDate.toString(new LocalDate()), XSD.date)),
