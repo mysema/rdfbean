@@ -89,7 +89,7 @@ public abstract class SesameRepository implements Repository{
                     return retVal;
                 }catch(IOException io){
                     tx.rollback();
-                    return null;
+                    throw new RepositoryException(io);
                 }                
             }finally{
                 connection.close();
