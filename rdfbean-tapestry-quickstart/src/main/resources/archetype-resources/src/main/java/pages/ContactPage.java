@@ -1,5 +1,5 @@
 package ${package}.pages;
 
-public class Contact {
+public class ContactPage {
 
 }

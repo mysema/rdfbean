@@ -4,7 +4,6 @@ import static ${package}.domain.QUser.*;
 
 import org.apache.tapestry5.ioc.annotations.Inject;
 
-import com.example.app.domain.User;
 import com.mysema.rdfbean.object.SessionFactory;
 
 import ${package}.domain.User;
