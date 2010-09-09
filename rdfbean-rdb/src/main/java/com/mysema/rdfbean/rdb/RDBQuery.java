@@ -399,11 +399,10 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
                 public T newInstance(Object... args){
                     if (args[0] != null){
                         String id = args[0].toString();
-                        return session.get(expr.getType(), context.getID(id, !id.startsWith("_")));    
+                        return session.get(expr.getType(), context.getID(id));    
                     }else{
                         return null;
-                    }
-                    
+                    }                    
                 }
             };
         }else{

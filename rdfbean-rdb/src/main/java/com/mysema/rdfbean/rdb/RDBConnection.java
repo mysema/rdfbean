@@ -224,7 +224,7 @@ public class RDBConnection implements RDFConnection{
 
     @Override
     public BID createBNode() {
-        return new BID("_"+UUID.randomUUID());
+        return new BID(UUID.randomUUID().toString());
     }
 
     @SuppressWarnings("unchecked")

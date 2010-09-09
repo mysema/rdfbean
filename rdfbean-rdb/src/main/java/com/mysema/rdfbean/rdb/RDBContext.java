@@ -150,8 +150,12 @@ public final class RDBContext implements Closeable{
         return id;
     }
 
-    public ID getID(String lexical, boolean resource){
-        return resource ? new UID(lexical) : new BID(lexical);
+    public ID getID(String lex){
+        if (lex.contains(":")){
+            return new UID(lex);            
+        }else{
+            return new BID(lex);
+        }
     }
 
     @Nullable
