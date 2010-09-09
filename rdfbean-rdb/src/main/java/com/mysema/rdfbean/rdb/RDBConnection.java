@@ -352,11 +352,7 @@ public class RDBConnection implements RDFConnection{
 
     private NODE getNode(boolean res, String lex, Long datatype, Integer lang){
         if (res){
-            if (lex.startsWith("_") || !lex.contains(":")){
-                return new BID(lex);
-            }else{
-                return new UID(lex);
-            }
+            return context.getID(lex);
         }else{
             if (lang != null && !lang.equals(Integer.valueOf(0))){
                 return new LIT(lex, getLocale(lang));
