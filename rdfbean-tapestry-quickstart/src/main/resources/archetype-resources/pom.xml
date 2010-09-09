@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.mysema</groupId>
+		<artifactId>maven-parent</artifactId>
+		<version>2.1.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>${groupId}</groupId>
+	<artifactId>${artifactId}</artifactId>
+	<packaging>war</packaging>
+	<version>${version}</version>
+
+	<properties>
+		<tapestry.version>5.1.0.5</tapestry.version>
+		<jetty.version>6.1.0-SNAPSHOT</jetty.version>
+		<rdfbean.version>1.3.7</rdfbean.version>
+		<commons.tapestry.version>0.1.8</commons.tapestry.version>
+	</properties>
+
+	<dependencies>
+
+		<!-- tapestry -->
+
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-core</artifactId>
+			<version>${tapestry.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tapestry</groupId>
+			<artifactId>tapestry-upload</artifactId>
+			<version>${tapestry.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mysema.commons</groupId>
+			<artifactId>mysema-commons-tapestry</artifactId>
+			<version>${commons.tapestry.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.mysema.querydsl</groupId>
+					<artifactId>querydsl-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- security -->
+		<dependency>
+			<groupId>nu.localhost.tapestry</groupId>
+			<artifactId>tapestry-spring-security</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+		</dependency>
+
+		<!-- services -->
+		<dependency>
+			<groupId>stax</groupId>
+			<artifactId>stax</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+		<!-- persistence -->
+		<dependency>
+			<groupId>org.tmatesoft.svnkit</groupId>
+			<artifactId>svnkit</artifactId>
+			<version>1.3.2-1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mysema.rdf</groupId>
+			<artifactId>rdfbean-sesame</artifactId>
+			<version>${rdfbean.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mysema.rdf</groupId>
+			<artifactId>rdfbean-tapestry</artifactId>
+			<version>${rdfbean.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.mysema.rdf</groupId>
+			<artifactId>rdfbean-rdb</artifactId>
+			<version>${rdfbean.version}</version>
+		</dependency>
+		<dependency>
+	      <groupId>com.h2database</groupId>
+	      <artifactId>h2</artifactId>
+	      <version>1.2.140</version>
+	    </dependency>
+
+		<!-- TEST dependencies -->
+
+		<dependency>
+			<groupId>com.mysema.commons</groupId>
+			<artifactId>mysema-commons-jetty</artifactId>
+			<version>${jetty.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openqa.selenium.webdriver</groupId>
+			<artifactId>webdriver-htmlunit</artifactId>
+			<version>0.6.964</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openqa.selenium.webdriver</groupId>
+			<artifactId>webdriver-support</artifactId>
+			<version>0.6.964</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openqa.selenium.webdriver</groupId>
+			<artifactId>webdriver-firefox</artifactId>
+			<version>0.6.964</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>2.5.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymockclassextension</artifactId>
+            <version>2.4</version>
+            <scope>test</scope>
+        </dependency>
+
+
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>localhost.nu</id>
+			<url>http://www.localhost.nu/java/mvn</url>
+		</repository>
+	</repositories>
+
+	<profiles>
+		<profile>
+			<id>sks</id>
+            <build>
+              <resources>
+                <resource>
+                  <filtering>true</filtering>
+                  <directory>profiles/sks/res</directory>
+                </resource>
+                <resource>
+                  <directory>src/main/resources</directory>
+                </resource>
+                <resource>
+                  <directory>src/main/rdf</directory>
+                </resource>
+                <resource>
+                  <directory>src/main/java</directory>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                  <excludes>
+                    <exclude>**/*.java</exclude>
+                  </excludes>
+                </resource>              
+              </resources>
+            </build>
+		</profile>
+	</profiles>
+
+	<build>
+		<finalName>edith</finalName>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/main/rdf</directory>
+			</resource>
+			<resource>
+				<directory>src/main/java</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+			</testResource>
+			<testResource>
+				<directory>src/test/java</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.java</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
+		<plugins>
+			<plugin>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.7</version>
+			</plugin>
+
+			<!-- OWL schema generation -->
+			<plugin>
+				<groupId>com.mysema.rdf</groupId>
+				<artifactId>rdfbean-maven-plugin</artifactId>
+				<version>${rdfbean.version}</version>
+				<configuration>
+					<prefix>edith</prefix>
+					<namespace>http://www.finlit.fi/semantics/edith/#</namespace>
+					<schemaFile>src/main/rdf/edith.ttl</schemaFile>
+					<useTurtle>true</useTurtle>
+				</configuration>
+			</plugin>
+
+			<!-- Querydsl code generation -->
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>maven-apt-plugin</artifactId>
+				<version>0.3.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/generated-sources/java</outputDirectory>
+							<processor>com.mysema.query.apt.QuerydslAnnotationProcessor</processor>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                    <argLine>-Xms256m -Xmx512m</argLine>
+					<systemProperties>
+						<property>
+							<name>webtest</name>
+							<value>true</value>
+						</property>
+					</systemProperties>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

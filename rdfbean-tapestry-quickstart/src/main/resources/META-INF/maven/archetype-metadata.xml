@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd" name="fi.finlit.edith"
+    xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <fileSets>
+  	
+	<!-- src/main/java -->
+    <fileSet filtered="true" packaged="true" encoding="UTF-8">
+      <directory>src/main/java</directory>
+      <includes>
+        <include>**/*.java</include>
+        <include>**/*.tml</include>
+      </includes>
+    </fileSet>	
+    <fileSet packaged="true" encoding="UTF-8">
+      <directory>src/main/java</directory>
+      <includes>
+        <include>**/*.js</include>
+        <include>**/*.css</include>
+      </includes>
+    </fileSet>
+	
+	<!-- src/main/resources -->
+	<fileSet filtered="true" encoding="UTF-8">
+      <directory>src/main/resources</directory>
+      <includes>
+        <include>**/*.properties</include>
+      </includes>
+    </fileSet>	
+	<fileSet encoding="UTF-8">
+      <directory>src/main/resources</directory>
+      <includes>
+        <include>**/*.js</include>
+        <include>**/*.csv</include>
+      </includes>
+    </fileSet>	
+    
+	<!-- src/main/webapp -->
+	<fileSet filtered="true" encoding="UTF-8">
+      <directory>src/main/webapp</directory>
+      <includes>
+        <include>**/*.xml</include>
+        <include>**/*.properties</include>		
+      </includes>
+    </fileSet>
+	<fileSet encoding="UTF-8">
+      <directory>src/main/webapp</directory>
+      <includes>
+        <include>**/*.jpg</include>
+        <include>**/*.png</include>
+        <include>**/*.css</include>
+        <include>**/*.gif</include>
+      </includes>
+    </fileSet>
+    
+    <!-- src/test/java -->
+	<fileSet filtered="true" packaged="true" encoding="UTF-8">
+      <directory>src/test/java</directory>
+      <includes>
+        <include>**/*.java</include>
+        <include>**/*.tml</include>
+      </includes>
+    </fileSet>    
+	    
+	<!-- src/test/resources -->
+	<fileSet filtered="true" encoding="UTF-8">
+      <directory>src/test/resources</directory>
+      <includes>
+        <include>**/*.properties</include>
+      </includes>
+    </fileSet>
+
+  </fileSets>
+</archetype-descriptor>

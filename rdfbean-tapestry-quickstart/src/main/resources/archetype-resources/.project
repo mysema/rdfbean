@@ -1,0 +1,21 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<projectDescription>
+  <name>${package}.edith</name>
+  <comment></comment>
+  <projects>
+    <project>rdfbean-core</project>
+    <project>rdfbean-rdb</project>
+    <project>rdfbean-sesame</project>
+    <project>rdfbean-tapestry</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>
