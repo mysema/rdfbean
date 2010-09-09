@@ -43,9 +43,9 @@
     
     <module>../rdfbean-maven-plugin</module>    
     
-    <!-- demo -->
-         
+    <!-- demo -->         
     <module>../rdfbean-demo</module>
+	<module>../rdfbean-tapestry-quickstart</module>
  <!--
     <module>../rdfbean-docs</module>
  -->
