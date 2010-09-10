@@ -286,9 +286,10 @@ public class RDBRepository implements Repository{
             .column("datetime", Timestamp.class)
             .primaryKey("pk_symbol", "id")
             .foreignKey("fk_lang", "lang").references("language", "id")
+            .index("statement_lex", "lexical")
             .execute();
             
-            // statement
+            // statement spoc,posc
              new CreateTableClause(conn,templates,"statement")
             .column("model", Long.class)
             .column("subject",Long.class).notNull()
@@ -298,9 +299,8 @@ public class RDBRepository implements Repository{
             .foreignKey("fk_subject", "subject").references("symbol", "id")
             .foreignKey("fk_predicate", "predicate").references("symbol", "id")
             .foreignKey("fk_object", "object").references("symbol", "id")
-            .index("spo", "subject","predicate","object")
-            .index("ops", "object","predicate","subject")
-            .index("m","model")
+            .index("statement_spom", "subject","predicate","object","model")
+            .index("statement_opsm", "object","predicate","subject","model")
             .execute();
         }finally{
             conn.close();

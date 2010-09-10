@@ -7,17 +7,11 @@ package com.mysema.rdfbean.rdb;
 
 import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import com.mysema.query.sql.ForeignKey;
 import com.mysema.query.sql.PrimaryKey;
-import com.mysema.query.sql.RelationalPath;
+import com.mysema.query.sql.RelationalPathBase;
 import com.mysema.query.sql.Table;
-import com.mysema.query.types.Expr;
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.custom.CSimple;
 import com.mysema.query.types.path.BeanPath;
 import com.mysema.query.types.path.PBoolean;
 import com.mysema.query.types.path.PDateTime;
@@ -28,7 +22,7 @@ import com.mysema.query.types.path.PString;
  * QSymbol is a Querydsl query type for QSymbol
  */
 @Table("SYMBOL")
-public class QSymbol extends BeanPath<QSymbol> implements RelationalPath<QSymbol>{
+public class QSymbol extends RelationalPathBase<QSymbol> {
 
     private static final long serialVersionUID = 1776011891;
 
@@ -50,17 +44,17 @@ public class QSymbol extends BeanPath<QSymbol> implements RelationalPath<QSymbol
 
     public final PString lexical = createString("LEXICAL");
 
-    public final PrimaryKey<QSymbol> primaryKey = new PrimaryKey<QSymbol>(this, id);
+    public final PrimaryKey<QSymbol> primaryKey = createPrimaryKey(id);
 
-    public final ForeignKey<QLanguage> langKeyFk = new ForeignKey<QLanguage>(this, lang, "ID");
+    public final ForeignKey<QLanguage> langKeyFk = createForeignKey(lang, "ID");
 
-    public final ForeignKey<QStatement> _objectKeyFk = new ForeignKey<QStatement>(this, id, "OBJECT");
+    public final ForeignKey<QStatement> _objectKeyFk = createForeignKey(id, "OBJECT");
 
-    public final ForeignKey<QStatement> _subjectKeyFk = new ForeignKey<QStatement>(this, id, "SUBJECT");
+    public final ForeignKey<QStatement> _subjectKeyFk = createForeignKey(id, "SUBJECT");
 
-    public final ForeignKey<QStatement> _predicateKeyFk = new ForeignKey<QStatement>(this, id, "PREDICATE");
+    public final ForeignKey<QStatement> _predicateKeyFk = createForeignKey(id, "PREDICATE");
 
-    public final ForeignKey<QStatement> _modelKeyFk = new ForeignKey<QStatement>(this, id, "MODEL");
+    public final ForeignKey<QStatement> _modelKeyFk = createForeignKey(id, "MODEL");
 
     public QSymbol(String variable) {
         super(QSymbol.class, forVariable(variable));
@@ -74,28 +68,5 @@ public class QSymbol extends BeanPath<QSymbol> implements RelationalPath<QSymbol
         super(QSymbol.class, metadata);
     }
 
-    public Expr<Object[]> all() {
-        return CSimple.create(Object[].class, "{0}.*", this);
-    }
-
-    @Override
-    public Collection<ForeignKey<?>> getForeignKeys() {
-        return Arrays.<ForeignKey<?>>asList(langKeyFk);
-    }
-
-    @Override
-    public Collection<ForeignKey<?>> getInverseForeignKeys() {
-        return Arrays.<ForeignKey<?>>asList(_subjectKeyFk, _predicateKeyFk, _objectKeyFk, _modelKeyFk);
-    }
-
-    @Override
-    public PrimaryKey<QSymbol> getPrimaryKey() {
-        return primaryKey;
-    }
-
-    @Override
-    public List<Expr<?>> getColumns() {
-        return Arrays.<Expr<?>>asList(resource, datatype, datetime, floating, id, integer, lang, lexical);
-    }
 }
 

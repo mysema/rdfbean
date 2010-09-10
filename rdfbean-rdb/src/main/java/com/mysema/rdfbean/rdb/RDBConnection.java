@@ -32,7 +32,7 @@ import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
-import com.mysema.query.types.path.PNumber;
+import com.mysema.query.types.custom.CSimple;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
@@ -46,7 +46,7 @@ public class RDBConnection implements RDFConnection{
     
     private static final int ADD_BATCH = 50;
    
-    public static final PNumber<Integer> one = new PNumber<Integer>(Integer.class,"1");
+    public static final Expr<Integer> one = CSimple.create(Integer.class,"1");
     
     public static final QSymbol sub = new QSymbol("subject");
     
@@ -153,8 +153,6 @@ public class RDBConnection implements RDFConnection{
                 addNode(id, nodes.get(i));
             }
         }
-        ids.clear();
-        nodes.clear();
     }
     
     public void addNodes(Set<NODE> n, @Nullable BidiMap<NODE,Long> cache) {
@@ -169,10 +167,14 @@ public class RDBConnection implements RDFConnection{
             }
             if (ids.size() == ADD_BATCH){
                 addNodes(ids, nodes);
+                ids = new ArrayList<Long>(ADD_BATCH);
+                nodes = new ArrayList<NODE>(ADD_BATCH);
             }
         }
         if (!ids.isEmpty()){
             addNodes(ids, nodes);
+            ids = new ArrayList<Long>(ADD_BATCH);
+            nodes = new ArrayList<NODE>(ADD_BATCH);
         }
     }
 
