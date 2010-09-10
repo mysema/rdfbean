@@ -462,7 +462,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
      */
     @SuppressWarnings("unchecked")
     private Expr<?> transform(SQLCommonQuery<?> query, Expr<?> e, boolean realType) {
-        Expr<?> expr = new ExtractorVisitor(e).getExpr();
+        Expr<?> expr = e.accept(ExtractorVisitor.DEFAULT, null);
         if (expr instanceof Path<?>){
             return transform(query, (Path<?>)expr, realType);
         }else if (expr instanceof Operation<?>){

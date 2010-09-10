@@ -520,10 +520,9 @@ public class SesameQuery
         } else if (expr instanceof Constant) {
             return toVar((Constant<?>)expr);            
         } else {
-            ExtractorVisitor visitor = new ExtractorVisitor();
-            expr.accept(visitor);
-            if (visitor.getExpression() != expr){
-                return toValue(visitor.getExpression());
+            Expr<?> extracted = expr.accept(ExtractorVisitor.DEFAULT, null);
+            if (extracted != expr){
+                return toValue(extracted);
             }else{
                 throw new IllegalArgumentException(expr.toString());
             }
