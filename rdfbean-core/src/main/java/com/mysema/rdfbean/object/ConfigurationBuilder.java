@@ -5,11 +5,14 @@
  */
 package com.mysema.rdfbean.object;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -25,7 +28,7 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
  */
 public class ConfigurationBuilder {
         
-    private final Set<MappedClass> mappedClasses = new HashSet<MappedClass>();
+    private final Map<Class<?>,MappedClass> mappedClasses = new HashMap<Class<?>,MappedClass>();
     
     @Nullable
     private ConverterRegistry converterRegistry;
@@ -36,7 +39,33 @@ public class ConfigurationBuilder {
         if (converterRegistry == null){
             converterRegistry = new ConverterRegistryImpl();
         }
-        return new SimpleConfiguration(converterRegistry, fetchStrategies, mappedClasses);
+        
+        // populate mappedSuperClasses
+        for (MappedClass mappedClass : mappedClasses.values()){
+            if (!mappedClass.getJavaClass().getSuperclass().equals(Object.class)){
+                MappedClass mappedSuperClass = mappedClasses.get(mappedClass.getJavaClass().getSuperclass());
+                if (mappedSuperClass != null){
+                    mappedClass.getMappedSuperClasses().add(mappedSuperClass);
+                }
+            }
+        }
+        
+        // merge data
+        for (MappedClass mappedClass : mappedClasses.values()){
+            Deque<MappedClass> supers = new ArrayDeque<MappedClass>(mappedClass.getMappedSuperClasses());
+            while (!supers.isEmpty()){
+                MappedClass mappedSuperClass = supers.pop();
+                supers.addAll(mappedSuperClass.getMappedSuperClasses());
+                for (MappedPath path : mappedSuperClass.getProperties()) {
+                    MappedProperty<?> property = (MappedProperty<?>) path.getMappedProperty().clone();
+                    property.resolve(mappedClass);
+                    mappedClass.addMappedPath(new MappedPath(property,
+                            path.getPredicatePath(), !mappedClass.equals(property.getDeclaringClass())));
+                }
+            }
+        }
+        
+        return new SimpleConfiguration(converterRegistry, fetchStrategies, new HashSet<MappedClass>(mappedClasses.values()));
     }
 
     public MappedClassBuilder addClass(Class<?> clazz) {
@@ -48,13 +77,11 @@ public class ConfigurationBuilder {
     }
     
     public MappedClassBuilder addClass(UID uid, Class<?> clazz) {
-        MappedClass mappedClass = new MappedClass(clazz, uid, Collections.<MappedClass>emptyList());
-        mappedClasses.add(mappedClass);
+        MappedClass mappedClass = new MappedClass(clazz, uid, new ArrayList<MappedClass>());
+        mappedClasses.put(clazz,mappedClass);
         return new MappedClassBuilder(mappedClass);
     }
     
-    
-
     public ConfigurationBuilder addFetchStrategy(FetchStrategy fetchStrategy){
         fetchStrategies.add(fetchStrategy);
         return this;
