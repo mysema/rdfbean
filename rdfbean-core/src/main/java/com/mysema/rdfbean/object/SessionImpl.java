@@ -25,7 +25,6 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
 
@@ -1419,7 +1418,7 @@ public final class SessionImpl implements Session {
             return (NODE)o;
         }
         Class<?> type = getClass(o);
-        if (type.isAnnotationPresent(ClassMapping.class)) {
+        if (conf.isMapped(type)){
             return toRDF(o, context);
         } else if (o instanceof UID) {
             return (UID) o;
