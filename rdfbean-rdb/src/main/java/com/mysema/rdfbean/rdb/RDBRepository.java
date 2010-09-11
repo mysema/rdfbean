@@ -83,6 +83,8 @@ public class RDBRepository implements Repository{
         throw new IllegalArgumentException("Unsupported format : " + format);
     }
         
+    private static final int LOAD_BATCH_SIZE = 1000;
+    
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
     private final IdFactory idFactory = new MD5IdFactory();
@@ -184,19 +186,19 @@ public class RDBRepository implements Repository{
         SesameDialect dialect = new SesameDialect(valueFactory);
         RDBConnection connection = openConnection();
         try{
-            Set<STMT> stmts = new HashSet<STMT>();
             if (!replace && context != null){
                 if (!connection.find(null, null, null, context, false).isEmpty()){
                     return;
                 }
             }
-            RDFParser parser = Rio.createParser(getRioFormat(format));
-            parser.setRDFHandler(createHandler(dialect, stmts, context));
-            parser.parse(is, context != null ? context.getValue() : TEST.NS);
             if (context != null && replace){
                 connection.deleteFromContext(context);    
-            }            
-            connection.update(Collections.<STMT>emptySet(), stmts);    
+            }
+            Set<STMT> stmts = new HashSet<STMT>(LOAD_BATCH_SIZE);
+            RDFParser parser = Rio.createParser(getRioFormat(format));
+            parser.setRDFHandler(createHandler(dialect, connection, stmts, context));
+            parser.parse(is, context != null ? context.getValue() : TEST.NS);             
+            connection.update(Collections.<STMT>emptySet(), stmts);
         } catch (RDFParseException e) {
             throw new RepositoryException(e);
         } catch (RDFHandlerException e) {
@@ -224,13 +226,13 @@ public class RDBRepository implements Repository{
                     ValueFactory valueFactory = new ValueFactoryImpl();
                     SesameDialect dialect = new SesameDialect(valueFactory);
                     for (RDFSource source : sources){                        
-                        Set<STMT> stmts = new HashSet<STMT>();
+                        Set<STMT> stmts = new HashSet<STMT>(LOAD_BATCH_SIZE);
                         RDFFormat format = getRioFormat(source.getFormat());
                         RDFParser parser = Rio.createParser(format);
                         UID context = new UID(source.getContext());
-                        parser.setRDFHandler(createHandler(dialect, stmts, context));
-                        parser.parse(source.openStream(), source.getContext());
                         connection.deleteFromContext(context);
+                        parser.setRDFHandler(createHandler(dialect, connection, stmts, context));
+                        parser.parse(source.openStream(), source.getContext());
                         connection.update(Collections.<STMT>emptySet(), stmts);
                     }
                 } catch (RDFParseException e) {
@@ -248,14 +250,20 @@ public class RDBRepository implements Repository{
         }
     }
     
-    private RDFHandler createHandler(final SesameDialect dialect, final Set<STMT> stmts, @Nullable final UID context) {
+    private RDFHandler createHandler(
+            final SesameDialect dialect, 
+            final RDBConnection connection, final Set<STMT> stmts, @Nullable final UID context) {
         return new RDFHandlerBase(){
             @Override
             public void handleStatement(Statement stmt) throws RDFHandlerException {
                 ID sub = dialect.getID(stmt.getSubject());
                 UID pre = dialect.getUID(stmt.getPredicate());
                 NODE obj = dialect.getNODE(stmt.getObject());
-                stmts.add(new STMT(sub, pre, obj, context));                                                              
+                stmts.add(new STMT(sub, pre, obj, context));                
+                if (stmts.size() == LOAD_BATCH_SIZE){
+                    connection.update(Collections.<STMT>emptySet(), stmts);
+                    stmts.clear();
+                }
             }                            
         };
     }

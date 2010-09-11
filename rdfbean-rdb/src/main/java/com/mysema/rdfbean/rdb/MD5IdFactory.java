@@ -9,11 +9,13 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDF;
@@ -41,6 +43,7 @@ public class MD5IdFactory implements IdFactory {
         register("rdfs",RDFS.ALL);
         register("owl",OWL.ALL);
         register("xsd",XSD.ALL);
+        register("core",Arrays.asList(CORE.localId));                
     }
     
     private void register(String prefix, Collection<UID> all) {

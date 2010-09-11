@@ -2,6 +2,7 @@ package com.mysema.rdfbean.rdb.support;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
@@ -19,6 +20,8 @@ public class SortableQueryMetadata extends DefaultQueryMetadata{
     
     private static final long serialVersionUID = 6326236143414219377L;
 
+    private static final Pattern SPLIT = Pattern.compile("_");
+    
     private List<JoinExpression> joins = new ArrayList<JoinExpression>();
     
     @Nullable
@@ -29,10 +32,10 @@ public class SortableQueryMetadata extends DefaultQueryMetadata{
         if (join.getType() == JoinType.DEFAULT){
             joins.add(join);
         }else{
-            String[] path = join.getTarget().toString().split("_");
+            String[] path = SPLIT.split(join.getTarget().toString());
             boolean added = false;
             for (int i = joins.size()-1; i >= 0 && !added; i--){
-                String[] joinPath = joins.get(i).getTarget().toString().split("_");
+                String[] joinPath = SPLIT.split(joins.get(i).getTarget().toString());
                 if (path[0].equals(joinPath[0])){
                     joins.add(i+1, join);
                     added = true;
