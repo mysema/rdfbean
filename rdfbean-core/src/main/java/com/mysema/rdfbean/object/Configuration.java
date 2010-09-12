@@ -38,6 +38,7 @@ public interface Configuration {
     
     Set<MappedClass> getMappedClasses();
 
+    // TODO : move this to MappedClass ?!?
     @Nullable
     UID getContext(Class<?> javaClass, @Nullable ID subject);
 
