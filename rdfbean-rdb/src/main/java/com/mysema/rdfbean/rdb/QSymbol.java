@@ -32,13 +32,13 @@ public class QSymbol extends RelationalPathBase<QSymbol> {
     
     public final PNumber<Long> datatype = createNumber("DATATYPE", Long.class);
     
-    public final PDateTime<java.util.Date> datetime = createDateTime("DATETIME", java.util.Date.class);
+    public final PDateTime<java.sql.Timestamp> datetimeval = createDateTime("DATETIMEVAL", java.sql.Timestamp.class);
 
-    public final PNumber<Double> floating = createNumber("FLOATING", Double.class);
+    public final PNumber<Double> floatval = createNumber("FLOATVAL", Double.class);
 
     public final PNumber<Long> id = createNumber("ID", Long.class);
 
-    public final PNumber<Long> integer = createNumber("INTEGER", Long.class);
+    public final PNumber<Long> intval = createNumber("INTVAL", Long.class);
 
     public final PNumber<Integer> lang = createNumber("LANG", Integer.class);
 

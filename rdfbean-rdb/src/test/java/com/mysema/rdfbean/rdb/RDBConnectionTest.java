@@ -147,14 +147,16 @@ public class RDBConnectionTest extends AbstractRDBTest{
     @Test
     public void testAddStatement() {
         Set<STMT> additions = new HashSet<STMT>();
-        additions.add(new STMT(RDF.type, RDF.type, RDF.Property));
-        additions.add(new STMT(RDF.subject, RDF.type, RDF.Property, new UID(RDF.NS)));
-        additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
-        additions.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));     
+        ID sub1 = new BID();
+        ID sub2 = new BID();
+        additions.add(new STMT(sub1, RDF.type, RDF.Property));        
+        additions.add(new STMT(sub1, RDFS.label, new LIT("type")));
+        additions.add(new STMT(sub1, RDFS.label, new LIT("tyyppi", new Locale("fi"))));
+        additions.add(new STMT(sub2, RDF.type, RDF.Property, new UID(RDF.NS)));
         conn.update(Collections.<STMT>emptySet(), additions);        
         
         for (STMT stmt : additions){
-            assertEquals(1, conn.find(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext(), false).size());
+            assertEquals(stmt + " failed", 1, conn.find(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext(), false).size());
         }
     }
 
@@ -166,14 +168,18 @@ public class RDBConnectionTest extends AbstractRDBTest{
     @Test
     public void testRemoveStatement() {
         Set<STMT> removals = new HashSet<STMT>();
-        removals.add(new STMT(RDF.type, RDF.type, RDF.Property));
-        removals.add(new STMT(RDF.subject, RDF.type, RDF.Property, new UID(RDF.NS)));
-        removals.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
-        removals.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));     
+        ID sub1 = new BID();
+        ID sub2 = new BID();
+        removals.add(new STMT(sub1, RDF.type, RDF.Property));        
+        removals.add(new STMT(sub1, RDFS.label, new LIT("type")));
+        removals.add(new STMT(sub1, RDFS.label, new LIT("type"), new UID(RDF.NS)));
+        removals.add(new STMT(sub1, RDFS.label, new LIT("tyyppi", new Locale("fi"))));
+        removals.add(new STMT(sub2, RDF.type, RDF.Property));
+        removals.add(new STMT(sub2, RDF.type, RDF.Property, new UID(RDF.NS)));
         conn.update(removals, Collections.<STMT>emptySet());        
         
         for (STMT stmt : removals){
-            assertEquals(0, conn.find(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext(), false).size());
+            assertEquals(stmt + " failed", 0, conn.find(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext(), false).size());
         }
     }
     

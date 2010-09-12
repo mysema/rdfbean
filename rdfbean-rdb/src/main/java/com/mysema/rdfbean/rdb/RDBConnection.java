@@ -10,6 +10,7 @@ import static com.mysema.rdfbean.rdb.QStatement.statement;
 import static com.mysema.rdfbean.rdb.QSymbol.symbol;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,7 +29,6 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.dml.SQLDeleteClause;
-import com.mysema.query.sql.dml.SQLInsertClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.Expr;
@@ -44,7 +44,7 @@ import com.mysema.rdfbean.object.Session;
  */
 public class RDBConnection implements RDFConnection{
     
-    private static final int ADD_BATCH = 50;
+    private static final int ADD_BATCH = 200;
    
     public static final Expr<Integer> one = CSimple.create(Integer.class,"1");
     
@@ -121,7 +121,6 @@ public class RDBConnection implements RDFConnection{
     
     private void addNode(Long nodeId, NODE node) {
         SQLMergeClause merge = context.createMerge(symbol);
-        merge.keys(symbol.id);
         merge.set(symbol.id, nodeId);
         merge.set(symbol.resource, node.isResource());
         merge.set(symbol.lexical, node.getValue());
@@ -130,29 +129,33 @@ public class RDBConnection implements RDFConnection{
             merge.set(symbol.datatype, getId(literal.getDatatype()));    
             merge.set(symbol.lang, getLangId(literal.getLang()));
             if (Constants.integerTypes.contains(literal.getDatatype())){
-                merge.set(symbol.integer, Long.valueOf(literal.getValue()));
+                merge.set(symbol.intval, Long.valueOf(literal.getValue()));
             }else if (Constants.decimalTypes.contains(literal.getDatatype())){
-                merge.set(symbol.floating, Double.valueOf(literal.getValue()));
+                merge.set(symbol.floatval, Double.valueOf(literal.getValue()));
             }else if (Constants.dateTypes.contains(literal.getDatatype())){
-                merge.set(symbol.datetime, context.toDate(literal));                
+                merge.set(symbol.datetimeval, new Timestamp(context.toDate(literal).getTime()));     
             }else if (Constants.dateTimeTypes.contains(literal.getDatatype())){
-                merge.set(symbol.datetime, context.toTimestamp(literal));
+                merge.set(symbol.datetimeval, context.toTimestamp(literal));
             }
         }
         merge.execute();
     }
     
     private void addNodes(List<Long> ids, List<NODE> nodes){
+        // TODO : improve performance
         Set<Long> persisted = new HashSet<Long>(context.createQuery()
             .from(symbol)
             .where(symbol.id.in(ids))
             .list(symbol.id));
+        
         for (int i = 0; i < ids.size(); i++){
             Long id = ids.get(i);
             if (!persisted.contains(id)){
                 addNode(id, nodes.get(i));
             }
         }
+        ids.clear();
+        nodes.clear();
     }
     
     public void addNodes(Set<NODE> n, @Nullable BidiMap<NODE,Long> cache) {
@@ -167,46 +170,26 @@ public class RDBConnection implements RDFConnection{
             }
             if (ids.size() == ADD_BATCH){
                 addNodes(ids, nodes);
-                ids = new ArrayList<Long>(ADD_BATCH);
-                nodes = new ArrayList<NODE>(ADD_BATCH);
             }
         }
         if (!ids.isEmpty()){
             addNodes(ids, nodes);
-            ids = new ArrayList<Long>(ADD_BATCH);
-            nodes = new ArrayList<NODE>(ADD_BATCH);
         }
     }
 
     private void addStatement(STMT stmt) {
-        Long c = stmt.getContext() != null ? getId(stmt.getContext()) : null;
+        // TODO : improve performance
+        Long c = stmt.getContext() != null ? getId(stmt.getContext()) : getId(RDB.nullContext);
         Long s = getId(stmt.getSubject());
         Long p = getId(stmt.getPredicate());
         Long o = getId(stmt.getObject());
         
-        SQLQuery query = context.createQuery();
-        query.from(statement);
-        if (stmt.getContext() != null){
-            query.where(statement.model.eq(c));    
-        }else{
-            query.where(statement.model.isNull());
-        }        
-        query.where(statement.subject.eq(s));
-        query.where(statement.predicate.eq(p));
-        query.where(statement.object.eq(o));
-        if (query.uniqueResult(one) != null){
-            return;
-        }
-        
-        // TODO : fix merge clause behaviour in Querydsl SQL
-//        SQLMergeClause merge = context.createMerge(statement);
-//        merge.keys(statement.model, statement.subject, statement.predicate, statement.object);
-        SQLInsertClause insert = context.createInsert(statement);
-        insert.set(statement.model, c);
-        insert.set(statement.subject, s);
-        insert.set(statement.predicate, p);
-        insert.set(statement.object, o);
-        insert.execute();
+        SQLMergeClause merge = context.createMerge(statement);
+        merge.set(statement.model, c);
+        merge.set(statement.subject, s);
+        merge.set(statement.predicate, p);
+        merge.set(statement.object, o);
+        merge.execute();
     }
 
     @Override
@@ -320,6 +303,9 @@ public class RDBConnection implements RDFConnection{
                 }
                 if (m == null && args[counter] != null && !args[counter].equals(Long.valueOf(0l))){
                     m = getNode((Long) args[counter]).asURI();
+                    if (m.equals(RDB.nullContext)){
+                        m = null;
+                    }
                 }
                 return new STMT(s, p, o, m);
             }

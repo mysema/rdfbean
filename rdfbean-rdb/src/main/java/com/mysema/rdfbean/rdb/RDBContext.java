@@ -49,7 +49,7 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
  * @version $Id$
  */
 public final class RDBContext implements Closeable{
-    
+        
     private final ConverterRegistry converterRegistry;
     
     private final RDBOntology ontology;
@@ -62,7 +62,7 @@ public final class RDBContext implements Closeable{
     
     private final BidiMap<Locale,Integer> langCache;
     
-    private final Map<Object,Long> idCache = new HashMap<Object,Long>();
+    private final Map<Object,Long> idCache = new HashMap<Object,Long>(1000);
     
     private final BidiMap<NODE,Long> nodeCache;
     
@@ -216,6 +216,5 @@ public final class RDBContext implements Closeable{
     public java.sql.Timestamp toTimestamp(LIT literal){
         return converterRegistry.fromString(literal.getValue(), java.sql.Timestamp.class);
     }
-    
-    
+        
 }

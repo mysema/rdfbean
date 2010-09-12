@@ -210,17 +210,17 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             }            
             Expr<?> expr;
             if (Constants.decimalClasses.contains(path.getType())){
-                expr = cast(symbol.floating,path.getType());
+                expr = cast(symbol.floatval,path.getType());
             }else if (Number.class.isAssignableFrom(path.getType())){
-                expr = cast(symbol.integer, path.getType());
+                expr = cast(symbol.intval, path.getType());
             }else if (path.getType().equals(java.util.Date.class)){    
-                expr = symbol.datetime;
+                expr = symbol.datetimeval;
             }else if (Constants.dateClasses.contains(path.getType())){
-                expr = new PDate(path.getType(), symbol.datetime.getMetadata()); 
+                expr = new PDate(path.getType(), symbol.datetimeval.getMetadata()); 
             }else if (Constants.dateTimeClasses.contains(path.getType())){    
-                expr = new PDateTime(path.getType(), symbol.datetime.getMetadata());
+                expr = new PDateTime(path.getType(), symbol.datetimeval.getMetadata());
             }else if (Constants.timeClasses.contains(path.getType())){
-                expr = new PTime(path.getType(), symbol.datetime.getMetadata());
+                expr = new PTime(path.getType(), symbol.datetimeval.getMetadata());
             }else{
                 expr = symbol.lexical;
             }

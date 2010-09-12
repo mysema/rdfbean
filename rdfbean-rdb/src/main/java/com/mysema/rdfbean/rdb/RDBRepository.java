@@ -276,40 +276,42 @@ public class RDBRepository implements Repository{
             query.count();
         } catch (Exception e) {
             // language
-            new CreateTableClause(conn,templates,"language")
-            .column("id", Integer.class).notNull()
-            .column("text", String.class).size(256).notNull()
-            .primaryKey("pk_language", "id")
-            .execute();
+            new CreateTableClause(conn,templates,"LANGUAGE")
+              .column("ID", Integer.class).notNull()
+              .column("TEXT", String.class).size(256).notNull()
+              .primaryKey("PK_LANGUAGE", "ID")
+              .execute();
             
             // symbol
-            new CreateTableClause(conn,templates,"symbol")
-            .column("id", Long.class).notNull()
-            .column("resource", Boolean.class).notNull()
-            .column("lexical", String.class).size(1024).notNull()
-            .column("datatype", Long.class)
-            .column("lang", Integer.class)
-            .column("integer", Long.class)
-            .column("floating", Double.class)
-            .column("datetime", Timestamp.class)
-            .primaryKey("pk_symbol", "id")
-            .foreignKey("fk_lang", "lang").references("language", "id")
-            .index("statement_lex", "lexical")
-            .execute();
+            new CreateTableClause(conn,templates,"SYMBOL")
+              .column("ID", Long.class).notNull()
+              .column("RESOURCE", Boolean.class).notNull()
+              .column("LEXICAL", String.class).size(1024).notNull()
+              .column("DATATYPE", Long.class)
+              .column("LANG", Integer.class)
+              .column("INTVAL", Long.class)
+              .column("FLOATVAL", Double.class)
+              .column("DATETIMEVAL", Timestamp.class)
+              .primaryKey("PK_SYMBOL", "ID")
+              .foreignKey("FK_LANG", "LANG").references("LANGUAGE", "ID")
+              .index("STATEMENT_LEX", "LEXICAL")
+              .execute();
             
             // statement spoc,posc
-             new CreateTableClause(conn,templates,"statement")
-            .column("model", Long.class)
-            .column("subject",Long.class).notNull()
-            .column("predicate", Long.class).notNull()
-            .column("object", Long.class).notNull()
-            .foreignKey("fk_model", "model").references("symbol", "id")
-            .foreignKey("fk_subject", "subject").references("symbol", "id")
-            .foreignKey("fk_predicate", "predicate").references("symbol", "id")
-            .foreignKey("fk_object", "object").references("symbol", "id")
-            .index("statement_spom", "subject","predicate","object","model")
-            .index("statement_opsm", "object","predicate","subject","model")
-            .execute();
+             new CreateTableClause(conn,templates,"STATEMENT")
+              .column("MODEL", Long.class).notNull()
+              .column("SUBJECT",Long.class).notNull()
+              .column("PREDICATE", Long.class).notNull()
+              .column("OBJECT", Long.class).notNull()
+              .primaryKey("PK_STATEMENT", "MODEL","SUBJECT","PREDICATE","OBJECT")
+              .foreignKey("FK_MODEL", "MODEL").references("SYMBOL", "ID")
+              .foreignKey("FK_SUBJECT", "SUBJECT").references("SYMBOL", "ID")
+              .foreignKey("FK_PREDICATE", "PREDICATE").references("SYMBOL", "ID")
+              .foreignKey("FK_OBJECT", "OBJECT").references("SYMBOL", "ID")
+              .index("STATEMENT_SPOM", "SUBJECT","PREDICATE","OBJECT","MODEL")
+              .index("STATEMENT_OPSM", "OBJECT","PREDICATE","SUBJECT","MODEL")
+              .execute();
+               
         }finally{
             conn.close();
         }
@@ -350,6 +352,7 @@ public class RDBRepository implements Repository{
             
             // common resources
             nodes.add(CORE.localId);
+            nodes.add(RDB.nullContext);
             nodes.addAll(RDF.ALL);
             nodes.addAll(RDFS.ALL);
             nodes.addAll(XSD.ALL);

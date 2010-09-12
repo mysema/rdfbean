@@ -59,7 +59,7 @@ public abstract class AbstractRDBTest {
     @BeforeClass
     public static void setUpClass() throws IOException{
         if (dataSource == null){
-            dataSource = JdbcConnectionPool.create("jdbc:h2:target/h2", "sa", "");   
+            dataSource = JdbcConnectionPool.create("jdbc:h2:nioMapped:target/h2", "sa", "");   
             dataSource.setMaxConnections(30);
         }
         Configuration configuration = new DefaultConfiguration(Entity1.class, Entity2.class, Entity3.class, SimpleType.class, SimpleType2.class);
