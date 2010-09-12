@@ -11,9 +11,13 @@ import org.junit.Test;
 
 import com.mysema.rdfbean.model.io.Format;
 
+@Ignore
 public class DBPediaLoadTest {
 
     private NativeRepository repository;
+    
+//  private String path = "../../geocoordinates-fixed.nt";
+    private String path = "../../homepages-fixed-subset.nt";
     
     @After
     public void tearDown(){
@@ -23,16 +27,15 @@ public class DBPediaLoadTest {
     }
     
     @Test
-    @Ignore
     public void test() throws FileNotFoundException{
         repository = new NativeRepository();
         repository.setDataDir(new File("target/DBPedia"));
         repository.initialize();
-        InputStream is = new FileInputStream("../../geocoordinates-fixed.nt");
+        InputStream is = new FileInputStream(path);
         long start = System.currentTimeMillis();
         repository.load(Format.NTRIPLES, is, null, false);
         System.out.println(System.currentTimeMillis()-start);
-        //32982ms = 33s
+        //3.536
     }
     
 }
