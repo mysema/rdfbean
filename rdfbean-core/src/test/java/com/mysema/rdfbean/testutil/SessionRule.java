@@ -33,7 +33,7 @@ public class SessionRule implements MethodRule{
                 @Override
                 public void evaluate() throws Throwable {
                     Session session = SessionUtil.openSession(repository, new Locale("fi"), config.value());
-                    RDFBeanTransaction tx = session.beginTransaction();                   
+                    RDFBeanTransaction tx = session.beginTransaction();     
                     try{
                         Field field = target.getClass().getField("session");
                         field.setAccessible(true);
@@ -42,8 +42,7 @@ public class SessionRule implements MethodRule{
                     }finally{
                         tx.rollback();
                         session.close();
-                    }
-                    
+                    }                    
                 }                
             };
         }else{
