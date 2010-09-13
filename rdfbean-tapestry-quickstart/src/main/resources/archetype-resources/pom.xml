@@ -15,7 +15,7 @@
 
 	<properties>
 		<tapestry.version>5.1.0.5</tapestry.version>
-		<jetty.version>6.1.0-SNAPSHOT</jetty.version>
+		<jetty.version>6.1.14-SNAPSHOT</jetty.version>
 		<rdfbean.version>1.3.7</rdfbean.version>
 		<commons.tapestry.version>0.1.8</commons.tapestry.version>
 	</properties>
@@ -191,7 +191,7 @@
 	</profiles>
 
 	<build>
-		<finalName>edith</finalName>
+		<finalName>app</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -227,19 +227,6 @@
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<version>2.7</version>
-			</plugin>
-
-			<!-- OWL schema generation -->
-			<plugin>
-				<groupId>com.mysema.rdf</groupId>
-				<artifactId>rdfbean-maven-plugin</artifactId>
-				<version>${rdfbean.version}</version>
-				<configuration>
-					<prefix>edith</prefix>
-					<namespace>http://www.finlit.fi/semantics/edith/#</namespace>
-					<schemaFile>src/main/rdf/edith.ttl</schemaFile>
-					<useTurtle>true</useTurtle>
-				</configuration>
 			</plugin>
 
 			<!-- Querydsl code generation -->
