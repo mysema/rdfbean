@@ -263,6 +263,11 @@ public class ConfigurationBuilderTest {
         PathBuilder<Person> personPath = new PathBuilderFactory().create(Person.class);
         assertEquals(other, session.from(personPath).where(personPath.getString("firstName").eq("Bob")).uniqueResult(personPath));
         assertEquals(other, session.from(personPath).where(personPath.getString("lastName").eq("Smith")).uniqueResult(personPath));
+        
+        // list
+        assertEquals(1, session.from(personPath).list(personPath).size());
+        
+        
     }
     
 }
