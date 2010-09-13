@@ -142,7 +142,7 @@ public final class MappedClass {
     }
     
     public String getClassNs() {
-        return getClassNs(clazz);
+        return uid != null ? uid.ns() : "";
     }
     
     @Nullable

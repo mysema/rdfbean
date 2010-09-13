@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
@@ -239,7 +240,7 @@ public class ConfigurationBuilderTest {
     }
 
     @Test
-    public void query(){
+    public void query() throws IOException{
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Person.class).addId("id").addProperties();
         builder.addClass(new UID(TEST.NS, "Dept"), Department.class).addId("id").addProperties();
@@ -269,7 +270,7 @@ public class ConfigurationBuilderTest {
         
         // findInstances
         assertEquals(1, session.findInstances(Person.class).size());
-        
+        session.close();        
         
     }
     
