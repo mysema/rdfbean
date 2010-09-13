@@ -486,7 +486,7 @@ public final class SessionImpl implements Session {
                 convertedValue = convertClassReference(value, propertyPath, mappedProperty);
             }
             // Mapped class
-            else if (MappedPath.isMappedClass(targetClass) || mappedProperty.isInjection()) {
+            else if (conf.isMapped(targetClass) || mappedProperty.isInjection()) {
                 convertedValue = convertMappedClass(value, targetClass, propertyPath, mappedProperty);
             }
             // ID reference

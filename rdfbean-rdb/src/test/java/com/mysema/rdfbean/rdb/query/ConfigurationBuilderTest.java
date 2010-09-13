@@ -1,6 +1,6 @@
-package com.mysema.rdfbean.object;
+package com.mysema.rdfbean.rdb.query;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,11 +11,16 @@ import java.util.Locale;
 import org.junit.Test;
 
 import com.mysema.query.types.path.PathBuilder;
-import com.mysema.rdfbean.model.MiniRepository;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.ConfigurationBuilder;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.object.SessionUtil;
+import com.mysema.rdfbean.rdb.AbstractRDBTest;
 
-public class ConfigurationBuilderExtTest {
+public class ConfigurationBuilderTest extends AbstractRDBTest {
     
-    public static class Category extends Identifiable {
+    public static class Category extends Identifiable  {
         
         String name;
         
@@ -68,7 +73,9 @@ public class ConfigurationBuilderExtTest {
         builder.addClass(User.class).addProperties();
         Configuration configuration = builder.build();
         
-        Session session = SessionUtil.openSession(new MiniRepository(), Collections.<Locale>emptySet(), configuration);        
+        Session session = SessionUtil.openSession(repository, Collections.<Locale>emptySet(), configuration);
+        RDFBeanTransaction tx = session.beginTransaction();
+        
         Product product = new Product();
         product.name = "XXX";
         Category category = new Category();
@@ -77,13 +84,6 @@ public class ConfigurationBuilderExtTest {
         session.save(product);
         session.save(category);
         session.save(new User());
-        session.clear();
-        
-        // findInstances
-        session.findInstances(Category.class);
-        session.findInstances(Identifiable.class);
-        session.findInstances(Product.class);
-        session.findInstances(User.class);
         session.clear();
         
         // list
@@ -96,6 +96,11 @@ public class ConfigurationBuilderExtTest {
         assertEquals(1, session.from(_product).list(_product).size());
         assertEquals(1, session.from(_user).list(_user).size());
         
+        assertEquals("XXX", session.from(_category).list(_category).get(0).name);
+        assertEquals("XXX", session.from(_product).list(_product).get(0).name);
+        
+        tx.rollback();
         session.close();
     }
+
 }

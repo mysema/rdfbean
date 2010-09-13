@@ -180,7 +180,8 @@ public final class MappedPath {
             || mappedProperty.isInjection();
     }
 
-    public static boolean isMappedClass(Class<?> type) {
+    @Deprecated
+    private static boolean isMappedClass(Class<?> type) {
         return type != null && type.isAnnotationPresent(ClassMapping.class);
     }
     

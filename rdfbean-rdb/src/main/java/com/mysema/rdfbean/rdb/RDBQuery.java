@@ -260,8 +260,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     }
     
     private boolean isEntityType(Class<?> cl){
-        // TODO : replace with proper check
-        return ID.class.isAssignableFrom(cl) || cl.getAnnotation(ClassMapping.class) != null;
+        return ID.class.isAssignableFrom(cl) || configuration.isMapped(cl);
     }
 
     @Override
