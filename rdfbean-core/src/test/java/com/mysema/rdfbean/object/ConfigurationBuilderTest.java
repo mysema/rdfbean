@@ -267,6 +267,9 @@ public class ConfigurationBuilderTest {
         // list
         assertEquals(1, session.from(personPath).list(personPath).size());
         
+        // findInstances
+        assertEquals(1, session.findInstances(Person.class).size());
+        
         
     }
     
