@@ -26,7 +26,6 @@ import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.ConfigurationBuilder;
 import com.mysema.rdfbean.rdb.RDBRepository;
 import com.mysema.rdfbean.tapestry.TransactionalAdvisor;
-import com.mysema.rdfbean.webshop.domain.Identifiable;
 
 import ${package}.domain.User;
 import ${package}.domain.Identifiable;
