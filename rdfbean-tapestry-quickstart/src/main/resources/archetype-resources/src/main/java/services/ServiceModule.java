@@ -14,6 +14,7 @@ import org.apache.tapestry5.ioc.services.RegistryShutdownHub;
 import org.apache.tapestry5.ioc.services.RegistryShutdownListener;
 import org.h2.jdbcx.JdbcConnectionPool;
 
+import com.mysema.query.annotations.QueryEntities;
 import com.mysema.query.sql.H2Templates;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.rdfbean.model.FetchStrategy;
@@ -25,6 +26,7 @@ import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.ConfigurationBuilder;
 import com.mysema.rdfbean.rdb.RDBRepository;
 import com.mysema.rdfbean.tapestry.TransactionalAdvisor;
+import com.mysema.rdfbean.webshop.domain.Identifiable;
 
 import ${package}.domain.User;
 import ${package}.domain.Identifiable;
@@ -35,7 +37,7 @@ import ${package}.domain.Identifiable;
  */
 public final class ServiceModule {
 
-    @Match({ "UseDAO" })
+    @Match({ "UserDAO" })
     public static void adviseTransactions(TransactionalAdvisor advisor,
             MethodAdviceReceiver receiver) {
         advisor.addTransactionCommitAdvice(receiver);
@@ -46,9 +48,14 @@ public final class ServiceModule {
     }
 
     public static Configuration buildConfiguration() {
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
-        builder.addClass(Identifiable.class).addId("id").addProperties();
-        builder.addClass(User.class).addProperties();
+        ConfigurationBuilder builder = new ConfigurationBuilder();
+        Class<?>[] domainClasses = Identifiable.class.getPackage().getAnnotation(QueryEntities.class).value();
+        builder.addClass(Identifiable.class).addId("id").addProperties();        
+        for (Class<?> domainClass : domainClasses) {
+            if (!domainClass.equals(Identifiable.class)) {
+                builder.addClass(domainClass).addProperties();
+            }
+        }     
         builder.setFetchStrategies(Collections.<FetchStrategy> singletonList(new PredicateWildcardFetch()));
         return builder.build();
     }
