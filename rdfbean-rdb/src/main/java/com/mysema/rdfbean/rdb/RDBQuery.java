@@ -44,7 +44,6 @@ import com.mysema.query.types.path.PNumber;
 import com.mysema.query.types.path.PSimple;
 import com.mysema.query.types.path.PTime;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDF;
