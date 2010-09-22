@@ -10,8 +10,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.path.PString;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -28,9 +28,9 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class StringHandlingTest extends SessionTestBase{
     
-    private PString stringPath = var.listProperty.get(1).directProperty;
+    private StringPath stringPath = var.listProperty.get(1).directProperty;
     
-    private BeanQuery where(EBoolean... conditions) {
+    private BeanQuery where(Predicate... conditions) {
         return session.from(var).where(conditions);
     }
     
@@ -57,7 +57,7 @@ public class StringHandlingTest extends SessionTestBase{
     
     @Test
     public void startsWithIgnoreCase(){
-        assertEquals(1, where(stringPath.startsWith("NS",false)).count());   
+        assertEquals(1, where(stringPath.startsWithIgnoreCase("NS")).count());   
     }
     
     @Test
@@ -67,7 +67,7 @@ public class StringHandlingTest extends SessionTestBase{
     
     @Test
     public void endsWithIgnoreCase(){
-        assertEquals(1, where(stringPath.endsWith("IX",false)).count());   
+        assertEquals(1, where(stringPath.endsWithIgnoreCase("IX")).count());   
     }
     
     @Test

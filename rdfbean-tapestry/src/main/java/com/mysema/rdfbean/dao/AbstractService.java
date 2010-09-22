@@ -10,7 +10,7 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 
 import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.query.BeanListSourceBuilder;
@@ -42,7 +42,7 @@ public abstract class AbstractService {
         return new BeanGridDataSource<T>(sessionFactory, entity, defaultOrder, caseSensitive, null);
     }
     
-    protected <T> GridDataSource createGridDataSource(EntityPath<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, EBoolean conditions){
+    protected <T> GridDataSource createGridDataSource(EntityPath<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, Predicate conditions){
         return new BeanGridDataSource<T>(sessionFactory, entity, defaultOrder, caseSensitive, conditions);
     }
 

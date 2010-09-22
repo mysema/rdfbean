@@ -16,10 +16,10 @@ import com.mysema.query.collections.ColQueryImpl;
 import com.mysema.query.collections.QueryEngine;
 import com.mysema.query.support.ProjectableAdapter;
 import com.mysema.query.types.EntityPath;
-import com.mysema.query.types.Expr;
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.Param;
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.ParamExpression;
+import com.mysema.query.types.Predicate;
 
 /**
  * Non-optimized Memory based BeanQuery implementation
@@ -82,23 +82,23 @@ public class SimpleBeanQuery extends ProjectableAdapter<ColQueryImpl> implements
     }
 
     @Override
-    public BeanQuery where(EBoolean... o) {
+    public BeanQuery where(Predicate... o) {
         colQuery.where(o);
         return this;
     }
 
     @Override
-    public BeanQuery groupBy(Expr<?>... o) {
+    public BeanQuery groupBy(Expression<?>... o) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public BeanQuery having(EBoolean... o) {
+    public BeanQuery having(Predicate... o) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public <T> BeanQuery set(Param<T> param, T value) {
+    public <T> BeanQuery set(ParamExpression<T> param, T value) {
         colQuery.set(param, value);
         return this;
     }

@@ -17,8 +17,8 @@ import org.junit.Test;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.store.StoreException;
 
+import com.mysema.query.types.PathMetadataFactory;
 import com.mysema.query.types.path.EntityPathBase;
-import com.mysema.query.types.path.PathMetadataFactory;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;

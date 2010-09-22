@@ -5,19 +5,19 @@
  */
 package com.mysema.rdfbean.domains;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
-
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
-import com.mysema.query.types.path.PSimple;
-import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathInits;
+import com.mysema.query.types.path.SimplePath;
+import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
+
+import static com.mysema.query.types.PathMetadataFactory.*;
 
 public interface NoteRevisionTermDomain {
 
@@ -95,7 +95,7 @@ public interface NoteRevisionTermDomain {
 
         public static final QNote note = new QNote("note");
 
-        public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
+        public final SimplePath<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
 
         public final QNoteRevision latestRevision;
 
@@ -129,9 +129,9 @@ public interface NoteRevisionTermDomain {
 
         public static final QNoteRevision noteRevision = new QNoteRevision("noteRevision");
 
-        public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
+        public final SimplePath<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
 
-        public final PString lemma = createString("lemma");
+        public final StringPath lemma = createString("lemma");
 
         public final QNote note;
 
@@ -160,11 +160,11 @@ public interface NoteRevisionTermDomain {
 
         public static final QTerm term = new QTerm("term");
 
-        public final PString basicForm = createString("basicForm");
+        public final StringPath basicForm = createString("basicForm");
 
-        public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
+        public final SimplePath<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
 
-        public final PString meaning = createString("meaning");
+        public final StringPath meaning = createString("meaning");
 
         public QTerm(String variable) {
             super(NoteRevisionTermDomain.Term.class, forVariable(variable));

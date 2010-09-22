@@ -5,21 +5,21 @@
  */
 package com.mysema.rdfbean.domains;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
-
 import java.util.HashSet;
 import java.util.Set;
 
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
-import com.mysema.query.types.path.PSet;
-import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathInits;
+import com.mysema.query.types.path.SetPath;
+import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.IDType;
+
+import static com.mysema.query.types.PathMetadataFactory.*;
 
 public interface UserProfileDomain {
     
@@ -105,7 +105,7 @@ public interface UserProfileDomain {
 
         public static final QIdentifiable identifiable = new QIdentifiable("identifiable");
 
-        public final PString id = createString("id");
+        public final StringPath id = createString("id");
 
         public QIdentifiable(String variable) {
             super(UserProfileDomain.Identifiable.class, forVariable(variable));
@@ -151,22 +151,22 @@ public interface UserProfileDomain {
 
         public final QIdentifiable _super = new QIdentifiable(this);
 
-        public final PSet<UserProfileDomain.User> buddies = createSet("buddies", UserProfileDomain.User.class);
+        public final SetPath<UserProfileDomain.User> buddies = createSet("buddies", UserProfileDomain.User.class);
 
-        public final PString email = createString("email");
+        public final StringPath email = createString("email");
 
-        public final PString firstName = createString("firstName");
+        public final StringPath firstName = createString("firstName");
 
         //inherited
-        public final PString id = _super.id;
+        public final StringPath id = _super.id;
 
-        public final PString lastName = createString("lastName");
+        public final StringPath lastName = createString("lastName");
 
-        public final PString password = createString("password");
+        public final StringPath password = createString("password");
 
         public final QProfile profile;
 
-        public final PString username = createString("username");
+        public final StringPath username = createString("username");
 
         public QUser(String variable) {
             this(UserProfileDomain.User.class, forVariable(variable), INITS);

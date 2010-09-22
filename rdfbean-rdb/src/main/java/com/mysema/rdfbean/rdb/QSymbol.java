@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.rdb;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
 
 import com.mysema.query.sql.ForeignKey;
 import com.mysema.query.sql.PrimaryKey;
@@ -13,10 +13,10 @@ import com.mysema.query.sql.RelationalPathBase;
 import com.mysema.query.sql.Table;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.BeanPath;
-import com.mysema.query.types.path.PBoolean;
-import com.mysema.query.types.path.PDateTime;
-import com.mysema.query.types.path.PNumber;
-import com.mysema.query.types.path.PString;
+import com.mysema.query.types.path.BooleanPath;
+import com.mysema.query.types.path.DateTimePath;
+import com.mysema.query.types.path.NumberPath;
+import com.mysema.query.types.path.StringPath;
 
 /**
  * QSymbol is a Querydsl query type for QSymbol
@@ -28,21 +28,21 @@ public class QSymbol extends RelationalPathBase<QSymbol> {
 
     public static final QSymbol symbol = new QSymbol("symbol");
 
-    public final PBoolean resource = createBoolean("RESOURCE");
+    public final BooleanPath resource = createBoolean("RESOURCE");
     
-    public final PNumber<Long> datatype = createNumber("DATATYPE", Long.class);
+    public final NumberPath<Long> datatype = createNumber("DATATYPE", Long.class);
     
-    public final PDateTime<java.sql.Timestamp> datetimeval = createDateTime("DATETIMEVAL", java.sql.Timestamp.class);
+    public final DateTimePath<java.sql.Timestamp> datetimeval = createDateTime("DATETIMEVAL", java.sql.Timestamp.class);
 
-    public final PNumber<Double> floatval = createNumber("FLOATVAL", Double.class);
+    public final NumberPath<Double> floatval = createNumber("FLOATVAL", Double.class);
 
-    public final PNumber<Long> id = createNumber("ID", Long.class);
+    public final NumberPath<Long> id = createNumber("ID", Long.class);
 
-    public final PNumber<Long> intval = createNumber("INTVAL", Long.class);
+    public final NumberPath<Long> intval = createNumber("INTVAL", Long.class);
 
-    public final PNumber<Integer> lang = createNumber("LANG", Integer.class);
+    public final NumberPath<Integer> lang = createNumber("LANG", Integer.class);
 
-    public final PString lexical = createString("LEXICAL");
+    public final StringPath lexical = createString("LEXICAL");
 
     public final PrimaryKey<QSymbol> primaryKey = createPrimaryKey(id);
 

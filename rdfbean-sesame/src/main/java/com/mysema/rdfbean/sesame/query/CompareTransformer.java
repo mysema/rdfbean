@@ -16,7 +16,7 @@ import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Compare.CompareOp;
 
 import com.mysema.query.types.Constant;
-import com.mysema.query.types.Expr;
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
@@ -53,8 +53,8 @@ public class CompareTransformer implements OperationTransformer{
     @SuppressWarnings("unchecked")
     @Override
     public ValueExpr transform(Operation<?> operation, TransformerContext context) {
-        Expr<?> arg1 = operation.getArg(0);
-        Expr<?> arg2 = operation.getArg(1);
+        Expression<?> arg1 = operation.getArg(0);
+        Expression<?> arg2 = operation.getArg(1);
         CompareOp op = ops.get(operation.getOperator());
         
         if (arg2 instanceof SubQueryExpression){

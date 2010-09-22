@@ -16,7 +16,7 @@ import java.util.Locale;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -38,7 +38,7 @@ public class SimpleQueriesTest extends SessionTestBase{
     
     private List<SimpleType> instances;
     
-    private BeanQuery where(EBoolean... conditions) {
+    private BeanQuery where(Predicate... conditions) {
         return session.from(var).where(conditions);
     }
     

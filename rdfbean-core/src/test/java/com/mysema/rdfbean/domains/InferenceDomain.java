@@ -5,14 +5,14 @@
  */
 package com.mysema.rdfbean.domains;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
-
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
-import com.mysema.query.types.path.PString;
+import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
+
+import static com.mysema.query.types.PathMetadataFactory.*;
 
 public interface InferenceDomain {
 
@@ -38,7 +38,7 @@ public interface InferenceDomain {
 
         public static final QEntity1 entity1 = new QEntity1("entity1");
 
-        public final PString id = createString("id");
+        public final StringPath id = createString("id");
 
         public QEntity1(String variable) {
             super(InferenceDomain.Entity1.class, forVariable(variable));
@@ -63,7 +63,7 @@ public interface InferenceDomain {
         public final QEntity1 _super = new QEntity1(this);
 
         //inherited
-        public final PString id = _super.id;
+        public final StringPath id = _super.id;
 
         public QEntity2(String variable) {
             super(InferenceDomain.Entity2.class, forVariable(variable));
@@ -88,7 +88,7 @@ public interface InferenceDomain {
         public final QEntity2 _super = new QEntity2(this);
 
         //inherited
-        public final PString id = _super.id;
+        public final StringPath id = _super.id;
 
         public QEntity3(String variable) {
             super(InferenceDomain.Entity3.class, forVariable(variable));

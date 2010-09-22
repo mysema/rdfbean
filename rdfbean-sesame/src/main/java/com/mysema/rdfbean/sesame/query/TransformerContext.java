@@ -17,7 +17,7 @@ import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.StatementPattern.Scope;
 
 import com.mysema.query.types.Constant;
-import com.mysema.query.types.Expr;
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.SubQueryExpression;
 import com.mysema.rdfbean.model.ID;
@@ -121,7 +121,7 @@ public interface TransformerContext {
      * @return
      */
     @Nullable
-    ValueExpr toValue(Expr<?> expr);
+    ValueExpr toValue(Expression<?> expr);
 
     /**
      * Transform the given ID to a Value

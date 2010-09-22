@@ -188,7 +188,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
     }
 
     private SQLQuery from(RelationalPath<?> entity){
-        return new SQLQueryImpl(jdbcConn, templates).from(entity.asExpr());
+        return new SQLQueryImpl(jdbcConn, templates).from(entity);
     }
 
 }

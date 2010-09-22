@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.domains;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
 
 import java.util.Date;
 import java.util.List;
@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.Set;
 
 import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.path.DateTimePath;
 import com.mysema.query.types.path.EntityPathBase;
-import com.mysema.query.types.path.PDateTime;
-import com.mysema.query.types.path.PList;
-import com.mysema.query.types.path.PMap;
-import com.mysema.query.types.path.PNumber;
-import com.mysema.query.types.path.PSet;
-import com.mysema.query.types.path.PString;
+import com.mysema.query.types.path.ListPath;
+import com.mysema.query.types.path.MapPath;
+import com.mysema.query.types.path.NumberPath;
+import com.mysema.query.types.path.SetPath;
+import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
@@ -186,25 +186,25 @@ public interface SimpleDomain {
 
         public static final QSimpleType simpleType = new QSimpleType("simpleType");
 
-        public final PDateTime<java.util.Date> dateProperty = createDateTime("dateProperty", java.util.Date.class);
+        public final DateTimePath<java.util.Date> dateProperty = createDateTime("dateProperty", java.util.Date.class);
 
-        public final PString directProperty = createString("directProperty");
+        public final StringPath directProperty = createString("directProperty");
 
-        public final PString id = createString("id");
+        public final StringPath id = createString("id");
 
-        public final PList<SimpleDomain.SimpleType2, QSimpleType2> listProperty = createList("listProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class);
+        public final ListPath<SimpleDomain.SimpleType2, QSimpleType2> listProperty = createList("listProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class);
 
-        public final PMap<java.util.Locale, String, PString> localizedAsMap = this.<java.util.Locale, String, PString>createMap("localizedAsMap", java.util.Locale.class, String.class, PString.class);
+        public final MapPath<java.util.Locale, String, StringPath> localizedAsMap = this.<java.util.Locale, String, StringPath>createMap("localizedAsMap", java.util.Locale.class, String.class, StringPath.class);
 
-        public final PString localizedProperty = createString("localizedProperty");
+        public final StringPath localizedProperty = createString("localizedProperty");
 
-        public final PMap<String, SimpleDomain.SimpleType2, QSimpleType2> mapProperty = this.<String, SimpleDomain.SimpleType2, QSimpleType2>createMap("mapProperty", String.class, SimpleDomain.SimpleType2.class, QSimpleType2.class);
+        public final MapPath<String, SimpleDomain.SimpleType2, QSimpleType2> mapProperty = this.<String, SimpleDomain.SimpleType2, QSimpleType2>createMap("mapProperty", String.class, SimpleDomain.SimpleType2.class, QSimpleType2.class);
 
-        public final PString notExistantProperty = createString("notExistantProperty");
+        public final StringPath notExistantProperty = createString("notExistantProperty");
 
-        public final PNumber<Integer> numericProperty = createNumber("numericProperty", Integer.class);
+        public final NumberPath<Integer> numericProperty = createNumber("numericProperty", Integer.class);
 
-        public final PSet<SimpleDomain.SimpleType2> setProperty = createSet("setProperty", SimpleDomain.SimpleType2.class);
+        public final SetPath<SimpleDomain.SimpleType2> setProperty = createSet("setProperty", SimpleDomain.SimpleType2.class);
 
         public QSimpleType(String variable) {
             super(SimpleDomain.SimpleType.class, forVariable(variable));
@@ -226,11 +226,11 @@ public interface SimpleDomain {
 
         public static final QSimpleType2 simpleType2 = new QSimpleType2("simpleType2");
 
-        public final PString directProperty = createString("directProperty");
+        public final StringPath directProperty = createString("directProperty");
 
-        public final PString id = createString("id");
+        public final StringPath id = createString("id");
 
-        public final PString pathProperty = createString("pathProperty");
+        public final StringPath pathProperty = createString("pathProperty");
 
         public QSimpleType2(String variable) {
             super(SimpleDomain.SimpleType2.class, forVariable(variable));

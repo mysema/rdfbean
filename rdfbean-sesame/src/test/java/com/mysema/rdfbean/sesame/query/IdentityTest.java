@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
-import com.mysema.query.types.path.PSimple;
+import com.mysema.query.types.path.SimplePath;
 import com.mysema.rdfbean.domains.IdentityDomain;
 import com.mysema.rdfbean.domains.IdentityDomain.Entity1;
 import com.mysema.rdfbean.domains.IdentityDomain.Entity2;
@@ -26,7 +26,7 @@ public class IdentityTest extends SessionTestBase implements IdentityDomain{
         
         Entity1 e1 = Alias.alias(Entity1.class);
         Entity2 e2 = Alias.alias(Entity2.class);
-        PSimple<ID> idPath = new PSimple<ID>(ID.class, $(e1), "id");
+        SimplePath<ID> idPath = new SimplePath<ID>(ID.class, $(e1), "id");
         assertEquals(entity1, session.from($(e1)).where(idPath.eq(entity1.getId())).uniqueResult($(e1)));
         assertEquals(entity2, session.from($(e2)).where($(e2.getId()).eq(entity2.getId())).uniqueResult($(e2)));
     }

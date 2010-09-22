@@ -44,7 +44,6 @@ import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.types.*;
-import com.mysema.query.types.expr.EBoolean;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.Inference;
@@ -200,12 +199,12 @@ public class SesameQuery
     }
     
     @SuppressWarnings("unchecked")
-    private void addProjection(Expr<?> expr, ProjectionElemList projection, List<ExtensionElem> extensions){
+    private void addProjection(Expression<?> expr, ProjectionElemList projection, List<ExtensionElem> extensions){
         if (expr instanceof Path){
             projection.addElement(new ProjectionElem(toVar((Path<?>) expr).getName()));    
-        }else if (expr instanceof EConstructor){    
-            EConstructor<?> constructor = (EConstructor<?>)expr;
-            for (Expr<?> arg : constructor.getArgs()){
+        }else if (expr instanceof FactoryExpression){    
+            FactoryExpression<?> constructor = (FactoryExpression<?>)expr;
+            for (Expression<?> arg : constructor.getArgs()){
                 addProjection(arg, projection, extensions);
             }
         }else{
@@ -324,7 +323,7 @@ public class SesameQuery
         allPaths.putAll(pathToVar);
         pathToVar = allPaths;
         // select (optional paths)
-        for (Expr<?> expr : metadata.getProjection()){
+        for (Expression<?> expr : metadata.getProjection()){
             addProjection(expr, projection, extensions);
         }
         joinBuilder.setMandatory();
@@ -474,7 +473,7 @@ public class SesameQuery
     }
         
     public TupleExpr toTuples(SubQueryExpression<?> subQuery){
-        EBoolean where = subQuery.getMetadata().getWhere();
+        Predicate where = subQuery.getMetadata().getWhere();
         
         Map<Path<?>,Var> normalPathToVar = pathToVar;        
         pathToVar = new HashMap<Path<?>,Var>(pathToVar);
@@ -489,7 +488,7 @@ public class SesameQuery
         // list
         ProjectionElemList projection = new ProjectionElemList();            
         List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
-        for (Expr<?> expr : subQuery.getMetadata().getProjection()){
+        for (Expression<?> expr : subQuery.getMetadata().getProjection()){
             addProjection(expr, projection, extensions);
         }        
         
@@ -512,7 +511,7 @@ public class SesameQuery
     
     @SuppressWarnings("unchecked")
     @Nullable
-    public ValueExpr toValue(Expr<?> expr) {
+    public ValueExpr toValue(Expression<?> expr) {
         if (expr instanceof Path) {
             return toVar((Path)expr);  
         } else if (expr instanceof Operation) {
@@ -520,7 +519,7 @@ public class SesameQuery
         } else if (expr instanceof Constant) {
             return toVar((Constant<?>)expr);            
         } else {
-            Expr<?> extracted = expr.accept(ExtractorVisitor.DEFAULT, null);
+            Expression<?> extracted = expr.accept(ExtractorVisitor.DEFAULT, null);
             if (extracted != expr){
                 return toValue(extracted);
             }else{
@@ -555,7 +554,7 @@ public class SesameQuery
             if (transformer != null) {             
                 return transformer.transform(operation, this);
             } else {
-                throw new IllegalArgumentException(operation.toString());
+                throw new IllegalArgumentException(operation.getOperator() + " : " + operation.toString());
             }    
         }finally{
             operatorStack.pop();
@@ -681,15 +680,15 @@ public class SesameQuery
             pathToVar.put(path, pathNode);
             return pathNode;
 
-        }else if (path.getMetadata().getPathType().equals(PathType.DELEGATE)){
-            PathMetadata<?> md = path.getMetadata();
-            ValueExpr rv = toValue(md.getExpression());
-            if (rv instanceof Var){
-                pathToVar.put(path, (Var)rv);
-                return (Var)rv;
-            }else{
-                throw new IllegalArgumentException(md.getExpression() + " can't be converted into a Var");
-            }            
+//        }else if (path.getMetadata().getPathType().equals(PathType.DELEGATE)){
+//            PathMetadata<?> md = path.getMetadata();
+//            ValueExpr rv = toValue(md.getExpression());
+//            if (rv instanceof Var){
+//                pathToVar.put(path, (Var)rv);
+//                return (Var)rv;
+//            }else{
+//                throw new IllegalArgumentException(md.getExpression() + " can't be converted into a Var");
+//            }            
             
         } else {
             throw new IllegalArgumentException("Undeclared path " + path);

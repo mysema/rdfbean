@@ -14,7 +14,7 @@ import org.openrdf.query.algebra.Not;
 import org.openrdf.query.algebra.Or;
 import org.openrdf.query.algebra.ValueExpr;
 
-import com.mysema.query.types.Expr;
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
@@ -36,7 +36,7 @@ public class BooleanTransformer implements OperationTransformer{
     @Override
     public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Operator<?> op = operation.getOperator();
-        List<Expr<?>> args = operation.getArgs();
+        List<Expression<?>> args = operation.getArgs();
         
         if (op == Ops.AND){
             ValueExpr arg1, arg2;

@@ -30,9 +30,9 @@ import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.dml.SQLDeleteClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
-import com.mysema.query.types.EConstructor;
-import com.mysema.query.types.Expr;
-import com.mysema.query.types.custom.CSimple;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.expr.ConstructorExpression;
+import com.mysema.query.types.template.NumberTemplate;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
@@ -46,7 +46,7 @@ public class RDBConnection implements RDFConnection{
     
     private static final int ADD_BATCH = 200;
    
-    public static final Expr<Integer> one = CSimple.create(Integer.class,"1");
+    public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
     
     public static final QSymbol sub = new QSymbol("subject");
     
@@ -239,7 +239,7 @@ public class RDBConnection implements RDFConnection{
             @Nullable final UID model, boolean includeInferred) {
         SQLQuery query = this.context.createQuery();
         query.from(statement);
-        List<Expr<?>> exprs = new ArrayList<Expr<?>>();
+        List<Expression<?>> exprs = new ArrayList<Expression<?>>();
         if (subject != null){
             query.where(statement.subject.eq(getId(subject)));
         }else{
@@ -284,7 +284,7 @@ public class RDBConnection implements RDFConnection{
             exprs.add(one);
         }
         
-        EConstructor<STMT> stmt = new EConstructor<STMT>(STMT.class, new Class[0],exprs.toArray(new Expr[exprs.size()])){
+        Expression<STMT> stmt = new ConstructorExpression<STMT>(STMT.class, new Class[0],exprs.toArray(new Expression[exprs.size()])){
             @Override
             public STMT newInstance(Object... args) {
                 ID s = subject;

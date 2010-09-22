@@ -9,15 +9,15 @@ import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.support.DetachableMixin;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.EntityPath;
-import com.mysema.query.types.Expr;
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.expr.EComparable;
-import com.mysema.query.types.expr.EDate;
-import com.mysema.query.types.expr.EDateTime;
-import com.mysema.query.types.expr.ENumber;
-import com.mysema.query.types.expr.EString;
-import com.mysema.query.types.expr.ETime;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.expr.ComparableExpression;
+import com.mysema.query.types.expr.DateExpression;
+import com.mysema.query.types.expr.DateTimeExpression;
+import com.mysema.query.types.expr.NumberExpression;
+import com.mysema.query.types.expr.StringExpression;
+import com.mysema.query.types.expr.TimeExpression;
 import com.mysema.query.types.query.*;
 
 /**
@@ -44,7 +44,7 @@ public class BeanSubQuery implements Detachable {
     }
         
     @Override
-    public EBoolean exists() {
+    public Predicate exists() {
         return detachableMixin.exists();
     }
     
@@ -59,22 +59,22 @@ public class BeanSubQuery implements Detachable {
     }
 
     @Override
-    public ListSubQuery<Object[]> list(Expr<?> first, Expr<?> second, Expr<?>... rest) {
+    public ListSubQuery<Object[]> list(Expression<?> first, Expression<?> second, Expression<?>... rest) {
         return detachableMixin.list(first, second, rest);
     }
 
     @Override
-    public ListSubQuery<Object[]> list(Expr<?>[] args) {
+    public ListSubQuery<Object[]> list(Expression<?>[] args) {
         return detachableMixin.list(args);
     }
 
     @Override
-    public <RT> ListSubQuery<RT> list(Expr<RT> projection) {
+    public <RT> ListSubQuery<RT> list(Expression<RT> projection) {
         return detachableMixin.list(projection);
     }
 
     @Override
-    public EBoolean notExists() {
+    public Predicate notExists() {
         return detachableMixin.notExists();
     }
 
@@ -89,52 +89,52 @@ public class BeanSubQuery implements Detachable {
     }
 
     @Override
-    public BooleanSubQuery unique(EBoolean projection) {
+    public BooleanSubQuery unique(Predicate projection) {
         return detachableMixin.unique(projection);
     }
 
     @Override
-    public <RT extends Comparable<?>> ComparableSubQuery<RT> unique(EComparable<RT> projection) {
+    public <RT extends Comparable<?>> ComparableSubQuery<RT> unique(ComparableExpression<RT> projection) {
         return detachableMixin.unique(projection);
     }
 
     @Override
-    public <RT extends Comparable<?>> DateSubQuery<RT> unique(EDate<RT> projection) {
+    public <RT extends Comparable<?>> DateSubQuery<RT> unique(DateExpression<RT> projection) {
         return detachableMixin.unique(projection);
     }
 
     @Override
-    public <RT extends Comparable<?>> DateTimeSubQuery<RT> unique(EDateTime<RT> projection) {
+    public <RT extends Comparable<?>> DateTimeSubQuery<RT> unique(DateTimeExpression<RT> projection) {
         return detachableMixin.unique(projection);
     }
 
     @Override
-    public <RT extends Number & Comparable<?>> NumberSubQuery<RT> unique(ENumber<RT> projection) {
+    public <RT extends Number & Comparable<?>> NumberSubQuery<RT> unique(NumberExpression<RT> projection) {
         return detachableMixin.unique(projection);
     }
 
     @Override
-    public StringSubQuery unique(EString projection) {
+    public StringSubQuery unique(StringExpression projection) {
         return detachableMixin.unique(projection);
     }
 
     @Override
-    public <RT extends Comparable<?>> TimeSubQuery<RT> unique(ETime<RT> projection) {
+    public <RT extends Comparable<?>> TimeSubQuery<RT> unique(TimeExpression<RT> projection) {
         return detachableMixin.unique(projection);
     }
 
     @Override
-    public ObjectSubQuery<Object[]> unique(Expr<?> first, Expr<?> second, Expr<?>... rest) {
+    public ObjectSubQuery<Object[]> unique(Expression<?> first, Expression<?> second, Expression<?>... rest) {
         return detachableMixin.unique(first, second, rest);
     }
 
     @Override
-    public ObjectSubQuery<Object[]> unique(Expr<?>[] args) {
+    public ObjectSubQuery<Object[]> unique(Expression<?>[] args) {
         return detachableMixin.unique(args);
     }
 
     @Override
-    public <RT> ObjectSubQuery<RT> unique(Expr<RT> projection) {
+    public <RT> ObjectSubQuery<RT> unique(Expression<RT> projection) {
         return detachableMixin.unique(projection);
     }
 
@@ -144,7 +144,7 @@ public class BeanSubQuery implements Detachable {
      * @param o multiple mandatory filters
      * @return
      */
-    public BeanSubQuery where(EBoolean... o){
+    public BeanSubQuery where(Predicate... o){
         return queryMixin.where(o);
     }
     

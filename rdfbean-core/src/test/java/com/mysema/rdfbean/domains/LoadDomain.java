@@ -5,13 +5,13 @@
  */
 package com.mysema.rdfbean.domains;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
 
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
-import com.mysema.query.types.path.PNumber;
-import com.mysema.query.types.path.PString;
+import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.PathInits;
+import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
@@ -63,9 +63,9 @@ public interface LoadDomain {
 
         public static final QDocument document = new QDocument("document");
 
-        public final PString id = createString("id");
+        public final StringPath id = createString("id");
 
-        public final PString text = createString("text");
+        public final StringPath text = createString("text");
 
         public QDocument(String variable) {
             super(Document.class, forVariable(variable));
@@ -91,9 +91,9 @@ public interface LoadDomain {
 
         public final QDocument document;
 
-        public final PString id = createString("id");
+        public final StringPath id = createString("id");
 
-        public final PString text = createString("text");
+        public final StringPath text = createString("text");
 
         public QEntity(String variable) {
             this(Entity.class, forVariable(variable), INITS);
@@ -122,13 +122,13 @@ public interface LoadDomain {
 
         public static final QRevision revision = new QRevision("revision");
 
-        public final PNumber<Long> created = createNumber("created", Long.class);
+        public final NumberPath<Long> created = createNumber("created", Long.class);
 
-        public final PString id = createString("id");
+        public final StringPath id = createString("id");
 
         public final QEntity revisionOf;
 
-        public final PNumber<Long> svnRevision = createNumber("svnRevision", Long.class);
+        public final NumberPath<Long> svnRevision = createNumber("svnRevision", Long.class);
 
         public QRevision(String variable) {
             this(Revision.class, forVariable(variable), INITS);

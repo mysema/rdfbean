@@ -25,7 +25,7 @@ import org.openrdf.query.algebra.Compare.CompareOp;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.query.types.Constant;
-import com.mysema.query.types.Expr;
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
@@ -63,8 +63,8 @@ public class EqualsTransformer implements OperationTransformer{
     @SuppressWarnings("unchecked")
     @Override
     public ValueExpr transform(Operation<?> operation, TransformerContext context) {
-        Expr<?> arg1 = operation.getArg(0);
-        Expr<?> arg2 = operation.getArg(1);
+        Expression<?> arg1 = operation.getArg(0);
+        Expression<?> arg2 = operation.getArg(1);
         
         if (arg1 instanceof Path){            
            
@@ -108,7 +108,7 @@ public class EqualsTransformer implements OperationTransformer{
 
     @Nullable
     @SuppressWarnings("unchecked")
-    private ValueExpr pathEqNeConstant(Operator<?> op, Path<?> path, Expr<?> constant, TransformerContext context){
+    private ValueExpr pathEqNeConstant(Operator<?> op, Path<?> path, Expression<?> constant, TransformerContext context){
         Var pathVar = context.toVar(path);
         Value constValue;
         

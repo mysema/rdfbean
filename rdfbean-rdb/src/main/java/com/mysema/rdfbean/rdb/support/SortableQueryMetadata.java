@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.JoinType;
-import com.mysema.query.types.Expr;
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.Predicate;
 
 /**
  * @author tiwe
@@ -49,12 +49,12 @@ public class SortableQueryMetadata extends DefaultQueryMetadata{
     }
     
     @Override
-    public void addJoin(JoinType joinType, Expr<?> expr) {
+    public void addJoin(JoinType joinType, Expression<?> expr) {
         addJoin(new JoinExpression(joinType, expr));
     }
 
     @Override
-    public void addJoinCondition(EBoolean o) {
+    public void addJoinCondition(Predicate o) {
         if (last != null){
             last.addCondition(o);
         }

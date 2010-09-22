@@ -7,7 +7,7 @@ import org.openrdf.query.algebra.ValueExpr;
 
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
-import com.mysema.query.types.PathType;
+import com.mysema.query.types.Ops;
 
 /**
  * DelegateTransformer provides
@@ -19,7 +19,7 @@ public class DelegateTransformer implements OperationTransformer{
 
     @Override
     public Collection<? extends Operator<?>> getSupportedOperations() {
-        return Collections.singleton(PathType.DELEGATE);
+        return Collections.singleton(Ops.DELEGATE);
     }
 
     @Override

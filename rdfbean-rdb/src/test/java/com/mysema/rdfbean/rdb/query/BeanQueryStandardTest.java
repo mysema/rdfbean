@@ -17,8 +17,8 @@ import com.mysema.query.Module;
 import com.mysema.query.Projectable;
 import com.mysema.query.QueryExecution;
 import com.mysema.query.Target;
-import com.mysema.query.types.Expr;
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.rdfbean.domains.SimpleDomain;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
@@ -42,12 +42,12 @@ public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDoma
     
     private QueryExecution standardTest = new QueryExecution(Module.SQL, Target.H2){        
         @Override
-        protected Pair<Projectable, List<Expr<?>>> createQuery() {
-            return Pair.of((Projectable)session.from(v1, v2), Collections.<Expr<?>>emptyList());
+        protected Pair<Projectable, List<Expression<?>>> createQuery() {
+            return Pair.of((Projectable)session.from(v1, v2), Collections.<Expression<?>>emptyList());
         }
         @Override
-        protected Pair<Projectable, List<Expr<?>>> createQuery(EBoolean filter) {
-            return Pair.of((Projectable)session.from(v1, v2).where(filter), Arrays.<Expr<?>>asList(v1, v2));
+        protected Pair<Projectable, List<Expression<?>>> createQuery(BooleanExpression filter) {
+            return Pair.of((Projectable)session.from(v1, v2).where(filter), Arrays.<Expression<?>>asList(v1, v2));
         }        
     };
     

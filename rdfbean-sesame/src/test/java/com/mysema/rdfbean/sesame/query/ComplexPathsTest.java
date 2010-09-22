@@ -16,7 +16,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Note;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.NoteRevision;
@@ -96,7 +96,7 @@ public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTer
         session.saveAll(note, rev1, rev2);
 
         NoteRevision noteVar = Alias.alias(NoteRevision.class);
-        EBoolean where = $(noteVar).eq($(noteVar.getNote().getLatestRevision()));
+        Predicate where = $(noteVar).eq($(noteVar.getNote().getLatestRevision()));
         assertEquals(1, session.from($(noteVar)).where(where).list($(noteVar)).size());
     }
     

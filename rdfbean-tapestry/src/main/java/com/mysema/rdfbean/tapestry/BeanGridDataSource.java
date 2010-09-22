@@ -17,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.expr.EComparable;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.expr.ComparableExpression;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
@@ -46,7 +46,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
     private List<T> preparedResults;
     
     @Nullable
-    private final EBoolean conditions;
+    private final Predicate conditions;
     
     private final OrderSpecifier<?> defaultOrder;
     
@@ -74,7 +74,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
      * @param conditions filter conditions
      */
     @SuppressWarnings("unchecked")
-    public BeanGridDataSource(SessionFactory sessionFactory, EntityPath<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, @Nullable EBoolean conditions) {
+    public BeanGridDataSource(SessionFactory sessionFactory, EntityPath<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, @Nullable Predicate conditions) {
         this.sessionFactory = Assert.notNull(sessionFactory,"sessionFactory");
         this.entityType = (Class<T>) Assert.notNull(entity.getType(),"entity has no type");
         this.entityPath = new PathBuilder<T>(entity.getType(), entity.getMetadata());
@@ -121,7 +121,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
         for (SortConstraint constraint : sortConstraints) {
             String propertyName = constraint.getPropertyModel().getPropertyName();
             Class<? extends Comparable<?>> propertyType = constraint.getPropertyModel().getPropertyType();
-            EComparable<?> propertyPath;
+            ComparableExpression<?> propertyPath;
             if (!caseSensitive && propertyType.equals(String.class)){
                 propertyPath = entityPath.getString(propertyName).toLowerCase();
             }else{

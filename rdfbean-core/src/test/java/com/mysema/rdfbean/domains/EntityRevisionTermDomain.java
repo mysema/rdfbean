@@ -5,19 +5,19 @@
  */
 package com.mysema.rdfbean.domains;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
-
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
-import com.mysema.query.types.path.PSimple;
-import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathInits;
+import com.mysema.query.types.path.SimplePath;
+import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
+
+import static com.mysema.query.types.PathMetadataFactory.*;
 
 public interface EntityRevisionTermDomain {
     
@@ -89,7 +89,7 @@ public interface EntityRevisionTermDomain {
 
         public static final QEntity entity = new QEntity("entity");
 
-        public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
+        public final SimplePath<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
 
         public final QEntityRevision latestRevision;
 
@@ -123,11 +123,11 @@ public interface EntityRevisionTermDomain {
 
         public static final QEntityRevision entityRevision = new QEntityRevision("entityRevision");
 
-        public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
+        public final SimplePath<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
 
         public final QEntity revisionOf;
 
-        public final PString text = createString("text");
+        public final StringPath text = createString("text");
 
         public QEntityRevision(String variable) {
             this(EntityRevisionTermDomain.EntityRevision.class, forVariable(variable), INITS);
@@ -154,9 +154,9 @@ public interface EntityRevisionTermDomain {
 
         public static final QTerm term = new QTerm("term");
 
-        public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
+        public final SimplePath<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
 
-        public final PString text2 = createString("text2");
+        public final StringPath text2 = createString("text2");
 
         public QTerm(String variable) {
             super(EntityRevisionTermDomain.Term.class, forVariable(variable));

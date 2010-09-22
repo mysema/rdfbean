@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
@@ -56,7 +56,7 @@ public class UpdateTest extends AbstractStoreTest{
         article.title = null;
         session.save(article);
         session.clear();        
-        EBoolean notNull = QUpdateTest_Article.article.title.isNotNull();
+        BooleanExpression notNull = QUpdateTest_Article.article.title.isNotNull();
         assertTrue(query(notNull.and(QUpdateTest_Article.article.title.eq("Test"))) == null);
         assertTrue(query(notNull.and(QUpdateTest_Article.article.title.eq("Other"))) == null);
         assertTrue(query(QUpdateTest_Article.article.title.isNull()) != null);
@@ -92,7 +92,7 @@ public class UpdateTest extends AbstractStoreTest{
         assertTrue(query(QUpdateTest_Article.article.titles.contains("2")) != null);
     }
     
-    private Article query(EBoolean cond){
+    private Article query(BooleanExpression cond){
         return session.from(QUpdateTest_Article.article).where(cond)
             .uniqueResult(QUpdateTest_Article.article);
     }

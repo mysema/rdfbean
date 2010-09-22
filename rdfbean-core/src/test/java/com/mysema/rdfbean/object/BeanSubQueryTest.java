@@ -8,8 +8,8 @@ package com.mysema.rdfbean.object;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mysema.query.types.path.PString;
 import com.mysema.query.types.path.PathBuilder;
+import com.mysema.query.types.path.StringPath;
 
 /**
  * BeanSubQueryTest provides
@@ -23,7 +23,7 @@ public class BeanSubQueryTest {
 
     private PathBuilder<Object> pathBuilder = new PathBuilder<Object>(Object.class, "obj");
     
-    private PString stringPath = pathBuilder.getString("str");
+    private StringPath stringPath = pathBuilder.getString("str");
     
     @Before
     public void setUp(){

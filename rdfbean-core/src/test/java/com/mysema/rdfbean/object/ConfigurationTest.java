@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.mysema.query.Projectable;
 import com.mysema.query.Query;
-import com.mysema.query.types.Expr;
+import com.mysema.query.types.Expression;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.TypedList;
@@ -65,7 +65,7 @@ public class ConfigurationTest {
         DefaultConfiguration conf = new DefaultConfiguration();
         Set<Class<?>> classes = conf.scanPackage(classLoader, Query.class.getPackage());
         assertTrue(classes.contains(Projectable.class));
-        assertTrue(classes.contains(Expr.class));
+        assertTrue(classes.contains(Expression.class));
         assertFalse(classes.isEmpty()); 
     }
 

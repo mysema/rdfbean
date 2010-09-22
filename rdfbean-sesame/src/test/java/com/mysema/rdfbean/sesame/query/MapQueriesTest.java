@@ -12,9 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.store.StoreException;
 
-import com.mysema.query.types.Expr;
-import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.expr.EMap;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.expr.BooleanExpression;
+import com.mysema.query.types.expr.MapExpression;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.sesame.SessionTestBase;
@@ -42,7 +42,7 @@ public class MapQueriesTest extends SessionTestBase{
     
     @Test
     public void mapFilters() {
-        for (EBoolean f : mapFilters(v1.mapProperty, v2.mapProperty, "", instance)){
+        for (BooleanExpression f : mapFilters(v1.mapProperty, v2.mapProperty, "", instance)){
             System.err.println("\n" + f);
             session.from(v1,v2).where(f).list(v1.directProperty);
         }             
@@ -50,14 +50,14 @@ public class MapQueriesTest extends SessionTestBase{
 
     @Test
     public void mapProjections() {
-        for (Expr<?> pr : mapProjections(v1.mapProperty, v2.mapProperty, "", instance)){
+        for (Expression<?> pr : mapProjections(v1.mapProperty, v2.mapProperty, "", instance)){
             System.err.println("\n" + pr);
             session.from(v1,v2).list(pr);
         }    
     }
     
-    private static <K,V> Collection<EBoolean> mapFilters(EMap<K,V> expr, EMap<K,V> other, K knownKey, V knownValue) {
-        return Arrays.<EBoolean>asList(
+    private static <K,V> Collection<BooleanExpression> mapFilters(MapExpression<K,V> expr, MapExpression<K,V> other, K knownKey, V knownValue) {
+        return Arrays.<BooleanExpression>asList(
           expr.isEmpty(),
           expr.isNotEmpty(),
           expr.containsKey(knownKey),
@@ -66,8 +66,8 @@ public class MapQueriesTest extends SessionTestBase{
         );
     }
         
-    private static <K,V> Collection<Expr<?>> mapProjections(EMap<K,V> expr, EMap<K,V> other, K knownKey, V knownValue) {
-        return Arrays.<Expr<?>>asList(
+    private static <K,V> Collection<Expression<?>> mapProjections(MapExpression<K,V> expr, MapExpression<K,V> other, K knownKey, V knownValue) {
+        return Arrays.<Expression<?>>asList(
           expr.get(knownKey)
         );
     }

@@ -13,7 +13,7 @@ import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Path;
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**
@@ -48,7 +48,7 @@ public class BeanListSourceBuilder{
         return this;
     }
     
-    public BeanListSourceBuilder where(EBoolean... o){
+    public BeanListSourceBuilder where(Predicate... o){
         metadata.addWhere(o);
         return this;
     }

@@ -13,8 +13,8 @@ import java.util.Collections;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.mysema.query.types.expr.EBoolean;
-import com.mysema.query.types.expr.ENumber;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.expr.NumberExpression;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -30,7 +30,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class ListQueriesTest extends SessionTestBase{
     
-    private ENumber<Integer> size = var.listProperty.size();
+    private NumberExpression<Integer> size = var.listProperty.size();
         
     @Test
     public void persist(){
@@ -53,7 +53,7 @@ public class ListQueriesTest extends SessionTestBase{
               var.listProperty.isNotEmpty()).count();
     }
     
-    private BeanQuery where(EBoolean... conditions) {
+    private BeanQuery where(Predicate... conditions) {
         return session.from(var).where(conditions);
     }
 

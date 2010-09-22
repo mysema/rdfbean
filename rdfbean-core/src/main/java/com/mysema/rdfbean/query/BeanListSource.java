@@ -15,7 +15,7 @@ import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Path;
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionCallback;
@@ -29,10 +29,9 @@ import com.mysema.rdfbean.object.SessionFactory;
  */
 @Immutable
 public class BeanListSource<T>{
-//public class BeanListSource<T> implements ListSource<T>{
     
     @Nullable
-    private final EBoolean condition;
+    private final Predicate condition;
     
     private final OrderSpecifier<?>[] order;
     
@@ -76,7 +75,7 @@ public class BeanListSource<T>{
                 if (condition != null){
                     qry.where(condition);
                 }
-                return qry.list(projection.asExpr());
+                return qry.list(projection);
             }
         });
     }

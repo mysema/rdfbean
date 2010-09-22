@@ -12,8 +12,8 @@ import com.mysema.query.sql.H2Templates;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
-import com.mysema.query.types.Expr;
-import com.mysema.query.types.expr.EBoolean;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.model.MemoryIdSequence;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
@@ -52,11 +52,11 @@ public class ExplainTest {
         QSymbol symbol = QSymbol.symbol;
         
         // stmt
-        EBoolean s = stmt.subject.eq(1l);
-        EBoolean p = stmt.predicate.eq(1l);
-        EBoolean o = stmt.object.eq(1l);
-        EBoolean m = stmt.model.eq(1l);
-        Expr[] projection = new Expr[]{stmt.subject, stmt.predicate, stmt.object, stmt.model};
+        Predicate s = stmt.subject.eq(1l);
+        Predicate p = stmt.predicate.eq(1l);
+        Predicate o = stmt.object.eq(1l);
+        Predicate m = stmt.model.eq(1l);
+        Expression[] projection = new Expression[]{stmt.subject, stmt.predicate, stmt.object, stmt.model};
         
         print(query().from(stmt).where(s).getResults(projection));  
         print(query().from(stmt).where(s,p).getResults(projection));    

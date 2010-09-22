@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.rdb;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
 
 import com.mysema.query.sql.ForeignKey;
 import com.mysema.query.sql.PrimaryKey;
@@ -13,8 +13,8 @@ import com.mysema.query.sql.RelationalPathBase;
 import com.mysema.query.sql.Table;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.BeanPath;
-import com.mysema.query.types.path.PNumber;
-import com.mysema.query.types.path.PString;
+import com.mysema.query.types.path.NumberPath;
+import com.mysema.query.types.path.StringPath;
 
 /**
  * QLanguage is a Querydsl query type for QLanguage
@@ -26,9 +26,9 @@ public class QLanguage extends RelationalPathBase<QLanguage>{
 
     public static final QLanguage language = new QLanguage("lang");
 
-    public final PNumber<Integer> id = createNumber("ID", Integer.class);
+    public final NumberPath<Integer> id = createNumber("ID", Integer.class);
 
-    public final PString text = createString("TEXT");
+    public final StringPath text = createString("TEXT");
 
     public final PrimaryKey<QLanguage> primaryKey = createPrimaryKey(id);
 

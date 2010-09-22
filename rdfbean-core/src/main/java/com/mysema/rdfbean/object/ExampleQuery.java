@@ -20,7 +20,8 @@ import org.joda.time.LocalTime;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.BooleanBuilder;
-import com.mysema.query.types.Expr;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.query.types.path.PathBuilderFactory;
 import com.mysema.rdfbean.model.BID;
@@ -76,8 +77,8 @@ public class ExampleQuery <T>{
                  && !property.isMap()
                  // blank nodes are skipped
                  && !(value instanceof BID)){
-                Expr<Object> propertyPath = (Expr)entityPath.get(property.getName(), property.getType());
-                conditions.and(propertyPath.eq(value));
+                Expression<Object> propertyPath = (Expression)entityPath.get(property.getName(), property.getType());
+                conditions.and(ExpressionUtils.eqConst(propertyPath, value));
             }
         }
     }

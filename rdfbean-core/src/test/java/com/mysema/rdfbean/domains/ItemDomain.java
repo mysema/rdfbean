@@ -5,18 +5,18 @@
  */
 package com.mysema.rdfbean.domains;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
-
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
-import com.mysema.query.types.path.PSimple;
-import com.mysema.query.types.path.PString;
+import com.mysema.query.types.path.SimplePath;
+import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
+
+import static com.mysema.query.types.PathMetadataFactory.*;
 
 public interface ItemDomain {
     
@@ -54,9 +54,9 @@ public interface ItemDomain {
 
         public static final QItem item = new QItem("item");
 
-        public final PString path = createString("path");
+        public final StringPath path = createString("path");
 
-        public final PSimple<com.mysema.rdfbean.model.ID> resource = createSimple("resource", com.mysema.rdfbean.model.ID.class);
+        public final SimplePath<com.mysema.rdfbean.model.ID> resource = createSimple("resource", com.mysema.rdfbean.model.ID.class);
 
         public QItem(String variable) {
             super(Item.class, forVariable(variable));

@@ -28,7 +28,7 @@ public class MapIsEmptyTransformer implements OperationTransformer{
 
     @Override
     public Collection<? extends Operator<?>> getSupportedOperations() {
-        return Collections.singleton(Ops.MAP_ISEMPTY);
+        return Collections.singleton(Ops.MAP_IS_EMPTY);
     }
 
     @SuppressWarnings("unchecked")

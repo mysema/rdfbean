@@ -5,20 +5,20 @@
  */
 package com.mysema.rdfbean.domains;
 
-import static com.mysema.query.types.path.PathMetadataFactory.forVariable;
-
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
-import com.mysema.query.types.path.PNumber;
-import com.mysema.query.types.path.PSimple;
-import com.mysema.query.types.path.PString;
+import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.PathInits;
+import com.mysema.query.types.path.SimplePath;
+import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
+
+import static com.mysema.query.types.PathMetadataFactory.*;
 
 public interface EntityDocumentRevisionDomain {
     
@@ -89,7 +89,7 @@ public interface EntityDocumentRevisionDomain {
 
         public static final QDocument document = new QDocument("document");
 
-        public final PString id = createString("id");
+        public final StringPath id = createString("id");
 
         public QDocument(String variable) {
             super(EntityDocumentRevisionDomain.Document.class, forVariable(variable));
@@ -115,7 +115,7 @@ public interface EntityDocumentRevisionDomain {
 
         public final QDocument document;
 
-        public final PString id = createString("id");
+        public final StringPath id = createString("id");
 
         public QEntity(String variable) {
             this(EntityDocumentRevisionDomain.Entity.class, forVariable(variable), INITS);
@@ -144,13 +144,13 @@ public interface EntityDocumentRevisionDomain {
 
         public static final QRevision revision = new QRevision("revision");
 
-        public final PNumber<Long> created = createNumber("created", Long.class);
+        public final NumberPath<Long> created = createNumber("created", Long.class);
 
-        public final PSimple<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
+        public final SimplePath<com.mysema.rdfbean.model.ID> id = createSimple("id", com.mysema.rdfbean.model.ID.class);
 
         public final QEntity revisionOf;
 
-        public final PNumber<Long> svnRevision = createNumber("svnRevision", Long.class);
+        public final NumberPath<Long> svnRevision = createNumber("svnRevision", Long.class);
 
         public QRevision(String variable) {
             this(EntityDocumentRevisionDomain.Revision.class, forVariable(variable), INITS);

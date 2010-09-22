@@ -25,11 +25,11 @@ import com.mysema.query.SearchResults;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.Constant;
-import com.mysema.query.types.EConstructor;
 import com.mysema.query.types.EntityPath;
-import com.mysema.query.types.Expr;
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.expr.ConstructorExpression;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NodeType;
@@ -94,9 +94,9 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         
     @SuppressWarnings("unchecked")
     @Nullable
-    private <RT> RT getAsProjectionValue(Expr<RT> expr, N[] nodes, MutableInt offset) {
-        if (expr instanceof EConstructor){
-            EConstructor<?> constructor = (EConstructor<?>)expr;
+    private <RT> RT getAsProjectionValue(Expression<RT> expr, N[] nodes, MutableInt offset) {
+        if (expr instanceof ConstructorExpression){
+            ConstructorExpression<?> constructor = (ConstructorExpression<?>)expr;
             Object[] args = new Object[constructor.getArgs().size()];
             for (int i = 0; i < args.length; i++){
                 args[i] = getAsProjectionValue(constructor.getArgs().get(i).getType(), nodes[offset.intValue() + i]);
@@ -144,7 +144,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
     
     @Override
-    public CloseableIterator<Object[]> iterate(final Expr<?>[] args) {
+    public CloseableIterator<Object[]> iterate(final Expression<?>[] args) {
         queryMixin.addToProjection(args);
         
         // TODO : add batch fetch functionality
@@ -173,7 +173,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
 
     @Override
-    public <RT> CloseableIterator<RT> iterate(final Expr<RT> expr) {
+    public <RT> CloseableIterator<RT> iterate(final Expression<RT> expr) {
         queryMixin.addToProjection(expr);
 
         // TODO : add batch fetch functionality
@@ -196,7 +196,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
     
     @Override
-    public <RT> SearchResults<RT> listResults(Expr<RT> expr) {
+    public <RT> SearchResults<RT> listResults(Expression<RT> expr) {
         // TODO : simplify this
         queryMixin.addToProjection(expr);        
         QueryModifiers modifiers = queryMixin.getMetadata().getModifiers();
