@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -27,6 +28,7 @@ import org.apache.commons.collections15.Transformer;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
+import com.mysema.query.dml.StoreClause;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.dml.SQLDeleteClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
@@ -45,16 +47,20 @@ import com.mysema.rdfbean.object.Session;
 public class RDBConnection implements RDFConnection{
     
     private static final int ADD_BATCH = 200;
+    
+    public static final QSymbol con = new QSymbol("context");
+    
+    private static final Locale DEFAULT_LOCALE = new Locale("en");
    
-    public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
-    
-    public static final QSymbol sub = new QSymbol("subject");
-    
-    public static final QSymbol pre = new QSymbol("predicate");
+    private static final Timestamp DEFAULT_TIMESTAMP = new Timestamp(0);
     
     public static final QSymbol obj = new QSymbol("object");
     
-    public static final QSymbol con = new QSymbol("context");
+    public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
+    
+    public static final QSymbol pre = new QSymbol("predicate");
+    
+    public static final QSymbol sub = new QSymbol("subject");
     
     private final RDBContext context;
     
@@ -119,41 +125,22 @@ public class RDBConnection implements RDFConnection{
         }
     }
     
-    private void addNode(Long nodeId, NODE node) {
-        SQLMergeClause merge = context.createMerge(symbol);
-        merge.set(symbol.id, nodeId);
-        merge.set(symbol.resource, node.isResource());
-        merge.set(symbol.lexical, node.getValue());
-        if (node.isLiteral()){
-            LIT literal = node.asLiteral();
-            merge.set(symbol.datatype, getId(literal.getDatatype()));    
-            merge.set(symbol.lang, getLangId(literal.getLang()));
-            if (Constants.integerTypes.contains(literal.getDatatype())){
-                merge.set(symbol.intval, Long.valueOf(literal.getValue()));
-            }else if (Constants.decimalTypes.contains(literal.getDatatype())){
-                merge.set(symbol.floatval, Double.valueOf(literal.getValue()));
-            }else if (Constants.dateTypes.contains(literal.getDatatype())){
-                merge.set(symbol.datetimeval, new Timestamp(context.toDate(literal).getTime()));     
-            }else if (Constants.dateTimeTypes.contains(literal.getDatatype())){
-                merge.set(symbol.datetimeval, context.toTimestamp(literal));
-            }
-        }
-        merge.execute();
-    }
-    
     private void addNodes(List<Long> ids, List<NODE> nodes){
-        // TODO : improve performance
         Set<Long> persisted = new HashSet<Long>(context.createQuery()
             .from(symbol)
             .where(symbol.id.in(ids))
             .list(symbol.id));
         
-        for (int i = 0; i < ids.size(); i++){
-            Long id = ids.get(i);
-            if (!persisted.contains(id)){
-                addNode(id, nodes.get(i));
+        if (persisted.size() < ids.size()){
+            SQLMergeClause merge = context.createMerge(symbol);
+            for (int i = 0; i < ids.size(); i++){
+                Long id = ids.get(i);
+                if (!persisted.contains(id)){
+                    populate(merge, symbol, id, nodes.get(i)).addBatch();                       
+                }
             }
-        }
+            merge.execute();
+        }        
         ids.clear();
         nodes.clear();
     }
@@ -176,22 +163,7 @@ public class RDBConnection implements RDFConnection{
             addNodes(ids, nodes);
         }
     }
-
-    private void addStatement(STMT stmt) {
-        // TODO : improve performance
-        Long c = stmt.getContext() != null ? getId(stmt.getContext()) : getId(RDB.nullContext);
-        Long s = getId(stmt.getSubject());
-        Long p = getId(stmt.getPredicate());
-        Long o = getId(stmt.getObject());
-        
-        SQLMergeClause merge = context.createMerge(statement);
-        merge.set(statement.model, c);
-        merge.set(statement.subject, s);
-        merge.set(statement.predicate, p);
-        merge.set(statement.object, o);
-        merge.execute();
-    }
-
+    
     @Override
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
         return context.beginTransaction(readOnly, txTimeout, isolationLevel);
@@ -201,12 +173,12 @@ public class RDBConnection implements RDFConnection{
     public void clear() {
         context.clear();        
     }
-    
+
     @Override
     public void close() throws IOException {
         context.close();
     }
-
+    
     @Override
     public BID createBNode() {
         return new BID(UUID.randomUUID().toString());
@@ -220,6 +192,12 @@ public class RDBConnection implements RDFConnection{
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);
         }
+    }
+
+    public void deleteFromContext(UID model) {
+        SQLDeleteClause delete = context.createDelete(statement);
+        delete.where(statement.model.eq(getId(model)));
+        delete.execute();
     }
        
     public List<STMT> find(
@@ -356,6 +334,54 @@ public class RDBConnection implements RDFConnection{
         return context.getNode(id, nodeTransformer);
     }
     
+    private <C extends StoreClause<C>> C populate(C clause, QStatement statement, STMT stmt){
+        Long c = stmt.getContext() != null ? getId(stmt.getContext()) : getId(RDB.nullContext);
+        Long s = getId(stmt.getSubject());
+        Long p = getId(stmt.getPredicate());
+        Long o = getId(stmt.getObject());
+        
+        clause.set(statement.model, c);
+        clause.set(statement.subject, s);
+        clause.set(statement.predicate, p);
+        clause.set(statement.object, o);
+        return clause;
+    }
+
+    private <C extends StoreClause<C>> C populate(C clause, QSymbol symbol, Long nodeId, NODE node){
+        long datatypeId = getId(XSD.anyURI);
+        int langId = getLangId(DEFAULT_LOCALE);
+        long intVal = 0l;
+        double floatVal = 0.0;
+        Timestamp datetimeVal = DEFAULT_TIMESTAMP;
+        
+        clause.set(symbol.id, nodeId);
+        clause.set(symbol.resource, node.isResource());
+        clause.set(symbol.lexical, node.getValue());
+        
+        if (node.isLiteral()){
+            LIT literal = node.asLiteral();
+            datatypeId = getId(literal.getDatatype());
+            if (literal.getLang() != null){
+                langId = getLangId(literal.getLang());    
+            }else if (Constants.integerTypes.contains(literal.getDatatype())){
+                intVal = Long.valueOf(literal.getValue());
+            }else if (Constants.decimalTypes.contains(literal.getDatatype())){
+                floatVal = Double.valueOf(literal.getValue());
+            }else if (Constants.dateTypes.contains(literal.getDatatype())){
+                datetimeVal = new Timestamp(context.toDate(literal).getTime());     
+            }else if (Constants.dateTimeTypes.contains(literal.getDatatype())){
+                datetimeVal = context.toTimestamp(literal);
+            }
+        }
+        
+        clause.set(symbol.datatype, datatypeId);
+        clause.set(symbol.lang, langId);
+        clause.set(symbol.intval, intVal);
+        clause.set(symbol.floatval, floatVal);
+        clause.set(symbol.datetimeval, datetimeVal);       
+        return clause;
+    }
+    
     private void removeStatement(STMT stmt) {
         SQLDeleteClause delete = context.createDelete(statement);
         if (stmt.getContext() == null){
@@ -369,12 +395,6 @@ public class RDBConnection implements RDFConnection{
         delete.execute();
     }
 
-    public void deleteFromContext(UID model) {
-        SQLDeleteClause delete = context.createDelete(statement);
-        delete.where(statement.model.eq(getId(model)));
-        delete.execute();
-    }
-    
     @Override
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
         // remove
@@ -412,12 +432,26 @@ public class RDBConnection implements RDFConnection{
         addNodes(newNodes, null);
         
         // insert stmts
-        for (STMT stmt : addedStatements){
-            addStatement(stmt);
+        if (!addedStatements.isEmpty()){
+            Iterator<STMT> stmts = addedStatements.iterator();
+            SQLMergeClause merge = context.createMerge(statement);
+            populate(merge, statement, stmts.next()).addBatch();
+            int counter = 1;
+            while (stmts.hasNext()){
+                counter++;
+                populate(merge, statement, stmts.next()).addBatch();
+                if (counter == ADD_BATCH){
+                    merge.execute();
+                    merge = context.createMerge(statement);
+                    counter = 0;
+                }                
+            }
+            if (counter > 0){
+                merge.execute();    
+            }            
         }
         
     }
-
 
 
 }

@@ -321,6 +321,15 @@ public class RDBRepository implements Repository{
     private void initTables() throws IOException {
         RDBConnection conn = openConnection();
         try{
+            
+            // init languages
+            Set<Locale> locales = new HashSet<Locale>(Arrays.asList(Locale.getAvailableLocales()));
+            locales.add(new Locale("en"));
+            locales.add(new Locale("fi"));
+            locales.add(new Locale("sv"));
+            
+            conn.addLocales(locales, langCache);
+            
             Set<NODE> nodes = new HashSet<NODE>();
             
             // ontology resources
@@ -390,13 +399,6 @@ public class RDBRepository implements Repository{
             
             conn.addNodes(nodes, nodeCache);
                         
-            // init languages
-            Set<Locale> locales = new HashSet<Locale>(Arrays.asList(Locale.getAvailableLocales()));
-            locales.add(new Locale("fi"));
-            locales.add(new Locale("sv"));
-            
-            conn.addLocales(locales, langCache);
-            
         }finally{
             conn.close();
         }                

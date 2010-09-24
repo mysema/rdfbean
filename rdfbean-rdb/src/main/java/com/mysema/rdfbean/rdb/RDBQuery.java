@@ -29,7 +29,6 @@ import com.mysema.query.sql.SQLSubQuery;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.*;
-import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.expr.BooleanOperation;
 import com.mysema.query.types.expr.ConstructorExpression;
 import com.mysema.query.types.expr.SimpleOperation;
@@ -105,8 +104,6 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         populate(query);
         return query.count();
     }
-
-    // simplify
     
     public SQLQuery createQuery(Expression<?>... args){
         SQLQuery query = context.createQuery();
