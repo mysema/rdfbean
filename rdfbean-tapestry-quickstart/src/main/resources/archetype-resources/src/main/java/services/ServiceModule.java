@@ -27,7 +27,6 @@ import com.mysema.rdfbean.object.ConfigurationBuilder;
 import com.mysema.rdfbean.rdb.RDBRepository;
 import com.mysema.rdfbean.tapestry.TransactionalAdvisor;
 
-import ${package}.domain.User;
 import ${package}.domain.Identifiable;
 
 /**
@@ -36,14 +35,14 @@ import ${package}.domain.Identifiable;
  */
 public final class ServiceModule {
 
-    @Match({ "UserDAO" })
+    @Match({ "UserService" })
     public static void adviseTransactions(TransactionalAdvisor advisor,
             MethodAdviceReceiver receiver) {
         advisor.addTransactionCommitAdvice(receiver);
     }
     
     public static void bind(ServiceBinder binder) {
-        binder.bind(UserDAO.class, UserDAOImpl.class);
+        binder.bind(UserService.class, UserServiceImpl.class);
     }
 
     public static Configuration buildConfiguration() {

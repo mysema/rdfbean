@@ -20,6 +20,7 @@ import com.mysema.rdfbean.object.SessionFactory;
  * @author tiwe
  * @version $Id$
  */
+@Deprecated
 public abstract class AbstractRepository<T> extends AbstractService 
     implements Repository<T,String>{
     

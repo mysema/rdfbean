@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
  * @version $Id$
  *
  */
+@Deprecated
 public interface Repository<Entity, Id extends Serializable> {    
 
     /**

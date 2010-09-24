@@ -11,9 +11,6 @@ import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.query.BeanListSourceBuilder;
 import com.mysema.rdfbean.tapestry.BeanGridDataSource;
 
-/**
- * AbstractService provides a stub for transactional RDFBean DAOs
- */
 public abstract class AbstractService {
     
     private final SessionFactory sessionFactory;

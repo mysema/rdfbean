@@ -8,10 +8,10 @@ import com.mysema.rdfbean.object.SessionFactory;
 
 import ${package}.domain.User;
 
-public class UserDAOImpl extends AbstractDAO<User> implements UserDAO {
+public class UserServiceImpl extends AbstractService implements UserService {
 
-    public UserDAOImpl(@Inject SessionFactory sessionFactory) {
-        super(sessionFactory, user);
+    public UserServiceImpl(@Inject SessionFactory sessionFactory) {
+        super(sessionFactory);
     }
 
     @Override

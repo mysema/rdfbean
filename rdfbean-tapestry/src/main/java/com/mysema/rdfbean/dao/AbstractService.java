@@ -22,6 +22,7 @@ import com.mysema.rdfbean.tapestry.BeanGridDataSource;
  * @author tiwe
  * @version $Id$
  */
+@Deprecated
 public abstract class AbstractService {
     
     private final SessionFactory sessionFactory;

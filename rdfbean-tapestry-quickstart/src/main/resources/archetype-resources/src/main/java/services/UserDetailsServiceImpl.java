@@ -10,18 +10,17 @@ import ${package}.domain.User;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Inject
-    private final UserDAO userDAO;
+    private final UserService userService;
 
-    public UserDetailsServiceImpl(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UserDetailsServiceImpl(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userDAO.getByUsername(username);
+        User user = userService.getByUsername(username);
         if (user != null) {
-            return new UserDetailsImpl(user.getUsername(), user.getPassword(), user.getProfile()
-                    .getAuthorities());
+            return new UserDetailsImpl(user.getUsername(), user.getPassword(), user.getProfile().getAuthorities());
         }
         throw new UsernameNotFoundException("User " + username + " not found");
     }
