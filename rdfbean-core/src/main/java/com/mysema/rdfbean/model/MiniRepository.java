@@ -75,11 +75,7 @@ public final class MiniRepository implements Repository{
                 add(stmts.next());
             }
         } finally {
-            try {
-                stmts.close();
-            } catch (IOException e) {
-                throw new RepositoryException(e);
-            }
+            stmts.close();
         }
     }
 

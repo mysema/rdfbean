@@ -68,11 +68,7 @@ public class SessionIdentityService implements IdentityService{
         try{
             return stmts.hasNext() ? stmts.next() : null;
         }finally{
-            try {
-                stmts.close();
-            } catch (IOException e) {
-                throw new SessionException(e);
-            }
+            stmts.close();
         }
     }
 }

@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.query;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -25,11 +24,11 @@ import com.mysema.query.SearchResults;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.Constant;
+import com.mysema.query.types.ConstructorExpression;
 import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.expr.ConstructorExpression;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NodeType;
@@ -166,7 +165,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
             public void remove() {        
                 
             }
-            public void close() throws IOException {
+            public void close() {
                 
             }            
         };
@@ -189,7 +188,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
             public void remove() {
                 
             }
-            public void close() throws IOException {
+            public void close(){
                 
             }            
         };

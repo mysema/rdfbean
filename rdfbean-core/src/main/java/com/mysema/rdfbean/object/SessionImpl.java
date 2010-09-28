@@ -706,11 +706,7 @@ public final class SessionImpl implements Session {
     }
 
     private void close(CloseableIterator<STMT> statements) {
-        try {
-            statements.close();
-        } catch (IOException e) {
-            throw new SessionException(e);
-        }
+        statements.close();
     }
 
     @Override

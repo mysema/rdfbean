@@ -30,7 +30,6 @@ import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.*;
 import com.mysema.query.types.expr.BooleanOperation;
-import com.mysema.query.types.expr.ConstructorExpression;
 import com.mysema.query.types.expr.SimpleOperation;
 import com.mysema.query.types.expr.StringOperation;
 import com.mysema.query.types.path.DatePath;

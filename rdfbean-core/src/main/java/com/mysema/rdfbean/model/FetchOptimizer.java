@@ -82,12 +82,8 @@ public class FetchOptimizer implements RDFConnection {
 //               cache.addStatements(stmt);
             }
         } finally {
-            try {
-                if (stmts != null) {
-                    stmts.close();
-                }
-            } catch (IOException e) {
-                throw new RepositoryException(e);
+            if (stmts != null) {
+                stmts.close();
             }
         }
         return cache.findStatements(subject, predicate, object, context, includeInferred);

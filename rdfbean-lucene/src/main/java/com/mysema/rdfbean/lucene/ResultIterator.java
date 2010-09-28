@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -36,7 +35,7 @@ public abstract class ResultIterator implements CloseableIterator<STMT>{
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         hits.close();        
     }
     

@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.model;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 import javax.annotation.Nullable;
@@ -24,12 +23,7 @@ import com.mysema.commons.lang.CloseableIterator;
 public final class ResultIterator implements CloseableIterator<STMT> {
     
     private final Iterator<STMT> iter;
-    
-//    private ResultIterator(Iterable<STMT> iterable, @Nullable final ID subject, @Nullable final UID predicate, 
-//            @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
-//        this(iterable.iterator(), subject, predicate, object, context, includeInferred);
-//    }
-    
+        
     ResultIterator(Iterator<STMT> iterator, @Nullable final ID subject, @Nullable final UID predicate, 
             @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
         this.iter = new FilterIterator<STMT>(iterator, new Predicate<STMT>() {
@@ -43,7 +37,7 @@ public final class ResultIterator implements CloseableIterator<STMT> {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
     }
 
     @Override

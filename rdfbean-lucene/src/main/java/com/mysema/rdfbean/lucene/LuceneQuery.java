@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.lucene;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -60,7 +59,7 @@ public class LuceneQuery {
         if (hits.length() > 0){
             final Iterator<CompassHit> iterator = hits.iterator();
             return new CloseableIterator<T>(){
-                public void close() throws IOException {
+                public void close() {
                     hits.close();                
                 }
                 public boolean hasNext() {

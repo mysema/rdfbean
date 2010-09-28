@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.sesame;
 
-import java.io.IOException;
-
 import org.openrdf.model.Statement;
 import org.openrdf.result.ModelResult;
 import org.openrdf.store.StoreException;
@@ -40,11 +38,11 @@ public class ModelResultIterator implements CloseableIterator<STMT>{
     
 
     @Override
-    public void close() throws IOException {
+    public void close(){
         try {
             statements.close();
         } catch (StoreException e1) {
-            throw new IOException(e1);
+            throw new RepositoryException(e1);
         }
     }
 
