@@ -28,6 +28,7 @@ import org.apache.commons.collections15.Transformer;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
+import com.mysema.query.dml.DeleteClause;
 import com.mysema.query.dml.StoreClause;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.dml.SQLDeleteClause;
@@ -48,20 +49,22 @@ public class RDBConnection implements RDFConnection{
     
     private static final int ADD_BATCH = 200;
     
-    public static final QSymbol con = new QSymbol("context");
-    
     private static final Locale DEFAULT_LOCALE = new Locale("en");
    
     private static final Timestamp DEFAULT_TIMESTAMP = new Timestamp(0);
     
-    public static final QSymbol obj = new QSymbol("object");
+    private static final int DELETE_BATCH = 200;
     
     public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
+    
+    public static final QSymbol con = new QSymbol("context");
+    
+    public static final QSymbol obj = new QSymbol("object");
     
     public static final QSymbol pre = new QSymbol("predicate");
     
     public static final QSymbol sub = new QSymbol("subject");
-    
+        
     private final RDBContext context;
     
     private final Transformer<Long,NODE> nodeTransformer = new Transformer<Long,NODE>(){
@@ -346,6 +349,19 @@ public class RDBConnection implements RDFConnection{
         clause.set(statement.object, o);
         return clause;
     }
+    
+    private <C extends DeleteClause<C>> C populate(C clause, QStatement statement, STMT stmt) {
+        Long c = stmt.getContext() != null ? getId(stmt.getContext()) : getId(RDB.nullContext);
+        Long s = getId(stmt.getSubject());
+        Long p = getId(stmt.getPredicate());
+        Long o = getId(stmt.getObject());
+        
+        clause.where(statement.model.eq(c));
+        clause.where(statement.subject.eq(s));
+        clause.where(statement.predicate.eq(p));
+        clause.where(statement.object.eq(o));
+        return clause;
+    }
 
     private <C extends StoreClause<C>> C populate(C clause, QSymbol symbol, Long nodeId, NODE node){
         long datatypeId = getId(XSD.anyURI);
@@ -382,18 +398,6 @@ public class RDBConnection implements RDFConnection{
         return clause;
     }
     
-    private void removeStatement(STMT stmt) {
-        SQLDeleteClause delete = context.createDelete(statement);
-        if (stmt.getContext() == null){
-            delete.where(statement.model.isNull());
-        }else{
-            delete.where(statement.model.eq(getId(stmt.getContext())));
-        }
-        delete.where(statement.subject.eq(getId(stmt.getSubject())));
-        delete.where(statement.predicate.eq(getId(stmt.getPredicate())));
-        delete.where(statement.object.eq(getId(stmt.getObject())));
-        delete.execute();
-    }
 
     @Override
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
@@ -405,8 +409,26 @@ public class RDBConnection implements RDFConnection{
             }
             oldNodes.add(stmt.getSubject());
             oldNodes.add(stmt.getPredicate());
-            oldNodes.add(stmt.getObject());
-            removeStatement(stmt);            
+            oldNodes.add(stmt.getObject());   
+        }
+        
+        if (!removedStatements.isEmpty()){
+            Iterator<STMT> stmts = removedStatements.iterator();
+            SQLDeleteClause delete = context.createDelete(statement);
+            populate(delete, statement, stmts.next()).addBatch();
+            int counter = 1;
+            while (stmts.hasNext()){
+                counter++;
+                populate(delete, statement, stmts.next()).addBatch();
+                if (counter == DELETE_BATCH){
+                    delete.execute();
+                    delete = context.createDelete(statement);
+                    counter = 0;
+                }                
+            }
+            if (counter > 0){
+                delete.execute();    
+            }    
         }
         
         // insert
