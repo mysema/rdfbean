@@ -47,13 +47,13 @@ import com.mysema.rdfbean.object.Session;
  */
 public class RDBConnection implements RDFConnection{
     
-    private static final int ADD_BATCH = 200;
+    private static final int ADD_BATCH = 1000;
     
     private static final Locale DEFAULT_LOCALE = new Locale("en");
    
     private static final Timestamp DEFAULT_TIMESTAMP = new Timestamp(0);
     
-    private static final int DELETE_BATCH = 200;
+    private static final int DELETE_BATCH = 1000;
     
     public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
     

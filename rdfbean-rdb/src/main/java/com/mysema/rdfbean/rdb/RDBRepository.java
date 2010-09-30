@@ -259,7 +259,8 @@ public class RDBRepository implements Repository{
                 ID sub = dialect.getID(stmt.getSubject());
                 UID pre = dialect.getUID(stmt.getPredicate());
                 NODE obj = dialect.getNODE(stmt.getObject());
-                stmts.add(new STMT(sub, pre, obj, context));                
+                stmts.add(new STMT(sub, pre, obj, context));     
+                
                 if (stmts.size() == LOAD_BATCH_SIZE){
                     connection.update(Collections.<STMT>emptySet(), stmts);
                     stmts.clear();
