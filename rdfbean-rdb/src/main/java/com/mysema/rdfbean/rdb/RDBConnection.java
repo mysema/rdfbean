@@ -456,7 +456,7 @@ public class RDBConnection implements RDFConnection{
         
         // insert nodes
         newNodes.removeAll(oldNodes);
-//        newNodes.removeAll(context.getNodes());
+        newNodes.removeAll(context.getNodes());
         addNodes(newNodes, null);
         
         // insert stmts

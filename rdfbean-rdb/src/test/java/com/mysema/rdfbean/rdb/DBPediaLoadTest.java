@@ -60,6 +60,7 @@ public class DBPediaLoadTest{
         System.out.println(System.currentTimeMillis()-start);
         // 12.469
         //  9.314
+        //  8.067
     }
     
 }
