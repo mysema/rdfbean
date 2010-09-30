@@ -49,11 +49,11 @@ public class RDBConnection implements RDFConnection{
     
     private static final int ADD_BATCH = 1000;
     
+    private static final int DELETE_BATCH = 1000;
+    
     private static final Locale DEFAULT_LOCALE = new Locale("en");
    
     private static final Timestamp DEFAULT_TIMESTAMP = new Timestamp(0);
-    
-    private static final int DELETE_BATCH = 1000;
     
     public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
     
@@ -66,6 +66,10 @@ public class RDBConnection implements RDFConnection{
     public static final QSymbol sub = new QSymbol("subject");
         
     private final RDBContext context;
+    
+    private final long anyUriId;
+    
+    private final int defaultLocaleId;
     
     private final Transformer<Long,NODE> nodeTransformer = new Transformer<Long,NODE>(){
         @Override
@@ -84,6 +88,8 @@ public class RDBConnection implements RDFConnection{
     
     public RDBConnection(RDBContext context) {
         this.context = context;
+        this.anyUriId = getId(XSD.anyURI);
+        this.defaultLocaleId = getLangId(DEFAULT_LOCALE);
     }
     
     private void addLocale(Integer id, Locale locale ){
@@ -364,8 +370,8 @@ public class RDBConnection implements RDFConnection{
     }
 
     private <C extends StoreClause<C>> C populate(C clause, QSymbol symbol, Long nodeId, NODE node){
-        long datatypeId = getId(XSD.anyURI);
-        int langId = getLangId(DEFAULT_LOCALE);
+        long datatypeId = anyUriId;
+        int langId = defaultLocaleId;
         long intVal = 0l;
         double floatVal = 0.0;
         Timestamp datetimeVal = DEFAULT_TIMESTAMP;
@@ -450,7 +456,7 @@ public class RDBConnection implements RDFConnection{
         
         // insert nodes
         newNodes.removeAll(oldNodes);
-        newNodes.removeAll(context.getNodes());
+//        newNodes.removeAll(context.getNodes());
         addNodes(newNodes, null);
         
         // insert stmts

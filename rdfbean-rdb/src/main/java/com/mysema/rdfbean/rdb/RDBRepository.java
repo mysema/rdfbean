@@ -298,7 +298,7 @@ public class RDBRepository implements Repository{
               .index("STATEMENT_LEX", "LEXICAL")
               .execute();
             
-            // statement spoc,posc
+            // statement 
              new CreateTableClause(conn,templates,"STATEMENT")
               .column("MODEL", Long.class).notNull()
               .column("SUBJECT",Long.class).notNull()

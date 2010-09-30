@@ -9,7 +9,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -201,9 +200,9 @@ public final class RDBContext implements Closeable{
         return id;
     }
     
-    public Collection<NODE> getNodes() {
-        return nodeCache.keySet();
-    }
+//    public Collection<NODE> getNodes() {
+//        return nodeCache.keySet();
+//    }
     
     public RDBOntology getOntology() {
         return ontology;
