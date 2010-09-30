@@ -31,10 +31,7 @@ import com.mysema.rdfbean.owl.OWL;
  * @author tiwe
  * @version $Id$
  */
-// FIXME
 public class MD5IdFactory implements IdFactory {
-    
-    private final int[] masks = new int[]{-128,191,127,63};
     
     private final Map<UID,String> uid2string = new HashMap<UID,String>();
     
@@ -67,17 +64,17 @@ public class MD5IdFactory implements IdFactory {
         if (node.isLiteral()){
             LIT literal = node.asLiteral();            
             if (literal.getLang() != null){
-                mask = masks[0];
+                mask = 0;
                 value = literal.getValue() + literal.getLang();
             }else{
-                mask = masks[1];
+                mask = 1;
                 value = literal.getValue() + getReadableURI(literal.getDatatype());
             }
         }else if (node.isBNode()){
-            mask = masks[2];
+            mask = 2;
             value = node.getValue();
         }else{
-            mask = masks[3];
+            mask = 3;
             value = getReadableURI(node.asURI());
         }
         try {
@@ -86,7 +83,7 @@ public class MD5IdFactory implements IdFactory {
             byte[] hash = digest.digest();
             byte[] longBytes = new byte[8];
             System.arraycopy(hash, 0, longBytes, 0, longBytes.length);
-            longBytes[0] = (byte)(longBytes[0] & mask);            
+            longBytes[0] = (byte)(mask(longBytes[0], mask));            
             return new BigInteger(longBytes).longValue();
         } catch (NoSuchAlgorithmException e) {
             throw new RepositoryException(e);
@@ -94,6 +91,15 @@ public class MD5IdFactory implements IdFactory {
             throw new RepositoryException(e);
         }
         
+    }
+
+    int mask(byte b, int mask) {
+        switch (mask){
+          case 0 : return (b & ~3);     // 00
+          case 1 : return (b & ~3) | 1; // 10
+          case 2 : return (b & ~3) | 2; // 01
+          default: return (b & ~3) | 3; // 11
+        }
     }
 
     @Override

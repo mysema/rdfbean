@@ -103,6 +103,18 @@ public class MD5IdFactoryTest {
         }
     }
     
+    @Test
+    public void testMask(){
+        MD5IdFactory idFactory = new MD5IdFactory();
+        for (int i = -128; i < 128; i++){
+            int val1 = idFactory.mask((byte)i, 0);
+            int val2 = idFactory.mask((byte)i, 1);
+            int val3 = idFactory.mask((byte)i, 2);
+            int val4 = idFactory.mask((byte)i, 3);
+            System.out.println(i + " :  " + val1 + " " + val2 + " " + val3 + " " + val4);
+        }
+    }
+    
     
 
 }
