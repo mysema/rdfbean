@@ -3,6 +3,24 @@
 <sect1 id="spring-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Spring integration</title>
     
+	<sect2>
+		
+		<title>Dependencies</title>
+		
+		<para>Add the following additional dependency to be able to use Spring integration features</para>
+		
+<programlisting language="xml">
+<![CDATA[    
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-spring</artifactId>
+      <version>${rdfbean.version}</version>
+    </dependency>
+]]>
+</programlisting>    		
+		
+	</sect2>
+	
     <sect2>
     
       <title>Basic wiring</title>

@@ -42,7 +42,7 @@
       <plugin>
         <groupId>com.mysema.maven</groupId>
         <artifactId>maven-apt-plugin</artifactId>
-        <version>0.3.1</version>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
@@ -106,6 +106,7 @@
     
     </sect2>
     
+<!-- 	
     <sect2>
       <title>Repository stubs</title>
       
@@ -173,6 +174,6 @@ public interface UserRepository extends Repository<User,String>{
     <para>For other RDFBean persistence services extend AbstractService.</para>    
     
     </sect2>
-    
+-->    
               
 </sect1>
