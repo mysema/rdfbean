@@ -180,6 +180,7 @@ public class User {
     
     </sect2>
     
+<!-- 	
     <sect2>
     
       <title>Unique</title>
@@ -201,6 +202,7 @@ public class User {
 ]]></programlisting>       
     
     </sect2>
+-->	
     
     </sect1>
     
@@ -220,8 +222,9 @@ public class User {
 	  
       <para>Here is a minimal setup for testing : </para>
       
-      <programlisting language="java"><![CDATA[      
-Repository repository = new MiniRepository();
+      <programlisting language="java"><![CDATA[
+// minimal memory based repository for RDF statement storage
+Repository repository = new MiniRepository(); 
 Configuration configuration = new DefaultConfiguration(User.class, Department.class, Company.class);
 SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
 sessionFactory.setConfiguration(configuration);
@@ -351,7 +354,34 @@ session.delete(user);
 	  	
 		<title>RDF I/O</title>
 		
-		<para>TODO</para>
+		<para>
+			If you want to load data from RDF/XML or Turtle files or serialize data of your repository into files you can
+			use the following methods in the Repository interface.
+		</para>
+		
+<programlisting language="java"><![CDATA[		
+    /**
+     * Load the contents to the Repository
+     * 
+     * @param format Format to be used
+     * @param is input stream
+     * @param context target context or null for default
+     * @param replace whether to replace the contents of the target context
+     */
+    void load(Format format, InputStream is, @Nullable UID context, boolean replace);
+    
+    /**
+     * Export the contents of the Repository 
+     * 
+     * @param format Format to be used
+     * @param os target stream for output
+     */
+    void export(Format format, OutputStream os);		
+]]></programlisting>
+
+	<para>
+		The supported formats are N3, NTRIPLES, RDFA, RDFXML, TRIG and Turtle.
+	</para>		
 	  	
 	  </sect2>
     
@@ -379,7 +409,7 @@ session.delete(user);
 <plugin>
   <groupId>com.mysema.maven</groupId>
   <artifactId>maven-apt-plugin</artifactId>
-  <version>0.3.1</version>
+  <version>1.0</version>
   <executions>
     <execution>
       <goals>
@@ -490,7 +520,34 @@ session.from(customer)
   <sect2>
     <title>Subqueries</title>
     
-    <para>TODO</para>
+    <para>Here are some examples on how to use subqueries in RDFBean :</para>
+	
+<programlisting language="java"><![CDATA[ 
+QCustomer other = new QCustomer("other");
+session.from(customer)
+     .where(new BeanSubQuery()
+	 	.from(other).where(other.ne(customer), other.city.eq(customer.city)).notExists())
+    .list(customer);
+]]></programlisting>	
+
+	<para>This query returns all the customers which don't share the city with any other customers.</para>
+	
+	<para>Usually it makes sense to provide a factory method for subquery creation. Here is one way to do it :</para>
+	
+<programlisting language="java"><![CDATA[ 
+private BeanSubQuery subQuery(EntityPath<?> entity){
+    return new BeanSubQuery().from(entity);
+}
+]]></programlisting>		
+
+	<para>This way the query gets simplified to the following form : </para>
+	
+<programlisting language="java"><![CDATA[ 
+QCustomer other = new QCustomer("other");
+session.from(customer)
+    .where(subQuery(other).where(other.ne(customer), other.city.eq(customer.city)).notExists())
+    .list(customer);
+]]></programlisting>		
   
   </sect2>
       

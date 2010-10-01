@@ -326,6 +326,10 @@
     <fo:inline color="#2A00FF"><xsl:apply-templates/></fo:inline>
   </xsl:template>
   
+  <xsl:template match='xslthl:doccomment'>
+    <xsl:apply-templates/>
+  </xsl:template>        
+  
   <!--  fixes -->
 
   <xsl:template match='xslthl:annotation'>
@@ -518,5 +522,7 @@
       </xsl:choose>
     </fo:basic-link>
   </xsl:template>
+  
+
 
 </xsl:stylesheet>

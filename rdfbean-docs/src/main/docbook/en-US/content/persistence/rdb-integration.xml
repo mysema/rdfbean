@@ -4,6 +4,58 @@
     
 	<title>RDB</title>
 	
-	<para>TODO</para>
+	<para>The RDFBean RDB module provides a minimal RDBMS based backend for RDF statement storage</para>
+	
+	<para>
+		RDB has been tested against the embedded H2 database but should be usable with HSQLDB, Derby, PostgreSQL, MySQL, MSSQL and Oracle databases,
+		since these databases are supported by Querydsl SQL, which is used as the SQL integration API in RDB.
+	</para>
+	
+	<sect2>
+      <title>Getting started</title>
+	  
+	  <para>To get started with RDFBean RDB all you need is a DataSource, a Configuration instance, the used Querydsl SQL dialect and a IdSequence implementation.</para>
+	  
+	  <para>Here is a minimal configuration for testing using H2:</para>
+	  
+<programlisting language="java">
+<![CDATA[           	  
+// JDBC data source
+JdbcConnectionPool dataSource = JdbcConnectionPool.create("jdbc:h2:nioMapped:target/h2", "sa", "");   
+dataSource.setMaxConnections(30);
+
+// SQL dialect used
+SQLTemplates templates = new H2Templates();
+
+// RDFBean configuration
+Configuration configuration = new DefaultConfiguration(Employee.class, Department.class, Company.class);
+repository = new RDBRepository(configuration, dataSource, templates, new MemoryIdSequence());
+repository.initialize();	  
+]]>
+</programlisting>		
+
+	<para>
+	For a production setup you would typically replaced the MemoryIdSequence with FileIdSequence and maybe use a different
+	RDBMS engine.
+	</para>
+	  
+    </sect2>
+	
+	<sect2>
+		
+		<title>Logging SQL statements</title>
+		
+		<para>
+			In case you are using Log4j for logging and you want to log the SQL statements executed by the RDB module you
+			can enable the logging like this in the log4j.properties :
+		</para>
+		
+<programlisting>
+<![CDATA[           	  		
+log4j.logger.com.mysema.query.sql=DEBUG		
+]]>
+</programlisting>		
+		
+	</sect2>	
 	
 </sect1>	
