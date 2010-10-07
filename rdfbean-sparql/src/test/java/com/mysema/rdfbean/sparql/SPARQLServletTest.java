@@ -13,6 +13,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.sesame.MemoryRepository;
@@ -65,4 +66,11 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("literal"));
     }
     
+    @Test
+    public void Construct() throws ServletException, IOException{
+        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
+        servlet.service(request, response);
+        assertTrue(response.getContentAsString().contains("<rdf:RDF"));
+        assertTrue(response.getContentAsString().contains(RDF.NS));
+    }
 }

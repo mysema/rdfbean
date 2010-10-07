@@ -18,6 +18,8 @@ import com.mysema.rdfbean.model.SPARQLQuery;
 
 
 /**
+ * SPARQLServlet provides a Servlet based SPARQL HTTP access point for RDFBean repositories
+ * 
  * @author tiwe
  *
  */
@@ -74,7 +76,8 @@ public class SPARQLServlet implements Servlet{
                 }
                 
             }else{
-                // TODO : return triple results
+                response.setContentType("application/rdf+xml");
+                query.streamTriples(response.getWriter(), "application/rdf+xml");
             }
         }finally{
             connection.close();

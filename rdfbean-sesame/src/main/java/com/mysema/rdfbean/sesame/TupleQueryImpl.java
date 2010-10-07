@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.sesame;
 
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
@@ -62,6 +63,11 @@ public class TupleQueryImpl implements SPARQLQuery {
             result = query.evaluate();
         }
         return result;
+    }
+
+    @Override
+    public void streamTriples(Writer writer, String contentType) {
+        throw new UnsupportedOperationException();
     }
     
 }
