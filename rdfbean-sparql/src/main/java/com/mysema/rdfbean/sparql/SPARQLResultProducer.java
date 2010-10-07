@@ -8,7 +8,9 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import com.mysema.commons.fluxml.XMLWriter;
+import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.SPARQLQuery;
 
@@ -40,8 +42,14 @@ public class SPARQLResultProducer {
                     default:      type = "null";
                 }
                 writer.begin(type);
-                // TODO : lang
-                // TODO : datatype
+                if (entry.getValue().isLiteral()){
+                    LIT literal = entry.getValue().asLiteral();
+                    if (literal.getLang() != null){
+                        writer.attribute("xml:lang", LocaleUtil.toLang(literal.getLang()));
+                    }else if (literal.getDatatype() != null){
+                        writer.attribute("datatype", literal.getDatatype().getValue());
+                    }
+                }
                 writer.print(entry.getValue().getValue());
                 writer.end(type);
                 writer.end("binding");
@@ -73,6 +81,14 @@ public class SPARQLResultProducer {
                     case URI: value.put("type", "uri"); break;
                     case BLANK: value.put("type", "bnode"); break;
                     case LITERAL: value.put("type", "literal"); break;
+                }
+                if (entry.getValue().isLiteral()){
+                    LIT literal = entry.getValue().asLiteral();
+                    if (literal.getLang() != null){
+                        value.put("xml:lang", LocaleUtil.toLang(literal.getLang()));
+                    }else if (literal.getDatatype() != null){
+                        value.put("datatype", literal.getDatatype().getValue());
+                    }
                 }
                 value.put("value", entry.getValue().getValue());
                 binding.put(entry.getKey(), value);
