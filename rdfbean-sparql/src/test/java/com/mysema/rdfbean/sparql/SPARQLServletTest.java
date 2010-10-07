@@ -73,4 +73,20 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("<rdf:RDF"));
         assertTrue(response.getContentAsString().contains(RDF.NS));
     }
+    
+    @Test
+    public void Construct_as_Turtle() throws ServletException, IOException{
+        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
+        request.setParameter("type", "turtle");
+        servlet.service(request, response);
+        // TODO : assertions
+    }
+    
+    @Test
+    public void Construct_as_NTriples() throws ServletException, IOException{
+        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
+        request.setParameter("type", "ntriples");
+        servlet.service(request, response);
+        // TODO : assertions
+    }
 }

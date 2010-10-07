@@ -44,19 +44,6 @@
 	<!-- test -->
     <dependency>
       <groupId>com.mysema.rdf</groupId>
-      <artifactId>rdfbean-core</artifactId>
-      <version>${project.version}</version>
-      <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>	
-    <dependency>
-      <groupId>com.mysema.rdf</groupId>
-      <artifactId>rdfbean-core</artifactId>
-      <version>${project.parent.version}</version>
-	  <scope>test</scope>
-    </dependency>	
-    <dependency>
-      <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-sesame</artifactId>
       <version>${project.parent.version}</version>
 	  <scope>test</scope>

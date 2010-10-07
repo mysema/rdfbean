@@ -36,7 +36,7 @@ public enum Format {
     /**
      * 
      */
-    TURTLE("text/turtle"); // application/x-turtle
+    TURTLE("application/x-turtle"); 
     
     private final String mimetype;
     

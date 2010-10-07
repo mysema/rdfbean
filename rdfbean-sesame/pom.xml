@@ -7,7 +7,7 @@
   <name>RDFBean - Sesame</name>
   
   <parent>
-  <groupId>com.mysema.rdf</groupId>
+    <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
     <version>1.4.1-SNAPSHOT</version>
   </parent>  
@@ -49,6 +49,11 @@
       <artifactId>sesame-rio-rdfxml</artifactId>
       <version>${sesame.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-rio-ntriples</artifactId>
+      <version>${sesame.version}</version>
+    </dependency>	
 	<dependency>
       <groupId>org.openrdf.sesame</groupId>
       <artifactId>sesame-queryparser-sparql</artifactId>
@@ -82,13 +87,6 @@
       <version>1.8.0</version>
       <scope>test</scope>
     </dependency>    
-    
-	<dependency>
-      <groupId>org.openrdf.sesame</groupId>
-      <artifactId>sesame-rio-ntriples</artifactId>
-      <version>${sesame.version}</version>
-      <scope>test</scope>
-    </dependency>        
        
   </dependencies>
   

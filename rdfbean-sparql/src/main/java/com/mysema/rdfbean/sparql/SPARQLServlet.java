@@ -15,6 +15,7 @@ import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.io.Format;
 
 
 /**
@@ -65,8 +66,9 @@ public class SPARQLServlet implements Servlet{
         RDFConnection connection = repository.openConnection();
         try{
             SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, queryString);
+            String type = request.getParameter("type");
             if (query.getResultType() == SPARQLQuery.ResultType.TUPLES){
-                if ("json".equals(request.getParameter("type"))){
+                if ("json".equals(type)){
                     response.setContentType("application/sparql-results+json");
                     resultProducer.streamJSONResults(query, response.getWriter());
                 }else{
@@ -76,8 +78,14 @@ public class SPARQLServlet implements Servlet{
                 }
                 
             }else{
-                response.setContentType("application/rdf+xml");
-                query.streamTriples(response.getWriter(), "application/rdf+xml");
+                String contentType = Format.RDFXML.getMimetype();
+                if ("turtle".equals(type)){
+                    contentType = Format.TURTLE.getMimetype();
+                }else if ("ntriples".equals(type)){
+                    contentType = Format.NTRIPLES.getMimetype();
+                }
+                response.setContentType(contentType);
+                query.streamTriples(response.getWriter(), contentType);
             }
         }finally{
             connection.close();
@@ -85,6 +93,8 @@ public class SPARQLServlet implements Servlet{
         
     }
 
-    
+    public void setRepository(Repository repository) {
+        this.repository = repository;
+    }
 
 }
