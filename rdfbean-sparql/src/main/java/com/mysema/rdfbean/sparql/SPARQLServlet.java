@@ -17,6 +17,10 @@ import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.SPARQLQuery;
 
 
+/**
+ * @author tiwe
+ *
+ */
 public class SPARQLServlet implements Servlet{
     
     private final SPARQLResultProducer resultProducer = new SPARQLResultProducer();

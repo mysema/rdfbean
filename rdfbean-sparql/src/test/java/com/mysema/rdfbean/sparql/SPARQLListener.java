@@ -14,8 +14,7 @@ public class SPARQLListener implements ServletContextListener{
         Repository repository = (Repository)sce.getServletContext().getAttribute(Repository.class.getName());
         if (repository != null){
             repository.close();
-        }
-        
+        }        
     }
 
     @Override

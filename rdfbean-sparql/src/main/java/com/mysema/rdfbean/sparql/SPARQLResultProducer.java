@@ -14,6 +14,10 @@ import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.SPARQLQuery;
 
+/**
+ * @author tiwe
+ *
+ */
 public class SPARQLResultProducer {
 
     private static final String SPARQL_NS = "http://www.w3.org/2005/sparql-results#";
