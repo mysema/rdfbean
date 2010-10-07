@@ -12,6 +12,10 @@
     <version>1.4.1-SNAPSHOT</version>
   </parent>
 
+  <properties>
+    <jetty.version>6.1.0-SNAPSHOT</jetty.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.mysema.rdf</groupId>
@@ -50,6 +54,18 @@
       <version>${project.parent.version}</version>
 	  <scope>test</scope>
     </dependency>	
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-sesame</artifactId>
+      <version>${project.parent.version}</version>
+	  <scope>test</scope>
+    </dependency>	
+	<dependency>
+	  <groupId>com.mysema.commons</groupId>
+	  <artifactId>mysema-commons-jetty</artifactId>
+	  <version>${jetty.version}</version>
+	  <scope>test</scope>
+	</dependency>	
 	
   </dependencies>
   

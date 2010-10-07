@@ -46,7 +46,7 @@ public class SPARQLServlet implements Servlet{
     @Override
     public void init(ServletConfig config) throws ServletException {
         this.config = config;
-        repository = (Repository) config.getServletContext().getAttribute(Repository.class.getName());
+        repository = (Repository) config.getServletContext().getAttribute(Repository.class.getName());        
     }
     
     @Override
@@ -54,6 +54,11 @@ public class SPARQLServlet implements Servlet{
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
         String queryString = request.getParameter("query");        
+        if (queryString == null){
+            response.sendError(500, "No query given");
+            return;
+        }
+        
         RDFConnection connection = repository.openConnection();
         try{
             SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, queryString);
