@@ -18,6 +18,8 @@ public final class QueryLanguage<D,Q> {
 
     public static final QueryLanguage<Void,BeanQuery> QUERYDSL = create("Querydsl", BeanQuery.class);
     
+    public static final QueryLanguage<String,SPARQLQuery> SPARQL = create("SPARQL", String.class, SPARQLQuery.class);
+    
     public static <Q> QueryLanguage<Void,Q> create(String name, Class<Q> queryType){
         return new QueryLanguage<Void,Q>(name, Void.class, queryType);
     }

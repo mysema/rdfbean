@@ -233,6 +233,16 @@ class LuceneConnection implements RDFConnection{
 	    boolBuilder.addMust(queryBuilder.term(ID_FIELD_NAME, subjectStr));
 	}
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
+        if (queryLanguage.equals(Constants.COMPASSQUERY)){    
+            return (Q) compassSession.queryBuilder();
+        }else{
+            throw new UnsupportedQueryLanguageException(queryLanguage);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     @Override

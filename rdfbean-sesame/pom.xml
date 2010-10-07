@@ -48,7 +48,12 @@
       <groupId>org.openrdf.sesame</groupId>
       <artifactId>sesame-rio-rdfxml</artifactId>
       <version>${sesame.version}</version>
-    </dependency>    
+    </dependency>
+	<dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-queryparser-sparql</artifactId>
+      <version>${sesame.version}</version>
+    </dependency>    	    
     
     <!-- test deps -->
    <dependency>

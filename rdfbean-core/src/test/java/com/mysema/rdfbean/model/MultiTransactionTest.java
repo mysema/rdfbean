@@ -29,9 +29,15 @@ public class MultiTransactionTest {
                 repository.openConnection()
             ){
                 @Override
-                public <D, Q> Q createQuery(Session session,QueryLanguage<D, Q> queryLanguage, D definition) {
+                public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
                     throw new UnsupportedOperationException();
-                }};
+                }
+                
+                @Override
+                public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
+                    throw new UnsupportedOperationException();
+                }
+        };
         
         RDFBeanTransaction innerTx = EasyMock.createNiceMock(RDFBeanTransaction.class);        
         tx = new MultiTransaction(connection, new RDFBeanTransaction[]{innerTx});

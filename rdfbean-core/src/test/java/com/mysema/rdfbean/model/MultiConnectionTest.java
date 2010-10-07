@@ -36,9 +36,16 @@ public class MultiConnectionTest {
             repository.openConnection()
         ){
             @Override
-            public <D, Q> Q createQuery(Session session,QueryLanguage<D, Q> queryLanguage, D definition) {
+            public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
                 throw new UnsupportedOperationException();
-            }};
+            }
+            
+            @Override
+            public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
+                throw new UnsupportedOperationException();
+            }
+            
+        };
             
         // find
         CloseableIterator<STMT> stmts = connection.findStatements(null, null, null, null, false);

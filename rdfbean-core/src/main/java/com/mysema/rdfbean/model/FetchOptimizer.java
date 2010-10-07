@@ -144,6 +144,11 @@ public class FetchOptimizer implements RDFConnection {
     }
 
     @Override
+    public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
+        return connection.createQuery(queryLanguage, definition);
+    }
+    
+    @Override
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
         return connection.createQuery(session, queryLanguage, definition);
     }

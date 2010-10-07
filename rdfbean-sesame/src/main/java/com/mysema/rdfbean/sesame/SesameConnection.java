@@ -22,6 +22,10 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.query.GraphQuery;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.Query;
+import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
 import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.repository.RepositoryConnection;
@@ -30,6 +34,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.query.QueryException;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
@@ -169,6 +174,11 @@ public class SesameConnection implements RDFConnection {
         return dialect.getBID(dialect.createBNode());
     }
 
+    @Override
+    public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
+        throw new UnsupportedOperationException();
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
@@ -183,6 +193,22 @@ public class SesameConnection implements RDFConnection {
                     inference);
             query.getMetadata().setDistinct(true);
             return (Q)query;
+            
+        }else if (queryLanguage.equals(QueryLanguage.SPARQL)){
+            try {
+                Query query = connection.prepareQuery(org.openrdf.query.QueryLanguage.SPARQL, definition.toString());
+                if (query instanceof GraphQuery){
+                    return (Q)new GraphQueryImpl((GraphQuery)query, dialect);
+                }else if (query instanceof TupleQuery){
+                    return (Q)new TupleQueryImpl((TupleQuery)query, dialect);
+                }else{
+                    throw new RepositoryException("Unsupported query type " + query.getClass().getName());
+                }               
+            } catch (StoreException e) {
+                throw new QueryException(e);
+            } catch (MalformedQueryException e) {
+                throw new QueryException(e);
+            }
             
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);

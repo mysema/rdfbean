@@ -40,7 +40,8 @@
     <module>../rdfbean-spring</module>    
     <module>../rdfbean-guice</module>
     <module>../rdfbean-tapestry</module>
-    
+    <module>../rdfbean-sparql</module>
+	
     <module>../rdfbean-maven-plugin</module>    
     
     <!-- demo -->         

@@ -23,6 +23,7 @@ import org.junit.Test;
 import com.mysema.rdfbean.domains.LoadDomain;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.ConfigurationOntology;
 import com.mysema.rdfbean.object.DefaultConfiguration;
@@ -47,7 +48,7 @@ public class LoadTest extends SessionTestBase implements LoadDomain{
 
     private Configuration configuration;
     
-    private Ontology ontology;
+    private Ontology<UID> ontology;
     
     @Before
     public void setUp(){

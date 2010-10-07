@@ -71,6 +71,11 @@ public class MiniConnection implements RDFConnection {
     public MiniRepository getRepository() {
         return repository;
     }
+    
+    @Override
+    public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
+        throw new UnsupportedOperationException();
+    }
 
     @SuppressWarnings("unchecked")
     @Override

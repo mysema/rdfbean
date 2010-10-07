@@ -49,6 +49,17 @@ public interface RDFConnection extends Closeable{
      * 
      * @param <D>
      * @param <Q>
+     * @param queryLanguage
+     * @param definition
+     * @return
+     */
+    <D,Q> Q createQuery(QueryLanguage<D,Q> queryLanguage, @Nullable D definition);
+    
+    /**
+     * Prepare a Query of the given query language with the given definition
+     * 
+     * @param <D>
+     * @param <Q>
      * @param session
      * @param queryLanguage
      * @param definition

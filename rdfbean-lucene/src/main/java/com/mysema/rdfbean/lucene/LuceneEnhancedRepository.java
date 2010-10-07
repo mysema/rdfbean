@@ -61,6 +61,11 @@ public class LuceneEnhancedRepository implements Repository{
         final RDFConnection connection = repository.openConnection();
         return new MultiConnection(connection, luceneConnection){
             @Override
+            public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
+                throw new UnsupportedOperationException();
+            }
+            
+            @Override
             public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
                 if (queryLanguage.equals(Constants.LUCENEQUERY) || queryLanguage.equals(Constants.COMPASSQUERY)){
                     return luceneConnection.createQuery(session, queryLanguage, definition);
