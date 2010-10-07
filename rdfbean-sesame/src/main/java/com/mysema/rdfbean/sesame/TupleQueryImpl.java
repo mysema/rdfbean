@@ -1,9 +1,12 @@
 package com.mysema.rdfbean.sesame;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import javax.annotation.Nullable;
 
 import org.openrdf.query.TupleQuery;
+import org.openrdf.result.TupleResult;
 import org.openrdf.store.StoreException;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -17,6 +20,9 @@ public class TupleQueryImpl implements SPARQLQuery {
     private final TupleQuery query;
     
     private final SesameDialect dialect;
+    
+    @Nullable
+    private TupleResult result;
 
     public TupleQueryImpl(TupleQuery query, SesameDialect dialect) {
         this.query = query;
@@ -36,15 +42,26 @@ public class TupleQueryImpl implements SPARQLQuery {
     @Override
     public CloseableIterator<Map<String, NODE>> getTuples() {
         try {
-            return new TupleResultIterator(query.evaluate(), dialect);
+            return new TupleResultIterator(getResult(), dialect);
         } catch (StoreException e) {
             throw new RepositoryException(e);
         }
     }
 
     @Override
-    public Set<String> getVariables() {
-        return query.getBindings().getBindingNames();
+    public List<String> getVariables() {
+        try {
+            return getResult().getBindingNames();
+        } catch (StoreException e) {
+            throw new RepositoryException(e);
+        }
     }
 
+    private TupleResult getResult() throws StoreException{
+        if (result == null){
+            result = query.evaluate();
+        }
+        return result;
+    }
+    
 }

@@ -1,7 +1,7 @@
 package com.mysema.rdfbean.sesame;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.openrdf.query.GraphQuery;
 import org.openrdf.store.StoreException;
@@ -47,7 +47,7 @@ public class GraphQueryImpl implements SPARQLQuery{
     }
 
     @Override
-    public Set<String> getVariables() {
+    public List<String> getVariables() {
         throw new UnsupportedOperationException();
     }
 

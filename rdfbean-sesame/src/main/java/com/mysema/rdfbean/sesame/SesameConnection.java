@@ -174,9 +174,15 @@ public class SesameConnection implements RDFConnection {
         return dialect.getBID(dialect.createBNode());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-        throw new UnsupportedOperationException();
+        if (queryLanguage.equals(QueryLanguage.SPARQL)){
+            return (Q)createSPARQLQuery((String) definition);
+            
+        }else{
+            throw new UnsupportedQueryLanguageException(queryLanguage);
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -195,23 +201,27 @@ public class SesameConnection implements RDFConnection {
             return (Q)query;
             
         }else if (queryLanguage.equals(QueryLanguage.SPARQL)){
-            try {
-                Query query = connection.prepareQuery(org.openrdf.query.QueryLanguage.SPARQL, definition.toString());
-                if (query instanceof GraphQuery){
-                    return (Q)new GraphQueryImpl((GraphQuery)query, dialect);
-                }else if (query instanceof TupleQuery){
-                    return (Q)new TupleQueryImpl((TupleQuery)query, dialect);
-                }else{
-                    throw new RepositoryException("Unsupported query type " + query.getClass().getName());
-                }               
-            } catch (StoreException e) {
-                throw new QueryException(e);
-            } catch (MalformedQueryException e) {
-                throw new QueryException(e);
-            }
+            return (Q)createSPARQLQuery((String) definition);
             
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);
+        }
+    }
+    
+    private SPARQLQuery createSPARQLQuery(String queryString) {
+        try {
+            Query query = connection.prepareQuery(org.openrdf.query.QueryLanguage.SPARQL, queryString);
+            if (query instanceof GraphQuery){
+                return new GraphQueryImpl((GraphQuery)query, dialect);
+            }else if (query instanceof TupleQuery){
+                return new TupleQueryImpl((TupleQuery)query, dialect);
+            }else{
+                throw new RepositoryException("Unsupported query type " + query.getClass().getName());
+            }               
+        } catch (StoreException e) {
+            throw new QueryException(e);
+        } catch (MalformedQueryException e) {
+            throw new QueryException(e);
         }
     }
 

@@ -1,7 +1,7 @@
 package com.mysema.rdfbean.model;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.mysema.commons.lang.CloseableIterator;
 
@@ -19,6 +19,6 @@ public interface SPARQLQuery {
     
     CloseableIterator<Map<String,NODE>> getTuples();
 
-    Set<String> getVariables();
+    List<String> getVariables();
 
 }

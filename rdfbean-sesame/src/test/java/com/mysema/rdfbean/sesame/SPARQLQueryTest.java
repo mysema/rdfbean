@@ -3,6 +3,7 @@ package com.mysema.rdfbean.sesame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Before;
@@ -35,6 +36,7 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
     public void Select(){        
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s ?p ?o WHERE {?s ?p ?o}");
         assertEquals(SPARQLQuery.ResultType.TUPLES, query.getResultType());
+        assertEquals(Arrays.asList("s","p","o"), query.getVariables());
         CloseableIterator<Map<String,NODE>> rows = query.getTuples();
         assertTrue(rows.hasNext());
         while (rows.hasNext()){
@@ -59,6 +61,7 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
     public void Select_and_Describe(){
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s WHERE {?s ?p ?o}");
         CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        assertEquals(Arrays.asList("s"), query.getVariables());
         assertTrue(rows.hasNext());
         while (rows.hasNext()){
             Map<String,NODE> row = rows.next();
