@@ -4,10 +4,6 @@
  * 
  */
 
-
-/**
- * Utility classes
- */
 @DefaultAnnotation( { Nonnull.class })
 package com.mysema.rdfbean.sparql;
 

@@ -73,6 +73,8 @@ public class SPARQLResultProducer {
             JSONObject binding = new JSONObject();
             for (Map.Entry<String,NODE> entry : row.entrySet()){
                 JSONObject value = new JSONObject();
+                String type = getNodeType(entry.getValue());
+                value.put("type", type);
                 switch (entry.getValue().getNodeType()){
                     case URI: value.put("type", "uri"); break;
                     case BLANK: value.put("type", "bnode"); break;
@@ -114,13 +116,7 @@ public class SPARQLResultProducer {
             writer.begin("result");
             for (Map.Entry<String, NODE> entry : row.entrySet()) {
                 writer.begin("binding").attribute("name", entry.getKey());
-                String type;
-                switch (entry.getValue().getNodeType()) {
-                    case BLANK:   type = "bnode"; break;
-                    case URI:     type = "uri"; break;
-                    case LITERAL: type = "literal"; break;
-                    default:      type = "null";
-                }
+                String type = getNodeType(entry.getValue());
                 writer.begin(type);
                 if (entry.getValue().isLiteral()){
                     LIT literal = entry.getValue().asLiteral();
@@ -140,4 +136,13 @@ public class SPARQLResultProducer {
         writer.end("sparql");
     }
 
+    private String getNodeType(NODE node){
+        switch (node.getNodeType()) {
+            case BLANK:   return "bnode";
+            case URI:     return "uri"; 
+            case LITERAL: return "literal"; 
+        }
+        throw new IllegalArgumentException(node.toString());
+    }
+    
 }
