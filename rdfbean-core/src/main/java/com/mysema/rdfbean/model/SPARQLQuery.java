@@ -14,7 +14,7 @@ import com.mysema.commons.lang.CloseableIterator;
  */
 public interface SPARQLQuery {
     
-    public enum ResultType { TRIPLES, TUPLES }
+    public enum ResultType { BOOLEAN, TRIPLES, TUPLES }
     
     /**
      * Get the result type of the SPARQL query
@@ -22,6 +22,13 @@ public interface SPARQLQuery {
      * @return
      */
     ResultType getResultType();
+    
+    /**
+     * Get the result of an ASK query
+     * 
+     * @return
+     */
+    boolean getBoolean();
     
     /**
      * Get the result of a DESCRIBE or CONSTRUCT query as triples

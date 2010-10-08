@@ -67,17 +67,7 @@ public class SPARQLServlet implements Servlet{
         try{
             SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, queryString);
             String type = request.getParameter("type");
-            if (query.getResultType() == SPARQLQuery.ResultType.TUPLES){
-                if ("json".equals(type)){
-                    response.setContentType("application/sparql-results+json");
-                    resultProducer.streamJSONResults(query, response.getWriter());
-                }else{
-                    response.setContentType("application/sparql-results+xml");
-                    XMLWriter writer = new XMLWriter(response.getWriter());
-                    resultProducer.streamXMLResults(query, writer);
-                }
-                
-            }else{
+            if (query.getResultType() == SPARQLQuery.ResultType.TRIPLES){
                 String contentType = Format.RDFXML.getMimetype();
                 if ("turtle".equals(type)){
                     contentType = Format.TURTLE.getMimetype();
@@ -86,6 +76,16 @@ public class SPARQLServlet implements Servlet{
                 }
                 response.setContentType(contentType);
                 query.streamTriples(response.getWriter(), contentType);
+                
+            }else{
+                if ("json".equals(type)){
+                    response.setContentType("application/sparql-results+json");
+                    resultProducer.streamAsJSON(query, response.getWriter());
+                }else{
+                    response.setContentType("application/sparql-results+xml");
+                    XMLWriter writer = new XMLWriter(response.getWriter());
+                    resultProducer.streamAsXML(query, writer);
+                }    
             }
         }finally{
             connection.close();

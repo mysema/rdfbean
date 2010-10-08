@@ -22,6 +22,7 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
@@ -211,7 +212,9 @@ public class SesameConnection implements RDFConnection {
     private SPARQLQuery createSPARQLQuery(String queryString) {
         try {
             Query query = connection.prepareQuery(org.openrdf.query.QueryLanguage.SPARQL, queryString);
-            if (query instanceof GraphQuery){
+            if (query instanceof BooleanQuery){
+                return new BooleanQueryImpl((BooleanQuery)query);
+            }else if (query instanceof GraphQuery){
                 return new GraphQueryImpl((GraphQuery)query, dialect);
             }else if (query instanceof TupleQuery){
                 return new TupleQueryImpl((TupleQuery)query, dialect);

@@ -16,11 +16,15 @@ import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
 
+/**
+ * @author tiwe
+ *
+ */
 public class TupleQueryImpl implements SPARQLQuery {
     
-    private final TupleQuery query;
-    
     private final SesameDialect dialect;
+    
+    private final TupleQuery query;
     
     @Nullable
     private TupleResult result;
@@ -28,6 +32,18 @@ public class TupleQueryImpl implements SPARQLQuery {
     public TupleQueryImpl(TupleQuery query, SesameDialect dialect) {
         this.query = query;
         this.dialect = dialect;
+    }
+
+    @Override
+    public boolean getBoolean() {
+        throw new UnsupportedOperationException();
+    }
+    
+    private TupleResult getResult() throws StoreException{
+        if (result == null){
+            result = query.evaluate();
+        }
+        return result;
     }
 
     @Override
@@ -56,13 +72,6 @@ public class TupleQueryImpl implements SPARQLQuery {
         } catch (StoreException e) {
             throw new RepositoryException(e);
         }
-    }
-
-    private TupleResult getResult() throws StoreException{
-        if (result == null){
-            result = query.evaluate();
-        }
-        return result;
     }
 
     @Override

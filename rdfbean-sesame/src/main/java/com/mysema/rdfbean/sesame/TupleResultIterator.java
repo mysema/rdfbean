@@ -11,6 +11,10 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RepositoryException;
 
+/**
+ * @author tiwe
+ *
+ */
 public class TupleResultIterator implements CloseableIterator<Map<String, NODE>> {
 
     private final TupleResult tupleResult;

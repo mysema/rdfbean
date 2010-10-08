@@ -6,6 +6,10 @@ import org.openrdf.store.StoreException;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
 
+/**
+ * @author tiwe
+ *
+ */
 public class GraphResultIterator extends AbstractResultIterator{
     
     private final GraphResult graphResult;

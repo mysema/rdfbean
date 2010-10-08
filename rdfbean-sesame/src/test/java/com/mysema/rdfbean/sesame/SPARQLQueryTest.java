@@ -35,6 +35,13 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
     }
     
     @Test
+    public void Ask(){
+        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "ASK { ?s ?p ?o }");
+        assertEquals(SPARQLQuery.ResultType.BOOLEAN, query.getResultType());
+        assertTrue(query.getBoolean());
+    }
+    
+    @Test
     public void Select(){        
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s ?p ?o WHERE {?s ?p ?o}");
         assertEquals(SPARQLQuery.ResultType.TUPLES, query.getResultType());

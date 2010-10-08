@@ -47,6 +47,27 @@ public class SPARQLServletTest {
     }
     
     @Test
+    public void Ask() throws ServletException, IOException{
+        request.setParameter("query", "ASK { ?s ?p ?o }");
+        servlet.service(request, response);
+        System.out.println(response.getContentAsString());
+        assertTrue(response.getContentAsString().contains("<sparql"));
+        assertTrue(response.getContentAsString().contains("<head/>"));
+        assertTrue(response.getContentAsString().contains("<results><boolean>true</boolean></results>"));
+    }
+    
+    @Test
+    public void Ask_as_JSON() throws ServletException, IOException{
+        request.setParameter("query", "ASK { ?s ?p ?o }");
+        request.setParameter("type", "json");
+        servlet.service(request, response);
+        System.out.println(response.getContentAsString());
+        assertTrue(response.getContentAsString().contains("head"));
+        assertTrue(response.getContentAsString().contains("boolean"));
+        assertTrue(response.getContentAsString().contains("true"));
+    }
+    
+    @Test
     public void Select() throws ServletException, IOException{
         request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
         servlet.service(request, response);

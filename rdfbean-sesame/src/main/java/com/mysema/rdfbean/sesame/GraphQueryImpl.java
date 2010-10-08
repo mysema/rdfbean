@@ -27,15 +27,20 @@ import com.mysema.rdfbean.model.STMT;
  */
 public class GraphQueryImpl implements SPARQLQuery{
     
-    private final GraphQuery graphQuery;
-    
     private final SesameDialect dialect;
+    
+    private final GraphQuery graphQuery;
     
     public GraphQueryImpl(GraphQuery graphQuery, SesameDialect dialect) {
         this.graphQuery = graphQuery;
         this.dialect = dialect;
     }
     
+    @Override
+    public boolean getBoolean() {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public ResultType getResultType() {
         return ResultType.TRIPLES;
