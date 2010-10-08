@@ -83,7 +83,7 @@ public class ServiceInjectionTest {
     }
     
     @Test
-    public void injectSpringServices() throws ClassNotFoundException {
+    public void InjectSpringServices() throws ClassNotFoundException {
         BID subject = new BID("foobar");
         MiniRepository repository = new MiniRepository(
                 new STMT(subject, RDF.type, new UID(TEST.NS, "RichBean")),
@@ -104,7 +104,7 @@ public class ServiceInjectionTest {
     }
 
     @Test
-    public void mixinInjection() {
+    public void MixinInjection() {
         UID uid = new UID(SRV.NS, "helloWorld");
         Session session = SessionUtil.openSession(MixinInjection.class);
         session.addParent(SRV.NS, new SpringObjectRepository(applicationContext));

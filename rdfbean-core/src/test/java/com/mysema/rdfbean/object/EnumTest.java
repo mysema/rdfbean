@@ -42,7 +42,7 @@ public class EnumTest {
     }
     
     @Test
-    public void testEnum() {
+    public void Enum() {
         MiniRepository repository = new MiniRepository();
         Session session = SessionUtil.openSession(repository, EnumType.class, EnumRef.class);
         session.save(new EnumRef(EnumType.SECONDARY));

@@ -53,7 +53,7 @@ public class ConfigurationOntologyTest {
     }
     
     @Test
-    public void getMappedSubtypes(){
+    public void GetMappedSubtypes(){
         MappedClass cl = configuration.getMappedClass(Entity1.class);
         assertEquals(getUIDs(Entity1.class, Entity2.class, Entity3.class), ontology.getSubtypes(cl.getUID()));
         
@@ -65,7 +65,7 @@ public class ConfigurationOntologyTest {
     }
     
     @Test
-    public void getMappedSupertypes(){
+    public void GetMappedSupertypes(){
         MappedClass cl = configuration.getMappedClass(Entity3.class);
         assertEquals(getUIDs(Entity1.class, Entity2.class), ontology.getSupertypes(cl.getUID()));
         

@@ -41,7 +41,7 @@ public class MapQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void mapFilters() {
+    public void MapFilters() {
         for (BooleanExpression f : mapFilters(v1.mapProperty, v2.mapProperty, "", instance)){
             System.err.println("\n" + f);
             session.from(v1,v2).where(f).list(v1.directProperty);
@@ -49,7 +49,7 @@ public class MapQueriesTest extends SessionTestBase{
     }
 
     @Test
-    public void mapProjections() {
+    public void MapProjections() {
         for (Expression<?> pr : mapProjections(v1.mapProperty, v2.mapProperty, "", instance)){
             System.err.println("\n" + pr);
             session.from(v1,v2).list(pr);

@@ -31,18 +31,18 @@ public class RDBRepositoryTest extends AbstractRDBTest{
     private Operation<Long> countOp = new CountOperation(); 
     
     @Test
-    public void execute() {
+    public void Execute() {
         repository.execute(countOp);
     }
 
     @Test
-    public void export() {
+    public void Export() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         repository.export(Format.TURTLE, baos);
     }
 
     @Test
-    public void load_withContext_replace(){
+    public void Load_withContext_replace(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, true);
@@ -56,7 +56,7 @@ public class RDBRepositoryTest extends AbstractRDBTest{
     }
     
     @Test
-    public void load_withContext_withoutReplace(){
+    public void Load_withContext_withoutReplace(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, false);
@@ -70,14 +70,14 @@ public class RDBRepositoryTest extends AbstractRDBTest{
     }
     
     @Test
-    public void load_withoutContext(){
+    public void Load_withoutContext(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, null, false);
         assertTrue(repository.execute(countOp) > 0);
     }
     
     @Test
-    public void open_Connection() throws IOException {
+    public void Open_Connection() throws IOException {
         repository.initialize();
         RDFConnection conn = repository.openConnection();
         assertNotNull(conn);

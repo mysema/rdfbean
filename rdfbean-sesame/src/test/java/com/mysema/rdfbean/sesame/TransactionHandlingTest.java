@@ -61,7 +61,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     }
     
     @Test
-    public void commit() throws StoreException, ClassNotFoundException, IOException{
+    public void Commit() throws StoreException, ClassNotFoundException, IOException{
         session = sessionFactory.openSession();
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
@@ -75,7 +75,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     }
         
     @Test
-    public void rollback() throws StoreException, ClassNotFoundException, IOException{
+    public void Rollback() throws StoreException, ClassNotFoundException, IOException{
         session = sessionFactory.openSession();
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();

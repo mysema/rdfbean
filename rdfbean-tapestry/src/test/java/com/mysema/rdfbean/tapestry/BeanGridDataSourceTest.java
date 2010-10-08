@@ -109,24 +109,24 @@ public class BeanGridDataSourceTest {
     }
 
     @Test
-    public void testGetAvailableRows() {
+    public void GetAvailableRows() {
         assertEquals(250, dataSource.getAvailableRows());
     }
 
     @Test
-    public void testPrepare() {
+    public void Prepare() {
         dataSource.prepare(0, 10, Collections.<SortConstraint>emptyList());
     }
     
     @Test
-    public void testPrepare_with_sort() {
+    public void Prepare_with_sort() {
 	PropertyModel firstName = new SimplePropertyModel("firstName",String.class);
 	SortConstraint constraint = new SortConstraint(firstName,ColumnSort.ASCENDING);
 	dataSource.prepare(0, 10, Collections.singletonList(constraint));
     }
 
     @Test
-    public void testGetRowValue() {
+    public void GetRowValue() {
         dataSource.prepare(0, 9, Collections.<SortConstraint>emptyList());
         for (int i = 0; i < 10; i++){
             dataSource.getRowValue(i);
@@ -148,7 +148,7 @@ public class BeanGridDataSourceTest {
     // TODO : proper test for case sensitivity
     
     @Test
-    public void testGetRowType() {
+    public void GetRowType() {
         assertEquals(User.class, dataSource.getRowType());
     }
 

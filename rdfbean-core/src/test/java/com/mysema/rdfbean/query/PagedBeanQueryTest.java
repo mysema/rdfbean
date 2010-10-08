@@ -91,7 +91,7 @@ public class PagedBeanQueryTest {
     }
 
     @Test
-    public void orderByFirstName(){
+    public void OrderByFirstName(){
         BeanListSourceBuilder query = new BeanListSourceBuilder(sessionFactory);
         User user = Alias.alias(User.class);
         assertEquals(
@@ -104,7 +104,7 @@ public class PagedBeanQueryTest {
     }
     
     @Test
-    public void orderByLastName(){
+    public void OrderByLastName(){
         BeanListSourceBuilder query = new BeanListSourceBuilder(sessionFactory);
         User user = Alias.alias(User.class);
         assertEquals(

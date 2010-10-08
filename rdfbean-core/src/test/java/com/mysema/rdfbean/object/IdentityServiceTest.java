@@ -36,14 +36,14 @@ public class IdentityServiceTest {
     }
     
     @Test
-    public void testURI(){     
+    public void URI(){     
         LID lid = identityService.getLID(RDF.type);
         assertEquals(RDF.type, identityService.getID(lid));
         assertEquals(RDF.type, identityService.getID(lid));
     }
     
     @Test
-    public void testURI2(){
+    public void URI2(){
         LID lid = identityService.getLID(RDF.type);
         assertEquals(lid, identityService.getLID(RDF.type));
         assertEquals(lid, identityService.getLID(RDF.type));
@@ -51,14 +51,14 @@ public class IdentityServiceTest {
     }
     
     @Test
-    public void testURINamedContext(){     
+    public void URINamedContext(){     
         LID lid = identityService.getLID(RDF.type);
         assertEquals(RDF.type, identityService.getID(lid));
         assertEquals(RDF.type, identityService.getID(lid));
     }
     
     @Test
-    public void testBlankNode(){
+    public void BlankNode(){
         BID id = new BID();        
         LID lid = identityService.getLID(id);
         assertEquals(id, identityService.getID(lid));
@@ -66,7 +66,7 @@ public class IdentityServiceTest {
     }
     
     @Test
-    public void testBlankNode2(){
+    public void BlankNode2(){
         BID id = new BID("_:node1445r1ioqx129");        
         LID lid = identityService.getLID(id);
         assertEquals(id, identityService.getID(lid));

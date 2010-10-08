@@ -41,21 +41,21 @@ public class RDBQueryTest extends AbstractRDBTest implements UserDepartmentCompa
     }
     
     @Test
-    public void fromUser_list(){
+    public void FromUser_list(){
         List<String> names = MiniApi.from(u, Arrays.asList(users)).list($(u.getUserName()));
         List<String> queriedNames = session.from($(u)).list($(u.getUserName()));
         assertTrue(queriedNames.containsAll(names));
     }
     
     @Test
-    public void fromUser_count(){
+    public void FromUser_count(){
         long count = session.from($(u)).count();
         session.save(new User());
         assertEquals(count + 1l, session.from($(u)).count());
     }
     
     @Test
-    public void fromUser_where_userName_eq_constant(){        
+    public void FromUser_where_userName_eq_constant(){        
         for (int i = 0; i < users.length; i++){
             assertEquals(users[i].getUserName(), session.from($(u))
                 .where($(u.getUserName()).eq(users[i].getUserName()))
@@ -64,7 +64,7 @@ public class RDBQueryTest extends AbstractRDBTest implements UserDepartmentCompa
     }
 
     @Test
-    public void fromUser_where_userName_startsWith_constant(){
+    public void FromUser_where_userName_startsWith_constant(){
         for (int i = 0; i < users.length; i++){
             assertEquals(users[i].getUserName(), session.from($(u))
                 .where($(u.getUserName()).startsWith(users[i].getUserName().substring(0,users[i].getUserName().length()-1)))
@@ -73,7 +73,7 @@ public class RDBQueryTest extends AbstractRDBTest implements UserDepartmentCompa
     }
     
     @Test
-    public void fromUser_where_userName_endsWith_constant(){
+    public void FromUser_where_userName_endsWith_constant(){
         for (int i = 0; i < users.length; i++){
             assertEquals(users[i].getUserName(), session.from($(u))
                 .where($(u.getUserName()).endsWith(users[i].getUserName().substring(1)))

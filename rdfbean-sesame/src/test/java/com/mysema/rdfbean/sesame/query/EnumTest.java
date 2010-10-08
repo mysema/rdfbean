@@ -38,7 +38,7 @@ public class EnumTest extends SessionTestBase implements NoteTypeDomain{
     }
     
     @Test
-    public void order(){
+    public void Order(){
         session.save(new Note(NoteType.A));
         session.save(new Note(NoteType.B));
         session.flush();
@@ -49,7 +49,7 @@ public class EnumTest extends SessionTestBase implements NoteTypeDomain{
     }
     
     @Test
-    public void order_by_ordinal() throws IOException{
+    public void Order_by_ordinal() throws IOException{
         session.save(new Note(NoteType.A));
         session.save(new Note(NoteType.B));
         session.flush();

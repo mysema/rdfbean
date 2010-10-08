@@ -28,7 +28,7 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 public class InheritanceTest extends AbstractConfigurationTest{
     
     @Test
-    public void inheritance(){
+    public void Inheritance(){
         configuration.setCoreConfiguration(new DefaultConfiguration(Animal.class, Cat.class, Dog.class));
         configuration.initialize();
         
@@ -53,7 +53,7 @@ public class InheritanceTest extends AbstractConfigurationTest{
     }
     
     @Test
-    public void supertypesMapping(){
+    public void SupertypesMapping(){
         configuration.setCoreConfiguration(new DefaultConfiguration(Animal.class, BlackCat.class, Cat.class, Dog.class));
         configuration.initialize();
         
@@ -62,7 +62,7 @@ public class InheritanceTest extends AbstractConfigurationTest{
     }
     
     @Test
-    public void subtypesMapping(){
+    public void SubtypesMapping(){
         configuration.setCoreConfiguration(new DefaultConfiguration(Animal.class, BlackCat.class, Cat.class, Dog.class));
         configuration.initialize();
         

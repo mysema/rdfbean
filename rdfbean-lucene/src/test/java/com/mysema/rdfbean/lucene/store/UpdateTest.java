@@ -40,7 +40,7 @@ public class UpdateTest extends AbstractStoreTest{
     }
     
     @Test
-    public void titlePersistence(){
+    public void TitlePersistence(){
         Article article = new Article();
         article.title = "Test";
         session.save(article);
@@ -63,7 +63,7 @@ public class UpdateTest extends AbstractStoreTest{
     }
     
     @Test
-    public void titlesPersistence(){
+    public void TitlesPersistence(){
         Article article = new Article();
         article.titles.add("Test");
         session.save(article);

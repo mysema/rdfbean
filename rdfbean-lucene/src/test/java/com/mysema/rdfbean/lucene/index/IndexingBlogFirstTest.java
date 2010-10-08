@@ -41,7 +41,7 @@ import com.mysema.rdfbean.object.SessionUtil;
 public class IndexingBlogFirstTest extends AbstractIndexTest{
     
     @Test
-    public void basicSearch() throws IOException{
+    public void BasicSearch() throws IOException{
         User user = new User();
         user.firstName = "John";
         user.lastName = "Smith";
@@ -81,7 +81,7 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
     }
     
     @Test
-    public void searchByTag() throws IOException{
+    public void SearchByTag() throws IOException{
         session.setFlushMode(FlushMode.MANUAL);
         
         Tag java = new Tag("java");
@@ -113,7 +113,7 @@ public class IndexingBlogFirstTest extends AbstractIndexTest{
     
     @Test
     @Ignore
-    public void tagPersistence() throws IOException{
+    public void TagPersistence() throws IOException{
         Tag java = new Tag("java");
         Tag web = new Tag("web");
         Tag dev = new Tag("dev");

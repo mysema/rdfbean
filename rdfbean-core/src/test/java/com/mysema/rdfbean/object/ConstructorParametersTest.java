@@ -48,7 +48,7 @@ public class ConstructorParametersTest {
     }
 
     @Test
-    public void constructorInjection() {
+    public void ConstructorInjection() {
         Session session = SessionUtil.openSession(ChildType.class, ParentType.class, ParentServiceType.class);
         session.addParent(TEST.NS, session);
         ChildType child = session.getBean(ChildType.class, new UID(TEST.NS,"child"));

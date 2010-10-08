@@ -20,13 +20,13 @@ public class LIDEditorTest {
     private LIDEditor editor = new LIDEditor();
     
     @Test
-    public void testGetAsText() {
+    public void GetAsText() {
         editor.setValue(new LID("1"));        
         assertEquals("1", editor.getAsText());
     }
 
     @Test
-    public void testSetAsTextString() {
+    public void SetAsTextString() {
         editor.setAsText("1");
         assertEquals(new LID("1"), editor.getValue());
     }

@@ -40,7 +40,7 @@ public class LoadTest {
     }
     
     @Test
-    public void export_and_load(){
+    public void Export_and_Load(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, true);
@@ -57,7 +57,7 @@ public class LoadTest {
     }
     
     @Test
-    public void load_withContext_replace(){
+    public void Load_withContext_replace(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, true);
@@ -71,7 +71,7 @@ public class LoadTest {
     }
     
     @Test
-    public void load_withContext_withoutReplace(){
+    public void Load_withContext_withoutReplace(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, false);
@@ -85,7 +85,7 @@ public class LoadTest {
     }
     
     @Test
-    public void load_withoutContext(){
+    public void Load_withoutContext(){
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, null, false);
         assertTrue(repository.execute(countOp) > 0);

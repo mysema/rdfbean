@@ -191,7 +191,7 @@ public class UpdateTest {
     }
     
     @Test
-    public void testInitialData() {
+    public void InitialData() {
         newSession();
         Employee employee = getEmployee();
         Company company = getCompany();
@@ -202,7 +202,7 @@ public class UpdateTest {
     }
     
     @Test
-    public void updateEmployeeName() {
+    public void UpdateEmployeeName() {
         newSession();
         Employee employee = getEmployee();
         
@@ -215,7 +215,7 @@ public class UpdateTest {
     }
     
     @Test
-    public void companyNameCascaded() {
+    public void CompanyNameCascaded() {
         newSession();
         Employee employee = getEmployee();
         Company company = getCompany();
@@ -229,7 +229,7 @@ public class UpdateTest {
     }
     
     @Test
-    public void changeCompany() {
+    public void ChangeCompany() {
         newSession();
         Employee employee = getEmployee();
 
@@ -251,7 +251,7 @@ public class UpdateTest {
     }
     
     @Test
-    public void updateMangers() {
+    public void UpdateManagers() {
         newSession();
         Company company = getCompany();
         
@@ -287,7 +287,7 @@ public class UpdateTest {
     }
     
     @Test
-    public void updateProjection() {
+    public void UpdateProjection() {
         EmployeeInfo einfo = session.get(EmployeeInfo.class, ids.get(0));
         assertEquals("John Doe", einfo.name);
         assertEquals("Example", einfo.companyName);
@@ -306,7 +306,7 @@ public class UpdateTest {
     }
     
     @Test
-    public void localizedProperty() {
+    public void LocalizedProperty() {
         newSession(Locale.UK);
         Company company = getCompany();
         assertEquals("In English", company.description);
@@ -324,7 +324,7 @@ public class UpdateTest {
     }
     
     @Test
-    public void getCompanyByExample(){
+    public void GetCompanyByExample(){
         newSession();
         Company company = getCompany();
         
@@ -344,7 +344,7 @@ public class UpdateTest {
     }
     
     @Test
-    public void getEmployeeByExample(){
+    public void GetEmployeeByExample(){
         newSession();
         Employee employee = getEmployee();
         

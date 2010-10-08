@@ -67,7 +67,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
     }
     
     @Test
-    public void testFindStatements() {
+    public void FindStatements() {
         ID subject = new BID();
         Set<STMT> additions = new HashSet<STMT>();
         additions.add(new STMT(subject, RDF.type, RDF.Property));
@@ -83,7 +83,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
     }
     
     @Test
-    public void testDateTime(){
+    public void DateTime(){
         UtilDateConverter converter = new UtilDateConverter();
         ID subject = new BID();
         LIT object = new LIT(converter.toString(new Date()), XSD.date);
@@ -98,7 +98,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
     }
     
     @Test
-    public void testNumeric(){
+    public void Numeric(){
         ID subject = new BID();
         Set<STMT> additions = new HashSet<STMT>();
         additions.add(new STMT(subject, new UID(TEST.NS,"int"), new LIT("1",XSD.intType)));
@@ -113,7 +113,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
     }
 
     @Test
-    public void testUpdate() throws SQLException {
+    public void Update() throws SQLException {
        Set<STMT> additions = new HashSet<STMT>();
        additions.add(new STMT(RDF.type, RDF.type, RDF.Property));
        additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
@@ -145,7 +145,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
     
 
     @Test
-    public void testAddStatement() {
+    public void AddStatement() {
         Set<STMT> additions = new HashSet<STMT>();
         ID sub1 = new BID();
         ID sub2 = new BID();
@@ -161,12 +161,12 @@ public class RDBConnectionTest extends AbstractRDBTest{
     }
 
     @Test
-    public void testAddNode() {
+    public void AddNode() {
         // TODO
     }
 
     @Test
-    public void testRemoveStatement() {
+    public void RemoveStatement() {
         Set<STMT> removals = new HashSet<STMT>();
         ID sub1 = new BID();
         ID sub2 = new BID();

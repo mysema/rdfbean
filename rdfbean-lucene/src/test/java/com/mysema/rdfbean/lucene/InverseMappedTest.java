@@ -24,7 +24,7 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 public class InverseMappedTest extends AbstractConfigurationTest{
     
     @Test
-    public void inheritance(){
+    public void Inheritance(){
         configuration.setCoreConfiguration(new DefaultConfiguration(User.class, Account.class));
         configuration.initialize();
         

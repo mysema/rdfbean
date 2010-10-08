@@ -18,7 +18,7 @@ import org.junit.Test;
 public class MemoryIdSequenceTest {
 
     @Test
-    public void testGetNextId() {
+    public void GetNextId() {
         IdSequence idSequence = new MemoryIdSequence();
         assertEquals(1l, idSequence.getNextId());
         assertEquals(2l, idSequence.getNextId());

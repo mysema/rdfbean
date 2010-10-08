@@ -44,7 +44,7 @@ public class ConstructorParameters3Test {
     }
 
     @Test
-    public void constructorInjection() {
+    public void ConstructorInjection() {
         Session session = SessionUtil.openSession(Child.class, Parent.class);
         Parent parent = new Parent();
         Child child = new Child(parent);

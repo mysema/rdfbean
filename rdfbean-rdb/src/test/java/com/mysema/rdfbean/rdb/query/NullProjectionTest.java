@@ -24,7 +24,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class NullProjectionTest extends AbstractRDBTest implements UserProjectionDomain{
     
     @Test
-    public void testOrderBy() throws IOException{
+    public void OrderBy() throws IOException{
         session.save(new User());
         User user = Alias.alias(User.class, "user");
         List<String> results = session.from($(user)).list($(user.getFirstName()));

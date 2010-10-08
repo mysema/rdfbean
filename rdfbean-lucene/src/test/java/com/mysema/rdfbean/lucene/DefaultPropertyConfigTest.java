@@ -28,7 +28,7 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 public class DefaultPropertyConfigTest extends AbstractConfigurationTest{
     
     @Test
-    public void defaultConfig(){
+    public void DefaultConfig(){
         configuration.setCoreConfiguration(new DefaultConfiguration());
         PropertyConfig defaultConfig = new PropertyConfig(Store.YES, Index.NOT_ANALYZED, false, true, false, 1.0f);
         configuration.setDefaultPropertyConfig(defaultConfig);

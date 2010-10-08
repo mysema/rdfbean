@@ -24,7 +24,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class PathInPathTest extends SessionTestBase {
     
     @Test
-    public void pathInPath(){
+    public void PathInPath(){
         int count1 = session.from(var2, var).where(var2.in(var.setProperty)).list(var, var2).size();
         int count2 = session.from(var2, var).where(var2.in(var.setProperty)).listDistinct(var, var2).size();
         assertEquals(count1, count2);

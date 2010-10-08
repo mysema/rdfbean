@@ -31,7 +31,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class NullProjectionTest extends SessionTestBase implements UserProjectionDomain{
     
     @Test
-    public void testOrderBy() throws StoreException, IOException{
+    public void OrderBy() throws StoreException, IOException{
         session.save(new User());
         User user = Alias.alias(User.class, "user");
         List<String> results = session.from($(user)).list($(user.getFirstName()));

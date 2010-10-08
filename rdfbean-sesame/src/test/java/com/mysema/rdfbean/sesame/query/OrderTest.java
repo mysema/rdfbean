@@ -33,7 +33,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class OrderTest extends SessionTestBase implements UserDomain{
     
     @Test
-    public void testOrderBy() throws StoreException, IOException{
+    public void OrderBy() throws StoreException, IOException{
         session.save(new User());
         User user = Alias.alias(User.class, "user");
         assertFalse(session.from($(user))
@@ -45,7 +45,7 @@ public class OrderTest extends SessionTestBase implements UserDomain{
     }
     
     @Test
-    public void correctOrder() throws StoreException, IOException{
+    public void CorrectOrder() throws StoreException, IOException{
         for(User user : session.findInstances(User.class)){
             session.delete(user);
         }
@@ -62,7 +62,7 @@ public class OrderTest extends SessionTestBase implements UserDomain{
     }
     
     @Test
-    public void orderWithOffset() throws StoreException, IOException{
+    public void OrderWithOffset() throws StoreException, IOException{
         for(User user : session.findInstances(User.class)){
             session.delete(user);
         }

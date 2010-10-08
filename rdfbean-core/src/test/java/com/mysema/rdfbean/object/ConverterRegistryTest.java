@@ -26,13 +26,13 @@ public class ConverterRegistryTest {
     private ConverterRegistry converter = new ConverterRegistryImpl();
     
     @Test
-    public void testYear(){
+    public void Year(){
         assertEquals("2000", converter.toString(new Year(2000)));
         assertEquals("-2000", converter.toString(new Year(-2000)));        
     }
     
     @Test
-    public void testLocalDate(){
+    public void LocalDate(){
         assertEquals("2000-01-01", converter.toString(new LocalDate(2000,1,1)));    
     }
 }

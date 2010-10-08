@@ -53,7 +53,7 @@ public class TypeVariableMappingTest {
     }
     
     @Test
-    public void testMappings() {
+    public void Mappings() {
         Configuration configuration = new DefaultConfiguration(Parent.class, FirstChild.class, NestedChild.class, SecondChild.class);
         
         MappedClass mappedClass = configuration.getMappedClass(Parent.class);

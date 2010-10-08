@@ -20,12 +20,12 @@ import com.mysema.rdfbean.model.RDF;
 public class NamespacesTest {
 
     @Test
-    public void testGetPrefix() {
+    public void GetPrefix() {
         assertEquals("rdf", Namespaces.getPrefix(RDF.NS));
     }
 
     @Test
-    public void testGetReadableURI() {
+    public void GetReadableURI() {
         assertEquals("rdf:type", Namespaces.getReadableURI(RDF.NS,"type"));
         assertEquals("rdf:", Namespaces.getReadableURI(RDF.NS,null));
         assertEquals("<urn:test>", Namespaces.getReadableURI("urn:", "test"));
@@ -33,7 +33,7 @@ public class NamespacesTest {
     }
     
     @Test
-    public void testRegister(){
+    public void Register(){
 	Namespaces.register("test", TEST.NS);
         assertEquals("test:test", Namespaces.getReadableURI(TEST.NS, "test"));	
     }

@@ -14,7 +14,7 @@ import org.junit.Test;
 public class LITTest {
 
     @Test
-    public void testToString() {
+    public void ToString() {
 	LIT lit1 = new LIT("x");
 	LIT lit2 = new LIT("x",Locale.ENGLISH);
 	LIT lit3 = new LIT("x",XSD.stringType);

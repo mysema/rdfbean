@@ -76,12 +76,12 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void path(){
+    public void Path(){
         // TODO
     }
     
     @Test
-    public void mixin(){
+    public void Mixin(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Person.class)
             .addMixin("labeled");
@@ -94,7 +94,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void without_namespace(){
+    public void Without_namespace(){
         ConfigurationBuilder builder = new ConfigurationBuilder();
         for (Class<?> cl : Arrays.<Class<?>>asList(Person.class, Department.class, Company.class, Labeled.class)){
             builder.addClass(cl).addProperties();    
@@ -108,7 +108,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void container(){
+    public void Container(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Company.class)
             .addId("id")
@@ -125,7 +125,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void localized(){
+    public void Localized(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Labeled.class)
             .addLocalized("label", RDFS.label)
@@ -143,7 +143,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void namespaces(){
+    public void Namespaces(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Labeled.class)
             .addProperty("label", RDFS.label)
@@ -159,7 +159,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void inverse(){
+    public void Inverse(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Company.class)
             .addId("id")
@@ -176,7 +176,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void addProperty(){
+    public void AddProperty(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Person.class)
             .addId("id")
@@ -202,7 +202,7 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
-    public void addProperties(){
+    public void AddProperties(){
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Person.class).addId("id").addProperties();
         builder.addClass(new UID(TEST.NS, "Dept"), Department.class).addId("id").addProperties();
@@ -240,7 +240,7 @@ public class ConfigurationBuilderTest {
     }
 
     @Test
-    public void query() throws IOException{
+    public void Query() throws IOException{
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Person.class).addId("id").addProperties();
         builder.addClass(new UID(TEST.NS, "Dept"), Department.class).addId("id").addProperties();

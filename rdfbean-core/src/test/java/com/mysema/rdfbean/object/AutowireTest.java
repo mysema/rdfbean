@@ -42,7 +42,7 @@ public class AutowireTest {
     }
     
     @Test
-    public void classReference() {
+    public void ClassReference() {
         MiniRepository repository = new MiniRepository();
         repository.add(
             new STMT(new UID(TEST.NS, "domainType"), RDF.type, new UID(TEST.NS, "DomainType"))

@@ -47,7 +47,7 @@ public class LocalizationTest {
     }
     
     @Test
-    public void localizedMap() {
+    public void LocalizedMap() {
         UID subject = new UID(TEST.NS, "LocalizedMapTest");
         MiniRepository repository = new MiniRepository(
                 new STMT(subject, RDFS.label, new LIT("suomeksi", FI)),

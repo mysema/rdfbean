@@ -49,14 +49,14 @@ public class ResourcesTest extends AbstractRDBTest implements ResourceDomain{
     }
     
     @Test
-    public void from_Resource_list(){
+    public void From_Resource_list(){
         List<Resource> resources = session.from($(r)).list($(r)); 
         assertEquals(count + 1, resources.size());
         assertTrue(resources.contains(resource));        
     }
     
     @Test
-    public void findInstances(){
+    public void FindInstances(){
         assertEquals(count + 1, session.findInstances(Resource.class).size());
     }
 }

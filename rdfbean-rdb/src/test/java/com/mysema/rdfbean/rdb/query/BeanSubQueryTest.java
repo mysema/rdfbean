@@ -48,7 +48,7 @@ public class BeanSubQueryTest extends AbstractRDBTest implements EntityDomain{
     }
     
     @Test
-    public void compareLong() throws  IOException{                
+    public void CompareLong() throws  IOException{                
         Entity result = session.from($(var1))
             .where(
                 sub($(var2))
@@ -60,7 +60,7 @@ public class BeanSubQueryTest extends AbstractRDBTest implements EntityDomain{
     }   
     
     @Test
-    public void compareDateTime(){
+    public void CompareDateTime(){
         Entity result = session.from($(var1))
             .where(
                 sub($(var2))

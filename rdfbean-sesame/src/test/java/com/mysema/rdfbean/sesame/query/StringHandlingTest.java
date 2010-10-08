@@ -35,49 +35,49 @@ public class StringHandlingTest extends SessionTestBase{
     }
     
     @Test
-    public void untypedLiterals(){
+    public void UntypedLiterals(){
         assertEquals(1, where(var.directProperty.eq("metaonto_elements")).count());
     }
     
     @Test
-    public void matches(){
+    public void Matches(){
         assertEquals(1, where(var.directProperty.matches("propertym.*")).count());
         assertEquals(1, where(var.directProperty.matches(".*opertym.*")).count());
     }
     
     @Test
-    public void typedLiterals(){
+    public void TypedLiterals(){
         assertEquals(1, where(var.directProperty.eq("propertymap")).count());
     }
     
     @Test
-    public void startsWith(){
+    public void StartsWith(){
         assertEquals(1, where(stringPath.startsWith("ns")).count());     
     }
     
     @Test
-    public void startsWithIgnoreCase(){
+    public void StartsWithIgnoreCase(){
         assertEquals(1, where(stringPath.startsWithIgnoreCase("NS")).count());   
     }
     
     @Test
-    public void endsWith(){
+    public void EndsWith(){
         assertEquals(1, where(stringPath.endsWith("ix")).count());    
     }
     
     @Test
-    public void endsWithIgnoreCase(){
+    public void EndsWithIgnoreCase(){
         assertEquals(1, where(stringPath.endsWithIgnoreCase("IX")).count());   
     }
     
     @Test
-    public void contains(){
+    public void Contains(){
         assertEquals(2, where(stringPath.contains("i")).count());
     }
     
     @Test
     @Ignore
-    public void in(){
+    public void In(){
      // Sesame doesn't support RDFS Datatype inferencing rules properly
         assertEquals(1, where(stringPath.in("metaonto_elements","B","C")).count());
     }

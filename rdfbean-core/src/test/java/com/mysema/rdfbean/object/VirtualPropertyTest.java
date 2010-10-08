@@ -62,7 +62,7 @@ public class VirtualPropertyTest {
     }
     
     @Test
-    public void testVirtualProperties() {
+    public void VirtualProperties() {
         MiniRepository repository = new MiniRepository();
         Session session = SessionUtil.openSession(repository, Party.class, Person.class);
         

@@ -33,7 +33,7 @@ public class ListQueriesTest extends SessionTestBase{
     private NumberExpression<Integer> size = var.listProperty.size();
         
     @Test
-    public void persist(){
+    public void Persist(){
         SimpleType simpleType = new SimpleType();
         simpleType.listProperty = Arrays.asList(new SimpleType2(), new SimpleType2());
         session.save(simpleType);
@@ -47,7 +47,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void in(){
+    public void In(){
         where(var.listProperty.contains(var.listProperty.get(0))).count();
         where(var.listProperty.contains(var.listProperty.get(0)),
               var.listProperty.isNotEmpty()).count();
@@ -59,7 +59,7 @@ public class ListQueriesTest extends SessionTestBase{
 
     @Test
     @Ignore
-    public void inList(){
+    public void InList(){
         // TODO
     }
 
@@ -69,7 +69,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void sizeEq(){
+    public void SizeEq(){
         // eq
         assertEquals(0, where(size.eq(1)).count());
         assertEquals(1, where(size.eq(2)).count());
@@ -77,7 +77,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void goe(){
+    public void Goe(){
         // goe
         assertEquals(2, where(size.goe(1)).count());
         assertEquals(2, where(size.goe(2)).count());
@@ -86,7 +86,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void gt(){
+    public void Gt(){
         // gt
         assertEquals(2, where(size.gt(0)).count());
         assertEquals(2, where(size.gt(1)).count());
@@ -95,7 +95,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void loe(){
+    public void Loe(){
         // loe
         assertEquals(0, where(size.loe(0)).count());
         assertEquals(0, where(size.loe(1)).count());
@@ -105,7 +105,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void lt(){
+    public void Lt(){
         // lt
         assertEquals(0, where(size.lt(1)).count());
         assertEquals(0, where(size.lt(2)).count());
@@ -115,7 +115,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void isEmpty(){
+    public void IsEmpty(){
         assertEquals(0, where(var.listProperty.isEmpty()).count());
         assertEquals(2, where(var.listProperty.isNotEmpty()).count());
     }

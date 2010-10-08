@@ -29,7 +29,7 @@ public class ReplaceOperationTest {
     }
     
     @Test
-    public void testExecute() throws IOException {
+    public void Execute() throws IOException {
         UID replacement = new UID(RDF.NS,"type2");
         Operation replace = new ReplaceOperation(Collections.singletonMap(RDF.type, replacement));
         repository.execute(replace);
@@ -40,7 +40,7 @@ public class ReplaceOperationTest {
     }
     
     @Test
-    public void testExecute2() throws IOException {
+    public void Execute2() throws IOException {
         UID replacement = new UID(RDF.NS,"Property2");
         Operation replace = new ReplaceOperation(Collections.singletonMap(RDF.Property, replacement));
         repository.execute(replace);

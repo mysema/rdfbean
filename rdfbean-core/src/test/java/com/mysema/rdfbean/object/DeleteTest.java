@@ -72,7 +72,7 @@ public class DeleteTest {
     }
     
     @Test
-    public void testSimpleDelete() {
+    public void SimpleDelete() {
         DeleteTest dtest = new DeleteTest();
         dtest.name = "dtest";
         
@@ -93,7 +93,7 @@ public class DeleteTest {
     }
     
     @Test
-    public void testRemoveReferences() {
+    public void RemoveReferences() {
         DeleteTest dtest1 = new DeleteTest();
         dtest1.name = "dtest1";
 

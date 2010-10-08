@@ -81,7 +81,7 @@ public class DynamicPropertiesTest implements PropertiesDomain{
     }
     
     @Test
-    public void testRead() throws IOException {
+    public void Read() throws IOException {
         
         // Checking preconditions
         
@@ -133,7 +133,7 @@ public class DynamicPropertiesTest implements PropertiesDomain{
     }
     
     @Test
-    public void testWrite(){
+    public void Write(){
         Project project = new Project();
         project.dates = new HashMap<UID,LocalDate>();
         project.dates.put(_created, CREATED);

@@ -48,7 +48,7 @@ public class SimpleQueriesTest extends SessionTestBase{
     }
         
     @Test
-    public void allIds(){
+    public void AllIds(){
         System.out.println("allIds");
         instances = session.from(var).list(var);
         List<String> ids = Arrays.asList(instances.get(0).getId(), instances.get(1).getId());        
@@ -56,7 +56,7 @@ public class SimpleQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void allInstances(){
+    public void AllInstances(){
         System.out.println("allInstances");
         instances = session.from(var).list(var);
         assertEquals(2, instances.size());
@@ -66,13 +66,13 @@ public class SimpleQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void allDistinctInstances(){
+    public void AllDistinctInstances(){
         System.out.println("allDistinctInstances");
         assertEquals(2, session.from(var).listDistinct(var).size());
     }
     
     @Test
-    public void byId(){
+    public void ById(){
         System.out.println("byId");
         String id = session.from(var).list(var.id).get(0);
         instance = where(var.id.eq(id)).uniqueResult(var);
@@ -81,7 +81,7 @@ public class SimpleQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void byIdNegated(){
+    public void ByIdNegated(){
         System.out.println("byIdNegated");
         instances = session.from(var).list(var);
         instance = where(var.id.ne(instances.get(0).getId())).uniqueResult(var);
@@ -90,7 +90,7 @@ public class SimpleQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void byLiteralProperty(){
+    public void ByLiteralProperty(){
         System.out.println("byLiteralProperty");
         instance = where(var.directProperty.eq("propertymap")).uniqueResult(var);
         assertNotNull(instance);
@@ -98,14 +98,14 @@ public class SimpleQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void byNonExistantProperty(){
+    public void ByNonExistantProperty(){
         System.out.println("byNonExistantProperty");
         assertEquals(2, where(var.notExistantProperty.isNull()).list(var).size());        
         assertEquals(0, where(var.notExistantProperty.isNotNull()).list(var).size());
     }
     
     @Test
-    public void byNumericProperty(){
+    public void ByNumericProperty(){
         assertEquals(1, where(var.numericProperty.eq(10)).list(var).size());
         assertEquals(1, where(var.numericProperty.eq(20)).list(var).size());
         assertEquals(0, where(var.numericProperty.eq(30)).list(var).size());
@@ -114,62 +114,62 @@ public class SimpleQueriesTest extends SessionTestBase{
     
     @Test
     @Ignore
-    public void byReferenceProperty(){
+    public void ByReferenceProperty(){
         // TODO        
     }
     
     @Test
-    public void idAndDirectProperties(){        
+    public void IdAndDirectProperties(){        
         System.out.println("idAndDirectProperties");
         session.from(var).list(var.id, var.directProperty);        
     }
  
     @Test
-    public void typeOf(){
+    public void TypeOf(){
         System.out.println("typeOf");
         assertEquals(2, where(var.instanceOf(SimpleType.class)).list(var).size());
     }
     
     @Test
-    public void listAccess(){        
+    public void ListAccess(){        
         System.out.println("listAccess");
         assertEquals(1, where(var.listProperty.get(1).directProperty.eq("nsprefix")).list(var).size());
     }
     
     @Test
-    public void listAccess2(){
+    public void ListAccess2(){
         System.out.println("listAccess2");
         assertEquals(1, where(var.listProperty.get(0).directProperty.eq("target_idspace")).list(var).size());
     }
         
     @Test
     @Ignore
-    public void mapAccess(){
+    public void MapAccess(){
         // TODO
     }
     
     @Test
     @Ignore
-    public void dtoProjection(){
+    public void DtoProjection(){
         // TODO
     }
     
     @Test
-    public void matchLocale(){
+    public void MatchLocale(){
         System.out.println("matchLocale");
         assertEquals(1, where(var.localizedProperty.eq("fi")).list(var).size());
         assertEquals(1, where(var.localizedProperty.eq("en")).list(var).size());
     }
     
     @Test
-    public void matchLocale2(){
+    public void MatchLocale2(){
         System.out.println("matchLocale2");
         assertEquals(1, where(var.localizedProperty.ne("fi")).list(var).size());
         assertEquals(1, where(var.localizedProperty.ne("en")).list(var).size());
     }
     
     @Test
-    public void localizedMap(){
+    public void LocalizedMap(){
         System.out.println("localizedMap");
         assertEquals(1, where(var.localizedAsMap.get(new Locale("fi")).eq("fi")).list(var).size());
         assertEquals(1, where(var.localizedAsMap.get(new Locale("en")).eq("fi")).list(var).size());
@@ -177,7 +177,7 @@ public class SimpleQueriesTest extends SessionTestBase{
     }
     
     @Test
-    public void localizedMap2(){
+    public void LocalizedMap2(){
         System.out.println("localizedMap2");
         assertEquals(1, where(var.localizedAsMap.get(new Locale("en")).eq("en")).list(var).size());
         assertEquals(1, where(var.localizedAsMap.get(new Locale("fi")).eq("en")).list(var).size());

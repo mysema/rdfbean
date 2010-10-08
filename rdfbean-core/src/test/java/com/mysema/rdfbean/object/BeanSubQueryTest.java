@@ -31,37 +31,37 @@ public class BeanSubQueryTest {
     }
     
     @Test
-    public void testCount() {
+    public void Count() {
         beanSubQuery.count();
     }
 
     @Test
-    public void testExists() {
+    public void Exists() {
         beanSubQuery.exists();
     }
 
     @Test
-    public void testListExprOfQExprOfQExprOfQArray() {
+    public void ListExprOfQExprOfQExprOfQArray() {
         beanSubQuery.list(pathBuilder);
     }
 
     @Test
-    public void testNotExists() {
+    public void NotExists() {
         beanSubQuery.notExists();
     }
 
     @Test
-    public void testOrderBy() {
+    public void OrderBy() {
         beanSubQuery.orderBy(stringPath.asc());
     }
 
     @Test
-    public void testUniqueEBoolean() {
+    public void UniqueEBoolean() {
         beanSubQuery.unique(stringPath);
     }
 
     @Test
-    public void testWhere() {
+    public void Where() {
         beanSubQuery.where(stringPath.isNotNull());
     }
 

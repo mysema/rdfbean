@@ -27,7 +27,7 @@ import org.openrdf.query.parser.TupleQueryModel;
 public class ParsingTest {
 
     @Test
-    public void tupleQuery() throws MalformedQueryException, UnsupportedQueryLanguageException{
+    public void TupleQuery() throws MalformedQueryException, UnsupportedQueryLanguageException{
         List<String> queries = new ArrayList<String>();
         queries.add("SELECT R FROM {R} rdfs:label {L}");        
         queries.add("SELECT L, R FROM {R} rdfs:label {L}");
@@ -48,7 +48,7 @@ public class ParsingTest {
     }
     
     @Test
-    public void graphQuery(){
+    public void GraphQuery(){
         List<String> queries = new ArrayList<String>();
         queries.add("CONSTRUCT {S} rdf:type {O} FROM {S} rdf:type {O}");
         

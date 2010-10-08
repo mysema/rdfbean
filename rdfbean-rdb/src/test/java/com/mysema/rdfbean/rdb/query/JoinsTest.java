@@ -38,7 +38,7 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
     }
     
     @Test
-    public void resultSetAssertions(){
+    public void ResultSetAssertions(){
         assertEquals(1l, from($(u)).count());
         assertEquals(1l, from($(u)).list($(u.getUserName())).size());
         
@@ -56,21 +56,21 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
     }
     
     @Test
-    public void from_list(){
+    public void From_list(){
         assertEquals(2, countJoins(from($(u)).createQuery($(u))));
         // u rdf:type  :User
         // u-symbol
     }    
     
     @Test
-    public void from_where_list(){                
+    public void From_where_list(){                
         assertEquals(2, countJoins(from($(u)).where($(u).eq(sample)).createQuery($(u))));
         // u rdf:type  :User
         // u-symbol
     }
     
     @Test
-    public void from_where2_list(){                
+    public void From_where2_list(){                
         assertEquals(3, countJoins(from($(u)).where($(u.getUserName()).eq("Bobby")).createQuery($(u))));
         // u rdf:type  :User
         // u :userName  username
@@ -78,7 +78,7 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
     }    
     
     @Test
-    public void from_listName(){
+    public void From_listName(){
         assertEquals(3, countJoins(from($(u)).createQuery($(u.getUserName()))));
         // u rdf:type  :User
         // u :userName userName
@@ -86,7 +86,7 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
     }
     
     @Test
-    public void from_where_listName(){
+    public void From_where_listName(){
         assertEquals(3, countJoins(from($(u)).where($(u).eq(sample)).createQuery($(u.getUserName()))));
         // u rdf:type  :User
         // u :userName userName
@@ -94,13 +94,12 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
     }
     
     @Test
-    public void from_where2_listName(){
+    public void From_where2_listName(){
         assertEquals(3, countJoins(from($(u)).where($(u.getUserName()).eq("Bobby")).createQuery($(u.getUserName()))));
         // u rdf:type  :User
         // u :userName userName
         // userName-symbol        
-    }
-    
+    }    
     
     private RDBQuery from(EntityPath<?> entity){
         return (RDBQuery) session.from(entity);

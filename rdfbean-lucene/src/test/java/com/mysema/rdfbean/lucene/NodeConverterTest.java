@@ -71,13 +71,13 @@ public class NodeConverterTest {
     }    
 
     @Test
-    public void testShortTypes(){
+    public void ShortTypes(){
         assertEquals("rdf:type", converter.toString(RDF.type));
         assertEquals(RDF.type,   converter.fromString("rdf:type"));
     }
     
     @Test
-    public void testStringLiteral(){
+    public void StringLiteral(){
         assertEquals("Test|l", converter.toString(new LIT("Test")));
         assertEquals("Test|l", converter.toString(new LIT("Test", XSD.stringType)));
     }

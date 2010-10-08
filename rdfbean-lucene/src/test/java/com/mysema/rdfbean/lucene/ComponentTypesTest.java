@@ -24,7 +24,7 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 public class ComponentTypesTest extends AbstractConfigurationTest{
     
     @Test
-    public void componentTypes(){
+    public void ComponentTypes(){
         configuration.setCoreConfiguration(new DefaultConfiguration(Tag.class));        
         configuration.initialize();    
         

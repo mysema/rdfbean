@@ -30,7 +30,7 @@ public class FetchStrategyTest {
     }
     
     @Test
-    public void testPredicateWildcardFetch() throws IOException {
+    public void PredicateWildcardFetch() throws IOException {
         FetchOptimizer fetchOptimizer = new FetchOptimizer(repository.openConnection(), new PredicateWildcardFetch());
         CloseableIterator<STMT> stmts = fetchOptimizer.findStatements(subject, null, null, null, false);
         assertTrue(stmts.hasNext());
@@ -43,7 +43,7 @@ public class FetchStrategyTest {
     }
     
     @Test
-    public void testFullContextFetch() throws IOException {
+    public void FullContextFetch() throws IOException {
         FullContextFetch fullContextFetch = new FullContextFetch();
         fullContextFetch.setContexts(Collections.singleton(RDFS.label));
         FetchOptimizer fetchOptimizer = new FetchOptimizer(repository.openConnection(), fullContextFetch);
@@ -58,7 +58,7 @@ public class FetchStrategyTest {
     }
     
     @Test
-    public void testFullContextFetch_no_contexts_given() throws IOException {
+    public void FullContextFetch_no_contexts_given() throws IOException {
         FullContextFetch fullContextFetch = new FullContextFetch();
 //        fullContextFetch.setContexts(Collections.singleton(RDFS.label));
         FetchOptimizer fetchOptimizer = new FetchOptimizer(repository.openConnection(), fullContextFetch);

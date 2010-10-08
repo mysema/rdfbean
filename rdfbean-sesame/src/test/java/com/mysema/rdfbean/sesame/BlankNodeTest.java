@@ -42,12 +42,12 @@ public class BlankNodeTest {
     }
     
     @Test
-    public void withMiniRepository() throws Exception{
+    public void WithMiniRepository() throws Exception{
         test(new MiniRepository());
     }
     
     @Test
-    public void withNativeRepository() throws Exception{
+    public void WithNativeRepository() throws Exception{
         File dataDir = new File("target/test-repo1");
         FileUtils.deleteDirectory(dataDir);
         NativeRepository repository = new NativeRepository();
@@ -57,7 +57,7 @@ public class BlankNodeTest {
     
     @Test
     @Ignore
-    public void withMemoryRepository() throws Exception{
+    public void WithMemoryRepository() throws Exception{
         File dataDir = new File("target/test-repo2");
         FileUtils.deleteDirectory(dataDir);
         MemoryRepository repository = new MemoryRepository();

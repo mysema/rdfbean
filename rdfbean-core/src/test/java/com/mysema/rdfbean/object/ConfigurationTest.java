@@ -40,7 +40,7 @@ public class ConfigurationTest {
     }
     
     @Test
-    public void scanPackages() throws IOException, ClassNotFoundException{
+    public void ScanPackages() throws IOException, ClassNotFoundException{
         DefaultConfiguration conf1 = new DefaultConfiguration();
         conf1.addPackages(OWL.class.getPackage());
         conf1.addClasses(TypedList.class);
@@ -51,7 +51,7 @@ public class ConfigurationTest {
     }
     
     @Test
-    public void scanPackages_from_file() throws IOException, ClassNotFoundException{
+    public void ScanPackages_from_File() throws IOException, ClassNotFoundException{
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         DefaultConfiguration conf = new DefaultConfiguration();
         Set<Class<?>> classes = conf.scanPackage(classLoader, CORE.class.getPackage());
@@ -60,7 +60,7 @@ public class ConfigurationTest {
     }
     
     @Test
-    public void scanPackages_from_jar() throws IOException, ClassNotFoundException{
+    public void ScanPackages_from_Jar() throws IOException, ClassNotFoundException{
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         DefaultConfiguration conf = new DefaultConfiguration();
         Set<Class<?>> classes = conf.scanPackage(classLoader, Query.class.getPackage());

@@ -27,7 +27,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class ComplexPathsTest extends AbstractRDBTest implements NoteRevisionTermDomain{
     
     @Test
-    public void optionalPaths() throws IOException{
+    public void OptionalPaths() throws IOException{
         Note note = new Note();
         session.save(note);        
         
@@ -81,7 +81,7 @@ public class ComplexPathsTest extends AbstractRDBTest implements NoteRevisionTer
     }
     
     @Test
-    public void deepPaths(){
+    public void DeepPaths(){
         NoteRevision rev1 = new NoteRevision();
         NoteRevision rev2 = new NoteRevision();
         Note note = new Note();

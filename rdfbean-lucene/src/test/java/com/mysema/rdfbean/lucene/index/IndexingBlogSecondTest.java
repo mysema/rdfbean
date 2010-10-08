@@ -46,7 +46,7 @@ public class IndexingBlogSecondTest  extends AbstractIndexTest{
     }
     
     @Test
-    public void searchByTag() throws IOException{
+    public void SearchByTag() throws IOException{
         Tag java = new Tag("java");
         Tag web = new Tag("web");
         Tag dev = new Tag("dev");

@@ -13,7 +13,7 @@ import com.mysema.rdfbean.rdb.QSymbol;
 public class SortableQueryMetadataTest {
     
     @Test
-    public void statements(){
+    public void Statements(){
         QueryMetadata metadata = new SortableQueryMetadata();
         QStatement user = new QStatement("user");
         QStatement user_type = new QStatement("user_type");
@@ -31,7 +31,7 @@ public class SortableQueryMetadataTest {
     }
 
     @Test
-    public void statements_and_symbols(){
+    public void Statements_and_Symbols(){
         QueryMetadata metadata = new SortableQueryMetadata();
         QStatement stmt = new QStatement("stmt");
         QSymbol sub = new QSymbol("subject");        

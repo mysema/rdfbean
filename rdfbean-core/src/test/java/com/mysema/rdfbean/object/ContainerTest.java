@@ -39,7 +39,7 @@ public class ContainerTest {
     List<String> names = new ArrayList<String>();
     
     @Test
-    public void testContainer() {
+    public void Container() {
         MiniRepository repository = new MiniRepository();
         Session session = SessionUtil.openSession(repository, ContainerTest.class);
         

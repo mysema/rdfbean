@@ -34,7 +34,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTermDomain{
     
     @Test
-    public void optionalPaths() throws StoreException, IOException{
+    public void OptionalPaths() throws StoreException, IOException{
         Note note = new Note();
         session.save(note);        
         NoteRevision rev = new NoteRevision();

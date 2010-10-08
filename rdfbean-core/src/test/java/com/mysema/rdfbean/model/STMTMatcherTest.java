@@ -12,7 +12,7 @@ import org.junit.Test;
 public class STMTMatcherTest {
 
     @Test
-    public void testEqualsObject() {
+    public void EqualsObject() {
 	STMTMatcher matcher1 = new STMTMatcher(null,null,null,null,true);
 	STMTMatcher matcher2 = new STMTMatcher(RDF.type,null,null,null,true);
 	STMTMatcher matcher3 = new STMTMatcher(null,RDF.type,null,null,true);

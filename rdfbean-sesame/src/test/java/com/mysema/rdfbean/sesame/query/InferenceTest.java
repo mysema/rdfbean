@@ -31,7 +31,7 @@ public class InferenceTest extends SessionTestBase implements InferenceDomain{
     
     @Test
     @Ignore // FIXME
-    public void subClassOf() throws StoreException{
+    public void SubClassOf() throws StoreException{
         session.save(new Entity1());
         session.save(new Entity2());
         session.save(new Entity3());

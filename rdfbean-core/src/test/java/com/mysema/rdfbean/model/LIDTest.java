@@ -20,13 +20,13 @@ public class LIDTest {
     private LID lid = new LID("1");
 
     @Test
-    public void testHashCode() {
+    public void HashCode() {
         LID lid2 = new LID("1");
         assertEquals(lid, lid2);
     }
 
     @Test
-    public void testEqualsObject() {
+    public void EqualsObject() {
         LID lid2 = new LID("1");
         assertEquals(lid.hashCode(), lid2.hashCode());
     }

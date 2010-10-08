@@ -37,11 +37,10 @@ public class SourcesTest {
         if (repo != null){
             repo.close();
         }
-    }
-    
+    }    
     
     @Test
-    public void withSources(){
+    public void WithSources(){
         JdbcConnectionPool ds = JdbcConnectionPool.create("jdbc:h2:target/foaf", "sa", "");   
         ds.setMaxConnections(30);
         RDFSource source = new RDFSource("classpath:/foaf.rdf", Format.RDFXML, "http://xmlns.com/foaf/0.1/");
@@ -55,7 +54,7 @@ public class SourcesTest {
     }
     
     @Test
-    public void rdfXmlSource() throws IOException{
+    public void RdfXmlSource() throws IOException{
         IdSequence sequence = new MemoryIdSequence();
         JdbcConnectionPool ds = JdbcConnectionPool.create("jdbc:h2:target/mixed1", "sa", "");   
         ds.setMaxConnections(30);
@@ -84,7 +83,7 @@ public class SourcesTest {
     }
     
     @Test
-    public void turtleSource() throws IOException{
+    public void TurtleSource() throws IOException{
         IdSequence sequence = new MemoryIdSequence();
         JdbcConnectionPool ds = JdbcConnectionPool.create("jdbc:h2:target/mixed2", "sa", "");   
         ds.setMaxConnections(30);        

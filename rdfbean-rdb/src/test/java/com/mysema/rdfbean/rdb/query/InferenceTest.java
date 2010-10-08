@@ -22,7 +22,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class InferenceTest extends AbstractRDBTest implements InferenceDomain{
         
     @Test
-    public void subClassOf() {
+    public void SubClassOf() {
         session.save(new Entity1());
         session.save(new Entity2());
         session.save(new Entity3());

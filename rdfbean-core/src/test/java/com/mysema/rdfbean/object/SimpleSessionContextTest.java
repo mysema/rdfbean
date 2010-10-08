@@ -41,19 +41,19 @@ public class SimpleSessionContextTest {
     }
     
     @Test
-    public void testGetCurrentSession() {
+    public void GetCurrentSession() {
         assertNull(sessionContext.getCurrentSession());
     }
 
     @Test
-    public void testGetOrCreateSession() {
+    public void GetOrCreateSession() {
         assertNull(sessionContext.getCurrentSession());
         assertNotNull(sessionContext.getOrCreateSession());
         assertNotNull(sessionContext.getCurrentSession());
     }
 
     @Test
-    public void testReleaseSession() {
+    public void ReleaseSession() {
         assertNull(sessionContext.getCurrentSession());
         assertNotNull(sessionContext.getOrCreateSession());
         assertNotNull(sessionContext.getCurrentSession());

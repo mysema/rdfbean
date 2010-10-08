@@ -34,7 +34,7 @@ public class MD5IdFactoryTest {
     private IdFactory idFactory = new MD5IdFactory();
     
     @Test
-    public void testNode() throws UnsupportedEncodingException, NoSuchAlgorithmException{        
+    public void Node() throws UnsupportedEncodingException, NoSuchAlgorithmException{        
         Map<Long,NODE> seen = new HashMap<Long,NODE>();        
         Set<NODE> nodes = new HashSet<NODE>();
         // UID
@@ -92,7 +92,7 @@ public class MD5IdFactoryTest {
     }
     
     @Test
-    public void testLang(){
+    public void Lang(){
         Set<Integer> seen = new HashSet<Integer>();        
         for (Locale locale : Locale.getAvailableLocales()){
             Integer id = idFactory.getId(locale);

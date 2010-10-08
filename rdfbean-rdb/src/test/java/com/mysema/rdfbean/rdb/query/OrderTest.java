@@ -27,7 +27,7 @@ public class OrderTest extends AbstractRDBTest implements UserDomain{
     private User user = Alias.alias(User.class, "u");
     
     @Test
-    public void testOrderBy() throws  IOException{
+    public void OrderBy() throws  IOException{
         session.save(new User());
         assertFalse(session.from($(user))
                 .orderBy($(user.getFirstName()).asc()).list($(user)).isEmpty());
@@ -38,7 +38,7 @@ public class OrderTest extends AbstractRDBTest implements UserDomain{
     }
     
     @Test
-    public void correctOrder() throws  IOException{
+    public void CorrectOrder() throws  IOException{
         for (User user : session.findInstances(User.class)){
             session.delete(user);
         }
@@ -54,7 +54,7 @@ public class OrderTest extends AbstractRDBTest implements UserDomain{
     }
     
     @Test
-    public void orderWithOffset() throws  IOException{  
+    public void OrderWithOffset() throws  IOException{  
         for(User user : session.findInstances(User.class)){
             session.delete(user);
         }

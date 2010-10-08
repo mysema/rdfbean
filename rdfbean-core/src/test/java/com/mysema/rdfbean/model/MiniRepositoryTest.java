@@ -18,7 +18,7 @@ public class MiniRepositoryTest {
     
     @Test
     @Ignore
-    public void export() throws UnsupportedEncodingException{
+    public void Export() throws UnsupportedEncodingException{
         List<STMT> stmts = new ArrayList<STMT>();
         stmts.add(new STMT(RDF.type, RDF.type, RDF.Property));
         stmts.add(new STMT(RDF.type, RDFS.label, new LIT("type")));

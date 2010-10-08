@@ -18,14 +18,14 @@ public class RDFBeanTransactionManagerTest {
     }
     
     @Test
-    public void testAsserts(){	
+    public void Asserts(){	
 	demoService.assertWriteTx();
 	demoService.assertReadTx();
 	demoService.assertUnbound();
     }
     
     @Test(expected=Exception.class)
-    public void testRollback() throws Exception{
+    public void Rollback() throws Exception{
         demoService.rollback();
         // TODO : assert that transaction was actually rolled back
     }

@@ -32,7 +32,7 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 public class AllStoredTest extends AbstractConfigurationTest{
     
     @Test
-    public void allStored(){        
+    public void AllStored(){        
         configuration.setCoreConfiguration(new DefaultConfiguration(AllStored.class));        
         configuration.initialize();    
         

@@ -44,27 +44,27 @@ public class MultiTransactionTest {
     }
     
     @Test
-    public void testCommit() {
+    public void Commit() {
         tx.commit();
     }
 
     @Test
-    public void testIsActive() {
+    public void IsActive() {
         tx.isActive();
     }
 
     @Test
-    public void testIsRollbackOnly() {
+    public void IsRollbackOnly() {
         tx.isRollbackOnly();
     }
 
     @Test
-    public void testRollback() {
+    public void Rollback() {
         tx.rollback();
     }
 
     @Test
-    public void testSetRollbackOnly() {
+    public void SetRollbackOnly() {
         tx.setRollbackOnly();
     }
 

@@ -24,7 +24,7 @@ public class MappedPathTest {
     }
 
     @Test
-    public void testToString() throws SecurityException, NoSuchMethodException {
+    public void ToString() throws SecurityException, NoSuchMethodException {
         Configuration configuration = new DefaultConfiguration(MappedPathTest.class);        
 	MappedClass mappedClass = configuration.getMappedClass(MappedPathTest.class);
 	MethodProperty property = new MethodProperty(MappedPathTest.class.getMethod("getProperty"), mappedClass);

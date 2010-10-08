@@ -18,7 +18,7 @@ import org.junit.Test;
 public class VarNameIteratorTest {
 
     @Test
-    public void testNext() {
+    public void Next() {
         Iterator<String> it = new VarNameIterator();
         for (int i = 0; i < 100; i++){
             System.out.println(it.next());

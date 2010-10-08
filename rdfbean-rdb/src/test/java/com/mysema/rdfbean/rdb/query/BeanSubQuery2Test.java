@@ -54,7 +54,7 @@ public class BeanSubQuery2Test extends AbstractRDBTest implements EntityDocument
     }
     
     @Test
-    public void subQuery_exists() throws IOException{   
+    public void SubQuery_exists() throws IOException{   
         Entity entity = session.findInstances(Entity.class).get(0);
         
         List<Revision> results = session.from($(rev1))
@@ -74,7 +74,7 @@ public class BeanSubQuery2Test extends AbstractRDBTest implements EntityDocument
     }   
 
     @Test
-    public void subQuery_exists2() throws IOException{   
+    public void SubQuery_exists2() throws IOException{   
         Document document = session.findInstances(Document.class).get(0);
         
         List<Revision> results = session.from($(rev1))
@@ -94,7 +94,7 @@ public class BeanSubQuery2Test extends AbstractRDBTest implements EntityDocument
     
     @Test
     @Ignore
-    public void subQuery_all() throws IOException{        
+    public void SubQuery_all() throws IOException{        
         // FIXME : Scalar subquery contains more than one row [90053-133]
         Document document = session.findInstances(Document.class).get(0);
         

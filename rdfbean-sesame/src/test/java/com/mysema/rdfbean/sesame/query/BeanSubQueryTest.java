@@ -55,7 +55,7 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     }
     
     @Test
-    public void compareLong() throws StoreException, IOException{                
+    public void CompareLong() throws StoreException, IOException{                
         Entity result = session.from($(var1))
             .where(
                 sub($(var2))
@@ -67,7 +67,7 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     }   
     
     @Test
-    public void compareDateTime(){
+    public void CompareDateTime(){
         Entity result = session.from($(var1))
             .where(
                 sub($(var2))
@@ -79,7 +79,7 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     }
     
     @Test
-    public void pathVisibility(){
+    public void PathVisibility(){
         int count = session.from($(var1))
             .where(
                 sub($(var2))

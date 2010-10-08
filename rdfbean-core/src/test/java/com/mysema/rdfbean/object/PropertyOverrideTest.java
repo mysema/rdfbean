@@ -30,7 +30,7 @@ public class PropertyOverrideTest {
     }
 
     @Test
-    public void overrideWithinClass() {
+    public void VverrideWithinClass() {
         Configuration configuration = new DefaultConfiguration(WithinClass.class);
         MappedClass mappedClass = configuration.getMappedClass(WithinClass.class);
         MappedPath path = mappedClass.getMappedPath("reference");
@@ -46,4 +46,5 @@ public class PropertyOverrideTest {
     public void illegalOverride() {
         // TODO
     }
+    
 }

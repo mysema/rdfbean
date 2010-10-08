@@ -28,7 +28,7 @@ public class PropertiesConfigurationTest {
     }
     
     @Test
-    public void testMappedClass() throws SecurityException,
+    public void MappedClass() throws SecurityException,
             NoSuchFieldException {
 
         Field field = Project.class.getDeclaredField("infos");
@@ -52,18 +52,18 @@ public class PropertiesConfigurationTest {
 
     @Ignore
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidProject1() {
+    public void InvalidProject1() {
         // TODO How to handle this case
         configuration.getMappedClass(InvalidProject1.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidProject2() {
+    public void InvalidProject2() {
         new DefaultConfiguration(InvalidProject2.class);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidProject3() {
+    public void InvalidProject3() {
         new DefaultConfiguration(InvalidProject3.class);
     }
 
