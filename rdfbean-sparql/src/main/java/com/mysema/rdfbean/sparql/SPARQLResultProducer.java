@@ -99,6 +99,7 @@ public class SPARQLResultProducer {
             }
             bindings.add(binding);                              
         }
+        rows.close();
         
         results.put("bindings", bindings);        
         root.put("head", head);

@@ -3,6 +3,7 @@ package com.mysema.rdfbean.sesame;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({Entity.class, EntityRevision.class, Term.class})
@@ -43,6 +45,7 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
             Map<String,NODE> row = rows.next();
             System.out.println(row.get("s") + " " + row.get("p") + " " + row.get("o"));
         }
+        rows.close();
     }
     
     @Test
@@ -55,6 +58,16 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
             STMT triple = triples.next();
             System.out.println(triple);
         }
+        triples.close();
+    }
+    
+    @Test
+    public void Construct_Stream_Triples(){        
+        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "CONSTRUCT { ?s ?p ?o } WHERE {?s ?p ?o}");
+        assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
+        StringWriter w = new StringWriter();
+        query.streamTriples(w, Format.RDFXML.getMimetype());
+        assertTrue(w.toString().contains("rdf:RDF"));
     }
     
     @Test
@@ -74,6 +87,7 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
                     STMT triple = triples.next();
                     System.out.println(triple);
                 }
+                triples.close();
             }
         }
     }

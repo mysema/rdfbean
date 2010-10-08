@@ -4,8 +4,12 @@
  * 
  */
 
+
+/**
+ * Utility classes
+ */
 @DefaultAnnotation( { Nonnull.class })
-package com.mysema.rdfbean;
+package com.mysema.rdfbean.sparql;
 
 import javax.annotation.Nonnull;
 
