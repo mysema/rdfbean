@@ -66,6 +66,15 @@
       <artifactId>javassist</artifactId>
       <version>3.4.ga</version>
     </dependency>    
+	
+	<!-- test -->
+	<dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-core</artifactId>
+      <version>${project.parent.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>  
   </dependencies>
   
 </project>
