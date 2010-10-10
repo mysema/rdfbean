@@ -7,8 +7,20 @@ package com.mysema.rdfbean.object;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -210,12 +222,18 @@ public final class DefaultConfiguration implements Configuration {
                 
             }else if (url.getProtocol().equals("file")){
                 Deque<File> files = new ArrayDeque<File>();
-                files.add(new File(url.getPath()));
+                String packagePath;
+                try {
+                	packagePath = url.toURI().getPath();
+					files.add(new File(packagePath));
+				} catch (URISyntaxException e) {
+					throw new IOException(e);
+				}
                 while (!files.isEmpty()){
                     File file = files.pop();
                     for (File child : file.listFiles()){
                         if (child.getName().endsWith(".class")){
-                            String fileName = child.getPath().substring(url.getPath().length()+1).replace('/', '.');
+                            String fileName = child.getPath().substring(packagePath.length()+1).replace('/', '.');
                             String className = pkg.getName() + "." + fileName.substring(0, fileName.length()-6);
                             classes.add(Class.forName(className));
                         }else if (child.isDirectory()){
