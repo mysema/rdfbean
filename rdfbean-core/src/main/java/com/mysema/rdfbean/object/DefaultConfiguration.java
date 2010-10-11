@@ -224,11 +224,11 @@ public final class DefaultConfiguration implements Configuration {
                 Deque<File> files = new ArrayDeque<File>();
                 String packagePath;
                 try {
-                	packagePath = url.toURI().getPath();
-					files.add(new File(packagePath));
-				} catch (URISyntaxException e) {
-					throw new IOException(e);
-				}
+                    packagePath = url.toURI().getPath();
+                    files.add(new File(packagePath));
+                } catch (URISyntaxException e) {
+                    throw new IOException(e);
+                }
                 while (!files.isEmpty()){
                     File file = files.pop();
                     for (File child : file.listFiles()){
