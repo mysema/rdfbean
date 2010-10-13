@@ -68,26 +68,6 @@ public class SPARQLServletTest {
     }
     
     @Test
-    public void Select() throws ServletException, IOException{
-        request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
-        servlet.service(request, response);
-        assertTrue(response.getContentAsString().contains("<sparql"));
-        assertTrue(response.getContentAsString().contains("<head>"));
-        assertTrue(response.getContentAsString().contains("<results>"));
-        assertTrue(response.getContentAsString().contains("literal"));
-    }
-    
-    @Test
-    public void Select_as_JSON() throws ServletException, IOException{
-        request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
-        request.setParameter("type", "json");
-        servlet.service(request, response);
-        assertTrue(response.getContentAsString().contains("head"));
-        assertTrue(response.getContentAsString().contains("results"));
-        assertTrue(response.getContentAsString().contains("literal"));
-    }
-    
-    @Test
     public void Construct() throws ServletException, IOException{
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
         servlet.service(request, response);
@@ -100,7 +80,15 @@ public class SPARQLServletTest {
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
         request.setParameter("type", "turtle");
         servlet.service(request, response);
-        // TODO : assertions
+        assertTrue(!response.getContentAsString().contains("<rdf:RDF"));
+    }
+    
+    @Test
+    public void Construct_as_Turtle_via_Accept() throws ServletException, IOException{
+        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
+        request.addHeader("Accept", Format.TURTLE.getMimetype()+", "+Format.RDFXML.getMimetype());
+        servlet.service(request, response);
+        assertTrue(!response.getContentAsString().contains("<rdf:RDF"));
     }
     
     @Test
@@ -108,6 +96,41 @@ public class SPARQLServletTest {
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
         request.setParameter("type", "ntriples");
         servlet.service(request, response);
-        // TODO : assertions
+        assertTrue(!response.getContentAsString().contains("<rdf:RDF"));
     }
+    
+    @Test
+    public void Select() throws ServletException, IOException{
+        request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
+        servlet.service(request, response);
+        assertTrue(response.getContentAsString().contains("<sparql"));
+        assertTrue(response.getContentAsString().contains("<head>"));
+        assertTrue(response.getContentAsString().contains("<results>"));
+        assertTrue(response.getContentAsString().contains("literal"));
+        assertEquals(SPARQLServlet.SPARQL_RESULTS_XML, response.getContentType());
+    }
+    
+    @Test
+    public void Select_as_JSON() throws ServletException, IOException{
+        request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
+        request.setParameter("type", "json");
+        servlet.service(request, response);
+        assertTrue(response.getContentAsString().contains("head"));
+        assertTrue(response.getContentAsString().contains("results"));
+        assertTrue(response.getContentAsString().contains("literal"));
+        assertEquals(SPARQLServlet.SPARQL_RESULTS_JSON, response.getContentType());
+    }
+    
+    @Test
+    public void Select_as_JSON_via_Accept() throws ServletException, IOException{
+        request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
+        request.addHeader("Accept", SPARQLServlet.SPARQL_RESULTS_JSON);
+        servlet.service(request, response);
+        assertTrue(response.getContentAsString().contains("head"));
+        assertTrue(response.getContentAsString().contains("results"));
+        assertTrue(response.getContentAsString().contains("literal"));
+        assertEquals(SPARQLServlet.SPARQL_RESULTS_JSON, response.getContentType());
+        
+    }
+    
 }

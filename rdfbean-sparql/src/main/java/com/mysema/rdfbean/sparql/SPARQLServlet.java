@@ -26,6 +26,10 @@ import com.mysema.rdfbean.model.io.Format;
  */
 public class SPARQLServlet implements Servlet{
     
+    public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
+    
+    public static final String SPARQL_RESULTS_XML = "application/sparql-results+xml";
+    
     private final SPARQLResultProducer resultProducer = new SPARQLResultProducer();
     
     private ServletConfig config;
@@ -73,24 +77,39 @@ public class SPARQLServlet implements Servlet{
                     contentType = Format.TURTLE.getMimetype();
                 }else if ("ntriples".equals(type)){
                     contentType = Format.NTRIPLES.getMimetype();
+                }else{
+                    contentType = getAcceptedType(request, contentType);
                 }
                 response.setContentType(contentType);
                 query.streamTriples(response.getWriter(), contentType);
                 
             }else{
+                String contentType = SPARQL_RESULTS_XML;
                 if ("json".equals(type)){
-                    response.setContentType("application/sparql-results+json");
+                    contentType = SPARQL_RESULTS_JSON;
+                }else{
+                    contentType = getAcceptedType(request, contentType);
+                }
+                response.setContentType(contentType);
+                if (contentType.equals(SPARQL_RESULTS_JSON)){
                     resultProducer.streamAsJSON(query, response.getWriter());
                 }else{
-                    response.setContentType("application/sparql-results+xml");
                     XMLWriter writer = new XMLWriter(response.getWriter());
                     resultProducer.streamAsXML(query, writer);
                 }    
             }
         }finally{
             connection.close();
+        }        
+    }
+    
+    private String getAcceptedType(HttpServletRequest request, String defaultType){
+        String accept = request.getHeader("Accept");
+        if (accept != null){
+            return accept.contains(",") ? accept.substring(0, accept.indexOf(',')) : accept;
+        }else{
+            return defaultType;
         }
-        
     }
 
     public void setRepository(Repository repository) {
