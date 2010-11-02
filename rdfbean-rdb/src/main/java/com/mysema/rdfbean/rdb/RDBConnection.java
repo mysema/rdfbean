@@ -36,6 +36,7 @@ import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.ConstructorExpression;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.template.NumberTemplate;
+import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
@@ -51,8 +52,6 @@ public class RDBConnection implements RDFConnection{
     
     private static final int DELETE_BATCH = 1000;
     
-    private static final Locale DEFAULT_LOCALE = new Locale("en");
-   
     private static final Timestamp DEFAULT_TIMESTAMP = new Timestamp(0);
     
     public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
@@ -67,7 +66,7 @@ public class RDBConnection implements RDFConnection{
         
     private final RDBContext context;
     
-    private final long anyUriId;
+    private final long defaultDatatypeId;
     
     private final int defaultLocaleId;
     
@@ -88,8 +87,8 @@ public class RDBConnection implements RDFConnection{
     
     public RDBConnection(RDBContext context) {
         this.context = context;
-        this.anyUriId = getId(XSD.anyURI);
-        this.defaultLocaleId = getLangId(DEFAULT_LOCALE);
+        this.defaultDatatypeId = getId(new UID("default:default"));
+        this.defaultLocaleId = getLangId(new Locale(""));
     }
     
     private void addLocale(Integer id, Locale locale ){
@@ -334,9 +333,9 @@ public class RDBConnection implements RDFConnection{
         if (res){
             return context.getID(lex);
         }else{
-            if (lang != null && !lang.equals(Integer.valueOf(0))){
+            if (lang != null && !lang.equals(defaultLocaleId)){
                 return new LIT(lex, getLocale(lang));
-            }else if (datatype != null && !datatype.equals(Long.valueOf(0l))){
+            }else if (datatype != null && !datatype.equals(defaultDatatypeId)){
                 return new LIT(lex, getNode(datatype).asURI());
             }else{
                 return new LIT(lex);
@@ -375,7 +374,7 @@ public class RDBConnection implements RDFConnection{
     }
 
     private <C extends StoreClause<C>> C populate(C clause, QSymbol symbol, Long nodeId, NODE node){
-        long datatypeId = anyUriId;
+        long datatypeId = defaultDatatypeId;
         int langId = defaultLocaleId;
         long intVal = 0l;
         double floatVal = 0.0;

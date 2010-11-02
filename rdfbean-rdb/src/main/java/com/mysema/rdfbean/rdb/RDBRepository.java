@@ -335,6 +335,7 @@ public class RDBRepository implements Repository{
             
             // init languages
             Set<Locale> locales = new HashSet<Locale>(Arrays.asList(Locale.getAvailableLocales()));
+            locales.add(new Locale(""));
             locales.add(new Locale("en"));
             locales.add(new Locale("fi"));
             locales.add(new Locale("sv"));
@@ -371,6 +372,7 @@ public class RDBRepository implements Repository{
             }
             
             // common resources
+            nodes.add(new UID("default:default"));
             nodes.add(CORE.localId);
             nodes.add(RDB.nullContext);
             nodes.addAll(RDF.ALL);
