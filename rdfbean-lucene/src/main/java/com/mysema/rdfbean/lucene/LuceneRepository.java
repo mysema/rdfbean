@@ -7,6 +7,7 @@ package com.mysema.rdfbean.lucene;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -52,6 +53,11 @@ public class LuceneRepository implements Repository{
     }
 
     @Override
+    public void export(Format format, Map<String, String> ns2prefix, OutputStream os) {
+        throw new UnsupportedOperationException();        
+    }
+    
+    @Override
     public void export(Format format, OutputStream os) {
        throw new UnsupportedOperationException();        
     }
@@ -86,5 +92,6 @@ public class LuceneRepository implements Repository{
     public void setConfiguration(LuceneConfiguration configuration) {
         this.configuration = configuration;
     }
+
 
 }

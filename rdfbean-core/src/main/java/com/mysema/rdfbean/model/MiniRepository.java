@@ -90,6 +90,11 @@ public final class MiniRepository implements Repository{
     }
     
     @Override
+    public void export(Format format, Map<String, String> ns2prefix, OutputStream os) {
+        throw new UnsupportedOperationException();        
+    }
+    
+    @Override
     public void export(Format format, OutputStream out) {        
         throw new UnsupportedOperationException();
     }
@@ -176,5 +181,6 @@ public final class MiniRepository implements Repository{
             throw new RepositoryException(io);
         }
     }
+
     
 }

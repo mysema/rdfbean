@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,9 +27,23 @@ import com.mysema.rdfbean.owl.OWL;
  */
 public final class Namespaces {
     
-    private Namespaces(){}
-
+    public static final Map<String,String> DEFAULT;
+    
     private static Map<String, String> ns2prefix = new HashMap<String, String>();
+    
+    static{
+        Map<String,String> defaultMappings = new HashMap<String,String>();
+        defaultMappings.put(RDF.NS, "rdf");
+        defaultMappings.put(RDFS.NS, "rdfs");
+        defaultMappings.put(OWL.NS, "owl");
+        defaultMappings.put(XSD.NS, "xsd");
+        DEFAULT = Collections.unmodifiableMap(defaultMappings);
+        
+        ns2prefix.putAll(defaultMappings);
+        ns2prefix.put(SRV.NS,  "srv");
+        ns2prefix.put(TEST.NS, "test");
+    }
+    
     
     public static void register(String prefix, String ns){        
         ns2prefix.put(ns, prefix);
@@ -36,15 +51,6 @@ public final class Namespaces {
     
     public static String getPrefix(String ns) {
         return ns2prefix.get(ns);
-    }
-
-    static{
-        ns2prefix.put(SRV.NS,  "srv");
-        ns2prefix.put(RDF.NS,  "rdf");
-        ns2prefix.put(RDFS.NS, "rdfs");
-        ns2prefix.put(TEST.NS, "test");
-        ns2prefix.put(OWL.NS,  "owl");
-        ns2prefix.put(XSD.NS,  "xsd");        
     }
     
     public static String getReadableURI(String ns, @Nullable String ln) {
@@ -62,5 +68,8 @@ public final class Namespaces {
             return ln;
         }
     }
+    
+    private Namespaces(){}
+
 
 }

@@ -7,6 +7,7 @@ package com.mysema.rdfbean.model;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +36,15 @@ public interface Repository {
      * @param replace whether to replace the contents of the target context
      */
     void load(Format format, InputStream is, @Nullable UID context, boolean replace);
+
+    /**
+     * Export the contents of the Repository with the given namespace prefix mappings 
+     * 
+     * @param format Format to be used
+     * @param ns2prefix Namespace prefix mappings
+     * @param os target stream for output
+     */
+    void export(Format format, Map<String,String> ns2prefix, OutputStream os);
     
     /**
      * Export the contents of the Repository 

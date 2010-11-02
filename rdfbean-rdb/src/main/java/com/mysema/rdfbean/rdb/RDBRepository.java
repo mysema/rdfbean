@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -46,6 +47,7 @@ import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.query.sql.ddl.CreateTableClause;
 import com.mysema.rdfbean.CORE;
+import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
@@ -149,12 +151,20 @@ public class RDBRepository implements Repository{
 
     @Override
     public void export(Format format, OutputStream out) {        
+        export(format, Namespaces.DEFAULT, out);
+    }
+    
+    @Override
+    public void export(Format format, Map<String, String> ns2prefix, OutputStream out) {
         RDFFormat targetFormat = getRioFormat(format);
         RDFWriter writer = Rio.createWriter(targetFormat, out);
         try {
             RDFConnection conn = openConnection();
             try{
                 writer.startRDF();
+                for (Map.Entry<String, String> entry : ns2prefix.entrySet()){
+                    writer.handleNamespace(entry.getValue(), entry.getKey());
+                }                
                 CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, null, false);
                 ValueFactory valueFactory = new ValueFactoryImpl();
                 SesameDialect dialect = new SesameDialect(valueFactory);
@@ -177,7 +187,7 @@ public class RDBRepository implements Repository{
             throw new RepositoryException(e.getMessage(), e);
         } catch (IOException e){
             throw new RepositoryException(e.getMessage(), e);
-        }
+        }        
     }
     
     @Override

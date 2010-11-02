@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.sql.Connection;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -23,6 +24,7 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.store.StoreException;
 
+import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.Operation;
@@ -100,11 +102,19 @@ public abstract class SesameRepository implements Repository{
     }
     
     @Override
-    public void export(Format format, OutputStream out){
+    public void export(Format format, OutputStream out) {
+        export(format, Namespaces.DEFAULT, out);
+    }
+    
+    @Override
+    public void export(Format format, Map<String, String> ns2prefix, OutputStream out){
         RDFFormat targetFormat = FormatHelper.getFormat(format);
         RDFWriter writer = Rio.createWriter(targetFormat, out);
         try {
             RepositoryConnection conn = repository.getConnection();
+            for(Map.Entry<String, String> entry : ns2prefix.entrySet()){
+                conn.setNamespace(entry.getValue(), entry.getKey());
+            }            
             try{
                 conn.export(writer);    
             }finally{

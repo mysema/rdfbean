@@ -7,6 +7,7 @@ package com.mysema.rdfbean.lucene;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -82,6 +83,11 @@ public class LuceneEnhancedRepository implements Repository{
 
     public void setRepository(Repository repository){
         this.repository = Assert.notNull(repository,"repository");
+    }
+    
+    @Override
+    public void export(Format format, Map<String, String> ns2prefix, OutputStream os) {
+        repository.export(format, ns2prefix, os);        
     }
 
     @Override
