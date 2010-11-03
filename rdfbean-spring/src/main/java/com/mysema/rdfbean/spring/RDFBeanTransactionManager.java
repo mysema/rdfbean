@@ -5,10 +5,6 @@
  */
 package com.mysema.rdfbean.spring;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionSystemException;
@@ -22,7 +18,6 @@ import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.object.SimpleSessionContext;
-import com.mysema.rdfbean.object.TxException;
 
 
 /**
@@ -34,8 +29,6 @@ import com.mysema.rdfbean.object.TxException;
  *
  */
 public class RDFBeanTransactionManager extends AbstractPlatformTransactionManager{
-
-    private static final Logger logger = LoggerFactory.getLogger(RDFBeanTransactionManager.class);
     
     private static final long serialVersionUID = -4060513400839374983L;
 
@@ -271,13 +264,7 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
 
         public void close(){
             if (closeAfterTx){
-                try {
-                    session.close();
-                } catch (IOException e) {
-                    String error = "Caught " + e.getClass().getName();
-                    logger.error(error, e);
-                    throw new TxException(error, e);
-                }
+                session.close();
             }
         }
     }

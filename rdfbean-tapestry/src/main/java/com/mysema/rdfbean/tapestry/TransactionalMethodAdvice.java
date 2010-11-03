@@ -3,8 +3,6 @@
  */
 package com.mysema.rdfbean.tapestry;
 
-import java.io.IOException;
-
 import org.apache.tapestry5.ioc.Invocation;
 import org.apache.tapestry5.ioc.MethodAdvice;
 
@@ -12,7 +10,6 @@ import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleSessionContext;
-import com.mysema.rdfbean.object.TxException;
 
 /**
  * @author tiwe
@@ -61,13 +58,7 @@ public final class TransactionalMethodAdvice implements MethodAdvice {
                 session.setFlushMode(savedFlushMode);
                 sessionContext.releaseSession();
                 if (!inSession){
-                    try {
-                        session.close();
-                    } catch (IOException e) {
-                        String error = "Caught " + e.getClass().getName();
-                        TransactionalAdvisorImpl.logger.error(error, e);
-                        throw new TxException(error, e);
-                    }
+                    session.close();
                 }                                    
             }    
         }else{

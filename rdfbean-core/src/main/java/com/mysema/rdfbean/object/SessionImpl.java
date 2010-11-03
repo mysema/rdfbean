@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.object;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -274,7 +273,7 @@ public final class SessionImpl implements Session {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         connection.close();
     }
 

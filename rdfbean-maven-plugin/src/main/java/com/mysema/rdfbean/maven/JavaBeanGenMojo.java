@@ -72,8 +72,6 @@ public class JavaBeanGenMojo extends AbstractMojo{
         }finally{
             try {
                 session.close();
-            } catch (IOException e) {
-                throw new MojoExecutionException(e.getMessage(), e);
             }finally{
                 sessionFactory.close();
             }

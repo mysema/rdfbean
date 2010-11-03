@@ -141,11 +141,7 @@ public class DeleteTest {
 
     private void closeSession() {
         if (session != null) {
-            try {
-                session.close();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            session.close();
             session = null;
         }
     }

@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.object;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -59,11 +58,7 @@ public class SessionFactoryImpl implements SessionFactory {
             try{
                 return cb.doInSession(session);
             }finally{
-                try {
-                    session.close();
-                } catch (IOException e) {
-                    throw new SessionException(e);
-                }
+                session.close();
             }
         }
     }

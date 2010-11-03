@@ -91,6 +91,11 @@ public interface Session extends ObjectRepository, Closeable {
     void clear();
     
     /**
+     * Close the session
+     */
+    void close();
+    
+    /**
      * Deletes given object and all references to it.
      * 
      * @param object
