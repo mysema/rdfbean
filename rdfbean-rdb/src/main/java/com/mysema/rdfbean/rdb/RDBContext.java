@@ -6,7 +6,6 @@
 package com.mysema.rdfbean.rdb;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -112,11 +111,11 @@ public final class RDBContext implements Closeable{
     }
     
     @Override
-    public void close() throws IOException {
+    public void close() {
         try {
             connection.close();
         } catch (SQLException e) {
-            throw new IOException(e.getMessage(), e);
+            throw new RepositoryException(e.getMessage(), e);
         }
     }
     

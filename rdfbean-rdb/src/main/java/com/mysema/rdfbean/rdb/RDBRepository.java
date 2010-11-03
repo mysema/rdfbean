@@ -185,8 +185,6 @@ public class RDBRepository implements Repository{
             }
         } catch (RDFHandlerException e) {
             throw new RepositoryException(e.getMessage(), e);
-        } catch (IOException e){
-            throw new RepositoryException(e.getMessage(), e);
         }        
     }
     
@@ -216,11 +214,7 @@ public class RDBRepository implements Repository{
         } catch (IOException e) {
             throw new RepositoryException(e);
         }finally{
-            try {
-                connection.close();
-            } catch (IOException e) {
-                throw new RepositoryException(e);
-            }
+            connection.close();
         }        
     }
 

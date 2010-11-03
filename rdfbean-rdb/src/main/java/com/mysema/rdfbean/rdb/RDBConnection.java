@@ -183,7 +183,7 @@ public class RDBConnection implements RDFConnection{
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         context.close();
     }
     

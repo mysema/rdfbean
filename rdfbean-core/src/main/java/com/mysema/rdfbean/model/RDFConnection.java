@@ -38,6 +38,11 @@ public interface RDFConnection extends Closeable{
     void clear();
     
     /**
+     * Close this connection
+     */
+    void close();
+    
+    /**
      * Create a new unique Blank node
      * 
      * @return
@@ -97,5 +102,5 @@ public interface RDFConnection extends Closeable{
      * @param addedStatements statement to be added
      */
     void update(Set<STMT> removedStatements, Set<STMT> addedStatements);
-
+    
 }

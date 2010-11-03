@@ -5,13 +5,9 @@
  */
 package com.mysema.rdfbean.model;
 
-import java.io.IOException;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
@@ -25,8 +21,6 @@ import com.mysema.commons.lang.CloseableIterator;
  */
 public abstract class MultiConnection implements RDFConnection{
     
-    private static final Logger logger = LoggerFactory.getLogger(MultiConnection.class);
-
     private final RDFConnection[] connections;
     
     @Nullable
@@ -63,15 +57,9 @@ public abstract class MultiConnection implements RDFConnection{
     }
     
     public void cleanUpAfterRollback(){
-        try {
-            localTxn = null;
-            readonlyTnx = false;
-            close();
-        } catch (IOException e) {
-            String error = "Caught " + e.getClass().getName();
-            logger.error(error, e);
-            throw new RepositoryException(error, e);
-        }
+        localTxn = null;
+        readonlyTnx = false;
+        close();
     }
 
     @Override
@@ -90,7 +78,7 @@ public abstract class MultiConnection implements RDFConnection{
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         for (RDFConnection connection : connections){
             connection.close();
         }        

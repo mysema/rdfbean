@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.model;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -97,7 +96,7 @@ public class FetchOptimizer implements RDFConnection {
         connection.clear();
     }
 
-    public void close() throws IOException {
+    public void close() {
         connection.close();
     }
             

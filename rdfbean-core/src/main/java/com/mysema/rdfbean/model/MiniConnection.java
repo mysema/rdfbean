@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.model;
 
-import java.io.IOException;
 import java.util.Set;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -56,7 +55,7 @@ public class MiniConnection implements RDFConnection {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
     }
 
     @Override

@@ -83,22 +83,18 @@ public abstract class SesameRepository implements Repository{
     public <RT> RT execute(Operation<RT> operation) {
         RDFConnection connection = openConnection();
         try{
+            RDFBeanTransaction tx = connection.beginTransaction(false, 0, Connection.TRANSACTION_READ_COMMITTED);
             try{
-                RDFBeanTransaction tx = connection.beginTransaction(false, 0, Connection.TRANSACTION_READ_COMMITTED);
-                try{
-                    RT retVal = operation.execute(connection);    
-                    tx.commit();
-                    return retVal;
-                }catch(IOException io){
-                    tx.rollback();
-                    throw new RepositoryException(io);
-                }                
-            }finally{
-                connection.close();
-            }    
-        }catch(IOException io){
-            throw new RepositoryException(io);
-        }
+                RT retVal = operation.execute(connection);    
+                tx.commit();
+                return retVal;
+            }catch(IOException io){
+                tx.rollback();
+                throw new RepositoryException(io);
+            }                
+        }finally{
+            connection.close();
+        }    
     }
     
     @Override
