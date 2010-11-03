@@ -204,7 +204,7 @@ public interface SimpleDomain {
 
         public final NumberPath<Integer> numericProperty = createNumber("numericProperty", Integer.class);
 
-        public final SetPath<SimpleDomain.SimpleType2> setProperty = createSet("setProperty", SimpleDomain.SimpleType2.class);
+        public final SetPath<SimpleDomain.SimpleType2, QSimpleType2> setProperty = createSet("setProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class);
 
         public QSimpleType(String variable) {
             super(SimpleDomain.SimpleType.class, forVariable(variable));

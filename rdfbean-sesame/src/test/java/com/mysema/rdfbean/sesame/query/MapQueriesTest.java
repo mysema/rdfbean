@@ -14,7 +14,7 @@ import org.openrdf.store.StoreException;
 
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.expr.BooleanExpression;
-import com.mysema.query.types.expr.MapExpression;
+import com.mysema.query.types.path.MapPath;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.sesame.SessionTestBase;
@@ -56,7 +56,7 @@ public class MapQueriesTest extends SessionTestBase{
         }    
     }
     
-    private static <K,V> Collection<BooleanExpression> mapFilters(MapExpression<K,V> expr, MapExpression<K,V> other, K knownKey, V knownValue) {
+    private static <K,V> Collection<BooleanExpression> mapFilters(MapPath<K,V,?> expr, MapPath<K,V,?> other, K knownKey, V knownValue) {
         return Arrays.<BooleanExpression>asList(
           expr.isEmpty(),
           expr.isNotEmpty(),
@@ -66,7 +66,7 @@ public class MapQueriesTest extends SessionTestBase{
         );
     }
         
-    private static <K,V> Collection<Expression<?>> mapProjections(MapExpression<K,V> expr, MapExpression<K,V> other, K knownKey, V knownValue) {
+    private static <K,V> Collection<Expression<?>> mapProjections(MapPath<K,V,?> expr, MapPath<K,V,?> other, K knownKey, V knownValue) {
         return Arrays.<Expression<?>>asList(
           expr.get(knownKey)
         );

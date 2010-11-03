@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.domains;
 
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,8 +20,6 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.IDType;
-
-import static com.mysema.query.types.PathMetadataFactory.*;
 
 public interface UserProfileDomain {
     
@@ -151,7 +151,7 @@ public interface UserProfileDomain {
 
         public final QIdentifiable _super = new QIdentifiable(this);
 
-        public final SetPath<UserProfileDomain.User> buddies = createSet("buddies", UserProfileDomain.User.class);
+        public final SetPath<UserProfileDomain.User, QUser> buddies = createSet("buddies", UserProfileDomain.User.class, QUser.class);
 
         public final StringPath email = createString("email");
 

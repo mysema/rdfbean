@@ -40,7 +40,7 @@ public class BeanSubQuery implements Detachable {
     }
     
     @Override
-    public SimpleSubQuery<Long> count() {
+    public NumberSubQuery<Long> count() {
         return detachableMixin.count();
     }
         
