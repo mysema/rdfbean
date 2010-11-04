@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,12 +18,6 @@ import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.query.parser.TupleQueryModel;
-
-import com.mysema.rdfbean.Namespaces;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFS;
-import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.owl.OWL;
 
 /**
  * QuerySerializer seriales ParsedTupleQuery instances to a syntax combining 
@@ -98,7 +91,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
 
     private static final String ORDER_BY = "\nORDER BY ";
 
-    private static final String PREFIXES = "\nPREFIXES";
+//    private static final String PREFIXES = "\nPREFIXES";
 
     private static final String REGEX = "regex( ";
 
@@ -112,7 +105,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
 
     private static final String WHERE = "\nWHERE ";
     
-    private static final Set<String> knownNamespaces = new HashSet<String>(Arrays.asList(RDF.NS, RDFS.NS, XSD.NS, OWL.NS));
+//    private static final Set<String> knownNamespaces = new HashSet<String>(Arrays.asList(RDF.NS, RDFS.NS, XSD.NS, OWL.NS));
     
     private final StringBuilder builder = new StringBuilder();
     
@@ -123,25 +116,29 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     private final Set<String> namespaces = new HashSet<String>();
     
-    private boolean usingNsPrinted;
+//    private boolean usingNsPrinted;
     
     public QuerySerializer(GraphQueryModel query, boolean verbose){
         query.getTupleExpr().visit(this);        
-        if (!namespaces.isEmpty() && verbose){           
-            printNamespaces();
-        }
+//        if (!namespaces.isEmpty() && verbose){           
+//            printNamespaces();
+//        }
     }
     
     public QuerySerializer(TupleQueryModel query, boolean verbose){
         query.getTupleExpr().visit(this);        
-        if (!namespaces.isEmpty() && verbose){           
-            printNamespaces();
-        }
+//        if (!namespaces.isEmpty() && verbose){           
+//            printNamespaces();
+//        }
     }
 
     private QuerySerializer append(String str){
         builder.append(str);
         return this;
+    }
+        
+    private String getReadableURI(String namespace, String localName) {
+        return "<" + namespace + localName + ">";
     }
     
     @Override
@@ -237,7 +234,8 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     public void meet(FunctionCall node){        
         URI uri = new URIImpl(node.getURI());
         namespaces.add(uri.getNamespace());
-        append(Namespaces.getReadableURI(uri.getNamespace(), uri.getLocalName()));
+//        append(Namespaces.getReadableURI(uri.getNamespace(), uri.getLocalName()));
+        append("<" + uri.stringValue() + ">");
         append( "( " );
         boolean first = true;
         for (ValueExpr v : node.getArgs()){
@@ -456,14 +454,14 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         if (value instanceof URI){    
             URI uri = (URI) value;
             namespaces.add(uri.getNamespace());
-            append(Namespaces.getReadableURI(uri.getNamespace(), uri.getLocalName()));
+            append(getReadableURI(uri.getNamespace(), uri.getLocalName()));
         
         }else if (value instanceof Literal){
             Literal lit = (Literal) value;
             if (lit.getDatatype() != null){
                 append("\"").append(lit.getLabel()).append("\"^^");
                 namespaces.add(lit.getDatatype().getNamespace());
-                append(Namespaces.getReadableURI(lit.getDatatype().getNamespace(), lit.getDatatype().getLocalName()));
+                append(getReadableURI(lit.getDatatype().getNamespace(), lit.getDatatype().getLocalName()));
             }else{
                 append(lit.toString());
             }
@@ -472,7 +470,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             append(value.toString());
         }
     }
-        
+      
     @Override
     public void meet(ValueConstant node){
         meet(node.getValue());
@@ -488,18 +486,18 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         }
     }
     
-    private void printNamespaces() {
-        for (String ns : namespaces){
-            String prefix = Namespaces.getPrefix(ns);
-            if (prefix != null && !knownNamespaces.contains(ns)){
-                if (!usingNsPrinted){
-                    append(PREFIXES);
-                    usingNsPrinted = true;
-                }
-                append("\n  ").append(prefix).append(": <").append(ns).append(">");
-            }
-        }
-    }
+//    private void printNamespaces() {
+//        for (String ns : namespaces){
+//            String prefix = Namespaces.getPrefix(ns);
+//            if (prefix != null && !knownNamespaces.contains(ns)){
+//                if (!usingNsPrinted){
+//                    append(PREFIXES);
+//                    usingNsPrinted = true;
+//                }
+//                append("\n  ").append(prefix).append(": <").append(ns).append(">");
+//            }
+//        }
+//    }
     
     public String toString(){
         return builder.toString();

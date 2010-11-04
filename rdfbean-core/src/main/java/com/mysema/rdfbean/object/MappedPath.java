@@ -225,7 +225,8 @@ public final class MappedPath {
             } else if (!first) {
                 sb.append('.');
             }
-            sb.append(predicate.getReadableURI());
+//            sb.append(predicate.getReadableURI());
+            sb.append(predicate.toString());
             first = false;
         }
         sb.append(" }");

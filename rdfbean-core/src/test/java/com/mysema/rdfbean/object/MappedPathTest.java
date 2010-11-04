@@ -30,7 +30,8 @@ public class MappedPathTest {
 	MethodProperty property = new MethodProperty(MappedPathTest.class.getMethod("getProperty"), mappedClass);
 	MappedPredicate predicate = new MappedPredicate(TEST.NS,new DummyPredicate(RDF.type), null);
 	MappedPath path = new MappedPath(property,Collections.<MappedPredicate>singletonList(predicate),false);
-	assertEquals("public java.lang.String com.mysema.rdfbean.object.MappedPathTest.getProperty() { rdf:type }", path.toString());
+	assertEquals("public java.lang.String com.mysema.rdfbean.object.MappedPathTest.getProperty() { http://www.w3.org/1999/02/22-rdf-syntax-ns#type }",
+	        path.toString());
     }
 
 }

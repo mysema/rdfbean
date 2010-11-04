@@ -43,7 +43,7 @@ public class RepositoryOntologyTest {
         repository.add(new STMT(type2, RDFS.subClassOf, type1));
         repository.add(new STMT(type3, RDFS.subClassOf, type2));
                 
-        Ontology ontology = new RepositoryOntology(repository);
+        Ontology<UID> ontology = new RepositoryOntology(repository);
         assertEquals(asSet(type1, type2, type3), ontology.getSubtypes(type1));
         assertEquals(asSet(type2, type3), ontology.getSubtypes(type2));
         assertEquals(asSet(type3), ontology.getSubtypes(type3));

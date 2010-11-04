@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 
 import net.jcip.annotations.Immutable;
 
-import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.UID;
 
@@ -67,15 +66,11 @@ public final class MappedPredicate {
         return context;
     }
 
-    public String getReadableURI() {
-        return Namespaces.getReadableURI(uid.ns(), uid.ln());
-    }
-
     public UID getUID() {
         return uid;
     }
     
     public String toString() {
-        return getReadableURI();
+        return uid.getId();
     }
 }
