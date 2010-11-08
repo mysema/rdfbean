@@ -22,6 +22,7 @@ import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.query.parser.TupleQueryModel;
 
 import com.mysema.rdfbean.Namespaces;
+import com.mysema.rdfbean.TEST;
 
 /**
  * QuerySerializer seriales ParsedTupleQuery instances to a syntax combining 
@@ -130,7 +131,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     public QuerySerializer(TupleQueryModel query, boolean verbose){
-        query.getTupleExpr().visit(this);        
+        query.getTupleExpr().visit(this);    
         if (!namespaces.isEmpty() && verbose){           
             printNamespaces();
         }
@@ -231,11 +232,12 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     }
     
     private String getReadableURI(String ns, String ln){
-        if (knownPrefixes.containsKey(ns)){
-            return knownPrefixes.get(ns) + ":" + ln;
-        }else{
-            return "<" + ns + ln + ">";
+        String prefix = knownPrefixes.get(ns);
+        if (prefix == null){
+            prefix = "ns" + knownPrefixes.size();
+            knownPrefixes.put(ns, prefix);
         }
+        return prefix + ":" + ln;
     }
     
     @Override
