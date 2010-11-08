@@ -45,7 +45,8 @@ public class InstanceOfTransformer implements OperationTransformer{
             context.match(
                 (Var)context.toValue(operation.getArg(0)),
                 RDF.type,
-                (Var)context.toValue(operation.getArg(1)));
+                (Var)context.toValue(operation.getArg(1)),
+                null); // TODO : context
             return null;
         }        
     }

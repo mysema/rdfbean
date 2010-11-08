@@ -64,13 +64,13 @@ public class ContainsKeyValueTransformer implements OperationTransformer{
         JoinBuilder builder = context.createJoinBuilder();
         if (valNode != null){
             if (mappedProperty.getValuePredicate() != null){
-                context.match(builder, pathVar, mappedProperty.getValuePredicate(), valNode);
+                context.match(builder, pathVar, mappedProperty.getValuePredicate(), valNode, null); // TODO : context
             }else if (!context.inNegation()){    
                 pathVar.setValue(valNode.getValue());
             }
         }
         if (keyNode != null){
-            context.match(builder, pathVar, mappedProperty.getKeyPredicate(), keyNode);   
+            context.match(builder, pathVar, mappedProperty.getKeyPredicate(), keyNode, null); // TODO : context 
         }                        
         
         if (!builder.isEmpty()){

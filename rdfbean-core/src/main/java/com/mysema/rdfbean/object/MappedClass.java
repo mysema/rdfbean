@@ -49,9 +49,13 @@ public final class MappedClass {
     @Nullable
     private final UID uid;
     
-    MappedClass(Class<?> clazz, UID uid, List<MappedClass> mappedSuperClasses) {
+    @Nullable
+    private final UID context;
+    
+    MappedClass(Class<?> clazz, UID uid, UID context,List<MappedClass> mappedSuperClasses) {
         this.clazz = clazz;
         this.uid = uid;
+        this.context = context;
         this.mappedSuperClasses = mappedSuperClasses;
     }
     
@@ -185,6 +189,11 @@ public final class MappedClass {
         return uid;
     }
     
+    @Nullable
+    public UID getContext() {
+        return context;        
+    }    
+    
     public int hashCode() {
         return clazz.hashCode();
     }
@@ -251,5 +260,5 @@ public final class MappedClass {
     public String toString() {
         return clazz.toString();
     }
-    
+
 }

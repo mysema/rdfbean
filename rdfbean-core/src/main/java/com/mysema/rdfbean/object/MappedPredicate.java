@@ -28,7 +28,7 @@ public final class MappedPredicate {
     private final boolean includeInferred;
     
     @Nullable
-    private final String context;
+    private final UID context;
     
     public MappedPredicate(UID uid, boolean inv) {
         this.uid = uid;
@@ -46,7 +46,7 @@ public final class MappedPredicate {
         if (predicate.context().isEmpty()){
             this.context = null;
         }else{
-            this.context = predicate.context();
+            this.context = new UID(predicate.context());
         }        
     }
     
@@ -62,7 +62,7 @@ public final class MappedPredicate {
         return includeInferred;
     }
     
-    public String context() {
+    public UID getContext() {
         return context;
     }
 

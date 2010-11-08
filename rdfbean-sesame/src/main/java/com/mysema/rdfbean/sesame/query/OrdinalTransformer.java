@@ -23,7 +23,7 @@ public class OrdinalTransformer implements OperationTransformer{
     public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Var var = context.toVar((Path<?>)operation.getArg(0));
         Var ordinal = new Var(var.getName() + "_ordinal");
-        context.match(var, CORE.enumOrdinal, ordinal);
+        context.match(var, CORE.enumOrdinal, ordinal, null); // TODO : context
         return ordinal;
     }
 

@@ -90,15 +90,17 @@ public interface TransformerContext {
      * @param s
      * @param p
      * @param o
+     * @param context
      */
-    void match(JoinBuilder builder, Var s, UID p, Var o);
+    void match(JoinBuilder builder, Var s, UID p, Var o, @Nullable UID context);
 
     /**
      * @param s
      * @param p
      * @param o
+     * @param context
      */
-    void match(Var s, UID p, Var o);
+    void match(Var s, UID p, Var o, @Nullable UID context);
 
     /**
      * @param otherPath

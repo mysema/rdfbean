@@ -768,8 +768,8 @@ public final class SessionImpl implements Session {
 
     private Set<NODE> findPathValues(ID resource, MappedPath path, int index, UID context) {
         MappedPredicate predicate = path.get(index);
-        if (predicate.context() != null) {
-            context = new UID(predicate.context());
+        if (predicate.getContext() != null) {
+            context = predicate.getContext();
         }
         Set<NODE> values = findValues(resource, predicate.getUID(), predicate.inv(), predicate.includeInferred(), context);
         if (path.size() > index + 1) {
@@ -1240,8 +1240,8 @@ public final class SessionImpl implements Session {
             if (path.isSimpleProperty()) {
                 MappedPredicate mappedPredicate = path.get(0);
                 UID predicate = mappedPredicate.getUID();
-                if (mappedPredicate.context() != null){
-                    context = new UID(mappedPredicate.context());
+                if (mappedPredicate.getContext() != null){
+                    context = mappedPredicate.getContext();
                 }
                 
                 if (update) {

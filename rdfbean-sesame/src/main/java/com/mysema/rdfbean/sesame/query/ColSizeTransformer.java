@@ -51,21 +51,21 @@ public class ColSizeTransformer implements OperationTransformer{
         Var pathVar = context.toVar(path);                                
         for (int i=0; i < size-1; i++){
             Var rest = context.createVar();
-            context.match(builder, pathVar, RDF.rest, rest);
+            context.match(builder, pathVar, RDF.rest, rest, null); // TODO : context
             pathVar = rest;
         }
         
         // last
         if (op == Ops.EQ_PRIMITIVE){
-            context.match(builder, pathVar, RDF.rest, context.toVar(RDF.nil));
+            context.match(builder, pathVar, RDF.rest, context.toVar(RDF.nil), null); // TODO : context
             
         }else if (op == Ops.GT){
             Var next = context.createVar();
-            context.match(builder, pathVar, RDF.rest, next);
-            context.match(builder, next, RDF.rest, context.createVar());
+            context.match(builder, pathVar, RDF.rest, next, null); // TODO : context
+            context.match(builder, next, RDF.rest, context.createVar(), null); // TODO : context
             
         }else if (op == Ops.LT){
-            context.match(builder, pathVar, RDF.rest, context.createVar());
+            context.match(builder, pathVar, RDF.rest, context.createVar(), null); // TODO : context
         }          
         
         if (op != Ops.LT){

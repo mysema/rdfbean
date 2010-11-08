@@ -76,7 +76,11 @@ public class ConfigurationBuilder {
     }
     
     public MappedClassBuilder addClass(UID uid, Class<?> clazz) {
-        MappedClass mappedClass = new MappedClass(clazz, uid, new ArrayList<MappedClass>());
+        return addClass(uid, null, clazz);
+    }
+    
+    public MappedClassBuilder addClass(UID uid, @Nullable UID context, Class<?> clazz) {
+        MappedClass mappedClass = new MappedClass(clazz, uid, context, new ArrayList<MappedClass>());
         mappedClasses.put(clazz,mappedClass);
         return new MappedClassBuilder(mappedClass);
     }

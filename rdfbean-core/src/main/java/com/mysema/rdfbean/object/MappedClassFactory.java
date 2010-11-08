@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.model.UID;
 
 /**
@@ -130,8 +131,9 @@ public class MappedClassFactory {
         MappedClass mappedClass = mappedClasses.get(clazz);
         if (mappedClass == null) {
             UID uid = getUID(clazz);
+            Context context = clazz.getAnnotation(Context.class);
             List<MappedClass> superclasses = getMappedSuperClasses(clazz);
-            mappedClass = new MappedClass(clazz, uid, superclasses);
+            mappedClass = new MappedClass(clazz, uid, context != null ? new UID(context.value()) : null, superclasses);
             if (!clazz.isEnum()) {
                 for (MappedClass mappedSuperClass : mappedClass.getMappedSuperClasses()) {
                     if (mappedSuperClass != null) {
