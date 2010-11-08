@@ -73,6 +73,15 @@ public class SesameQuery
     extends AbstractProjectingQuery<SesameQuery, Value, Resource, BNode, URI, Literal, Statement>  
     implements TransformerContext, BeanQuery, Closeable{
    
+    private static final Templates TEMPLATES = new Templates(){
+        {
+            add(PathType.PROPERTY, "{0}_{1}");
+            add(PathType.COLLECTION_ANY, "{0}");
+            add(PathType.LISTVALUE_CONSTANT, "{0}_{1}");
+            add(PathType.ARRAYVALUE_CONSTANT, "{0}_{1}");
+            add(PathType.MAPVALUE_CONSTANT, "{0}_{1}");
+        }};
+    
     private static final boolean includeInferred = true;
     
     private static final Logger logger = LoggerFactory.getLogger(SesameQuery.class);
@@ -622,7 +631,7 @@ public class SesameQuery
                         if (matchedVar != null && (i == predPath.size() -1)){
                             pathNode = matchedVar;
                         }else if (i == predPath.size() - 1){    
-                            pathNode = new Var(path.toString().replace('.', '_'));
+                            pathNode = new Var(path.accept(ToStringVisitor.DEFAULT, TEMPLATES));
                             varNames.disallow(pathNode.getName());
                         }else{
                             pathNode = new Var(varNames.next());    
@@ -638,6 +647,9 @@ public class SesameQuery
                 }else{
                     pathNode =  parentNode;
                 }
+                
+            } else if (pathType.equals(PathType.COLLECTION_ANY)){
+                return toVar(path.getMetadata().getParent());
 
             } else if (pathType.equals(PathType.ARRAYVALUE) 
                     || pathType.equals(PathType.LISTVALUE)) { 

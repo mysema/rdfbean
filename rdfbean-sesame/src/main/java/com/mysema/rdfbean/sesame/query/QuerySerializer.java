@@ -5,7 +5,9 @@
  */
 package com.mysema.rdfbean.sesame.query;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -18,6 +20,8 @@ import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
 import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.query.parser.TupleQueryModel;
+
+import com.mysema.rdfbean.Namespaces;
 
 /**
  * QuerySerializer seriales ParsedTupleQuery instances to a syntax combining 
@@ -91,7 +95,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
 
     private static final String ORDER_BY = "\nORDER BY ";
 
-//    private static final String PREFIXES = "\nPREFIXES";
+    private static final String PREFIXES = "\nPREFIXES";
 
     private static final String REGEX = "regex( ";
 
@@ -105,7 +109,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
 
     private static final String WHERE = "\nWHERE ";
     
-//    private static final Set<String> knownNamespaces = new HashSet<String>(Arrays.asList(RDF.NS, RDFS.NS, XSD.NS, OWL.NS));
+    private final Map<String,String> knownPrefixes = new HashMap<String,String>(Namespaces.DEFAULT);
     
     private final StringBuilder builder = new StringBuilder();
     
@@ -116,31 +120,27 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     private final Set<String> namespaces = new HashSet<String>();
     
-//    private boolean usingNsPrinted;
+    private boolean usingNsPrinted;
     
     public QuerySerializer(GraphQueryModel query, boolean verbose){
         query.getTupleExpr().visit(this);        
-//        if (!namespaces.isEmpty() && verbose){           
-//            printNamespaces();
-//        }
+        if (!namespaces.isEmpty() && verbose){           
+            printNamespaces();
+        }
     }
     
     public QuerySerializer(TupleQueryModel query, boolean verbose){
         query.getTupleExpr().visit(this);        
-//        if (!namespaces.isEmpty() && verbose){           
-//            printNamespaces();
-//        }
+        if (!namespaces.isEmpty() && verbose){           
+            printNamespaces();
+        }
     }
-
+        
     private QuerySerializer append(String str){
         builder.append(str);
         return this;
     }
-        
-    private String getReadableURI(String namespace, String localName) {
-        return "<" + namespace + localName + ">";
-    }
-    
+     
     @Override
     public void meet(And node){
         visit(node.getArg(0)).append( " AND\n  " ).visit(node.getArg(1));
@@ -230,12 +230,19 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         node.getCondition().visit(this);
     }
     
+    private String getReadableURI(String ns, String ln){
+        if (knownPrefixes.containsKey(ns)){
+            return knownPrefixes.get(ns) + ":" + ln;
+        }else{
+            return "<" + ns + ln + ">";
+        }
+    }
+    
     @Override
     public void meet(FunctionCall node){        
         URI uri = new URIImpl(node.getURI());
         namespaces.add(uri.getNamespace());
-//        append(Namespaces.getReadableURI(uri.getNamespace(), uri.getLocalName()));
-        append("<" + uri.stringValue() + ">");
+        append(getReadableURI(uri.getNamespace(), uri.getLocalName()));
         append( "( " );
         boolean first = true;
         for (ValueExpr v : node.getArgs()){
@@ -486,18 +493,18 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
         }
     }
     
-//    private void printNamespaces() {
-//        for (String ns : namespaces){
-//            String prefix = Namespaces.getPrefix(ns);
-//            if (prefix != null && !knownNamespaces.contains(ns)){
-//                if (!usingNsPrinted){
-//                    append(PREFIXES);
-//                    usingNsPrinted = true;
-//                }
-//                append("\n  ").append(prefix).append(": <").append(ns).append(">");
-//            }
-//        }
-//    }
+    private void printNamespaces() {
+        for (String ns : namespaces){
+            String prefix = knownPrefixes.get(ns);
+            if (prefix != null){
+                if (!usingNsPrinted){
+                    append(PREFIXES);
+                    usingNsPrinted = true;
+                }
+                append("\n  ").append(prefix).append(": <").append(ns).append(">");
+            }
+        }
+    }
     
     public String toString(){
         return builder.toString();
