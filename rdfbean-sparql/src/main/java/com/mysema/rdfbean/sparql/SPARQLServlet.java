@@ -56,7 +56,10 @@ public class SPARQLServlet extends HttpServlet{
     @Override
     public void init(ServletConfig config) throws ServletException {
         this.config = config;
-        repository = (Repository) config.getServletContext().getAttribute(Repository.class.getName());        
+        if (repository == null){
+            repository = (Repository) config.getServletContext().getAttribute(Repository.class.getName());    
+        }
+                
     }
     
     @Override
