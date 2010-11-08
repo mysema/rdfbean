@@ -34,20 +34,8 @@ public class SPARQLServlet extends HttpServlet{
     
     private final SPARQLResultProducer resultProducer = new SPARQLResultProducer();
     
-    private ServletConfig config;
-    
     private Repository repository;
     
-    @Override
-    public void destroy() {
-        
-    }
-
-    @Override
-    public ServletConfig getServletConfig() {
-        return config;
-    }
-
     @Override
     public String getServletInfo() {
         return "RDFBean SPARQL service";
@@ -55,7 +43,7 @@ public class SPARQLServlet extends HttpServlet{
 
     @Override
     public void init(ServletConfig config) throws ServletException {
-        this.config = config;
+        super.init(config);
         if (repository == null){
             repository = (Repository) config.getServletContext().getAttribute(Repository.class.getName());    
         }
