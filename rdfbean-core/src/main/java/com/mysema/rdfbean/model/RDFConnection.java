@@ -88,6 +88,14 @@ public interface RDFConnection extends Closeable{
             @Nullable NODE object, 
             @Nullable UID context, boolean includeInferred);
     
+    /**
+     * @param subject
+     * @param predicate
+     * @param object
+     * @param context
+     * @param includeInferred
+     * @return
+     */
     boolean exists(
             @Nullable ID subject, 
             @Nullable UID predicate, 
