@@ -269,7 +269,17 @@ public class SesameConnection implements RDFConnection {
         return new ModelResultIterator(dialect, 
                 findStatements(subject, predicate, object, includeInferred, context), 
                 includeInferred);       
-    }    
+    }
+
+    @Override
+    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
+        try {
+            return iter.hasNext();
+        } finally {
+            iter.close();
+        }
+    }
 
     private ModelResult findStatements(
             @Nullable Resource subject, @Nullable URI predicate, @Nullable Value object, 

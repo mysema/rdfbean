@@ -36,6 +36,16 @@ public class MiniConnection implements RDFConnection {
         return repository.findStatements(subject, predicate, object, context, includeInferred);
     }
 
+    @Override
+    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
+        try {
+            return iter.hasNext();
+        } finally {
+            iter.close();
+        }
+    }
+
     public void addStatements(CloseableIterator<STMT> stmts) {
         this.repository.addStatements(stmts);
     }

@@ -138,6 +138,16 @@ public class FetchOptimizer implements RDFConnection {
         }
     }
 
+    @Override
+    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
+        try {
+            return iter.hasNext();
+        } finally {
+            iter.close();
+        }
+    }
+
     public MiniRepository getCache() {
         return cache.getRepository();
     }

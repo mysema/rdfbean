@@ -280,6 +280,16 @@ class LuceneConnection implements RDFConnection{
         }
     }
 
+    @Override
+    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
+        try {
+            return iter.hasNext();
+        } finally {
+            iter.close();
+        }
+    }
+
     protected List<STMT> findStatements(Resource resource, ID subject, UID predicate, NODE object, UID context){
         // TODO : how to handle embedded properties of components?!?
         List<STMT> stmts = new ArrayList<STMT>();

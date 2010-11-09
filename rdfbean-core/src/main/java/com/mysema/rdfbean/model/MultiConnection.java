@@ -69,6 +69,16 @@ public abstract class MultiConnection implements RDFConnection{
     }
 
     @Override
+    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
+        try {
+            return iter.hasNext();
+        } finally {
+            iter.close();
+        }
+    }
+
+    @Override
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
         if (!readonlyTnx){
             for (RDFConnection connection : connections){

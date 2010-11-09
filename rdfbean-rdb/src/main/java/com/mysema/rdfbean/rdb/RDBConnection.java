@@ -307,6 +307,16 @@ public class RDBConnection implements RDFConnection{
 
     }
 
+    @Override
+    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
+        try {
+            return iter.hasNext();
+        } finally {
+            iter.close();
+        }
+    }
+
     private Long getId(NODE node) {
         return context.getNodeId(node);
     }
