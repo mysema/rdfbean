@@ -100,6 +100,14 @@ public class SPARQLServletTest {
     }
     
     @Test
+    public void Construct_with_Html_Accept() throws ServletException, IOException{
+        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
+        request.addHeader("Accept", "text/html");
+        servlet.service(request, response);
+        assertEquals(Format.RDFXML.getMimetype(), response.getContentType());
+    }
+    
+    @Test
     public void Select() throws ServletException, IOException{
         request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
         servlet.service(request, response);
@@ -107,6 +115,14 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("<head>"));
         assertTrue(response.getContentAsString().contains("<results>"));
         assertTrue(response.getContentAsString().contains("literal"));
+        assertEquals(SPARQLServlet.SPARQL_RESULTS_XML, response.getContentType());
+    }
+    
+    @Test
+    public void Select_with_Html_Accept() throws ServletException, IOException{
+        request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
+        request.addHeader("Accept", "text/html");
+        servlet.service(request, response);
         assertEquals(SPARQLServlet.SPARQL_RESULTS_XML, response.getContentType());
     }
     

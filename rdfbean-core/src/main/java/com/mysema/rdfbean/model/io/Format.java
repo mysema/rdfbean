@@ -48,4 +48,13 @@ public enum Format {
         return mimetype;
     }
 
+    public static Format getFormat(String contentType, Format defaultFormat) {
+        for (Format format : values()){
+            if (format.mimetype.equals(contentType)){
+                return format;
+            }
+        }
+        return defaultFormat;
+    }
+
 }

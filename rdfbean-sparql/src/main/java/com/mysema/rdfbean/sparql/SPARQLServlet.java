@@ -77,6 +77,8 @@ public class SPARQLServlet extends HttpServlet{
                 }else{
                     contentType = getAcceptedType(request, contentType);
                 }
+                // normalize
+                contentType = Format.getFormat(contentType, Format.RDFXML).getMimetype();
                 response.setContentType(contentType);
                 query.streamTriples(response.getWriter(), contentType);
                 
@@ -86,6 +88,10 @@ public class SPARQLServlet extends HttpServlet{
                     contentType = SPARQL_RESULTS_JSON;
                 }else{
                     contentType = getAcceptedType(request, contentType);
+                }
+                // normalize
+                if (!contentType.equals(SPARQL_RESULTS_JSON) && !contentType.equals(SPARQL_RESULTS_XML)){
+                    contentType = SPARQL_RESULTS_XML;
                 }
                 response.setContentType(contentType);
                 if (contentType.equals(SPARQL_RESULTS_JSON)){
@@ -108,5 +114,5 @@ public class SPARQLServlet extends HttpServlet{
             return defaultType;
         }
     }
-
+    
 }
