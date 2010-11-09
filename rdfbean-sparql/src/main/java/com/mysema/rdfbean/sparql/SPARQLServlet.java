@@ -2,6 +2,7 @@ package com.mysema.rdfbean.sparql;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -34,6 +35,7 @@ public class SPARQLServlet extends HttpServlet{
     
     private final SPARQLResultProducer resultProducer = new SPARQLResultProducer();
     
+    @Nullable
     private Repository repository;
 
     public SPARQLServlet(Repository repository) {
@@ -105,10 +107,6 @@ public class SPARQLServlet extends HttpServlet{
         }else{
             return defaultType;
         }
-    }
-
-    public void setRepository(Repository repository) {
-        this.repository = repository;
     }
 
 }

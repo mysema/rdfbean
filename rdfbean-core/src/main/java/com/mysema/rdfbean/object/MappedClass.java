@@ -52,7 +52,7 @@ public final class MappedClass {
     @Nullable
     private final UID context;
     
-    MappedClass(Class<?> clazz, UID uid, UID context,List<MappedClass> mappedSuperClasses) {
+    MappedClass(Class<?> clazz, UID uid, @Nullable UID context,List<MappedClass> mappedSuperClasses) {
         this.clazz = clazz;
         this.uid = uid;
         this.context = context;
