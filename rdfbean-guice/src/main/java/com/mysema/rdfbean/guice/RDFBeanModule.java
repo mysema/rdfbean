@@ -8,6 +8,7 @@ package com.mysema.rdfbean.guice;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ public abstract class RDFBeanModule extends AbstractModule{
         return Collections.singletonList("/persistence.properties");
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     protected void configure() {               
         // inject properties
@@ -46,10 +48,10 @@ public abstract class RDFBeanModule extends AbstractModule{
             for (String res : getConfiguration()){
                 properties.load(RDFBeanModule.class.getResourceAsStream(res));
             }            
-            for (Object key : properties.keySet()){
+            for (Map.Entry entry : properties.entrySet()){
                 bind(String.class)
-                    .annotatedWith(Names.named(key.toString()))
-                    .toInstance(properties.getProperty(key.toString()));
+                    .annotatedWith(Names.named(entry.getKey().toString()))
+                    .toInstance(entry.getValue().toString());
             }
         } catch (IOException e) {
             String error = "Caught " + e.getClass().getName();
