@@ -29,32 +29,28 @@ import com.mysema.rdfbean.testutil.SessionConfig;
  */
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class ListQueriesTest extends SessionTestBase{
-    
-    private NumberExpression<Integer> size = var.listProperty.size();
-        
+
+    private final NumberExpression<Integer> size = var.listProperty.size();
+
     @Test
     public void Persist(){
         SimpleType simpleType = new SimpleType();
         simpleType.listProperty = Arrays.asList(new SimpleType2(), new SimpleType2());
         session.save(simpleType);
         session.clear();
-        
+
         SimpleType other = session.getById(simpleType.id, SimpleType.class);
         assertEquals(simpleType.listProperty.size(), other.listProperty.size());
         assertEquals(simpleType.listProperty.get(0).id, other.listProperty.get(0).id);
         assertEquals(simpleType.listProperty.get(1).id, other.listProperty.get(1).id);
-        
+
     }
-    
+
     @Test
     public void In(){
         where(var.listProperty.contains(var.listProperty.get(0))).count();
         where(var.listProperty.contains(var.listProperty.get(0)),
-              var.listProperty.isNotEmpty()).count();
-    }
-    
-    private BeanQuery where(Predicate... conditions) {
-        return session.from(var).where(conditions);
+                var.listProperty.isNotEmpty()).count();
     }
 
     @Test
@@ -63,11 +59,11 @@ public class ListQueriesTest extends SessionTestBase{
         // TODO
     }
 
-    @Test(expected=UnsupportedOperationException.class)    
+    @Test(expected=UnsupportedOperationException.class)
     public void listPropertyEq(){
         where(var.listProperty.eq(Collections.<SimpleType2>emptyList())).list(var);
     }
-    
+
     @Test
     public void SizeEq(){
         // eq
@@ -75,7 +71,7 @@ public class ListQueriesTest extends SessionTestBase{
         assertEquals(1, where(size.eq(2)).count());
         assertEquals(1, where(size.eq(3)).count());
     }
-    
+
     @Test
     public void Goe(){
         // goe
@@ -84,7 +80,7 @@ public class ListQueriesTest extends SessionTestBase{
         assertEquals(1, where(size.goe(3)).count());
         assertEquals(0, where(size.goe(4)).count());
     }
-    
+
     @Test
     public void Gt(){
         // gt
@@ -93,7 +89,7 @@ public class ListQueriesTest extends SessionTestBase{
         assertEquals(1, where(size.gt(2)).count());
         assertEquals(0, where(size.gt(3)).count());
     }
-    
+
     @Test
     public void Loe(){
         // loe
@@ -103,7 +99,7 @@ public class ListQueriesTest extends SessionTestBase{
         assertEquals(2, where(size.loe(3)).count());
         assertEquals(2, where(size.loe(4)).count());
     }
-    
+
     @Test
     public void Lt(){
         // lt
@@ -113,11 +109,16 @@ public class ListQueriesTest extends SessionTestBase{
         assertEquals(2, where(size.lt(4)).count());
         assertEquals(2, where(size.lt(5)).count());
     }
-    
+
     @Test
     public void IsEmpty(){
         assertEquals(0, where(var.listProperty.isEmpty()).count());
         assertEquals(2, where(var.listProperty.isNotEmpty()).count());
     }
-    
+
+    private BeanQuery where(Predicate... conditions) {
+        return session.from(var).where(conditions);
+    }
+
+
 }
