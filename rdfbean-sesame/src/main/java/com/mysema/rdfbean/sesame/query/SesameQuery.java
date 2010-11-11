@@ -402,6 +402,7 @@ implements TransformerContext, BeanQuery, Closeable{
             return conf.getMappedClass(javaClass);
         }
 
+        @Nullable
         public UID getContext(Path<?> path){
             if (pathToContext.containsKey(path)){
                 return pathToContext.get(path);
