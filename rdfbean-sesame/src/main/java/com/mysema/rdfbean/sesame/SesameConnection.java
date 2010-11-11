@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.sesame;
 
@@ -44,9 +44,9 @@ import com.mysema.rdfbean.sesame.query.SesameQuery;
 
 /**
  * SaesameConnection is the RDFConnection implementation for RepositoryConnection usage
- * 
+ *
  * @author sasa
- * 
+ *
  */
 public class SesameConnection implements RDFConnection {
 
@@ -301,12 +301,16 @@ public class SesameConnection implements RDFConnection {
     }
 
     @Override
-    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
-        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
+    public boolean exists(ID sub, UID pre, NODE obj, UID con, boolean includeInferred) {
+        Resource subject = convert(sub);
+        URI predicate = convert(pre);
+        Value object = convert(obj);
+        URI context = convert(con);
+
         try {
-            return iter.hasNext();
-        } finally {
-            iter.close();
+            return connection.hasMatch(subject, predicate, object, includeInferred, context);
+        } catch (StoreException e) {
+            throw new RepositoryException(e);
         }
     }
 
