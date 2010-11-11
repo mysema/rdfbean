@@ -901,7 +901,7 @@ public final class SessionImpl implements Session {
     }
 
     private UID getContext(Class<?> clazz, @Nullable ID subject, @Nullable UID defaultContext) {
-        UID contextUID = conf.getContext(clazz, subject);
+        UID contextUID = conf.getMappedClass(clazz).getContext();
         if (contextUID != null) {
             return contextUID;
         } else {

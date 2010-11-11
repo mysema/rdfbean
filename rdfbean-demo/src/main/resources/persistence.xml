@@ -32,9 +32,7 @@
             </bean>
         </list>
     </property>
-    <!-- 
     <property name="dataDirName" value="${persistence.sesame.mem.dir}"/>
-     -->
      <property name="sesameInference" value="true"/>
   </bean>
  
@@ -46,7 +44,9 @@
               <value>com.mysema.rdf.demo.domain.Person</value>
           </list>
       </constructor-arg>
+	  <!-- 
       <property name="defaultContext" value="http://demo.mysema.com/rdfbean-demo"/>
+	  -->
   </bean>
   
   <bean id="sessionFactory" class="com.mysema.rdfbean.spring.ContextAwareSessionFactory"

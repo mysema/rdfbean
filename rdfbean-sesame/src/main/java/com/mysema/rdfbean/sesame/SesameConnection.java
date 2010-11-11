@@ -254,7 +254,7 @@ public class SesameConnection implements RDFConnection {
         URI context = convert(con);
         
         // subClassOf inference
-        if (subject == null && RDF.type.equals(pre) && obj instanceof UID && inference.subClassOf()){
+        if (subject == null && RDF.type.equals(pre) && obj instanceof UID && inference.subClassOf() && includeInferred){
             Collection<UID> types = ontology.getSubtypes((UID)obj);
             if (types.size() > 1){
                 return new ModelResultIterator(dialect, 

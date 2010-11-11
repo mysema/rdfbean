@@ -9,7 +9,6 @@ import static com.mysema.rdfbean.rdb.QLanguage.language;
 import static com.mysema.rdfbean.rdb.QStatement.statement;
 import static com.mysema.rdfbean.rdb.QSymbol.symbol;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +35,6 @@ import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.ConstructorExpression;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.template.NumberTemplate;
-import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 

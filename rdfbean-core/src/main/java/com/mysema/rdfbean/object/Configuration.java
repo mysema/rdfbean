@@ -11,7 +11,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import com.mysema.rdfbean.model.FetchStrategy;
-import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
@@ -37,10 +36,6 @@ public interface Configuration {
     List<MappedClass> getMappedClasses(UID uid);
     
     Set<MappedClass> getMappedClasses();
-
-    // TODO : move this to MappedClass ?!?
-    @Nullable
-    UID getContext(Class<?> javaClass, @Nullable ID subject);
 
     boolean isRestricted(UID uid);
 

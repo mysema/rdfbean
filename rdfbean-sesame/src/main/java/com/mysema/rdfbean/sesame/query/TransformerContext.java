@@ -172,4 +172,10 @@ public interface TransformerContext {
      */
     JoinBuilder createJoinBuilder();
     
+    /**
+     * @param path
+     * @return
+     */
+    UID getContext(Path<?> path);
+    
 }

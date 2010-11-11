@@ -14,20 +14,44 @@ package com.mysema.rdfbean.model;
  */
 public enum Inference {
     
+    /**
+     * 
+     */
     CLASS(true, false, false),
     
+    /**
+     * 
+     */
     CLASS_LITERAL(true, false, true),
     
+    /**
+     * 
+     */
     CLASS_PROPERTY(true, true, false),
     
+    /**
+     * 
+     */
     FULL(true, true, true),
     
+    /**
+     * 
+     */
     PROPERTY(false, true, false),
     
+    /**
+     * 
+     */
     NONE(false, false, false),
     
+    /**
+     * 
+     */
     PROPERTY_LITERAL(false, true, true),
     
+    /**
+     * 
+     */
     LITERAL(false, false, true);
     
     private final boolean subClassOf, subPropertyOf, untypedAsString;

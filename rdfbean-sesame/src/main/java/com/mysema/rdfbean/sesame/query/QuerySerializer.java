@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
@@ -22,10 +23,9 @@ import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.query.parser.TupleQueryModel;
 
 import com.mysema.rdfbean.Namespaces;
-import com.mysema.rdfbean.TEST;
 
 /**
- * QuerySerializer seriales ParsedTupleQuery instances to a syntax combining 
+ * QuerySerializer serializes ParsedTupleQuery instances to a syntax combining 
  * SeRQL and SPARQL features for optimal readability 
  *
  * @see http://www.openrdf.org/doc/sesame2/2.2.4/users/ch09.html#d0e1398
@@ -429,16 +429,27 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             if (lastPattern.getSubjectVar().equals(node.getSubjectVar())){
                 if (lastPattern.getPredicateVar().equals(node.getPredicateVar())){
                     append(COMMA).visit(node.getObjectVar());
+                    if (!ObjectUtils.equals(lastPattern.getContextVar(), node.getContextVar())){
+                        append( " " ).visit(node.getContextVar());
+                    }
                     return;
                 }else{
                     append(SEMICOLON).visit(node.getPredicateVar()).append(" ").visit(node.getObjectVar());
+                    if (!ObjectUtils.equals(lastPattern.getContextVar(), node.getContextVar())){
+                        append( " " ).visit(node.getContextVar());
+                    }
                     return;
                 }
             }else{
                 append(" .\n ");
             }            
         }        
-        visit(node.getSubjectVar()).append( " " ).visit(node.getPredicateVar()).append( " " ).visit(node.getObjectVar());
+        visit(node.getSubjectVar());
+        append( " " ).visit(node.getPredicateVar());
+        append( " " ).visit(node.getObjectVar());
+        if (node.getContextVar() != null){
+            append( " " ).visit(node.getContextVar());
+        }
         lastPattern = node;
     }
     

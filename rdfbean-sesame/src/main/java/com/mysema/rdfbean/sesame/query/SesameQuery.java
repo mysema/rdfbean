@@ -140,6 +140,8 @@ public class SesameQuery
     
     private Map<Path<?>, Var> pathToVar = new HashMap<Path<?>, Var>();
     
+    private Map<Path<?>, UID> pathToContext = new HashMap<Path<?>, UID>();
+    
     private final StatementPattern.Scope patternScope;
     
     private TupleResult queryResult;
@@ -394,10 +396,19 @@ public class SesameQuery
         return session.getCurrentLocale();
     }
     
-
     @Override
     public MappedClass getMappedClass(Class<?> javaClass) {
         return conf.getMappedClass(javaClass);
+    }
+    
+    public UID getContext(Path<?> path){
+        if (pathToContext.containsKey(path)){
+            return pathToContext.get(path);
+        }else if (path.getMetadata().getParent() != null){
+            return getContext(path.getMetadata().getParent());
+        }else{
+            return null;
+        }
     }
     
     @Override
@@ -422,11 +433,14 @@ public class SesameQuery
 
     private void handleRootPath(Path<?> path) {
         Var var = new Var(path.getMetadata().getExpression().toString());
-        varNames.disallow(var.getName());
-        pathToVar.put(path, var);
+        varNames.disallow(var.getName());        
         MappedClass mappedClass = conf.getMappedClass(path.getType());
         UID rdfType = mappedClass.getUID();
         UID context = mappedClass.getContext();
+        pathToVar.put(path, var);
+        if (context != null){
+            pathToContext.put(path, context);    
+        }        
         if (rdfType != null){
             match(var, RDF.type, toVar(rdfType), context);
         } else {
@@ -620,6 +634,7 @@ public class SesameQuery
             Var parentNode = toVar(md.getParent());
             Var pathNode = null;
             Var matchedVar = pathToKnownVar.get(path);
+            UID context = getContext(path);
             
             if (pathType.equals(PathType.PROPERTY)) {
                 MappedPath mappedPath = getMappedPathForPropertyPath(path); 
@@ -627,7 +642,7 @@ public class SesameQuery
                 if (predPath.size() > 0){
                     for (int i = 0; i < predPath.size(); i++){
                         MappedPredicate pred = predPath.get(i);
-                        UID context = pred.getContext();
+                        UID c = pred.getContext() != null ? pred.getContext() : context;
                         if (matchedVar != null && (i == predPath.size() -1)){
                             pathNode = matchedVar;
                         }else if (i == predPath.size() - 1){    
@@ -637,9 +652,9 @@ public class SesameQuery
                             pathNode = new Var(varNames.next());    
                         }                        
                         if (!pred.inv()) {
-                            match(parentNode, pred.getUID(), pathNode, context);
+                            match(parentNode, pred.getUID(), pathNode, c);
                         } else {
-                            match(pathNode, pred.getUID(), parentNode, context);
+                            match(pathNode, pred.getUID(), parentNode, c);
                         }
                         parentNode = pathNode;
                     }
@@ -662,11 +677,11 @@ public class SesameQuery
                 int index = getIntValue((Constant<Integer>)md.getExpression());                
                 for (int i = 0; i < index; i++){
                     pathNode = new Var(varNames.next());
-                    match(parentNode, RDF.rest, pathNode, null); // TODO : context
+                    match(parentNode, RDF.rest, pathNode, context);
                     parentNode = pathNode;
                 }
                 pathNode = new Var(varNames.next());
-                match(parentNode, RDF.first, pathNode, null); // TODO : context
+                match(parentNode, RDF.first, pathNode, context);
 
             // map value    
             } else if (pathType.equals(PathType.MAPVALUE) 
@@ -676,11 +691,11 @@ public class SesameQuery
                 if (!mappedProperty.isLocalized()){
                     match(parentNode, mappedProperty.getKeyPredicate(), 
                         ((Var)toValue(path.getMetadata().getExpression())),
-                        null); // TODO : context
+                        context);
                         
                     if (mappedProperty.getValuePredicate() != null){
                         pathNode = new Var(varNames.next());
-                        match(parentNode, mappedProperty.getValuePredicate(), pathNode, null); // TODO : context
+                        match(parentNode, mappedProperty.getValuePredicate(), pathNode, context);
                     }else{
                         pathNode = parentNode;
                     }

@@ -9,18 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -30,10 +19,8 @@ import javax.annotation.Nullable;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.MappedClasses;
 import com.mysema.rdfbean.model.FetchStrategy;
-import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
@@ -66,8 +53,8 @@ public final class DefaultConfiguration implements Configuration {
 
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
-    @Nullable
-    private UID defaultContext;
+//    @Nullable
+//    private UID defaultContext;
     
     private List<FetchStrategy> fetchStrategies = Collections.emptyList();
     
@@ -131,26 +118,11 @@ public final class DefaultConfiguration implements Configuration {
     @Nullable
     public UID createURI(Object instance) {
         Class<?> clazz = instance.getClass();
-        UID context = getContext(clazz, null);
+        UID context = getMappedClass(clazz).getContext();
         if (context != null) {
             return new UID(context.getId() + "#", clazz.getSimpleName() + "-" + UUID.randomUUID().toString());
         }
         return null;
-    }
-
-    @Override
-    @Nullable
-    public UID getContext(Class<?> javaClass, @Nullable ID subject) {
-        Context ctxAnno = javaClass.getAnnotation(Context.class);
-        if (ctxAnno == null) {
-            Package pack = javaClass.getPackage();
-            ctxAnno = pack.getAnnotation(Context.class);
-        }
-        if (ctxAnno != null) {
-            return new UID(ctxAnno.value());
-        } else {
-            return defaultContext;
-        }
     }
 
     @Override
@@ -250,9 +222,9 @@ public final class DefaultConfiguration implements Configuration {
     }
     
 
-    public void setDefaultContext(String ctx) {
-        this.defaultContext = new UID(ctx);
-    }
+//    public void setDefaultContext(String ctx) {
+//        this.defaultContext = new UID(ctx);
+//    }
 
     public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
         this.fetchStrategies = fetchStrategies;

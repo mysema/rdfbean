@@ -16,7 +16,9 @@ import org.openrdf.query.algebra.Var;
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
+import com.mysema.query.types.Path;
 import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.UID;
 
 /**
  * InstanceOfTransformer provides
@@ -42,11 +44,15 @@ public class InstanceOfTransformer implements OperationTransformer{
             return new Exists(pattern);    
             
         }else{
+            UID c = null;
+            if (operation.getArg(0) instanceof Path<?>){
+                c = context.getContext((Path<?>) operation.getArg(0));
+            }
             context.match(
                 (Var)context.toValue(operation.getArg(0)),
                 RDF.type,
                 (Var)context.toValue(operation.getArg(1)),
-                null); // TODO : context
+                c); 
             return null;
         }        
     }

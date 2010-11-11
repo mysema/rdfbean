@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.FetchStrategy;
-import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
@@ -77,16 +76,10 @@ class SimpleConfiguration implements Configuration{
     @Override
     public UID createURI(Object instance) {
         Class<?> clazz = instance.getClass();
-        UID context = getContext(clazz, null);
+        UID context = getMappedClass(clazz).getContext();
         if (context != null) {
             return new UID(context.getId() + "#", clazz.getSimpleName() + "-" + UUID.randomUUID().toString());
         }
-        return null;
-    }
-
-    @Override
-    public UID getContext(Class<?> javaClass, ID subject) {
-        // TODO Auto-generated method stub
         return null;
     }
 

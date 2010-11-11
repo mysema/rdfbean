@@ -20,6 +20,8 @@ import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Path;
+import com.mysema.rdfbean.annotations.MapElements;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedProperty;
 
@@ -50,7 +52,9 @@ public class ContainsKeyValueTransformer implements OperationTransformer{
                 keyNode = null;
                 valNode = (Var) context.toValue(operation.getArg(1));
             }                
-            return transformMapAccess(pathVar, mappedPath, valNode, keyNode, context);
+            UID c = context.getContext(path);
+            return transformMapAccess(pathVar, mappedPath, valNode, keyNode, context, c);
+            
         }else{  
             // TODO
             return null;
@@ -59,18 +63,26 @@ public class ContainsKeyValueTransformer implements OperationTransformer{
     
     @Nullable
     private ValueExpr transformMapAccess(Var pathVar, MappedPath mappedPath, 
-            @Nullable Var valNode, @Nullable Var keyNode, TransformerContext context) {
+            @Nullable Var valNode, @Nullable Var keyNode, TransformerContext context, @Nullable UID c) {
         MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
         JoinBuilder builder = context.createJoinBuilder();
         if (valNode != null){
             if (mappedProperty.getValuePredicate() != null){
-                context.match(builder, pathVar, mappedProperty.getValuePredicate(), valNode, null); // TODO : context
+                MapElements mapKey = mappedProperty.getAnnotation(MapElements.class);
+                if (!mapKey.value().context().isEmpty()){
+                    c = new UID(mapKey.value().context());
+                }
+                context.match(builder, pathVar, mappedProperty.getValuePredicate(), valNode, c);
             }else if (!context.inNegation()){    
                 pathVar.setValue(valNode.getValue());
             }
         }
         if (keyNode != null){
-            context.match(builder, pathVar, mappedProperty.getKeyPredicate(), keyNode, null); // TODO : context 
+            MapElements mapKey = mappedProperty.getAnnotation(MapElements.class);
+            if (!mapKey.key().context().isEmpty()){
+                c = new UID(mapKey.key().context());
+            }
+            context.match(builder, pathVar, mappedProperty.getKeyPredicate(), keyNode, c); 
         }                        
         
         if (!builder.isEmpty()){

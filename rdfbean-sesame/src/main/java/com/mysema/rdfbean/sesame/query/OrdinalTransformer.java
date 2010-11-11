@@ -11,6 +11,7 @@ import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Path;
 import com.mysema.rdfbean.CORE;
+import com.mysema.rdfbean.model.UID;
 
 public class OrdinalTransformer implements OperationTransformer{
 
@@ -23,7 +24,8 @@ public class OrdinalTransformer implements OperationTransformer{
     public ValueExpr transform(Operation<?> operation, TransformerContext context) {
         Var var = context.toVar((Path<?>)operation.getArg(0));
         Var ordinal = new Var(var.getName() + "_ordinal");
-        context.match(var, CORE.enumOrdinal, ordinal, null); // TODO : context
+        UID c = context.getContext((Path<?>) operation.getArg(0));
+        context.match(var, CORE.enumOrdinal, ordinal, c);
         return ordinal;
     }
 

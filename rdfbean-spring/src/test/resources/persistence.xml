@@ -32,7 +32,9 @@
               <value>com.mysema.rdfbean.domain.Person</value>
           </list>
       </constructor-arg>
+	  <!-- 
       <property name="defaultContext" value="http://demo.mysema.com/rdfbean-demo"/>
+	  -->
   </bean>
   
   <bean id="sessionFactory" class="com.mysema.rdfbean.spring.ContextAwareSessionFactory" init-method="initialize" destroy-method="close">
