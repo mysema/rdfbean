@@ -25,34 +25,34 @@ import com.mysema.commons.lang.Assert;
  * @version $Id$
  */
 public class JoinBuilder{
-    
+
     private final Transformer<StatementPattern,TupleExpr> stmtTransformer;
-    
+
     private final List<StatementPattern> patterns = new ArrayList<StatementPattern>();
-    
+
     @Nullable
     private TupleExpr tupleExpr;
-    
+
     public JoinBuilder(Transformer<StatementPattern,TupleExpr> stmtTransformer){
         this.stmtTransformer = Assert.notNull(stmtTransformer,"stmtTransformer");
     }
 
     public JoinBuilder add(StatementPattern pattern){
-        patterns.add(pattern);        
+        patterns.add(pattern);
         return this;
     }
-        
+
     public TupleExpr getTupleExpr() {
         if (!patterns.isEmpty()){
             tupleExpr = merge(patterns, tupleExpr);
-        }        
+        }
         return tupleExpr;
     }
-    
+
     public boolean isEmpty() {
         return tupleExpr == null && patterns.isEmpty();
     }
-    
+
     private TupleExpr merge(List<StatementPattern> patterns, @Nullable TupleExpr base){
         TupleExpr rv = base;
         for (StatementPattern pattern : patterns){
@@ -63,20 +63,20 @@ public class JoinBuilder{
             }
         }
         patterns.clear();
-        return rv;        
+        return rv;
     }
-    
+
     public void setMandatory(){
-        if (!patterns.isEmpty()){        
-            tupleExpr = new LeftJoin(tupleExpr, merge(patterns, null)); 
+        if (!patterns.isEmpty()){
+            tupleExpr = new LeftJoin(tupleExpr, merge(patterns, null));
             patterns.clear();
-        }        
-    }    
-        
+        }
+    }
+
     public void setOptional(){
         if (!patterns.isEmpty()){
             tupleExpr = merge(patterns, tupleExpr);
-        }        
+        }
     }
-    
+
 }
