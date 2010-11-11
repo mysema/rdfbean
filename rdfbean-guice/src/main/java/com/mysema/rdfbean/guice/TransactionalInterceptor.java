@@ -25,7 +25,7 @@ import com.mysema.rdfbean.object.TxException;
 
 
 /**
- * TransactionalInterceptor provides a MethodInterceptor implementation for 
+ * TransactionalInterceptor provides a MethodInterceptor implementation for
  * transactional method interception
  *
  * @author tiwe
@@ -33,8 +33,8 @@ import com.mysema.rdfbean.object.TxException;
  *
  */
 @ThreadSafe
-class TransactionalInterceptor implements MethodInterceptor{ 
-    
+class TransactionalInterceptor implements MethodInterceptor{
+
     private final Provider<Map<Method,Transactional>> configuration;
 
     private SimpleSessionContext sessionContext;
@@ -42,9 +42,9 @@ class TransactionalInterceptor implements MethodInterceptor{
     public TransactionalInterceptor(Provider<Map<Method,Transactional>> configuration) {
         this.configuration = configuration;
     }
-        
+
     @Override
-    public Object invoke(MethodInvocation methodInvocation) throws Throwable { //NOSONAR        
+    public Object invoke(MethodInvocation methodInvocation) throws Throwable { //NOSONAR
         Transactional annotation = configuration.get().get(methodInvocation.getMethod());
         boolean inSession = false;
         boolean inTx = false;
@@ -53,21 +53,21 @@ class TransactionalInterceptor implements MethodInterceptor{
             Session session = sessionContext.getCurrentSession();
             inTx = session.getTransaction() != null && session.getTransaction().isActive();
         }
-        
+
         boolean intercepted = isIntercepted(annotation, inTx);
         if (!intercepted){
             return methodInvocation.proceed();
-        }        
-        
+        }
+
         Session session = sessionContext.getOrCreateSession();
         FlushMode savedFlushMode = session.getFlushMode();
 
         try {
             RDFBeanTransaction txn = doBegin(session, annotation);
-            Object result;            
+            Object result;
             try {
-                result = methodInvocation.proceed();                
-            } catch(Exception e) {                
+                result = methodInvocation.proceed();
+            } catch(Exception e) {
                 if (txn.isRollbackOnly() || isRollbackNecessary(annotation, e, txn)){
                     doRollback(txn);
                 }else{
@@ -76,14 +76,14 @@ class TransactionalInterceptor implements MethodInterceptor{
                 throw e;
             }
             doCommit(session, txn);
-            return result;            
-            
+            return result;
+
         } finally {
             session.setFlushMode(savedFlushMode);
             sessionContext.releaseSession();
             if (!inSession){
                 session.close();
-            }                                        
+            }
         }
     }
 
@@ -91,19 +91,19 @@ class TransactionalInterceptor implements MethodInterceptor{
         switch(annotation.propagation()){
         case REQUIRED:
         case REQUIRES_NEW:
-        case NESTED:    
+        case NESTED:
             if (inTx){
                 return false;
             }
             break;
-            
-        case MANDATORY:    
+
+        case MANDATORY:
             if (inTx){
                 return false;
             }else{
                 throw new TxException("Tx propagation " + annotation.propagation() + " without transaction");
             }
-            
+
         case NOT_SUPPORTED:
         case NEVER:
             if (inTx){
@@ -117,20 +117,20 @@ class TransactionalInterceptor implements MethodInterceptor{
 
     private RDFBeanTransaction doBegin(Session session, Transactional transactional) {
         RDFBeanTransaction txn = session.beginTransaction(
-                transactional.readOnly(), 
-                transactional.timeout(), 
+                transactional.readOnly(),
+                transactional.timeout(),
                 transactional.isolation().value());
-        
+
         session.setFlushMode(FlushMode.COMMIT);
         return txn;
     }
-    
+
     private void doCommit(Session session, RDFBeanTransaction txn) throws Exception {
         Exception commitException = null;
         try {
             session.flush();
             txn.commit();
-            
+
         } catch(RuntimeException re) {
             doRollback(txn);
             commitException = re;
@@ -141,17 +141,15 @@ class TransactionalInterceptor implements MethodInterceptor{
         }
     }
 
-
     private void doRollback(RDFBeanTransaction txn) {
         txn.rollback();
     }
 
-    
     private boolean isRollbackNecessary(Transactional transactional, Exception e, RDFBeanTransaction txn) {
-        boolean rollBack = false;        
+        boolean rollBack = false;
         for (Class<? extends Throwable> rollBackOn : transactional.rollbackFor()) {
             if (rollBackOn.isInstance(e)) {
-                rollBack = true;                
+                rollBack = true;
                 for (Class<? extends Throwable> exceptOn : transactional.noRollbackFor()) {
                     if (exceptOn.isInstance(e)) {
                         rollBack = false;
