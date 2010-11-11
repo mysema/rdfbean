@@ -642,7 +642,9 @@ implements TransformerContext, BeanQuery, Closeable{
                     List<MappedPredicate> predPath = mappedPath.getPredicatePath();
                     if (predPath.size() > 0){
                         MappedPredicate last = predPath.get(predPath.size()-1);
-                        if (last.getContext() != null){
+                        if (last.includeInferred()){
+                            pathToContext.put(path, context = null);
+                        }else if (last.getContext() != null){
                             pathToContext.put(path, last.getContext());
                             context = last.getContext();
                         }else if (conf.isMapped(path.getType())){
