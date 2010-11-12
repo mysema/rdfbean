@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.lucene;
 
@@ -57,53 +57,53 @@ import com.mysema.util.MultiMapFactory;
  */
 // TODO : clean this up!
 class LuceneConnection implements RDFConnection{
-    
+
     private static final List<String> INTERNAL_FIELDS = Arrays.asList(
             "alias",
             "$/uid",
-            ALL_FIELD_NAME, 
+            ALL_FIELD_NAME,
             CONTEXT_FIELD_NAME,
             ID_FIELD_NAME,
             TEXT_FIELD_NAME);
-    
+
     private static final Logger logger = LoggerFactory.getLogger(LuceneConnection.class);
-    
+
     private final Compass compass;
-    
+
     private final CompassSession compassSession;
-    
+
     private final LuceneConfiguration conf;
-    
+
     private final NodeConverter converter;
-    
+
     @Nullable
     private LuceneTransaction localTxn = null;
-    
+
     private boolean readonlyTnx = false;
-        
+
     public LuceneConnection(LuceneConfiguration configuration, CompassSession session) {
         this.conf = Assert.notNull(configuration,"configuration");
         this.converter = conf.getConverter();
         this.compassSession = Assert.notNull(session,"session");
         this.compass = conf.getCompass();
     }
-    
-    private void addStatement(Resource resource, boolean component, STMT stmt, Collection<ID> subjectTypes) {        
+
+    private void addStatement(Resource resource, boolean component, STMT stmt, Collection<ID> subjectTypes) {
 //        System.err.println("added : " + stmt);
-        String objectValue = converter.toString(stmt.getObject());        
+        String objectValue = converter.toString(stmt.getObject());
         PropertyConfig propertyConfig = conf.getPropertyConfig(stmt.getPredicate(), subjectTypes);
-        
-        if (propertyConfig != null){           
+
+        if (propertyConfig != null){
             // index predicate
             if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
-                indexPredicate(resource, component, stmt, objectValue, propertyConfig);                
-            }     
-            
+                indexPredicate(resource, component, stmt, objectValue, propertyConfig);
+            }
+
             // index value into all field
             if (propertyConfig.isAllIndexed()){
                 resource.addProperty(ALL_FIELD_NAME, objectValue);
-            }            
-            
+            }
+
             // index value into text field
             if (propertyConfig.isTextIndexed()){
                 String value;
@@ -113,89 +113,89 @@ class LuceneConnection implements RDFConnection{
                     value = stmt.getObject().getValue();
                 }
                 resource.addProperty(TEXT_FIELD_NAME, value);
-            }            
+            }
         }
-        
+
     }
 
     private void indexPredicate(Resource resource, boolean component, STMT stmt, String objectValue, PropertyConfig propertyConfig) {
         String predicateField = converter.toString(stmt.getPredicate());
         if (component){
-            predicateField = converter.toString(stmt.getSubject()) + " " + predicateField; 
-        }                
-        Property property = compass.getResourceFactory().createProperty(predicateField, objectValue, 
+            predicateField = converter.toString(stmt.getSubject()) + " " + predicateField;
+        }
+        Property property = compass.getResourceFactory().createProperty(predicateField, objectValue,
                 propertyConfig.getStore(), propertyConfig.getIndex());
         resource.addProperty(property);
-        
+
         // index supertypes
         if (conf.isIndexSupertypes() && stmt.getPredicate().equals(RDF.type) && stmt.getObject() instanceof ID){
-            for (ID supertype : conf.getSupertypes((ID) stmt.getObject())){            
+            for (ID supertype : conf.getSupertypes((ID) stmt.getObject())){
                 if (!supertype.equals(stmt.getObject())){
                     String supertypeValue = converter.toString(supertype);
-                    resource.addProperty(compass.getResourceFactory().createProperty(predicateField, supertypeValue, 
-                            Store.NO, Index.NOT_ANALYZED));    
-                }                        
+                    resource.addProperty(compass.getResourceFactory().createProperty(predicateField, supertypeValue,
+                            Store.NO, Index.NOT_ANALYZED));
+                }
             }
         }
-    }   
+    }
 
     @Override
     public RDFBeanTransaction beginTransaction(boolean readOnly,
             int txTimeout, int isolationLevel) {
         CompassTransaction tx = compassSession.beginTransaction();
         readonlyTnx = readOnly;
-        localTxn = new LuceneTransaction(this, tx);        
+        localTxn = new LuceneTransaction(this, tx);
         return localTxn;
     }
-    
+
     public void cleanUpAfterCommit(){
         localTxn = null;
         readonlyTnx = false;
     }
-    
+
     public void cleanUpAfterRollback(){
         localTxn = null;
         readonlyTnx = false;
         // NOTE : LuceneConnection is closed after rollback
         close();
     }
-    
+
     @Override
     public void clear() {
-        compassSession.evictAll();        
+        compassSession.evictAll();
     }
 
     @Override
     public void close()  {
         compassSession.close();
     }
-    
+
     @Override
     public BID createBNode() {
         return new BID();
     }
-    
+
     private CompassQuery createQuery(ID subject, UID predicate, NODE object, UID context, boolean includeInferred){
         CompassQueryBuilder queryBuilder = compassSession.queryBuilder();
-        if (subject != null || predicate != null || object != null || context != null){            
+        if (subject != null || predicate != null || object != null || context != null){
             CompassBooleanQueryBuilder boolBuilder = queryBuilder.bool();
             if (subject != null){
                 handleSubject(subject, queryBuilder, boolBuilder);
-            }   
+            }
             if (predicate != null){
                 handlePredicate(predicate, object, queryBuilder, boolBuilder);
-                
+
             }else if (object != null){
                 String value = converter.toString(object);
                 boolBuilder.addMust(queryBuilder.term(ALL_FIELD_NAME, value));
             }
-            
+
             if (conf.isContextsStored()){
                 handleContext(context, queryBuilder, boolBuilder);
             }
-                                   
+
             return boolBuilder.toQuery();
-            
+
         }else{
             return queryBuilder.matchAll();
         }
@@ -218,7 +218,7 @@ class LuceneConnection implements RDFConnection{
 	// TODO : component predicate matches need to be handled here
 	if (object != null){
 	    String value = converter.toString(object);
-	    boolBuilder.addMust(queryBuilder.term(predicateField, value));                        
+	    boolBuilder.addMust(queryBuilder.term(predicateField, value));
 	}else{
 	    boolBuilder.addMust(queryBuilder.wildcard(predicateField, "*"));
 	}
@@ -228,16 +228,16 @@ class LuceneConnection implements RDFConnection{
             CompassBooleanQueryBuilder boolBuilder) {
 	String subjectStr = converter.toString(subject);
 	if (conf.isEmbeddedIds()){
-	    boolBuilder.addMust(queryBuilder.term(EMBEDDED_ID_FIELD_NAME, subjectStr));    
+	    boolBuilder.addMust(queryBuilder.term(EMBEDDED_ID_FIELD_NAME, subjectStr));
 	}else{
 	    boolBuilder.addMust(queryBuilder.term(ID_FIELD_NAME, subjectStr));
 	}
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-        if (queryLanguage.equals(Constants.COMPASSQUERY)){    
+        if (queryLanguage.equals(Constants.COMPASSQUERY)){
             return (Q) compassSession.queryBuilder();
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);
@@ -251,28 +251,28 @@ class LuceneConnection implements RDFConnection{
             return (Q) new SimpleBeanQuery(session);
         }else if (queryLanguage.equals(Constants.LUCENEQUERY)){
             return (Q) new LuceneQuery(conf, session, compassSession);
-        }else if (queryLanguage.equals(Constants.COMPASSQUERY)){    
+        }else if (queryLanguage.equals(Constants.COMPASSQUERY)){
             return (Q) compassSession.queryBuilder();
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);
         }
     }
-        
+
     private Resource createResource(){
         return compass.getResourceFactory().createResource("resource");
     }
-    
+
     @Override
-    public CloseableIterator<STMT> findStatements(final ID subject, final UID predicate, final NODE object, 
-            final UID context, boolean includeInferred) {        
-        CompassQuery query = createQuery(subject, predicate, object, context, includeInferred);        
-        CompassHits hits = query.hits();        
+    public CloseableIterator<STMT> findStatements(final ID subject, final UID predicate, final NODE object,
+            final UID context, boolean includeInferred) {
+        CompassQuery query = createQuery(subject, predicate, object, context, includeInferred);
+        CompassHits hits = query.hits();
         if (hits.getLength() > 0){
             return new ResultIterator(hits){
                 @Override
                 protected List<STMT> getStatements(Resource resource) {
                     return findStatements(resource, subject, predicate, object, context);
-                }                
+                }
             };
         }else{
             hits.close();
@@ -295,10 +295,10 @@ class LuceneConnection implements RDFConnection{
         List<STMT> stmts = new ArrayList<STMT>();
         ID sub = subject;
         UID pre = predicate;
-        NODE obj = object;               
+        NODE obj = object;
         if (sub == null){
             sub = (ID) converter.fromString(resource.getId());
-        }                    
+        }
         if (pre != null){
             if (obj != null){
                 stmts.add(new STMT(sub, pre, obj));
@@ -308,7 +308,7 @@ class LuceneConnection implements RDFConnection{
                     stmts.add(new STMT(sub, pre, obj));
                 }
             }
-            
+
         }else if (obj != null){
             String objString = converter.toString(obj);
             for (Property property : resource.getProperties()){
@@ -317,32 +317,32 @@ class LuceneConnection implements RDFConnection{
                     stmts.add(new STMT(sub, pre, obj));
                 }
             }
-            
+
         }else{
             for (Property property : resource.getProperties()){
-                if (isPredicateProperty(property.getName())){ 
+                if (isPredicateProperty(property.getName())){
                     pre = (UID) converter.fromString(property.getName());
                     obj = converter.fromString(property.getStringValue());
                     stmts.add(new STMT(sub, pre, obj));
-                }    
-            }            
+                }
+            }
         }
         return stmts;
     }
-          
+
     private String getPredicateField(UID predicate){
         return converter.toString(predicate);
     }
-    
+
     private Resource getResource(String field, Object value) throws IOException {
         CompassHits hits = compassSession.queryBuilder().term(field, value).hits();
         return hits.getLength() > 0 ? hits.resource(0) : null;
     }
-        
+
     private Collection<ID> getSubjectTypes(ID subject, MultiMap<ID, ID> types, Resource luceneResource) {
         Collection<ID> subjectTypes = types.get(subject);
         if (subjectTypes == null){
-            List<STMT> typeStmts = findStatements(luceneResource, subject, RDF.type, null, null); 
+            List<STMT> typeStmts = findStatements(luceneResource, subject, RDF.type, null, null);
             subjectTypes = new ArrayList<ID>(typeStmts.size());
             for (STMT stmt : typeStmts){
                 subjectTypes.add((ID) stmt.getObject());
@@ -360,20 +360,20 @@ class LuceneConnection implements RDFConnection{
 //        System.err.println("removed : " + stmt);
         String objectValue = converter.toString(stmt.getObject());
         PropertyConfig propertyConfig = conf.getPropertyConfig(stmt.getPredicate(), subjectTypes);
-        
+
         if (propertyConfig != null){
             if (propertyConfig.getStore() != Store.NO || propertyConfig.getIndex() != Index.NO){
                 String predicateField = converter.toString(stmt.getPredicate());
                 if (component){
-                    predicateField = converter.toString(stmt.getSubject()) + " " + predicateField; 
-                }                
-                
+                    predicateField = converter.toString(stmt.getSubject()) + " " + predicateField;
+                }
+
                 List<Property> properties = new ArrayList<Property>(Arrays.asList(resource.getProperties(predicateField)));
                 for (Property property : properties.toArray(new Property[properties.size()])){
                     if (property.getStringValue().equals(objectValue)){
                         properties.remove(property);
                     }
-                }   
+                }
                 // remove all predicate
                 resource.removeProperty(predicateField);
                 // add left ones back
@@ -381,9 +381,9 @@ class LuceneConnection implements RDFConnection{
                     resource.addProperty(left);
                 }
             }
-            
+
 //            if (propertyConfig.isAllIndexed()){
-//                // TODO : handle ALL indexed                
+//                // TODO : handle ALL indexed
 //            }
 //
 //            if (propertyConfig.isTextIndexed()){
@@ -391,7 +391,7 @@ class LuceneConnection implements RDFConnection{
 //            }
         }
     }
-        
+
     private void update(MultiMap<ID,ID> types, MultiMap<ID, STMT> rsAdded, MultiMap<ID, STMT> rsRemoved,
             Set<ID> resources) throws IOException {
 
@@ -408,7 +408,7 @@ class LuceneConnection implements RDFConnection{
                 luceneResource = createResource();
                 luceneResource.addProperty(ID_FIELD_NAME, id);
             }
-            
+
             // removed
             Collection<STMT> removedStatements = rsRemoved.get(resource);
             if (removedStatements != null) {
@@ -417,7 +417,7 @@ class LuceneConnection implements RDFConnection{
                     removeStatement(luceneResource, !stmt.getSubject().equals(resource), stmt, subjectTypes);
                 }
             }
-            
+
             // added
             Collection<STMT> addedToResource = rsAdded.get(resource);
             if (addedToResource != null) {
@@ -428,12 +428,12 @@ class LuceneConnection implements RDFConnection{
             }
 
             if (luceneResource.getProperties(converter.toString(RDF.type)).length > 0){
-                compassSession.save(luceneResource);    
+                compassSession.save(luceneResource);
             }else{
                 compassSession.delete(luceneResource);
             }
-            
-        }        
+
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -445,38 +445,46 @@ class LuceneConnection implements RDFConnection{
             MultiMap<ID, ID> types = MultiMapFactory.<ID, ID>create();
             HashSet<ID> resources = new HashSet<ID>();
 
+            Collection<Collection<STMT>> stmtLists = Arrays.asList(
+                    added != null ? added : Collections.<STMT>emptyList(),
+                    removed != null ? removed : Collections.<STMT>emptyList());
+
+
             Map<ID,ID> componentToHost;
             if (!conf.getComponentProperties().isEmpty()){
                 componentToHost = new HashMap<ID,ID>();
-                for (Collection<STMT> stmts : Arrays.asList(added, removed)){
+                for (Collection<STMT> stmts : stmtLists){
                     for (STMT s :stmts){
                         if (conf.getComponentProperties().contains(s.getPredicate())){
                             componentToHost.put((ID) s.getObject(), s.getSubject());
                         }
-                    }   
+                    }
                 }
             }else{
                 componentToHost = Collections.emptyMap();
             }
-            
+
             // populate rsAdded and rsRemoved
-            for (Collection<STMT> stmts : Arrays.asList(added, removed)){
+            for (Collection<STMT> stmts : stmtLists){
+                if (stmts.isEmpty()){
+                    continue;
+                }
                 MultiMap<ID,STMT> target = stmts == added ? rsAdded : rsRemoved;
                 for (STMT s : stmts){
                     if (componentToHost.containsKey(s.getSubject())){
-                        target.put(componentToHost.get(s.getSubject()), s);    
+                        target.put(componentToHost.get(s.getSubject()), s);
                     }else{
                         target.put(s.getSubject(), s);
-                    }                
+                    }
                     resources.add(s.getSubject());
                     if (s.getPredicate().equals(RDF.type) && stmts == added){
                         if (s.getObject().isResource()){
-                            types.put(s.getSubject(), (ID) s.getObject());    
-                        }                        
+                            types.put(s.getSubject(), (ID) s.getObject());
+                        }
                     }
-                }                                  
+                }
             }
-            
+
             try {
                 update(types, rsAdded, rsRemoved, resources);
             } catch (CorruptIndexException e) {
@@ -488,7 +496,7 @@ class LuceneConnection implements RDFConnection{
                 logger.error(error, e);
                 throw new RepositoryException(error, e);
             }
-        }                
+        }
     }
 
     @Override
