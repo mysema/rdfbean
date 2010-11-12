@@ -28,7 +28,7 @@ public class SPARQLImplicitLimiTest {
     public static void setUpClass() throws ServletException{
         repository = new MemoryRepository();
         repository.initialize();
-        repository.load(Format.RDFXML, SPARQLServletTest.class.getResourceAsStream("/foaf.rdf"), null, false);
+        repository.load(Format.RDFXML, SPARQLImplicitLimiTest.class.getResourceAsStream("/foaf.rdf"), null, false);
 
         servlet = new SPARQLServlet(repository, 10);
     }
