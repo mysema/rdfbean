@@ -301,14 +301,19 @@ public class SesameConnection implements RDFConnection {
     }
 
     @Override
-    public boolean exists(ID sub, UID pre, NODE obj, UID con, boolean includeInferred) {
+    public boolean exists(@Nullable ID sub, @Nullable UID pre, @Nullable NODE obj, @Nullable UID con,
+            boolean includeInferred) {
         Resource subject = convert(sub);
         URI predicate = convert(pre);
         Value object = convert(obj);
         URI context = convert(con);
 
         try {
-            return connection.hasMatch(subject, predicate, object, includeInferred, context);
+            if (context == null){
+                return connection.hasMatch(subject, predicate, object, includeInferred);
+            }else{
+                return connection.hasMatch(subject, predicate, object, includeInferred, context);
+            }
         } catch (StoreException e) {
             throw new RepositoryException(e);
         }
