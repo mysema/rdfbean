@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.sesame;
 
@@ -23,29 +23,31 @@ import com.mysema.rdfbean.ontology.Ontology;
 
 /**
  * Implementation of the Repository interface using NativeStore
- * 
+ *
  * @author sasa
  *
  */
 public class NativeRepository extends SesameRepository {
-    
+
     @Nullable
     private File dataDir;
-        
+
     private IdSequence idSource;
-    
+
+    private String indexes;
+
     public NativeRepository(){}
 
     public NativeRepository(File dataDir, boolean sesameInference) {
         this.dataDir = dataDir;
         setSesameInference(sesameInference);
     }
-    
+
     public NativeRepository(File dataDir, Ontology<UID> ontology) {
         this.dataDir = dataDir;
         setOntology(ontology);
     }
-    
+
     public NativeRepository(Ontology<UID> ontology) {
         setOntology(ontology);
     }
@@ -53,13 +55,16 @@ public class NativeRepository extends SesameRepository {
     @Override
     protected Repository createRepository(boolean sesameInference) {
         NativeStore store = new NativeStore(Assert.notNull(dataDir,"dataDir"));
+        if (indexes != null){
+            store.setTripleIndexes(indexes);
+        }
         idSource = new FileIdSequence(new File(dataDir, "lastLocalId"));
         if (sesameInference){
             return new SailRepository(new ExtendedRDFSInferencer(store));
         }else{
             return new SailRepository(store);
         }
-    }            
+    }
 
     @Override
     public long getNextLocalId(){
@@ -69,11 +74,15 @@ public class NativeRepository extends SesameRepository {
     public void setDataDir(File dataDir) {
         this.dataDir = dataDir;
     }
-    
+
     public void setDataDirName(String dataDirName) {
         if (StringUtils.isNotEmpty(dataDirName)) {
             this.dataDir = new File(dataDirName);
         }
+    }
+
+    public void setIndexes(String indexes) {
+        this.indexes = indexes;
     }
 
 }

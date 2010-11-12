@@ -7,8 +7,10 @@ package com.mysema.rdfbean.sesame;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -80,6 +82,10 @@ public class SesameConnection implements RDFConnection {
 
     private boolean readonlyTnx = false;
 
+    private final Map<LIT, Literal> literalCache = new HashMap<LIT, Literal>(1024);
+
+    private final Map<UID, URI> uriCache = new HashMap<UID, URI>(1024);
+
     private final Transformer<STMT,Statement> stmtTransformer = new Transformer<STMT,Statement>(){
         @Override
         public Statement transform(STMT stmt) {
@@ -122,6 +128,8 @@ public class SesameConnection implements RDFConnection {
     @Override
     public void clear() {
         dialect.clear();
+        uriCache.clear();
+        literalCache.clear();
     }
 
     @Override
@@ -158,10 +166,31 @@ public class SesameConnection implements RDFConnection {
     }
 
     private Statement convert(STMT stmt){
+        // subject
         Resource subject = dialect.getResource(stmt.getSubject());
-        URI predicate = dialect.getURI(stmt.getPredicate());
-        Value object = dialect.getNode(stmt.getObject());
-        URI context = stmt.getContext() != null ? dialect.getURI(stmt.getContext()) : null;
+        // predicate
+        URI predicate = uriCache.get(stmt.getPredicate());
+        if (predicate == null){
+            predicate = dialect.getURI(stmt.getPredicate());
+            uriCache.put(stmt.getPredicate(), predicate);
+        }
+        // object
+        Value object = null;
+        if (predicate.equals(RDF.type) && stmt.getObject().isURI()){
+            object = uriCache.get(stmt.getObject().asURI());
+            if (object == null){
+                object = dialect.getNode(stmt.getObject());
+                uriCache.put((UID)stmt.getObject(), (URI)object);
+            }
+        }else{
+            object = dialect.getNode(stmt.getObject());
+        }
+        // context
+        URI context = null;
+        if (stmt.getContext() != null && (context = uriCache.get(stmt.getContext())) == null){
+            context = dialect.getURI(stmt.getContext());
+            uriCache.put(stmt.getContext(), context);
+        }
         return dialect.createStatement(subject, predicate, object, context);
     }
 
