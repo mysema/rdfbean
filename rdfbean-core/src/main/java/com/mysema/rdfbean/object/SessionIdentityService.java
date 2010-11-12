@@ -54,7 +54,7 @@ public class SessionIdentityService implements IdentityService{
     
     private void add(ID subject, UID predicate, NODE object){
         connection.update(
-                Collections.<STMT>emptySet(), 
+                null, 
                 Collections.singleton(new STMT(subject, predicate, object)));
     }
 
