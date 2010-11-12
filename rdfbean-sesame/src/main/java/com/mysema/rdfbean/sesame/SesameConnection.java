@@ -7,10 +7,8 @@ package com.mysema.rdfbean.sesame;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -82,12 +80,6 @@ public class SesameConnection implements RDFConnection {
 
     private boolean readonlyTnx = false;
 
-    private final Map<BID, BNode> bnodeCache = new HashMap<BID, BNode>(1024);
-
-    private final Map<LIT, Literal> literalCache = new HashMap<LIT, Literal>(1024);
-
-    private final Map<UID, URI> uriCache = new HashMap<UID, URI>(1024);
-
     private final Transformer<STMT,Statement> stmtTransformer = new Transformer<STMT,Statement>(){
         @Override
         public Statement transform(STMT stmt) {
@@ -130,9 +122,6 @@ public class SesameConnection implements RDFConnection {
     @Override
     public void clear() {
         dialect.clear();
-        uriCache.clear();
-        literalCache.clear();
-        bnodeCache.clear();
     }
 
     @Override
@@ -152,7 +141,7 @@ public class SesameConnection implements RDFConnection {
         return new Iterable<Statement>(){
             @Override
             public Iterator<Statement> iterator() {
-                return new TransformIterator<STMT,Statement>(stmts.iterator(),stmtTransformer);
+                return new TransformIterator<STMT,Statement>(stmts.iterator(), stmtTransformer);
             }
 
         };
@@ -169,31 +158,10 @@ public class SesameConnection implements RDFConnection {
     }
 
     private Statement convert(STMT stmt){
-        // subject
         Resource subject = dialect.getResource(stmt.getSubject());
-        // predicate
-        URI predicate = uriCache.get(stmt.getPredicate());
-        if (predicate == null){
-            predicate = dialect.getURI(stmt.getPredicate());
-            uriCache.put(stmt.getPredicate(), predicate);
-        }
-        // object
-        Value object = null;
-        if (predicate.equals(RDF.type) && stmt.getObject().isURI()){
-            object = uriCache.get(stmt.getObject().asURI());
-            if (object == null){
-                object = dialect.getNode(stmt.getObject());
-                uriCache.put((UID)stmt.getObject(), (URI)object);
-            }
-        }else{
-            object = dialect.getNode(stmt.getObject());
-        }
-        // context
-        URI context = null;
-        if (stmt.getContext() != null && (context = uriCache.get(stmt.getContext())) == null){
-            context = dialect.getURI(stmt.getContext());
-            uriCache.put(stmt.getContext(), context);
-        }
+        URI predicate = dialect.getURI(stmt.getPredicate());
+        Value object = dialect.getNode(stmt.getObject());
+        URI context = stmt.getContext() != null ? dialect.getURI(stmt.getContext()) : null;
         return dialect.createStatement(subject, predicate, object, context);
     }
 
@@ -383,10 +351,10 @@ public class SesameConnection implements RDFConnection {
     public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
         if (!readonlyTnx){
             try {
-                if (removedStatements != null) {
+                if (!removedStatements.isEmpty()) {
                     connection.remove(convert(removedStatements));
                 }
-                if (addedStatements != null) {
+                if (!addedStatements.isEmpty()) {
                     connection.add(convert(addedStatements));
                 }
             } catch (StoreException e) {

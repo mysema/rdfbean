@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.sesame;
 
@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections15.map.LRUMap;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -21,8 +22,8 @@ import org.openrdf.model.ValueFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.AbstractDialect;
+import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
@@ -32,20 +33,28 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
 /**
- * SesameDialect is a Dialect implementation for Sesame 
- * 
+ * SesameDialect is a Dialect implementation for Sesame
+ *
  * @author sasa
  *
  */
 public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, Literal, Statement> {
-    
-    private final Map<BNode, BID> bnodeCache = new HashMap<BNode, BID>(1024);
-    
-    private final Map<Literal, LIT> literalCache = new HashMap<Literal, LIT>(1024); 
-    
-    private final Map<URI, UID> uriCache = new HashMap<URI, UID>(1024); 
-        
-    private final ValueFactory vf; 
+
+    private static final int CACHE_SIZE = 2048;
+
+    private final Map<BNode, BID> bidCache = new HashMap<BNode, BID>(CACHE_SIZE);
+
+    private final Map<Literal, LIT> litCache = new HashMap<Literal, LIT>(CACHE_SIZE);
+
+    private final Map<URI, UID> uidCache = new HashMap<URI, UID>(CACHE_SIZE);
+
+    private final Map<BID, BNode> bnodeCache = new LRUMap<BID, BNode>(CACHE_SIZE);
+
+    private final Map<LIT, Literal> literalCache = new LRUMap<LIT, Literal>(CACHE_SIZE);
+
+    private final Map<UID, URI> uriCache = new LRUMap<UID, URI>(CACHE_SIZE);
+
+    private final ValueFactory vf;
 
     public SesameDialect(ValueFactory vf) {
         Assert.notNull(vf,"vf");
@@ -53,6 +62,10 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     }
 
     public void clear(){
+        uidCache.clear();
+        bidCache.clear();
+        litCache.clear();
+
         uriCache.clear();
         bnodeCache.clear();
         literalCache.clear();
@@ -62,7 +75,7 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     public BNode createBNode() {
         return vf.createBNode();
     }
-    
+
     @Override
     public Statement createStatement(Resource subject, URI predicate, Value object) {
         return vf.createStatement(subject, predicate, object);
@@ -75,17 +88,22 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
 
     @Override
     public BID getBID(BNode bnode) {
-        BID bid = bnodeCache.get(bnode);
+        BID bid = bidCache.get(bnode);
         if (bid == null) {
             bid = new BID(bnode.getID());
-            bnodeCache.put(bnode, bid);
+            bidCache.put(bnode, bid);
         }
         return bid;
     }
 
     @Override
     public BNode getBNode(BID bid) {
-        return vf.createBNode(bid.getId());
+        BNode bnode = bnodeCache.get(bid);
+        if (bnode == null){
+            bnode = vf.createBNode(bid.getId());
+            bnodeCache.put(bid, bnode);
+        }
+        return bnode;
     }
 
     @Override
@@ -101,7 +119,7 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
 
     @Override
     public LIT getLIT(Literal literal) {
-        LIT lit = literalCache.get(literal);
+        LIT lit = litCache.get(literal);
         if (lit == null) {
             if (literal.getLanguage() != null) {
                 lit = new LIT(literal.stringValue(), literal.getLanguage());
@@ -110,27 +128,32 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
             } else {
                 lit = new LIT(literal.stringValue(), RDF.text);
             }
-            literalCache.put(literal, lit);
+            litCache.put(literal, lit);
         }
         return lit;
     }
 
     @Override
     public Literal getLiteral(LIT lit) {
-        if (lit.isText()) {
-            Locale lang = lit.getLang();
-            if (lang.equals(Locale.ROOT)) {
-                return vf.createLiteral(lit.getValue());
+        Literal literal = literalCache.get(lit);
+        if (literal == null){
+            if (lit.isText()) {
+                Locale lang = lit.getLang();
+                if (lang.equals(Locale.ROOT)) {
+                    literal = vf.createLiteral(lit.getValue());
+                } else {
+                    literal = vf.createLiteral(lit.getValue(),  LocaleUtil.toLang(lang));
+                }
+            } else if (lit.isString()) {
+                literal = vf.createLiteral(lit.getValue(), getURI(XSD.stringType));
+            } else if (lit.getDatatype().equals(RDF.text)){
+                literal = vf.createLiteral(lit.getValue());
             } else {
-                return vf.createLiteral(lit.getValue(),  LocaleUtil.toLang(lang));
+                literal = vf.createLiteral(lit.getValue(), getURI(lit.getDatatype()));
             }
-        } else if (lit.isString()) {
-            return vf.createLiteral(lit.getValue(), getURI(XSD.stringType));
-        } else if (lit.getDatatype().equals(RDF.text)){    
-            return vf.createLiteral(lit.getValue());
-        } else {
-            return vf.createLiteral(lit.getValue(), getURI(lit.getDatatype()));
+            literalCache.put(lit, literal);
         }
+        return literal;
     }
 
     @Override
@@ -174,19 +197,24 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
 
     @Override
     public UID getUID(URI uri) {
-        UID uid = uriCache.get(uri);
+        UID uid = uidCache.get(uri);
         if (uid == null) {
             uid = new UID(uri.getNamespace(), uri.getLocalName());
-            uriCache.put((URI) uri, uid);
+            uidCache.put(uri, uid);
         }
         return uid;
     }
-    
+
     @Override
     public URI getURI(UID uid) {
-        return vf.createURI(uid.ns(), uid.ln());
+        URI uri = uriCache.get(uid);
+        if (uri == null){
+            uri = vf.createURI(uid.ns(), uid.ln());
+            uriCache.put(uid, uri);
+        }
+        return uri;
     }
-    
+
     public ValueFactory getValueFactory(){
         return vf;
     }
