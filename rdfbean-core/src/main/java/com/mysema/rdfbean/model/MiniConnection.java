@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.model;
 
-import java.util.Set;
+import java.util.Collection;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.object.Session;
@@ -55,7 +55,7 @@ public class MiniConnection implements RDFConnection {
     }
 
     @Override
-    public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
+    public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
         if (removedStatements != null) {
             repository.removeStatement(removedStatements.toArray(new STMT[removedStatements.size()]));
         }

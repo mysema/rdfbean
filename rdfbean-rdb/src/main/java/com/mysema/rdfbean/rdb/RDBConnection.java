@@ -418,7 +418,7 @@ public class RDBConnection implements RDFConnection{
     
 
     @Override
-    public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
+    public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
         // remove
         Set<NODE> oldNodes = new HashSet<NODE>();
         for (STMT stmt : removedStatements){

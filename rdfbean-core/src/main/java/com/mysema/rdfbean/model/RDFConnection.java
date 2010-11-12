@@ -6,7 +6,7 @@
 package com.mysema.rdfbean.model;
 
 import java.io.Closeable;
-import java.util.Set;
+import java.util.Collection;
 
 import javax.annotation.Nullable;
 
@@ -117,6 +117,6 @@ public interface RDFConnection extends Closeable{
      * @param removedStatements statements to be removed
      * @param addedStatements statement to be added
      */
-    void update(Set<STMT> removedStatements, Set<STMT> addedStatements);
+    void update(@Nullable Collection<STMT> removedStatements, @Nullable Collection<STMT> addedStatements);
 
 }

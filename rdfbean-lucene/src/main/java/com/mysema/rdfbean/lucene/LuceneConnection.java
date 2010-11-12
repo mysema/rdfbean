@@ -438,7 +438,7 @@ class LuceneConnection implements RDFConnection{
 
     @SuppressWarnings("unchecked")
     @Override
-    public void update(Set<STMT> removed, Set<STMT> added) {
+    public void update(Collection<STMT> removed, Collection<STMT> added) {
         if (!readonlyTnx){
             MultiMap<ID, STMT> rsAdded = MultiMapFactory.<ID, STMT>create();
             MultiMap<ID, STMT> rsRemoved = MultiMapFactory.<ID, STMT>create();
@@ -448,7 +448,7 @@ class LuceneConnection implements RDFConnection{
             Map<ID,ID> componentToHost;
             if (!conf.getComponentProperties().isEmpty()){
                 componentToHost = new HashMap<ID,ID>();
-                for (Set<STMT> stmts : Arrays.asList(added, removed)){
+                for (Collection<STMT> stmts : Arrays.asList(added, removed)){
                     for (STMT s :stmts){
                         if (conf.getComponentProperties().contains(s.getPredicate())){
                             componentToHost.put((ID) s.getObject(), s.getSubject());
@@ -460,7 +460,7 @@ class LuceneConnection implements RDFConnection{
             }
             
             // populate rsAdded and rsRemoved
-            for (Set<STMT> stmts : Arrays.asList(added ,removed)){
+            for (Collection<STMT> stmts : Arrays.asList(added, removed)){
                 MultiMap<ID,STMT> target = stmts == added ? rsAdded : rsRemoved;
                 for (STMT s : stmts){
                     if (componentToHost.containsKey(s.getSubject())){

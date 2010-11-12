@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.model;
 
-import java.util.Set;
+import java.util.Collection;
 
 import javax.annotation.Nullable;
 
@@ -74,7 +74,7 @@ public abstract class MultiConnection implements RDFConnection{
     }
 
     @Override
-    public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
+    public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
         if (!readonlyTnx){
             for (RDFConnection connection : connections){
                 connection.update(removedStatements, addedStatements);

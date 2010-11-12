@@ -7,6 +7,7 @@ package com.mysema.rdfbean.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -166,7 +167,8 @@ public class FetchOptimizer implements RDFConnection {
         this.fetchStrategies = fetchStrategies;
     }
 
-    public void update(Set<STMT> removedStatements, Set<STMT> addedStatements) {
+    @Override
+    public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
         cache.update(removedStatements, addedStatements);
         connection.update(removedStatements, addedStatements);
     }
