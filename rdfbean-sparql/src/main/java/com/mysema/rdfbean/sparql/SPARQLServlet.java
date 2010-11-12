@@ -21,49 +21,58 @@ import com.mysema.rdfbean.model.io.Format;
 
 /**
  * SPARQLServlet provides a Servlet based SPARQL HTTP access point for RDFBean repositories
- * 
+ *
  * @author tiwe
  *
  */
 public class SPARQLServlet extends HttpServlet{
-    
+
     private static final long serialVersionUID = 5726683938555535282L;
 
     public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
-    
+
     public static final String SPARQL_RESULTS_XML = "application/sparql-results+xml";
-    
+
     private final SPARQLResultProducer resultProducer = new SPARQLResultProducer();
-    
+
     @Nullable
     private Repository repository;
+
+    private Integer limit;
+
+    public SPARQLServlet(Repository repository, Integer limit) {
+        this.repository = repository;
+        this.limit = limit;
+    }
 
     public SPARQLServlet(Repository repository) {
         this.repository = repository;
     }
-    
+
     public SPARQLServlet() {
     }
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         if (repository == null){
-            repository = (Repository) config.getServletContext().getAttribute(Repository.class.getName());    
+            repository = (Repository) config.getServletContext().getAttribute(Repository.class.getName());
         }
-                
+
     }
-    
+
     @Override
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
-        String queryString = request.getParameter("query");        
+        String queryString = request.getParameter("query");
         if (queryString == null){
             response.sendError(500, "No query given");
             return;
         }
-        
+        if (limit != null && !queryString.toLowerCase().contains("limit ")){
+            queryString += " LIMIT " + limit;
+        }
         RDFConnection connection = repository.openConnection();
         try{
             SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, queryString);
@@ -81,7 +90,7 @@ public class SPARQLServlet extends HttpServlet{
                 contentType = Format.getFormat(contentType, Format.RDFXML).getMimetype();
                 response.setContentType(contentType);
                 query.streamTriples(response.getWriter(), contentType);
-                
+
             }else{
                 String contentType = SPARQL_RESULTS_XML;
                 if ("json".equals(type)){
@@ -99,13 +108,13 @@ public class SPARQLServlet extends HttpServlet{
                 }else{
                     XMLWriter writer = new XMLWriter(response.getWriter());
                     resultProducer.streamAsXML(query, writer);
-                }    
+                }
             }
         }finally{
             connection.close();
-        }        
+        }
     }
-    
+
     private String getAcceptedType(HttpServletRequest request, String defaultType){
         String accept = request.getHeader("Accept");
         if (accept != null){
@@ -114,5 +123,7 @@ public class SPARQLServlet extends HttpServlet{
             return defaultType;
         }
     }
-    
+
+
+
 }

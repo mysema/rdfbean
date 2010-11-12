@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.sparql;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -21,15 +22,15 @@ import com.mysema.rdfbean.sesame.MemoryRepository;
 public class SPARQLServletTest {
 
     private static SPARQLServlet servlet = new SPARQLServlet();
-    
+
     private static MockServletConfig config;
-    
+
     private static MemoryRepository repository;
-    
-    private MockHttpServletRequest request = new MockHttpServletRequest();
-    
-    private MockHttpServletResponse response = new MockHttpServletResponse();
-    
+
+    private final MockHttpServletRequest request = new MockHttpServletRequest();
+
+    private final MockHttpServletResponse response = new MockHttpServletResponse();
+
     @BeforeClass
     public static void setUpClass() throws ServletException{
         repository = new MemoryRepository();
@@ -37,15 +38,15 @@ public class SPARQLServletTest {
         repository.load(Format.RDFXML, SPARQLServletTest.class.getResourceAsStream("/foaf.rdf"), null, false);
         config = new MockServletConfig();
         config.getServletContext().setAttribute(Repository.class.getName(), repository);
-        
+
         servlet.init(config);
     }
-    
+
     @AfterClass
     public static void tearDownClass(){
         repository.close();
     }
-    
+
     @Test
     public void Ask() throws ServletException, IOException{
         request.setParameter("query", "ASK { ?s ?p ?o }");
@@ -55,7 +56,7 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("<head/>"));
         assertTrue(response.getContentAsString().contains("<results><boolean>true</boolean></results>"));
     }
-    
+
     @Test
     public void Ask_as_JSON() throws ServletException, IOException{
         request.setParameter("query", "ASK { ?s ?p ?o }");
@@ -66,7 +67,7 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("boolean"));
         assertTrue(response.getContentAsString().contains("true"));
     }
-    
+
     @Test
     public void Construct() throws ServletException, IOException{
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
@@ -74,7 +75,7 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("<rdf:RDF"));
         assertTrue(response.getContentAsString().contains(RDF.NS));
     }
-    
+
     @Test
     public void Construct_as_Turtle() throws ServletException, IOException{
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
@@ -82,7 +83,7 @@ public class SPARQLServletTest {
         servlet.service(request, response);
         assertTrue(!response.getContentAsString().contains("<rdf:RDF"));
     }
-    
+
     @Test
     public void Construct_as_Turtle_via_Accept() throws ServletException, IOException{
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
@@ -90,7 +91,7 @@ public class SPARQLServletTest {
         servlet.service(request, response);
         assertTrue(!response.getContentAsString().contains("<rdf:RDF"));
     }
-    
+
     @Test
     public void Construct_as_NTriples() throws ServletException, IOException{
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
@@ -98,7 +99,7 @@ public class SPARQLServletTest {
         servlet.service(request, response);
         assertTrue(!response.getContentAsString().contains("<rdf:RDF"));
     }
-    
+
     @Test
     public void Construct_with_Html_Accept() throws ServletException, IOException{
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }");
@@ -106,7 +107,7 @@ public class SPARQLServletTest {
         servlet.service(request, response);
         assertEquals(Format.RDFXML.getMimetype(), response.getContentType());
     }
-    
+
     @Test
     public void Select() throws ServletException, IOException{
         request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
@@ -117,7 +118,7 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("literal"));
         assertEquals(SPARQLServlet.SPARQL_RESULTS_XML, response.getContentType());
     }
-    
+
     @Test
     public void Select_with_Html_Accept() throws ServletException, IOException{
         request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
@@ -125,7 +126,7 @@ public class SPARQLServletTest {
         servlet.service(request, response);
         assertEquals(SPARQLServlet.SPARQL_RESULTS_XML, response.getContentType());
     }
-    
+
     @Test
     public void Select_as_JSON() throws ServletException, IOException{
         request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
@@ -136,7 +137,7 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("literal"));
         assertEquals(SPARQLServlet.SPARQL_RESULTS_JSON, response.getContentType());
     }
-    
+
     @Test
     public void Select_as_JSON_via_Accept() throws ServletException, IOException{
         request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
@@ -146,7 +147,6 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("results"));
         assertTrue(response.getContentAsString().contains("literal"));
         assertEquals(SPARQLServlet.SPARQL_RESULTS_JSON, response.getContentType());
-        
     }
-    
+
 }
