@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.model;
 
@@ -21,10 +21,10 @@ import com.mysema.rdfbean.object.Session;
  *
  */
 public interface RDFConnection extends Closeable{
-    
+
     /**
      * Create a new transaction for the Connection
-     * 
+     *
      * @param readOnly
      * @param txTimeout
      * @param isolationLevel
@@ -36,22 +36,22 @@ public interface RDFConnection extends Closeable{
      * Clear any cached objects in the Connection
      */
     void clear();
-    
+
     /**
      * Close this connection
      */
     void close();
-    
+
     /**
      * Create a new unique Blank node
-     * 
+     *
      * @return
      */
     BID createBNode();
-    
+
     /**
      * Prepare a Query of the given query language with the given definition
-     * 
+     *
      * @param <D>
      * @param <Q>
      * @param queryLanguage
@@ -59,10 +59,10 @@ public interface RDFConnection extends Closeable{
      * @return
      */
     <D,Q> Q createQuery(QueryLanguage<D,Q> queryLanguage, @Nullable D definition);
-    
+
     /**
      * Prepare a Query of the given query language with the given definition
-     * 
+     *
      * @param <D>
      * @param <Q>
      * @param session
@@ -71,10 +71,10 @@ public interface RDFConnection extends Closeable{
      * @return
      */
     <D,Q> Q createQuery(Session session, QueryLanguage<D,Q> queryLanguage, @Nullable D definition);
-    
+
     /**
      * Find the statements matching the given pattern
-     * 
+     *
      * @param subject
      * @param predicate
      * @param object
@@ -83,12 +83,14 @@ public interface RDFConnection extends Closeable{
      * @return
      */
     CloseableIterator<STMT> findStatements(
-            @Nullable ID subject, 
-            @Nullable UID predicate, 
-            @Nullable NODE object, 
+            @Nullable ID subject,
+            @Nullable UID predicate,
+            @Nullable NODE object,
             @Nullable UID context, boolean includeInferred);
-    
+
     /**
+     * Find out if statements matching the given pattern exist
+     *
      * @param subject
      * @param predicate
      * @param object
@@ -97,24 +99,24 @@ public interface RDFConnection extends Closeable{
      * @return
      */
     boolean exists(
-            @Nullable ID subject, 
-            @Nullable UID predicate, 
-            @Nullable NODE object, 
+            @Nullable ID subject,
+            @Nullable UID predicate,
+            @Nullable NODE object,
             @Nullable UID context, boolean includeInferred);
-    
+
     /**
      * Get a unallocated local id for use in a ID/LID mapping
-     * 
+     *
      * @return
      */
     long getNextLocalId();
-    
+
     /**
      * Update the Repository with the given statements
-     * 
+     *
      * @param removedStatements statements to be removed
      * @param addedStatements statement to be added
      */
     void update(Set<STMT> removedStatements, Set<STMT> addedStatements);
-    
+
 }

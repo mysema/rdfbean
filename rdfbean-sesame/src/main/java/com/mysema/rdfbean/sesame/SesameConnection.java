@@ -82,6 +82,8 @@ public class SesameConnection implements RDFConnection {
 
     private boolean readonlyTnx = false;
 
+    private final Map<BID, BNode> bnodeCache = new HashMap<BID, BNode>(1024);
+
     private final Map<LIT, Literal> literalCache = new HashMap<LIT, Literal>(1024);
 
     private final Map<UID, URI> uriCache = new HashMap<UID, URI>(1024);
@@ -130,6 +132,7 @@ public class SesameConnection implements RDFConnection {
         dialect.clear();
         uriCache.clear();
         literalCache.clear();
+        bnodeCache.clear();
     }
 
     @Override
