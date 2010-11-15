@@ -1,6 +1,8 @@
 package com.mysema.rdfbean.sparql;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletConfig;
@@ -28,6 +30,8 @@ import com.mysema.rdfbean.model.io.Format;
 public class SPARQLServlet extends HttpServlet{
 
     private static final long serialVersionUID = 5726683938555535282L;
+
+    private static final Pattern LIMIT_PATTERN = Pattern.compile("\\s+[lL][iI][mM][iI][tT]\\s+(\\d+)");
 
     public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
 
@@ -70,9 +74,22 @@ public class SPARQLServlet extends HttpServlet{
             response.sendError(500, "No query given");
             return;
         }
-        if (limit != null && !queryString.toLowerCase().contains("limit ")){
-            queryString += " LIMIT " + limit;
+
+        // handle implicit limit
+        if (limit != null){
+            Matcher m = LIMIT_PATTERN.matcher(queryString);
+            if (m.find()){
+                String l = m.group(1);
+                if (Integer.valueOf(l) < limit){
+                    queryString = m.replaceAll(" LIMIT " + l + " ");
+                }else{
+                    queryString = m.replaceAll(" LIMIT " + limit + " ");
+                }
+            }else{
+                queryString += " LIMIT " + limit;
+            }
         }
+
         RDFConnection connection = repository.openConnection();
         try{
             SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, queryString);

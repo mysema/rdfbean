@@ -14,7 +14,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
-public class SPARQLImplicitLimiTest {
+public class SPARQLImplicitLimitTest {
 
     private static SPARQLServlet servlet = new SPARQLServlet();
 
@@ -28,7 +28,7 @@ public class SPARQLImplicitLimiTest {
     public static void setUpClass() throws ServletException{
         repository = new MemoryRepository();
         repository.initialize();
-        repository.load(Format.RDFXML, SPARQLImplicitLimiTest.class.getResourceAsStream("/foaf.rdf"), null, false);
+        repository.load(Format.RDFXML, SPARQLImplicitLimitTest.class.getResourceAsStream("/foaf.rdf"), null, false);
 
         servlet = new SPARQLServlet(repository, 10);
     }
@@ -43,12 +43,21 @@ public class SPARQLImplicitLimiTest {
     }
 
     @Test
-    public void Explicit_Limit() throws ServletException, IOException{
+    public void Explicit_High_Limit_Overriden() throws ServletException, IOException{
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } ORDER BY ?s ?p ?o LIMIT 30");
         request.addHeader("Accept", Format.NTRIPLES.getMimetype());
         servlet.service(request, response);
         String content = response.getContentAsString();
-        assertEquals(30, content.split("\n").length);
+        assertEquals(10, content.split("\n").length);
+    }
+
+    @Test
+    public void Explicit_Low_Limit() throws ServletException, IOException{
+        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } ORDER BY ?s ?p ?o LIMIT 5");
+        request.addHeader("Accept", Format.NTRIPLES.getMimetype());
+        servlet.service(request, response);
+        String content = response.getContentAsString();
+        assertEquals(5, content.split("\n").length);
     }
 
 }
