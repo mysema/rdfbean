@@ -43,10 +43,10 @@ public class RDFWriterAdapter extends RDFHandlerWrapper implements RDFWriter {
         return writer.getRDFFormat();
     }
 
-    @Override
-    public void setBaseURI(String arg0) {
-        writer.setBaseURI(arg0);        
-    }
+//    @Override
+//    public void setBaseURI(String arg0) {
+//        writer.setBaseURI(arg0);        
+//    }
 
     @Override
     public void endRDF() throws RDFHandlerException {

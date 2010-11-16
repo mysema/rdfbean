@@ -15,7 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.types.PathMetadataFactory;
 import com.mysema.query.types.path.EntityPathBase;
@@ -45,7 +44,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     private Session session;
     
     @Before
-    public void setUp() throws StoreException, RDFParseException, IOException{
+    public void setUp() throws RDFParseException, IOException{
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(new DefaultConfiguration(OWL.class.getPackage()));
         sessionFactory.setRepository(repository);
@@ -61,7 +60,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     }
     
     @Test
-    public void Commit() throws StoreException, ClassNotFoundException, IOException{
+    public void Commit() throws ClassNotFoundException, IOException{
         session = sessionFactory.openSession();
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
@@ -75,7 +74,7 @@ public class TransactionHandlingTest extends SessionTestBase{
     }
         
     @Test
-    public void Rollback() throws StoreException, ClassNotFoundException, IOException{
+    public void Rollback() throws ClassNotFoundException, IOException{
         session = sessionFactory.openSession();
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();

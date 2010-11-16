@@ -5,27 +5,27 @@
  */
 package com.mysema.rdfbean.sesame;
 
-import org.openrdf.result.ModelResult;
-import org.openrdf.store.StoreException;
+import org.openrdf.model.Statement;
+import org.openrdf.repository.RepositoryResult;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
 
 /**
- * ModelResultIterator provides a CloseableIterator adapter for ModelResults
+ * RepositoryResultIterator provides a CloseableIterator adapter for ModelResults
  *
  * @author tiwe
  * @author sasa
  * @version $Id$
  */
-public class ModelResultIterator extends AbstractResultIterator{
+public class RepositoryResultIterator extends AbstractResultIterator{
     
-    private final ModelResult statements;
+    private final RepositoryResult<Statement> statements;
     
     private final boolean includeInferred;
     
-    public ModelResultIterator(SesameDialect dialect, ModelResult statements, boolean includeInferred){
+    public RepositoryResultIterator(SesameDialect dialect, RepositoryResult<Statement> statements, boolean includeInferred){
         super(dialect);
         this.statements = Assert.notNull(statements,"statements");
         this.includeInferred = includeInferred;
@@ -36,7 +36,7 @@ public class ModelResultIterator extends AbstractResultIterator{
     public void close(){
         try {
             statements.close();
-        } catch (StoreException e1) {
+        } catch (org.openrdf.repository.RepositoryException e1) {
             throw new RepositoryException(e1);
         }
     }
@@ -45,7 +45,7 @@ public class ModelResultIterator extends AbstractResultIterator{
     public boolean hasNext() {
         try {
             return statements.hasNext();
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
     }
@@ -54,7 +54,7 @@ public class ModelResultIterator extends AbstractResultIterator{
     public STMT next() {
         try {
             return convert(statements.next(), !includeInferred);
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
     }

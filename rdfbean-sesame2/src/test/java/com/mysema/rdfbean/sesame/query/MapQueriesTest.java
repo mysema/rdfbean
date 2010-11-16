@@ -10,7 +10,6 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.expr.BooleanExpression;
@@ -36,7 +35,7 @@ public class MapQueriesTest extends SessionTestBase{
     private SimpleType2 instance;
     
     @Before
-    public void setUp() throws StoreException{
+    public void setUp() {
         instance = session.from(QSimpleType2.simpleType2).uniqueResult(QSimpleType2.simpleType2);    
     }
     

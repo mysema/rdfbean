@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.openrdf.query.algebra.FunctionCall;
-import org.openrdf.query.algebra.Regex;
+import org.openrdf.query.algebra.Like;
 import org.openrdf.query.algebra.Str;
 import org.openrdf.query.algebra.ValueExpr;
 import org.openrdf.query.algebra.Var;
@@ -73,7 +73,7 @@ public class StringContainsTransformer implements OperationTransformer{
         if (args.get(1) instanceof Var){
             Var arg2 = ((Var)args.get(1));
             if (arg2.getValue() != null){
-                return new Regex(first, "*"+((Var)arg2).getValue().stringValue(),caseSensitive); 
+                return new Like(first, "*"+((Var)arg2).getValue().stringValue(), caseSensitive); 
             }    
         }
         if (caseSensitive){
@@ -89,7 +89,7 @@ public class StringContainsTransformer implements OperationTransformer{
         if (args.get(1) instanceof Var){
             Var arg2 = ((Var)args.get(1));
             if (arg2.getValue() != null){
-                return new Regex(first, ((Var)arg2).getValue().stringValue()+"*", caseSensitive);
+                return new Like(first, ((Var)arg2).getValue().stringValue()+"*", caseSensitive);
             }    
         }
         if (caseSensitive){
@@ -105,7 +105,7 @@ public class StringContainsTransformer implements OperationTransformer{
         if (args.get(1) instanceof Var){
             Var arg2 = ((Var)args.get(1));
             if (arg2.getValue() != null){
-                return new Regex(first, "*"+((Var)arg2).getValue().stringValue()+"*",caseSensitive);    
+                return new Like(first, "*"+((Var)arg2).getValue().stringValue()+"*", caseSensitive);
             }    
         }
         if (caseSensitive){

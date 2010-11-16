@@ -8,7 +8,6 @@ package com.mysema.rdfbean.sesame.query;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.domains.UserProfileDomain;
 import com.mysema.rdfbean.domains.UserProfileDomain.Identifiable;
@@ -27,7 +26,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class QueryByExampleTest extends SessionTestBase implements UserProfileDomain{
         
     @Test
-    public void test() throws StoreException{
+    public void test(){
         User user = new User();
         user.email = "a@b.com";
         user.firstName = "Anton";

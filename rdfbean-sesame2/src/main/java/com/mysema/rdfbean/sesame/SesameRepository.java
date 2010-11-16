@@ -14,6 +14,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.repository.RepositoryConnection;
@@ -22,7 +23,6 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
-import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
@@ -72,7 +72,7 @@ public abstract class SesameRepository implements Repository{
         try {
             initialized = false;
             repository.shutDown();
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
     }
@@ -116,7 +116,7 @@ public abstract class SesameRepository implements Repository{
             }finally{
                 conn.close();
             }
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e.getMessage(), e);
         } catch (RDFHandlerException e) {
             throw new RepositoryException(e.getMessage(), e);
@@ -165,7 +165,7 @@ public abstract class SesameRepository implements Repository{
                 throw new RepositoryException(e);
             } catch (IOException e) {
                 throw new RepositoryException(e);
-            } catch (StoreException e) {
+            } catch (org.openrdf.repository.RepositoryException e) {
                 throw new RepositoryException(e);
             }
             initialized = true;
@@ -180,12 +180,12 @@ public abstract class SesameRepository implements Repository{
             try{
                 URI contextURI = context != null ? vf.createURI(context.getId()) : null;
                 if (!replace && context != null){
-                    if (connection.hasMatch(null, null, null, true, contextURI)){
+                    if (connection.hasStatement(null, null, null, true, contextURI)){
                         return;
                     }
                 }
                 if (context != null && replace){
-                    connection.removeMatch(null, null, null, contextURI);
+                    connection.remove((Resource)null, null, null, contextURI);
                 }                
                 if (context == null){
                     connection.add(is, TEST.NS, FormatHelper.getFormat(format));    
@@ -196,7 +196,7 @@ public abstract class SesameRepository implements Repository{
             }finally {
                 connection.close();    
             }
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         } catch (RDFParseException e) {
             throw new RepositoryException(e);
@@ -209,7 +209,7 @@ public abstract class SesameRepository implements Repository{
     public RDFConnection openConnection() {
         try {
             return new SesameConnection(this, repository.getConnection(), ontology, getInferenceOptions());
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
     }

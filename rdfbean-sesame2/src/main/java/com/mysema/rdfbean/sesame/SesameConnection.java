@@ -5,10 +5,8 @@
  */
 package com.mysema.rdfbean.sesame;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -26,11 +24,12 @@ import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.algebra.*;
-import org.openrdf.query.parser.GraphQueryModel;
+import org.openrdf.query.algebra.ProjectionElem;
+import org.openrdf.query.algebra.ProjectionElemList;
+import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.Var;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.result.ModelResult;
-import org.openrdf.store.StoreException;
+import org.openrdf.repository.RepositoryResult;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
@@ -38,7 +37,6 @@ import com.mysema.query.QueryException;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
-import com.mysema.rdfbean.sesame.query.DirectQuery;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
 
 /**
@@ -52,10 +50,6 @@ public class SesameConnection implements RDFConnection {
     private static final URI RDF_TYPE = org.openrdf.model.vocabulary.RDF.TYPE;
 
     private static final Var RDF_TYPE_VAR = new Var("rdf_type", RDF_TYPE);;
-
-    private static final Var SUBJECT_VAR = new Var("subject");
-
-    private static final ExtensionElem extensionElem = new ExtensionElem(new ValueConstant(RDF_TYPE),"_rdf_type");
 
     private static final ProjectionElemList projections = new ProjectionElemList();
 
@@ -220,52 +214,12 @@ public class SesameConnection implements RDFConnection {
             }else{
                 throw new RepositoryException("Unsupported query type " + query.getClass().getName());
             }
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new QueryException(e);
         } catch (MalformedQueryException e) {
             throw new QueryException(e);
         }
     }
-
-    private ModelResult findOfType(Collection<UID> types, @Nullable URI context){
-        try {
-            List<StatementPattern> patterns = new ArrayList<StatementPattern>();
-            Var contextVar = context != null ? new Var("context", context) : null;
-            for (UID type : types){
-                Var objectVar = new Var("object", dialect.getURI(type));
-                patterns.add(new StatementPattern(SUBJECT_VAR, RDF_TYPE_VAR, objectVar, contextVar));
-            }
-            Union union = new Union(patterns);
-            Extension extension = new Extension(union, extensionElem);
-            Projection projection = new Projection(extension, projections);
-            Reduced reduced = new Reduced(projection);
-            return DirectQuery.query(connection, new GraphQueryModel(reduced), false);
-        } catch (StoreException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-
-    private ModelResult findWithPredicates(Collection<UID> predicates, @Nullable URI context, Resource subject, Value object) {
-        try {
-            List<StatementPattern> patterns = new ArrayList<StatementPattern>();
-            Var subjectVar = new Var("subject", subject);
-            Var objectVar = new Var("object", object);
-            Var contextVar = context != null ? new Var("context", context) : null;
-            for (UID predicate : predicates){
-                Var predicateVar = new Var("predicate", dialect.getURI(predicate));
-                patterns.add(new StatementPattern(subjectVar, predicateVar, objectVar, contextVar));
-            }
-            Union union = new Union(patterns);
-            Extension extension = new Extension(union, extensionElem);
-            Projection projection = new Projection(extension, projections);
-            Reduced reduced = new Reduced(projection);
-            return DirectQuery.query(connection, new GraphQueryModel(reduced), false);
-        } catch (StoreException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
 
     @Override
     public CloseableIterator<STMT> findStatements(ID sub, UID pre, NODE obj, UID con, boolean includeInferred) {
@@ -274,28 +228,8 @@ public class SesameConnection implements RDFConnection {
         Value object = convert(obj);
         URI context = convert(con);
 
-        if (includeInferred){
-            // subClassOf inference
-            if (subject == null && RDF.type.equals(pre) && obj instanceof UID && inference.subClassOf()){
-                Collection<UID> types = ontology.getSubtypes((UID)obj);
-                if (types.size() > 1){
-                    return new ModelResultIterator(dialect, findOfType(types, context), includeInferred);
-                }
-            }
-
-            // subPropertyOf inference
-            if (pre != null && inference.subPropertyOf()){
-                Collection<UID> predicates = ontology.getSubproperties(pre);
-                if (predicates.size() > 1){
-                    return new ModelResultIterator(dialect,
-                            findWithPredicates(predicates, context, subject, object), includeInferred);
-                }
-            }
-
-        }
-
         // default results
-        return new ModelResultIterator(dialect,
+        return new RepositoryResultIterator(dialect,
                 findStatements(subject, predicate, object, includeInferred, context), includeInferred);
     }
 
@@ -309,27 +243,27 @@ public class SesameConnection implements RDFConnection {
 
         try {
             if (context == null){
-                return connection.hasMatch(subject, predicate, object, includeInferred);
+                return connection.hasStatement(subject, predicate, object, includeInferred);
             }else{
-                return connection.hasMatch(subject, predicate, object, includeInferred, context);
+                return connection.hasStatement(subject, predicate, object, includeInferred, context);
             }
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
     }
 
-    private ModelResult findStatements(
+    private RepositoryResult<Statement> findStatements(
             @Nullable Resource subject, @Nullable URI predicate, @Nullable Value object,
             boolean includeInferred, @Nullable URI context) {
         try {
             if (context == null) {
-                return connection.match(subject, predicate, object, includeInferred);
+                return connection.getStatements(subject, predicate, object, includeInferred);
             } else if (includeInferred) {
-                return connection.match(subject, predicate, object, includeInferred, context, null);
+                return connection.getStatements(subject, predicate, object, includeInferred, context, null);
             } else {
-                return connection.match(subject, predicate, object, includeInferred, context);
+                return connection.getStatements(subject, predicate, object, includeInferred, context);
             }
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
     }
@@ -361,7 +295,7 @@ public class SesameConnection implements RDFConnection {
                 if (addedStatements != null && !addedStatements.isEmpty()) {
                     connection.add(convert(addedStatements));
                 }
-            } catch (StoreException e) {
+            } catch (org.openrdf.repository.RepositoryException e) {
                 throw new RepositoryException(e);
             }
         }

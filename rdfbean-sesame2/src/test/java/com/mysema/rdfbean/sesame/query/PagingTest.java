@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
@@ -36,7 +35,7 @@ public class PagingTest extends SessionTestBase implements EntityDomain {
     private static final Entity entity = Alias.alias(Entity.class);
     
     @Before
-    public void setUp() throws StoreException{
+    public void setUp(){
         for (int i = 0; i < 9; i++){
             Entity entity = new Entity();
             entity.property = String.valueOf(i);

@@ -54,12 +54,12 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
         Join join = (Join) query.getJoinBuilder().getTupleExpr();
 
         // rdf:type
-        StatementPattern rdf_type = (StatementPattern) join.getArg(0);
+        StatementPattern rdf_type = (StatementPattern) join.getLeftArg();
         assertEquals(RDF.type.getId(), rdf_type.getPredicateVar().getValue().stringValue());
         assertEquals(NS1, rdf_type.getContextVar().getValue().stringValue());
 
         // property
-        StatementPattern property = (StatementPattern) join.getArg(1);
+        StatementPattern property = (StatementPattern) join.getRightArg();
         assertEquals(TEST.NS + "property", property.getPredicateVar().getValue().stringValue());
         assertEquals(NS1, property.getContextVar().getValue().stringValue());
     }
@@ -73,12 +73,12 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
         Join join = (Join) query.getJoinBuilder().getTupleExpr();
 
         // entity
-        StatementPattern entity = (StatementPattern) ((Join) join.getArg(0)).getArg(1);
+        StatementPattern entity = (StatementPattern) ((Join) join.getLeftArg()).getRightArg();
         assertEquals(TEST.NS + "entity", entity.getPredicateVar().getValue().stringValue());
         assertEquals(NS1, entity.getContextVar().getValue().stringValue());
 
         // entity.property
-        StatementPattern property = (StatementPattern) join.getArg(1);
+        StatementPattern property = (StatementPattern) join.getRightArg();
         assertEquals(TEST.NS + "property", property.getPredicateVar().getValue().stringValue());
         assertEquals(NS2, property.getContextVar().getValue().stringValue());
     }
@@ -90,12 +90,12 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
         Join join = (Join) query.getJoinBuilder().getTupleExpr();
 
         // rdf:type
-        StatementPattern rdf_type = (StatementPattern) join.getArg(0);
+        StatementPattern rdf_type = (StatementPattern) join.getLeftArg();
         assertEquals(RDF.type.getId(), rdf_type.getPredicateVar().getValue().stringValue());
         assertNull(rdf_type.getContextVar());
 
         // property
-        StatementPattern property = (StatementPattern) join.getArg(1);
+        StatementPattern property = (StatementPattern) join.getRightArg();
         assertEquals(TEST.NS + "property", property.getPredicateVar().getValue().stringValue());
         assertEquals(NS2, property.getContextVar().getValue().stringValue());
 
@@ -110,12 +110,12 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
         Join join = (Join) query.getJoinBuilder().getTupleExpr();
 
         // entity
-        StatementPattern entity = (StatementPattern) ((Join) join.getArg(0)).getArg(1);
+        StatementPattern entity = (StatementPattern) ((Join) join.getLeftArg()).getRightArg();
         assertEquals(TEST.NS + "entity", entity.getPredicateVar().getValue().stringValue());
         assertNull(entity.getContextVar());
 
         // entity.property
-        StatementPattern property = (StatementPattern) join.getArg(1);
+        StatementPattern property = (StatementPattern) join.getRightArg();
         assertEquals(TEST.NS + "property", property.getPredicateVar().getValue().stringValue());
         assertEquals(NS3, property.getContextVar().getValue().stringValue());
     }
@@ -127,12 +127,12 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
         Join join = (Join) query.getJoinBuilder().getTupleExpr();
 
         // rdf:type
-        StatementPattern rdf_type = (StatementPattern) join.getArg(0);
+        StatementPattern rdf_type = (StatementPattern) join.getLeftArg();
         assertEquals(RDF.type.getId(), rdf_type.getPredicateVar().getValue().stringValue());
         assertNull(rdf_type.getContextVar());
 
         // property
-        StatementPattern property = (StatementPattern) join.getArg(1);
+        StatementPattern property = (StatementPattern) join.getRightArg();
         assertEquals(TEST.NS + "property", property.getPredicateVar().getValue().stringValue());
         assertEquals(NS3, property.getContextVar().getValue().stringValue());
     }
@@ -146,12 +146,12 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
         Join join = (Join) query.getJoinBuilder().getTupleExpr();
 
         // entity
-        StatementPattern entity = (StatementPattern) ((Join) join.getArg(0)).getArg(1);
+        StatementPattern entity = (StatementPattern) ((Join) join.getLeftArg()).getRightArg();
         assertEquals(TEST.NS + "entity", entity.getPredicateVar().getValue().stringValue());
         assertNull(entity.getContextVar());
 
         // entity.property
-        StatementPattern property = (StatementPattern) join.getArg(1);
+        StatementPattern property = (StatementPattern) join.getRightArg();
         assertEquals(TEST.NS + "property", property.getPredicateVar().getValue().stringValue());
         assertEquals(NS1, property.getContextVar().getValue().stringValue());
     }

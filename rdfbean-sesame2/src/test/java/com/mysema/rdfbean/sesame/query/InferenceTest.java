@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.InferenceDomain;
@@ -31,7 +30,7 @@ public class InferenceTest extends SessionTestBase implements InferenceDomain{
     
     @Test
     @Ignore // FIXME
-    public void SubClassOf() throws StoreException{
+    public void SubClassOf(){
         session.save(new Entity1());
         session.save(new Entity2());
         session.save(new Entity3());

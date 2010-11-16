@@ -1,7 +1,7 @@
 package com.mysema.rdfbean.sesame;
 
-import org.openrdf.result.GraphResult;
-import org.openrdf.store.StoreException;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.QueryEvaluationException;
 
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
@@ -12,9 +12,9 @@ import com.mysema.rdfbean.model.STMT;
  */
 public class GraphResultIterator extends AbstractResultIterator{
     
-    private final GraphResult graphResult;
+    private final GraphQueryResult graphResult;
     
-    public GraphResultIterator(GraphResult graphResult, SesameDialect dialect){
+    public GraphResultIterator(GraphQueryResult graphResult, SesameDialect dialect){
         super(dialect);
         this.graphResult = graphResult;
     }
@@ -24,7 +24,7 @@ public class GraphResultIterator extends AbstractResultIterator{
     public void close(){
         try {
             graphResult.close();
-        } catch (StoreException e1) {
+        } catch (QueryEvaluationException e1) {
             throw new RepositoryException(e1);
         }
     }
@@ -33,7 +33,7 @@ public class GraphResultIterator extends AbstractResultIterator{
     public boolean hasNext() {
         try {
             return graphResult.hasNext();
-        } catch (StoreException e) {
+        } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
     }
@@ -42,7 +42,7 @@ public class GraphResultIterator extends AbstractResultIterator{
     public STMT next() {
         try {
             return convert(graphResult.next(), true);
-        } catch (StoreException e) {
+        } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
     }

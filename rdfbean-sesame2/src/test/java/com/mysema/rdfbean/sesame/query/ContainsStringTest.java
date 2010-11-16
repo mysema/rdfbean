@@ -10,7 +10,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
@@ -31,7 +30,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class ContainsStringTest extends SessionTestBase implements EntityRevisionTermDomain{
     
     @Test
-    public void test() throws StoreException{
+    public void test(){
         EntityRevision revision = new EntityRevision();
         revision.text = "a bcd e";
         session.save(revision);
@@ -43,7 +42,7 @@ public class ContainsStringTest extends SessionTestBase implements EntityRevisio
     }
     
     @Test
-    public void test2() throws StoreException{
+    public void test2(){
         // 1
         Entity entity = new Entity();        
         session.save(entity);

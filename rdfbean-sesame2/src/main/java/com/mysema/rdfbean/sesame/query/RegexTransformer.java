@@ -8,6 +8,7 @@ package com.mysema.rdfbean.sesame.query;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.openrdf.query.algebra.Like;
 import org.openrdf.query.algebra.Regex;
 import org.openrdf.query.algebra.Str;
 import org.openrdf.query.algebra.ValueExpr;
@@ -34,7 +35,7 @@ public class RegexTransformer implements OperationTransformer{
         ValueExpr arg1 = context.toValue(operation.getArg(0));
         
         if (operation.getOperator() == Ops.STRING_IS_EMPTY){
-            return new Regex(new Str(arg1), "", false);
+            return new Like(new Str(arg1), "", true);
             
         }else{
             ValueExpr arg2 = context.toValue(operation.getArg(1));

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openrdf.query.BooleanQuery;
-import org.openrdf.store.StoreException;
+import org.openrdf.query.QueryEvaluationException;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.NODE;
@@ -49,8 +49,8 @@ public class BooleanQueryImpl implements SPARQLQuery{
     @Override
     public boolean getBoolean() {
         try {
-            return booleanQuery.ask();
-        } catch (StoreException e) {
+            return booleanQuery.evaluate();
+        } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
     }

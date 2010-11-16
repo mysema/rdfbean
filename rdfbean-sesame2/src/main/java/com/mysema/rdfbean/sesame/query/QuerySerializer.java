@@ -19,8 +19,8 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.helpers.QueryModelVisitorBase;
-import org.openrdf.query.parser.GraphQueryModel;
-import org.openrdf.query.parser.TupleQueryModel;
+import org.openrdf.query.parser.ParsedGraphQuery;
+import org.openrdf.query.parser.ParsedTupleQuery;
 
 import com.mysema.rdfbean.Namespaces;
 
@@ -78,6 +78,8 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
 
     private static final String LANG = "lang( ";
 
+    private static final String LIKE = " like ";
+    
     private static final String LIMIT = "\nLIMIT ";
 
     private static final String MATCH = " match ";
@@ -123,14 +125,14 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     private boolean usingNsPrinted;
     
-    public QuerySerializer(GraphQueryModel query, boolean verbose){
+    public QuerySerializer(ParsedGraphQuery query, boolean verbose){
         query.getTupleExpr().visit(this);        
         if (!namespaces.isEmpty() && verbose){           
             printNamespaces();
         }
     }
     
-    public QuerySerializer(TupleQueryModel query, boolean verbose){
+    public QuerySerializer(ParsedTupleQuery query, boolean verbose){
         query.getTupleExpr().visit(this);    
         if (!namespaces.isEmpty() && verbose){           
             printNamespaces();
@@ -144,7 +146,7 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
      
     @Override
     public void meet(And node){
-        visit(node.getArg(0)).append( " AND\n  " ).visit(node.getArg(1));
+        visit(node.getLeftArg()).append( " AND\n  " ).visit(node.getRightArg());
     }
     
     @Override
@@ -297,9 +299,9 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             append( FROM );
             fromPrinted = true;
         }
-        node.getArg(0).visit(this);
-        if (node.getArg(1) != null){
-            node.getArg(1).visit(this);    
+        node.getLeftArg().visit(this);
+        if (node.getRightArg() != null){
+            node.getRightArg().visit(this);    
         }        
     }
     
@@ -324,11 +326,11 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             append( FROM );
             fromPrinted = true;
         }
-        node.getArg(0).visit(this);        
+        node.getLeftArg().visit(this);        
         append( ".\n ");
         append(OPTIONAL );
         lastPattern = null;
-        node.getArg(1).visit(this);
+        node.getRightArg().visit(this);
         append( " )" );
     }
     
@@ -349,9 +351,9 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     @Override
     public void meet(Or node){
-        node.getArg(0).visit(this);
+        node.getLeftArg().visit(this);
         append( OR );
-        node.getArg(1).visit(this);
+        node.getRightArg().visit(this);
     }
     
     @Override
@@ -393,6 +395,13 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
             first = false;
         }        
         node.getArg().visit(this);
+    }
+    
+    @Override
+    public void meet(Like node){
+        node.getArg().visit(this);
+        append(LIKE);
+        append(node.getPattern());
     }
     
     @Override
@@ -460,14 +469,9 @@ public class QuerySerializer extends QueryModelVisitorBase<RuntimeException>{
     
     @Override
     public void meet(Union node){
-        for (int i = 0; i < node.getNumberOfArguments(); i++){            
-            if (i > 0){
-                lastPattern = null;
-                append(UNION);
-            }
-            visit(node.getArg(i));
-        }        
-//        lastPattern = null;
+        visit(node.getLeftArg());
+        append(UNION);
+        visit(node.getRightArg());
     }
     
     private void meet(Value value){

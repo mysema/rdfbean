@@ -6,9 +6,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.result.TupleResult;
-import org.openrdf.store.StoreException;
+import org.openrdf.query.TupleQueryResult;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.NODE;
@@ -27,7 +27,7 @@ public class TupleQueryImpl implements SPARQLQuery {
     private final TupleQuery query;
     
     @Nullable
-    private TupleResult result;
+    private TupleQueryResult result;
 
     public TupleQueryImpl(TupleQuery query, SesameDialect dialect) {
         this.query = query;
@@ -39,7 +39,7 @@ public class TupleQueryImpl implements SPARQLQuery {
         throw new UnsupportedOperationException();
     }
     
-    private TupleResult getResult() throws StoreException{
+    private TupleQueryResult getResult() throws QueryEvaluationException{
         if (result == null){
             result = query.evaluate();
         }
@@ -60,7 +60,7 @@ public class TupleQueryImpl implements SPARQLQuery {
     public CloseableIterator<Map<String, NODE>> getTuples() {
         try {
             return new TupleResultIterator(getResult(), dialect);
-        } catch (StoreException e) {
+        } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
     }
@@ -69,7 +69,7 @@ public class TupleQueryImpl implements SPARQLQuery {
     public List<String> getVariables() {
         try {
             return getResult().getBindingNames();
-        } catch (StoreException e) {
+        } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
     }

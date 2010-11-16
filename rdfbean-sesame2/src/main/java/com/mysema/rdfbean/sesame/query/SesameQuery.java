@@ -29,13 +29,15 @@ import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.Order;
 import org.openrdf.query.algebra.StatementPattern.Scope;
-import org.openrdf.query.parser.TupleQueryModel;
+import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.result.TupleResult;
-import org.openrdf.store.StoreException;
+import org.openrdf.sail.SailException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,7 +146,7 @@ implements TransformerContext, BeanQuery, Closeable{
 
     private final StatementPattern.Scope patternScope;
 
-    private TupleResult queryResult;
+    private TupleQueryResult queryResult;
 
     private final Map<UID, Var> resToVar = new HashMap<UID, Var>();
 
@@ -234,7 +236,7 @@ implements TransformerContext, BeanQuery, Closeable{
         if (queryResult != null){
             try {
                 queryResult.close();
-            } catch (StoreException e) {
+            } catch (QueryEvaluationException e) {
                 throw new RepositoryException(e.getMessage(), e);
             }
         }
@@ -352,11 +354,11 @@ implements TransformerContext, BeanQuery, Closeable{
 
         // evaluate it
         try {
-            TupleQueryModel query;
+            ParsedTupleQuery query;
             if (getMetadata().isDistinct()){
-                query = new TupleQueryModel(new Distinct(tupleExpr));
+                query = new ParsedTupleQuery(new Distinct(tupleExpr));
             }else{
-                query = new TupleQueryModel(tupleExpr);
+                query = new ParsedTupleQuery(tupleExpr);
             }
 
             logQuery(query);
@@ -366,7 +368,7 @@ implements TransformerContext, BeanQuery, Closeable{
                 public boolean hasNext() {
                     try {
                         return queryResult.hasNext();
-                    } catch (StoreException e) {
+                    } catch (QueryEvaluationException e) {
                         throw new RepositoryException(e.getMessage(), e);
                     }
                 }
@@ -379,7 +381,7 @@ implements TransformerContext, BeanQuery, Closeable{
                             values[i] = bindingSet.getValue(bindingNames.get(i));
                         }
                         return values;
-                    } catch (StoreException e) {
+                    } catch (QueryEvaluationException e) {
                         throw new RepositoryException(e.getMessage(), e);
                     }
                 }
@@ -387,7 +389,13 @@ implements TransformerContext, BeanQuery, Closeable{
                     // do nothing
                 }
             };
-        } catch (StoreException e) {
+        } catch (QueryEvaluationException e) {
+            throw new RepositoryException(e.getMessage(), e);
+        } catch (SailException e) {
+            throw new RepositoryException(e.getMessage(), e);
+        } catch (org.openrdf.repository.RepositoryException e) {
+            throw new RepositoryException(e.getMessage(), e);
+        } catch (MalformedQueryException e) {
             throw new RepositoryException(e.getMessage(), e);
         }
     }
@@ -469,7 +477,7 @@ implements TransformerContext, BeanQuery, Closeable{
         return pathToVar.containsKey(path);
     }
 
-    protected void logQuery(TupleQueryModel query) {
+    protected void logQuery(ParsedTupleQuery query) {
         if (queryTreeLogger.isDebugEnabled()){
             queryTreeLogger.debug(query.toString());
         }
@@ -768,14 +776,14 @@ implements TransformerContext, BeanQuery, Closeable{
         if (object.getValue() instanceof URI){
             Collection<UID> subtypes = ontology.getSubtypes(dialect.getUID((URI) object.getValue()));
             if (subtypes.size() > 1){
-                List<StatementPattern> patterns = new ArrayList<StatementPattern>(subtypes.size());
+                TupleExpr rv = null;
                 int counter = 1;
                 for (UID type : subtypes){
                     Var subtypeVar = new Var(object.getName() + "_" + (counter++));
                     subtypeVar.setValue(dialect.getURI(type));
-                    patterns.add(replaceObject(pattern, subtypeVar));
+                    rv = (rv != null) ? new Union(rv, replaceObject(pattern, subtypeVar)) : replaceObject(pattern, subtypeVar);  
                 }
-                return new Union(patterns);
+                return rv;
             }else{
                 return pattern;
             }

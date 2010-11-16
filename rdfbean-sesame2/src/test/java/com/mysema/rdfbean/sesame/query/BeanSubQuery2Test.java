@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.EntityPath;
@@ -40,7 +39,7 @@ public class BeanSubQuery2Test extends SessionTestBase implements EntityDocument
     private Revision rev2 = Alias.alias(Revision.class,"rev2");
     
     @Before
-    public void setUp() throws StoreException{
+    public void setUp() {
         Document document = new Document();
         session.save(document);
         
@@ -60,7 +59,7 @@ public class BeanSubQuery2Test extends SessionTestBase implements EntityDocument
     }
     
     @Test
-    public void subQuery_exists() throws StoreException, IOException{   
+    public void subQuery_exists() throws IOException{   
         Entity entity = session.findInstances(Entity.class).get(0);
         
         List<Revision> results = session.from($(rev1))
@@ -80,7 +79,7 @@ public class BeanSubQuery2Test extends SessionTestBase implements EntityDocument
     }   
 
     @Test
-    public void subQuery_exists2() throws StoreException, IOException{   
+    public void subQuery_exists2() throws IOException{   
         Document document = session.findInstances(Document.class).get(0);
         
         List<Revision> results = session.from($(rev1))
@@ -99,7 +98,7 @@ public class BeanSubQuery2Test extends SessionTestBase implements EntityDocument
     }
     
     @Test
-    public void subQuery_all() throws StoreException, IOException{   
+    public void subQuery_all() throws IOException{   
         Document document = session.findInstances(Document.class).get(0);
         
         List<Revision> results = session.from($(rev1))

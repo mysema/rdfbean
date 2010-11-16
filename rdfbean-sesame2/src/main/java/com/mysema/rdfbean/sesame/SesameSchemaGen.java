@@ -15,13 +15,14 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.rdfxml.RDFXMLWriter;
 import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
-import org.openrdf.store.StoreException;
+import org.openrdf.sail.SailException;
 
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
@@ -66,7 +67,7 @@ public class SesameSchemaGen extends SchemaGen {
         return this;
     }
 
-    public void generateRDFXML(Configuration configuration) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+    public void generateRDFXML(Configuration configuration) throws SailException, RDFHandlerException, RDFParseException, IOException, RepositoryException {
         if (outputStream != null) {
             generateRDFXML(configuration, outputStream);
         } else if (writer != null) {
@@ -76,21 +77,21 @@ public class SesameSchemaGen extends SchemaGen {
         }
     }
 
-    public void generateRDFXML(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+    public void generateRDFXML(Configuration configuration, OutputStream out) throws SailException, RDFHandlerException, RDFParseException, IOException, RepositoryException {
         generateSchema(configuration, new RDFXMLPrettyWriter(out));
     }
 
-    public void generateRDFXML(Configuration configuration, Writer out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+    public void generateRDFXML(Configuration configuration, Writer out) throws SailException, RDFHandlerException, RDFParseException, IOException, RepositoryException {
         generateSchema(configuration, new RDFXMLPrettyWriter(out));
     }
 
-    public void generateSchema(Configuration configuration, RDFHandler handler) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+    public void generateSchema(Configuration configuration, RDFHandler handler) throws SailException, RDFHandlerException, RDFParseException, IOException, RepositoryException {
         for (Map.Entry<String, String> entry : namespaces.entrySet()) {
             handler.handleNamespace(entry.getKey(), entry.getValue());
         }
         String ontology = getOntology();
         if (ontology != null && handler instanceof RDFXMLWriter) {
-            ((RDFXMLWriter) handler).setBaseURI(ontology);
+//            ((RDFXMLWriter) handler).setBaseURI(ontology);
         }
         handler = new RDFBeanHandler(handler);
         MemoryRepository repository = new MemoryRepository();
@@ -106,7 +107,7 @@ public class SesameSchemaGen extends SchemaGen {
         conn.close();
     }
 
-    public void generateTurtle(Configuration configuration) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+    public void generateTurtle(Configuration configuration) throws SailException, RDFHandlerException, RDFParseException, IOException, RepositoryException {
         if (outputStream != null) {
             generateTurtle(configuration, outputStream);
         } else if (writer != null) {
@@ -116,11 +117,11 @@ public class SesameSchemaGen extends SchemaGen {
         }
     }
 
-    public void generateTurtle(Configuration configuration, OutputStream out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+    public void generateTurtle(Configuration configuration, OutputStream out) throws SailException, RDFHandlerException, RDFParseException, IOException, RepositoryException {
         generateSchema(configuration, new RDFWriterAdapter(new TurtleWriter(out)));
     }
     
-    public void generateTurtle(Configuration configuration, Writer out) throws StoreException, RDFHandlerException, RDFParseException, IOException {
+    public void generateTurtle(Configuration configuration, Writer out) throws SailException, RDFHandlerException, RDFParseException, IOException, RepositoryException {
         generateSchema(configuration, new RDFWriterAdapter(new TurtleWriter(out)));
     }
     

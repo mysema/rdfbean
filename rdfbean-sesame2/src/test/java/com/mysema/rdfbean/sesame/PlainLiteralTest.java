@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
@@ -29,7 +28,7 @@ public class PlainLiteralTest extends SessionTestBase{
     private final QSimpleType simpleType = QSimpleType.simpleType;
     
     @Test
-    public void test() throws StoreException, IOException{                
+    public void test() throws IOException{                
         // get instance with plain literal value
         SimpleType instance = session
             .from(simpleType)

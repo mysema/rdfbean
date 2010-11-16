@@ -12,7 +12,6 @@ import static org.junit.Assert.assertFalse;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
@@ -34,7 +33,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTermDomain{
     
     @Test
-    public void OptionalPaths() throws StoreException, IOException{
+    public void OptionalPaths() throws IOException{
         Note note = new Note();
         session.save(note);        
         NoteRevision rev = new NoteRevision();
@@ -85,7 +84,7 @@ public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTer
     }
     
     @Test
-    public void deepPaths() throws StoreException{        
+    public void deepPaths(){        
         NoteRevision rev1 = new NoteRevision();
         NoteRevision rev2 = new NoteRevision();
         Note note = new Note();

@@ -12,9 +12,9 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.sail.NotifyingSail;
+import org.openrdf.sail.SailException;
 import org.openrdf.sail.inferencer.InferencerConnection;
 import org.openrdf.sail.inferencer.fc.ForwardChainingRDFSInferencer;
-import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.model.RepositoryException;
 
@@ -36,12 +36,12 @@ public class ExtendedRDFSInferencer extends ForwardChainingRDFSInferencer {
     }
 
     @Override
-    public void initialize() throws StoreException {
+    public void initialize() throws SailException  {
         super.initialize();
 
         InferencerConnection conn = getConnection();
         try {
-            conn.begin();
+//            conn.begin();
             for (Field field : XMLSchema.class.getFields()){
                 if (field.getType().equals(URI.class)){
                     conn.addInferredStatement((URI)field.get(null), RDF.TYPE, RDFS.DATATYPE);
@@ -49,7 +49,7 @@ public class ExtendedRDFSInferencer extends ForwardChainingRDFSInferencer {
             }
             // TODO : datatype relations
             conn.commit();
-        } catch (StoreException e) {
+        } catch (SailException e) {
             conn.rollback();
             String error = "Caught " + e.getClass().getName();
             throw new RepositoryException(error, e);

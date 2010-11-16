@@ -5,15 +5,7 @@
  */
 package com.mysema.rdfbean.sesame;
 
-import java.sql.Connection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import org.openrdf.store.Isolation;
-import org.openrdf.store.StoreException;
+import org.openrdf.sail.SailException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,43 +20,26 @@ import com.mysema.rdfbean.model.RepositoryException;
  * @version $Id$
  */
 public class SesameTransaction implements RDFBeanTransaction{
-
-    private static final Map<Integer,Isolation> isolationLevels;
     
     private static final Logger logger = LoggerFactory.getLogger(SesameTransaction.class);
-    
-    static{
-        Map<Integer,Isolation> levels = new HashMap<Integer,Isolation>();
-        levels.put(Connection.TRANSACTION_READ_COMMITTED, Isolation.READ_COMMITTED);
-        levels.put(Connection.TRANSACTION_READ_UNCOMMITTED, Isolation.READ_UNCOMMITTED);
-        levels.put(Connection.TRANSACTION_REPEATABLE_READ, Isolation.REPEATABLE_READ);
-        levels.put(Connection.TRANSACTION_SERIALIZABLE, Isolation.SERIALIZABLE);        
-        isolationLevels = Collections.unmodifiableMap(levels);
-    }
     
     private boolean active = false;
     
     private final SesameConnection connection;
     
-    @Nullable
-    private Isolation isolationLevel;
-    
     private boolean rollbackOnly;
     
     public SesameTransaction(SesameConnection connection, int isolationLevel) {
         this.connection = Assert.notNull(connection,"connection");
-        this.isolationLevel = isolationLevels.containsKey(isolationLevel) 
-            ? isolationLevels.get(isolationLevel) : null;
     }
 
     public void begin() {
         try {
-            connection.getConnection().setTransactionIsolation(isolationLevel);
-            connection.getConnection().begin();            
-        } catch (StoreException e) {
+            connection.getConnection().setAutoCommit(false);
+        } catch (org.openrdf.repository.RepositoryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
-            throw new RepositoryException(error, e);
+            throw new RuntimeException(error, e);
         }
         active = true;
     }
@@ -76,7 +51,7 @@ public class SesameTransaction implements RDFBeanTransaction{
         }        
         try {
             connection.getConnection().commit();
-        } catch (StoreException e) {
+        } catch (org.openrdf.repository.RepositoryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
             throw new RepositoryException(error, e);
@@ -104,7 +79,7 @@ public class SesameTransaction implements RDFBeanTransaction{
     public void rollback() {
        try {
            connection.getConnection().rollback();           
-       } catch (StoreException e) {
+       } catch (org.openrdf.repository.RepositoryException e) {
            String error = "Caught " + e.getClass().getName();
            logger.error(error, e);
            throw new RepositoryException(error, e);

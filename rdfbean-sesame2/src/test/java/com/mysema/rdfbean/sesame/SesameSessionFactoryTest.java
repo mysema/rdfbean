@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.io.Format;
@@ -26,7 +25,7 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 public class SesameSessionFactoryTest {
     
     @Test
-    public void test() throws StoreException, RDFParseException, IOException{
+    public void test() throws RDFParseException, IOException{
         MemoryRepository repository = new MemoryRepository();
         repository.setSources(
                 new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),

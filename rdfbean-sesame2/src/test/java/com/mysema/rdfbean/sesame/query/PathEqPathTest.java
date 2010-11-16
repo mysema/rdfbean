@@ -9,7 +9,6 @@ import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.EntityDomain;
@@ -27,7 +26,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class PathEqPathTest extends SessionTestBase implements EntityDomain {
     
     @Test
-    public void test() throws StoreException{
+    public void test(){
         Entity entity = new Entity();
         entity.text1 = "a";
         entity.text2 = "a";

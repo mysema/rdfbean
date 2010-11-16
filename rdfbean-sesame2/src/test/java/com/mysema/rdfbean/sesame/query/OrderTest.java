@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.domains.UserDomain;
@@ -33,7 +32,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class OrderTest extends SessionTestBase implements UserDomain{
     
     @Test
-    public void OrderBy() throws StoreException, IOException{
+    public void OrderBy() throws IOException{
         session.save(new User());
         User user = Alias.alias(User.class, "user");
         assertFalse(session.from($(user))
@@ -45,7 +44,7 @@ public class OrderTest extends SessionTestBase implements UserDomain{
     }
     
     @Test
-    public void CorrectOrder() throws StoreException, IOException{
+    public void CorrectOrder() throws IOException{
         for(User user : session.findInstances(User.class)){
             session.delete(user);
         }
@@ -62,7 +61,7 @@ public class OrderTest extends SessionTestBase implements UserDomain{
     }
     
     @Test
-    public void OrderWithOffset() throws StoreException, IOException{
+    public void OrderWithOffset() throws IOException{
         for(User user : session.findInstances(User.class)){
             session.delete(user);
         }

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertFalse;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.alias.Alias;
@@ -31,7 +30,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class OptionalPathsTest extends SessionTestBase implements NoteTermDomain{
     
     @Test
-    public void test() throws StoreException, IOException{
+    public void test() throws IOException{
         Note note = new Note();
         note.lemma = "a";
         session.save(note);

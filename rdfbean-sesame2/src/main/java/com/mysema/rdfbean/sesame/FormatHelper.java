@@ -23,7 +23,6 @@ final class FormatHelper {
         switch(format){
         case N3: return RDFFormat.N3;
         case NTRIPLES: return RDFFormat.NTRIPLES;
-        case RDFA: return RDFFormat.RDFA;
         case RDFXML: return RDFFormat.RDFXML;
         case TRIG: return RDFFormat.TRIG;
         case TURTLE: return RDFFormat.TURTLE;

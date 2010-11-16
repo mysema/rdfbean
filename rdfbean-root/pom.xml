@@ -33,6 +33,7 @@
     
     <!-- persistence -->
     <module>../rdfbean-rdb</module>
+    <module>../rdfbean-sesame2</module>    
     <module>../rdfbean-sesame</module>
     <module>../rdfbean-lucene</module>
         

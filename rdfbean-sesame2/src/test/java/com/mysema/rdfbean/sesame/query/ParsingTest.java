@@ -12,9 +12,9 @@ import org.junit.Test;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.UnsupportedQueryLanguageException;
-import org.openrdf.query.parser.GraphQueryModel;
+import org.openrdf.query.parser.ParsedGraphQuery;
+import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.QueryParserUtil;
-import org.openrdf.query.parser.TupleQueryModel;
 
 
 
@@ -40,7 +40,7 @@ public class ParsingTest {
         queries.add("SELECT R FROM {R} rdfs:label {L} LIMIT 2 OFFSET 3");
         
         for (String query : queries){
-            TupleQueryModel model = QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL, query, null);
+            ParsedTupleQuery model = QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL, query, null);
             System.out.println(model);
             System.out.println(new QuerySerializer(model, false).toString());
             System.out.println();
@@ -48,12 +48,12 @@ public class ParsingTest {
     }
     
     @Test
-    public void GraphQuery(){
+    public void GraphQuery() throws MalformedQueryException, UnsupportedQueryLanguageException{
         List<String> queries = new ArrayList<String>();
         queries.add("CONSTRUCT {S} rdf:type {O} FROM {S} rdf:type {O}");
         
         for (String query : queries){
-            GraphQueryModel model = QueryParserUtil.parseGraphQuery(QueryLanguage.SERQL, query, null);
+            ParsedGraphQuery model = QueryParserUtil.parseGraphQuery(QueryLanguage.SERQL, query, null);
             System.out.println(model);
             System.out.println(new QuerySerializer(model, false).toString());
             System.out.println();

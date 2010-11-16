@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.openrdf.query.BindingSet;
-import org.openrdf.result.TupleResult;
-import org.openrdf.store.StoreException;
+import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.TupleQueryResult;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.NODE;
@@ -17,11 +17,11 @@ import com.mysema.rdfbean.model.RepositoryException;
  */
 public class TupleResultIterator implements CloseableIterator<Map<String, NODE>> {
 
-    private final TupleResult tupleResult;
+    private final TupleQueryResult tupleResult;
     
     private final SesameDialect dialect;
     
-    public TupleResultIterator(TupleResult tupleResult, SesameDialect dialect) {
+    public TupleResultIterator(TupleQueryResult tupleResult, SesameDialect dialect) {
         this.tupleResult = tupleResult;
         this.dialect = dialect;
     }
@@ -30,7 +30,7 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
     public void close() {
         try {
             tupleResult.close();
-        } catch (StoreException e1) {
+        } catch (QueryEvaluationException e1) {
             throw new RepositoryException(e1);
         }
     }
@@ -39,7 +39,7 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
     public boolean hasNext() {
         try {
             return tupleResult.hasNext();
-        } catch (StoreException e) {
+        } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
     }
@@ -53,7 +53,7 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
                 row.put(name, dialect.getNODE(bindingSet.getValue(name)));
             }
             return row;
-        } catch (StoreException e) {
+        } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
     }

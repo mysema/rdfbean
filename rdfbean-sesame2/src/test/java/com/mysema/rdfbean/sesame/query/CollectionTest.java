@@ -52,7 +52,7 @@ public class CollectionTest extends SessionTestBase implements CompanyDepartment
         assertEquals(1l, qry.count());
 
         TupleExpr tuples = ((SesameQuery)qry).getJoinBuilder().getTupleExpr();
-        StatementPattern rightPattern = (StatementPattern) ((Join)tuples).getArg(1);
+        StatementPattern rightPattern = (StatementPattern) ((Join)tuples).getRightArg();
         assertEquals("department_employees", rightPattern.getSubjectVar().getName());
         assertEquals(new UID(TEST.NS, "department").getId(), rightPattern.getPredicateVar().getValue().stringValue());
         assertEquals("department_employees_department", rightPattern.getObjectVar().getName());

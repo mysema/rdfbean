@@ -17,7 +17,6 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.EntityPath;
@@ -43,7 +42,7 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     private Entity var2 = Alias.alias(Entity.class, "var2");
     
     @Before
-    public void setUp() throws StoreException{
+    public void setUp() {
         DateTime dateTime = new DateTime();   
         dateTime = dateTime.minus(dateTime.getMillisOfSecond());
         for (Long rev : Arrays.asList(5l, 10l, 15l, 20l, 25l, 30l)){
@@ -55,7 +54,7 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     }
     
     @Test
-    public void CompareLong() throws StoreException, IOException{                
+    public void CompareLong() throws IOException{                
         Entity result = session.from($(var1))
             .where(
                 sub($(var2))
