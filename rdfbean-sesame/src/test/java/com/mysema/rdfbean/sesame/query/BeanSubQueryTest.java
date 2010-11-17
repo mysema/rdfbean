@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.sesame.query;
 
@@ -17,7 +17,6 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.store.StoreException;
 
 import com.mysema.query.alias.Alias;
 import com.mysema.query.types.EntityPath;
@@ -35,27 +34,27 @@ import com.mysema.rdfbean.testutil.SessionConfig;
  */
 @SessionConfig(Entity.class)
 public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
-    
-    private List<DateTime> dateTimes = new ArrayList<DateTime>();
 
-    private Entity var1 = Alias.alias(Entity.class, "var1");
-    
-    private Entity var2 = Alias.alias(Entity.class, "var2");
-    
+    private final List<DateTime> dateTimes = new ArrayList<DateTime>();
+
+    private final Entity var1 = Alias.alias(Entity.class, "var1");
+
+    private final Entity var2 = Alias.alias(Entity.class, "var2");
+
     @Before
-    public void setUp() throws StoreException{
-        DateTime dateTime = new DateTime();   
+    public void setUp() {
+        DateTime dateTime = new DateTime();
         dateTime = dateTime.minus(dateTime.getMillisOfSecond());
         for (Long rev : Arrays.asList(5l, 10l, 15l, 20l, 25l, 30l)){
             Entity entity = new Entity(rev, "text" + rev, dateTime.plusMinutes(rev.intValue()));
             dateTimes.add(entity.getCreated());
             session.save(entity);
         }
-        session.clear();        
+        session.clear();
     }
-    
+
     @Test
-    public void CompareLong() throws StoreException, IOException{                
+    public void CompareLong() throws IOException{
         Entity result = session.from($(var1))
             .where(
                 sub($(var2))
@@ -64,8 +63,8 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
             .uniqueResult($(var1));
         assertNotNull(result);
         assertEquals(30l, result.getRevision());
-    }   
-    
+    }
+
     @Test
     public void CompareDateTime(){
         Entity result = session.from($(var1))
@@ -77,7 +76,7 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
         assertNotNull(result);
         assertEquals(dateTimes.get(dateTimes.size()-1), result.getCreated());
     }
-    
+
     @Test
     public void PathVisibility(){
         int count = session.from($(var1))
@@ -89,10 +88,10 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
             .list($(var1.getText())).size();
         assertEquals(6, count);
     }
-    
+
     private BeanSubQuery sub(EntityPath<?> entity){
         return new BeanSubQuery().from(entity);
     }
-    
+
 
 }
