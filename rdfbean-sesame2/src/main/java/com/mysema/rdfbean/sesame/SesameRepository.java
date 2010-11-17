@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.sesame;
 
@@ -40,32 +40,26 @@ import com.mysema.rdfbean.ontology.Ontology;
 import com.mysema.rdfbean.ontology.RepositoryOntology;
 
 /**
- * SesameRepository provides a base class for Sesame repository based RDFBean repositories 
- * 
+ * SesameRepository provides a base class for Sesame repository based RDFBean repositories
+ *
  * @author sasa
  * @author tiwe
  *
  */
 public abstract class SesameRepository implements Repository{
-    
+
     @Nullable
     private Ontology<UID> ontology;
-    
+
     private RDFSource[] sources;
-    
+
     private org.openrdf.repository.Repository repository;
 
     private boolean initialized = false;
-    
+
     private boolean sesameInference = false;
-    
+
     private Inference inference = Inference.FULL;
-        
-    public SesameRepository() {}
-    
-    public SesameRepository(org.openrdf.repository.Repository repository) {
-        this.repository = repository;
-    }
 
     @Override
     public void close() {
@@ -76,32 +70,32 @@ public abstract class SesameRepository implements Repository{
             throw new RepositoryException(e);
         }
     }
-    
+
     protected abstract org.openrdf.repository.Repository createRepository(boolean sesameInference);
-    
+
     @Override
     public <RT> RT execute(Operation<RT> operation) {
         RDFConnection connection = openConnection();
         try{
             RDFBeanTransaction tx = connection.beginTransaction(false, 0, Connection.TRANSACTION_READ_COMMITTED);
             try{
-                RT retVal = operation.execute(connection);    
+                RT retVal = operation.execute(connection);
                 tx.commit();
                 return retVal;
             }catch(IOException io){
                 tx.rollback();
                 throw new RepositoryException(io);
-            }                
+            }
         }finally{
             connection.close();
-        }    
+        }
     }
-    
+
     @Override
     public void export(Format format, OutputStream out) {
         export(format, Namespaces.DEFAULT, out);
     }
-    
+
     @Override
     public void export(Format format, Map<String, String> ns2prefix, OutputStream out){
         RDFFormat targetFormat = FormatHelper.getFormat(format);
@@ -110,9 +104,9 @@ public abstract class SesameRepository implements Repository{
             RepositoryConnection conn = repository.getConnection();
             for(Map.Entry<String, String> entry : ns2prefix.entrySet()){
                 conn.setNamespace(entry.getValue(), entry.getKey());
-            }            
+            }
             try{
-                conn.export(writer);    
+                conn.export(writer);
             }finally{
                 conn.close();
             }
@@ -120,19 +114,19 @@ public abstract class SesameRepository implements Repository{
             throw new RepositoryException(e.getMessage(), e);
         } catch (RDFHandlerException e) {
             throw new RepositoryException(e.getMessage(), e);
-        }                     
+        }
     }
-    
+
     protected Inference getInferenceOptions() {
         return inference;
     }
-    
+
     public abstract long getNextLocalId();
-    
+
     public org.openrdf.repository.Repository getSesameRepository() {
         return repository;
     }
-    
+
     public void initialize() {
         if (!initialized) {
             try {
@@ -143,22 +137,22 @@ public abstract class SesameRepository implements Repository{
                     if (sources != null && connection.isEmpty()) {
                         ValueFactory vf = connection.getValueFactory();
                         for (RDFSource source : sources) {
-                            connection.add(source.openStream(), 
+                            connection.add(source.openStream(),
                                     source.getContext(),
-                                    FormatHelper.getFormat(source.getFormat()), 
+                                    FormatHelper.getFormat(source.getFormat()),
                                     vf.createURI(source.getContext()));
                         }
                     }
                 } finally {
                     connection.close();
                 }
-                
+
                 if (ontology == null){
                     ontology = EmptyOntology.DEFAULT;
                     RepositoryOntology schemaOntology = new RepositoryOntology(this);
                     ontology = schemaOntology;
                 }
-                
+
             } catch (RDFParseException e) {
                 throw new RepositoryException(e);
             } catch (MalformedURLException e) {
@@ -171,11 +165,11 @@ public abstract class SesameRepository implements Repository{
             initialized = true;
         }
     }
-    
+
     @Override
     public void load(Format format, InputStream is, @Nullable UID context, boolean replace){
         try {
-            RepositoryConnection connection = repository.getConnection();            
+            RepositoryConnection connection = repository.getConnection();
             ValueFactory vf = connection.getValueFactory();
             try{
                 URI contextURI = context != null ? vf.createURI(context.getId()) : null;
@@ -186,15 +180,15 @@ public abstract class SesameRepository implements Repository{
                 }
                 if (context != null && replace){
                     connection.remove((Resource)null, null, null, contextURI);
-                }                
+                }
                 if (context == null){
-                    connection.add(is, TEST.NS, FormatHelper.getFormat(format));    
+                    connection.add(is, TEST.NS, FormatHelper.getFormat(format));
                 }else{
                     connection.add(is, context.getId(), FormatHelper.getFormat(format), contextURI);
                 }
-                    
+
             }finally {
-                connection.close();    
+                connection.close();
             }
         } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
@@ -204,7 +198,7 @@ public abstract class SesameRepository implements Repository{
             throw new RepositoryException(e);
         }
     }
-    
+
     @Override
     public RDFConnection openConnection() {
         try {
@@ -217,7 +211,7 @@ public abstract class SesameRepository implements Repository{
     public final void setOntology(Ontology<UID> ontology) {
         this.ontology = ontology;
     }
-    
+
     public final void setSesameInference(boolean sesameInference) {
         this.sesameInference = sesameInference;
         this.inference = sesameInference ? Inference.LITERAL : Inference.FULL;
