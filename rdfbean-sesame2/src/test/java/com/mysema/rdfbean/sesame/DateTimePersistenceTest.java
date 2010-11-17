@@ -32,21 +32,21 @@ import com.mysema.rdfbean.xsd.TimestampConverter;
 import com.mysema.rdfbean.xsd.UtilDateConverter;
 
 public class DateTimePersistenceTest {
-    
+
     private MemoryRepository repository;
-    
+
     @After
     public void tearDown(){
         if (repository != null){
             repository.close();
         }
     }
-    
+
     @Test
     public void Round_Trip(){
         repository = new MemoryRepository();
         repository.initialize();
-        
+
         DateTimeConverter dateTime = new DateTimeConverter();
         LocalDateConverter localDate = new LocalDateConverter();
         LocalTimeConverter localTime = new LocalTimeConverter();
@@ -54,14 +54,14 @@ public class DateTimePersistenceTest {
         UtilDateConverter utilDate = new UtilDateConverter();
         TimeConverter time = new TimeConverter();
         TimestampConverter timestamp = new TimestampConverter();
-        
+
         // load data
-        ID sub = new BID();
+        ID sub = new BID("b123");
         repository.execute(new Addition(
                 new STMT(sub, pre(1), new LIT(dateTime.toString(new DateTime()), XSD.dateTime)),
                 new STMT(sub, pre(2), new LIT(localDate.toString(new LocalDate()), XSD.date)),
                 new STMT(sub, pre(3), new LIT(localTime.toString(new LocalTime()), XSD.time)),
-                
+
                 new STMT(sub, pre(4), new LIT(date.toString(new java.sql.Date(0)), XSD.date)),
                 new STMT(sub, pre(5), new LIT(utilDate.toString(new java.util.Date(0)), XSD.dateTime)),
                 new STMT(sub, pre(6), new LIT(time.toString(new Time(0)), XSD.time)),
@@ -69,16 +69,16 @@ public class DateTimePersistenceTest {
         ));
         long count = repository.execute(new CountOperation());
         assertEquals(7, count);
-        
+
         // export
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         repository.export(Format.TURTLE, out);
         System.out.println(new String(out.toByteArray()));
-        
+
         // import
         ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
         repository.load(Format.TURTLE, in, new UID(TEST.NS), true);
-        
+
         count = repository.execute(new CountOperation());
         assertEquals(7*2, count);
     }
@@ -86,5 +86,5 @@ public class DateTimePersistenceTest {
     private UID pre(int i){
         return new UID(TEST.NS, "test"+i);
     }
-    
+
 }
