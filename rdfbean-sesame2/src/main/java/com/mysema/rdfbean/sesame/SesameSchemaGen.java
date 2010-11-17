@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.sesame;
 
@@ -19,7 +19,6 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.rdfxml.RDFXMLWriter;
 import org.openrdf.rio.rdfxml.util.RDFXMLPrettyWriter;
 import org.openrdf.rio.turtle.TurtleWriter;
 import org.openrdf.sail.SailException;
@@ -39,15 +38,15 @@ import com.mysema.rdfbean.schema.SchemaGen;
  *
  */
 public class SesameSchemaGen extends SchemaGen {
-    
+
     private final Map<String, String> namespaces = new LinkedHashMap<String, String>();
-    
+
     @Nullable
     private OutputStream outputStream = System.out;
-    
+
     @Nullable
     private Writer writer;
-    
+
     {
         namespaces.put("rdf", RDF.NS);
         namespaces.put("rdfs", RDFS.NS);
@@ -89,19 +88,19 @@ public class SesameSchemaGen extends SchemaGen {
         for (Map.Entry<String, String> entry : namespaces.entrySet()) {
             handler.handleNamespace(entry.getKey(), entry.getValue());
         }
-        String ontology = getOntology();
-        if (ontology != null && handler instanceof RDFXMLWriter) {
+//        String ontology = getOntology();
+//        if (ontology != null && handler instanceof RDFXMLWriter) {
 //            ((RDFXMLWriter) handler).setBaseURI(ontology);
-        }
+//        }
         handler = new RDFBeanHandler(handler);
         MemoryRepository repository = new MemoryRepository();
         repository.initialize();
-        
+
         setRepository(repository);
-        
+
         setConfiguration(configuration);
         exportConfiguration();
-        
+
         RepositoryConnection conn = repository.getSesameRepository().getConnection();
         conn.export(handler);
         conn.close();
@@ -120,16 +119,16 @@ public class SesameSchemaGen extends SchemaGen {
     public void generateTurtle(Configuration configuration, OutputStream out) throws SailException, RDFHandlerException, RDFParseException, IOException, RepositoryException {
         generateSchema(configuration, new RDFWriterAdapter(new TurtleWriter(out)));
     }
-    
+
     public void generateTurtle(Configuration configuration, Writer out) throws SailException, RDFHandlerException, RDFParseException, IOException, RepositoryException {
         generateSchema(configuration, new RDFWriterAdapter(new TurtleWriter(out)));
     }
-    
+
     public SesameSchemaGen setNamespace(String prefix, String namespace) {
         this.namespaces.put(prefix, namespace);
         return this;
     }
-    
+
     public SesameSchemaGen setNamespaces(Map<String, String> namespaces) {
         this.namespaces.putAll(namespaces);
         return this;
@@ -164,5 +163,5 @@ public class SesameSchemaGen extends SchemaGen {
         this.writer = writer;
         return this;
     }
-    
+
 }
