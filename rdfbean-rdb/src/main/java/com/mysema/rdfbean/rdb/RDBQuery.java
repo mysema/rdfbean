@@ -54,32 +54,41 @@ import com.mysema.rdfbean.object.Session;
 
 /**
  * RDBQuery is a BeanQuery implementation for the RDB module
- * 
+ *
  * @author tiwe
  *
  */
 public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
-    
+
+    private static final Templates TEMPLATES = new Templates(){
+        {
+            add(PathType.PROPERTY, "{0}_{1}");
+            add(PathType.COLLECTION_ANY, "{0}");
+            add(PathType.LISTVALUE_CONSTANT, "{0}_{1}");
+            add(PathType.ARRAYVALUE_CONSTANT, "{0}_{1}");
+            add(PathType.MAPVALUE_CONSTANT, "{0}_{1}");
+        }};
+
     private final RDBContext context;
-    
+
     private final Configuration configuration;
-    
+
     private final Session session;
-    
+
     private boolean optional = false;
-    
+
     private final Stack<Operator<?>> operatorStack = new Stack<Operator<?>>();
-    
+
     private final Set<Path<?>> inversePaths = new HashSet<Path<?>>();
-    
+
     // $var rdf:type ?
     private Map<Path<?>,QStatement> variables = new HashMap<Path<?>,QStatement>();
-    
+
     // ? ? $prop
     private Map<Path<?>,QStatement> properties = new HashMap<Path<?>,QStatement>();
-    
+
     private Map<Path<?>,Expression<?>> symbols = new HashMap<Path<?>,Expression<?>>();
-    
+
     public RDBQuery(RDBContext context, Session session) {
         super(new QueryMixin<RDBQuery>());
         queryMixin.setSelf(this);
@@ -103,19 +112,19 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         populate(query);
         return query.count();
     }
-    
+
     public SQLQuery createQuery(Expression<?>... args){
         SQLQuery query = context.createQuery();
         populate(query, args);
         return query;
     }
-    
+
     @Override
     public BeanQuery from(EntityPath<?>... o) {
         queryMixin.from(o);
         return this;
     }
-    
+
     private Long getId(NODE node) {
         return context.getNodeId(node);
     }
@@ -128,65 +137,70 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             if (mp.getPredicatePath().isEmpty()){
                 // local
                 if (mp.getMappedProperty().getType().equals(String.class)){
-                    QStatement statement = new QStatement(target.toString().replace('.', '_'));
+                    String str = target.accept(ToStringVisitor.DEFAULT, TEMPLATES);
+                    QStatement statement = new QStatement(str);
                     properties.put(target, statement);
                     BooleanBuilder joinCondition = new BooleanBuilder();
                     if (variables.containsKey(parent)){
-                        joinCondition.and(variables.get(parent).subject.eq(statement.subject));                            
+                        joinCondition.and(variables.get(parent).subject.eq(statement.subject));
                     }else if (properties.containsKey(parent)){
                         joinCondition.and(properties.get(parent).object.eq(statement.subject));
                     }else{
                         throw new IllegalStateException();
-                    }                    
+                    }
                     joinCondition.and(statement.predicate.eq(getId(CORE.localId)));
                     if (inOptionalPath()){
                         query.leftJoin(statement).on(joinCondition);
                     }else{
-                        query.innerJoin(statement).on(joinCondition);    
-                    }                            
+                        query.innerJoin(statement).on(joinCondition);
+                    }
                     return statement;
-                    
-                // resource    
+
+                // resource
                 }else{
                     throw new IllegalStateException();
                 }
-                
-            // other property 
+
+            // other property
             }else{
-                return getProperty(query, parent, target, mp.getPredicatePath());    
-            }                
+                return getProperty(query, parent, target, mp.getPredicatePath());
+            }
         }else{
             return properties.get(target);
-        }        
+        }
     }
 
     private QStatement getProperty(SQLCommonQuery<?> query, Path<?> parent, Path<?> target, List<MappedPredicate> predicates) {
-        QStatement statement = new QStatement(target.toString().replace('.', '_'));
+        String str = target.accept(ToStringVisitor.DEFAULT, TEMPLATES);
+        QStatement statement = new QStatement(str);
         properties.put(target, statement);
         BooleanBuilder joinCondition = new BooleanBuilder();
         NumberPath<Long> propSymbol = predicates.get(0).inv() ? statement.object : statement.subject;
         if (predicates.get(0).inv()){
             inversePaths.add(target);
         }
+        if (parent.getMetadata().getPathType() == PathType.COLLECTION_ANY){
+            parent = parent.getMetadata().getParent();
+        }
         if (variables.containsKey(parent)){
-            // property of variable            
-            joinCondition.and(variables.get(parent).subject.eq(propSymbol));                            
+            // property of variable
+            joinCondition.and(variables.get(parent).subject.eq(propSymbol));
         }else if (properties.containsKey(parent)){
             joinCondition.and(properties.get(parent).object.eq(propSymbol));
         }else{
             throw new IllegalStateException();
         }
-        
+
         // TODO : support longer paths
         joinCondition.and(statement.predicate.eq(getId(predicates.get(0).getUID())));
         if (inOptionalPath()){
             query.leftJoin(statement).on(joinCondition);
         }else{
-            query.innerJoin(statement).on(joinCondition);    
-        }                            
+            query.innerJoin(statement).on(joinCondition);
+        }
         return statement;
     }
-    
+
     @SuppressWarnings("unchecked")
     private Expression<?> getSymbol(SQLCommonQuery<?> query, QStatement stmt, Path<?> path) {
         if (!symbols.containsKey(path)){
@@ -195,23 +209,23 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             if (path.getMetadata().isRoot() || inversePaths.contains(path)){
                 fk = stmt.subjectFk;
             }else{
-                fk = stmt.objectFk;    
-            }            
+                fk = stmt.objectFk;
+            }
             if (inOptionalPath()){
-                query.leftJoin(fk, symbol);   
+                query.leftJoin(fk, symbol);
             }else{
-                query.innerJoin(fk, symbol);    
-            }            
+                query.innerJoin(fk, symbol);
+            }
             Expression<?> expr;
             if (Constants.decimalClasses.contains(path.getType())){
                 expr = cast(symbol.floatval,path.getType());
             }else if (Number.class.isAssignableFrom(path.getType())){
                 expr = cast(symbol.intval, path.getType());
-            }else if (path.getType().equals(java.util.Date.class)){    
+            }else if (path.getType().equals(java.util.Date.class)){
                 expr = symbol.datetimeval;
             }else if (Constants.dateClasses.contains(path.getType())){
-                expr = new DatePath(path.getType(), symbol.datetimeval.getMetadata()); 
-            }else if (Constants.dateTimeClasses.contains(path.getType())){    
+                expr = new DatePath(path.getType(), symbol.datetimeval.getMetadata());
+            }else if (Constants.dateTimeClasses.contains(path.getType())){
                 expr = new DateTimePath(path.getType(), symbol.datetimeval.getMetadata());
             }else if (Constants.timeClasses.contains(path.getType())){
                 expr = new TimePath(path.getType(), symbol.datetimeval.getMetadata());
@@ -224,35 +238,36 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             return symbols.get(path);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private QStatement getVariable(SQLCommonQuery<?> query, Path<?> target) {
         if (!variables.containsKey(target)){
-            MappedClass mc = configuration.getMappedClass(target.getType());            
-            QStatement statement = new QStatement(target.toString());
+            MappedClass mc = configuration.getMappedClass(target.getType());
+            String str = target.accept(ToStringVisitor.DEFAULT, TEMPLATES);
+            QStatement statement = new QStatement(str);
             variables.put(target, statement);
             MappedProperty<?> idProperty = mc.getIdProperty();
             if (idProperty != null && ID.class.isAssignableFrom(idProperty.getType())){
                 SimplePath<?> idPath = new SimplePath(idProperty.getType(), target, idProperty.getName());
                 variables.put(idPath, statement);
             }
-            query.from(statement);            
+            query.from(statement);
             query.where(statement.predicate.eq(getId(RDF.type)));
             Long type = getId(mc.getUID());
             Collection<Long> subtypes = context.getOntology().getSubtypes(type);
             query.where(statement.object.in(subtypes));
-            return statement;            
+            return statement;
         }else{
-            return variables.get(target);    
-        }        
+            return variables.get(target);
+        }
     }
 
     private boolean inOptionalPath(){
-        return optional 
-            || operatorStack.contains(Ops.IS_NULL) 
+        return optional
+            || operatorStack.contains(Ops.IS_NULL)
             || (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
     }
-    
+
     private boolean isEntityType(Class<?> cl){
         return ID.class.isAssignableFrom(cl) || configuration.isMapped(cl);
     }
@@ -262,14 +277,14 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         SQLQuery query = context.createQuery();
         return query.iterate(populate(query, args));
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <RT> CloseableIterator<RT> iterate(Expression<RT> arg) {
         SQLQuery query = context.createQuery();
         return (CloseableIterator<RT>) query.iterate(populate(query, arg)[0]);
     }
-        
+
     @Override
     public List<Object[]> list(Expression<?>[] args) {
         SQLQuery query = context.createQuery();
@@ -291,7 +306,7 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     }
 
     private boolean needsSymbolResolving(Operation<?> op) {
-        if (Ops.equalsOps.contains(op.getOperator()) 
+        if (Ops.equalsOps.contains(op.getOperator())
          || Ops.notEqualsOps.contains(op.getOperator())
          || op.getOperator() == Ops.IN
          || op.getOperator() == Ops.ORDINAL){
@@ -309,13 +324,13 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     private Expression<?>[] populate(SQLCommonQuery<?> query, Expression<?>... projection){
         return populate(query, queryMixin.getMetadata(), projection);
     }
-    
+
     @SuppressWarnings("unchecked")
     private Expression<?>[] populate(SQLCommonQuery<?> query, QueryMetadata metadata, Expression<?>... proj){
         Map<Path<?>,QStatement> v = null;
         Map<Path<?>,QStatement> p = null;
         Map<Path<?>,Expression<?>> s = null;
-        
+
         // scope subquery data
         if (query instanceof SQLSubQuery){
             v = variables;
@@ -325,55 +340,55 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             properties = new HashMap<Path<?>,QStatement>(properties);
             symbols = new HashMap<Path<?>,Expression<?>>(symbols);
         }
-        
+
         // from
         for (JoinExpression join : metadata.getJoins()){
             Expression<?> target = join.getTarget();
             getVariable(query,(Path<?>) target);
         }
-        
+
         // where
         if (metadata.getWhere() != null){
             query.where(transform(query, metadata.getWhere()));
         }
-        
+
         // group by
         for (Expression<?> expr : metadata.getGroupBy()){
             query.groupBy(transform(query, expr, false));
         }
-        
+
         // having
         if (metadata.getHaving() != null){
             query.having(transform(query, metadata.getHaving()));
         }
-                
+
         // order
         optional = true;
-        for (OrderSpecifier<?> order : metadata.getOrderBy()){            
-            query.orderBy(new OrderSpecifier(order.getOrder(), transform(query,order.getTarget(),true)));            
+        for (OrderSpecifier<?> order : metadata.getOrderBy()){
+            query.orderBy(new OrderSpecifier(order.getOrder(), transform(query,order.getTarget(),true)));
         }
         optional = false;
-        
+
         // paging
         if (metadata.getModifiers() != null){
             query.restrict(metadata.getModifiers());
-        }        
+        }
 
-        // projection        
+        // projection
         optional = true;
         Expression<?>[] projection = projection(query, proj);
         optional = false;
-        
+
         // reset original data
         if (query instanceof SQLSubQuery){
             variables = v;
             properties = p;
             symbols = s;
         }
-        
+
         return projection;
     }
-    
+
     private Expression<?>[] projection(SQLCommonQuery<?> query, Expression<?>[] exprs) {
         Expression<?>[] rv = new Expression<?>[exprs.length];
         for (int i = 0; i < rv.length; i++){
@@ -385,17 +400,17 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
     @SuppressWarnings({ "unchecked", "serial" })
     private <T> Expression<T> projection(SQLCommonQuery<?> query, final Expression<T> expr) {
         if (expr instanceof Path<?> && isEntityType(expr.getType())){
-            Expression<?> source = (Expression<T>) transform(query, (Path<?>)expr, true);
+            Expression<?> source = transform(query, (Path<?>)expr, true);
             return new ConstructorExpression<T>((Class)expr.getType(), new Class[0], source){
                 @Override
                 @Nullable
                 public T newInstance(Object... args){
                     if (args[0] != null){
                         String id = args[0].toString();
-                        return session.get(expr.getType(), context.getID(id));    
+                        return session.get(expr.getType(), context.getID(id));
                     }else{
                         return null;
-                    }                    
+                    }
                 }
             };
         }else{
@@ -409,41 +424,41 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         populate(query);
         return query.toString();
     }
-    
+
     private Expression<?> transform(SQLCommonQuery<?> query, Constant<?> constant, boolean realType){
         if (NODE.class.isAssignableFrom(constant.getConstant().getClass())){
             NODE node = (NODE)constant.getConstant();
             return ConstantImpl.create(getId(node));
-        }else if (!realType){    
+        }else if (!realType){
             if (isEntityType(constant.getConstant().getClass())){
                 ID id = session.getId(constant.getConstant());
                 return ConstantImpl.create(getId(id));
-            }else if (Collection.class.isAssignableFrom(constant.getConstant().getClass())){    
+            }else if (Collection.class.isAssignableFrom(constant.getConstant().getClass())){
                 List<Object> ids = new ArrayList<Object>();
                 for (Object o : (Collection<?>)constant.getConstant()){
                     if (isEntityType(o.getClass())){
                         ids.add(getId(session.getId(o)));
                     }else{
-                        ids.add(context.getId(o));    
-                    }                    
+                        ids.add(context.getId(o));
+                    }
                 }
                 return new ConstantImpl<Object>(ids);
             }else{
-                return ConstantImpl.create(context.getId(constant.getConstant()));    
-            }                        
+                return ConstantImpl.create(context.getId(constant.getConstant()));
+            }
         }else{
             return constant;
         }
     }
-    
+
     private Expression<?> transform(SQLCommonQuery<?> query, TemplateExpression<?> custom) {
         if (custom.getType().equals(Boolean.class)){
             return BooleanTemplate.create(custom.getTemplate(), transform(query, custom.getArgs(), true));
         }else if (custom.getType().equals(String.class)){
             return StringTemplate.create(custom.getTemplate(), transform(query, custom.getArgs(), true));
         }else{
-            return SimpleTemplate.create(custom.getType(), custom.getTemplate(), transform(query, custom.getArgs(), true));    
-        }               
+            return SimpleTemplate.create(custom.getType(), custom.getTemplate(), transform(query, custom.getArgs(), true));
+        }
     }
 
     private Predicate transform(SQLCommonQuery<?> query, Predicate expr){
@@ -463,8 +478,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         }else if (expr instanceof Constant){
             return transform(query, (Constant<?>)expr, realType);
         }else if (expr instanceof TemplateExpression<?>){
-            return transform(query, (TemplateExpression<?>)expr);                 
-        }else if (expr instanceof SubQueryExpression){    
+            return transform(query, (TemplateExpression<?>)expr);
+        }else if (expr instanceof SubQueryExpression){
             return transform(query, (SubQueryExpression<?>)expr, realType);
         }else{
             throw new IllegalArgumentException(e.toString());
@@ -478,17 +493,17 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         }
         return rv;
     }
-    
+
     @SuppressWarnings("unchecked")
     private Expression<?> transform(SQLCommonQuery<?> query, Operation<?> operation, boolean realType){
         Operator operator = operation.getOperator();
         boolean rt = needsSymbolResolving(operation);
-        operatorStack.push(operator);        
+        operatorStack.push(operator);
         Expression<?>[] args = transform(query, operation.getArgs(), rt);
         if (operator == Ops.IN && !rt && operation.getArg(1) instanceof Path){
             operator = Ops.EQ_OBJECT;
             args = new Expression[]{args[1],args[0]};
-            
+
         }else if (operator == Ops.ORDINAL){
             List<MappedPredicate> predicates = Collections.singletonList(new MappedPredicate(CORE.enumOrdinal, false));
             SimplePath ordinalPath = new SimplePath(Integer.class, (Path)operation.getArg(0), "ordinal");
@@ -502,15 +517,15 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
         }else if (operation.getType().equals(String.class)){
             return StringOperation.create(operator, args);
         }else{
-            return SimpleOperation.create(operation.getType(), operator, args);    
-        }        
+            return SimpleOperation.create(operation.getType(), operator, args);
+        }
     }
-    
-    private Expression<?> transform(SQLCommonQuery<?> query, Path<?> path, boolean realType){        
+
+    private Expression<?> transform(SQLCommonQuery<?> query, Path<?> path, boolean realType){
         PathType pathType = path.getMetadata().getPathType();
         if (path.getMetadata().getParent() != null){
             transform(query, path.getMetadata().getParent(), false);
-        }        
+        }
         if (pathType == PathType.VARIABLE || variables.containsKey(path)){
             QStatement stmt = getVariable(query, path);
             if (realType){
@@ -518,39 +533,42 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             }else{
                 return stmt.subject;
             }
-            
-        }else if (pathType == PathType.PROPERTY){            
+
+        }else if (pathType == PathType.PROPERTY){
             QStatement stmt = getProperty(query, path.getMetadata().getParent(), path);
             if (realType){
                 return getSymbol(query,stmt, path);
             }else{
                 return inversePaths.contains(path) ? stmt.subject : stmt.object;
             }
-            
+
+        }else if (pathType == PathType.COLLECTION_ANY){
+            return transform(query, path.getMetadata().getParent(), realType);
+
         }else{
             throw new IllegalArgumentException("Unsupported path type " + pathType);
         }
     }
 
     private Expression<?> transform(SQLCommonQuery<?> query, SubQueryExpression<?> expr, boolean realType) {
-        SubQueryExpression<?> q = (SubQueryExpression<?>)expr;
+        SubQueryExpression<?> q = expr;
         List<? extends Expression<?>> p = q.getMetadata().getProjection();
         SQLSubQuery sq = new SQLSubQuery();
         Expression<?>[] projection = populate(sq, q.getMetadata(), p.toArray(new Expression[p .size()]));
-        return sq.list(projection);            
+        return sq.list(projection);
     }
-    
+
     @Override
     public Object[] uniqueResult(Expression<?>[] args) {
         SQLQuery query = context.createQuery();
         return query.uniqueResult(populate(query, args));
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <RT> RT uniqueResult(Expression<RT> arg) {
         SQLQuery query = context.createQuery();
         return (RT) query.uniqueResult(populate(query, arg)[0]);
     }
-    
+
 }
