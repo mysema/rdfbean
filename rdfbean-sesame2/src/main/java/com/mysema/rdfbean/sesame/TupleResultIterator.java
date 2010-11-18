@@ -3,6 +3,7 @@ package com.mysema.rdfbean.sesame;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
@@ -18,14 +19,14 @@ import com.mysema.rdfbean.model.RepositoryException;
 public class TupleResultIterator implements CloseableIterator<Map<String, NODE>> {
 
     private final TupleQueryResult tupleResult;
-    
+
     private final SesameDialect dialect;
-    
+
     public TupleResultIterator(TupleQueryResult tupleResult, SesameDialect dialect) {
         this.tupleResult = tupleResult;
         this.dialect = dialect;
     }
-    
+
     @Override
     public void close() {
         try {
@@ -50,7 +51,10 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
             BindingSet bindingSet = tupleResult.next();
             Map<String,NODE> row = new HashMap<String,NODE>();
             for (String name : bindingSet.getBindingNames()){
-                row.put(name, dialect.getNODE(bindingSet.getValue(name)));
+                Value value = bindingSet.getValue(name);
+                if (value != null){
+                    row.put(name, dialect.getNODE(value));
+                }
             }
             return row;
         } catch (QueryEvaluationException e) {

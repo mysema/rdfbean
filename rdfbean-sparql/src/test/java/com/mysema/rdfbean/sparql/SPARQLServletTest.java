@@ -149,4 +149,22 @@ public class SPARQLServletTest {
         assertEquals(SPARQLServlet.SPARQL_RESULTS_JSON, response.getContentType());
     }
 
+    @Test
+    public void Select_with_Optional_Bindings_as_JSON() throws ServletException, IOException{
+        StringBuilder query = new StringBuilder();
+        query.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
+        query.append("PREFIX owl: <http://www.w3.org/2002/07/owl#>\n");
+        query.append("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n");
+        query.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n");
+        query.append("SELECT ?c ?c2 ?domain " +
+        	"WHERE { ?c rdf:type rdfs:Class . " +
+        	"OPTIONAL { ?c owl:disjointWith ?c2 . } " +
+        	"OPTIONAL { ?c rdfs:domain ?domain } }");
+
+        request.setParameter("query", query.toString());
+        request.addHeader("Accept", SPARQLServlet.SPARQL_RESULTS_JSON);
+        servlet.service(request, response);
+        System.out.println(response.getContentAsString());
+    }
+
 }
