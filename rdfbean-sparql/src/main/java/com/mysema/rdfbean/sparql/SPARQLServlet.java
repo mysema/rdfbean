@@ -74,6 +74,7 @@ public class SPARQLServlet extends HttpServlet{
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         HttpServletRequest request = (HttpServletRequest)req;
         HttpServletResponse response = (HttpServletResponse)res;
+        response.setCharacterEncoding("UTF-8");
         String queryString = request.getParameter("query");
         if (queryString == null){
             response.sendError(400, "No query given");
