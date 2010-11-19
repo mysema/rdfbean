@@ -17,6 +17,7 @@ import com.mysema.rdfbean.domains.EntityRevisionTermDomain.EntityRevision;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Term;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.io.Format;
@@ -24,7 +25,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({Entity.class, EntityRevision.class, Term.class})
 public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTermDomain{
-    
+
     @Before
     public void setUp(){
         Entity entity = new Entity();
@@ -33,16 +34,16 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
         session.saveAll(entity, revision, term);
         session.flush();
     }
-    
+
     @Test
     public void Ask(){
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "ASK { ?s ?p ?o }");
         assertEquals(SPARQLQuery.ResultType.BOOLEAN, query.getResultType());
         assertTrue(query.getBoolean());
     }
-    
+
     @Test
-    public void Select(){        
+    public void Select(){
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s ?p ?o WHERE {?s ?p ?o}");
         assertEquals(SPARQLQuery.ResultType.TUPLES, query.getResultType());
         assertEquals(Arrays.asList("s","p","o"), query.getVariables());
@@ -54,9 +55,23 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
         }
         rows.close();
     }
-    
+
     @Test
-    public void Construct(){        
+    public void Select_with_Bindings(){
+        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s ?p ?o WHERE {?s ?p ?o}");
+        query.setBinding("p", RDF.type);
+        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        assertTrue(rows.hasNext());
+        while (rows.hasNext()){
+            Map<String,NODE> row = rows.next();
+            assertEquals(RDF.type, row.get("p"));
+        }
+        rows.close();
+    }
+
+
+    @Test
+    public void Construct(){
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "CONSTRUCT { ?s ?p ?o } WHERE {?s ?p ?o}");
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
         CloseableIterator<STMT> triples = query.getTriples();
@@ -67,16 +82,16 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
         }
         triples.close();
     }
-    
+
     @Test
-    public void Construct_Stream_Triples(){        
+    public void Construct_Stream_Triples(){
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "CONSTRUCT { ?s ?p ?o } WHERE {?s ?p ?o}");
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
         StringWriter w = new StringWriter();
         query.streamTriples(w, Format.RDFXML.getMimetype());
         assertTrue(w.toString().contains("rdf:RDF"));
     }
-    
+
     @Test
     public void Select_and_Describe(){
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s WHERE {?s ?p ?o}");
@@ -98,6 +113,6 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
             }
         }
     }
-                                      
+
 
 }

@@ -206,7 +206,7 @@ public class SesameConnection implements RDFConnection {
         try {
             Query query = connection.prepareQuery(org.openrdf.query.QueryLanguage.SPARQL, queryString);
             if (query instanceof BooleanQuery){
-                return new BooleanQueryImpl((BooleanQuery)query);
+                return new BooleanQueryImpl((BooleanQuery)query, dialect);
             }else if (query instanceof GraphQuery){
                 return new GraphQueryImpl((GraphQuery)query, dialect);
             }else if (query instanceof TupleQuery){

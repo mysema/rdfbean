@@ -14,11 +14,14 @@ import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
 
 public class BooleanQueryImpl implements SPARQLQuery{
-    
+
     private final BooleanQuery booleanQuery;
-    
-    public BooleanQueryImpl(BooleanQuery query) {
+
+    private final SesameDialect dialect;
+
+    public BooleanQueryImpl(BooleanQuery query, SesameDialect dialect) {
         this.booleanQuery = query;
+        this.dialect = dialect;
     }
 
     @Override
@@ -53,6 +56,11 @@ public class BooleanQueryImpl implements SPARQLQuery{
         } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
+    }
+
+    @Override
+    public void setBinding(String variable, NODE node) {
+        booleanQuery.setBinding(variable, dialect.getNode(node));
     }
 
 }

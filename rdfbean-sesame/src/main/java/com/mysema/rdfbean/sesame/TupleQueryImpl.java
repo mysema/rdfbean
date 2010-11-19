@@ -21,11 +21,11 @@ import com.mysema.rdfbean.model.STMT;
  *
  */
 public class TupleQueryImpl implements SPARQLQuery {
-    
+
     private final SesameDialect dialect;
-    
+
     private final TupleQuery query;
-    
+
     @Nullable
     private TupleResult result;
 
@@ -38,7 +38,7 @@ public class TupleQueryImpl implements SPARQLQuery {
     public boolean getBoolean() {
         throw new UnsupportedOperationException();
     }
-    
+
     private TupleResult getResult() throws StoreException{
         if (result == null){
             result = query.evaluate();
@@ -78,5 +78,10 @@ public class TupleQueryImpl implements SPARQLQuery {
     public void streamTriples(Writer writer, String contentType) {
         throw new UnsupportedOperationException();
     }
-    
+
+    @Override
+    public void setBinding(String variable, NODE node) {
+        query.setBinding(variable, dialect.getNode(node));
+    }
+
 }

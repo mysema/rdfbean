@@ -26,16 +26,16 @@ import com.mysema.rdfbean.model.STMT;
  *
  */
 public class GraphQueryImpl implements SPARQLQuery{
-    
+
     private final SesameDialect dialect;
-    
+
     private final GraphQuery graphQuery;
-    
+
     public GraphQueryImpl(GraphQuery graphQuery, SesameDialect dialect) {
         this.graphQuery = graphQuery;
         this.dialect = dialect;
     }
-    
+
     @Override
     public boolean getBoolean() {
         throw new UnsupportedOperationException();
@@ -52,7 +52,7 @@ public class GraphQueryImpl implements SPARQLQuery{
             return new GraphResultIterator(graphQuery.evaluate(), dialect);
         } catch (StoreException e) {
             throw new RepositoryException(e);
-        }                
+        }
     }
 
     @Override
@@ -84,12 +84,17 @@ public class GraphQueryImpl implements SPARQLQuery{
                 rdfWriter.handleStatement(st);
             }
             rdfWriter.endRDF();
-            
+
         } catch (StoreException e) {
             throw new RepositoryException(e);
         } catch (RDFHandlerException e) {
             throw new RepositoryException(e);
         }
+    }
+
+    @Override
+    public void setBinding(String variable, NODE node) {
+        graphQuery.setBinding(variable, dialect.getNode(node));
     }
 
 

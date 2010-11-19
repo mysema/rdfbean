@@ -13,6 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.commons.fluxml.XMLWriter;
 import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDFConnection;
@@ -28,6 +31,8 @@ import com.mysema.rdfbean.model.io.Format;
  *
  */
 public class SPARQLServlet extends HttpServlet{
+
+    private static final Logger logger = LoggerFactory.getLogger(SPARQLServlet.class);
 
     private static final long serialVersionUID = 5726683938555535282L;
 
@@ -71,7 +76,7 @@ public class SPARQLServlet extends HttpServlet{
         HttpServletResponse response = (HttpServletResponse)res;
         String queryString = request.getParameter("query");
         if (queryString == null){
-            response.sendError(500, "No query given");
+            response.sendError(400, "No query given");
             return;
         }
 
@@ -90,6 +95,17 @@ public class SPARQLServlet extends HttpServlet{
             }
         }
 
+        try{
+            handleRequest(request, response, queryString);
+        }catch(Exception e){
+            logger.error(e.getMessage(), e);
+            response.sendError(400, e.getMessage().replace("<", "&lt;").replace(">","&gt;"));
+        }
+    }
+
+    private void handleRequest(HttpServletRequest request,
+            HttpServletResponse response, String queryString)
+            throws IOException {
         RDFConnection connection = repository.openConnection();
         try{
             SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, queryString);
