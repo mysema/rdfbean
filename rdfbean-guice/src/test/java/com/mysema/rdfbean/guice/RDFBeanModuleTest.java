@@ -1,9 +1,11 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.guice;
+
+import java.util.Properties;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,7 +26,7 @@ import com.mysema.rdfbean.sesame.MemoryRepository;
 public class RDFBeanModuleTest {
 
     private static Injector injector;
-    
+
     @BeforeClass
     public static void setUp(){
         injector = Guice.createInjector(new RDFBeanModule(){
@@ -37,12 +39,12 @@ public class RDFBeanModuleTest {
                 bind(ServiceD.class).to(ServiceDImpl.class);
             }
             @Override
-            public Repository createRepository(Configuration configuration) {
+            public Repository createRepository(Configuration configuration, @Config Properties properties) {
                 return new MemoryRepository();
-            }            
+            }
         });
     }
-    
+
     @Test
     public void tx1(){
         ServiceA service = injector.getInstance(ServiceA.class);
@@ -50,37 +52,37 @@ public class RDFBeanModuleTest {
         service.nonTxMethod2();
         service.txMethod();
         service.txMethod2();
-        service.txMethod3();        
-        service.txReadonly();        
+        service.txMethod3();
+        service.txReadonly();
     }
-    
+
     @Test
     public void tx2(){
-        ServiceB service = injector.getInstance(ServiceB.class); 
+        ServiceB service = injector.getInstance(ServiceB.class);
         service.txMethod();
         service.txReadonly();
         service.nonTxMethod();
     }
-    
+
     @Test
     public void tx3(){
-        ServiceC service = injector.getInstance(ServiceC.class); 
+        ServiceC service = injector.getInstance(ServiceC.class);
         service.txMethod();
         service.nonTxMethod();
     }
-    
+
     @Test
     public void tx4(){
-        ServiceD service = injector.getInstance(ServiceD.class); 
+        ServiceD service = injector.getInstance(ServiceD.class);
         service.txMethod();
     }
-    
+
     @Test(expected=Exception.class)
     public void txMethodWithException_commit() throws Exception{
         ServiceA service = injector.getInstance(ServiceA.class);
         service.txMethodWithException_commit();
     }
-    
+
     @Test(expected=Exception.class)
     public void txMethodWithException_rollback() throws Exception{
         ServiceA service = injector.getInstance(ServiceA.class);

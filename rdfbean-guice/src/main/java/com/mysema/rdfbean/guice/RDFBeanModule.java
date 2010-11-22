@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.guice;
 
@@ -34,20 +34,21 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 public abstract class RDFBeanModule extends AbstractModule{
 
     private static final Logger logger = LoggerFactory.getLogger(RDFBeanModule.class);
-    
+
     public List<String> getConfiguration(){
         return Collections.singletonList("/persistence.properties");
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
-    protected void configure() {               
+    protected void configure() {
         // inject properties
         try {
             Properties properties = new Properties();
             for (String res : getConfiguration()){
                 properties.load(RDFBeanModule.class.getResourceAsStream(res));
-            }            
+            }
+            bind(Properties.class).annotatedWith(Config.class).toInstance(properties);
             for (Map.Entry entry : properties.entrySet()){
                 bind(String.class)
                     .annotatedWith(Names.named(entry.getKey().toString()))
@@ -58,18 +59,19 @@ public abstract class RDFBeanModule extends AbstractModule{
             logger.error(error, e);
             throw new RuntimeException(error, e);
         }
-       
+
         // AOP tx handling
         TransactionalMethodMatcher methodMatcher = new TransactionalMethodMatcher();
         TransactionalInterceptor interceptor = new TransactionalInterceptor(methodMatcher);
         requestInjection(interceptor);
         bindInterceptor(Matchers.any(), methodMatcher, interceptor);
     }
-    
-    @Provides 
+
+    @Provides
     @Singleton
-    public abstract Repository createRepository(Configuration configuration);
-    
+    public abstract Repository createRepository(Configuration configuration,
+            @Config Properties properties);
+
     @Provides
     @Singleton
     public Configuration createConfiguration(){
@@ -78,7 +80,7 @@ public abstract class RDFBeanModule extends AbstractModule{
         configuration.addPackages(getAnnotatedPackages());
         return configuration;
     }
-    
+
     protected Package[] getAnnotatedPackages() {
         return new Package[0];
     }
@@ -89,7 +91,7 @@ public abstract class RDFBeanModule extends AbstractModule{
 
     @Provides
     @Singleton
-    public SessionFactory createSessionFactory(Configuration configuration, Repository repository){        
+    public SessionFactory createSessionFactory(Configuration configuration, Repository repository){
         // TODO : locale handling
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(configuration);

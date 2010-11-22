@@ -1,9 +1,11 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.guice;
+
+import java.util.Properties;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,7 +19,7 @@ import com.mysema.rdfbean.sesame.MemoryRepository;
 
 /**
  * RDFBeanModuleTest provides
- * 
+ *
  * @author tiwe
  * @version $Id$
  */
@@ -39,7 +41,7 @@ public class RDFBeanSubModuleTest {
 
                 RDFBeanModule rdfBeanModule = new RDFBeanModule() {
                     @Override
-                    public Repository createRepository(Configuration configuration) {
+                    public Repository createRepository(Configuration configuration, @Config Properties properties) {
                         return new MemoryRepository();
                     }
                 };
