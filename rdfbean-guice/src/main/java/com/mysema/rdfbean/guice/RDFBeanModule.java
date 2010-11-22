@@ -69,8 +69,7 @@ public abstract class RDFBeanModule extends AbstractModule{
 
     @Provides
     @Singleton
-    public abstract Repository createRepository(Configuration configuration,
-            @Config Properties properties);
+    public abstract Repository createRepository(Configuration configuration, @Config Properties properties);
 
     @Provides
     @Singleton
