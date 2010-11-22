@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import javax.annotation.Nullable;
+
 import net.jcip.annotations.Immutable;
 
 import com.mysema.commons.lang.Assert;
@@ -23,10 +25,14 @@ import com.mysema.commons.lang.Assert;
 @Immutable
 public class RDFSource {
 
-    private final String resource, context;
+    @Nullable
+    private final String resource;
+
+    private final String context;
 
     private final Format format;
 
+    @Nullable
     private final InputStream input;
 
     public RDFSource(String resource, Format format, String context) {
@@ -58,6 +64,8 @@ public class RDFSource {
     public InputStream openStream() throws IOException {
         if (input != null){
             return input;
+        }else if (resource == null){
+            throw new IllegalStateException();
         }else if (resource.startsWith("classpath:")){
             String name = resource.substring(10);
             if (name.startsWith("/")) {
