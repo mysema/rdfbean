@@ -1,11 +1,10 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.sesame;
 
-import org.openrdf.sail.SailException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,15 +19,15 @@ import com.mysema.rdfbean.model.RepositoryException;
  * @version $Id$
  */
 public class SesameTransaction implements RDFBeanTransaction{
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SesameTransaction.class);
-    
+
     private boolean active = false;
-    
+
     private final SesameConnection connection;
-    
+
     private boolean rollbackOnly;
-    
+
     public SesameTransaction(SesameConnection connection, int isolationLevel) {
         this.connection = Assert.notNull(connection,"connection");
     }
@@ -48,7 +47,7 @@ public class SesameTransaction implements RDFBeanTransaction{
     public void commit() {
         if (rollbackOnly){
             throw new RepositoryException("Transaction is rollBackOnly");
-        }        
+        }
         try {
             connection.getConnection().commit();
         } catch (org.openrdf.repository.RepositoryException e) {
@@ -58,7 +57,7 @@ public class SesameTransaction implements RDFBeanTransaction{
         }finally{
             connection.cleanUpAfterCommit();
         }
-        
+
     }
 
     public boolean isActive(){
@@ -72,26 +71,26 @@ public class SesameTransaction implements RDFBeanTransaction{
 
     @Override
     public void prepare() {
-        // TODO        
+        // TODO
     }
-    
+
     @Override
     public void rollback() {
        try {
-           connection.getConnection().rollback();           
+           connection.getConnection().rollback();
        } catch (org.openrdf.repository.RepositoryException e) {
            String error = "Caught " + e.getClass().getName();
            logger.error(error, e);
            throw new RepositoryException(error, e);
        }finally{
            connection.cleanUpAfterRollback();
-       }        
+       }
     }
 
     @Override
     public void setRollbackOnly() {
         this.rollbackOnly = true;
-        
+
     }
 
 }
