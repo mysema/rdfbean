@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.sesame;
 
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,8 @@ import com.mysema.rdfbean.model.STMT;
  *
  */
 public class TupleQueryImpl implements SPARQLQuery {
+
+    private final Map<String, NODE> bindings = new HashMap<String, NODE>();
 
     private final SesameDialect dialect;
 
@@ -59,7 +62,7 @@ public class TupleQueryImpl implements SPARQLQuery {
     @Override
     public CloseableIterator<Map<String, NODE>> getTuples() {
         try {
-            return new TupleResultIterator(getResult(), dialect);
+            return new TupleResultIterator(getResult(), bindings, dialect);
         } catch (QueryEvaluationException e) {
             throw new RepositoryException(e);
         }
@@ -81,6 +84,7 @@ public class TupleQueryImpl implements SPARQLQuery {
 
     @Override
     public void setBinding(String variable, NODE node) {
+        bindings.put(variable, node);
         query.setBinding(variable, dialect.getNode(node));
     }
 }

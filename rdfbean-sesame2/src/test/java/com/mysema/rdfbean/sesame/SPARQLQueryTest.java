@@ -69,6 +69,18 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
         rows.close();
     }
 
+    @Test
+    public void Select_with_Bindings_in_Projection(){
+        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s ?type ?o WHERE {?s ?p ?o}");
+        query.setBinding("type", RDF.type);
+        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        assertTrue(rows.hasNext());
+        while (rows.hasNext()){
+            Map<String,NODE> row = rows.next();
+            assertEquals(RDF.type, row.get("type"));
+        }
+        rows.close();
+    }
 
     @Test
     public void Construct(){

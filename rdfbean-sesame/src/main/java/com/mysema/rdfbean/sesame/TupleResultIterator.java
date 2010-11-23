@@ -20,10 +20,13 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
 
     private final TupleResult tupleResult;
 
+    private final Map<String, NODE> bindings;
+
     private final SesameDialect dialect;
 
-    public TupleResultIterator(TupleResult tupleResult, SesameDialect dialect) {
+    public TupleResultIterator(TupleResult tupleResult, Map<String, NODE> bindings, SesameDialect dialect) {
         this.tupleResult = tupleResult;
+        this.bindings = bindings;
         this.dialect = dialect;
     }
 
@@ -50,10 +53,12 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
         try {
             BindingSet bindingSet = tupleResult.next();
             Map<String,NODE> row = new HashMap<String,NODE>();
-            for (String name : bindingSet.getBindingNames()){
+            for (String name : tupleResult.getBindingNames()){
                 Value value = bindingSet.getValue(name);
                 if (value != null){
                     row.put(name, dialect.getNODE(value));
+                }else if (bindings.containsKey(name)){
+                    row.put(name, bindings.get(name));
                 }
             }
             return row;
