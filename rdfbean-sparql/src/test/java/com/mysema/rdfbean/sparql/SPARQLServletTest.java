@@ -120,6 +120,19 @@ public class SPARQLServletTest {
     }
 
     @Test
+    public void Select_with_MaxQueryTime() throws ServletException, IOException{
+        request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
+        SPARQLServlet servlet2 = new SPARQLServlet(repository, null, 1);
+        servlet2.service(request, response);
+
+        assertTrue(response.getContentAsString().contains("<sparql"));
+        assertTrue(response.getContentAsString().contains("<head>"));
+        assertTrue(response.getContentAsString().contains("<results>"));
+        assertTrue(response.getContentAsString().contains("literal"));
+        assertEquals(SPARQLServlet.SPARQL_RESULTS_XML, response.getContentType());
+    }
+
+    @Test
     public void Select_with_Html_Accept() throws ServletException, IOException{
         request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
         request.addHeader("Accept", "text/html");

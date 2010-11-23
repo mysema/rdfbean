@@ -47,7 +47,17 @@ public class SPARQLServlet extends HttpServlet{
     @Nullable
     private Repository repository;
 
+    @Nullable
     private Integer limit;
+
+    @Nullable
+    private Integer maxQueryTime;
+
+    public SPARQLServlet(Repository repository, Integer limit, Integer maxQueryTime) {
+        this.repository = repository;
+        this.limit = limit;
+        this.maxQueryTime = maxQueryTime;
+    }
 
     public SPARQLServlet(Repository repository, Integer limit) {
         this.repository = repository;
@@ -110,6 +120,10 @@ public class SPARQLServlet extends HttpServlet{
         RDFConnection connection = repository.openConnection();
         try{
             SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, queryString);
+            if (maxQueryTime != null){
+                query.setMaxQueryTime(maxQueryTime);
+            }
+
             String type = request.getParameter("type");
             if (query.getResultType() == SPARQLQuery.ResultType.TRIPLES){
                 String contentType = Format.RDFXML.getMimetype();
