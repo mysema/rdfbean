@@ -133,6 +133,7 @@ public abstract class SesameRepository implements Repository{
                 repository = createRepository(sesameInference);
                 repository.initialize();
                 RepositoryConnection connection = repository.getConnection();
+                connection.begin();
                 try {
                     if (sources != null && connection.isEmpty()) {
                         ValueFactory vf = connection.getValueFactory();
@@ -143,6 +144,9 @@ public abstract class SesameRepository implements Repository{
                                     vf.createURI(source.getContext()));
                         }
                     }
+                    connection.commit();
+                } catch(Exception e){
+                    connection.rollback();
                 } finally {
                     connection.close();
                 }
@@ -153,8 +157,8 @@ public abstract class SesameRepository implements Repository{
                     ontology = schemaOntology;
                 }
 
-            } catch (RDFParseException e) {
-                throw new RepositoryException(e);
+//            } catch (RDFParseException e) {
+//                throw new RepositoryException(e);
             } catch (MalformedURLException e) {
                 throw new RepositoryException(e);
             } catch (IOException e) {
