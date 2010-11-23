@@ -57,6 +57,18 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
     }
 
     @Test
+    public void Select_with_QueryTime(){
+        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s ?p ?o WHERE {?s ?p ?o}");
+        query.setMaxQueryTime(1);
+        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        assertTrue(rows.hasNext());
+        while (rows.hasNext()){
+            rows.next();
+        }
+        rows.close();
+    }
+
+    @Test
     public void Select_with_Bindings(){
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s ?p ?o WHERE {?s ?p ?o}");
         query.setBinding("p", RDF.type);

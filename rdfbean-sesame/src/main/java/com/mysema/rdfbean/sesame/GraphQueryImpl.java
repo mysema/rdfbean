@@ -97,5 +97,10 @@ public class GraphQueryImpl implements SPARQLQuery{
         graphQuery.setBinding(variable, dialect.getNode(node));
     }
 
+    @Override
+    public void setMaxQueryTime(int secs) {
+        graphQuery.setMaxQueryTime(secs);
+    }
+
 
 }

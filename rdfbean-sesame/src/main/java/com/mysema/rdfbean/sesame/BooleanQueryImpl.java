@@ -63,4 +63,9 @@ public class BooleanQueryImpl implements SPARQLQuery{
         booleanQuery.setBinding(variable, dialect.getNode(node));
     }
 
+    @Override
+    public void setMaxQueryTime(int secs) {
+        booleanQuery.setMaxQueryTime(secs);
+    }
+
 }

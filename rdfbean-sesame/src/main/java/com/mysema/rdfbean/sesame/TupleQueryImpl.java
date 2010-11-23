@@ -88,4 +88,9 @@ public class TupleQueryImpl implements SPARQLQuery {
         query.setBinding(variable, dialect.getNode(node));
     }
 
+    @Override
+    public void setMaxQueryTime(int secs) {
+        query.setMaxQueryTime(secs);
+    }
+
 }

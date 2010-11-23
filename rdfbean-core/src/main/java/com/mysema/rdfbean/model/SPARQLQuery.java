@@ -67,4 +67,11 @@ public interface SPARQLQuery {
      */
     void setBinding(String variable, NODE node);
 
+    /**
+     * Set the maximum query time in seconds
+     *
+     * @param secs
+     */
+    void setMaxQueryTime(int secs);
+
 }
