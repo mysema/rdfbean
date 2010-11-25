@@ -22,6 +22,7 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
+import org.openrdf.store.Isolation;
 import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.Namespaces;
@@ -133,6 +134,7 @@ public abstract class SesameRepository implements Repository{
                 repository = createRepository(sesameInference);
                 repository.initialize();
                 RepositoryConnection connection = repository.getConnection();
+                connection.setTransactionIsolation(Isolation.READ_COMMITTED);
                 connection.begin();
                 try {
                     if (sources != null && connection.isEmpty()) {
