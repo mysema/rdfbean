@@ -163,6 +163,7 @@ public class SPARQLServlet extends HttpServlet{
         }
     }
 
+    // TODO : make sure this works correctly
     private String getAcceptedType(HttpServletRequest request, String defaultType){
         String accept = request.getHeader("Accept");
         if (accept != null){
