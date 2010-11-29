@@ -24,6 +24,8 @@ import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.store.Isolation;
 import org.openrdf.store.StoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
@@ -49,6 +51,8 @@ import com.mysema.rdfbean.ontology.RepositoryOntology;
  */
 public abstract class SesameRepository implements Repository{
 
+    private static final Logger logger = LoggerFactory.getLogger(SesameRepository.class);
+
     @Nullable
     private Ontology<UID> ontology;
 
@@ -66,7 +70,9 @@ public abstract class SesameRepository implements Repository{
     public void close() {
         try {
             initialized = false;
-            repository.shutDown();
+            if (repository != null){
+                repository.shutDown();
+            }
         } catch (StoreException e) {
             throw new RepositoryException(e);
         }
@@ -140,6 +146,9 @@ public abstract class SesameRepository implements Repository{
                     if (sources != null && connection.isEmpty()) {
                         ValueFactory vf = connection.getValueFactory();
                         for (RDFSource source : sources) {
+                            if (source.getResource() != null){
+                                logger.info("loading " + source.getResource());
+                            }
                             connection.add(source.openStream(),
                                     source.getContext(),
                                     FormatHelper.getFormat(source.getFormat()),
@@ -149,6 +158,7 @@ public abstract class SesameRepository implements Repository{
                     connection.commit();
                 } catch(Exception e){
                     connection.rollback();
+                    throw new RepositoryException(e);
                 } finally {
                     connection.close();
                 }
@@ -159,8 +169,6 @@ public abstract class SesameRepository implements Repository{
                     ontology = schemaOntology;
                 }
 
-//            } catch (RDFParseException e) {
-//                throw new RepositoryException(e);
             } catch (MalformedURLException e) {
                 throw new RepositoryException(e);
             } catch (IOException e) {
