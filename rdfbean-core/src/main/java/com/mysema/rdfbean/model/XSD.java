@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.model;
 
@@ -10,9 +10,9 @@ import java.util.Collection;
 
 /**
  * Namespace file for XML Schema namespace
- * 
+ *
  * @author sasa
- * 
+ *
  */
 public final class XSD {
     public static final String NS = "http://www.w3.org/2001/XMLSchema#";
@@ -44,6 +44,8 @@ public final class XSD {
     public static final UID gYear = new UID(NS, "gYear");
 
     public static final UID gYearMonth = new UID(NS, "gYearMonth");
+
+    public static final UID hexBinary = new UID(NS, "hexBinary");
 
     public static final UID integerType = new UID(NS, "integer");
 
