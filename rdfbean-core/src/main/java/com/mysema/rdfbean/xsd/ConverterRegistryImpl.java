@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.xsd;
 
@@ -22,12 +22,13 @@ import com.mysema.rdfbean.model.XSD;
 public class ConverterRegistryImpl implements ConverterRegistry{
 
     private final Map<Class<?>,Converter<?>> classToConverter = new HashMap<Class<?>,Converter<?>>();
-    
+
     private final Map<Class<?>,UID> classToType = new HashMap<Class<?>,UID>();
 
-    public ConverterRegistryImpl(){                
+    public ConverterRegistryImpl(){
         register(new URIConverter());
         register(new BooleanConverter());
+        register(new BlobConverter());
         register(new ByteConverter());
         register(new LocalDateConverter());
         register(new DateConverter());
@@ -51,7 +52,7 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         register(new ShortConverter());
         register(XSD.stringType, String.class);
         register(new CharacterConverter());
-        register(new LocalTimeConverter());   
+        register(new LocalTimeConverter());
         register(new TimeConverter());
     }
 
@@ -73,37 +74,37 @@ public class ConverterRegistryImpl implements ConverterRegistry{
     public UID getDatatype(Class<?> javaClass) {
         return classToType.get(javaClass);
     }
-    
-    private <T> void register(UID type, Class<T> clazz) {        
-        classToType.put(clazz, type);     
+
+    private <T> void register(UID type, Class<T> clazz) {
+        classToType.put(clazz, type);
     }
 
-    private <T> void register(Converter<T> converter) {        
+    private <T> void register(Converter<T> converter) {
         register(converter.getType(), converter.getJavaType());
-        classToConverter.put(converter.getJavaType(), converter);    
+        classToConverter.put(converter.getJavaType(), converter);
         Class<?> primitiveType = ClassUtils.wrapperToPrimitive(converter.getJavaType());
         if (primitiveType != null){
             register(converter.getType(), primitiveType);
             classToConverter.put(primitiveType, converter);
-        }    
+        }
     }
-    
+
     @Override
     public boolean supports(Class<?> cl) {
         return classToType.containsKey(cl);
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> String toString(T javaValue) {
         if (javaValue instanceof String) {
             return (String)javaValue;
-        } 
-        Converter<T> converter = (Converter<T>) classToConverter.get(javaValue.getClass());            
+        }
+        Converter<T> converter = (Converter<T>) classToConverter.get(javaValue.getClass());
         if (converter != null){
-            return converter.toString(javaValue);    
+            return converter.toString(javaValue);
         }else{
             throw new IllegalArgumentException("No conversion for " + javaValue.getClass().getName() + " available");
-        }                
+        }
     }
 }

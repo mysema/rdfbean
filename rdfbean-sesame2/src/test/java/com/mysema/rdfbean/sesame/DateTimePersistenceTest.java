@@ -23,13 +23,8 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.model.io.Format;
-import com.mysema.rdfbean.xsd.DateConverter;
-import com.mysema.rdfbean.xsd.DateTimeConverter;
-import com.mysema.rdfbean.xsd.LocalDateConverter;
-import com.mysema.rdfbean.xsd.LocalTimeConverter;
-import com.mysema.rdfbean.xsd.TimeConverter;
-import com.mysema.rdfbean.xsd.TimestampConverter;
-import com.mysema.rdfbean.xsd.UtilDateConverter;
+import com.mysema.rdfbean.xsd.ConverterRegistry;
+import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 public class DateTimePersistenceTest {
 
@@ -47,25 +42,19 @@ public class DateTimePersistenceTest {
         repository = new MemoryRepository();
         repository.initialize();
 
-        DateTimeConverter dateTime = new DateTimeConverter();
-        LocalDateConverter localDate = new LocalDateConverter();
-        LocalTimeConverter localTime = new LocalTimeConverter();
-        DateConverter date = new DateConverter();
-        UtilDateConverter utilDate = new UtilDateConverter();
-        TimeConverter time = new TimeConverter();
-        TimestampConverter timestamp = new TimestampConverter();
+        ConverterRegistry converters = new ConverterRegistryImpl();
 
         // load data
         ID sub = new BID("b123");
         repository.execute(new Addition(
-                new STMT(sub, pre(1), new LIT(dateTime.toString(new DateTime()), XSD.dateTime)),
-                new STMT(sub, pre(2), new LIT(localDate.toString(new LocalDate()), XSD.date)),
-                new STMT(sub, pre(3), new LIT(localTime.toString(new LocalTime()), XSD.time)),
+                new STMT(sub, pre(1), new LIT(converters.toString(new DateTime()), XSD.dateTime)),
+                new STMT(sub, pre(2), new LIT(converters.toString(new LocalDate()), XSD.date)),
+                new STMT(sub, pre(3), new LIT(converters.toString(new LocalTime()), XSD.time)),
 
-                new STMT(sub, pre(4), new LIT(date.toString(new java.sql.Date(0)), XSD.date)),
-                new STMT(sub, pre(5), new LIT(utilDate.toString(new java.util.Date(0)), XSD.dateTime)),
-                new STMT(sub, pre(6), new LIT(time.toString(new Time(0)), XSD.time)),
-                new STMT(sub, pre(7), new LIT(timestamp.toString(new Timestamp(0)), XSD.dateTime))
+                new STMT(sub, pre(4), new LIT(converters.toString(new java.sql.Date(0)), XSD.date)),
+                new STMT(sub, pre(5), new LIT(converters.toString(new java.util.Date(0)), XSD.dateTime)),
+                new STMT(sub, pre(6), new LIT(converters.toString(new Time(0)), XSD.time)),
+                new STMT(sub, pre(7), new LIT(converters.toString(new Timestamp(0)), XSD.dateTime))
         ));
         long count = repository.execute(new CountOperation());
         assertEquals(7, count);

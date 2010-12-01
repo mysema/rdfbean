@@ -73,6 +73,7 @@ public final class XSD {
             gMonthDay,
             gYear,
             gYearMonth,
+            hexBinary,
             integerType,
             intType,
             longType,
