@@ -2,6 +2,8 @@ package com.mysema.rdfbean.model;
 
 import java.io.IOException;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.CloseableIterator;
 
 /**
@@ -10,10 +12,13 @@ import com.mysema.commons.lang.CloseableIterator;
  */
 public class CountOperation implements Operation<Long>{
 
+    @Nullable
     private final ID subject;
 
+    @Nullable
     private final UID predicate, context;
 
+    @Nullable
     private final NODE object;
 
     private final boolean includeInferred;
@@ -22,7 +27,10 @@ public class CountOperation implements Operation<Long>{
         this(null, null, null, null, false);
     }
 
-    public CountOperation(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+    public CountOperation(@Nullable ID subject, 
+            @Nullable UID predicate, 
+            @Nullable NODE object, 
+            @Nullable UID context, boolean includeInferred) {
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;

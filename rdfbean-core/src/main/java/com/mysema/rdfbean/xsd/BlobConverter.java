@@ -9,7 +9,8 @@ public class BlobConverter extends AbstractConverter<Blob>{
 
     @Override
     public Blob fromString(String str) {
-        return null;
+        // TODO
+        throw new UnsupportedOperationException();
     }
 
     @Override
