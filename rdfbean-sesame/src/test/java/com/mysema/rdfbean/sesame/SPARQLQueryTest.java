@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.sesame;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
@@ -40,6 +41,13 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
         SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "ASK { ?s ?p ?o }");
         assertEquals(SPARQLQuery.ResultType.BOOLEAN, query.getResultType());
         assertTrue(query.getBoolean());
+    }
+    
+    @Test
+    public void Ask_with_False_result(){
+        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "ASK { ?s <test:test> ?o }");
+        assertEquals(SPARQLQuery.ResultType.BOOLEAN, query.getResultType());
+        assertFalse(query.getBoolean());
     }
 
     @Test
