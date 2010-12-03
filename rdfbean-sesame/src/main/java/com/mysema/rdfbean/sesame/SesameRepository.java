@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.sql.Connection;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -53,10 +52,6 @@ public abstract class SesameRepository implements Repository{
 
     private static final Logger logger = LoggerFactory.getLogger(SesameRepository.class);
 
-    private static final int TX_TIMEOUT = -1;
-
-    private static final int TX_ISOLATION = Connection.TRANSACTION_READ_COMMITTED;
-
     @Nullable
     private Ontology<UID> ontology;
 
@@ -88,7 +83,7 @@ public abstract class SesameRepository implements Repository{
     public <RT> RT execute(Operation<RT> operation) {
         RDFConnection connection = openConnection();
         try{
-            RDFBeanTransaction tx = connection.beginTransaction(false, TX_TIMEOUT, TX_ISOLATION);
+            RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
             try{
                 RT retVal = operation.execute(connection);
                 tx.commit();

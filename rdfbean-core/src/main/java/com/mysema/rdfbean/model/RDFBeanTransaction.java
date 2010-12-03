@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.model;
 
+import java.sql.Connection;
+
 
 /**
  * RDFBeanTransaction defines a common interface for RDFBean transaction implementations
@@ -13,6 +15,10 @@ package com.mysema.rdfbean.model;
  * @version $Id$
  */
 public interface RDFBeanTransaction {
+    
+    int TIMEOUT = -1;
+
+    int ISOLATION = Connection.TRANSACTION_READ_COMMITTED;
     
     /**
      * Prepare the transaction for commit

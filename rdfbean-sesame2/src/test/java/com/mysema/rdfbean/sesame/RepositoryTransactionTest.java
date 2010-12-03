@@ -1,7 +1,5 @@
 package com.mysema.rdfbean.sesame;
 
-import java.sql.Connection;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,10 +11,6 @@ import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 
 public class RepositoryTransactionTest {
-
-    private static final int TX_TIMEOUT = -1;
-
-    private static final int TX_ISOLATION = Connection.TRANSACTION_READ_COMMITTED;
 
     private static SesameRepository repository;
 
@@ -39,7 +33,7 @@ public class RepositoryTransactionTest {
     public void Create_and_Commit(){
         RDFConnection connection = repository.openConnection();
         try{
-            RDFBeanTransaction tx = connection.beginTransaction(false, TX_TIMEOUT, TX_ISOLATION);
+            RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
             tx.commit();
         }finally{
             connection.close();
@@ -50,7 +44,7 @@ public class RepositoryTransactionTest {
     public void Create_and_Rollback(){
         RDFConnection connection = repository.openConnection();
         try{
-            RDFBeanTransaction tx = connection.beginTransaction(false, TX_TIMEOUT, TX_ISOLATION);
+            RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
             tx.rollback();
         }finally{
             connection.close();
