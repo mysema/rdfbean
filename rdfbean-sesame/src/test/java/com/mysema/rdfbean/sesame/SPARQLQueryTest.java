@@ -114,6 +114,20 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
         }
         triples.close();
     }
+    
+    @Test
+    public void Construct_Multiple_Patterns(){
+        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "CONSTRUCT { ?s ?p ?o . ?s rdf:type ?type } " +
+                        "WHERE {?s ?p ?o . ?s rdf:type ?type } LIMIT 10");
+        assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
+        CloseableIterator<STMT> triples = query.getTriples();
+        assertTrue(triples.hasNext());
+        while (triples.hasNext()){
+            STMT triple = triples.next();
+            System.out.println(triple);
+        }
+        triples.close();
+    }
 
     @Test
     public void Construct_Stream_Triples(){
