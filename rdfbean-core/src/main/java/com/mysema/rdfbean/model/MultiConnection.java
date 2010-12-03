@@ -98,5 +98,10 @@ public abstract class MultiConnection implements RDFConnection{
     public BID createBNode() {
         return connections[0].createBNode();
     }
+    
+    @Override
+    public void remove(ID subject, UID predicate, NODE object, UID context) {
+        connections[0].remove(subject, predicate, object, context);
+    }
 
 }

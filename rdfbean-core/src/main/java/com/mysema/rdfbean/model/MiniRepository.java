@@ -29,7 +29,7 @@ import com.mysema.rdfbean.model.io.Format;
  */
 public final class MiniRepository implements Repository{
     
-    private MiniDialect dialect = new MiniDialect();
+    private final MiniDialect dialect = new MiniDialect();
     
     private long localId = 0;
     
@@ -149,6 +149,12 @@ public final class MiniRepository implements Repository{
         return new MiniConnection(this);
     }
 
+
+    public void remove(ID subject, UID predicate, NODE object, UID context) {
+        // TODO
+    }
+
+    
     private boolean removeIndexed(ID key, STMT stmt, Map<ID, PredicateCache> index) {
         PredicateCache stmtMap = index.get(key);
         if (stmtMap != null) {
@@ -181,6 +187,5 @@ public final class MiniRepository implements Repository{
             throw new RepositoryException(io);
         }
     }
-
     
 }

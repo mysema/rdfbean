@@ -25,47 +25,12 @@ public class MiniConnection implements RDFConnection {
         this.repository = repository;
     }
 
-    @Override
-    public BID createBNode() {
-        return new BID();
-    }
-
-    @Override
-    public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
-            NODE object, UID context, boolean includeInferred) {
-        return repository.findStatements(subject, predicate, object, context, includeInferred);
-    }
-
-    @Override
-    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
-        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
-        try {
-            return iter.hasNext();
-        } finally {
-            iter.close();
-        }
-    }
-
     public void addStatements(CloseableIterator<STMT> stmts) {
         this.repository.addStatements(stmts);
     }
-    
+
     public void addStatements(STMT... stmts) {
         this.repository.add(stmts);
-    }
-
-    @Override
-    public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
-        if (removedStatements != null) {
-            repository.removeStatement(removedStatements.toArray(new STMT[removedStatements.size()]));
-        }
-        if (addedStatements != null) {
-            repository.add(addedStatements.toArray(new STMT[addedStatements.size()]));
-        }
-    }
-
-    @Override
-    public void close() {
     }
 
     @Override
@@ -76,11 +41,16 @@ public class MiniConnection implements RDFConnection {
     @Override
     public void clear() {
     }
-
-    public MiniRepository getRepository() {
-        return repository;
-    }
     
+    @Override
+    public void close() {
+    }
+
+    @Override
+    public BID createBNode() {
+        return new BID();
+    }
+
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
         throw new UnsupportedOperationException();
@@ -97,8 +67,43 @@ public class MiniConnection implements RDFConnection {
     }
 
     @Override
+    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
+        try {
+            return iter.hasNext();
+        } finally {
+            iter.close();
+        }
+    }
+
+    @Override
+    public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
+            NODE object, UID context, boolean includeInferred) {
+        return repository.findStatements(subject, predicate, object, context, includeInferred);
+    }
+    
+    @Override
     public long getNextLocalId() {
         return repository.getNextLocalId();
+    }
+
+    public MiniRepository getRepository() {
+        return repository;
+    }
+
+    @Override
+    public void remove(ID subject, UID predicate, NODE object, UID context) {
+        repository.remove(subject, predicate, object, context);
+    }
+
+    @Override
+    public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
+        if (removedStatements != null) {
+            repository.removeStatement(removedStatements.toArray(new STMT[removedStatements.size()]));
+        }
+        if (addedStatements != null) {
+            repository.add(addedStatements.toArray(new STMT[addedStatements.size()]));
+        }
     }
 
 }

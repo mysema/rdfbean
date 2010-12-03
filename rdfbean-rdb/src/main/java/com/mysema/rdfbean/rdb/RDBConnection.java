@@ -35,7 +35,17 @@ import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.ConstructorExpression;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.template.NumberTemplate;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -416,6 +426,23 @@ public class RDBConnection implements RDFConnection{
         return clause;
     }
 
+    @Override
+    public void remove(ID s, UID p, NODE o, UID c) {
+        SQLDeleteClause delete = context.createDelete(statement);
+        if (s != null){
+            delete.where(statement.subject.eq(getId(s)));
+        }
+        if (p != null){
+            delete.where(statement.predicate.eq(getId(p)));
+        }
+        if (o != null){
+            delete.where(statement.object.eq(getId(o)));
+        }
+        if (c != null){
+            delete.where(statement.model.eq(getId(c)));
+        }
+        delete.execute();
+    }
 
     @Override
     public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {

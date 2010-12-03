@@ -34,7 +34,19 @@ import org.openrdf.repository.RepositoryResult;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.Dialect;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.Inference;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
 import com.mysema.rdfbean.sesame.query.SesameQuery;
@@ -283,6 +295,19 @@ public class SesameConnection implements RDFConnection {
 
     public RDFBeanTransaction getTransaction() {
         return localTxn;
+    }
+    
+    @Override
+    public void remove(ID subject, UID predicate, NODE object, UID context) {
+        Resource subj = subject != null ? dialect.getResource(subject) : null;
+        URI pred = predicate != null ? dialect.getURI(predicate) : null;
+        Value obj = object != null ? dialect.getNode(object) : null;
+        URI cont = context != null ? dialect.getURI(context) : null;
+        try {
+            connection.remove(subj, pred, obj, cont);
+        } catch (org.openrdf.repository.RepositoryException e) {
+            throw new RepositoryException(e);
+        }
     }
 
     @Override

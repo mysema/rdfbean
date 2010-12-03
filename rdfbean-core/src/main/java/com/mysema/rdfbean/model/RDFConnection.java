@@ -73,22 +73,6 @@ public interface RDFConnection extends Closeable{
     <D,Q> Q createQuery(Session session, QueryLanguage<D,Q> queryLanguage, @Nullable D definition);
 
     /**
-     * Find the statements matching the given pattern
-     *
-     * @param subject
-     * @param predicate
-     * @param object
-     * @param context
-     * @param includeInferred true, if inferred triples are included, and false, if not
-     * @return
-     */
-    CloseableIterator<STMT> findStatements(
-            @Nullable ID subject,
-            @Nullable UID predicate,
-            @Nullable NODE object,
-            @Nullable UID context, boolean includeInferred);
-
-    /**
      * Find out if statements matching the given pattern exist
      *
      * @param subject
@@ -105,11 +89,41 @@ public interface RDFConnection extends Closeable{
             @Nullable UID context, boolean includeInferred);
 
     /**
+     * Find the statements matching the given pattern
+     *
+     * @param subject
+     * @param predicate
+     * @param object
+     * @param context
+     * @param includeInferred true, if inferred triples are included, and false, if not
+     * @return
+     */
+    CloseableIterator<STMT> findStatements(
+            @Nullable ID subject,
+            @Nullable UID predicate,
+            @Nullable NODE object,
+            @Nullable UID context, boolean includeInferred);
+    
+    /**
      * Get a unallocated local id for use in a ID/LID mapping
      *
      * @return
      */
     long getNextLocalId();
+
+    /**
+     * Remove all matching statements
+     * 
+     * @param subject
+     * @param predicate
+     * @param object
+     * @param context
+     */
+    void remove(
+            @Nullable ID subject,
+            @Nullable UID predicate,
+            @Nullable NODE object,
+            @Nullable UID context);
 
     /**
      * Update the Repository with the given statements

@@ -93,17 +93,20 @@ public class SPARQLServlet extends HttpServlet{
 
         // handle implicit limit
         if (limit != null){
-            Matcher m = LIMIT_PATTERN.matcher(queryString);
-            if (m.find()){
-                String l = m.group(1);
-                if (Integer.valueOf(l) < limit){
-                    queryString = m.replaceAll(" LIMIT " + l + " ");
+            String normalized = queryString.toLowerCase().replaceAll("\\s+", " ");
+            if (!normalized.startsWith("ask") && !normalized.contains(" ask ")){
+                Matcher m = LIMIT_PATTERN.matcher(queryString);
+                if (m.find()){
+                    String l = m.group(1);
+                    if (Integer.valueOf(l) < limit){
+                        queryString = m.replaceAll(" LIMIT " + l + " ");
+                    }else{
+                        queryString = m.replaceAll(" LIMIT " + limit + " ");
+                    }
                 }else{
-                    queryString = m.replaceAll(" LIMIT " + limit + " ");
-                }
-            }else{
-                queryString += " LIMIT " + limit;
-            }
+                    queryString += " LIMIT " + limit;
+                }    
+            }            
         }
 
         try{

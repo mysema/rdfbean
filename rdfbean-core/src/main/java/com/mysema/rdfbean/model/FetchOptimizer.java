@@ -105,6 +105,26 @@ public class FetchOptimizer implements RDFConnection {
         return connection.createBNode();
     }
     
+    @Override
+    public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
+        return connection.createQuery(queryLanguage, definition);
+    }
+
+    @Override
+    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
+        return connection.createQuery(session, queryLanguage, definition);
+    }
+
+    @Override
+    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
+        try {
+            return iter.hasNext();
+        } finally {
+            iter.close();
+        }
+    }
+
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, boolean includeInferred) {
         boolean cached = false;
@@ -138,33 +158,19 @@ public class FetchOptimizer implements RDFConnection {
             return connection.findStatements(subject, predicate, object, context, includeInferred);
         }
     }
-
-    @Override
-    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
-        CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
-        try {
-            return iter.hasNext();
-        } finally {
-            iter.close();
-        }
-    }
-
+    
     public MiniRepository getCache() {
         return cache.getRepository();
     }
+    
+    @Override
+    public long getNextLocalId() {
+        return connection.getNextLocalId();
+    }
 
     @Override
-    public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-        return connection.createQuery(queryLanguage, definition);
-    }
-    
-    @Override
-    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
-        return connection.createQuery(session, queryLanguage, definition);
-    }
-    
-    public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
-        this.fetchStrategies = fetchStrategies;
+    public void remove(ID subject, UID predicate, NODE object, UID context) {
+        connection.remove(subject, predicate, object, context);
     }
 
     @Override
@@ -173,10 +179,8 @@ public class FetchOptimizer implements RDFConnection {
         connection.update(removedStatements, addedStatements);
     }
 
-    @Override
-    public long getNextLocalId() {
-        return connection.getNextLocalId();
+    public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
+        this.fetchStrategies = fetchStrategies;
     }
-
     
 }

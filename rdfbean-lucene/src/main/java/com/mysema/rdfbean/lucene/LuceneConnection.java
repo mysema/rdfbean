@@ -44,7 +44,18 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.EmptyCloseableIterator;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.NodeType;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SimpleBeanQuery;
 import com.mysema.util.MultiMapFactory;
@@ -500,7 +511,14 @@ class LuceneConnection implements RDFConnection{
     }
 
     @Override
+    public void remove(ID subject, UID predicate, NODE object, UID context) {
+        throw new UnsupportedOperationException();
+    }
+    
+
+    @Override
     public synchronized long getNextLocalId() {
         return conf.getNextLocalId();
     }
+
 }

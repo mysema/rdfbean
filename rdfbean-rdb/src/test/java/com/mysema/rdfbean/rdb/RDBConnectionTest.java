@@ -111,6 +111,42 @@ public class RDBConnectionTest extends AbstractRDBTest{
         assertEquals(1, conn.find(subject, new UID(TEST.NS,"int"), new LIT("1",XSD.intType), null, false).size());
         assertEquals(1, conn.find(subject, new UID(TEST.NS,"double"),  new LIT("1.0",XSD.doubleType), null, false).size());
     }
+    
+    @Test
+    public void Remove(){
+        Set<STMT> additions = new HashSet<STMT>();
+        additions.add(new STMT(RDF.type, RDF.type, RDF.Property));
+        additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
+        additions.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));
+        Set<STMT> removals = new HashSet<STMT>();
+        conn.update(removals, additions);
+        
+        QSymbol symbol = QSymbol.symbol;
+        assertEquals(1l, from(symbol).where(symbol.id.eq(id(RDF.type))).count());
+        assertEquals(1l, from(symbol).where(symbol.id.eq(id(RDFS.label))).count());
+        assertEquals(1l, from(symbol).where(symbol.id.eq(id(new LIT("type")))).count());
+
+        conn.remove(null,     null,     null,         RDF.type); // * * * c
+        assertEquals(3, conn.find(RDF.type, null, null, null, false).size());
+        
+        conn.remove(null,     null,     RDF.Property, null);     // * * o *
+        assertEquals(2, conn.find(RDF.type, null, null, null, false).size());
+        
+        conn.remove(null,     RDF.type, RDF.Property, null);     // * p o *
+        assertEquals(2, conn.find(RDF.type, null, null, null, false).size());
+        
+        conn.remove(RDF.type, RDF.type, RDF.Property, null);     // s p o *
+        assertEquals(2, conn.find(RDF.type, null, null, null, false).size());
+        
+        conn.remove(RDF.type, RDF.type, null,         null);     // s p * *
+        assertEquals(2, conn.find(RDF.type, null, null, null, false).size());
+        
+        conn.remove(RDF.type, null,     null,         null);     // s * * *
+        assertEquals(0, conn.find(RDF.type, null, null, null, false).size());
+        
+        conn.remove(null,     null,     null,         null);     // * * * *
+
+    }
 
     @Test
     public void Update() throws SQLException {
