@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Entity;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.EntityRevision;
@@ -21,6 +22,7 @@ import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
@@ -88,6 +90,18 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
         }
         rows.close();
     }
+        
+    @Test
+    public void Select_with_Bindings_no_Match(){
+        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 10");
+        query.setBinding("p", new UID(TEST.NS, "p" + System.currentTimeMillis()));
+        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        try{
+            assertFalse(rows.hasNext());    
+        }finally{
+            rows.close();
+        }
+    }
 
     @Test
     public void Select_with_Bindings_in_Projection(){
@@ -117,8 +131,8 @@ public class SPARQLQueryTest extends SessionTestBase implements EntityRevisionTe
     
     @Test
     public void Construct_Multiple_Patterns(){
-        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "CONSTRUCT { ?s ?p ?o . ?s rdf:type ?type } " +
-                        "WHERE {?s ?p ?o . ?s rdf:type ?type } LIMIT 10");
+        SPARQLQuery query = session.createQuery(QueryLanguage.SPARQL, "CONSTRUCT { ?s ?p ?o . ?s ?p2 ?type } " +
+                        "WHERE {?s ?p ?o . ?s ?p2 ?type } LIMIT 10");
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
         CloseableIterator<STMT> triples = query.getTriples();
         assertTrue(triples.hasNext());
