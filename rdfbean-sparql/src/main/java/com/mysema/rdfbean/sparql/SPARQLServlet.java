@@ -155,7 +155,14 @@ public class SPARQLServlet extends HttpServlet{
                 }
                 response.setContentType(contentType);
                 if (contentType.equals(SPARQL_RESULTS_JSON)){
+                    String jsonpCallback = request.getParameter("jsonp");
+                    if (jsonpCallback != null){
+                        response.getWriter().write(jsonpCallback + "(");
+                    }
                     resultProducer.streamAsJSON(query, response.getWriter());
+                    if (jsonpCallback != null){
+                        response.getWriter().write(")");
+                    }
                 }else{
                     XMLWriter writer = new XMLWriter(response.getWriter());
                     resultProducer.streamAsXML(query, writer);

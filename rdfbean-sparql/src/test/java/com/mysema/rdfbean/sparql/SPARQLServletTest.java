@@ -150,6 +150,20 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("literal"));
         assertEquals(SPARQLServlet.SPARQL_RESULTS_JSON, response.getContentType());
     }
+    
+    @Test
+    public void Select_as_JSON_with_JSONP() throws ServletException, IOException{
+        request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
+        request.setParameter("type", "json");
+        request.setParameter("jsonp", "handleResponse");
+        servlet.service(request, response);
+        assertTrue(response.getContentAsString().startsWith("handleResponse("));
+        assertTrue(response.getContentAsString().endsWith(")"));
+        assertTrue(response.getContentAsString().contains("head"));
+        assertTrue(response.getContentAsString().contains("results"));
+        assertTrue(response.getContentAsString().contains("literal"));
+        assertEquals(SPARQLServlet.SPARQL_RESULTS_JSON, response.getContentType());
+    }
 
     @Test
     public void Select_as_JSON_via_Accept() throws ServletException, IOException{
