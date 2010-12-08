@@ -98,7 +98,7 @@ public class SPARQLResultProducer {
         results.put("bindings", bindings);        
         root.put("head", head);
         root.put("results", results);
-        writer.print(root.toString());
+        root.write(writer);
     }
 
     private void streamTupleAsXML(SPARQLQuery query, XMLWriter writer) throws IOException {
