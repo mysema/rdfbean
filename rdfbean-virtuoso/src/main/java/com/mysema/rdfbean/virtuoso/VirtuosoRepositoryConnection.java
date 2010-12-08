@@ -311,9 +311,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             return new STMTIterator(converter, ps, rs, subject, predicate, object, defaultGraph);
         } catch (SQLException e) {
             AbstractQueryImpl.close(ps, rs);
-            throw new RepositoryException(getClass().getCanonicalName()
-                    + ": SPARQL execute failed." + "\n" + query.toString()
-                    + "[" + e + "]", e);
+            throw new RepositoryException("Query execution failed : " + query.toString(), e);
         }        
     }
 
