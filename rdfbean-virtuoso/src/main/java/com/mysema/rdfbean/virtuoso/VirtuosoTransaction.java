@@ -19,6 +19,7 @@ public class VirtuosoTransaction implements RDFBeanTransaction{
     public VirtuosoTransaction(Connection connection, boolean readOnly, int txTimeout, int isolationLevel) {
         this.conn = connection;
         try{
+            conn.setAutoCommit(false);
             conn.setReadOnly(readOnly);
             conn.setTransactionIsolation(isolationLevel);
         } catch (SQLException e) {

@@ -3,11 +3,17 @@ package com.mysema.rdfbean.virtuoso;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.STMT;
 
 public class VirtuosoTransactionTest extends AbstractConnectionTest{
     
@@ -44,7 +50,12 @@ public class VirtuosoTransactionTest extends AbstractConnectionTest{
 
     @Test
     public void Rollback() {
+        STMT stmt = new STMT(new BID(), RDF.type, RDFS.Class);
+        toBeRemoved = Collections.singleton(stmt);
+        connection.update(null, Collections.singleton(stmt));
         tx.rollback();
+        
+        assertFalse(connection.exists(stmt.getSubject(), null, null, null, false));
     }
 
     @Test(expected=RepositoryException.class)
