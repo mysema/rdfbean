@@ -125,7 +125,7 @@
 					<ajdtVersion>none</ajdtVersion>
 				</configuration>
 			</plugin>
-
+	<!-- 
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -134,11 +134,10 @@
 					<maxmem>256</maxmem>
 				</configuration>
 			</plugin>
-
+	-->
 			<plugin>
 				<groupId>com.mysema.maven</groupId>
 				<artifactId>maven-apt-plugin</artifactId>
-				<version>0.3.0</version>
 				<executions>
 					<execution>
 						<goals>
