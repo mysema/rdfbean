@@ -1,0 +1,62 @@
+package com.mysema.rdfbean.virtuoso;
+
+import java.io.Writer;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.STMT;
+
+/**
+ * @author tiwe
+ *
+ */
+public class BooleanQueryImpl extends AbstractQueryImpl {
+    
+    public BooleanQueryImpl(Connection connection, String query) {
+        super(connection, query);
+    }
+
+    @Override
+    public boolean getBoolean() {
+        try {
+            rs = executeQuery(query);
+            rs.next();
+            return rs.getShort(1) > 0;
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }finally{
+            close();
+        }
+    }
+
+    @Override
+    public ResultType getResultType() {
+        return ResultType.BOOLEAN;
+    }
+
+    @Override
+    public CloseableIterator<STMT> getTriples() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public CloseableIterator<Map<String, NODE>> getTuples() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<String> getVariables() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void streamTriples(Writer writer, String contentType) {
+        throw new UnsupportedOperationException();        
+    }
+
+}

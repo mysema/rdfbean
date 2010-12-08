@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mysema.rdf</groupId>
+  <artifactId>rdfbean-virtuoso</artifactId>
+  <packaging>jar</packaging>
+  <name>RDFBean - Virtuoso</name>
+  
+  <parent>
+    <groupId>com.mysema.rdf</groupId>
+    <artifactId>rdfbean-root</artifactId>
+    <version>1.4.6-SNAPSHOT</version>
+  </parent>  
+  
+  <properties>
+  	<sesame.version>3.0-alpha1</sesame.version>
+  </properties>	  
+  
+  <dependencies>
+    <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-core</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+	<dependency>
+	  <groupId>com.openlinksw</groupId>
+	  <artifactId>virtjdbc4</artifactId>
+	  <version>1.0</version>
+	</dependency>		
+	
+    <!-- RDF I/O from Sesame RIO -->
+    <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-rio-turtle</artifactId>
+      <version>${sesame.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-rio-rdfxml</artifactId>
+      <version>${sesame.version}</version>
+    </dependency>
+    
+	<dependency>
+      <groupId>org.openrdf.sesame</groupId>
+      <artifactId>sesame-rio-ntriples</artifactId>
+      <version>${sesame.version}</version>
+      <scope>test</scope>
+    </dependency>    	
+           
+	<!-- test deps -->
+	
+	<dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-core</artifactId>
+      <version>${project.parent.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>   
+		   
+  </dependencies>
+  
+
+</project>
