@@ -134,24 +134,27 @@ public class STMTIterator implements CloseableIterator<STMT>{
             throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting UID: "+ val, ccex);
         }
 
-        if (_subject == null && col_s != -1)
+        if (_subject == null){
             try {
                 val = rs.getObject(col_s);
                 _subject = (ID) converter.toNODE(val);
             } catch (ClassCastException ccex) {
                 throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting ID: " + val, ccex);
             }
+        }            
 
-        if (_predicate == null && col_p != -1)
+        if (_predicate == null){
             try {
                 val = rs.getObject(col_p);
                 _predicate = (UID) converter.toNODE(val);
             } catch (ClassCastException ccex) {
                 throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting UID: "+ val, ccex);
-            }
+            }   
+        }         
 
-        if (_object == null && col_o != -1)
+        if (_object == null){
             _object = converter.toNODE(rs.getObject(col_o));
+        }            
 
         return new STMT(_subject, _predicate, _object, _graph);
     }

@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.impl.ValueFactoryImpl;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
@@ -336,7 +338,11 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
     }
 
-    private void removeMatch(ID subject, UID predicate, NODE object, UID context) throws SQLException  {
+    private void removeMatch(
+            @Nullable ID subject, 
+            @Nullable UID predicate, 
+            @Nullable NODE object, 
+            @Nullable UID context) throws SQLException  {
         PreparedStatement ps = null;
         try {
             // context given
