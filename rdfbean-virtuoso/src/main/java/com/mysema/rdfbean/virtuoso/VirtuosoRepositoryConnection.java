@@ -56,11 +56,11 @@ import com.mysema.rdfbean.object.Session;
  */
 public class VirtuosoRepositoryConnection implements RDFConnection {
 
-    private static final String S_INSERT = "sparql define output:format '_JAVA_'  " +
+    private static final String SPARQL_INSERT = "sparql define output:format '_JAVA_'  " +
     		"insert into graph iri(??) { `iri(??)` `iri(??)` " +
     		"`bif:__rdf_long_from_batch_params(??,??,??)` }";
 
-    private static final String S_DELETE = "sparql define output:format '_JAVA_' " +
+    private static final String SPARQL_DELETE = "sparql define output:format '_JAVA_' " +
     		"delete from graph iri(??) {`iri(??)` `iri(??)` " +
     		"`bif:__rdf_long_from_batch_params(??,??,??)`}";
     
@@ -102,7 +102,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
         PreparedStatement ps = null;
         try {
-            ps = connection.prepareStatement(VirtuosoRepositoryConnection.S_INSERT);
+            ps = connection.prepareStatement(VirtuosoRepositoryConnection.SPARQL_INSERT);
             int count = 0;
 
             for (STMT stmt : addedStatements) {
@@ -258,7 +258,12 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         return findStatements(subject, predicate, object, context, includeInferred, false);
     }
 
-    private STMTIterator findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context, boolean includeInferred, boolean hasOnly) {
+    private STMTIterator findStatements(
+            @Nullable ID subject, 
+            @Nullable UID predicate, 
+            @Nullable NODE object, 
+            @Nullable UID context, 
+            boolean includeInferred, boolean hasOnly) {
         verifyIsOpen();
         sendDelayAdd();
         
@@ -354,7 +359,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
             // all given
             } else if (subject != null && predicate != null && object != null && context != null) {
-                ps = connection.prepareStatement(VirtuosoRepositoryConnection.S_DELETE);
+                ps = connection.prepareStatement(VirtuosoRepositoryConnection.SPARQL_DELETE);
                 ps.setString(1, context.getId());
                 bindResource(ps, 2, subject);
                 bindURI(ps, 3, predicate);
