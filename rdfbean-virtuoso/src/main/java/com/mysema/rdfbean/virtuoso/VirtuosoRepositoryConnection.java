@@ -66,7 +66,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     
     private static final String JAVA_OUTPUT = "sparql define output:format '_JAVA_'\n ";
     
-//    private static final String DEFAULT_OUTPUT = "sparql\n ";
+    private static final String DEFAULT_OUTPUT = "sparql\n ";
 
     private static final int BATCH_SIZE = 5000;
 
@@ -211,7 +211,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             if (resultType == SPARQLQuery.ResultType.BOOLEAN){
                 return (Q)new BooleanQueryImpl(connection, prefetchSize, JAVA_OUTPUT + query);
             }else if (resultType == SPARQLQuery.ResultType.TUPLES){
-                return (Q)new TupleQueryImpl(connection, converter, prefetchSize, "sparql " + query);
+                return (Q)new TupleQueryImpl(connection, converter, prefetchSize, DEFAULT_OUTPUT + query);
             }else if (resultType == SPARQLQuery.ResultType.TRIPLES){
                 return (Q)new GraphQueryImpl(connection, converter, prefetchSize, dialect, JAVA_OUTPUT + query);
             }else{
@@ -258,7 +258,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         return findStatements(subject, predicate, object, context, includeInferred, false);
     }
 
-    private STMTIterator findStatements(ID subject, UID predicate, NODE object, UID context, boolean includeInferred, boolean hasOnly) {
+    private STMTIterator findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context, boolean includeInferred, boolean hasOnly) {
         verifyIsOpen();
         sendDelayAdd();
         
