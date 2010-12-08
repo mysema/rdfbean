@@ -34,9 +34,9 @@ public class Converter {
     
     @Nullable
     public NODE toNODE(@Nullable Object val) {
-        if (val == null)
+        if (val == null){
             return null;
-        if (val instanceof ExtendedString) {
+        } else if (val instanceof ExtendedString) {
             return toNODE((ExtendedString)val);
         } else if (val instanceof RdfBox) {
             return toNODE((RdfBox)val);

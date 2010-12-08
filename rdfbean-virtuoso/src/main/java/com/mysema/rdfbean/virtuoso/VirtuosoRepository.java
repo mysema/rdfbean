@@ -205,7 +205,7 @@ public class VirtuosoRepository implements Repository {
             java.sql.Connection connection = pconn.getConnection();
             return new VirtuosoRepositoryConnection(converter, prefetchSize, defGraph, connection);
         } catch (SQLException e) {
-            System.out.println("Connection to " + host + " FAILED.");
+            logger.error("Connection to " + host + " FAILED.");
             throw new RepositoryException(e);
         }
     }
