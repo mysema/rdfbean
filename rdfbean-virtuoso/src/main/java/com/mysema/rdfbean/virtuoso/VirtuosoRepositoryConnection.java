@@ -169,14 +169,10 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 ps.setInt(col, 5);
                 ps.setString(col + 1, lit.getValue());
                 ps.setString(col + 2, LocaleUtil.toLang(lit.getLang()));
-            } else if (lit.getDatatype() != null) {
+            } else {
                 ps.setInt(col, 4);
                 ps.setString(col + 1, lit.getValue());
                 ps.setString(col + 2, lit.getDatatype().toString());
-            } else {
-                ps.setInt(col, 3);
-                ps.setString(col + 1, lit.getValue());
-                ps.setNull(col + 2, java.sql.Types.VARCHAR);
             }
         } else {
             throw new IllegalArgumentException(n.toString());

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import virtuoso.sql.ExtendedString;
 import virtuoso.sql.RdfBox;
 
@@ -30,7 +32,8 @@ public class Converter {
         this.converters = converters;
     }
     
-    public NODE toNODE(Object val) {
+    @Nullable
+    public NODE toNODE(@Nullable Object val) {
         if (val == null)
             return null;
         if (val instanceof ExtendedString) {

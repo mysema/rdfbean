@@ -28,10 +28,13 @@ public class STMTIterator implements CloseableIterator<STMT>{
     
     private final ResultSet rs;
 
+    @Nullable
     private final ID subject;
 
+    @Nullable
     private final UID predicate;
 
+    @Nullable
     private final NODE object;
 
     private final UID nilContext;
@@ -47,7 +50,7 @@ public class STMTIterator implements CloseableIterator<STMT>{
 
     private int col_o = -1;
 
-    public STMTIterator(Converter converter, Statement stmt, ResultSet rs, ID subject, UID predicate, NODE object, UID nilContext){
+    public STMTIterator(Converter converter, Statement stmt, ResultSet rs, @Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, UID nilContext){
         this.converter = converter;
         this.stmt = stmt;
         this.rs = rs;
