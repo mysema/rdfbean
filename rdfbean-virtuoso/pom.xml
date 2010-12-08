@@ -59,5 +59,14 @@
 		   
   </dependencies>
   
-
+  <profiles>
+  	<profile>
+  		<id>no-virtuoso</id>
+  		<properties>
+  			<failIfNoTests>false</failIfNoTests>
+  			<test></test>
+  		</properties>
+  	</profile>
+  </profiles>
+  
 </project>
