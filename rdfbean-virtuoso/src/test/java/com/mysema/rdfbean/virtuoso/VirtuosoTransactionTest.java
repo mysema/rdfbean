@@ -28,7 +28,12 @@ public class VirtuosoTransactionTest extends AbstractConnectionTest{
     
     @Test
     public void Commit() {
+        STMT stmt = new STMT(new BID(), RDF.type, RDFS.Class);
+        toBeRemoved = Collections.singleton(stmt);
+        connection.update(null, Collections.singleton(stmt));
         tx.commit();
+        
+        assertTrue(connection.exists(stmt.getSubject(), null, null, null, false));
     }
 
     @Test
