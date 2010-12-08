@@ -7,6 +7,9 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
 import com.mysema.rdfbean.model.ID;
@@ -19,19 +22,24 @@ import com.mysema.rdfbean.model.UID;
  *
  */
 public class GraphResultIterator implements CloseableIterator<STMT> {
+    
+    private static final Logger logger = LoggerFactory.getLogger(GraphResultIterator.class);
 
     private final Statement stmt;
     
     private final ResultSet rs;
+    
+    private final String query;
     
     private final Converter converter;
     
     @Nullable
     private Boolean next = null;
     
-    public GraphResultIterator(Statement stmt, ResultSet rs, Converter converter) {
+    public GraphResultIterator(Statement stmt, ResultSet rs, String query, Converter converter) {
         this.stmt = stmt;
         this.rs = rs;
+        this.query = query;
         this.converter = converter;
     }
 
@@ -47,6 +55,7 @@ public class GraphResultIterator implements CloseableIterator<STMT> {
                 next = rs.next();
             } catch (SQLException e) {
                 close();
+                logger.warn("Caught exception for query " + query, e);
                 throw new QueryException(e);
             }
         }
@@ -64,6 +73,7 @@ public class GraphResultIterator implements CloseableIterator<STMT> {
                 return new STMT(subject, predicate, object);
             } catch (SQLException e) {
                 close();
+                logger.warn("Caught exception for query " + query, e);
                 throw new QueryException(e);
             }
         }else{

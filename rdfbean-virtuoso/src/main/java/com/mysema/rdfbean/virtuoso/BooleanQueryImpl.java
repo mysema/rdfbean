@@ -17,8 +17,8 @@ import com.mysema.rdfbean.model.STMT;
  */
 public class BooleanQueryImpl extends AbstractQueryImpl {
     
-    public BooleanQueryImpl(Connection connection, String query) {
-        super(connection, query);
+    public BooleanQueryImpl(Connection connection, int prefetch, String query) {
+        super(connection, prefetch, query);
     }
 
     @Override

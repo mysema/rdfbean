@@ -10,6 +10,9 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
 import com.mysema.rdfbean.model.NODE;
@@ -20,9 +23,13 @@ import com.mysema.rdfbean.model.NODE;
  */
 public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>{
 
+    private static final Logger logger = LoggerFactory.getLogger(TupleResultIterator.class);
+    
     private final Statement stmt;
     
     private final ResultSet rs;
+    
+    private final String query;
     
     private final Converter converter;
     
@@ -33,9 +40,15 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
     @Nullable
     private Boolean next;
     
-    public TupleResultIterator(Statement stmt, ResultSet rs, Converter converter, List<String> variables, Map<String, NODE> bindings) {
+    public TupleResultIterator(Statement stmt, 
+            ResultSet rs, 
+            String query, 
+            Converter converter,
+            List<String> variables, 
+            Map<String, NODE> bindings) {
         this.stmt = stmt;
         this.rs = rs;
+        this.query = query;
         this.converter = converter;
         this.variables = variables;
         this.bindings = bindings;
@@ -53,6 +66,7 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
                 next = rs.next();
             } catch (SQLException e) {
                 close();
+                logger.warn("Caught exception for query " + query, e);
                 throw new QueryException(e);
             }
         }
@@ -76,6 +90,7 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
                 return tuples;
             } catch (SQLException e) {
                 close();
+                logger.warn("Caught exception for query " + query, e);                
                 throw new QueryException(e);
             }
         }else{

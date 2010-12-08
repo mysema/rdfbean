@@ -26,6 +26,8 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
     
     private final Connection connection;
     
+    private final int prefetch;
+    
     protected PreparedStatement stmt;
     
     protected ResultSet rs;
@@ -34,8 +36,9 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
     
     protected final Map<String, NODE> bindings = new HashMap<String,NODE>();
     
-    public AbstractQueryImpl(Connection connection, String query) {
-        this.connection = connection;         
+    public AbstractQueryImpl(Connection connection, int prefetch, String query) {
+        this.connection = connection;
+        this.prefetch = prefetch;
         this.query = query;
     }    
 
@@ -71,7 +74,7 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
     
     protected ResultSet executeQuery(String query) throws SQLException{
         if (bindings.isEmpty()){
-            stmt = connection.prepareStatement(query);
+            stmt = connection.prepareStatement(query);            
         }else{
             List<NODE> nodes = new ArrayList<NODE>(bindings.size());
             String normalized = normalize(query, bindings, nodes);
@@ -86,6 +89,7 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
                 }
             }            
         }
+        stmt.setFetchSize(prefetch);
         rs = stmt.executeQuery();
         return rs;
     }

@@ -30,8 +30,8 @@ public class GraphQueryImpl extends AbstractQueryImpl{
     
     private final SesameDialect dialect;
     
-    public GraphQueryImpl(Connection connection, Converter converter, SesameDialect dialect, String query) {
-        super(connection, query);
+    public GraphQueryImpl(Connection connection, Converter converter, int prefetch, SesameDialect dialect, String query) {
+        super(connection, prefetch, query);
         this.converter = converter;
         this.dialect = dialect;
     }
@@ -50,7 +50,7 @@ public class GraphQueryImpl extends AbstractQueryImpl{
     public CloseableIterator<STMT> getTriples() {
         try {
             rs = executeQuery(query);
-            return new GraphResultIterator(stmt, rs, converter);
+            return new GraphResultIterator(stmt, rs, query, converter);
         } catch (SQLException e) {
             close();
             throw new RepositoryException(e);

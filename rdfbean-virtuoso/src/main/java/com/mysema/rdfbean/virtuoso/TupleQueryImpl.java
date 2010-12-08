@@ -29,8 +29,8 @@ public class TupleQueryImpl extends AbstractQueryImpl {
     @Nullable
     private CloseableIterator<Map<String, NODE>> tuples = null;
     
-    public TupleQueryImpl(Connection connection, Converter converter, String query) {
-        super(connection, query);
+    public TupleQueryImpl(Connection connection, Converter converter, int prefetch, String query) {
+        super(connection, prefetch, query);
         this.converter = converter;
     }
 
@@ -82,7 +82,7 @@ public class TupleQueryImpl extends AbstractQueryImpl {
         for (int i = 0; i < md.getColumnCount(); i++){
             variables.add(md.getColumnName(i+1));
         }
-        tuples = new TupleResultIterator(stmt, rs, converter, variables, bindings);
+        tuples = new TupleResultIterator(stmt, rs, query, converter, variables, bindings);
     }
 
     @Override

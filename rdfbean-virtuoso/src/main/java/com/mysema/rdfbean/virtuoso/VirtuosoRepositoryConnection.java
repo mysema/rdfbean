@@ -207,11 +207,11 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             String query = definition.toString();
             SPARQLQuery.ResultType resultType = getResultType(query);                
             if (resultType == SPARQLQuery.ResultType.BOOLEAN){
-                return (Q)new BooleanQueryImpl(connection, JAVA_OUTPUT + query);
+                return (Q)new BooleanQueryImpl(connection, prefetchSize, JAVA_OUTPUT + query);
             }else if (resultType == SPARQLQuery.ResultType.TUPLES){
-                return (Q)new TupleQueryImpl(connection, converter, JAVA_OUTPUT + query);
+                return (Q)new TupleQueryImpl(connection, converter, prefetchSize, "sparql " + query);
             }else if (resultType == SPARQLQuery.ResultType.TRIPLES){
-                return (Q)new GraphQueryImpl(connection, converter, dialect, JAVA_OUTPUT + query);
+                return (Q)new GraphQueryImpl(connection, converter, prefetchSize, dialect, JAVA_OUTPUT + query);
             }else{
                 throw new IllegalArgumentException("No result type for " + definition);
             }         
@@ -392,6 +392,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 
 //                System.err.println(query);
                 ps = connection.prepareStatement(query);
+                ps.setFetchSize(prefetchSize);
                 bindNodes(ps, nodes);
                 ps.execute();
             }

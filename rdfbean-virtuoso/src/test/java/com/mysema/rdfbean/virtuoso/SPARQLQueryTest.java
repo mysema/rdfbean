@@ -57,6 +57,16 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
         }
         rows.close();
     }
+    
+    @Test
+    public void Select_No_Results(){
+        SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "SELECT * WHERE {?s <xxx:xxx> ?o} LIMIT 10");
+        assertEquals(SPARQLQuery.ResultType.TUPLES, query.getResultType());
+        assertEquals(Arrays.asList("s","o"), query.getVariables());
+        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        assertFalse(rows.hasNext());
+        rows.close();
+    }
 
     @Test
     public void Select_with_QueryTime(){
@@ -179,6 +189,30 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
                 triples.close();
             }
         }
+    }
+    
+    @Test
+    public void LongQuery(){
+        StringBuilder qry = new StringBuilder();
+        qry.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
+        qry.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n");
+        qry.append("PREFIX dc: <http://purl.org/dc/elements/1.1/>\n");
+        qry.append("PREFIX scv: <http://purl.org/NET/scovo#>\n");
+        qry.append("PREFIX skos: <http://www.w3.org/2004/02/skos/core#>\n");
+        
+        qry.append("SELECT ?dimensionType ?dimensionTypeName ?dimension ?dimensionDescription ?dimensionName ?parent\n");
+        qry.append("WHERE {\n");
+        qry.append("?dimensionType rdfs:subClassOf scv:Dimension ; dc:title ?dimensionTypeName .\n");
+        qry.append("?dimension rdf:type ?dimensionType ; dc:title ?dimensionName .\n");
+        qry.append("OPTIONAL { ?dimension dc:description ?dimensionDescription } .OPTIONAL { ?dimension skos:broader ?parent } . }\n");
+        qry.append("ORDER BY ?dimensionName\n");
+        
+        SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, qry.toString());
+        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        while (rows.hasNext()){
+            System.out.println(rows.next());
+        }
+        rows.close();
     }
 
 

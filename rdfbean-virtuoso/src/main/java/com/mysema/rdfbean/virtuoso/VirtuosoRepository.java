@@ -71,6 +71,8 @@ public class VirtuosoRepository implements Repository {
 
     private final VirtuosoConnectionPoolDataSource pds = new VirtuosoConnectionPoolDataSource();
 
+    private final String host;
+    
     private final Converter converter = new Converter(new ConverterRegistryImpl());
 
     private RDFSource[] sources;
@@ -78,14 +80,6 @@ public class VirtuosoRepository implements Repository {
     private File dataDir;
 
     private boolean readOnly;
-
-    private final String user;
-
-    private final String password;
-
-    private String host = "localhost";
-
-    private int port = 1111;
 
     private final String charset = "UTF-8";
 
@@ -107,44 +101,37 @@ public class VirtuosoRepository implements Repository {
         this(host, port, user, password, "rdfbean:nil", useLazyAdd);
     }
 
-    public VirtuosoRepository(String host, int port, String user,
-            String password, String defGraph) {
+    public VirtuosoRepository(String host, int port, String user, String password, String defGraph) {
         this(host, port, user, password, defGraph, false);
-    }
-
-    public VirtuosoRepository(String host, int port, String user,
-            String password, String defGraph, boolean useLazyAdd) {
-        super();
-        this.port = port;
-        this.host = host;
-        this.user = user;
-        this.password = password;
-        this.defGraph = new UID(defGraph);
-        this.useLazyAdd = useLazyAdd;
     }
 
     public VirtuosoRepository(String hostlist, String user, String password) {
         this(hostlist, user, password, false);
     }
 
-    public VirtuosoRepository(String hostlist, String user, String password,
-            boolean useLazyAdd) {
+    public VirtuosoRepository(String hostlist, String user, String password, boolean useLazyAdd) {
         this(hostlist, user, password, "sesame:nil", useLazyAdd);
     }
 
-    public VirtuosoRepository(String hostlist, String user, String password,
-            String defGraph) {
+    public VirtuosoRepository(String hostlist, String user, String password, String defGraph) {
         this(hostlist, user, password, defGraph, false);
     }
 
-    public VirtuosoRepository(String hostlist, String user, String password,
-            String defGraph, boolean useLazyAdd) {
-        super();
-        this.host = hostlist;
-        this.user = user;
-        this.password = password;
+    public VirtuosoRepository(String hostlist, String user, String password, String defGraph, boolean useLazyAdd) {
+        this(hostlist, 1111, user, password, defGraph, useLazyAdd);
+    }
+    
+    public VirtuosoRepository(String host, int port, String user,
+            String password, String defGraph, boolean useLazyAdd) {
         this.defGraph = new UID(defGraph);
         this.useLazyAdd = useLazyAdd;
+        this.host = host;
+        pds.setServerName(host);
+        pds.setPortNumber(port);
+        pds.setUser(user);
+        pds.setPassword(password);
+        pds.setCharset(charset);
+        pds.setRoundrobin(roundrobin);
     }
 
     @Override
@@ -214,17 +201,11 @@ public class VirtuosoRepository implements Repository {
 
     public RDFConnection openConnection() {
         try {
-            pds.setServerName(host);
-            pds.setPortNumber(port);
-            pds.setUser(user);
-            pds.setPassword(password);
-            pds.setCharset(charset);
-            pds.setRoundrobin(roundrobin);
             javax.sql.PooledConnection pconn = pds.getPooledConnection();
             java.sql.Connection connection = pconn.getConnection();
             return new VirtuosoRepositoryConnection(converter, prefetchSize, defGraph, connection);
         } catch (SQLException e) {
-            System.out.println("Connection to " + host + " is FAILED.");
+            System.out.println("Connection to " + host + " FAILED.");
             throw new RepositoryException(e);
         }
     }
