@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import com.mysema.query.QueryException;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.SPARQLQuery;
@@ -56,7 +58,7 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         close(stmt, rs);
     }
     
-    public static void close(Statement stmt, ResultSet rs){
+    public static void close(@Nullable Statement stmt, @Nullable ResultSet rs){
         try{
             try {
                 if (rs != null){
