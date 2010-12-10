@@ -8,6 +8,7 @@ package com.mysema.rdfbean.model;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections15.iterators.IteratorChain;
 
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.model.io.Format;
 
 /**
@@ -150,10 +152,40 @@ public final class MiniRepository implements Repository{
     }
 
 
-    public void remove(ID subject, UID predicate, NODE object, UID context) {
-        // TODO
+    public void remove(@Nullable ID subject, @Nullable UID predicate, @Nullable  NODE object, @Nullable UID context) {
+        // remove all
+        if (subject == null && predicate == null && object == null && context == null){
+            subjects.clear();
+            if (object != null){
+                objects.clear();
+            }
+            
+        // subject given    
+        }else if (subject != null){
+            PredicateCache cache = subjects.get(subject);
+            if (cache != null){
+                Iterator<STMT> stmts = cache.iterator(predicate);                
+                removeStatements(IteratorAdapter.asList(stmts));
+                    
+            }            
+            
+        // object given   
+        }else if (object != null && object.isResource() && objects != null){
+            PredicateCache cache = objects.get(object.asResource());
+            if (cache != null){
+                Iterator<STMT> stmts = cache.iterator(predicate);                
+                removeStatements(IteratorAdapter.asList(stmts));    
+            }
+            
+        // predicate or context given    
+        }else{
+            for (Map.Entry<ID, PredicateCache> entry : subjects.entrySet()){
+                PredicateCache cache = entry.getValue();
+                Iterator<STMT> stmts = cache.iterator(predicate);                
+                removeStatements(IteratorAdapter.asList(stmts));
+            }            
+        }        
     }
-
     
     private boolean removeIndexed(ID key, STMT stmt, Map<ID, PredicateCache> index) {
         PredicateCache stmtMap = index.get(key);
@@ -164,7 +196,7 @@ public final class MiniRepository implements Repository{
         }
     }
 
-    public void removeStatement(STMT... stmts) {
+    public void removeStatements(Collection<STMT> stmts) {
         for (STMT stmt : stmts) {
             if (removeIndexed(stmt.getSubject(), stmt, subjects)) {
                 if (objects != null && stmt.getObject().isResource()) {
@@ -173,7 +205,7 @@ public final class MiniRepository implements Repository{
             }
         }
     }
-
+    
     @Override
     public <RT> RT execute(Operation<RT> operation) {
         RDFConnection connection = openConnection();

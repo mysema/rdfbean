@@ -99,7 +99,7 @@ public class MiniConnection implements RDFConnection {
     @Override
     public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
         if (removedStatements != null) {
-            repository.removeStatement(removedStatements.toArray(new STMT[removedStatements.size()]));
+            repository.removeStatements(removedStatements);
         }
         if (addedStatements != null) {
             repository.add(addedStatements.toArray(new STMT[addedStatements.size()]));
