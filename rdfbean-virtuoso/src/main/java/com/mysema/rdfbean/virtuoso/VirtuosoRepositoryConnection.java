@@ -76,10 +76,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     private final Connection connection;
 
-    private PreparedStatement psInsert;
-
-    private int psInsertCount = 0;
-
     private final int prefetchSize;
     
     private final SesameDialect dialect = new SesameDialect(new ValueFactoryImpl());
@@ -98,7 +94,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     private void add(Collection<STMT> addedStatements) throws SQLException {
         verifyIsOpen();
         verifyNotReadOnly();
-        sendDelayAdd();
 
         PreparedStatement ps = null;
         try {
@@ -205,7 +200,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
             verifyIsOpen();
-            sendDelayAdd();
+
             String query = definition.toString();
             SPARQLQuery.ResultType resultType = getResultType(query);                
             if (resultType == SPARQLQuery.ResultType.BOOLEAN){
@@ -265,7 +260,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             @Nullable UID context, 
             boolean includeInferred, boolean hasOnly) {
         verifyIsOpen();
-        sendDelayAdd();
         
         List<NODE> nodes = new ArrayList<NODE>(8);
         String s = "?s", p = "?p", o = "?o";
@@ -333,7 +327,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     private void remove(Collection<STMT> removedStatements) throws SQLException {
         verifyIsOpen();
         verifyNotReadOnly();
-        sendDelayAdd();
 
         for (STMT stmt : removedStatements){
             UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
@@ -421,18 +414,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 bindValue(ps, offset, node);
                 offset += 3;
             }
-        }
-    }
-
-    private synchronized void sendDelayAdd() {
-        try {
-            if (psInsertCount >= BATCH_SIZE && psInsert != null) {
-                psInsert.executeBatch();
-                psInsert.clearBatch();
-                psInsertCount = 0;
-            }
-        } catch (Exception e) {
-            // ?!?
         }
     }
 

@@ -87,44 +87,24 @@ public class VirtuosoRepository implements Repository {
 
     private final UID defGraph;
 
-    private boolean useLazyAdd = false;
-
     private int prefetchSize = 200;
 
     private boolean initialized = false;
 
-    public VirtuosoRepository(String host, int port, String user, String password) {
-        this(host, port, user, password, false);
-    }
-
-    public VirtuosoRepository(String host, int port, String user, String password, boolean useLazyAdd) {
-        this(host, port, user, password, "rdfbean:nil", useLazyAdd);
-    }
-
-    public VirtuosoRepository(String host, int port, String user, String password, String defGraph) {
-        this(host, port, user, password, defGraph, false);
-    }
-
     public VirtuosoRepository(String hostlist, String user, String password) {
-        this(hostlist, user, password, false);
+        this(hostlist, user, password, "sesame:nil");
     }
-
-    public VirtuosoRepository(String hostlist, String user, String password, boolean useLazyAdd) {
-        this(hostlist, user, password, "sesame:nil", useLazyAdd);
+    
+    public VirtuosoRepository(String host, int port, String user, String password) {
+        this(host, port, user, password, "rdfbean:nil");
     }
 
     public VirtuosoRepository(String hostlist, String user, String password, String defGraph) {
-        this(hostlist, user, password, defGraph, false);
-    }
-
-    public VirtuosoRepository(String hostlist, String user, String password, String defGraph, boolean useLazyAdd) {
-        this(hostlist, 1111, user, password, defGraph, useLazyAdd);
+        this(hostlist, 1111, user, password, defGraph);
     }
     
-    public VirtuosoRepository(String host, int port, String user,
-            String password, String defGraph, boolean useLazyAdd) {
+    public VirtuosoRepository(String host, int port, String user, String password, String defGraph) {
         this.defGraph = new UID(defGraph);
-        this.useLazyAdd = useLazyAdd;
         this.host = host;
         pds.setServerName(host);
         pds.setPortNumber(port);
