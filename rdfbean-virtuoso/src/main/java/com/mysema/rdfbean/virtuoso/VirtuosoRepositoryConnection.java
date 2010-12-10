@@ -92,7 +92,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     }
 
     private void add(Collection<STMT> addedStatements) throws SQLException {
-        verifyIsOpen();
         verifyNotReadOnly();
 
         PreparedStatement ps = null;
@@ -199,8 +198,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
-            verifyIsOpen();
-
             String query = definition.toString();
             SPARQLQuery.ResultType resultType = getResultType(query);                
             if (resultType == SPARQLQuery.ResultType.BOOLEAN){
@@ -259,7 +256,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             @Nullable NODE object, 
             @Nullable UID context, 
             boolean includeInferred, boolean hasOnly) {
-        verifyIsOpen();
         
         List<NODE> nodes = new ArrayList<NODE>(8);
         String s = "?s", p = "?p", o = "?o";
@@ -315,8 +311,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     }
 
     public boolean isReadOnly() {
-        verifyIsOpen();
-
         try {
             return connection.isReadOnly();
         } catch (SQLException e) {
@@ -325,7 +319,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     }
 
     private void remove(Collection<STMT> removedStatements) throws SQLException {
-        verifyIsOpen();
         verifyNotReadOnly();
 
         for (STMT stmt : removedStatements){
@@ -441,16 +434,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             } catch (SQLException e) {
                 throw new RepositoryException(e);
             }
-        }
-    }
-
-    private void verifyIsOpen() {
-        try {
-            if (connection.isClosed()){
-                throw new RepositoryException("Connection has been closed");
-            }
-        } catch (SQLException e) {
-            throw new RepositoryException(e);
         }
     }
 
