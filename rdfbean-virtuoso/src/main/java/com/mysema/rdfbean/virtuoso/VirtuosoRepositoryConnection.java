@@ -392,7 +392,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 String query = String.format("sparql delete from %1$s { %2$s %3$s %4$s } " +
                 		"where { graph `%1$s` { %2$s %3$s %4$s } }", c, s, p, o);
                 
-//                System.err.println(query);
                 ps = connection.prepareStatement(query);
                 ps.setFetchSize(prefetchSize);
                 bindNodes(ps, nodes);
