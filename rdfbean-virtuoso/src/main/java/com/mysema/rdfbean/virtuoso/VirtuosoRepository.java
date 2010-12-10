@@ -79,11 +79,7 @@ public class VirtuosoRepository implements Repository {
 
     private File dataDir;
 
-    private boolean readOnly;
-
     private final String charset = "UTF-8";
-
-    private boolean roundrobin = false;
 
     private final UID defGraph;
 
@@ -111,7 +107,6 @@ public class VirtuosoRepository implements Repository {
         pds.setUser(user);
         pds.setPassword(password);
         pds.setCharset(charset);
-        pds.setRoundrobin(roundrobin);
     }
 
     @Override
@@ -197,11 +192,7 @@ public class VirtuosoRepository implements Repository {
     public int getFetchSize() {
         return this.prefetchSize;
     }
-
-    public boolean getRoundrobin() {
-        return this.roundrobin;
-    }
-
+    
     public void initialize() {
         RDFConnection connection = openConnection();
         RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
@@ -222,10 +213,6 @@ public class VirtuosoRepository implements Repository {
             connection.close();
         }
         initialized = true;
-    }
-
-    public boolean isReadOnly() {
-        return readOnly;
     }
 
     @Override
@@ -283,14 +270,6 @@ public class VirtuosoRepository implements Repository {
 
     public void setFetchSize(int sz) {
         this.prefetchSize = sz;
-    }
-
-    public void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
-    }
-
-    public void setRoundrobin(boolean v) {
-        this.roundrobin = v;
     }
 
     public boolean isInitialized() {
