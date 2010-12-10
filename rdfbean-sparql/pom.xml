@@ -15,6 +15,7 @@
   <properties>
   	<spring.version>2.5.5</spring.version>
     <jetty.version>6.1.0-SNAPSHOT</jetty.version>
+    <sesame.version>3.0-alpha1</sesame.version>
   </properties>
   
   <dependencies>
@@ -47,7 +48,14 @@
       <artifactId>rdfbean-sesame</artifactId>
       <version>${project.parent.version}</version>
 	  <scope>test</scope>
-    </dependency>	
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>1.6.1</version>
+      <scope>test</scope>
+    </dependency>  
 	<dependency>
 	  <groupId>com.mysema.commons</groupId>
 	  <artifactId>mysema-commons-jetty</artifactId>
