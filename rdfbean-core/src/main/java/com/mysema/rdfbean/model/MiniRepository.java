@@ -156,7 +156,7 @@ public final class MiniRepository implements Repository{
         // remove all
         if (subject == null && predicate == null && object == null && context == null){
             subjects.clear();
-            if (object != null){
+            if (objects != null){
                 objects.clear();
             }
             
