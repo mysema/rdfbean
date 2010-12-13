@@ -91,6 +91,20 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     }
     
     @Test
+    public void Remove_none_given(){
+        ID sub = new UID(TEST.NS, "s"+ System.currentTimeMillis());
+        ID obj = new UID(TEST.NS, "o"+ System.currentTimeMillis());
+        STMT stmt = new STMT(sub, RDF.type, obj);
+        List<STMT> stmts = Collections.singletonList(stmt);
+        toBeRemoved = stmts;
+        connection.update(null, stmts);
+        
+        assertTrue(connection.exists(stmt.getSubject(), null, null, null, false));
+        connection.remove(null, null, null, null);
+        assertFalse(connection.exists(stmt.getSubject(), null, null, null, false));
+    }
+    
+    @Test
     public void Remove_all_given(){
         ID sub = new UID(TEST.NS, "s"+ System.currentTimeMillis());
         ID obj = new UID(TEST.NS, "o"+ System.currentTimeMillis());
