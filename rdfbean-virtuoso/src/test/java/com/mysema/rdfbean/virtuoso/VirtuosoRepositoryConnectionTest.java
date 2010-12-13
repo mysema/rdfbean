@@ -86,6 +86,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         ID sub = new UID(TEST.NS, "e"+ System.currentTimeMillis());
         List<STMT> stmts = Arrays.asList(
                 new STMT(sub, RDFS.label, new LIT(sub.getId())),
+                new STMT(sub, RDFS.label, new LIT("X")),
                 new STMT(sub, RDFS.label, new LIT(sub.getId(), Locale.ENGLISH)),
                 new STMT(sub, RDFS.label, new LIT("1", XSD.intType))
                 );
@@ -101,6 +102,9 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         assertTrue(connection.exists(sub,  RDFS.label, new LIT("1", XSD.intType), null, false));
         assertTrue(connection.exists(null, RDFS.label, new LIT("1", XSD.intType), null, false));
         assertTrue(connection.exists(null, null,       new LIT("1", XSD.intType), null, false));
+        
+        // find string literal
+        assertTrue(connection.exists(sub,  RDFS.label, new LIT("X"), null, false));
         
         // find string literal
         assertTrue(connection.exists(sub,  null,       null,                 null, false));

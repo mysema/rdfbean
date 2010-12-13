@@ -66,7 +66,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     
     private static final String SPARQL_CLEAR_GRAPH = "sparql clear graph iri(??)";
     
-    private static final String INTERNAL_PREFIX = "http://www.openlinksw.com/schemas/";
+    private static final String INTERNAL_PREFIX = "http://www.openlinksw.com/";
     
 //    private static final String SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
     
