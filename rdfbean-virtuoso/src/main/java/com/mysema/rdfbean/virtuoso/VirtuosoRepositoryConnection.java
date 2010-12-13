@@ -66,8 +66,12 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     
     private static final String SPARQL_CLEAR_GRAPH = "sparql clear graph iri(??)";
     
+    private static final String INTERNAL_PREFIX = "http://www.openlinksw.com/schemas/";
+    
 //    private static final String SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
-    private static final String SELECT_GRAPHS = "DB.DBA.SPARQL_SELECT_KNOWN_GRAPHS()";
+    
+    // NOTE : without the filter clause, only one graph is returned
+    private static final String SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } . FILTER ( ?g != <#>) } ";
     
     private static final String JAVA_OUTPUT = "sparql define output:format '_JAVA_'\n ";
     
@@ -363,7 +367,10 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 try{
                     rs = ps.executeQuery();
                     while (rs.next()){
-                        graphs.add(new UID(rs.getString(1)));                            
+                        String graph = rs.getString(1);
+                        if (!graph.startsWith(INTERNAL_PREFIX)){
+                            graphs.add(new UID(graph));    
+                        }                                                    
                     }                            
                 }finally{
                     AbstractQueryImpl.close(ps, rs);

@@ -1,14 +1,26 @@
 package com.mysema.rdfbean.virtuoso;
 
+import static org.junit.Assert.assertTrue;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.openrdf.model.vocabulary.RDFS;
 import org.openrdf.model.vocabulary.XMLSchema;
+
+import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 
 public class VirtuosoJDBCTest extends AbstractConnectionTest{
 
@@ -30,6 +42,41 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
         // ask
         query(jdbcConn, "sparql ask where { ?s ?p ?o }");
         query(jdbcConn, javaOutput + "ask where { ?s ?p ?o }");
+    }
+        
+    @Test
+    public void Contexts() throws SQLException{
+        ID sub = new UID(TEST.NS, "e" + System.currentTimeMillis());
+        UID pred = new UID(TEST.NS, "p" + System.currentTimeMillis());
+        List<STMT> stmts = Arrays.asList(
+                new STMT(sub, pred, sub, sub.asURI()),
+                new STMT(sub, pred, pred, pred.asURI())
+                );
+        toBeRemoved = stmts;
+        connection.update(null, stmts);
+        
+        Connection jdbcConn = ((VirtuosoRepositoryConnection)connection).getConnection();
+        Statement stmt = jdbcConn.createStatement();
+        ResultSet rs = null;
+        try{
+            Set<UID> found = new HashSet<UID>();
+//            rs = stmt.executeQuery("DB.DBA.SPARQL_SELECT_KNOWN_GRAPHS()");
+            rs = stmt.executeQuery("sparql select distinct ?g where { graph ?g { ?s ?p ?o } . FILTER ( ?g != <#>) } ");
+            while (rs.next()){
+                found.add(new UID(rs.getString(1)));
+            }
+            for (UID uid : found){
+                System.err.println(uid.getId());
+            }
+            
+            assertTrue(found.contains(sub));
+            assertTrue(found.contains(pred));
+            
+        }finally{
+            AbstractQueryImpl.close(stmt, rs);
+        }
+
+        
     }
     
     @Test
