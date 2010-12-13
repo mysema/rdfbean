@@ -45,8 +45,13 @@ public class BulkLoadTest extends AbstractConnectionTest{
         toBeRemoved = stmts;
         long start = System.currentTimeMillis();
         RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
-        connection.update(null, stmts);
-        tx.commit();
+        try{
+            connection.update(null, stmts);    
+            tx.commit();
+        }catch(Exception e){
+            tx.rollback();
+            throw new RuntimeException(e);
+        }
         long duration = System.currentTimeMillis() - start;
         System.out.println(duration / 1000);
     }
