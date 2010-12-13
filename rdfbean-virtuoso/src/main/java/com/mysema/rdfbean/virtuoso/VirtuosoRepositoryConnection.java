@@ -64,6 +64,11 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     		"delete from graph iri(??) {`iri(??)` `iri(??)` " +
     		"`bif:__rdf_long_from_batch_params(??,??,??)`}";
     
+    private static final String SPARQL_CLEAR_GRAPH = "sparql clear graph iri(??)";
+    
+//    private static final String SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
+    private static final String SELECT_GRAPHS = "DB.DBA.SPARQL_SELECT_KNOWN_GRAPHS()";
+    
     private static final String JAVA_OUTPUT = "sparql define output:format '_JAVA_'\n ";
     
     private static final String DEFAULT_OUTPUT = "sparql\n ";
@@ -168,7 +173,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             } else {
                 ps.setInt(col, 4);
                 ps.setString(col + 1, lit.getValue());
-                ps.setString(col + 2, lit.getDatatype().toString());
+                ps.setString(col + 2, lit.getDatatype().getId());
             }
         } else {
             throw new IllegalArgumentException(n.toString());
@@ -327,17 +332,13 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
     }
 
-    private void removeMatch(
-            @Nullable ID subject, 
-            @Nullable UID predicate, 
-            @Nullable NODE object, 
+    private void removeMatch(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, 
             @Nullable UID context) throws SQLException  {
         PreparedStatement ps = null;
         try {
             // context given
             if (subject == null && predicate == null && object == null && context != null) { 
-                String query = "sparql clear graph iri(??)";
-                ps = connection.prepareStatement(query);
+                ps = connection.prepareStatement(SPARQL_CLEAR_GRAPH);
                 ps.setString(1, context.getId());
                 ps.execute();
 
@@ -349,11 +350,35 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 bindURI(ps, 3, predicate);
                 bindValue(ps, 4, object);
                 ps.execute();
+                
+            // no context
+            } else if (context == null){
+                List<UID> graphs = new ArrayList<UID>();
+                graphs.add(defaultGraph);
+                
+                // collect graphs
+                ps = connection.prepareStatement(SELECT_GRAPHS);
+                ps.setFetchSize(25);
+                ResultSet rs = null;                    
+                try{
+                    rs = ps.executeQuery();
+                    while (rs.next()){
+                        graphs.add(new UID(rs.getString(1)));                            
+                    }                            
+                }finally{
+                    AbstractQueryImpl.close(ps, rs);
+                    ps = null;
+                }
+                
+                // delete from graphs
+                for (UID graph : graphs){
+                    removeMatch(subject, predicate, object, graph);
+                }
 
             } else {
                 String s = "?s", p = "?p", o = "?o", c = "iri(??)";
                 List<NODE> nodes = new ArrayList<NODE>(8);
-                nodes.add(context);
+                nodes.add(context);                 
                 if (subject != null){
                     nodes.add(subject);
                     s = "`iri(??)`";
@@ -371,7 +396,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                     }
                 }
                 
-                nodes.add(context);
+                nodes.add(context);                 
                 if (subject != null){
                     nodes.add(subject);
                 }
@@ -382,11 +407,10 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                     nodes.add(object);
                 }
 
-                String query = String.format("sparql delete from %1$s { %2$s %3$s %4$s } " +
-                		"where { graph `%1$s` { %2$s %3$s %4$s } }", c, s, p, o);
+                String delete = String.format("sparql delete from %1$s { %2$s %3$s %4$s } " +
+                        "where { graph `%1$s` { %2$s %3$s %4$s } }", c, s, p, o);
                 
-                ps = connection.prepareStatement(query);
-                ps.setFetchSize(prefetchSize);
+                ps = connection.prepareStatement(delete);
                 bindNodes(ps, nodes);
                 ps.execute();
             }
@@ -413,7 +437,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     @Override
     public void remove(ID subject, UID predicate, NODE object, UID context) {
         try {
-            removeMatch(subject, predicate, object, context != null ? context : defaultGraph);
+            removeMatch(subject, predicate, object, context);
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }

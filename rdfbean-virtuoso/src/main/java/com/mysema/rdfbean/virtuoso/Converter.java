@@ -40,6 +40,8 @@ public class Converter {
             return toNODE((ExtendedString)val);
         } else if (val instanceof RdfBox) {
             return toNODE((RdfBox)val);
+        } else if (val instanceof String) {    
+            return new LIT(val.toString());
         } else {
             UID datatype = converters.getDatatype(val.getClass());
             if (datatype != null){

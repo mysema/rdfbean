@@ -6,9 +6,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -30,6 +32,15 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
     
     private static final String SELECT_LIMIT_10 = "SELECT ?s ?p ?o WHERE {?s ?p ?o} LIMIT 10";
 
+    @Override
+    @Before
+    public void setUp(){
+        super.setUp();
+        List<STMT> stmts = Arrays.asList(new STMT(RDF.type, RDF.type, RDF.Property));
+        toBeRemoved = stmts;
+        connection.update(null, stmts);
+    }
+    
     @Test
     public void Ask(){
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "ASK { ?s ?p ?o }");
