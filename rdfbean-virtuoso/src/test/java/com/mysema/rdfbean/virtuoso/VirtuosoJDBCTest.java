@@ -61,7 +61,7 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
         try{
             Set<UID> found = new HashSet<UID>();
 //            rs = stmt.executeQuery("DB.DBA.SPARQL_SELECT_KNOWN_GRAPHS()");
-            rs = stmt.executeQuery("sparql select distinct ?g where { graph ?g { ?s ?p ?o } . FILTER ( ?g != <#>) } ");
+            rs = stmt.executeQuery("sparql select distinct ?g where { graph ?g { ?s ?p ?o } } ");
             while (rs.next()){
                 found.add(new UID(rs.getString(1)));
             }

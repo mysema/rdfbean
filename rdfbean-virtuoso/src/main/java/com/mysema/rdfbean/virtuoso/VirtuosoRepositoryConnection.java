@@ -1,35 +1,21 @@
-/*
- *  $Id: VirtuosoRepositoryConnection.java,v 1.7 2010/02/12 12:56:00 source Exp $
- *
- *  This file is part of the OpenLink Software Virtuoso Open-Source (VOS)
- *  project.
- *
- *  Copyright (C) 1998-2007 OpenLink Software
- *
- *  This project is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; only version 2 of the License, dated June 1991.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with this program; if not, write to the Free Software Foundation, Inc.,
- *  51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
- */
-
 package com.mysema.rdfbean.virtuoso;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -37,17 +23,8 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RepositoryException;
-import com.mysema.rdfbean.model.SPARQLQuery;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.io.NTriplesUtil;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -68,17 +45,14 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     
     private static final String INTERNAL_PREFIX = "http://www.openlinksw.com/";
     
-//    private static final String SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
-    
-    // NOTE : without the filter clause, only one graph is returned
-    private static final String SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } . FILTER ( ?g != <#>) } ";
+    private static final String SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
     
     private static final String JAVA_OUTPUT = "sparql define output:format '_JAVA_'\n ";
     
     private static final String DEFAULT_OUTPUT = "sparql\n ";
 
     private static final int BATCH_SIZE = 5000;
-
+    
     private final Converter converter;
 
     private final UID defaultGraph;
@@ -100,6 +74,54 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         this.defaultGraph = defGraph;
     }
 
+    private void addBulk(Collection<STMT> addedStatements) throws SQLException, IOException {
+        verifyNotReadOnly();
+        
+        Map<UID,File> files = new HashMap<UID,File>();
+        Map<UID,Writer> writers = new HashMap<UID,Writer>();
+        
+        // write statements to writers
+        for (STMT stmt : addedStatements) {
+            UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
+            Writer writer = writers.get(context);
+            if (writer == null){
+                File file = File.createTempFile("data", ".n3");
+                file.deleteOnExit();
+                files.put(context, file);
+                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF-8"));
+                writers.put(context, writer);                
+            }
+            
+            writer.write(NTriplesUtil.toString(stmt.getSubject()) + " " 
+                    + NTriplesUtil.toString(stmt.getPredicate()) + " " 
+                    + NTriplesUtil.toString(stmt.getObject()) + " .\n");
+        }
+        
+        // flush and close writers
+        for (Writer writer : writers.values()){
+            writer.flush();
+            writer.close();
+        }
+        
+        Statement stmt = connection.createStatement();
+        try{
+            for (Map.Entry<UID, File> entry : files.entrySet()){
+                File file = entry.getValue();
+                stmt.execute("ld_dir ('"+file.getParent()+"', '"+file.getName()+"', '"+entry.getKey().getId()+"')");
+            }
+            stmt.execute("rdf_loader_run()");   
+        }finally{
+            stmt.close();
+            
+            // delete files
+            for (File file : files.values()){
+                file.delete();
+            }
+        }
+                
+    }
+    
+    
     private void add(Collection<STMT> addedStatements) throws SQLException {
         verifyNotReadOnly();
 
@@ -461,8 +483,15 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
         if (addedStatements != null && !addedStatements.isEmpty()){
             try {
-                add(addedStatements);
+                // TODO : better call this explicitly
+                if (addedStatements.size() > 1000){
+                    addBulk(addedStatements);
+                }else{
+                    add(addedStatements);    
+                }                
             } catch (SQLException e) {
+                throw new RepositoryException(e);
+            } catch (IOException e) {
                 throw new RepositoryException(e);
             }
         }

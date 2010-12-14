@@ -88,7 +88,7 @@ public class VirtuosoRepository implements Repository {
     private boolean initialized = false;
 
     public VirtuosoRepository(String hostlist, String user, String password) {
-        this(hostlist, user, password, "sesame:nil");
+        this(hostlist, user, password, "rdfbean:nil");
     }
     
     public VirtuosoRepository(String host, int port, String user, String password) {
@@ -214,7 +214,7 @@ public class VirtuosoRepository implements Repository {
         }
         initialized = true;
     }
-
+    
     @Override
     public void load(Format format, InputStream is, UID context, boolean replace) {
         ValueFactory valueFactory = new ValueFactoryImpl();

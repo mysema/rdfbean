@@ -1,5 +1,7 @@
 package com.mysema.rdfbean.virtuoso;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,10 +28,10 @@ public class BulkLoadTest extends AbstractConnectionTest{
             predicates.add(new UID(TEST.NS, "pred"+i));
         }
         
-        
-        List<STMT> stmts = new ArrayList<STMT>(14000);
-        for (int i = 0; i < 1400; i++){
-            ID sub = new BID();  
+                             
+        List<STMT> stmts = new ArrayList<STMT>(3500); 
+        for (int i = 0; i < 350; i++){
+            ID sub = new UID(TEST.NS, "e" + UUID.randomUUID());  
             stmts.add(new STMT(sub, predicates.get(0), new LIT(UUID.randomUUID().toString())));
             stmts.add(new STMT(sub, predicates.get(1), new LIT("1", XSD.intType)));
             stmts.add(new STMT(sub, predicates.get(2), sub));
@@ -53,7 +55,9 @@ public class BulkLoadTest extends AbstractConnectionTest{
             throw new RuntimeException(e);
         }
         long duration = System.currentTimeMillis() - start;
-        System.out.println(duration / 1000);
+        System.out.println(duration + "ms");
+        
+        assertTrue(connection.exists(stmts.get(0).getSubject(), null, null, null, false));
     }
     
     public static void main(String[] args){
