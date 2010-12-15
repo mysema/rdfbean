@@ -39,7 +39,7 @@ public class NTriplesUtilTest {
     
     @Test
     public void LIT_serialization(){
-        assertEquals("\"X\"", NTriplesUtil.toString(new LIT("X")));
+        assertEquals("\"X\"^^<"+XSD.stringType.getId()+">", NTriplesUtil.toString(new LIT("X")));
         assertEquals("\"X\"@en", NTriplesUtil.toString(new LIT("X", Locale.ENGLISH)));
     }
     
