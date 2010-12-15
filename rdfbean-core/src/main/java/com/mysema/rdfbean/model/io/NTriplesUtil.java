@@ -7,6 +7,9 @@ import java.util.Map;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.DC;
+import com.mysema.rdfbean.model.DCTERMS;
+import com.mysema.rdfbean.model.GEO;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDF;
@@ -21,7 +24,7 @@ public final class NTriplesUtil {
     private static final Map<UID, String> uids = new HashMap<UID, String>();
     
     static {
-        for (Collection<UID> schema : Arrays.asList(XSD.ALL, RDF.ALL, RDFS.ALL, OWL.ALL)){
+        for (Collection<UID> schema : Arrays.asList(DC.ALL, DCTERMS.ALL, GEO.ALL, OWL.ALL, RDF.ALL, RDFS.ALL, XSD.ALL)){
             for (UID uid : schema){
                 uids.put(uid, toString(uid));
             }
@@ -50,8 +53,6 @@ public final class NTriplesUtil {
         String value = "\"" + escapeString(lit.getValue()) + "\"";
         if (lit.getLang() != null) {
             return value + "@" + LocaleUtil.toLang(lit.getLang());
-        } else if (lit.getDatatype().equals(XSD.stringType)) {    
-            return value;
         } else {
             return value + "^^" + toString(lit.getDatatype());
         }
