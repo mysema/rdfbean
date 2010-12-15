@@ -1,5 +1,8 @@
 package com.mysema.rdfbean.virtuoso;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +13,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
@@ -52,5 +57,14 @@ public abstract class AbstractConnectionTest {
             connection.close();
         }
     }
+        
+    protected void assertExists(ID subject, UID predicate, NODE object, UID context){
+        assertTrue(connection.exists(subject, predicate, object, context, false));
+    }
+   
+    protected void assertNotExists(ID subject, UID predicate, NODE object, UID context){
+        assertFalse(connection.exists(subject, predicate, object, context, false));
+    }
+
 
 }
