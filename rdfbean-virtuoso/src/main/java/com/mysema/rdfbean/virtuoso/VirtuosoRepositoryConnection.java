@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -23,7 +24,17 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.NTriplesUtil;
 import com.mysema.rdfbean.object.Session;
 
@@ -62,19 +73,23 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     private final int prefetchSize;
     
     private final SesameDialect dialect = new SesameDialect(new ValueFactoryImpl());
+    
+    private final File bulkLoadDir;
 
     protected VirtuosoRepositoryConnection(
             Converter converter, 
             int prefetchSize, 
             UID defGraph,
-            Connection connection) {
+            Connection connection,
+            File bulkLoadDir) {
         this.converter = converter;
         this.connection = connection;
         this.prefetchSize = prefetchSize;
         this.defaultGraph = defGraph;
+        this.bulkLoadDir = bulkLoadDir;
     }
 
-    private void addBulk(Collection<STMT> addedStatements) throws SQLException, IOException {
+    public void addBulk(Collection<STMT> addedStatements) throws SQLException, IOException {
         verifyNotReadOnly();
         
         Map<UID,File> files = new HashMap<UID,File>();
@@ -85,7 +100,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
             Writer writer = writers.get(context);
             if (writer == null){
-                File file = File.createTempFile("data", ".n3");
+                File file = new File(bulkLoadDir, UUID.randomUUID() + ".n3");
                 file.deleteOnExit();
                 files.put(context, file);
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF-8"));
@@ -107,7 +122,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         try{
             for (Map.Entry<UID, File> entry : files.entrySet()){
                 File file = entry.getValue();
-                stmt.execute("ld_dir ('"+file.getParent()+"', '"+file.getName()+"', '"+entry.getKey().getId()+"')");
+                stmt.execute("ld_dir ('"+file.getParentFile().getAbsolutePath()+"', '"+file.getName()+"', '"+entry.getKey().getId()+"')");
             }
             stmt.execute("rdf_loader_run()");   
         }finally{
@@ -483,8 +498,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
         if (addedStatements != null && !addedStatements.isEmpty()){
             try {
-                // TODO : better call this explicitly
-                if (addedStatements.size() > 1000){
+                if (bulkLoadDir != null && addedStatements.size() > 1000){
                     addBulk(addedStatements);
                 }else{
                     add(addedStatements);    

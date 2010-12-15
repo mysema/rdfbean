@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -79,6 +81,33 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         assertTrue(connection.exists(sub,  RDFS.label, sub,  null, false));
         assertTrue(connection.exists(null, RDFS.label, sub,  null, false));
         assertTrue(connection.exists(null,             null, sub, null, false));
+    }
+    
+    @Test
+    public void AddBulk() throws SQLException, IOException{
+        ID sub = new UID(TEST.NS, "e"+ System.currentTimeMillis());
+        List<STMT> stmts = Arrays.asList(
+                // uid
+                new STMT(sub, RDFS.label, sub),
+                // bid
+//                new STMT(sub, RDFS.label, new BID()),
+                // lit
+                new STMT(sub, RDFS.label, new LIT(sub.getId())),
+                new STMT(sub, RDFS.label, new LIT("X")),
+                new STMT(sub, RDFS.label, new LIT(sub.getId(), Locale.ENGLISH)),
+                new STMT(sub, RDFS.label, new LIT("1", XSD.intType))
+                );
+        toBeRemoved = stmts;
+        
+        connection.addBulk(stmts);
+        
+        for (STMT stmt : stmts){
+            assertTrue(stmt.toString(), connection.exists(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), null, false));
+            assertTrue(stmt.toString(), connection.exists(stmt.getSubject(), stmt.getPredicate(), null, null, false));
+            assertTrue(stmt.toString(), connection.exists(stmt.getSubject(), null, null, null, false));
+            assertTrue(stmt.toString(), connection.exists(null, stmt.getPredicate(), stmt.getObject(), null, false));
+            assertTrue(stmt.toString(), connection.exists(null, null, stmt.getObject(), null, false));
+        }
     }
     
     @Test

@@ -78,6 +78,8 @@ public class VirtuosoRepository implements Repository {
     private RDFSource[] sources;
 
     private File dataDir;
+    
+    private File bulkLoadDir;
 
     private final String charset = "UTF-8";
 
@@ -174,11 +176,11 @@ public class VirtuosoRepository implements Repository {
         export(format, Namespaces.DEFAULT, out);
     }
 
-    public RDFConnection openConnection() {
+    public VirtuosoRepositoryConnection openConnection() {
         try {
             javax.sql.PooledConnection pconn = pds.getPooledConnection();
             java.sql.Connection connection = pconn.getConnection();
-            return new VirtuosoRepositoryConnection(converter, prefetchSize, defGraph, connection);
+            return new VirtuosoRepositoryConnection(converter, prefetchSize, defGraph, connection, bulkLoadDir);
         } catch (SQLException e) {
             logger.error("Connection to " + host + " FAILED.");
             throw new RepositoryException(e);
@@ -267,6 +269,10 @@ public class VirtuosoRepository implements Repository {
     public void setDataDir(File dataDir) {
         this.dataDir = dataDir;
     }
+    
+    public void setBulkLoadDir(File bulkLoadDir) {
+        this.bulkLoadDir = bulkLoadDir;
+    }
 
     public void setFetchSize(int sz) {
         this.prefetchSize = sz;
@@ -279,5 +285,7 @@ public class VirtuosoRepository implements Repository {
     public void setSources(RDFSource... sources) {
         this.sources = sources;
     }
+    
+    
 
 }

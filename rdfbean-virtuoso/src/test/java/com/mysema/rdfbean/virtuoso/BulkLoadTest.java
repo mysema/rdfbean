@@ -29,8 +29,8 @@ public class BulkLoadTest extends AbstractConnectionTest{
         }
         
                              
-        List<STMT> stmts = new ArrayList<STMT>(3500); 
-        for (int i = 0; i < 350; i++){
+        List<STMT> stmts = new ArrayList<STMT>(14000);
+        for (int i = 0; i < 1400; i++){
             ID sub = new UID(TEST.NS, "e" + UUID.randomUUID());  
             stmts.add(new STMT(sub, predicates.get(0), new LIT(UUID.randomUUID().toString())));
             stmts.add(new STMT(sub, predicates.get(1), new LIT("1", XSD.intType)));
@@ -70,6 +70,9 @@ public class BulkLoadTest extends AbstractConnectionTest{
             test.tearDown();
             tearDownClass();    
         }                
+        
+        //  1322 ms
+        // 55592 ms
     }
     
 }
