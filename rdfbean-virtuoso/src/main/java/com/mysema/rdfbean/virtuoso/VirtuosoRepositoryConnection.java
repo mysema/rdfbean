@@ -10,7 +10,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -118,11 +117,15 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             writer.close();
         }
         
-        Statement stmt = connection.createStatement();
+        PreparedStatement stmt = connection.prepareStatement("ld_dir(?,?,?)");
         try{
             for (Map.Entry<UID, File> entry : files.entrySet()){
                 File file = entry.getValue();
-                stmt.execute("ld_dir ('"+file.getParentFile().getAbsolutePath()+"', '"+file.getName()+"', '"+entry.getKey().getId()+"')");
+                stmt.setString(1, file.getParentFile().getAbsolutePath());
+                stmt.setString(2, file.getName());
+                stmt.setString(3, entry.getKey().getId());
+                stmt.execute();
+                stmt.clearParameters();                
             }
             stmt.execute("rdf_loader_run()");   
         }finally{

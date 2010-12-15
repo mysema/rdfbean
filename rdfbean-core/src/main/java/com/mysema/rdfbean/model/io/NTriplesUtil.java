@@ -1,25 +1,41 @@
 package com.mysema.rdfbean.model.io;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
+import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 
 public final class NTriplesUtil {
 
     public static String toString(NODE node) {
-        if (node.isBNode()) {
-            return "_:b" + node.getValue();
-        } else if (node.isURI()) {
-            return "<" + escapeString(node.getValue()) + ">";
+        if (node.isURI()) {
+            return toString(node.asURI());
+        } else if (node.isLiteral()) {
+            return toString(node.asLiteral());
         } else {
-            LIT lit = node.asLiteral();
-            String value = "\"" + escapeString(lit.getValue()) + "\"";
-            if (lit.getLang() != null) {
-                return value + "@" + LocaleUtil.toLang(lit.getLang());
-            } else {
-                return value + "^^" + toString(lit.getDatatype());
-            }
+            return toString(node.asBNode());
         }
+    }
+    
+    public static String toString(UID uid){
+        return "<" + escapeString(uid.getValue()) + ">";
+    }
+    
+    public static String toString(LIT lit){
+        String value = "\"" + escapeString(lit.getValue()) + "\"";
+        if (lit.getLang() != null) {
+            return value + "@" + LocaleUtil.toLang(lit.getLang());
+        } else if (lit.getDatatype().equals(XSD.stringType)) {    
+            return value;
+        } else {
+            return value + "^^" + toString(lit.getDatatype());
+        }
+    }
+    
+    public static String toString(BID bid){
+        return "_:b" + bid.getValue();
     }
 
     private static String escapeString(String label) {
