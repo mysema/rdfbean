@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import virtuoso.jdbc4.VirtuosoConnectionPoolDataSource;
 
+import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
@@ -84,6 +86,8 @@ public class VirtuosoRepository implements Repository {
     private final String charset = "UTF-8";
 
     private final UID defGraph;
+    
+    private Collection<UID> allowedGraphs = Collections.emptySet();
 
     private int prefetchSize = 200;
 
@@ -180,7 +184,7 @@ public class VirtuosoRepository implements Repository {
         try {
             javax.sql.PooledConnection pconn = pds.getPooledConnection();
             java.sql.Connection connection = pconn.getConnection();
-            return new VirtuosoRepositoryConnection(converter, prefetchSize, defGraph, connection, bulkLoadDir);
+            return new VirtuosoRepositoryConnection(converter, prefetchSize, defGraph, allowedGraphs, connection, bulkLoadDir);
         } catch (SQLException e) {
             logger.error("Connection to " + host + " FAILED.");
             throw new RepositoryException(e);
@@ -267,11 +271,11 @@ public class VirtuosoRepository implements Repository {
     }
 
     public void setDataDir(File dataDir) {
-        this.dataDir = dataDir;
+        this.dataDir = Assert.notNull(dataDir,"dataDir");
     }
     
     public void setBulkLoadDir(File bulkLoadDir) {
-        this.bulkLoadDir = bulkLoadDir;
+        this.bulkLoadDir = Assert.notNull(bulkLoadDir,"bulkLoadDir");
     }
 
     public void setFetchSize(int sz) {
@@ -285,7 +289,9 @@ public class VirtuosoRepository implements Repository {
     public void setSources(RDFSource... sources) {
         this.sources = sources;
     }
-    
-    
 
+    public void setAllowedGraphs(Collection<UID> allowedGraphs) {
+        this.allowedGraphs = Assert.notNull(allowedGraphs,"allowedGraphs");
+    }
+    
 }

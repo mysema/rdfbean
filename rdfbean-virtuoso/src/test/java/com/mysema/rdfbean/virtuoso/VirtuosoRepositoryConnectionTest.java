@@ -58,12 +58,12 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     public void FindStatements_from_Context() {
         UID sub = new UID(TEST.NS, UUID.randomUUID().toString());
         assertTrue(IteratorAdapter.asList(connection.findStatements(sub, null, null, null, false)).isEmpty());
-        repository.execute(new Addition(new STMT(sub, RDF.type, RDFS.Class, sub)));
-        toBeRemoved = Collections.singleton(new STMT(sub, RDF.type, RDFS.Class, sub));
+        repository.execute(new Addition(new STMT(sub, RDF.type, RDFS.Class, context)));
+        toBeRemoved = Collections.singleton(new STMT(sub, RDF.type, RDFS.Class, context));
         
         assertFalse(IteratorAdapter.asList(connection.findStatements(sub,  null, null, null, false)).isEmpty());
-        assertFalse(IteratorAdapter.asList(connection.findStatements(sub,  null, null, sub, false)).isEmpty());
-        assertFalse(IteratorAdapter.asList(connection.findStatements(null, null, null, sub, false)).isEmpty());
+        assertFalse(IteratorAdapter.asList(connection.findStatements(sub,  null, null, context, false)).isEmpty());
+        assertFalse(IteratorAdapter.asList(connection.findStatements(null, null, null, context, false)).isEmpty());
     }
     
     @Test
@@ -179,7 +179,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     public void Remove_none_given_from_named(){
         ID sub = new UID(TEST.NS, "s"+ System.currentTimeMillis());
         ID obj = new UID(TEST.NS, "o"+ System.currentTimeMillis());
-        STMT stmt = new STMT(sub, RDF.type, obj,sub.asURI());
+        STMT stmt = new STMT(sub, RDF.type, obj, context);
         List<STMT> stmts = Collections.singletonList(stmt);
         toBeRemoved = stmts;
         connection.update(null, stmts);
@@ -207,7 +207,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     public void Remove_all_given_from_named(){
         ID sub = new UID(TEST.NS, "s"+ System.currentTimeMillis());
         ID obj = new UID(TEST.NS, "o"+ System.currentTimeMillis());
-        STMT stmt = new STMT(sub, RDF.type, obj, sub.asURI());
+        STMT stmt = new STMT(sub, RDF.type, obj, context);
         List<STMT> stmts = Collections.singletonList(stmt);
         toBeRemoved = stmts;
         connection.update(null, stmts);
@@ -234,7 +234,6 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     @Test
     public void Remove_Literals_from_named(){
         ID sub = new UID(TEST.NS, "el"+ System.currentTimeMillis());
-        UID context = new UID("sesame:other");
         List<STMT> stmts = Arrays.asList(
                 new STMT(sub, RDFS.label, new LIT(sub.getId(), new UID(TEST.NS)), context),
                 new STMT(sub, RDFS.label, new LIT(sub.getId()), context),
@@ -297,7 +296,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     public void Update_named() {
         ID sub = new UID(TEST.NS, "s"+ System.currentTimeMillis());
         ID type = new UID(TEST.NS, "TestType" + System.currentTimeMillis());
-        Collection<STMT> stmts = Collections.singleton(new STMT(sub, RDF.type, type, sub.asURI()));
+        Collection<STMT> stmts = Collections.singleton(new STMT(sub, RDF.type, type, context));
         toBeRemoved = stmts;        
         // add
         connection.update(null, stmts);

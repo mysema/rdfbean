@@ -8,45 +8,33 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.Format;
 
-public class VirtuosoRepositoryTest {
-
-    private Repository repository;
+public class VirtuosoRepositoryTest extends AbstractConnectionTest{
     
     private RDFConnection conn;
-
-    @Before
-    public void setUp(){
-        repository = new VirtuosoRepository("localhost:1111", "dba", "dba");
-        repository.initialize();
-    }
 
     @After
     public void tearDown(){
         if (conn != null){
             conn.close();
-        }        
-        repository.close();
+        }
+        super.tearDown();
     }
     
     @Test
     public void Load(){
-        UID foaf = new UID("http://xmlns.com/foaf/0.1/");
         conn = repository.openConnection();
-        conn.remove(null, null, null, foaf);
-        assertFalse(conn.exists(null, null, null, foaf, false));
+        conn.remove(null, null, null, context2);
+        assertFalse(conn.exists(null, null, null, context2, false));
         
         InputStream is = getClass().getResourceAsStream("/foaf.rdf");
-        repository.load(Format.RDFXML, is, foaf, true);
-        assertTrue(conn.exists(null, null, null, foaf, false));
+        repository.load(Format.RDFXML, is, context2, true);
+        assertTrue(conn.exists(null, null, null, context2, false));
     }
     
     @Test

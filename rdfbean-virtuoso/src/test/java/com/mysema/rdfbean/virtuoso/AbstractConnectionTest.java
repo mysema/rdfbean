@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.virtuoso;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.After;
@@ -8,19 +9,26 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 
 public abstract class AbstractConnectionTest {
 
     protected static VirtuosoRepository repository;
-
+    
+    protected static UID context = new UID(TEST.NS, "named1");
+    
+    protected static UID context2 = new UID(TEST.NS, "named2");
+    
     protected VirtuosoRepositoryConnection connection;
     
     protected Collection<STMT> toBeRemoved;
-
+    
     @BeforeClass
     public static void setUpClass(){
-        repository = new VirtuosoRepository("localhost:1111", "dba", "dba");
+        repository = new VirtuosoRepository("localhost:1111", "dba", "dba", TEST.NS);
+        repository.setAllowedGraphs(Arrays.asList(context, context2));
         repository.setBulkLoadDir(new File(System.getProperty("java.io.tmpdir")));
         repository.initialize();
     }

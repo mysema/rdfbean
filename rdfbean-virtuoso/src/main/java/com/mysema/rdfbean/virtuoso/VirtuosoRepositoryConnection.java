@@ -13,8 +13,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -23,17 +25,7 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RepositoryException;
-import com.mysema.rdfbean.model.SPARQLQuery;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.NTriplesUtil;
 import com.mysema.rdfbean.object.Session;
 
@@ -67,6 +59,8 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     private final UID defaultGraph;
 
+    private final Collection<UID> allowedGraphs;
+    
     private final Connection connection;
 
     private final int prefetchSize;
@@ -79,12 +73,14 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             Converter converter, 
             int prefetchSize, 
             UID defGraph,
+            Collection<UID> allowedGraphs,
             Connection connection,
             File bulkLoadDir) {
         this.converter = converter;
         this.connection = connection;
         this.prefetchSize = prefetchSize;
         this.defaultGraph = defGraph;
+        this.allowedGraphs = allowedGraphs;
         this.bulkLoadDir = bulkLoadDir;
     }
 
@@ -96,6 +92,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         
         // write statements to writers
         for (STMT stmt : addedStatements) {
+            assertAllowedGraph(stmt.getContext());
             UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
             Writer writer = writers.get(context);
             if (writer == null){
@@ -139,6 +136,18 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 
     }
     
+    private void assertAllowedGraph(@Nullable UID context) {
+        if (context != null && !isAllowedGraph(context)){
+            throw new IllegalStateException("Context not allowed for update " + context.getId());
+        }
+    }
+
+    private boolean isAllowedGraph(UID context){
+        return !context.getId().startsWith(INTERNAL_PREFIX)        
+            && (context.equals(defaultGraph) 
+            || allowedGraphs.isEmpty() 
+            || allowedGraphs.contains(context));
+    }
     
     private void add(Collection<STMT> addedStatements) throws SQLException {
         verifyNotReadOnly();
@@ -149,6 +158,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             int count = 0;
 
             for (STMT stmt : addedStatements) {
+                assertAllowedGraph(stmt.getContext());
                 ps.setString(1, stmt.getContext() != null ? stmt.getContext().getId() : defaultGraph.getId());
                 bindResource(ps, 2, stmt.getSubject());
                 bindURI(ps, 3, stmt.getPredicate());
@@ -371,6 +381,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         verifyNotReadOnly();
 
         for (STMT stmt : removedStatements){
+            assertAllowedGraph(stmt.getContext());
             UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
             removeMatch(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), context);
         }
@@ -378,6 +389,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     private void removeMatch(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, 
             @Nullable UID context) throws SQLException  {
+        assertAllowedGraph(context);
         PreparedStatement ps = null;
         try {
             // context given
@@ -397,7 +409,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 
             // no context
             } else if (context == null){
-                List<UID> graphs = new ArrayList<UID>();
+                Set<UID> graphs = new HashSet<UID>();
                 graphs.add(defaultGraph);
                 
                 // collect graphs
@@ -407,9 +419,9 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 try{
                     rs = ps.executeQuery();
                     while (rs.next()){
-                        String graph = rs.getString(1);
-                        if (!graph.startsWith(INTERNAL_PREFIX)){
-                            graphs.add(new UID(graph));    
+                        UID graph = new UID(rs.getString(1));
+                        if (isAllowedGraph(graph)){
+                            graphs.add(graph);    
                         }                                                    
                     }                            
                 }finally{

@@ -49,8 +49,8 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
         ID sub = new UID(TEST.NS, "e" + System.currentTimeMillis());
         UID pred = new UID(TEST.NS, "p" + System.currentTimeMillis());
         List<STMT> stmts = Arrays.asList(
-                new STMT(sub, pred, sub, sub.asURI()),
-                new STMT(sub, pred, pred, pred.asURI())
+                new STMT(sub, pred, sub, context),
+                new STMT(sub, pred, pred, context2)
                 );
         toBeRemoved = stmts;
         connection.update(null, stmts);
@@ -69,8 +69,8 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
                 System.err.println(uid.getId());
             }
             
-            assertTrue(found.contains(sub));
-            assertTrue(found.contains(pred));
+            assertTrue(found.contains(context));
+            assertTrue(found.contains(context2));
             
         }finally{
             AbstractQueryImpl.close(stmt, rs);
