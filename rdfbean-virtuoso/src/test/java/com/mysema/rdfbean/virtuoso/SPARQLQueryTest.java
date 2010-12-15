@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -180,7 +179,6 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    @Ignore // FIXME
     public void Select_and_Describe(){
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "SELECT ?s WHERE {?s ?p ?o} LIMIT 10");
         CloseableIterator<Map<String,NODE>> rows = query.getTuples();

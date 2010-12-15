@@ -36,8 +36,8 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
         query(jdbcConn, "sparql construct { ?s ?p ?o } where { ?s ?p ?o } limit 3");
         query(jdbcConn, javaOutput + "construct { ?s ?p ?o } where { ?s ?p ?o } limit 3");
         query(jdbcConn, javaOutput + "construct { ?s ?p ?o ; rdf:type ?type } where { ?s ?p ?o ; rdf:type ?type } limit 3");
-//        query(jdbcConn, "sparql describe ?s where { ?s ?p ?o } limit 3");
-//        query(jdbcConn, javaOutput + "describe ?s where { ?s ?p ?o } limit 3");
+        query(jdbcConn, "sparql describe ?s where { ?s ?p ?o } limit 3");
+        query(jdbcConn, javaOutput + "describe ?s where { ?s ?p ?o } limit 3");
         
         // ask
         query(jdbcConn, "sparql ask where { ?s ?p ?o }");
