@@ -62,7 +62,7 @@ public final class NTriplesUtil {
         return "_:b" + bid.getValue();
     }
 
-    private static String escapeString(String label) {
+    public static String escapeString(String label) {
         int labelLength = label.length();
         StringBuilder sb = new StringBuilder(2 * labelLength);
 

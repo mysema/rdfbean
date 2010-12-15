@@ -1,11 +1,7 @@
 package com.mysema.rdfbean.virtuoso;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,12 +17,15 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.io.FileUtils;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.model.io.NTriplesUtil;
+import com.mysema.rdfbean.model.io.TurtleWriter;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -35,6 +34,8 @@ import com.mysema.rdfbean.object.Session;
  */
 public class VirtuosoRepositoryConnection implements RDFConnection {
 
+    private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepositoryConnection.class);
+    
     private static final String SPARQL_INSERT = "sparql define output:format '_JAVA_'  " +
     		"insert into graph iri(??) { `iri(??)` `iri(??)` " +
     		"`bif:__rdf_long_from_batch_params(??,??,??)` }";
@@ -88,30 +89,34 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         verifyNotReadOnly();
         
         Map<UID,File> files = new HashMap<UID,File>();
-        Map<UID,Writer> writers = new HashMap<UID,Writer>();
+        Map<UID,TurtleWriter> writers = new HashMap<UID,TurtleWriter>();
+        
+        long start = System.currentTimeMillis();
         
         // write statements to writers
         for (STMT stmt : addedStatements) {
             assertAllowedGraph(stmt.getContext());
             UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
-            Writer writer = writers.get(context);
+            TurtleWriter writer = writers.get(context);
             if (writer == null){
-                File file = new File(bulkLoadDir, UUID.randomUUID() + ".n3");
-                file.deleteOnExit();
-                files.put(context, file);
-                writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file),"UTF-8"));
+                writer = new TurtleWriter();
                 writers.put(context, writer);                
-            }
-            
-            writer.write(NTriplesUtil.toString(stmt.getSubject()) + " " 
-                    + NTriplesUtil.toString(stmt.getPredicate()) + " " 
-                    + NTriplesUtil.toString(stmt.getObject()) + " .\n");
+            }            
+            writer.handle(stmt);
         }
         
-        // flush and close writers
-        for (Writer writer : writers.values()){
-            writer.flush();
-            writer.close();
+        // writer writers to files
+        for (Map.Entry<UID,TurtleWriter> entry : writers.entrySet()){
+            entry.getValue().end();
+            File file = new File(bulkLoadDir, UUID.randomUUID() + ".n3");
+            file.deleteOnExit();
+            FileUtils.writeStringToFile(file, entry.getValue().toString(), "UTF-8");
+            files.put(entry.getKey(), file);
+        }
+        
+        if (logger.isInfoEnabled()){
+            long duration = System.currentTimeMillis() - start;
+            logger.info("Serialization of " + addedStatements.size() + " statements in " + duration + "ms"); 
         }
         
         PreparedStatement stmt = connection.prepareStatement("ld_dir(?,?,?)");
