@@ -35,7 +35,6 @@ import virtuoso.jdbc4.VirtuosoConnectionPoolDataSource;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.Namespaces;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.Operation;
@@ -202,11 +201,23 @@ public class VirtuosoRepository implements Repository {
         RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
         try {
             if (sources != null) {
+                ValueFactory valueFactory = new ValueFactoryImpl();
+                SesameDialect dialect = new SesameDialect(valueFactory);
+                Set<UID> contexts = new HashSet<UID>();
                 for (RDFSource source : sources) {
                     if (source.getResource() != null){
                         logger.info("loading " + source.getResource());
                     }
-                    load(source.getFormat(), source.openStream(), new UID(source.getContext()), false);
+                    UID context = new UID(source.getContext());
+                    if (!contexts.contains(context) && connection.exists(null, null, null, context, false)){
+                        continue;
+                    }
+                    contexts.add(context);
+                    Set<STMT> stmts = new HashSet<STMT>(LOAD_BATCH_SIZE);
+                    RDFParser parser = Rio.createParser(getRioFormat(source.getFormat()));
+                    parser.setRDFHandler(createHandler(dialect, connection, stmts, context));
+                    parser.parse(source.openStream(), context.getValue());
+                    connection.update(null, stmts);
                 }
             }
             tx.commit();
@@ -236,7 +247,7 @@ public class VirtuosoRepository implements Repository {
             Set<STMT> stmts = new HashSet<STMT>(LOAD_BATCH_SIZE);
             RDFParser parser = Rio.createParser(getRioFormat(format));
             parser.setRDFHandler(createHandler(dialect, connection, stmts, context));
-            parser.parse(is, context != null ? context.getValue() : TEST.NS);
+            parser.parse(is, context != null ? context.getValue() : defGraph.getValue());
             connection.update(Collections.<STMT>emptySet(), stmts);
         } catch (RDFParseException e) {
             throw new RepositoryException(e);
