@@ -1,6 +1,6 @@
 package com.mysema.rdfbean.model.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,11 +12,15 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
 public class TurtleWriterTest {
+    
+    private final TurtleWriter writer = new TurtleWriter();
 
     @Test
     public void Handle(){
@@ -41,7 +45,7 @@ public class TurtleWriterTest {
             stmts.add(new STMT(sub, predicates.get(9), new LIT("3", XSD.intType)));
         }
         
-        TurtleWriter writer = new TurtleWriter();
+        
         for (STMT stmt : stmts){
             writer.handle(stmt);
         }
@@ -49,8 +53,33 @@ public class TurtleWriterTest {
         
         System.out.println(writer.toString());
         String str = writer.toString();
+        assertTrue(str.contains(" ; ns1:pred1"));
         assertTrue(str.contains("@prefix ns1: <http://semantics.mysema.com/test#> ."));
         assertTrue(str.contains("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."));
         assertTrue(str.contains("\"3\"^^xsd:int"));
+    }
+    
+    @Test
+    public void Duplicate_Predicate(){    
+        writer.handle(new STMT(RDF.type, RDF.type, RDF.Property));
+        writer.handle(new STMT(RDF.type, RDF.type, RDFS.Resource));
+        writer.handle(new STMT(RDF.type, RDFS.label, new LIT("X")));
+        writer.end();
+        
+        System.out.println(writer.toString());
+        String str = writer.toString();
+        assertTrue(str.contains("rdf:type rdf:type rdf:Property , rdfs:Resource ; rdfs:label \"X\"^^xsd:string ."));
+    }
+    
+    @Test
+    public void Duplicate_Predicate2(){
+        writer.handle(new STMT(RDF.type, RDFS.label, new LIT("X")));
+        writer.handle(new STMT(RDF.type, RDF.type, RDF.Property));
+        writer.handle(new STMT(RDF.type, RDF.type, RDFS.Resource));        
+        writer.end();
+        
+        System.out.println(writer.toString());
+        String str = writer.toString();
+        assertTrue(str.contains("rdf:type rdfs:label \"X\"^^xsd:string ; rdf:type rdf:Property , rdfs:Resource ."));
     }
 }

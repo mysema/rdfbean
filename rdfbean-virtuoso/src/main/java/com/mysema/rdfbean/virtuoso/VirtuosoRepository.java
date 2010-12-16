@@ -81,8 +81,6 @@ public class VirtuosoRepository implements Repository {
 
     private File dataDir;
     
-    private File bulkLoadDir;
-
     private final String charset = "UTF-8";
 
     private final UID defGraph;
@@ -184,7 +182,7 @@ public class VirtuosoRepository implements Repository {
         try {
             javax.sql.PooledConnection pconn = pds.getPooledConnection();
             java.sql.Connection connection = pconn.getConnection();
-            return new VirtuosoRepositoryConnection(converter, prefetchSize, defGraph, allowedGraphs, connection, bulkLoadDir);
+            return new VirtuosoRepositoryConnection(converter, prefetchSize, defGraph, allowedGraphs, connection);
         } catch (SQLException e) {
             logger.error("Connection to " + host + " FAILED.");
             throw new RepositoryException(e);
@@ -274,10 +272,6 @@ public class VirtuosoRepository implements Repository {
         this.dataDir = Assert.notNull(dataDir,"dataDir");
     }
     
-    public void setBulkLoadDir(File bulkLoadDir) {
-        this.bulkLoadDir = Assert.notNull(bulkLoadDir,"bulkLoadDir");
-    }
-
     public void setFetchSize(int sz) {
         this.prefetchSize = sz;
     }

@@ -25,18 +25,24 @@ public final class TurtleWriter {
     private STMT last;
     
     public void handle(STMT stmt){
-        if (last != null && last.getSubject().equals(stmt.getSubject())){
-            builder.append(" ; ");   
-        }else{
+        if (last == null || !last.getSubject().equals(stmt.getSubject())) {
             if (last != null){
                 builder.append(" .\n");    
             }            
             append(stmt.getSubject());
             builder.append(" ");
-        }        
+            append(stmt.getPredicate());
+            builder.append(" ");
+            
+        } else if (last.getPredicate().equals(stmt.getPredicate())) {
+            builder.append(" , ");
+            
+        } else {
+            builder.append(" ; ");
+            append(stmt.getPredicate());
+            builder.append(" ");
+        }                
         
-        append(stmt.getPredicate());
-        builder.append(" ");
         append(stmt.getObject());           
         last = stmt;
     }

@@ -3,7 +3,6 @@ package com.mysema.rdfbean.virtuoso;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -34,7 +33,6 @@ public abstract class AbstractConnectionTest {
     public static void setUpClass(){
         repository = new VirtuosoRepository("localhost:1111", "dba", "dba", TEST.NS);
         repository.setAllowedGraphs(Arrays.asList(context, context2));
-        repository.setBulkLoadDir(new File(System.getProperty("java.io.tmpdir")));
         repository.initialize();
     }
 

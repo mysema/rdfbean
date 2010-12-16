@@ -1,6 +1,5 @@
 package com.mysema.rdfbean.virtuoso;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,11 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.io.FileUtils;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,28 +75,23 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     
     private final SesameDialect dialect = new SesameDialect(new ValueFactoryImpl());
     
-    private final File bulkLoadDir;
-
     protected VirtuosoRepositoryConnection(
             Converter converter, 
             int prefetchSize, 
             UID defGraph,
             Collection<UID> allowedGraphs,
-            Connection connection,
-            File bulkLoadDir) {
+            Connection connection) {
         this.converter = converter;
         this.connection = connection;
         this.prefetchSize = prefetchSize;
         this.defaultGraph = defGraph;
         this.allowedGraphs = allowedGraphs;
-        this.bulkLoadDir = bulkLoadDir;
     }
 
     public void addBulk(Collection<STMT> addedStatements) throws SQLException, IOException {
         verifyNotReadOnly();
         
-        Map<UID,File> files = new HashMap<UID,File>();
-        Map<UID,TurtleWriter> writers = new HashMap<UID,TurtleWriter>();
+        Map<UID, TurtleWriter> writers = new HashMap<UID, TurtleWriter>();
         
         long start = System.currentTimeMillis();
         
@@ -115,39 +107,23 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             writer.handle(stmt);
         }
         
-        // writer writers to files
-        for (Map.Entry<UID,TurtleWriter> entry : writers.entrySet()){
-            entry.getValue().end();
-            File file = new File(bulkLoadDir, UUID.randomUUID() + ".n3");
-            file.deleteOnExit();
-            FileUtils.writeStringToFile(file, entry.getValue().toString(), "UTF-8");
-            files.put(entry.getKey(), file);
-        }
-        
         if (logger.isInfoEnabled()){
             long duration = System.currentTimeMillis() - start;
             logger.info("Serialization of " + addedStatements.size() + " statements in " + duration + "ms"); 
         }
         
-        PreparedStatement stmt = connection.prepareStatement("ld_dir(?,?,?)");
-//        DB.DBA.TTLP (file_to_string_output ('.\tmp\data.ttl'), '', 'http://my_graph', 0);
+        // load data
+        PreparedStatement stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
         try{
-            for (Map.Entry<UID, File> entry : files.entrySet()){
-                File file = entry.getValue();
-                stmt.setString(1, file.getParentFile().getAbsolutePath());
-                stmt.setString(2, file.getName());
-                stmt.setString(3, entry.getKey().getId());
+            for (Map.Entry<UID, TurtleWriter> entry : writers.entrySet()){
+                entry.getValue().end();
+                stmt.setString(1, entry.getValue().toString());
+                stmt.setString(2, entry.getKey().getId());
                 stmt.execute();
                 stmt.clearParameters();                
             }
-            stmt.execute("rdf_loader_run()");   
         }finally{
             stmt.close();
-            
-            // delete files
-            for (File file : files.values()){
-                file.delete();
-            }
         }
                 
     }
@@ -529,7 +505,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
         if (addedStatements != null && !addedStatements.isEmpty()){
             try {
-                if (bulkLoadDir != null && addedStatements.size() > 1000){
+                if (addedStatements.size() > 100){
                     addBulk(addedStatements);
                 }else{
                     add(addedStatements);    
