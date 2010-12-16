@@ -81,9 +81,9 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
                 Map<String,NODE> tuples = new HashMap<String,NODE>();
                 for (String variable : variables){
                     Object obj = rs.getObject(variable);
-                    if (obj != null){
+                    if (obj != null) {
                         tuples.put(variable, converter.toNODE(obj));    
-                    }else{
+                    } else if (bindings.containsKey(variable)) {
                         tuples.put(variable, bindings.get(variable));
                     }                    
                 }
