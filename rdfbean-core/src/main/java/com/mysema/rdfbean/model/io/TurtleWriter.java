@@ -34,13 +34,13 @@ public final class TurtleWriter {
             append(stmt.getPredicate());
             builder.append(" ");
             
-        } else if (last.getPredicate().equals(stmt.getPredicate())) {
-            builder.append(" , ");
-            
-        } else {
+        } else if (!last.getPredicate().equals(stmt.getPredicate())) {
             builder.append(" ; ");
             append(stmt.getPredicate());
             builder.append(" ");
+                        
+        } else {
+            builder.append(" , ");
         }                
         
         append(stmt.getObject());           
