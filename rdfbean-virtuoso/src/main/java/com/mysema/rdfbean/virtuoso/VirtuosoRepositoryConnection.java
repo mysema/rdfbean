@@ -24,7 +24,17 @@ import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.TurtleWriter;
 import com.mysema.rdfbean.object.Session;
 
@@ -120,6 +130,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
         
         PreparedStatement stmt = connection.prepareStatement("ld_dir(?,?,?)");
+//        DB.DBA.TTLP (file_to_string_output ('.\tmp\data.ttl'), '', 'http://my_graph', 0);
         try{
             for (Map.Entry<UID, File> entry : files.entrySet()){
                 File file = entry.getValue();

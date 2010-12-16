@@ -18,7 +18,16 @@ import org.junit.Test;
 
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.Addition;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 
 public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     
@@ -155,6 +164,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     
     @Test
     public void Remove_subject_and_object_given(){
+        // FIXME: this is too slow
         ID sub = new UID(TEST.NS, "s"+ System.currentTimeMillis());
         ID obj = new UID(TEST.NS, "o"+ System.currentTimeMillis());
         STMT stmt = new STMT(sub, RDF.type, obj);
@@ -169,6 +179,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     
     @Test
     public void Remove_subject_and_literal_object_given(){
+        // FIXME: this is too slow
         ID sub = new UID(TEST.NS, "s"+ System.currentTimeMillis());
         NODE obj = new LIT(TEST.NS, "o"+ System.currentTimeMillis());
         STMT stmt = new STMT(sub, RDF.type, obj);
