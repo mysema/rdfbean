@@ -3,6 +3,8 @@ package com.mysema.rdfbean.model.io;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.BID;
@@ -19,6 +21,7 @@ public final class TurtleWriter {
     
     private final StringBuilder builder = new StringBuilder();
     
+    @Nullable
     private STMT last;
     
     public void handle(STMT stmt){
