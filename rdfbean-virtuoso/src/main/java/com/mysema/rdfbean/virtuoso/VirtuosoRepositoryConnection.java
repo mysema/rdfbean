@@ -107,9 +107,9 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             writer.handle(stmt);
         }
         
-        if (logger.isInfoEnabled()){
+        if (logger.isDebugEnabled()){
             long duration = System.currentTimeMillis() - start;
-            logger.info("Serialization of " + addedStatements.size() + " statements in " + duration + "ms"); 
+            logger.debug("Serialization of " + addedStatements.size() + " statements in " + duration + "ms"); 
         }
         
         // load data
