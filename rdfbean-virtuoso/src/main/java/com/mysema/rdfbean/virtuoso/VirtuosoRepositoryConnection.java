@@ -91,6 +91,8 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     public void addBulk(Collection<STMT> addedStatements) throws SQLException, IOException {
         verifyNotReadOnly();
         
+        // TODO : split data into chunks to avoid too large strings in preparedstatements
+        
         Map<UID, TurtleWriter> writers = new HashMap<UID, TurtleWriter>();
         
         long start = System.currentTimeMillis();
