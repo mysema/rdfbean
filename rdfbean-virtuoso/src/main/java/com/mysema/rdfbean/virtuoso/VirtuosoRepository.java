@@ -22,7 +22,6 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
@@ -232,26 +231,10 @@ public class VirtuosoRepository implements Repository {
     
     @Override
     public void load(Format format, InputStream is, UID context, boolean replace) {
-        ValueFactory valueFactory = new ValueFactoryImpl();
-        SesameDialect dialect = new SesameDialect(valueFactory);
-        RDFConnection connection = openConnection();
+        VirtuosoRepositoryConnection connection = openConnection();
         try{
-            if (!replace && context != null){
-                if (connection.exists(null, null, null, context, false)){
-                    return;
-                }
-            }
-            if (context != null && replace){
-                connection.remove(null, null, null, context);
-            }
-            Set<STMT> stmts = new HashSet<STMT>(LOAD_BATCH_SIZE);
-            RDFParser parser = Rio.createParser(getRioFormat(format));
-            parser.setRDFHandler(createHandler(dialect, connection, stmts, context));
-            parser.parse(is, context != null ? context.getValue() : defGraph.getValue());
-            connection.update(Collections.<STMT>emptySet(), stmts);
-        } catch (RDFParseException e) {
-            throw new RepositoryException(e);
-        } catch (RDFHandlerException e) {
+            connection.load(format, is, context, replace);
+        } catch (SQLException e) {
             throw new RepositoryException(e);
         } catch (IOException e) {
             throw new RepositoryException(e);

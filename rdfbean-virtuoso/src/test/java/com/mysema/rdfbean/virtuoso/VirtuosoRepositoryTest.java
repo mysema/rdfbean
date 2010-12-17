@@ -27,13 +27,24 @@ public class VirtuosoRepositoryTest extends AbstractConnectionTest{
     }
     
     @Test
-    public void Load(){
+    public void Load_RDF_XML(){
         conn = repository.openConnection();
         conn.remove(null, null, null, context2);
         assertFalse(conn.exists(null, null, null, context2, false));
         
         InputStream is = getClass().getResourceAsStream("/foaf.rdf");
         repository.load(Format.RDFXML, is, context2, true);
+        assertTrue(conn.exists(null, null, null, context2, false));
+    }
+
+    @Test
+    public void Load_Turtle(){
+        conn = repository.openConnection();
+        conn.remove(null, null, null, context2);
+        assertFalse(conn.exists(null, null, null, context2, false));
+        
+        InputStream is = getClass().getResourceAsStream("/test.ttl");
+        repository.load(Format.TURTLE, is, context2, true);
         assertTrue(conn.exists(null, null, null, context2, false));
     }
     
