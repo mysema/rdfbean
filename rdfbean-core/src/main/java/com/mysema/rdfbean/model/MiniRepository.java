@@ -20,7 +20,10 @@ import org.apache.commons.collections15.iterators.IteratorChain;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
+import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.io.RDFWriter;
+import com.mysema.rdfbean.model.io.WriterUtils;
 
 /**
  * MiniRepository is a lightweight implementation of the Repository interface
@@ -70,16 +73,6 @@ public final class MiniRepository implements Repository{
             }
         }
     }
-    
-    public void addStatements(CloseableIterator<STMT> stmts) {
-        try {
-            while (stmts.hasNext()) {
-                add(stmts.next());
-            }
-        } finally {
-            stmts.close();
-        }
-    }
 
     @Override
     public void close() {
@@ -92,13 +85,29 @@ public final class MiniRepository implements Repository{
     }
     
     @Override
-    public void export(Format format, Map<String, String> ns2prefix, OutputStream os) {
-        throw new UnsupportedOperationException();        
+    public void export(Format format, Map<String, String> ns2prefix, OutputStream out) {
+        RDFWriter writer = WriterUtils.createWriter(format, out, ns2prefix);
+        RDFConnection conn = openConnection();
+        try{                
+            CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, null, false);
+            try{
+                writer.begin();
+                while (stmts.hasNext()){
+                    writer.handle(stmts.next());
+                }
+                writer.end();
+            }finally{
+                stmts.close();
+            }
+            
+        }finally{
+            conn.close();
+        }            
     }
     
     @Override
     public void export(Format format, OutputStream out) {        
-        throw new UnsupportedOperationException();
+        export(format, Namespaces.DEFAULT, out);
     }
     
     public CloseableIterator<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context, boolean includeInferred) {
@@ -115,6 +124,21 @@ public final class MiniRepository implements Repository{
             iterator = iterChain;
         }
         return new ResultIterator(iterator, subject, predicate, object, context, includeInferred);
+    }
+    
+    public boolean exists(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context) {
+        if (subject != null){
+            return subjects.containsKey(subject);
+        }else if (objects != null && object != null && object.isResource()){
+            return objects.containsKey(object.asResource());
+        }else{
+            for (PredicateCache stmtCache : subjects.values()) {
+                if (stmtCache.iterator(predicate).hasNext()){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
     
     public MiniDialect getDialect() {

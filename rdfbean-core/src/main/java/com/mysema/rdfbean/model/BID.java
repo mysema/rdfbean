@@ -23,7 +23,7 @@ public final class BID extends ID {
     private static final long serialVersionUID = 4477657161877734394L;
 
     public BID() {
-        this(UUID.randomUUID().toString());
+        this("b"+UUID.randomUUID().toString());
     }
     
     public BID(String bnodeId) {

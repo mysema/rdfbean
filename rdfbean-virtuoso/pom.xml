@@ -27,26 +27,7 @@
 	  <artifactId>virtjdbc4</artifactId>
 	  <version>1.0</version>
 	</dependency>		
-	
-    <!-- RDF I/O from Sesame RIO -->
-    <dependency>
-      <groupId>org.openrdf.sesame</groupId>
-      <artifactId>sesame-rio-turtle</artifactId>
-      <version>${sesame.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.openrdf.sesame</groupId>
-      <artifactId>sesame-rio-rdfxml</artifactId>
-      <version>${sesame.version}</version>
-    </dependency>
-    
-	<dependency>
-      <groupId>org.openrdf.sesame</groupId>
-      <artifactId>sesame-rio-ntriples</artifactId>
-      <version>${sesame.version}</version>
-      <scope>test</scope>
-    </dependency>    	
-           
+	           
 	<!-- test deps -->
 	
 	<dependency>

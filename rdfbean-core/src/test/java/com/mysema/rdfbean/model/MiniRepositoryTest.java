@@ -12,7 +12,6 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -35,7 +34,6 @@ public class MiniRepositoryTest {
     }
 
     @Test
-    @Ignore
     public void Export() throws UnsupportedEncodingException{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         repository.export(Format.TURTLE, baos);

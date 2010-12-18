@@ -17,25 +17,14 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
-import org.openrdf.model.impl.ValueFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RepositoryException;
-import com.mysema.rdfbean.model.SPARQLQuery;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
-import com.mysema.rdfbean.model.io.TurtleWriter;
+import com.mysema.rdfbean.model.io.TurtleStringWriter;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -119,7 +108,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     private final UID defaultGraph;
     
-    private final SesameDialect dialect = new SesameDialect(new ValueFactoryImpl());
+//    private final SesameDialect dialect = new SesameDialect(new ValueFactoryImpl());
 
     private final int prefetchSize;
     
@@ -174,7 +163,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     public void addBulk(Collection<STMT> addedStatements) throws SQLException, IOException {
         verifyNotReadOnly();
         
-        Map<UID, TurtleWriter> writers = new HashMap<UID, TurtleWriter>();
+        Map<UID, TurtleStringWriter> writers = new HashMap<UID, TurtleStringWriter>();
         
         long start = System.currentTimeMillis();
         
@@ -182,9 +171,9 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         for (STMT stmt : addedStatements) {
             assertAllowedGraph(stmt.getContext());
             UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
-            TurtleWriter writer = writers.get(context);
+            TurtleStringWriter writer = writers.get(context);
             if (writer == null){
-                writer = new TurtleWriter();
+                writer = new TurtleStringWriter();
                 writers.put(context, writer);                
             }            
             writer.handle(stmt);
@@ -198,7 +187,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         // load data
         PreparedStatement stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
         try{
-            for (Map.Entry<UID, TurtleWriter> entry : writers.entrySet()){
+            for (Map.Entry<UID, TurtleStringWriter> entry : writers.entrySet()){
                 entry.getValue().end();
                 stmt.setString(1, entry.getValue().toString());
                 stmt.setString(2, entry.getKey().getId());
@@ -264,7 +253,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             }else if (resultType == SPARQLQuery.ResultType.TUPLES){
                 return (Q)new TupleQueryImpl(connection, converter, prefetchSize, DEFAULT_OUTPUT + query);
             }else if (resultType == SPARQLQuery.ResultType.TRIPLES){
-                return (Q)new GraphQueryImpl(connection, converter, prefetchSize, dialect, JAVA_OUTPUT + query);
+                return (Q)new GraphQueryImpl(connection, converter, prefetchSize, JAVA_OUTPUT + query);
             }else{
                 throw new IllegalArgumentException("No result type for " + definition);
             }         

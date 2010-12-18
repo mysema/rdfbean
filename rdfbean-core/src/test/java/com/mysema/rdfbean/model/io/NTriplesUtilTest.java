@@ -33,7 +33,7 @@ public class NTriplesUtilTest {
     public void BID_serialization(){
         for (int i = 0; i < 100; i++){
             BID bid = new BID();
-            assertEquals("_:b" + bid.getId(), NTriplesUtil.toString(bid)); 
+            assertEquals("_:" + bid.getId(), NTriplesUtil.toString(bid)); 
         }
     }
     

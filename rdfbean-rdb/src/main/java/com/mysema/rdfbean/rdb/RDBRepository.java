@@ -25,10 +25,7 @@ import net.jcip.annotations.Immutable;
 
 import org.apache.commons.collections15.BidiMap;
 import org.apache.commons.collections15.bidimap.DualHashBidiMap;
-import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.rio.RDFFormat;
@@ -36,7 +33,6 @@ import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
-import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.RDFHandlerBase;
 
@@ -52,6 +48,8 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
+import com.mysema.rdfbean.model.io.RDFWriter;
+import com.mysema.rdfbean.model.io.WriterUtils;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
@@ -156,36 +154,23 @@ public class RDBRepository implements Repository{
     
     @Override
     public void export(Format format, Map<String, String> ns2prefix, OutputStream out) {
-        RDFFormat targetFormat = getRioFormat(format);
-        RDFWriter writer = Rio.createWriter(targetFormat, out);
-        try {
-            RDFConnection conn = openConnection();
+        RDFWriter writer = WriterUtils.createWriter(format, out, ns2prefix);
+        RDFConnection conn = openConnection();
+        try{                
+            CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, null, false);
             try{
-                writer.startRDF();
-                for (Map.Entry<String, String> entry : ns2prefix.entrySet()){
-                    writer.handleNamespace(entry.getValue(), entry.getKey());
-                }                
-                CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, null, false);
-                ValueFactory valueFactory = new ValueFactoryImpl();
-                SesameDialect dialect = new SesameDialect(valueFactory);
-                try{
-                    while (stmts.hasNext()){
-                        STMT stmt = stmts.next();
-                        Resource sub = dialect.getResource(stmt.getSubject());
-                        URI pre = dialect.getURI(stmt.getPredicate());
-                        Value obj = dialect.getNode(stmt.getObject());
-                        writer.handleStatement(valueFactory.createStatement(sub, pre, obj));
-                    }    
-                }finally{
-                    stmts.close();
-                }                
-                writer.endRDF();
+                writer.begin();
+                while (stmts.hasNext()){
+                    writer.handle(stmts.next());
+                }
+                writer.end();
             }finally{
-                conn.close();
+                stmts.close();
             }
-        } catch (RDFHandlerException e) {
-            throw new RepositoryException(e.getMessage(), e);
-        }        
+            
+        }finally{
+            conn.close();
+        }  
     }
     
     @Override
@@ -423,7 +408,7 @@ public class RDBRepository implements Repository{
                     idSequence, 
                     connection, 
                     templates); 
-            return new RDBConnection(context);
+            return new RDBConnection(context, configuration);
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }        

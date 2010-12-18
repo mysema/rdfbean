@@ -35,17 +35,8 @@ import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.ConstructorExpression;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.template.NumberTemplate;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
+import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -73,6 +64,8 @@ public class RDBConnection implements RDFConnection{
     public static final QSymbol sub = new QSymbol("subject");
 
     private final RDBContext context;
+    
+    private final Configuration configuration;
 
     private final long defaultDatatypeId;
 
@@ -93,8 +86,9 @@ public class RDBConnection implements RDFConnection{
         }
     };
 
-    public RDBConnection(RDBContext context) {
+    public RDBConnection(RDBContext context, Configuration configuration) {
         this.context = context;
+        this.configuration = configuration;
         this.defaultDatatypeId = getId(new UID("default:default"));
         this.defaultLocaleId = getLangId(new Locale(""));
     }
@@ -209,7 +203,7 @@ public class RDBConnection implements RDFConnection{
     @Override
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
-            return (Q)new RDBQuery(context,session);
+            return (Q)new RDBQuery(context, session, configuration);
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);
         }

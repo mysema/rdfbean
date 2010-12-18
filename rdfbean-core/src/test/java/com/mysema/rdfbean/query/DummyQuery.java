@@ -22,7 +22,7 @@ public class DummyQuery extends AbstractProjectingQuery<DummyQuery,NODE,ID,BID,U
     private NODE[] nodes = new NODE[]{new BID(),new BID()};
 
     public DummyQuery(Dialect<NODE, ID, BID, UID, LIT, STMT> dialect, Session session) {
-	super(dialect, session);
+	super(dialect, session, session.getConfiguration());
     }
 
     @SuppressWarnings("unchecked")

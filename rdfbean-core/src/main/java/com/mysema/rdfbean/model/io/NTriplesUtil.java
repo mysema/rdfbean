@@ -1,36 +1,13 @@
 package com.mysema.rdfbean.model.io;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.DC;
-import com.mysema.rdfbean.model.DCTERMS;
-import com.mysema.rdfbean.model.GEO;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.owl.OWL;
 
-@SuppressWarnings("unchecked")
 public final class NTriplesUtil {
     
-    private static final Map<UID, String> uids = new HashMap<UID, String>();
-    
-    static {
-        for (Collection<UID> schema : Arrays.asList(DC.ALL, DCTERMS.ALL, GEO.ALL, OWL.ALL, RDF.ALL, RDFS.ALL, XSD.ALL)){
-            for (UID uid : schema){
-                uids.put(uid, toString(uid));
-            }
-        }
-    }
-
     public static String toString(NODE node) {
         if (node.isURI()) {
             return toString(node.asURI());
@@ -42,11 +19,7 @@ public final class NTriplesUtil {
     }
     
     public static String toString(UID uid){
-        if (uids.containsKey(uid)){
-            return uids.get(uid);
-        }else{
-            return "<" + escapeString(uid.getValue()) + ">";    
-        }        
+        return "<" + escapeString(uid.getValue()) + ">";
     }
     
     public static String toString(LIT lit){
@@ -59,7 +32,7 @@ public final class NTriplesUtil {
     }
     
     public static String toString(BID bid){
-        return "_:b" + bid.getValue();
+        return "_:" + bid.getValue();
     }
 
     public static String escapeString(String label) {

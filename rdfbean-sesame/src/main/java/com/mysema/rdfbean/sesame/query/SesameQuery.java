@@ -184,7 +184,7 @@ implements TransformerContext, BeanQuery, Closeable{
             StatementPattern.Scope patternScope,
             Ontology<UID> ontology,
             Inference inference) {
-        super(dialect, session);
+        super(dialect, session, session.getConfiguration());
         this.connection = Assert.notNull(connection,"connection");
         this.conf = session.getConfiguration();
         this.ontology = Assert.notNull(ontology,"ontology");

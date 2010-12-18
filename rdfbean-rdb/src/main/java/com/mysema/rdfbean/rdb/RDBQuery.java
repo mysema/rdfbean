@@ -89,11 +89,11 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
 
     private Map<Path<?>,Expression<?>> symbols = new HashMap<Path<?>,Expression<?>>();
 
-    public RDBQuery(RDBContext context, Session session) {
+    public RDBQuery(RDBContext context, Session session, Configuration configuration) {
         super(new QueryMixin<RDBQuery>());
         queryMixin.setSelf(this);
         this.context = context;
-        this.configuration = session.getConfiguration();
+        this.configuration = configuration;
         this.session = session;
     }
 

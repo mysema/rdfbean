@@ -6,19 +6,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import org.openrdf.model.Resource;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFWriter;
-import org.openrdf.rio.Rio;
-
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.query.QueryException;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.io.RDFWriter;
+import com.mysema.rdfbean.model.io.WriterUtils;
 
 /**
  * @author tiwe
@@ -28,12 +22,9 @@ public class GraphQueryImpl extends AbstractQueryImpl{
     
     private final Converter converter;
     
-    private final SesameDialect dialect;
-    
-    public GraphQueryImpl(Connection connection, Converter converter, int prefetch, SesameDialect dialect, String query) {
+    public GraphQueryImpl(Connection connection, Converter converter, int prefetch, String query) {
         super(connection, prefetch, query);
         this.converter = converter;
-        this.dialect = dialect;
     }
 
     @Override
@@ -67,35 +58,19 @@ public class GraphQueryImpl extends AbstractQueryImpl{
         throw new UnsupportedOperationException();
     }
 
-
     @Override
     public void streamTriples(Writer writer, String contentType) {         
-        RDFFormat targetFormat = RDFFormat.forMIMEType(contentType);
-        if (targetFormat == null){
-            targetFormat = RDFFormat.RDFXML;
-        }
-        RDFWriter rdfWriter = Rio.createWriter(targetFormat, writer);
+        Format format = Format.getFormat(contentType, Format.RDFXML);
+        RDFWriter rdfWriter = WriterUtils.createWriter(format, writer);
+        CloseableIterator<STMT> stmts = getTriples();
         try{
-            rdfWriter.startRDF();
-//            for (String prefix : model.getNamespaces().keySet()) {
-//                rdfWriter.handleNamespace(prefix, model.getNamespace(prefix));
-//            }
-            CloseableIterator<STMT> stmts = getTriples();
-            try{
-                while (stmts.hasNext()){
-                    STMT stmt = stmts.next();
-                    Resource sub = dialect.getResource(stmt.getSubject());
-                    URI pred = dialect.getURI(stmt.getPredicate());
-                    Value obj = dialect.getNode(stmt.getObject());
-                    rdfWriter.handleStatement(dialect.createStatement(sub, pred, obj));
-                }    
-            }finally{
-                stmts.close();
-            }
-            rdfWriter.endRDF();   
-        } catch (RDFHandlerException e) {
-            close();
-            throw new QueryException(e);
+            rdfWriter.begin();
+            while (stmts.hasNext()){
+                rdfWriter.handle(stmts.next());
+            }    
+            rdfWriter.end();
+        }finally{
+            stmts.close();
         }
     }
 

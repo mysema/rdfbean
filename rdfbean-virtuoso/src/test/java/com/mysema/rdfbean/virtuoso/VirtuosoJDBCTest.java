@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.openrdf.model.vocabulary.RDFS;
-import org.openrdf.model.vocabulary.XMLSchema;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 
 public class VirtuosoJDBCTest extends AbstractConnectionTest{
 
@@ -88,7 +88,7 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
             // example on how to bind a resource
             String query = "sparql select ?s ?p ?o where { ?s `iri(??)` ?o } limit 3";
             ps = jdbcConn.prepareStatement(query);
-            ps.setString(1, RDFS.LABEL.stringValue());
+            ps.setString(1, RDFS.label.getId());
             rs = ps.executeQuery();
             if (rs.next()){
                 System.out.println(rs.getObject(1) + " " + rs.getObject(2));    
@@ -115,7 +115,7 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
             ps = jdbcConn.prepareStatement(query);
             ps.setInt(1, 4);
             ps.setString(2, "xxx");
-            ps.setString(3, XMLSchema.STRING.stringValue());
+            ps.setString(3, XSD.stringType.getId());
             rs = ps.executeQuery();
             if (rs.next()){
                 System.out.println(rs.getObject(1) + " " + rs.getObject(2));    
