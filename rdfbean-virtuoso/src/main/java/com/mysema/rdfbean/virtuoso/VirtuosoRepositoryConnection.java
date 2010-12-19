@@ -110,8 +110,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     private final UID defaultGraph;
     
-//    private final SesameDialect dialect = new SesameDialect(new ValueFactoryImpl());
-
     private final int prefetchSize;
     
     protected VirtuosoRepositoryConnection(
@@ -128,6 +126,8 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     }
 
     private void add(Collection<STMT> addedStatements) throws SQLException {
+        // TODO : consider DB.DBA.RDF_QUAD_URI
+        // TODO : consider DB.DBA.RDF_QUAD_URI_L_TYPED
         verifyNotReadOnly();
 
         PreparedStatement ps = null;
