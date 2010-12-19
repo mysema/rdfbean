@@ -17,8 +17,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
@@ -35,8 +33,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     
     // TODO : bulk delete
 
-    private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepositoryConnection.class);
-    
     private static final int BATCH_SIZE = 5000;
     
     private static final String DEFAULT_OUTPUT = "sparql\n ";
@@ -167,8 +163,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         
         Map<UID, TurtleStringWriter> writers = new HashMap<UID, TurtleStringWriter>();
         
-        long start = System.currentTimeMillis();
-        
         // write statements to writers
         for (STMT stmt : addedStatements) {
             assertAllowedGraph(stmt.getContext());
@@ -179,11 +173,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 writers.put(context, writer);                
             }            
             writer.handle(stmt);
-        }
-        
-        if (logger.isDebugEnabled()){
-            long duration = System.currentTimeMillis() - start;
-            logger.debug("Serialization of " + addedStatements.size() + " statements in " + duration + "ms"); 
         }
         
         // load data
@@ -549,6 +538,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
         if (removedStatements != null && !removedStatements.isEmpty()){
             try {
+                // TODO : add SPARQL DELETE based bulk delete
                 remove(removedStatements);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
