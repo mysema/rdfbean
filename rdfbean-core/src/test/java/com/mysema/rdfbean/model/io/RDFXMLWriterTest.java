@@ -4,6 +4,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.DC;
 
@@ -14,6 +16,11 @@ public class RDFXMLWriterTest extends AbstractWriterTest{
         Map<String,String> prefixes = new HashMap<String,String>(Namespaces.DEFAULT);
         prefixes.put(DC.NS, "dc");
         return WriterUtils.createWriter(Format.RDFXML, w, prefixes);
+    }
+    
+    @Override
+    protected void validate(String str) {
+        Assert.assertTrue(str.contains("&amp;"));        
     }
 
 }

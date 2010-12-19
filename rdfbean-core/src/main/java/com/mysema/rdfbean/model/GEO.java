@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 
-public class GEO {
+public final class GEO {
 
     public static final String NS = "http://www.w3.org/2003/01/geo/";
     
@@ -29,5 +29,7 @@ public class GEO {
     public static final UID polygon = new UID(NS, "polygon");
     
     public static final Collection<UID> ALL = Arrays.asList(Point, SpatialThing, where, shape, face, lat, long_, lat_long, line, polygon);
+ 
+    private GEO(){}
     
 }

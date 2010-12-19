@@ -2,6 +2,8 @@ package com.mysema.rdfbean.model.io;
 
 import java.io.Writer;
 
+import junit.framework.Assert;
+
 
 public class NTriplesWriterTest extends AbstractWriterTest{
 
@@ -14,6 +16,12 @@ public class NTriplesWriterTest extends AbstractWriterTest{
     @Override
     protected RDFWriter createWriter(Writer w) {
         return WriterUtils.createWriter(Format.NTRIPLES, w);
+    }
+
+    @Override
+    protected void validate(String str) {
+        Assert.assertTrue(str.contains("<http://purl.org/dc/elements/1.1/creator>"));
+        Assert.assertTrue(str.contains("<http://purl.org/dc/elements/1.1/publisher>"));        
     }
 
     

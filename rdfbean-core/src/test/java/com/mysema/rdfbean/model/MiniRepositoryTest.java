@@ -34,12 +34,19 @@ public class MiniRepositoryTest {
     }
 
     @Test
-    public void Export() throws UnsupportedEncodingException{
+    public void Export_RDFXML() throws UnsupportedEncodingException{
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        repository.export(Format.RDFXML, baos);
+        String str = new String(baos.toByteArray(),"UTF-8");
+        System.out.println(str);
+    }
+    
+    @Test
+    public void Export_Turtle() throws UnsupportedEncodingException{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         repository.export(Format.TURTLE, baos);
         String str = new String(baos.toByteArray(),"UTF-8");
         System.out.println(str);
-
     }
 
     @Test
