@@ -70,7 +70,7 @@ public class Converter {
         }
     }
     
-    private NODE toNODE(RdfBox rb){
+    private LIT toNODE(RdfBox rb){
         if (rb.getLang() != null) {
             return new LIT(rb.toString(), getLocale(rb.getLang()));
         } else if (rb.getType() != null) {
