@@ -55,6 +55,14 @@ public abstract class AbstractConnectionTest {
             connection.close();
         }
     }
+    
+    protected void assertExists(STMT stmt){
+        assertExists(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext()); // s p o
+        assertExists(stmt.getSubject(), stmt.getPredicate(), null,             stmt.getContext()); // s p -
+        assertExists(stmt.getSubject(), null,                null,             stmt.getContext()); // s - - 
+        assertExists(null,              stmt.getPredicate(), stmt.getObject(), stmt.getContext()); // - p o
+        assertExists(null,              null,                stmt.getObject(), stmt.getContext()); // - - o       
+    }
         
     protected void assertExists(ID subject, UID predicate, NODE object, UID context){
         assertTrue(connection.exists(subject, predicate, object, context, false));

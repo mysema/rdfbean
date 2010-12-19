@@ -21,6 +21,16 @@ public final class TurtleStringWriter implements RDFWriter{
     
     private final StringBuilder builder = new StringBuilder();
     
+    private final boolean blankNodeAsURI;
+    
+    public TurtleStringWriter() {
+        this(false);
+    }
+        
+    public TurtleStringWriter(boolean blankNodeAsURI) {
+        this.blankNodeAsURI = blankNodeAsURI;
+    }
+    
     @Nullable
     private STMT last;
     
@@ -74,7 +84,12 @@ public final class TurtleStringWriter implements RDFWriter{
     }
     
     private void append(BID bid){
-        builder.append("_:").append(bid.getValue());
+        if (blankNodeAsURI){
+            builder.append("<_:").append(bid.getValue()).append(">");
+        }else{
+            builder.append("_:").append(bid.getValue());    
+        }
+        
     }
     
     private void append(UID uid){

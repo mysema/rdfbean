@@ -18,19 +18,10 @@ import org.junit.Test;
 
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.model.Addition;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFS;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.model.*;
 
 public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
-    
+        
     @Test
     public void Exists() {
         ID sub = new UID(TEST.NS, "e"+ System.currentTimeMillis());
@@ -39,9 +30,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         repository.execute(new Addition(new STMT(sub, RDF.type, type)));
         toBeRemoved = Collections.singleton(new STMT(sub, RDF.type, type));
         
-        assertExists(null, RDF.type, type, null);
-        assertExists(null, RDF.type, null, null);
-        assertExists(sub,  null,     null, null);
+        assertExists(new STMT(sub, RDF.type, type));
     }
 
     @Test
@@ -76,12 +65,8 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         connection.update(null, stmts);
         
         List<STMT> found = IteratorAdapter.asList(connection.findStatements(sub, null, null, null, false));
-        assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(found));        
-        assertExists(sub,  null,       null, null);
-        assertExists(sub,  RDFS.label, null, null);
-        assertExists(sub,  RDFS.label, sub,  null);
-        assertExists(null, RDFS.label, sub,  null);
-        assertExists(null,             null, sub, null);
+        assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(found));
+        assertExists(stmts.get(0));
     }
     
     @Test
@@ -103,13 +88,19 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         connection.addBulk(stmts);
         
         for (STMT stmt : stmts){
-            assertTrue(stmt.toString(), connection.exists(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), null, false));
-            assertTrue(stmt.toString(), connection.exists(stmt.getSubject(), stmt.getPredicate(), null, null, false));
-            assertTrue(stmt.toString(), connection.exists(stmt.getSubject(), null, null, null, false));
-            assertTrue(stmt.toString(), connection.exists(null, stmt.getPredicate(), stmt.getObject(), null, false));
-            assertTrue(stmt.toString(), connection.exists(null, null, stmt.getObject(), null, false));
+            assertExists(stmt);
         }
     }
+    
+    @Test
+    public void AddBulk_with_BlankNodes() throws SQLException, IOException{
+        List<STMT> stmts = Collections.singletonList(new STMT(new BID(), RDF.type, new BID()));
+        toBeRemoved = stmts;
+        connection.addBulk(stmts);
+        
+        assertExists(stmts.get(0));        
+    }
+    
     
     @Test
     public void Literals(){
@@ -127,21 +118,11 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(found));
         
         // find int literal
-        assertExists(sub,  null,       null,                      null);
-        assertExists(sub,  RDFS.label, null,                      null);
-        assertExists(sub,  RDFS.label, new LIT("1", XSD.intType), null);
-        assertExists(null, RDFS.label, new LIT("1", XSD.intType), null);
-        assertExists(null, null,       new LIT("1", XSD.intType), null);
-        
+        assertExists(new STMT(sub, RDFS.label, new LIT("1", XSD.intType)));        
         // find string literal
-        assertExists(sub,  RDFS.label, new LIT("X"), null);
-        
+        assertExists(new STMT(sub, RDFS.label, new LIT("X")));        
         // find string literal
-        assertExists(sub,  null,       null,                 null);
-        assertExists(sub,  RDFS.label, null,                 null);
-        assertExists(sub,  RDFS.label, new LIT(sub.getId()), null);
-        assertExists(null, RDFS.label, new LIT(sub.getId()), null);
-        assertExists(null, null,       new LIT(sub.getId()), null);
+        assertExists(new STMT(sub, RDFS.label, new LIT(sub.getId())));
     }
 
     @Test
@@ -155,11 +136,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         List<STMT> found = IteratorAdapter.asList(connection.findStatements(sub, null, null, null, false));
         assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(found));
         
-        assertExists(sub,  null,     null, null);
-        assertExists(sub,  RDF.type, null, null);
-        assertExists(sub,  RDF.type, obj,  null);
-        assertExists(null, RDF.type, obj,  null);
-        assertExists(null, null,     obj,  null);
+        assertExists(stmts.get(0));
     }
     
     @Test

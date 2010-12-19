@@ -173,7 +173,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
             TurtleStringWriter writer = writers.get(context);
             if (writer == null){
-                writer = new TurtleStringWriter();
+                writer = new TurtleStringWriter(true);
                 writers.put(context, writer);                
             }            
             writer.handle(stmt);

@@ -4,9 +4,16 @@ import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
 public final class NTriplesUtil {
+    
+    public static String toString(STMT stmt){
+        return toString(stmt.getSubject()) + " " 
+            + toString(stmt.getPredicate()) + " " 
+            + toString(stmt.getObject()) + " . ";
+    }
     
     public static String toString(NODE node) {
         if (node.isURI()) {
