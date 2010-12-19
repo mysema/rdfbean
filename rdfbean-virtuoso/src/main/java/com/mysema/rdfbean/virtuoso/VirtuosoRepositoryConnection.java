@@ -440,12 +440,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 ps.close();
             }
         }
-        
-        for (STMT stmt : removedStatements){
-            assertAllowedGraph(stmt.getContext());
-            UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
-            removeMatch(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), context);
-        }
     }
 
     
