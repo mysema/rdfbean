@@ -40,21 +40,21 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         repository.execute(new Addition(new STMT(sub, RDF.type, RDFS.Class)));
         toBeRemoved = Collections.singleton(new STMT(sub, RDF.type, RDFS.Class));
         
-        assertFalse(IteratorAdapter.asList(connection.findStatements(sub,  null,     null,       null, false)).isEmpty());
-        assertFalse(IteratorAdapter.asList(connection.findStatements(sub,  RDF.type, null,       null, false)).isEmpty());
-        assertFalse(IteratorAdapter.asList(connection.findStatements(null, RDF.type, RDFS.Class, null, false)).isEmpty());
+        assertFalse(findStatements(sub,  null,     null,       null).isEmpty());
+        assertFalse(findStatements(sub,  RDF.type, null,       null).isEmpty());
+        assertFalse(findStatements(null, RDF.type, RDFS.Class, null).isEmpty());
     }
     
     @Test
     public void FindStatements_from_Context() {
         UID sub = new UID(TEST.NS, UUID.randomUUID().toString());
-        assertTrue(IteratorAdapter.asList(connection.findStatements(sub, null, null, null, false)).isEmpty());
+        assertTrue(findStatements(sub, null, null, null).isEmpty());
         repository.execute(new Addition(new STMT(sub, RDF.type, RDFS.Class, context)));
         toBeRemoved = Collections.singleton(new STMT(sub, RDF.type, RDFS.Class, context));
         
-        assertFalse(IteratorAdapter.asList(connection.findStatements(sub,  null, null, null, false)).isEmpty());
-        assertFalse(IteratorAdapter.asList(connection.findStatements(sub,  null, null, context, false)).isEmpty());
-        assertFalse(IteratorAdapter.asList(connection.findStatements(null, null, null, context, false)).isEmpty());
+        assertFalse(findStatements(sub,  null, null, null).isEmpty());
+        assertFalse(findStatements(sub,  null, null, context).isEmpty());
+        assertFalse(findStatements(null, null, null, context).isEmpty());
     }
     
     @Test
@@ -64,7 +64,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         toBeRemoved = stmts;
         connection.update(null, stmts);
         
-        List<STMT> found = IteratorAdapter.asList(connection.findStatements(sub, null, null, null, false));
+        List<STMT> found = findStatements(sub, null, null, null);
         assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(found));
         assertExists(stmts.get(0));
     }
@@ -99,6 +99,8 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         connection.addBulk(stmts);
         
         assertExists(stmts.get(0));        
+        assertTrue(findStatements(stmts.get(0).getSubject(), null, null, null).containsAll(stmts));
+        assertTrue(findStatements(null, null, stmts.get(0).getObject(), null).containsAll(stmts));
     }
     
     
@@ -114,7 +116,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         toBeRemoved = stmts;
         connection.update(null, stmts);
         
-        List<STMT> found = IteratorAdapter.asList(connection.findStatements(sub, null, null, null, false));
+        List<STMT> found = findStatements(sub, null, null, null);
         assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(found));
         
         // find int literal
@@ -133,7 +135,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         toBeRemoved = stmts;
         connection.update(null, stmts);
         
-        List<STMT> found = IteratorAdapter.asList(connection.findStatements(sub, null, null, null, false));
+        List<STMT> found = findStatements(sub, null, null, null);
         assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(found));
         
         assertExists(stmts.get(0));
@@ -294,7 +296,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
             connection.remove(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext());
             assertFalse(stmt.toString(), connection.exists(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext(), false));
         }
-        for(STMT stmt : IteratorAdapter.asList(connection.findStatements(sub, null, null, null, false))){
+        for(STMT stmt : findStatements(sub, null, null, null)){
             System.err.println(stmt);
         }
         assertNotExists(sub, null, null, null);

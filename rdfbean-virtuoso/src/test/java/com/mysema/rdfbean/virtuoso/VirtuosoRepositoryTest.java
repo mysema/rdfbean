@@ -1,6 +1,5 @@
 package com.mysema.rdfbean.virtuoso;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -30,28 +29,28 @@ public class VirtuosoRepositoryTest extends AbstractConnectionTest{
         repository.load(Format.NTRIPLES, is, context2, false);
         
         // blank node ids are not preserved in load
-        assertFalse(connection.exists(stmt.getSubject(), null, null, context2, false));
-        assertFalse(connection.exists(null, null, stmt.getObject(), context2, false));
+        assertNotExists(stmt.getSubject(), null, null, context2);
+        assertNotExists(null, null, stmt.getObject(), context2);
     }
     
     @Test
     public void Load_RDF_XML(){
         connection.remove(null, null, null, context2);
-        assertFalse(connection.exists(null, null, null, context2, false));
+        assertNotExists(null, null, null, context2);
         
         InputStream is = getClass().getResourceAsStream("/foaf.rdf");
         repository.load(Format.RDFXML, is, context2, true);
-        assertTrue(connection.exists(null, null, null, context2, false));
+        assertExists(null, null, null, context2);
     }
 
     @Test
     public void Load_Turtle(){
         connection.remove(null, null, null, context2);
-        assertFalse(connection.exists(null, null, null, context2, false));
+        assertNotExists(null, null, null, context2);
         
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, context2, true);
-        assertTrue(connection.exists(null, null, null, context2, false));
+        assertExists(null, null, null, context2);
     }
     
     @Test

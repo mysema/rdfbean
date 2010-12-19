@@ -13,7 +13,6 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.junit.Test;
 
-import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Addition;
 import com.mysema.rdfbean.model.BID;
@@ -45,7 +44,7 @@ public class DateTimePersistenceTest extends AbstractConnectionTest {
         toBeRemoved = stmts;
         repository.execute(new Addition(stmts.toArray(new STMT[stmts.size()])));
 
-        List<STMT> queried = IteratorAdapter.asList(connection.findStatements(sub, null, null, null, false));
+        List<STMT> queried = findStatements(sub, null, null, null);
         assertEquals(stmts.size(), queried.size());
         assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(queried));
     }

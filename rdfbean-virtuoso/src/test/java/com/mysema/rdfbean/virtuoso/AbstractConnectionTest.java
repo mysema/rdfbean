@@ -5,12 +5,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
@@ -64,6 +66,10 @@ public abstract class AbstractConnectionTest {
         assertExists(null,              null,                stmt.getObject(), stmt.getContext()); // - - o       
     }
         
+    protected List<STMT> findStatements(ID subject, UID predicate, NODE object, UID context){
+        return IteratorAdapter.asList(connection.findStatements(subject, predicate, object, context, false));
+    }
+    
     protected void assertExists(ID subject, UID predicate, NODE object, UID context){
         assertTrue(connection.exists(subject, predicate, object, context, false));
     }

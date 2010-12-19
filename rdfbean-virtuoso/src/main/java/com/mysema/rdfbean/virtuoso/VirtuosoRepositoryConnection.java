@@ -32,6 +32,8 @@ import com.mysema.rdfbean.object.Session;
  *
  */
 public class VirtuosoRepositoryConnection implements RDFConnection {
+    
+    // TODO : bulk delete
 
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepositoryConnection.class);
     

@@ -33,7 +33,7 @@ public class VirtuosoTransactionTest extends AbstractConnectionTest{
         connection.update(null, Collections.singleton(stmt));
         tx.commit();
         
-        assertTrue(connection.exists(stmt.getSubject(), null, null, null, false));
+        assertExists(stmt.getSubject(), null, null, null);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class VirtuosoTransactionTest extends AbstractConnectionTest{
         connection.update(null, Collections.singleton(stmt));
         tx.rollback();
         
-        assertFalse(connection.exists(stmt.getSubject(), null, null, null, false));
+        assertNotExists(stmt.getSubject(), null, null, null);
     }
 
     @Test(expected=RepositoryException.class)
