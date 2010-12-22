@@ -37,7 +37,7 @@ public class STMTIterator implements CloseableIterator<STMT>{
     @Nullable
     private final NODE object;
 
-    private final UID nilContext;
+    private final UID defaultGraph;
 
     @Nullable
     private Boolean next;
@@ -50,14 +50,14 @@ public class STMTIterator implements CloseableIterator<STMT>{
 
     private int col_o = -1;
 
-    public STMTIterator(Converter converter, Statement stmt, ResultSet rs, @Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, UID nilContext){
+    public STMTIterator(Converter converter, Statement stmt, ResultSet rs, @Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, UID defaultGraph){
         this.converter = converter;
         this.stmt = stmt;
         this.rs = rs;
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;
-        this.nilContext = nilContext;
+        this.defaultGraph = defaultGraph;
         try {
             ResultSetMetaData rsmd = rs.getMetaData();
             for (int i = 1; i <= rsmd.getColumnCount(); i++) {
@@ -126,7 +126,7 @@ public class STMTIterator implements CloseableIterator<STMT>{
             if (col_g != -1) {
                 val = rs.getObject(col_g);
                 _graph = (UID) converter.toNODE(val);
-                if (nilContext.equals(_graph)){
+                if (defaultGraph.equals(_graph)){
                     _graph = null;
                 }
             }

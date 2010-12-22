@@ -68,7 +68,7 @@ public class TurtleStringWriterTest {
         
         System.out.println(writer.toString());
         String str = writer.toString();
-        assertTrue(str.contains("rdf:type rdf:type rdf:Property , rdfs:Resource ; rdfs:label \"X\"^^xsd:string ."));
+        assertTrue(str.contains("rdf:type a rdf:Property , rdfs:Resource ; rdfs:label \"X\"^^xsd:string ."));
     }
     
     @Test
@@ -80,6 +80,6 @@ public class TurtleStringWriterTest {
         
         System.out.println(writer.toString());
         String str = writer.toString();
-        assertTrue(str.contains("rdf:type rdfs:label \"X\"^^xsd:string ; rdf:type rdf:Property , rdfs:Resource ."));
+        assertTrue(str.contains("rdf:type rdfs:label \"X\"^^xsd:string ; a rdf:Property , rdfs:Resource ."));
     }
 }

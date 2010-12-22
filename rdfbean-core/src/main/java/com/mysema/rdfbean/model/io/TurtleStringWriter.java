@@ -10,6 +10,7 @@ import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
@@ -43,15 +44,23 @@ public final class TurtleStringWriter implements RDFWriter{
             if (last != null){
                 builder.append(" .\n");    
             }            
-            append(stmt.getSubject());
-            builder.append(" ");
-            append(stmt.getPredicate());
-            builder.append(" ");
-            
+            append(stmt.getSubject());            
+            if (!stmt.getPredicate().equals(RDF.type)){
+                builder.append(" ");
+                append(stmt.getPredicate());
+                builder.append(" ");
+            }else{
+                builder.append(" a ");
+            }
+                        
         } else if (!last.getPredicate().equals(stmt.getPredicate())) {
-            builder.append(" ; ");
-            append(stmt.getPredicate());
-            builder.append(" ");
+            if (!stmt.getPredicate().equals(RDF.type)){
+                builder.append(" ; ");
+                append(stmt.getPredicate());
+                builder.append(" ");    
+            }else{
+                builder.append(" ; a ");
+            }            
                         
         } else {
             builder.append(" , ");

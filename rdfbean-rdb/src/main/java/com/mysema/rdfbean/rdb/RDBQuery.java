@@ -28,7 +28,23 @@ import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLSubQuery;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
-import com.mysema.query.types.*;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.ConstantImpl;
+import com.mysema.query.types.ConstructorExpression;
+import com.mysema.query.types.EntityPath;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.ExtractorVisitor;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.PathType;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.SubQueryExpression;
+import com.mysema.query.types.TemplateExpression;
+import com.mysema.query.types.Templates;
+import com.mysema.query.types.ToStringVisitor;
 import com.mysema.query.types.expr.BooleanOperation;
 import com.mysema.query.types.expr.SimpleOperation;
 import com.mysema.query.types.expr.StringOperation;
@@ -89,11 +105,11 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
 
     private Map<Path<?>,Expression<?>> symbols = new HashMap<Path<?>,Expression<?>>();
 
-    public RDBQuery(RDBContext context, Session session, Configuration configuration) {
+    public RDBQuery(RDBContext context, Session session) {
         super(new QueryMixin<RDBQuery>());
         queryMixin.setSelf(this);
         this.context = context;
-        this.configuration = configuration;
+        this.configuration = session.getConfiguration();
         this.session = session;
     }
 
@@ -253,6 +269,9 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
             }
             query.from(statement);
             query.where(statement.predicate.eq(getId(RDF.type)));
+            if (mc.getUID() == null){
+                throw new IllegalStateException("No uid for " + mc.getJavaClass().getName());
+            }
             Long type = getId(mc.getUID());
             Collection<Long> subtypes = context.getOntology().getSubtypes(type);
             query.where(statement.object.in(subtypes));

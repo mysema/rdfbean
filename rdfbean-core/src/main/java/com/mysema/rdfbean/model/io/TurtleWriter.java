@@ -10,6 +10,7 @@ import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
@@ -52,14 +53,22 @@ public class TurtleWriter implements RDFWriter{
                     writer.append(" .\n");    
                 }            
                 append(stmt.getSubject());
-                writer.append(" ");
-                append(stmt.getPredicate());
-                writer.append(" ");
+                if (!stmt.getPredicate().equals(RDF.type)){
+                    writer.append(" ");
+                    append(stmt.getPredicate());
+                    writer.append(" ");    
+                }else{
+                    writer.append(" a ");
+                }                
 
             } else if (!last.getPredicate().equals(stmt.getPredicate())) {
-                writer.append(" ; ");
-                append(stmt.getPredicate());
-                writer.append(" ");
+                if (!stmt.getPredicate().equals(RDF.type)){
+                    writer.append(" ; ");
+                    append(stmt.getPredicate());
+                    writer.append(" ");    
+                }else{
+                    writer.append(" ; a ");
+                }                
 
             } else {
                 writer.append(" , ");
@@ -104,8 +113,7 @@ public class TurtleWriter implements RDFWriter{
             writer.append(prefix).append(":").append(uid.ln());    
         }else{
             writer.append("<").append(NTriplesUtil.escapeString(uid.getId())).append(">");
-        }
-        
+        }    
     }
         
     @Override

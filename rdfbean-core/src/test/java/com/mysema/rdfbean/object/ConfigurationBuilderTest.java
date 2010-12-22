@@ -76,6 +76,19 @@ public class ConfigurationBuilderTest {
     }
     
     @Test
+    public void UID_availability(){
+        ConfigurationBuilder builder = new ConfigurationBuilder();        
+        builder.addClass(Person.class);
+        builder.addClass(Department.class);
+        builder.addClass(Company.class);
+        builder.addClass(Labeled.class);
+        Configuration configuration = builder.build();
+        for (MappedClass mc : configuration.getMappedClasses()){
+            assertNotNull(mc.getUID());
+        }
+    }
+    
+    @Test
     public void Path(){
         // TODO
     }

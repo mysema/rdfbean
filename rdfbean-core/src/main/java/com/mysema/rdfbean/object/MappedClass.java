@@ -10,10 +10,19 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.UID;
 
@@ -46,14 +55,14 @@ public final class MappedClass {
     
     private final List<MappedClass> mappedSuperClasses;
     
-    @Nullable
+    @Nullable    
     private final UID uid;
     
     @Nullable
     private final UID context;
     
-    MappedClass(Class<?> clazz, UID uid, @Nullable UID context,List<MappedClass> mappedSuperClasses) {
-        this.clazz = clazz;
+    MappedClass(Class<?> clazz, @Nullable UID uid, @Nullable UID context,List<MappedClass> mappedSuperClasses) {
+        this.clazz = Assert.notNull(clazz,"clazz");
         this.uid = uid;
         this.context = context;
         this.mappedSuperClasses = mappedSuperClasses;
@@ -130,6 +139,7 @@ public final class MappedClass {
         properties = Collections.unmodifiableMap(properties);
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
@@ -194,6 +204,7 @@ public final class MappedClass {
         return context;        
     }    
     
+    @Override
     public int hashCode() {
         return clazz.hashCode();
     }
@@ -257,6 +268,7 @@ public final class MappedClass {
         }
     }
 
+    @Override
     public String toString() {
         return clazz.toString();
     }
