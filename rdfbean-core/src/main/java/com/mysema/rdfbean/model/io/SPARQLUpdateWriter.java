@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.model.io;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +9,7 @@ import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 
-public class SPARQLUpdateWriter extends TurtleStringWriter{
+public class SPARQLUpdateWriter extends TurtleWriter{
     
     private final Map<String, String> prefixes = new HashMap<String,String>();
     
@@ -23,7 +24,7 @@ public class SPARQLUpdateWriter extends TurtleStringWriter{
     }
         
     public SPARQLUpdateWriter(UID graph, boolean delete, boolean blankNodeAsURI) {
-        super(blankNodeAsURI); 
+        super(new StringBuilder(), Collections.<String,String>emptyMap(), blankNodeAsURI); 
         this.graph = graph;
         this.delete = delete;
     }
