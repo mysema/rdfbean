@@ -43,7 +43,6 @@ public class DateTimePersistenceTest extends AbstractConnectionTest {
                 new STMT(sub, pre(7), new LIT(converters.toString(new Timestamp(0)), XSD.dateTime)));
         toBeRemoved = stmts;
         repository.execute(new Addition(stmts.toArray(new STMT[stmts.size()])));
-
         List<STMT> queried = findStatements(sub, null, null, null);
         assertEquals(stmts.size(), queried.size());
         assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(queried));
