@@ -42,15 +42,16 @@ public class STMTIterator implements CloseableIterator<STMT>{
     @Nullable
     private Boolean next;
 
-    private int col_g = -1;
+    private int graphColumn = -1, subjectColumn = -1, predicateColumn = -1, objectColumn = -1;
 
-    private int col_s = -1;
-
-    private int col_p = -1;
-
-    private int col_o = -1;
-
-    public STMTIterator(Converter converter, Statement stmt, ResultSet rs, @Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, UID defaultGraph){
+    public STMTIterator(
+            Converter converter, 
+            Statement stmt, 
+            ResultSet rs, 
+            @Nullable ID subject, 
+            @Nullable UID predicate, 
+            @Nullable NODE object, 
+            UID defaultGraph){
         this.converter = converter;
         this.stmt = stmt;
         this.rs = rs;
@@ -63,13 +64,13 @@ public class STMTIterator implements CloseableIterator<STMT>{
             for (int i = 1; i <= rsmd.getColumnCount(); i++) {
                 String label = rsmd.getColumnName(i);
                 if (label.equalsIgnoreCase("g")){
-                    col_g = i;
+                    graphColumn = i;
                 }else if (label.equalsIgnoreCase("s")){
-                    col_s = i;
+                    subjectColumn = i;
                 }else if (label.equalsIgnoreCase("p")){
-                    col_p = i;
+                    predicateColumn = i;
                 }else if (label.equalsIgnoreCase("o")){
-                    col_o = i;
+                    objectColumn = i;
                 }
             }
         } catch (Exception e) {
@@ -116,47 +117,47 @@ public class STMTIterator implements CloseableIterator<STMT>{
     }
 
     protected STMT extractRow() throws SQLException {
-        UID _graph = null;
-        ID _subject = subject;
-        UID _predicate = predicate;
-        NODE _object = object;
+        UID g = null;
+        ID s = subject;
+        UID p = predicate;
+        NODE o = object;
         Object val = null;
 
         try {
-            if (col_g != -1) {
-                val = rs.getObject(col_g);
-                _graph = (UID) converter.toNODE(val);
-                if (defaultGraph.equals(_graph)){
-                    _graph = null;
+            if (graphColumn != -1) {
+                val = rs.getObject(graphColumn);
+                g = (UID) converter.toNODE(val);
+                if (defaultGraph.equals(g)){
+                    g = null;
                 }
             }
         } catch (ClassCastException ccex) {
             throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting UID: "+ val, ccex);
         }
 
-        if (_subject == null){
+        if (s == null){
             try {
-                val = rs.getObject(col_s);
-                _subject = (ID) converter.toNODE(val);
+                val = rs.getObject(subjectColumn);
+                s = (ID) converter.toNODE(val);
             } catch (ClassCastException ccex) {
                 throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting ID: " + val, ccex);
             }
         }            
 
-        if (_predicate == null){
+        if (p == null){
             try {
-                val = rs.getObject(col_p);
-                _predicate = (UID) converter.toNODE(val);
+                val = rs.getObject(predicateColumn);
+                p = (UID) converter.toNODE(val);
             } catch (ClassCastException ccex) {
                 throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting UID: "+ val, ccex);
             }   
         }         
 
-        if (_object == null){
-            _object = converter.toNODE(rs.getObject(col_o));
+        if (o == null){
+            o = converter.toNODE(rs.getObject(objectColumn));
         }            
 
-        return new STMT(_subject, _predicate, _object, _graph);
+        return new STMT(s, p, o, g);
     }
 
 

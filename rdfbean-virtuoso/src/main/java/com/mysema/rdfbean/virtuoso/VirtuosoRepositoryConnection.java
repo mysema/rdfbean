@@ -280,7 +280,11 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     }
 
     @Override
-    public CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+    public CloseableIterator<STMT> findStatements(
+            @Nullable ID subject, 
+            @Nullable UID predicate, 
+            @Nullable NODE object, 
+            @Nullable UID context, boolean includeInferred) {
         return findStatements(subject, predicate, object, context, includeInferred, false);
     }
 
@@ -288,8 +292,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             @Nullable ID subject, 
             @Nullable UID predicate, 
             @Nullable NODE object, 
-            @Nullable UID context, 
-            boolean includeInferred, boolean hasOnly) {
+            @Nullable UID context, boolean includeInferred, boolean hasOnly) {
         
         List<NODE> nodes = new ArrayList<NODE>(8);
         String s = "?s", p = "?p", o = "?o";
