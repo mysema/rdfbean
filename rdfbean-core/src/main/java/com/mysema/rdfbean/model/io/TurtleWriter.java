@@ -15,70 +15,49 @@ import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
+/**
+ * @author tiwe
+ *
+ */
 public class TurtleWriter implements RDFWriter{
     
-    private final Writer writer;
+    protected final Appendable appendable;
+    
+    private final boolean blankNodeAsURI;
     
     private final Map<String, String> prefixes;
     
-    public TurtleWriter(Writer writer, Map<String,String> prefixes) {
-        this.writer = writer;
-        this.prefixes = prefixes;
-    }
-    
     @Nullable
-    private STMT last;
-    
-    @Override
-    public void begin(){
-        try{
-            for (Map.Entry<String,String> entry : prefixes.entrySet()){
-                writer.append("@prefix ");
-                writer.append(entry.getValue());
-                writer.append(": <");
-                writer.append(NTriplesUtil.escapeString(entry.getKey()));
-                writer.append("> .\n");
-            }
-            writer.append("\n");
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        }    
+    protected STMT last;
+        
+    public TurtleWriter(Appendable writer, Map<String,String> prefixes) {
+        this(writer, prefixes, false);
     }
     
-    @Override
-    public void handle(STMT stmt){
-        try{
-            if (last == null || !last.getSubject().equals(stmt.getSubject())) {
-                if (last != null){
-                    writer.append(" .\n");    
-                }            
-                append(stmt.getSubject());
-                if (!stmt.getPredicate().equals(RDF.type)){
-                    writer.append(" ");
-                    append(stmt.getPredicate());
-                    writer.append(" ");    
-                }else{
-                    writer.append(" a ");
-                }                
-
-            } else if (!last.getPredicate().equals(stmt.getPredicate())) {
-                if (!stmt.getPredicate().equals(RDF.type)){
-                    writer.append(" ; ");
-                    append(stmt.getPredicate());
-                    writer.append(" ");    
-                }else{
-                    writer.append(" ; a ");
-                }                
-
-            } else {
-                writer.append(" , ");
-            }                
-
-            append(stmt.getObject());           
-            last = stmt;
-        } catch (IOException e) {
-            throw new RepositoryException(e);
-        }    
+    public TurtleWriter(Appendable writer, Map<String,String> prefixes, boolean blankNodeAsURI) {
+        this.appendable = writer;
+        this.prefixes = prefixes;
+        this.blankNodeAsURI = blankNodeAsURI;
+    }
+    
+    protected void append(BID bid) throws IOException{
+        if (blankNodeAsURI){
+            appendable.append("<_:").append(bid.getValue()).append(">");
+        }else{
+            appendable.append("_:").append(bid.getValue());    
+        }        
+    }
+    
+    protected void append(LIT lit) throws IOException{
+        appendable.append("\"");
+        appendable.append(NTriplesUtil.escapeString(lit.getValue()));
+        appendable.append("\"");
+        if (lit.getLang() != null) {
+            appendable.append("@").append(LocaleUtil.toLang(lit.getLang()));
+        } else {
+            appendable.append("^^");
+            append(lit.getDatatype());
+        }
     }
     
     private void append(NODE node) throws IOException {
@@ -91,41 +70,91 @@ public class TurtleWriter implements RDFWriter{
         }
     }
     
-    private void append(LIT lit) throws IOException{
-        writer.append("\"");
-        writer.append(NTriplesUtil.escapeString(lit.getValue()));
-        writer.append("\"");
-        if (lit.getLang() != null) {
-            writer.append("@").append(LocaleUtil.toLang(lit.getLang()));
-        } else {
-            writer.append("^^");
-            append(lit.getDatatype());
+    protected void append(UID uid) throws IOException{
+        if (uid.ln().length() == 0 || !TurtleUtil.isNameStartChar(uid.ln().charAt(0))){
+            appendFull(uid);
+        }else{
+            appendPrefixed(uid);
+        }            
+    }
+    
+    protected void appendPredicate(UID uid) throws IOException{
+        if (uid.equals(RDF.type)){
+            appendable.append("a");
+        }else{
+            append(uid);
         }
     }
     
-    private void append(BID bid) throws IOException{
-        writer.append("_:").append(bid.getValue());
+    protected void appendFull(UID uid) throws IOException {
+        appendable.append("<").append(uid.getValue()).append(">");
     }
     
-    private void append(UID uid) throws IOException{
+    protected void appendPrefixed(UID uid) throws IOException {
         String prefix = prefixes.get(uid.ns());        
         if (prefix != null){
-            writer.append(prefix).append(":").append(uid.ln());    
+            appendable.append(prefix).append(":").append(uid.ln());    
         }else{
-            writer.append("<").append(NTriplesUtil.escapeString(uid.getId())).append(">");
+            appendable.append("<").append(NTriplesUtil.escapeString(uid.getId())).append(">");
+        }
+    }
+
+    @Override
+    public void begin(){
+        try{
+            for (Map.Entry<String,String> entry : prefixes.entrySet()){
+                appendable.append("@prefix ");
+                appendable.append(entry.getValue());
+                appendable.append(": <");
+                appendable.append(NTriplesUtil.escapeString(entry.getKey()));
+                appendable.append("> .\n");
+            }
+            appendable.append("\n");
+        } catch (IOException e) {
+            throw new RepositoryException(e);
         }    
     }
-        
+
     @Override
     public void end() {
         if (last != null){
             try {
-                writer.append(" .\n");
-                writer.flush();
+                appendable.append(" .\n");
+                if (appendable instanceof Writer){
+                    ((Writer)appendable).flush();    
+                }                
             } catch (IOException e) {
                 throw new RepositoryException(e);
             }        
         }
+    }
+        
+    @Override
+    public void handle(STMT stmt){
+        try{
+            if (last == null || !last.getSubject().equals(stmt.getSubject())) {
+                if (last != null){
+                    appendable.append(" .\n");    
+                }            
+                append(stmt.getSubject());
+                appendable.append(" ");
+                appendPredicate(stmt.getPredicate());
+                appendable.append(" ");                 
+
+            } else if (!last.getPredicate().equals(stmt.getPredicate())) {
+                appendable.append(" ; ");
+                appendPredicate(stmt.getPredicate());
+                appendable.append(" ");                 
+
+            } else {
+                appendable.append(" , ");
+            }                
+
+            append(stmt.getObject());           
+            last = stmt;
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }    
     }
 
 }

@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,18 +21,9 @@ import org.apache.commons.io.IOUtils;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RepositoryException;
-import com.mysema.rdfbean.model.SPARQLQuery;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
 import com.mysema.rdfbean.object.Session;
 
@@ -131,42 +123,42 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         this.allowedGraphs = allowedGraphs;
     }
 
-    private void add(Collection<STMT> addedStatements) throws SQLException {
-        // TODO : consider DB.DBA.RDF_QUAD_URI
-        // TODO : consider DB.DBA.RDF_QUAD_URI_L_TYPED
-        verifyNotReadOnly();
-
-        PreparedStatement ps = null;
-        try {
-            ps = connection.prepareStatement(VirtuosoRepositoryConnection.SPARQL_INSERT);
-            int count = 0;
-
-            for (STMT stmt : addedStatements) {
-                assertAllowedGraph(stmt.getContext());
-                ps.setString(1, stmt.getContext() != null ? stmt.getContext().getId() : defaultGraph.getId());
-                bindResource(ps, 2, stmt.getSubject());
-                bindURI(ps, 3, stmt.getPredicate());
-                bindValue(ps, 4, stmt.getObject());
-                ps.addBatch();
-                count++;
-
-                if (count > BATCH_SIZE) {
-                    ps.executeBatch();
-                    ps.clearBatch();
-                    count = 0;
-                }
-            }
-
-            if (count > 0) {
-                ps.executeBatch();
-                ps.clearBatch();
-            }
-        }finally{
-            if (ps != null){
-                ps.close();
-            }
-        }
-    }
+//    private void add(Collection<STMT> addedStatements) throws SQLException {
+//        // TODO : consider DB.DBA.RDF_QUAD_URI
+//        // TODO : consider DB.DBA.RDF_QUAD_URI_L_TYPED
+//        verifyNotReadOnly();
+//
+//        PreparedStatement ps = null;
+//        try {
+//            ps = connection.prepareStatement(VirtuosoRepositoryConnection.SPARQL_INSERT);
+//            int count = 0;
+//
+//            for (STMT stmt : addedStatements) {
+//                assertAllowedGraph(stmt.getContext());
+//                ps.setString(1, stmt.getContext() != null ? stmt.getContext().getId() : defaultGraph.getId());
+//                bindResource(ps, 2, stmt.getSubject());
+//                bindURI(ps, 3, stmt.getPredicate());
+//                bindValue(ps, 4, stmt.getObject());
+//                ps.addBatch();
+//                count++;
+//
+//                if (count > BATCH_SIZE) {
+//                    ps.executeBatch();
+//                    ps.clearBatch();
+//                    count = 0;
+//                }
+//            }
+//
+//            if (count > 0) {
+//                ps.executeBatch();
+//                ps.clearBatch();
+//            }
+//        }finally{
+//            if (ps != null){
+//                ps.close();
+//            }
+//        }
+//    }
 
     public void addBulk(Collection<STMT> addedStatements) throws SQLException, IOException {
         verifyNotReadOnly();
@@ -180,7 +172,8 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             TurtleStringWriter writer = writers.get(context);
             if (writer == null){
                 writer = new TurtleStringWriter(true);
-                writers.put(context, writer);                
+                writers.put(context, writer);       
+                writer.begin();
             }            
             writer.handle(stmt);
         }
@@ -194,6 +187,38 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 stmt.setString(2, entry.getKey().getId());
                 stmt.execute();
                 stmt.clearParameters();                
+            }
+        }finally{
+            stmt.close();
+        }
+                
+    }
+    
+    public void removeBulk(Collection<STMT> deletedStatements) throws SQLException, IOException {
+        verifyNotReadOnly();
+        
+        Map<UID, SPARQLUpdateWriter> writers = new HashMap<UID, SPARQLUpdateWriter>();
+        
+        // write statements to writers
+        for (STMT stmt : deletedStatements) {
+            assertAllowedGraph(stmt.getContext());
+            UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
+            SPARQLUpdateWriter writer = writers.get(context);
+            if (writer == null){
+                writer = new SPARQLUpdateWriter(context, true);
+                writers.put(context, writer);      
+                writer.begin();
+            }            
+            writer.handle(stmt);
+        }
+        
+        // load data
+        Statement stmt = connection.createStatement();
+        try{
+            for (Map.Entry<UID, SPARQLUpdateWriter> entry : writers.entrySet()){
+                entry.getValue().end();
+                System.out.println(entry.getValue().toString());
+                stmt.execute("sparql " + entry.getValue().toString());                
             }
         }finally{
             stmt.close();
@@ -551,7 +576,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
         if (removedStatements != null && !removedStatements.isEmpty()){
             try {
-                // TODO : add SPARQL DELETE based bulk delete
                 remove(removedStatements);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
@@ -559,11 +583,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
         if (addedStatements != null && !addedStatements.isEmpty()){
             try {
-                if (addedStatements.size() > 100){
-                    addBulk(addedStatements);
-                }else{
-                    add(addedStatements);    
-                }                
+                addBulk(addedStatements);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
             } catch (IOException e) {

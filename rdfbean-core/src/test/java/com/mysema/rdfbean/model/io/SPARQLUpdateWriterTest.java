@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.model.io;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
@@ -50,7 +52,7 @@ public class SPARQLUpdateWriterTest {
         }
         writer.end();
         
-        System.out.println(writer.toString());
+//        System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains(" ; ns1:pred1"));
         assertTrue(str.contains("PREFIX ns1: <http://semantics.mysema.com/test#>"));
@@ -58,4 +60,13 @@ public class SPARQLUpdateWriterTest {
         assertTrue(str.contains("\"3\"^^xsd:int"));
     }
     
+    @Test
+    public void RDFType_as_rdf_type(){
+        writer.begin();
+        writer.handle(new STMT(RDF.type, RDF.type, RDF.Property));
+        writer.end();
+        
+        assertFalse(writer.toString().contains(" a "));
+        assertTrue(writer.toString().contains("rdf:type rdf:type"));
+    }
 }

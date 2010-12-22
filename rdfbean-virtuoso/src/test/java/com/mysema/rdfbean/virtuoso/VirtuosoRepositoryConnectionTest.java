@@ -160,7 +160,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     public void Remove_subject_and_literal_object_given(){
         // FIXME: this is too slow
         ID sub = new UID(TEST.NS, "s"+ System.currentTimeMillis());
-        NODE obj = new LIT(TEST.NS, "o"+ System.currentTimeMillis());
+        NODE obj = new LIT(TEST.NS + "o"+ System.currentTimeMillis());
         STMT stmt = new STMT(sub, RDF.type, obj);
         List<STMT> stmts = Collections.singletonList(stmt);
         toBeRemoved = stmts;
