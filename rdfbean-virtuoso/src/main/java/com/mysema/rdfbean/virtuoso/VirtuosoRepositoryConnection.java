@@ -33,8 +33,6 @@ import com.mysema.rdfbean.object.Session;
  */
 public class VirtuosoRepositoryConnection implements RDFConnection {
     
-    // TODO : bulk delete
-
     private static final int BATCH_SIZE = 5000;
     
     private static final String DEFAULT_OUTPUT = "sparql\n ";
@@ -51,9 +49,9 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     		"delete from graph iri(??) {`iri(??)` `iri(??)` " +
     		"`bif:__rdf_long_from_batch_params(??,??,??)`}";
 
-    private static final String SPARQL_INSERT = "sparql define output:format '_JAVA_'  " +
-    		"insert into graph iri(??) { `iri(??)` `iri(??)` " +
-    		"`bif:__rdf_long_from_batch_params(??,??,??)` }";
+//    private static final String SPARQL_INSERT = "sparql define output:format '_JAVA_'  " +
+//    		"insert into graph iri(??) { `iri(??)` `iri(??)` " +
+//    		"`bif:__rdf_long_from_batch_params(??,??,??)` }";
     
     public static void bindBlankNode(PreparedStatement ps, int col, BID n) throws SQLException {
         ps.setString(col, "_:" + n.getValue());
@@ -217,8 +215,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         try{
             for (Map.Entry<UID, SPARQLUpdateWriter> entry : writers.entrySet()){
                 entry.getValue().end();
-                System.out.println(entry.getValue().toString());
-                stmt.execute("sparql " + entry.getValue().toString());                
+                stmt.execute("sparql " + entry.getValue().toString()); // NOSONAR                
             }
         }finally{
             stmt.close();
