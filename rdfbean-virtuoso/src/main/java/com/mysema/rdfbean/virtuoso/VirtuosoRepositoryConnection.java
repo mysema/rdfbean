@@ -359,7 +359,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             rs = ps.executeQuery();
             return new STMTIterator(converter, ps, rs, subject, predicate, object, defaultGraph);
         } catch (SQLException e) {
-//            AbstractQueryImpl.close(ps, rs);
+            AbstractQueryImpl.close(ps, rs);
             throw new RepositoryException("Query execution failed : " + query.toString(), e);
         }        
     }
