@@ -16,7 +16,7 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.io.Format;
-import com.mysema.rdfbean.model.io.NTriplesUtil;
+import com.mysema.rdfbean.model.io.NTriplesWriter;
 
 public class VirtuosoRepositoryTest extends AbstractConnectionTest{
     
@@ -24,7 +24,7 @@ public class VirtuosoRepositoryTest extends AbstractConnectionTest{
     public void Load() throws UnsupportedEncodingException{
         STMT stmt = new STMT(new BID(), RDF.type, new BID());
         toBeRemoved = Collections.singleton(stmt);
-        String ntriples = NTriplesUtil.toString(stmt);
+        String ntriples = NTriplesWriter.toString(stmt);
         InputStream is = new ByteArrayInputStream(ntriples.getBytes("US-ASCII"));        
         repository.load(Format.NTRIPLES, is, context2, false);
         

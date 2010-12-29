@@ -24,7 +24,7 @@ public class NTriplesUtilTest {
     public void UID_serialization(){
         for (Collection<UID> schema : Arrays.asList(XSD.ALL, RDF.ALL, RDFS.ALL, OWL.ALL)){
             for (UID uid : schema){
-                assertEquals("<"+ uid.getId() + ">", NTriplesUtil.toString(uid));
+                assertEquals("<"+ uid.getId() + ">", NTriplesWriter.toString(uid));
             }
         }
     }
@@ -33,14 +33,14 @@ public class NTriplesUtilTest {
     public void BID_serialization(){
         for (int i = 0; i < 100; i++){
             BID bid = new BID();
-            assertEquals("_:" + bid.getId(), NTriplesUtil.toString(bid)); 
+            assertEquals("_:" + bid.getId(), NTriplesWriter.toString(bid)); 
         }
     }
     
     @Test
     public void LIT_serialization(){
-        assertEquals("\"X\"^^<"+XSD.stringType.getId()+">", NTriplesUtil.toString(new LIT("X")));
-        assertEquals("\"X\"@en", NTriplesUtil.toString(new LIT("X", Locale.ENGLISH)));
+        assertEquals("\"X\"^^<"+XSD.stringType.getId()+">", NTriplesWriter.toString(new LIT("X")));
+        assertEquals("\"X\"@en", NTriplesWriter.toString(new LIT("X", Locale.ENGLISH)));
     }
     
 }

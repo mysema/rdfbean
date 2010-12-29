@@ -1,6 +1,6 @@
 package com.mysema.rdfbean.model.io;
 
-public final class TurtleUtil {
+final class TurtleUtil {
     
     public static boolean isPrefixChar(int c) {
         return isNameChar(c);

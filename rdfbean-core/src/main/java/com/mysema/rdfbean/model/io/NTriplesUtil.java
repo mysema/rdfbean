@@ -1,46 +1,7 @@
 package com.mysema.rdfbean.model.io;
 
-import com.mysema.commons.l10n.support.LocaleUtil;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
 
-public final class NTriplesUtil {
-    
-    public static String toString(STMT stmt){
-        return toString(stmt.getSubject()) + " " 
-            + toString(stmt.getPredicate()) + " " 
-            + toString(stmt.getObject()) + " . ";
-    }
-    
-    public static String toString(NODE node) {
-        if (node.isURI()) {
-            return toString(node.asURI());
-        } else if (node.isLiteral()) {
-            return toString(node.asLiteral());
-        } else {
-            return toString(node.asBNode());
-        }
-    }
-    
-    public static String toString(UID uid){
-        return "<" + escapeString(uid.getValue()) + ">";
-    }
-    
-    public static String toString(LIT lit){
-        String value = "\"" + escapeString(lit.getValue()) + "\"";
-        if (lit.getLang() != null) {
-            return value + "@" + LocaleUtil.toLang(lit.getLang());
-        } else {
-            return value + "^^" + toString(lit.getDatatype());
-        }
-    }
-    
-    public static String toString(BID bid){
-        return "_:" + bid.getValue();
-    }
+final class NTriplesUtil {
 
     public static String escapeString(String label) {
         int labelLength = label.length();

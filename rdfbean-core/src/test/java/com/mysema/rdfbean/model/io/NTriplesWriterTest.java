@@ -23,6 +23,5 @@ public class NTriplesWriterTest extends AbstractWriterTest{
         Assert.assertTrue(str.contains("<http://purl.org/dc/elements/1.1/creator>"));
         Assert.assertTrue(str.contains("<http://purl.org/dc/elements/1.1/publisher>"));        
     }
-
     
 }
