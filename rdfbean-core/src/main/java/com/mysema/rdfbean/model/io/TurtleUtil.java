@@ -37,4 +37,17 @@ public final class TurtleUtil {
         c >= 0x203F && c <= 0x2040;
     }
 
+    public static boolean isName(String str){
+        if (isNameStartChar(str.charAt(0))){
+            for (int i = 1; i < str.length(); i++){
+                if (!isNameChar(str.charAt(i))){
+                    return false;
+                }
+            }
+            return true;    
+        }else{
+            return false;
+        }        
+    }
+    
 }

@@ -71,7 +71,7 @@ public class TurtleWriter implements RDFWriter{
     }
     
     protected void append(UID uid) throws IOException{
-        if (uid.ln().length() == 0 || !TurtleUtil.isNameStartChar(uid.ln().charAt(0))){
+        if (uid.ln().length() == 0 || !TurtleUtil.isName(uid.ln())){
             appendFull(uid);
         }else{
             appendPrefixed(uid);

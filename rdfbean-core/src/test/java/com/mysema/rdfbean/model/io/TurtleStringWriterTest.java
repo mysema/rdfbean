@@ -82,4 +82,16 @@ public class TurtleStringWriterTest {
         String str = writer.toString();
         assertTrue(str.contains("rdf:type rdfs:label \"X\"^^xsd:string ; a rdf:Property , rdfs:Resource ."));
     }
+    
+    @Test
+    public void Proper_Name_Usage(){
+        UID subject = new UID("http://dbpedia.org/resource/Torpparinm%C3%A4ki");
+        writer.begin();
+        writer.handle(new STMT(subject, RDF.type, RDFS.Resource));
+        writer.end();
+        
+        System.out.println(writer.toString());
+        String str = writer.toString();
+        assertTrue(str.contains("<http://dbpedia.org/resource/Torpparinm%C3%A4ki> a rdfs:Resource ."));
+    }
 }
