@@ -529,8 +529,11 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 }
                 
                 // delete from graphs
+                ps = connection.prepareStatement(SPARQL_CLEAR_GRAPH);                
                 for (UID graph : graphs){
-                    removeMatch(subject, predicate, object, graph);
+                    ps.clearParameters();
+                    ps.setString(1, graph.getId());
+                    ps.execute();
                 }
 
             } else {
