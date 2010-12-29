@@ -21,7 +21,17 @@ import org.apache.commons.io.IOUtils;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
@@ -359,7 +369,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             rs = ps.executeQuery();
             return new STMTIterator(converter, ps, rs, subject, predicate, object, defaultGraph);
         } catch (SQLException e) {
-            AbstractQueryImpl.close(ps, rs);
+            AbstractQueryImpl.close(ps, rs); //NOSONAR
             throw new RepositoryException("Query execution failed : " + query.toString(), e);
         }        
     }
