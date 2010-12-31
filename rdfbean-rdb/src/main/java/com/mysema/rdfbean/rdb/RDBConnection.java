@@ -35,18 +35,7 @@ import com.mysema.query.sql.dml.SQLMergeClause;
 import com.mysema.query.types.ConstructorExpression;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.template.NumberTemplate;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
-import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -75,8 +64,6 @@ public class RDBConnection implements RDFConnection{
 
     private final RDBContext context;
     
-    private final Configuration configuration;
-
     private final long defaultDatatypeId;
 
     private final int defaultLocaleId;
@@ -96,9 +83,8 @@ public class RDBConnection implements RDFConnection{
         }
     };
 
-    public RDBConnection(RDBContext context, Configuration configuration) {
+    public RDBConnection(RDBContext context) {
         this.context = context;
-        this.configuration = configuration;
         this.defaultDatatypeId = getId(new UID("default:default"));
         this.defaultLocaleId = getLangId(new Locale(""));
     }

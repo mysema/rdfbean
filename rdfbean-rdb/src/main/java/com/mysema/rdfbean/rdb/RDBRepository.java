@@ -408,7 +408,7 @@ public class RDBRepository implements Repository{
                     idSequence, 
                     connection, 
                     templates); 
-            return new RDBConnection(context, configuration);
+            return new RDBConnection(context);
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }        
