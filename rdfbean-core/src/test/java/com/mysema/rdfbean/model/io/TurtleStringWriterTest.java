@@ -106,4 +106,15 @@ public class TurtleStringWriterTest {
         String str = writer.toString();
         assertTrue(str.contains("rdf:predicate rdfs:label \"Pr\u00E4dikat\"@de ."));
     }
+    
+    @Test
+    public void Long_String_Encoding(){
+        writer.begin();
+        writer.handle(new STMT(RDF.predicate, RDFS.label, new LIT("1\n2\n3")));
+        writer.end();
+        
+        System.out.println(writer.toString());
+        String str = writer.toString();
+        assertTrue(str.contains("rdf:predicate rdfs:label \"\"\"1\n2\n3\"\"\"^^xsd:string ."));
+    }
 }

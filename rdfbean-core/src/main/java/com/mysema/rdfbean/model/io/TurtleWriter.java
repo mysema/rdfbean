@@ -49,9 +49,17 @@ public class TurtleWriter implements RDFWriter{
     }
     
     protected void append(LIT lit) throws IOException{
-        appendable.append("\"");
-        appendable.append(NTriplesUtil.escapeString(lit.getValue()));
-        appendable.append("\"");
+        String val = lit.getValue();
+        if (val.indexOf('\n') > 0 || val.indexOf('\r') > 0 || val.indexOf('\t') > 0) {
+            appendable.append("\"\"\"");
+            appendable.append(TurtleUtil.encodeLongString(val));
+            appendable.append("\"\"\"");
+        }else{
+            appendable.append("\"");
+            appendable.append(TurtleUtil.encodeString(val));
+            appendable.append("\"");    
+        }        
+        
         if (lit.getLang() != null) {
             appendable.append("@").append(LocaleUtil.toLang(lit.getLang()));
         } else {
@@ -106,7 +114,7 @@ public class TurtleWriter implements RDFWriter{
                 appendable.append("@prefix ");
                 appendable.append(entry.getValue());
                 appendable.append(": <");
-                appendable.append(NTriplesUtil.escapeString(entry.getKey()));
+                appendable.append(TurtleUtil.encodeString(entry.getKey()));
                 appendable.append("> .\n");
             }
             appendable.append("\n");

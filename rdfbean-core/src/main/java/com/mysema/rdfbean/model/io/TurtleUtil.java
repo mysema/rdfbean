@@ -1,6 +1,22 @@
 package com.mysema.rdfbean.model.io;
 
+
 final class TurtleUtil {
+
+    public static String encodeString(String s) {
+        s = s.replace("\\", "\\\\");
+        s = s.replace("\t", "\\t");
+        s = s.replace("\n", "\\n");
+        s = s.replace("\r", "\\r");
+        s = s.replace("\"", "\\\"");
+        return s;
+    }
+
+    public static String encodeLongString(String s) {
+        s = s.replace("\\", "\\\\");
+        s = s.replace("\"", "\\\"");
+        return s;
+    }
     
     public static boolean isPrefixChar(int c) {
         return isNameChar(c);
