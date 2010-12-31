@@ -31,15 +31,36 @@ import com.mysema.util.MultiMapFactory;
 public class RepositoryOntology extends AbstractOntology<UID>{
     
     public RepositoryOntology(Repository repository) throws IOException{
-        Set<UID> types = new HashSet<UID>();                
+        Set<UID> types = new HashSet<UID>();
+        Set<UID> properties = new HashSet<UID>();             
         RDFConnection connection = repository.openConnection();
         try{
-            initTypes(types, connection);                        
-            initTypeHierachy(types, connection);  
-            // TODO : initProperties
-            // TODO : initPropertyHierarchy
+            // types
+            getInstances(types, RDFS.Class, connection);
+            getInstances(types, OWL.Class, connection);                        
+            initTypeHierachy(types, connection);
+            
+            // properties
+            getInstances(properties, RDF.Property, connection);
+            getInstances(properties, OWL.ObjectProperty, connection);
+            getInstances(properties, OWL.DatatypeProperty, connection);
+            initPropertyHierarchy(properties, connection);
         }finally{
             connection.close();
+        }
+    }
+    
+    private void getInstances(Set<UID> instances, UID type, RDFConnection connection)throws IOException {
+        CloseableIterator<STMT> stmts = connection.findStatements(null, RDF.type, type, null, false);
+        try{
+            while (stmts.hasNext()){
+                STMT stmt = stmts.next();
+                if (stmt.getSubject().isURI()){
+                    instances.add(stmt.getSubject().asURI());    
+                }                                
+            }   
+        }finally{
+            stmts.close();    
         }
     }
 
@@ -60,19 +81,25 @@ public class RepositoryOntology extends AbstractOntology<UID>{
             stmts.close();    
         }
     }
-
-    private void initTypes(Set<UID> types, RDFConnection connection)throws IOException {
-        CloseableIterator<STMT> stmts = connection.findStatements(null, RDF.type, OWL.Class, null, false);
+    
+    private void initPropertyHierarchy(Set<UID> properties, RDFConnection connection) throws IOException {
+        MultiMap<UID,UID> directSubproperties = MultiMapFactory.<UID,UID>createWithSet();
+        MultiMap<UID, UID> directSuperproperties = MultiMapFactory.<UID,UID>createWithSet();
+        CloseableIterator<STMT> stmts = connection.findStatements(null, RDFS.subPropertyOf, null, null, false);
         try{
             while (stmts.hasNext()){
                 STMT stmt = stmts.next();
-                if (stmt.getSubject().isURI()){
-                    types.add(stmt.getSubject().asURI());    
-                }                                
-            }   
+                if (stmt.getSubject().isURI() && stmt.getObject().isURI()){
+                    directSuperproperties.put((UID)stmt.getSubject(), (UID)stmt.getObject());
+                    directSubproperties.put((UID)stmt.getObject(), (UID)stmt.getSubject());
+                }
+            }
+            initializePropertyHierarchy(properties, directSubproperties, directSuperproperties);
         }finally{
             stmts.close();    
         }
     }
+
+
 
 }
