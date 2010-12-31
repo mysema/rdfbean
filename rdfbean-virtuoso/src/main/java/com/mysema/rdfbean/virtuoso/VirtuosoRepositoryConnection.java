@@ -50,10 +50,12 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     private static final String INTERNAL_PREFIX = "http://www.openlinksw.com/";
     
     private static final String JAVA_OUTPUT = "sparql define output:format '_JAVA_'\n ";
+
+    private static final String SPARQL_CREATE_GRAPH = "sparql create silent graph iri(??)";
     
     private static final String SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
     
-    private static final String SPARQL_CLEAR_GRAPH = "sparql clear graph iri(??)";
+    private static final String SPARQL_DROP_GRAPH = "sparql drop silent graph iri(??)";
     
     private static final String SPARQL_DELETE = "sparql define output:format '_JAVA_' " +
     		"delete from graph iri(??) {`iri(??)` `iri(??)` " +
@@ -186,8 +188,20 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             writer.handle(stmt);
         }
         
+        // create graphs
+        PreparedStatement stmt = connection.prepareStatement(SPARQL_CREATE_GRAPH);
+        try{
+            for (UID graph : writers.keySet()){
+                stmt.setString(1, graph.getId());
+                stmt.execute();
+                stmt.clearParameters();
+            }
+        }finally{
+            stmt.close();
+        }
+        
         // load data
-        PreparedStatement stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
+        stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
         try{
             for (Map.Entry<UID, TurtleStringWriter> entry : writers.entrySet()){
                 entry.getValue().end();
@@ -493,7 +507,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         try {
             // context given
             if (subject == null && predicate == null && object == null && context != null) { 
-                ps = connection.prepareStatement(SPARQL_CLEAR_GRAPH);
+                ps = connection.prepareStatement(SPARQL_DROP_GRAPH);
                 ps.setString(1, context.getId());
                 ps.execute();
 
@@ -527,13 +541,9 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                     AbstractQueryImpl.close(ps, rs);
                     ps = null;
                 }
-                
-                // delete from graphs
-                ps = connection.prepareStatement(SPARQL_CLEAR_GRAPH);                
+                                
                 for (UID graph : graphs){
-                    ps.clearParameters();
-                    ps.setString(1, graph.getId());
-                    ps.execute();
+                    removeMatch(subject, predicate, object, graph);
                 }
 
             } else {

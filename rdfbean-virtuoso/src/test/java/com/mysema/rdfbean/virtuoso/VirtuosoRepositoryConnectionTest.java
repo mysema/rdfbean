@@ -175,14 +175,17 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
     public void Remove_subject_and_predicate_given(){
         ID sub = new UID(TEST.NS, "s"+ System.currentTimeMillis());
         ID obj = new UID(TEST.NS, "o"+ System.currentTimeMillis());
-        STMT stmt = new STMT(sub, RDF.type, obj);
-        List<STMT> stmts = Collections.singletonList(stmt);
+        List<STMT> stmts = Arrays.asList(
+                new STMT(sub, RDF.type, obj),
+                new STMT(sub, RDFS.label, new LIT("X"))
+        );
         toBeRemoved = stmts;
         connection.update(null, stmts);
         
-        assertExists(stmt.getSubject(), null, null, null);
+        assertExists(sub, null, null, null);
         connection.remove(sub, RDF.type, null, null);
-        assertNotExists(stmt.getSubject(), null, null, null);
+        assertNotExists(sub, RDF.type, null, null);
+        assertExists(sub, RDFS.label, null, null);
     }
     
     @Test

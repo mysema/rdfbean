@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -93,5 +94,16 @@ public class TurtleStringWriterTest {
         System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains("<http://dbpedia.org/resource/Torpparinm%C3%A4ki> a rdfs:Resource ."));
+    }
+    
+    @Test
+    public void Umlaut_Escaping(){
+        writer.begin();
+        writer.handle(new STMT(RDF.predicate, RDFS.label, new LIT("Pr\u00E4dikat", Locale.GERMAN)));
+        writer.end();
+        
+        System.out.println(writer.toString());
+        String str = writer.toString();
+        assertTrue(str.contains("rdf:predicate rdfs:label \"Pr\u00E4dikat\"@de ."));
     }
 }
