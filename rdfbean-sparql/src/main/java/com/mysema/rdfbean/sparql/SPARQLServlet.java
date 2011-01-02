@@ -36,7 +36,7 @@ public class SPARQLServlet extends HttpServlet{
 
     private static final long serialVersionUID = 5726683938555535282L;
 
-    private static final Pattern LIMIT_PATTERN = Pattern.compile("\\s+[lL][iI][mM][iI][tT]\\s+(\\d+)");
+    private static final Pattern LIMIT_PATTERN = Pattern.compile("\\s+limit\\s+(\\d+)", Pattern.CASE_INSENSITIVE);
 
     public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
 
