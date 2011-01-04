@@ -117,4 +117,15 @@ public class TurtleStringWriterTest {
         String str = writer.toString();
         assertTrue(str.contains("rdf:predicate rdfs:label \"\"\"1\n2\n3\"\"\"^^xsd:string ."));
     }
+    
+    @Test
+    public void RDFText_typed_Literal(){
+        writer.begin();
+        writer.handle(new STMT(RDF.predicate, RDFS.label, new LIT("123", RDF.text)));
+        writer.end();
+        
+        System.out.println(writer.toString());
+        String str = writer.toString();
+        assertTrue(str.contains("rdf:predicate rdfs:label \"123\" ."));
+    }
 }

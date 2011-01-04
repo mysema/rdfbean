@@ -54,15 +54,15 @@ public class TurtleWriter implements RDFWriter{
             appendable.append("\"\"\"");
             appendable.append(TurtleUtil.encodeLongString(val));
             appendable.append("\"\"\"");
-        }else{
+        } else {
             appendable.append("\"");
             appendable.append(TurtleUtil.encodeString(val));
             appendable.append("\"");    
         }        
         
         if (lit.getLang() != null) {
-            appendable.append("@").append(LocaleUtil.toLang(lit.getLang()));
-        } else {
+            appendable.append("@").append(LocaleUtil.toLang(lit.getLang()));            
+        } else if (!lit.getDatatype().equals(RDF.text)) {
             appendable.append("^^");
             append(lit.getDatatype());
         }
