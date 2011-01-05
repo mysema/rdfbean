@@ -11,9 +11,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
-
 /**
  * DateConverter provides
  *
@@ -60,8 +57,8 @@ public class TimestampConverter implements Converter<Timestamp>{
         return Timestamp.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.dateTime;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.dateTime;
+//    }
 }

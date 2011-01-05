@@ -12,9 +12,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
-
 public class DateConverter implements Converter<Date>{
 
     private final DateTimeFormatter fromStringFmt = ISODateTimeFormat.dateTimeParser();
@@ -42,9 +39,9 @@ public class DateConverter implements Converter<Date>{
         return Date.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.date;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.date;
+//    }
     
 }

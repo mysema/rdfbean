@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.xsd;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 
 
 /**
@@ -27,9 +25,9 @@ public class LongConverter extends AbstractConverter<Long> {
         return Long.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.longType;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.longType;
+//    }
 
 }

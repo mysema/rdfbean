@@ -7,9 +7,6 @@ package com.mysema.rdfbean.xsd;
 
 import java.math.BigInteger;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
-
 
 /**
  * BigIntegerConverter provides
@@ -29,9 +26,9 @@ public class BigIntegerConverter extends AbstractConverter<BigInteger> {
         return BigInteger.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.integerType;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.integerType;
+//    }
 
 }

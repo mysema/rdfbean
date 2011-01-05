@@ -11,9 +11,6 @@ import java.net.URISyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
-
 
 /**
  * URIConverter provides
@@ -41,9 +38,9 @@ public class URIConverter  extends AbstractConverter<URI> {
         return URI.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.anyURI;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.anyURI;
+//    }
 
 }

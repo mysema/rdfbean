@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.xsd;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 
 
 /**
@@ -27,9 +25,9 @@ public class ByteConverter extends AbstractConverter<Byte> {
         return Byte.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.byteType;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.byteType;
+//    }
 
 }

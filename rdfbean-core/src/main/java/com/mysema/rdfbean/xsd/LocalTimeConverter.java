@@ -10,9 +10,6 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
-
 
 /**
  * LocalTimeConverter provides
@@ -41,9 +38,9 @@ public class LocalTimeConverter implements Converter<LocalTime> {
         return LocalTime.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.time;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.time;
+//    }
 
 }

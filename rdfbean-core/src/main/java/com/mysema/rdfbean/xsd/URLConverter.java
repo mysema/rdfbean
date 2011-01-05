@@ -11,9 +11,6 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
-
 /**
  * URLConverter provides
  *
@@ -40,9 +37,9 @@ public class URLConverter extends AbstractConverter<URL> {
         return URL.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.anyURI;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.anyURI;
+//    }
 
 }

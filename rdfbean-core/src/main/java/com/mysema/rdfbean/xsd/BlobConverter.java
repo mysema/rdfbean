@@ -2,9 +2,6 @@ package com.mysema.rdfbean.xsd;
 
 import java.sql.Blob;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
-
 public class BlobConverter extends AbstractConverter<Blob>{
 
     @Override
@@ -18,9 +15,9 @@ public class BlobConverter extends AbstractConverter<Blob>{
         return Blob.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.hexBinary;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.hexBinary;
+//    }
 
 }

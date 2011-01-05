@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.xsd;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 
 
 /**
@@ -27,9 +25,9 @@ public class IntegerConverter  extends AbstractConverter<Integer> {
         return Integer.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.intType;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.intType;
+//    }
 
 }

@@ -9,8 +9,6 @@ import java.util.Date;
 
 import org.joda.time.format.DateTimeFormat;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.xsd.Converter;
 import com.mysema.rdfbean.xsd.UtilDateConverter;
 
@@ -59,10 +57,10 @@ public enum YMDDateConverter implements Converter<Date>{
         return Date.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.dateTime;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.dateTime;
+//    }
        
 
 }

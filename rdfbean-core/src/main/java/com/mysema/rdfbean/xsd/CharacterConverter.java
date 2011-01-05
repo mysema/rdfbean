@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.xsd;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 
 /**
  * CharacterConverter provides
@@ -26,9 +24,9 @@ public class CharacterConverter extends AbstractConverter<Character> {
         return Character.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.stringType;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.stringType;
+//    }
 
 }

@@ -137,7 +137,7 @@ public class NodeConverter implements Converter<NODE>{
     }
     
     public String toString(UID uid){        
-        if (nsToPrefix.containsKey(((UID)uid).getNamespace())){
+        if (nsToPrefix.containsKey((uid).getNamespace())){
             return uidToShortString(uid);    
         }else{
             StringBuilder builder = new StringBuilder(uid.getValue()).append(SEPARATOR_CHAR);
@@ -170,9 +170,9 @@ public class NodeConverter implements Converter<NODE>{
         return NODE.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.stringType;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.stringType;
+//    }
 
 }

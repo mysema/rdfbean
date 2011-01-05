@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.xsd;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 
 /**
  * EnumConverter provides
@@ -16,7 +14,7 @@ import com.mysema.rdfbean.model.XSD;
  */
 public class EnumConverter<T extends Enum<T>> extends AbstractConverter<T>{
     
-    private Class<T> enumType;
+    private final Class<T> enumType;
     
     public EnumConverter(Class<T> enumType){
         this.enumType = enumType;
@@ -32,9 +30,9 @@ public class EnumConverter<T extends Enum<T>> extends AbstractConverter<T>{
         return enumType;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.stringType;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.stringType;
+//    }
 
 }

@@ -26,34 +26,34 @@ public class ConverterRegistryImpl implements ConverterRegistry{
     private final Map<Class<?>,UID> classToType = new HashMap<Class<?>,UID>();
 
     public ConverterRegistryImpl(){
-        register(new URIConverter());
-        register(new BooleanConverter());
-        register(new BlobConverter());
-        register(new ByteConverter());
-        register(new LocalDateConverter());
-        register(new DateConverter());
-        register(new DateTimeConverter());
-        register(new CalendarConverter());
-        register(new TimestampConverter());
-        register(new UtilDateConverter());
-        register(new BigDecimalConverter());
-        register(new DoubleConverter());
+        register(XSD.anyURI, new URIConverter());
+        register(XSD.booleanType, new BooleanConverter());
+        register(XSD.hexBinary, new BlobConverter());
+        register(XSD.byteType, new ByteConverter());
+        register(XSD.date, new LocalDateConverter());
+        register(XSD.date, new DateConverter());
+        register(XSD.dateTime, new DateTimeConverter());
+        register(XSD.dateTime, new CalendarConverter());
+        register(XSD.dateTime, new TimestampConverter());
+        register(XSD.dateTime, new UtilDateConverter());
+        register(XSD.decimalType, new BigDecimalConverter());
+        register(XSD.doubleType, new DoubleConverter());
         // duration
-        register(new FloatConverter());
+        register(XSD.floatType, new FloatConverter());
         // gDay
         // gMonth
         // gMonthDay
         // gYear
-        register(new YearConverter());
+        register(XSD.gYear, new YearConverter());
         // gYearMonth
-        register(new BigIntegerConverter());
-        register(new IntegerConverter());
-        register(new LongConverter());
-        register(new ShortConverter());
+        register(XSD.integerType, new BigIntegerConverter());
+        register(XSD.intType, new IntegerConverter());
+        register(XSD.longType, new LongConverter());
+        register(XSD.shortType, new ShortConverter());
         register(XSD.stringType, String.class);
-        register(new CharacterConverter());
-        register(new LocalTimeConverter());
-        register(new TimeConverter());
+        register(XSD.stringType, new CharacterConverter());
+        register(XSD.time, new LocalTimeConverter());
+        register(XSD.time, new TimeConverter());
     }
 
     @Override
@@ -79,12 +79,12 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         classToType.put(clazz, type);
     }
 
-    private <T> void register(Converter<T> converter) {
-        register(converter.getType(), converter.getJavaType());
+    private <T> void register(UID type, Converter<T> converter) {
+        register(type, converter.getJavaType());
         classToConverter.put(converter.getJavaType(), converter);
         Class<?> primitiveType = ClassUtils.wrapperToPrimitive(converter.getJavaType());
         if (primitiveType != null){
-            register(converter.getType(), primitiveType);
+            register(type, primitiveType);
             classToConverter.put(primitiveType, converter);
         }
     }

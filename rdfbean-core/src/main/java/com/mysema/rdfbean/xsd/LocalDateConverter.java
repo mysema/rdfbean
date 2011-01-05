@@ -11,9 +11,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
-
 
 /**
  * LocalDateConverter provides
@@ -42,9 +39,9 @@ public class LocalDateConverter implements Converter<LocalDate> {
         return LocalDate.class;
     }
 
-    @Override
-    public UID getType() {
-        return XSD.date;
-    }
+//    @Override
+//    public UID getType() {
+//        return XSD.date;
+//    }
 
 }
