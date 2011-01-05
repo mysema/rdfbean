@@ -21,6 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.mysema.converters.UtilDateConverter;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
@@ -34,7 +35,6 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.xsd.UtilDateConverter;
 
 /**
  * RDBConnectionTest provides

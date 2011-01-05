@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.xsd;
 
+import com.mysema.converters.AbstractConverter;
+
 
 
 /**
@@ -24,10 +26,5 @@ public class YearConverter  extends AbstractConverter<Year> {
     public Class<Year> getJavaType() {
         return Year.class;
     }
-
-//    @Override
-//    public UID getType() {
-//        return XSD.gYear;
-//    }
 
 }

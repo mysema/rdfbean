@@ -10,6 +10,27 @@ import java.util.Map;
 
 import org.apache.commons.lang.ClassUtils;
 
+import com.mysema.converters.BigDecimalConverter;
+import com.mysema.converters.BigIntegerConverter;
+import com.mysema.converters.BlobConverter;
+import com.mysema.converters.BooleanConverter;
+import com.mysema.converters.ByteConverter;
+import com.mysema.converters.CalendarConverter;
+import com.mysema.converters.CharacterConverter;
+import com.mysema.converters.Converter;
+import com.mysema.converters.DateConverter;
+import com.mysema.converters.DateTimeConverter;
+import com.mysema.converters.DoubleConverter;
+import com.mysema.converters.FloatConverter;
+import com.mysema.converters.IntegerConverter;
+import com.mysema.converters.LocalDateConverter;
+import com.mysema.converters.LocalTimeConverter;
+import com.mysema.converters.LongConverter;
+import com.mysema.converters.ShortConverter;
+import com.mysema.converters.TimeConverter;
+import com.mysema.converters.TimestampConverter;
+import com.mysema.converters.URIConverter;
+import com.mysema.converters.UtilDateConverter;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 

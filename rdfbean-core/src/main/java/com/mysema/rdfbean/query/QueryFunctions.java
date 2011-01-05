@@ -11,7 +11,7 @@ import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
-import com.mysema.rdfbean.xsd.DateTimeConverter;
+import com.mysema.converters.DateTimeConverter;
 
 /**
  * Functions provides

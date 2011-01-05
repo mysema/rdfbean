@@ -14,6 +14,13 @@ import org.joda.time.LocalTime;
 import org.junit.After;
 import org.junit.Test;
 
+import com.mysema.converters.DateConverter;
+import com.mysema.converters.DateTimeConverter;
+import com.mysema.converters.LocalDateConverter;
+import com.mysema.converters.LocalTimeConverter;
+import com.mysema.converters.TimeConverter;
+import com.mysema.converters.TimestampConverter;
+import com.mysema.converters.UtilDateConverter;
 import com.mysema.query.sql.H2Templates;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Addition;
@@ -26,13 +33,6 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.xsd.DateConverter;
-import com.mysema.rdfbean.xsd.DateTimeConverter;
-import com.mysema.rdfbean.xsd.LocalDateConverter;
-import com.mysema.rdfbean.xsd.LocalTimeConverter;
-import com.mysema.rdfbean.xsd.TimeConverter;
-import com.mysema.rdfbean.xsd.TimestampConverter;
-import com.mysema.rdfbean.xsd.UtilDateConverter;
 
 public class DateTimePersistenceTest {
     

@@ -12,12 +12,12 @@ import java.util.Map;
 import org.compass.core.util.Assert;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
+import com.mysema.converters.Converter;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.xsd.Converter;
 
 /**
  * NodeConverter provides compact Node to/from String conversions
