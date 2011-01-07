@@ -18,6 +18,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
@@ -43,6 +45,8 @@ import com.mysema.rdfbean.object.Session;
  */
 public class VirtuosoRepositoryConnection implements RDFConnection {
     
+    private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
+    
     private static final int BATCH_SIZE = 5000;
     
     private static final String DEFAULT_OUTPUT = "sparql\n ";
@@ -53,20 +57,18 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
 //    private static final String SPARQL_CREATE_GRAPH = "sparql create silent graph iri(??)";
     
-    private static final String SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
+//    private static final String SPARQL_SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
     
-//    private static final String SPARQL_DROP_GRAPH = "sparql drop silent graph iri(??)";
+    private static final String SPARQL_SELECT_KNOWN_GRAPHS = "DB.DBA.SPARQL_SELECT_KNOWN_GRAPHS()";
     
-    private static final String SPARQL_CLEAR_GRAPH = "sparql clear graph iri(??)";
+    private static final String SPARQL_DROP_GRAPH = "sparql drop silent graph iri(??)";
+    
+//    private static final String SPARQL_CLEAR_GRAPH = "sparql clear graph iri(??)";
     
     private static final String SPARQL_DELETE = "sparql define output:format '_JAVA_' " +
     		"delete from graph iri(??) {`iri(??)` `iri(??)` " +
     		"`bif:__rdf_long_from_batch_params(??,??,??)`}";
 
-//    private static final String SPARQL_INSERT = "sparql define output:format '_JAVA_'  " +
-//    		"insert into graph iri(??) { `iri(??)` `iri(??)` " +
-//    		"`bif:__rdf_long_from_batch_params(??,??,??)` }";
-    
     public static void bindBlankNode(PreparedStatement ps, int col, BID n) throws SQLException {
         ps.setString(col, "_:" + n.getValue());
     }
@@ -135,43 +137,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         this.allowedGraphs = allowedGraphs;
     }
 
-//    private void add(Collection<STMT> addedStatements) throws SQLException {
-//        // TODO : consider DB.DBA.RDF_QUAD_URI
-//        // TODO : consider DB.DBA.RDF_QUAD_URI_L_TYPED
-//        verifyNotReadOnly();
-//
-//        PreparedStatement ps = null;
-//        try {
-//            ps = connection.prepareStatement(VirtuosoRepositoryConnection.SPARQL_INSERT);
-//            int count = 0;
-//
-//            for (STMT stmt : addedStatements) {
-//                assertAllowedGraph(stmt.getContext());
-//                ps.setString(1, stmt.getContext() != null ? stmt.getContext().getId() : defaultGraph.getId());
-//                bindResource(ps, 2, stmt.getSubject());
-//                bindURI(ps, 3, stmt.getPredicate());
-//                bindValue(ps, 4, stmt.getObject());
-//                ps.addBatch();
-//                count++;
-//
-//                if (count > BATCH_SIZE) {
-//                    ps.executeBatch();
-//                    ps.clearBatch();
-//                    count = 0;
-//                }
-//            }
-//
-//            if (count > 0) {
-//                ps.executeBatch();
-//                ps.clearBatch();
-//            }
-//        }finally{
-//            if (ps != null){
-//                ps.close();
-//            }
-//        }
-//    }
-
     public void addBulk(Collection<STMT> addedStatements) throws SQLException, IOException {
         verifyNotReadOnly();
         
@@ -190,6 +155,18 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             writer.handle(stmt);
         }
 
+        // create graphs
+//        PreparedStatement stmt = connection.prepareStatement(SPARQL_CREATE_GRAPH);
+//        try{
+//            for (UID graph : writers.keySet()){
+//                stmt.setString(1, graph.getId());
+//                stmt.execute();
+//                stmt.clearParameters();
+//            }
+//        }finally{
+//            stmt.close();
+//        }
+        
         // load data
         PreparedStatement stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
         try{
@@ -496,12 +473,13 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         PreparedStatement ps = null;
         try {
             // context given
-            if (subject == null && predicate == null && object == null && context != null) { 
-                System.err.println(context.getId());
-                ps = connection.prepareStatement(SPARQL_CLEAR_GRAPH);
+            if (subject == null && predicate == null && object == null && context != null) {                
+                ps = connection.prepareStatement(SPARQL_DROP_GRAPH);
                 ps.setString(1, context.getId());
                 ps.execute();    
-                
+                if (logger.isInfoEnabled()){
+                    logger.info("Dropped " + context.getId());    
+                }                
 
             // all given
             } else if (subject != null && predicate != null && object != null && context != null) {
@@ -518,7 +496,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 graphs.add(defaultGraph);
                 
                 // collect graphs
-                ps = connection.prepareStatement(SELECT_GRAPHS);
+                ps = connection.prepareStatement(SPARQL_SELECT_KNOWN_GRAPHS);
                 ps.setFetchSize(25);
                 ResultSet rs = null;                    
                 try{

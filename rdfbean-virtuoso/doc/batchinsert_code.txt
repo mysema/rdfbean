@@ -1,0 +1,42 @@
+
+//    private static final String SPARQL_INSERT = "sparql define output:format '_JAVA_'  " +
+//    		"insert into graph iri(??) { `iri(??)` `iri(??)` " +
+//    		"`bif:__rdf_long_from_batch_params(??,??,??)` }";
+    
+
+//    private void add(Collection<STMT> addedStatements) throws SQLException {
+//        // TODO : consider DB.DBA.RDF_QUAD_URI
+//        // TODO : consider DB.DBA.RDF_QUAD_URI_L_TYPED
+//        verifyNotReadOnly();
+//
+//        PreparedStatement ps = null;
+//        try {
+//            ps = connection.prepareStatement(VirtuosoRepositoryConnection.SPARQL_INSERT);
+//            int count = 0;
+//
+//            for (STMT stmt : addedStatements) {
+//                assertAllowedGraph(stmt.getContext());
+//                ps.setString(1, stmt.getContext() != null ? stmt.getContext().getId() : defaultGraph.getId());
+//                bindResource(ps, 2, stmt.getSubject());
+//                bindURI(ps, 3, stmt.getPredicate());
+//                bindValue(ps, 4, stmt.getObject());
+//                ps.addBatch();
+//                count++;
+//
+//                if (count > BATCH_SIZE) {
+//                    ps.executeBatch();
+//                    ps.clearBatch();
+//                    count = 0;
+//                }
+//            }
+//
+//            if (count > 0) {
+//                ps.executeBatch();
+//                ps.clearBatch();
+//            }
+//        }finally{
+//            if (ps != null){
+//                ps.close();
+//            }
+//        }
+//    }
