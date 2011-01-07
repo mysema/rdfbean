@@ -92,10 +92,16 @@ public abstract class RDFBeanModule extends AbstractModule{
     @Singleton
     public SessionFactory createSessionFactory(Configuration configuration, Repository repository){
         // TODO : locale handling
-        SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
+        final SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                sessionFactory.close();
+            }
+        });
         return sessionFactory;
     }
 
