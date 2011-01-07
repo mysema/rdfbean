@@ -55,7 +55,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     
     private static final String JAVA_OUTPUT = "sparql define output:format '_JAVA_'\n ";
 
-//    private static final String SPARQL_CREATE_GRAPH = "sparql create silent graph iri(??)";
+    private static final String SPARQL_CREATE_GRAPH = "sparql create silent graph iri(??)";
     
 //    private static final String SPARQL_SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
     
@@ -156,19 +156,19 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
 
         // create graphs
-//        PreparedStatement stmt = connection.prepareStatement(SPARQL_CREATE_GRAPH);
-//        try{
-//            for (UID graph : writers.keySet()){
-//                stmt.setString(1, graph.getId());
-//                stmt.execute();
-//                stmt.clearParameters();
-//            }
-//        }finally{
-//            stmt.close();
-//        }
+        PreparedStatement stmt = connection.prepareStatement(SPARQL_CREATE_GRAPH);
+        try{
+            for (UID graph : writers.keySet()){
+                stmt.setString(1, graph.getId());
+                stmt.execute();
+                stmt.clearParameters();
+            }
+        }finally{
+            stmt.close();
+        }
         
         // load data
-        PreparedStatement stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
+        stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
         try{
             for (Map.Entry<UID, TurtleStringWriter> entry : writers.entrySet()){
                 entry.getValue().end();
