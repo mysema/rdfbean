@@ -7,9 +7,7 @@ import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,16 +157,11 @@ public class VirtuosoRepository implements Repository {
         RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
         try {
             if (sources != null) {
-                Set<UID> contexts = new HashSet<UID>();
                 for (RDFSource source : sources) {
                     if (source.getResource() != null){
                         logger.info("loading " + source.getResource());
                     }
                     UID context = new UID(source.getContext());
-                    if (!contexts.contains(context) && connection.exists(null, null, null, context, false)){
-                        continue;
-                    }
-                    contexts.add(context);
                     InputStream is = source.openStream();
                     try{
                         connection.load(source.getFormat(), is, context, false);    
