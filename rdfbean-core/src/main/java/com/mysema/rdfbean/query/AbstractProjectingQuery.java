@@ -70,7 +70,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
         this.session = session;
     }
     
-    protected abstract <RT> RT convert(Class<RT> rt, L node);
+    protected abstract <RT> RT convert(Class<RT> rt, L literal);
         
     public SubType from(EntityPath<?>... args){
         return queryMixin.from(args);
@@ -85,7 +85,7 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
                 // TODO : always return LID ?
                 return (RT) session.getLID(id).getId();
             }else{
-                return (RT) session.get(type, id);    
+                return session.get(type, id);    
             }            
         }else{
             return convert(type, (L)node);            
