@@ -25,7 +25,7 @@ import com.mysema.rdfbean.domains.UserDomain.User;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({User.class, Department.class, Company.class})
-public class RDBQueryTest extends AbstractRDBTest implements UserDepartmentCompanyDomain{
+public class RDBBeanQueryTest extends AbstractRDBTest implements UserDepartmentCompanyDomain{
     
     private User[] users = new User[10];
     

@@ -20,7 +20,7 @@ import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Company;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Department;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.User;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.rdb.RDBQuery;
+import com.mysema.rdfbean.rdb.RDBBeanQuery;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({User.class, Department.class, Company.class})
@@ -101,8 +101,8 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
         // userName-symbol        
     }    
     
-    private RDBQuery from(EntityPath<?> entity){
-        return (RDBQuery) session.from(entity);
+    private RDBBeanQuery from(EntityPath<?> entity){
+        return (RDBBeanQuery) session.from(entity);
     }
     
     private int countJoins(SQLQuery query){

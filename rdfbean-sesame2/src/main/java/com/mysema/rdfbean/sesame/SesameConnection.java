@@ -37,7 +37,7 @@ import com.mysema.query.QueryException;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
-import com.mysema.rdfbean.sesame.query.SesameQuery;
+import com.mysema.rdfbean.sesame.query.SesameBeanQuery;
 
 /**
  * SaesameConnection is the RDFConnection implementation for RepositoryConnection usage
@@ -183,7 +183,7 @@ public class SesameConnection implements RDFConnection {
     @Override
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
-            SesameQuery query = new SesameQuery(
+            SesameBeanQuery query = new SesameBeanQuery(
                     session,
                     dialect,
                     dialect.getValueFactory(),

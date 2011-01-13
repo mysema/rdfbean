@@ -51,7 +51,7 @@ public class CollectionTest extends SessionTestBase implements CompanyDepartment
         BeanQuery qry = session.from($(dep)).where($(emp.getDepartment()).isNotNull());
         assertEquals(1l, qry.count());
 
-        TupleExpr tuples = ((SesameQuery)qry).getJoinBuilder().getTupleExpr();
+        TupleExpr tuples = ((SesameBeanQuery)qry).getJoinBuilder().getTupleExpr();
         StatementPattern rightPattern = (StatementPattern) ((Join)tuples).getArg(1);
         assertEquals("department_employees", rightPattern.getSubjectVar().getName());
         assertEquals(new UID(TEST.NS, "department").getId(), rightPattern.getPredicateVar().getValue().stringValue());

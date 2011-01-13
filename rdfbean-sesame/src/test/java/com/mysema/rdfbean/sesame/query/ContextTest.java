@@ -49,7 +49,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
 
     @Test
     public void Entity1_property(){
-        SesameQuery query = (SesameQuery) session.from($(e1)).where($(e1.getProperty()).isNotNull());
+        SesameBeanQuery query = (SesameBeanQuery) session.from($(e1)).where($(e1.getProperty()).isNotNull());
         query.list($(e1));
         Join join = (Join) query.getJoinBuilder().getTupleExpr();
 
@@ -66,7 +66,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
 
     @Test
     public void Entity1_entity(){
-        SesameQuery query = (SesameQuery) session.from($(e1)).where(
+        SesameBeanQuery query = (SesameBeanQuery) session.from($(e1)).where(
                 $(e1.getEntity()).isNotNull(),
                 $(e1.getEntity().getProperty()).isNotNull());
         query.list($(e1));
@@ -85,7 +85,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
 
     @Test
     public void Entity2_property(){
-        SesameQuery query = (SesameQuery) session.from($(e2)).where($(e2.getProperty()).isNotNull());
+        SesameBeanQuery query = (SesameBeanQuery) session.from($(e2)).where($(e2.getProperty()).isNotNull());
         query.list($(e2));
         Join join = (Join) query.getJoinBuilder().getTupleExpr();
 
@@ -103,7 +103,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
 
     @Test
     public void Entity2_entity(){
-        SesameQuery query = (SesameQuery) session.from($(e2)).where(
+        SesameBeanQuery query = (SesameBeanQuery) session.from($(e2)).where(
                 $(e2.getEntity()).isNotNull(),
                 $(e2.getEntity().getProperty()).isNotNull());
         query.list($(e2));
@@ -122,7 +122,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
 
     @Test
     public void Entity3_property(){
-        SesameQuery query = (SesameQuery) session.from($(e3)).where($(e3.getProperty()).isNotNull());
+        SesameBeanQuery query = (SesameBeanQuery) session.from($(e3)).where($(e3.getProperty()).isNotNull());
         query.list($(e3));
         Join join = (Join) query.getJoinBuilder().getTupleExpr();
 
@@ -139,7 +139,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
 
     @Test
     public void Entity3_entity(){
-        SesameQuery query = (SesameQuery) session.from($(e3)).where(
+        SesameBeanQuery query = (SesameBeanQuery) session.from($(e3)).where(
                 $(e3.getEntity()).isNotNull(),
                 $(e3.getEntity().getProperty()).isNotNull());
         query.list($(e3));

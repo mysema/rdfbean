@@ -74,7 +74,7 @@ import com.mysema.rdfbean.object.Session;
  * @author tiwe
  *
  */
-public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
+public class RDBBeanQuery extends ProjectableQuery<RDBBeanQuery> implements BeanQuery{
 
     private static final Templates TEMPLATES = new Templates(){
         {
@@ -105,8 +105,8 @@ public class RDBQuery extends ProjectableQuery<RDBQuery> implements BeanQuery{
 
     private Map<Path<?>,Expression<?>> symbols = new HashMap<Path<?>,Expression<?>>();
 
-    public RDBQuery(RDBContext context, Session session) {
-        super(new QueryMixin<RDBQuery>());
+    public RDBBeanQuery(RDBContext context, Session session) {
+        super(new QueryMixin<RDBBeanQuery>());
         queryMixin.setSelf(this);
         this.context = context;
         this.configuration = session.getConfiguration();

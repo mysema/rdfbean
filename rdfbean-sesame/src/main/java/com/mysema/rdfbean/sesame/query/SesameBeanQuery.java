@@ -29,8 +29,22 @@ import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
-import org.openrdf.query.algebra.*;
+import org.openrdf.query.algebra.And;
+import org.openrdf.query.algebra.Distinct;
+import org.openrdf.query.algebra.Extension;
+import org.openrdf.query.algebra.ExtensionElem;
+import org.openrdf.query.algebra.Filter;
 import org.openrdf.query.algebra.Order;
+import org.openrdf.query.algebra.OrderElem;
+import org.openrdf.query.algebra.Projection;
+import org.openrdf.query.algebra.ProjectionElem;
+import org.openrdf.query.algebra.ProjectionElemList;
+import org.openrdf.query.algebra.Slice;
+import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.Union;
+import org.openrdf.query.algebra.ValueExpr;
+import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.StatementPattern.Scope;
 import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
@@ -43,7 +57,21 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.types.*;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.ExtractorVisitor;
+import com.mysema.query.types.FactoryExpression;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.PathType;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.SubQueryExpression;
+import com.mysema.query.types.Templates;
+import com.mysema.query.types.ToStringVisitor;
 import com.mysema.rdfbean.model.Dialect;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.Inference;
@@ -64,13 +92,13 @@ import com.mysema.rdfbean.query.VarNameIterator;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
- * SesameQuery provides a query implementation for Sesame Repository
+ * SesameBeanQuery provides a query implementation for Sesame Repository
  *
  * @author tiwe
  * @version $Id$
  */
-public class SesameQuery
-extends AbstractProjectingQuery<SesameQuery, Value, Resource, BNode, URI, Literal, Statement>
+public class SesameBeanQuery
+extends AbstractProjectingQuery<SesameBeanQuery, Value, Resource, BNode, URI, Literal, Statement>
 implements TransformerContext, BeanQuery, Closeable{
 
    private static final Templates TEMPLATES = new Templates(){
@@ -84,7 +112,7 @@ implements TransformerContext, BeanQuery, Closeable{
 
     private static final boolean includeInferred = true;
 
-    private static final Logger logger = LoggerFactory.getLogger(SesameQuery.class);
+    private static final Logger logger = LoggerFactory.getLogger(SesameBeanQuery.class);
 
     private static final Logger queryTreeLogger = LoggerFactory.getLogger("com.mysema.rdfbean.sesame.queryTree");
 
@@ -176,7 +204,7 @@ implements TransformerContext, BeanQuery, Closeable{
 
     private final VarNameIterator varNames = new VarNameIterator("_var_");
 
-    public SesameQuery(
+    public SesameBeanQuery(
             Session session,
             Dialect<Value, Resource, BNode, URI, Literal, Statement> dialect,
             ValueFactory valueFactory,
