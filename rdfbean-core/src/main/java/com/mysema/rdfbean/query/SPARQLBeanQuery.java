@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.Dialect;
@@ -35,6 +37,7 @@ public class SPARQLBeanQuery
 
     private final SPARQLQueryBuilder queryBuilder = new SPARQLQueryBuilder();
     
+    @Nullable
     private CloseableIterator<Map<String,NODE>> tupleResults;
     
     private final List<String> variables = new ArrayList<String>();
