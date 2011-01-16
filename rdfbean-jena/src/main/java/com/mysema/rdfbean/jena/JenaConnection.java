@@ -42,7 +42,11 @@ public class JenaConnection implements RDFConnection {
 
     @Override
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
-        return new JenaTransaction(graph.getTransactionHandler());
+        if (graph.getTransactionHandler().transactionsSupported()){
+            return new JenaTransaction(graph.getTransactionHandler());    
+        }else{
+            throw new UnsupportedOperationException();
+        }        
     }
 
     @Override
