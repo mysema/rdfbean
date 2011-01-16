@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mysema.commons.fluxml.XMLWriter;
 import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
@@ -35,14 +34,16 @@ public class SPARQLServlet extends HttpServlet{
     private static final Logger logger = LoggerFactory.getLogger(SPARQLServlet.class);
 
     private static final long serialVersionUID = 5726683938555535282L;
-
-    private static final Pattern LIMIT_PATTERN = Pattern.compile("\\s+limit\\s+(\\d+)", Pattern.CASE_INSENSITIVE);
-
+    
     public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
 
     public static final String SPARQL_RESULTS_XML = "application/sparql-results+xml";
+  
+    private static final Pattern LIMIT_PATTERN = Pattern.compile("\\s+limit\\s+(\\d+)", Pattern.CASE_INSENSITIVE);
 
-    private final SPARQLResultProducer resultProducer = new SPARQLResultProducer();
+    private static final ResultProducer xmlProducer = new XMLResultProducer();
+    
+    private static final ResultProducer jsonProducer = new JSONResultProducer();
 
     @Nullable
     private Repository repository;
@@ -165,13 +166,12 @@ public class SPARQLServlet extends HttpServlet{
                     if (jsonpCallback != null){
                         response.getWriter().write(jsonpCallback + "(");
                     }
-                    resultProducer.streamAsJSON(query, response.getWriter());
+                    jsonProducer.stream(query, response.getWriter());
                     if (jsonpCallback != null){
                         response.getWriter().write(")");
                     }
                 }else{
-                    XMLWriter writer = new XMLWriter(response.getWriter());
-                    resultProducer.streamAsXML(query, writer);
+                    xmlProducer.stream(query, response.getWriter());
                 }
             }
         }finally{
