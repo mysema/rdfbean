@@ -15,6 +15,10 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.SPARQLQuery;
 
+/**
+ * @author tiwe
+ *
+ */
 public class JSONResultProducer extends AbstractResultProducer {
 
     @Override

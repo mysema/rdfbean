@@ -2,6 +2,10 @@ package com.mysema.rdfbean.sparql;
 
 import com.mysema.rdfbean.model.NODE;
 
+/**
+ * @author tiwe
+ *
+ */
 public abstract class AbstractResultProducer implements ResultProducer {
     
     protected String getNodeType(NODE node){
