@@ -22,6 +22,7 @@ import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.io.RDFSource;
 
 /**
  * @author tiwe
@@ -34,6 +35,10 @@ public class JenaRepository implements Repository{
     private final Model model;
     
     private final JenaDialect dialect = new JenaDialect();
+    
+    private RDFSource[] sources;
+    
+    private boolean initialized = false;
     
     public JenaRepository(Model model) {
         this.graph = model.getGraph();
@@ -51,12 +56,13 @@ public class JenaRepository implements Repository{
     }
 
     @Override
-    public <RT> RT execute(Operation<RT> operation) {
-        
+    public <RT> RT execute(Operation<RT> operation) {        
         RDFConnection connection = openConnection();
         try{
             if (graph.getTransactionHandler().transactionsSupported()){
-                RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
+                RDFBeanTransaction tx = connection.beginTransaction(false, 
+                        RDFBeanTransaction.TIMEOUT, 
+                        RDFBeanTransaction.ISOLATION);
                 try{
                     RT retVal = operation.execute(connection);
                     tx.commit();
@@ -98,7 +104,19 @@ public class JenaRepository implements Repository{
 
     @Override
     public void initialize() {
-        // do nothing        
+        if (!initialized){
+            if (sources != null){
+                try{
+                    for (RDFSource source : sources){
+                        UID context = source.getContext() != null ? new UID(source.getContext()) : null;
+                        load(source.getFormat(), source.openStream(), context, false);
+                    }
+                } catch(IOException e){
+                    throw new RepositoryException(e);
+                }
+            }
+            initialized = true;
+        }
     }
 
     @Override
@@ -110,14 +128,17 @@ public class JenaRepository implements Repository{
             reader = new TurtleReader();
         }else {
             throw new IllegalArgumentException(format.toString());
-        }
-        
+        }        
         reader.read(model, is, context != null ? context.getId() : null);
     }
 
     @Override
     public RDFConnection openConnection() {
         return new JenaConnection(graph, dialect);
+    }
+    
+    public void setSources(RDFSource... sources) {
+        this.sources = sources;
     }
 
 }
