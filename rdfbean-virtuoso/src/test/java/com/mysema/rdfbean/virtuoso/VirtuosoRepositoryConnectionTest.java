@@ -110,6 +110,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         List<STMT> stmts = Arrays.asList(
                 new STMT(sub, RDFS.label, new LIT(sub.getId())),
                 new STMT(sub, RDFS.label, new LIT("X")),
+                new STMT(sub, RDFS.label, new LIT("äö")),
                 new STMT(sub, RDFS.label, new LIT(sub.getId(), Locale.ENGLISH)),
                 new STMT(sub, RDFS.label, new LIT("1", XSD.intType))
                 );
