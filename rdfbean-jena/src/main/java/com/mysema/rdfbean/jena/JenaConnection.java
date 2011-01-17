@@ -83,28 +83,7 @@ public class JenaConnection implements RDFConnection {
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
         final ExtendedIterator<Triple> triples = graph.find(convert(subject), convert(predicate), convert(object));        
         if (triples.hasNext()){
-            return new CloseableIterator<STMT>(){
-                @Override
-                public void close() {
-                    triples.close();                
-                }
-                @Override
-                public boolean hasNext() {
-                    return triples.hasNext();
-                }
-                @Override
-                public STMT next() {
-                    Triple triple = triples.next();
-                    return new STMT(
-                            dialect.getID(triple.getSubject()),
-                            dialect.getUID(triple.getPredicate()),
-                            dialect.getNODE(triple.getObject()));
-                }
-                @Override
-                public void remove() {
-                    triples.remove();
-                }            
-            };
+            return new TriplesIterator(dialect, triples);
         }else{
             return EMPTY_RESULTS;
         }        
