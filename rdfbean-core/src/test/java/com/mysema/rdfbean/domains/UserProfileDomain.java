@@ -151,7 +151,7 @@ public interface UserProfileDomain {
 
         public final QIdentifiable _super = new QIdentifiable(this);
 
-        public final SetPath<UserProfileDomain.User, QUser> buddies = createSet("buddies", UserProfileDomain.User.class, QUser.class);
+        public final SetPath<UserProfileDomain.User, QUser> buddies = this.<User, QUser>createSet("buddies", UserProfileDomain.User.class, QUser.class);
 
         public final StringPath email = createString("email");
 

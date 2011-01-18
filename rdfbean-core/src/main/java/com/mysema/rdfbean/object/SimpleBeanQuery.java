@@ -103,5 +103,11 @@ public class SimpleBeanQuery extends ProjectableAdapter<ColQueryImpl> implements
         return this;
     }
 
+    @Override
+    public BeanQuery distinct() {
+        colQuery.distinct();
+        return this;
+    }
+
     
 }

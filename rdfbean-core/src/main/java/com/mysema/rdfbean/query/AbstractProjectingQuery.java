@@ -173,6 +173,14 @@ public abstract class AbstractProjectingQuery<SubType extends AbstractProjecting
     }
 
     @Override
+    public boolean exists() {
+        queryMixin.addToProjection(getMetadata().getJoins().get(0).getTarget());
+        queryMixin.limit(1);        
+        Iterator<N[]> results = getInnerResults();
+        return results.hasNext();
+    }
+    
+    @Override
     public <RT> CloseableIterator<RT> iterate(final Expression<RT> expr) {
         queryMixin.addToProjection(expr);
 

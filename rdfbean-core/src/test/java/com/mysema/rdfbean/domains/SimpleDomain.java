@@ -192,7 +192,7 @@ public interface SimpleDomain {
 
         public final StringPath id = createString("id");
 
-        public final ListPath<SimpleDomain.SimpleType2, QSimpleType2> listProperty = createList("listProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class);
+        public final ListPath<SimpleDomain.SimpleType2, QSimpleType2> listProperty = this.<SimpleType2, QSimpleType2>createList("listProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class);
 
         public final MapPath<java.util.Locale, String, StringPath> localizedAsMap = this.<java.util.Locale, String, StringPath>createMap("localizedAsMap", java.util.Locale.class, String.class, StringPath.class);
 
@@ -204,7 +204,7 @@ public interface SimpleDomain {
 
         public final NumberPath<Integer> numericProperty = createNumber("numericProperty", Integer.class);
 
-        public final SetPath<SimpleDomain.SimpleType2, QSimpleType2> setProperty = createSet("setProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class);
+        public final SetPath<SimpleDomain.SimpleType2, QSimpleType2> setProperty = this.<SimpleType2, QSimpleType2>createSet("setProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class);
 
         public QSimpleType(String variable) {
             super(SimpleDomain.SimpleType.class, forVariable(variable));

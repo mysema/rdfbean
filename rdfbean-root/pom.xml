@@ -15,7 +15,7 @@
   </parent>
   
   <properties>
-    <querydsl.version>2.0.4</querydsl.version>
+    <querydsl.version>2.1.0-beta1-SNAPSHOT</querydsl.version>
     <spring.version>2.5.5</spring.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -36,7 +36,7 @@
     <module>../rdfbean-sesame2</module>       
     <module>../rdfbean-jena</module>
     <module>../rdfbean-virtuoso</module>
-    <module>../rdfbewan-rdb</module>
+    <module>../rdfbean-rdb</module>
         
     <!-- integration -->
     <module>../rdfbean-spring</module>    

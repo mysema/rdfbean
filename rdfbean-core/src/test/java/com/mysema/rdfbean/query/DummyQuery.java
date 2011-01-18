@@ -48,4 +48,9 @@ public class DummyQuery extends AbstractProjectingQuery<DummyQuery,NODE,ID,BID,U
 	return 0;
     }
 
+    @Override
+    public boolean exists() {
+        return false;
+    }
+
 }

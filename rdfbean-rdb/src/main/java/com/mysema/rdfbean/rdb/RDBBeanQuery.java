@@ -127,6 +127,13 @@ public class RDBBeanQuery extends ProjectableQuery<RDBBeanQuery> implements Bean
         SQLQuery query = context.createQuery();
         populate(query);
         return query.count();
+    }    
+
+    @Override
+    public boolean exists() {
+        SQLQuery query = context.createQuery();
+        populate(query);
+        return query.exists();
     }
 
     public SQLQuery createQuery(Expression<?>... args){

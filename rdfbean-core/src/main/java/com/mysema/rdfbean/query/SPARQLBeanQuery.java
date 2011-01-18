@@ -79,6 +79,12 @@ public class SPARQLBeanQuery
             }            
         };        
     }
+    
+    @Override
+    public boolean exists() {
+        // TODO
+        return false;
+    }    
 
     @Override 
     public long count() {
@@ -92,6 +98,6 @@ public class SPARQLBeanQuery
             tupleResults.close();
             tupleResults = null;
         }
-    }    
+    }
 
 }

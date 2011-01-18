@@ -114,8 +114,10 @@ public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, T
             return NodeType.URI;
         }else if (node.isBlank()){
             return NodeType.BLANK;
-        }else{
+        }else if (node.isLiteral()){
             return NodeType.LITERAL;
+        }else{
+            throw new IllegalArgumentException(node.toString());
         }
     }
 
