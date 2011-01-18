@@ -21,9 +21,10 @@ import com.mysema.rdfbean.model.SPARQLQuery;
  */
 public class JSONResultProducer extends AbstractResultProducer {
 
+    private JsonFactory jsonFactory = new JsonFactory();
+    
     @Override
     public void stream(SPARQLQuery query, Writer writer) throws IOException {
-        JsonFactory jsonFactory = new JsonFactory();  
         JsonGenerator generator = jsonFactory.createJsonGenerator(writer);
         if (query.getResultType().equals(SPARQLQuery.ResultType.BOOLEAN)){
             streamBoolean(query, generator);
