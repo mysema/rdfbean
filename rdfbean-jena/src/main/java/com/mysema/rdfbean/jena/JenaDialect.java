@@ -75,7 +75,7 @@ public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, T
             return new LIT(literal.getLiteralLexicalForm(), literal.getLiteralLanguage());
         }else{
             String datatype = literal.getLiteralDatatypeURI();
-            if (datatype == null || datatype.equals(RDF.text)){
+            if (datatype == null || datatype.equals(RDF.text.getId())){
                 return new LIT(literal.getLiteralLexicalForm(), RDF.text);
             }else {
                 return new LIT(literal.getLiteralLexicalForm(), getDatatypeUID(datatype));

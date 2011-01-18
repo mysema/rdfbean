@@ -108,8 +108,7 @@ public class JenaRepository implements Repository{
             if (sources != null){
                 try{
                     for (RDFSource source : sources){
-                        UID context = source.getContext() != null ? new UID(source.getContext()) : null;
-                        load(source.getFormat(), source.openStream(), context, false);
+                        load(source.getFormat(), source.openStream(),  new UID(source.getContext()), false);
                     }
                 } catch(IOException e){
                     throw new RepositoryException(e);
