@@ -334,4 +334,26 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest{
         assertNotExists(sub, RDF.type, type, null);
     }
 
+    
+
+    @Test
+    public void ConstructOrder(){
+        List<STMT> stmts = Arrays.asList(
+            new STMT(new UID(TEST.NS, "e1"), RDFS.label, new LIT("a")),
+            new STMT(new UID(TEST.NS, "e1"), RDFS.label, new LIT("b")),
+            new STMT(new UID(TEST.NS, "e1"), RDFS.label, new LIT("c")),
+            new STMT(new UID(TEST.NS, "e1"), RDFS.label, new LIT("d"))
+        );
+        toBeRemoved = stmts;
+        connection.update(null, stmts);
+        
+        //asc
+        SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, 
+                "CONSTRUCT { ?s ?p ?o } WHERE {?s ?p ?o . FILTER ( ?s = <" + stmts.get(0).getSubject().getId() + "> ) } ORDER BY ?s" );
+//        query.setBinding("s", stmts.get(0).getSubject());
+        assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
+        List<STMT> asc = IteratorAdapter.asList(query.getTriples());
+        assertEquals(stmts, asc);
+        
+    }
 }

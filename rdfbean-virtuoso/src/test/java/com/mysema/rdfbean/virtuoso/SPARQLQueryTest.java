@@ -153,6 +153,7 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
         }
         triples.close();
     }
+
     
     @Test
     public void Construct_Multiple_Patterns(){

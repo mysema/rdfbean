@@ -3,13 +3,16 @@ package com.mysema.rdfbean.virtuoso;
 import java.io.Writer;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.STMTComparator;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFWriter;
 import com.mysema.rdfbean.model.io.WriterUtils;
@@ -41,7 +44,9 @@ public class GraphQueryImpl extends AbstractQueryImpl{
     public CloseableIterator<STMT> getTriples() {
         try {
             rs = executeQuery(query);
-            return new GraphResultIterator(stmt, rs, query, converter);
+            List<STMT> stmts = IteratorAdapter.asList(new GraphResultIterator(stmt, rs, query, converter));
+            Collections.sort(stmts, STMTComparator.DEFAULT);
+            return new IteratorAdapter<STMT>(stmts.iterator());
         } catch (SQLException e) {
             close();
             throw new RepositoryException(e);
