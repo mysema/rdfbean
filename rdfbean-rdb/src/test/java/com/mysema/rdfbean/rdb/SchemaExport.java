@@ -46,7 +46,11 @@ public class SchemaExport {
             
             NamingStrategy namingStrategy = new DefaultNamingStrategy();
             MetaDataSerializer serializer = new MetaDataSerializer("Q",namingStrategy);            
-            MetaDataExporter exporter = new MetaDataExporter("Q", "com.mysema.rdfbean.rdb.schema", new File("src/main/java"), namingStrategy, serializer);
+            MetaDataExporter exporter = new MetaDataExporter();
+            exporter.setPackageName("com.mysema.rdfbean.rdb.schema");
+            exporter.setTargetFolder(new File("src/main/java"));
+            exporter.setNamingStrategy(namingStrategy);
+            exporter.setSerializer(serializer);
             exporter.export(conn.getMetaData());    
         }finally{
             conn.close();
