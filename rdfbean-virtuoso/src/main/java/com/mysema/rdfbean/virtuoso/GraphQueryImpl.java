@@ -43,9 +43,7 @@ public class GraphQueryImpl extends AbstractQueryImpl{
     @Override
     public CloseableIterator<STMT> getTriples() {
         try {
-            rs = executeQuery(query);
-            
-            // TODO : get rid of reordering here, and make sure that Virtuoso serves the results in ascending order
+            rs = executeQuery(query);            
             List<STMT> stmts = IteratorAdapter.asList(new GraphResultIterator(stmt, rs, query, converter));
             Collections.sort(stmts, STMTComparator.DEFAULT);
             return new IteratorAdapter<STMT>(stmts.iterator());
