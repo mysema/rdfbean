@@ -1,0 +1,50 @@
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<sect1 id="jena-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Jena</title>
+    
+    <para>
+    	The RDFBean Jena integration works on top of the Graph interface. It supports in it's current form no named contexts and no inferencing.
+    	Querydsl support is also not yet supported.
+     </para>
+    
+    <sect2>
+    
+    <title>Getting started</title>
+    
+    <para>To construct a Repository instance using Jena invoke the JenaRepository constructor with a Model or Graph instance.</para>
+    
+<programlisting language="java">
+<![CDATA[         
+Graph graph = Factory.createGraphMem();
+JenaRepository repository = new JenaRepository(graph);
+repository.initialize();
+]]>
+</programlisting>    
+    
+    </sect2>
+        
+    <sect2>
+    
+      <title>MemoryRepository</title>
+    
+    	<para>For simple memory based usage RDFBean provides the MemoryRepository class which can be instantiated via its empty constructor :</para>
+    	
+<programlisting language="java">
+<![CDATA[         
+JenaRepository repository = new MemoryRepository();
+repository.initialize();
+]]>
+</programlisting>    
+      
+    </sect2>
+    
+    <sect2>
+    
+    	<title>Support for named graphs</title>
+    	
+    	<para>Support for named graphs is missing since Jena doesn't support it natively. Supporting it via the NG4J project is on the roadmap. </para>
+    
+    </sect2>
+    
+</sect1>    

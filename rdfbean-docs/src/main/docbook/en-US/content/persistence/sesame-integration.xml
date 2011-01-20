@@ -6,6 +6,8 @@
     <para>The RDFBean sesame module depends currently on Sesame 3.0 alpha. We chose the 3.0 branch
       since it provides better transactional support and a more compact API than Sesame 2.*.</para>
       
+   	<para>Sessame 2.3 support is provided via the rdfbean-sesame2 module.</para>   
+      
     <para>The main Repository backends of this module are MemoryRepository and NativeRepository.</para>
     
     <sect2>

@@ -1,0 +1,61 @@
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<sect1 id="virtuoso-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Virtuoso</title>
+    
+    <para>OpenLink Virtuoso is supported via the rdfbean-virtuoso module.</para>
+    
+    <sect2>
+    
+    <title>Getting started</title>
+    
+    <para>To use Virtuoso via RDFBean instantiate VirtuosoRepository like this :</para>
+    
+<programlisting language="java">
+<![CDATA[             
+String hostAndPort = "localhost:1111";
+String username = "testuser";
+String password = "testpass";
+String defaultContext = "rdfbean:default";
+repository = new VirtuosoRepository(hostAndPort, username, password, defaultContext);
+repository.initialize();    
+]]>
+</programlisting>
+
+	<para>For additional security you can restrict the write access of the VirtuosoRepository instance to specific contexts like this :</para>        
+
+<programlisting language="java">
+<![CDATA[             
+repository.setAllowedGraphs(Arrays.asList(context, context2));	
+]]>
+</programlisting>
+
+	</sect2>
+    
+    <sect2>
+    	<title>Blank node handling</title>
+    	
+    	<para>Blank nodes can be referred to by their internal id when they are declared as URIs in SPARQL or N3 (incl. Turtle, NTriples) form.</para>
+    	
+    	<para>For example the blank node</para>
+    	
+<programlisting>
+<![CDATA[             
+_:bnode678fds676	
+]]>
+</programlisting>
+
+		<para>with the internal id "bnode678fds676" can be referred to like this </para>
+		
+<programlisting>
+<![CDATA[             
+<_:bnode678fds676>	
+]]>
+</programlisting>		
+		
+		<para>To make sure that the internal ids of blank nodes are preserved in the persistence process they have to be serialized in URI form or to be added
+		via the RepositoryConnection.update(...) method.</para>
+		
+    </sect2>
+    
+</sect1>
