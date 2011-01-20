@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.EmptyCloseableIterator;
@@ -18,6 +20,7 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
@@ -33,10 +36,13 @@ public class JenaConnection implements RDFConnection {
     
     private final Graph graph;
     
+    private final Model model;
+    
     private final JenaDialect dialect;
     
-    public JenaConnection(Graph graph, JenaDialect dialect) {
+    public JenaConnection(Graph graph, Model model, JenaDialect dialect) {
         this.graph = graph;
+        this.model = model;
         this.dialect = dialect;
     }
 
@@ -64,9 +70,25 @@ public class JenaConnection implements RDFConnection {
         return dialect.getBID(dialect.createBNode());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-        throw new UnsupportedQueryLanguageException(queryLanguage);
+        if (queryLanguage.equals(QueryLanguage.SPARQL)){
+            return (Q)createSPARQLQuery((String)definition);
+        }else{
+            throw new UnsupportedQueryLanguageException(queryLanguage);    
+        }
+    }
+
+    private SPARQLQuery createSPARQLQuery(String definition) {
+        com.hp.hpl.jena.query.Query query = QueryFactory.create(definition) ;
+        if (query.isAskType()){
+            return new BooleanQueryImpl(query, model, dialect);
+        }else if (query.isConstructType() || query.isDescribeType()){
+            return new GraphQueryImpl(query, model, dialect);
+        }else {
+            return new TupleQueryImpl(query, model, dialect);
+        }        
     }
 
     @Override

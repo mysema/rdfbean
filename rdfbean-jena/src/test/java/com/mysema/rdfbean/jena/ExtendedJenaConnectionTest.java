@@ -18,7 +18,7 @@ import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.*;
 
-public class ExtendedJenaConnectionTest extends AbstractConnectiontest {
+public class ExtendedJenaConnectionTest extends AbstractConnectionTest {
             
     private static final UID context = new UID(TEST.NS);            
     

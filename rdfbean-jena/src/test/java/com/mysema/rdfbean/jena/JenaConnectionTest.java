@@ -15,7 +15,7 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
 
-public class JenaConnectionTest extends AbstractConnectiontest{
+public class JenaConnectionTest extends AbstractConnectionTest{
 
     @Test
     public void Update_with_nulls(){

@@ -133,7 +133,7 @@ public class JenaRepository implements Repository{
 
     @Override
     public RDFConnection openConnection() {
-        return new JenaConnection(graph, dialect);
+        return new JenaConnection(graph, model, dialect);
     }
     
     public void setSources(RDFSource... sources) {

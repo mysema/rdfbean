@@ -17,7 +17,7 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
 
-public abstract class AbstractConnectiontest {
+public abstract class AbstractConnectionTest {
     
     protected Repository repository;
 
