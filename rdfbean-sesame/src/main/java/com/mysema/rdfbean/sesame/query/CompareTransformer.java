@@ -23,10 +23,7 @@ import com.mysema.query.types.Ops;
 import com.mysema.query.types.SubQueryExpression;
 
 /**
- * CompareTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class CompareTransformer implements OperationTransformer{
     

@@ -20,10 +20,7 @@ import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 
 /**
- * BooleanTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class BooleanTransformer implements OperationTransformer{
 

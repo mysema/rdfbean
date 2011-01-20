@@ -15,10 +15,7 @@ import com.mysema.rdfbean.SRV;
 import com.mysema.rdfbean.object.ObjectRepository;
 
 /**
- * ContextAwareSessionFactory provides
- *
  * @author tiwe
- * @version $Id$
  */
 public final class ContextAwareSessionFactory extends SpringSessionFactory implements ApplicationContextAware{
     

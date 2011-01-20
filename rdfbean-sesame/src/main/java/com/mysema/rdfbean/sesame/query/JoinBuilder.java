@@ -19,10 +19,7 @@ import org.openrdf.query.algebra.TupleExpr;
 import com.mysema.commons.lang.Assert;
 
 /**
- * JoinBuilder provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class JoinBuilder{
 

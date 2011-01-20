@@ -21,10 +21,7 @@ import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.xsd.Year;
 
 /**
- * TypeMapping provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class TypeMapping {
 

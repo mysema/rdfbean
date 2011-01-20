@@ -18,10 +18,7 @@ import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 
 /**
- * BetweenTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class BetweenTransformer implements OperationTransformer{
 

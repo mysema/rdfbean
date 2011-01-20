@@ -18,10 +18,7 @@ import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 
 /**
- * MathTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class MathTransformer implements OperationTransformer {
     

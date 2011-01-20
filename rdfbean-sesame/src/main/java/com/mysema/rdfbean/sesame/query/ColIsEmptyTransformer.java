@@ -19,10 +19,7 @@ import com.mysema.query.types.Path;
 import com.mysema.rdfbean.model.RDF;
 
 /**
- * ColIsEmptyTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class ColIsEmptyTransformer implements OperationTransformer{
 

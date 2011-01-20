@@ -31,10 +31,7 @@ import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.schema.SchemaGen;
 
 /**
- * SesameSchemaGen provides
- *
  * @author tiwe
- * @version $Id$
  *
  */
 public class SesameSchemaGen extends SchemaGen {

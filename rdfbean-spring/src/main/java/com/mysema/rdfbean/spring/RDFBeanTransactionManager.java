@@ -21,7 +21,6 @@ import com.mysema.rdfbean.object.SimpleSessionContext;
 
 
 /**
- * 
  * RDFBeanTransactionManager is a PlatformTransactionManager implementation for RDFBean usage in Spring
  *
  * @author tiwe

@@ -20,11 +20,7 @@ import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SimpleSessionContext;
 
 /**
- * TransactionalAdvisorImpl provides
- *
  * @author tiwe
- * @version $Id$
- *
  */
 // TODO : merge with tx support of Guice module
 public class TransactionalAdvisorImpl implements TransactionalAdvisor {

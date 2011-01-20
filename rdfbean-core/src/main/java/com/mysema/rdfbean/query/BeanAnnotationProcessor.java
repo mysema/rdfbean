@@ -19,10 +19,7 @@ import com.mysema.query.apt.Configuration;
 import com.mysema.query.apt.Processor;
 
 /**
- * BeanAnnotationProcessor provides
- *
  * @author tiwe
- * @version $Id$
  */
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)

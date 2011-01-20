@@ -8,6 +8,10 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.STMT;
 
+/**
+ * @author tiwe
+ *
+ */
 public final class TriplesIterator implements CloseableIterator<STMT> {
         
     private final JenaDialect dialect;

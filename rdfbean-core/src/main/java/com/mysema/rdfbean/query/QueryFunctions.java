@@ -14,10 +14,7 @@ import org.joda.time.DateTime;
 import com.mysema.converters.DateTimeConverter;
 
 /**
- * Functions provides
- *
  * @author tiwe
- * @version $Id$
  */
 public final class QueryFunctions {
     

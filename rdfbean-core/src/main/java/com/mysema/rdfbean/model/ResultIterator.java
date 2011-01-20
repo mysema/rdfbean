@@ -15,10 +15,7 @@ import org.apache.commons.collections15.iterators.FilterIterator;
 import com.mysema.commons.lang.CloseableIterator;
 
 /**
- * ResultIterator provides
- *
  * @author tiwe
- * @version $Id$
  */
 public final class ResultIterator implements CloseableIterator<STMT> {
     

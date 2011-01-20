@@ -16,10 +16,7 @@ import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 
 /**
- * CoalesceTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class CoalesceTransformer implements OperationTransformer{
 

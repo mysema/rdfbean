@@ -21,10 +21,7 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
 
 /**
- * InstanceOfTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class InstanceOfTransformer implements OperationTransformer{
 

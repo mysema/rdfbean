@@ -23,10 +23,7 @@ import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 
 /**
- * BeanConfiguration provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class BeanConfiguration extends DefaultConfiguration {
     

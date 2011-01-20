@@ -13,6 +13,10 @@ import com.mysema.query.types.Path;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.UID;
 
+/**
+ * @author tiwe
+ *
+ */
 public class OrdinalTransformer implements OperationTransformer{
 
     @Override

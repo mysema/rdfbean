@@ -22,10 +22,7 @@ import com.mysema.rdfbean.object.SessionCallback;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**
- * ListSourceBase provides
- *
  * @author tiwe
- * @version $Id$
  */
 @Immutable
 public class BeanListSource<T>{

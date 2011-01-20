@@ -10,10 +10,7 @@ import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 
 /**
- * DelegateTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class DelegateTransformer implements OperationTransformer{
 

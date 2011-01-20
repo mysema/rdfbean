@@ -15,10 +15,7 @@ import com.mysema.query.types.Operation;
 import com.mysema.query.types.Operator;
 
 /**
- * OperationTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public interface OperationTransformer{
 

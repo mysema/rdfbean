@@ -37,10 +37,7 @@ import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
 
 /**
- * EqualsTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class EqualsTransformer implements OperationTransformer{
 

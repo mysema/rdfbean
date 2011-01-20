@@ -17,10 +17,7 @@ import org.openrdf.rio.helpers.RDFHandlerWrapper;
 import com.mysema.commons.lang.Assert;
 
 /**
- * RDFWriterAdapter provides
- * 
  * @author tiwe
- * @version $Id$
  */
 public class RDFWriterAdapter extends RDFHandlerWrapper implements RDFWriter {
 

@@ -6,10 +6,7 @@
 package com.mysema.rdfbean.object;
 
 /**
- * TxException provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class TxException extends SessionException{
     

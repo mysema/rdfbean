@@ -18,10 +18,7 @@ import com.google.inject.Provider;
 import com.google.inject.matcher.AbstractMatcher;
 
 /**
- * TransactionalMethodMatcher provides
- *
  * @author tiwe
- * @version $Id$
  */
 class TransactionalMethodMatcher extends AbstractMatcher<Method> implements Provider<Map<Method,Transactional>>{
 

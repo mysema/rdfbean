@@ -11,10 +11,7 @@ import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.object.Session;
 
 /**
- * TransactionalAdvisor provides
- *
  * @author tiwe
- * @version $Id$
  */
 public interface TransactionalAdvisor {
 

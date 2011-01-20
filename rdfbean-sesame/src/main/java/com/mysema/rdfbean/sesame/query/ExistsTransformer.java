@@ -18,10 +18,7 @@ import com.mysema.query.types.Ops;
 import com.mysema.query.types.SubQueryExpression;
 
 /**
- * ExistsTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class ExistsTransformer implements OperationTransformer{
 

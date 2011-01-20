@@ -17,10 +17,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections15.iterators.IteratorChain;
 
 /**
- * PredicateCache provides
- *
  * @author tiwe
- * @version $Id$
  */
 public final class PredicateCache {
 

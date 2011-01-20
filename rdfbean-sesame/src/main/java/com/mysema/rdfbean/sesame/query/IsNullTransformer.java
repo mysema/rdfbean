@@ -19,10 +19,7 @@ import com.mysema.query.types.Ops;
 import com.mysema.query.types.Path;
 
 /**
- * IsNullTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class IsNullTransformer implements OperationTransformer{
 

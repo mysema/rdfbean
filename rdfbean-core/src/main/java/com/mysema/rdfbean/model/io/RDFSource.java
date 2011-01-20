@@ -16,10 +16,7 @@ import net.jcip.annotations.Immutable;
 import com.mysema.commons.lang.Assert;
 
 /**
- * RDFSource provides
- *
  * @author tiwe
- * @version $Id$
  *
  */
 @Immutable

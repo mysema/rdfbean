@@ -10,10 +10,7 @@ import com.mysema.converters.AbstractConverter;
 
 
 /**
- * YearConverter provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class YearConverter  extends AbstractConverter<Year> {
 

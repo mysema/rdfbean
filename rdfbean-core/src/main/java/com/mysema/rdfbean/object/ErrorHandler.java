@@ -13,10 +13,7 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.UID;
 
 /**
- * ErrorHandler provides
- *
  * @author tiwe
- * @version $Id$
  */
 public interface ErrorHandler {
 

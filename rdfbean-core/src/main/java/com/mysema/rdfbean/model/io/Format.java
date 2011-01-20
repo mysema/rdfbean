@@ -7,10 +7,7 @@ package com.mysema.rdfbean.model.io;
 
 
 /**
- * Format provides
- *
  * @author tiwe
- * @version $Id$
  */
 public enum Format {
     /**

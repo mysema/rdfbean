@@ -15,10 +15,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.collections15.iterators.SingletonIterator;
 
 /**
- * STMTCache provides
- *
  * @author tiwe
- * @version $Id$
  */
 public final class STMTCache {
     

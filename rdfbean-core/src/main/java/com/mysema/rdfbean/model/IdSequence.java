@@ -6,10 +6,7 @@
 package com.mysema.rdfbean.model;
 
 /**
- * IdSequence provides
- *
  * @author tiwe
- * @version $Id$
  */
 public interface IdSequence {
 

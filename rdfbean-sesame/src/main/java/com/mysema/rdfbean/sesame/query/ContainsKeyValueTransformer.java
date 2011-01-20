@@ -26,10 +26,7 @@ import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedProperty;
 
 /**
- * ContainsKeyValueTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class ContainsKeyValueTransformer implements OperationTransformer{
 

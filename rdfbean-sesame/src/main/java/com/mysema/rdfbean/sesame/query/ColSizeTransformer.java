@@ -20,10 +20,7 @@ import com.mysema.query.types.Path;
 import com.mysema.rdfbean.model.RDF;
 
 /**
- * ColSizeTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class ColSizeTransformer implements OperationTransformer{
 

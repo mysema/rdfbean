@@ -6,10 +6,7 @@
 package com.mysema.rdfbean.object;
 
 /**
- * SessionException provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class SessionException extends RuntimeException{
 

@@ -17,10 +17,7 @@ import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 
 /**
- * RegexTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class RegexTransformer implements OperationTransformer{
 

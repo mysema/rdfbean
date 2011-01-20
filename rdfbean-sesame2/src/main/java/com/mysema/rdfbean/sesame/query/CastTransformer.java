@@ -18,10 +18,7 @@ import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 
 /**
- * CastTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class CastTransformer implements OperationTransformer{
 

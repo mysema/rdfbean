@@ -35,10 +35,7 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
 /**
- * ConverterRegistryImpl provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class ConverterRegistryImpl implements ConverterRegistry{
 

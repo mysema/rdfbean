@@ -24,10 +24,7 @@ import com.mysema.query.types.Path;
 import com.mysema.query.types.expr.BooleanOperation;
 
 /**
- * InTransformer provides
- *
  * @author tiwe
- * @version $Id$
  */
 public class InTransformer implements OperationTransformer{
 
