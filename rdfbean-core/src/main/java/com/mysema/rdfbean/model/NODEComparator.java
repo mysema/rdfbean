@@ -16,21 +16,29 @@ public class NODEComparator implements Comparator<NODE>{
         }else if (o2 == null){
             return 1;
         }
-        int rv = 0;
-        if ((rv = o1.getNodeType().ordinal() - o2.getNodeType().ordinal()) == 0){
-            if ((rv = o1.getValue().compareTo(o2.getValue())) == 0){
-                if (o1.isLiteral() && o2.isLiteral()){
-                    LIT l1 = o1.asLiteral();
-                    LIT l2 = o2.asLiteral();
-                    if ((rv = compare(l1.getDatatype(), l2.getDatatype())) == 0){
-                        Locale loc1 = l1.getLang() == null ? new Locale("") : l1.getLang();
-                        Locale loc2 = l2.getLang() == null ? new Locale("") : l2.getLang();
-                        return loc1.toString().compareTo(loc2.toString());
-                    }    
-                }                
-            }
+        
+        // node type
+        if (o1.getNodeType() != o2.getNodeType()){
+            return o1.getNodeType().compareTo(o2.getNodeType());
         }
-        return rv;
+        
+        // value
+        if (!o1.getValue().equals(o2.getValue())){
+            return o1.getValue().compareTo(o2.getValue());
+        }
+        if (o1.isLiteral() && o2.isLiteral()){
+            LIT l1 = o1.asLiteral();
+            LIT l2 = o2.asLiteral();
+            // datatype
+            if (!l1.getDatatype().equals(l2.getDatatype())){
+                return compare(l1.getDatatype(), l2.getDatatype()); 
+            }
+            // locale
+            Locale loc1 = l1.getLang() == null ? new Locale("") : l1.getLang();
+            Locale loc2 = l2.getLang() == null ? new Locale("") : l2.getLang();
+            return loc1.toString().compareTo(loc2.toString());
+        }
+        return 0;
     }
 
 }

@@ -1,21 +1,43 @@
 package com.mysema.rdfbean.model.io;
 
 
+
 final class TurtleUtil {
 
     public static String encodeString(String s) {
-        s = s.replace("\\", "\\\\");
-        s = s.replace("\t", "\\t");
-        s = s.replace("\n", "\\n");
-        s = s.replace("\r", "\\r");
-        s = s.replace("\"", "\\\"");
-        return s;
+        StringBuilder builder = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++){
+            char c = s.charAt(i);
+            if (c == '\\'){
+                builder.append("\\\\");
+            }else if (c == '\t'){
+                builder.append("\\t");
+            }else if (c == '\n'){
+                builder.append("\\n");
+            }else if (c == '\r'){
+                builder.append("\\r");
+            }else if (c == '\"'){
+                builder.append("\\\"");
+            }else{
+                builder.append(c);
+            }
+        }
+        return builder.toString();
     }
 
     public static String encodeLongString(String s) {
-        s = s.replace("\\", "\\\\");
-        s = s.replace("\"", "\\\"");
-        return s;
+        StringBuilder builder = new StringBuilder(s.length());
+        for (int i = 0; i < s.length(); i++){
+            char c = s.charAt(i);
+            if (c == '\\'){
+                builder.append("\\\\");
+            }else if (c == '\"'){
+                builder.append("\\\"");
+            }else{
+                builder.append(c);
+            }
+        }
+        return builder.toString();
     }
     
     public static boolean isPrefixChar(int c) {
