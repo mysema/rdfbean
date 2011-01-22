@@ -1,29 +1,19 @@
 package com.mysema.rdfbean.jena;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Iterator;
 
 import javax.annotation.Nullable;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.sparql.core.DatasetGraph;
+import com.hp.hpl.jena.sparql.core.Quad;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.EmptyCloseableIterator;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.SPARQLQuery;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
 /**
@@ -34,25 +24,25 @@ public class JenaConnection implements RDFConnection {
 
     private static final CloseableIterator<STMT> EMPTY_RESULTS = new EmptyCloseableIterator<STMT>();
     
-    private final Graph graph;
+    private final DatasetGraph graph;
     
-    private final Model model;
+    private final Dataset dataset;
     
     private final JenaDialect dialect;
     
-    public JenaConnection(Graph graph, Model model, JenaDialect dialect) {
+    public JenaConnection(DatasetGraph graph, Dataset dataset, JenaDialect dialect) {
         this.graph = graph;
-        this.model = model;
+        this.dataset = dataset;
         this.dialect = dialect;
     }
 
     @Override
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
-        if (graph.getTransactionHandler().transactionsSupported()){
-            return new JenaTransaction(graph.getTransactionHandler());    
-        }else{
+//        if (graph.getTransactionHandler().transactionsSupported()){
+//            return new JenaTransaction(graph.getTransactionHandler());    
+//        }else{
             throw new UnsupportedOperationException();
-        }        
+//        }        
     }
 
     @Override
@@ -83,11 +73,11 @@ public class JenaConnection implements RDFConnection {
     private SPARQLQuery createSPARQLQuery(String definition) {
         com.hp.hpl.jena.query.Query query = QueryFactory.create(definition) ;
         if (query.isAskType()){
-            return new BooleanQueryImpl(query, model, dialect);
+            return new BooleanQueryImpl(query, dataset, dialect);
         }else if (query.isConstructType() || query.isDescribeType()){
-            return new GraphQueryImpl(query, model, dialect);
+            return new GraphQueryImpl(query, dataset, dialect);
         }else {
-            return new TupleQueryImpl(query, model, dialect);
+            return new TupleQueryImpl(query, dataset, dialect);
         }        
     }
 
@@ -98,14 +88,14 @@ public class JenaConnection implements RDFConnection {
 
     @Override
     public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
-        return graph.contains(convert(subject), convert(predicate), convert(object));
+        return graph.contains(convert(context), convert(subject), convert(predicate), convert(object));
     }
     
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
-        final ExtendedIterator<Triple> triples = graph.find(convert(subject), convert(predicate), convert(object));        
+        Iterator<Quad> triples = graph.find(convert(context), convert(subject), convert(predicate), convert(object));        
         if (triples.hasNext()){
-            return new TriplesIterator(dialect, triples);
+            return new QuadsIterator(dialect, triples);
         }else{
             return EMPTY_RESULTS;
         }        
@@ -119,33 +109,50 @@ public class JenaConnection implements RDFConnection {
 
     @Override
     public void remove(ID subject, UID predicate, NODE object, UID context) {
-        graph.getBulkUpdateHandler().remove(convert(subject), convert(predicate), convert(object));
+        // FIXME : deleteAny should work, but doesn't
+        if (context != null){
+            graph.deleteAny(convert(context), convert(subject), convert(predicate), convert(object));    
+        }else{
+            graph.getDefaultGraph().getBulkUpdateHandler().remove(convert(subject), convert(predicate), convert(object));
+            Iterator<String> names = dataset.listNames();
+            while (names.hasNext()){
+                Graph named = graph.getGraph(Node.createURI(names.next()));
+                named.getBulkUpdateHandler().remove(convert(subject), convert(predicate), convert(object));
+            }
+        }
+        
     }
 
     @Override
     public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
+        // TODO : add bulk handling
         if (removedStatements != null && !removedStatements.isEmpty()){
-            graph.getBulkUpdateHandler().delete(convert(removedStatements));
+            for (STMT stmt : removedStatements){
+                graph.delete(convert(stmt));
+            }
         }
         if (addedStatements != null && !addedStatements.isEmpty()){
-            graph.getBulkUpdateHandler().add(convert(addedStatements));
+            for (STMT stmt : addedStatements){
+                graph.add(convert(stmt));
+            }
         }
         
     }
     
-    private List<Triple> convert(Collection<STMT> statements){
-        List<Triple> triples = new ArrayList<Triple>(statements.size());
-        for (STMT stmt : statements){
-            triples.add(convert(stmt));
-        }
-        return triples;
-    }
+//    private List<Quad> convert(Collection<STMT> statements){
+//        List<Quad> quads = new ArrayList<Quad>(statements.size());
+//        for (STMT stmt : statements){
+//            quads.add(convert(stmt));
+//        }
+//        return quads;
+//    }
     
-    private Triple convert(STMT stmt){
+    private Quad convert(STMT stmt){
         return dialect.createStatement(
             dialect.getResource(stmt.getSubject()),
             dialect.getURI(stmt.getPredicate()),
-            dialect.getNode(stmt.getObject()));
+            dialect.getNode(stmt.getObject()),
+            stmt.getContext() != null ? dialect.getURI(stmt.getContext()) : Quad.defaultGraphIRI);
             
     }
 

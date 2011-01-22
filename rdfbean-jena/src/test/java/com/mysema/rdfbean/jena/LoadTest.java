@@ -32,6 +32,7 @@ public class LoadTest {
     @Before
     public void setUp(){
         repository = new MemoryRepository();
+        repository.addGraph(new UID(TEST.NS));
         repository.initialize();
     }
     
@@ -50,6 +51,7 @@ public class LoadTest {
         repository.export(Format.TURTLE, baos);
         
         MemoryRepository repository2 = new MemoryRepository();
+        repository2.addGraph(new UID(TEST.NS));
         repository2.initialize();
         repository2.load(Format.TURTLE, new ByteArrayInputStream(baos.toByteArray()), new UID(TEST.NS), true);
         long count2 = repository.execute(countOp);

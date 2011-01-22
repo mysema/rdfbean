@@ -40,6 +40,7 @@ public class DateTimePersistenceTest {
     @Test
     public void Round_Trip(){
         repository = new MemoryRepository();
+        repository.addGraph(new UID(TEST.NS));
         repository.initialize();
 
         ConverterRegistry converters = new ConverterRegistryImpl();

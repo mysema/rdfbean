@@ -8,8 +8,8 @@ import org.apache.commons.lang.StringUtils;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.sparql.core.Quad;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.rdfbean.model.AbstractDialect;
 import com.mysema.rdfbean.model.BID;
@@ -25,7 +25,7 @@ import com.mysema.rdfbean.model.XSD;
  * @author tiwe
  *
  */
-public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, Triple>{
+public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, Quad>{
 
     private static final Map<UID, RDFDatatype> datatypes = new HashMap<UID, RDFDatatype>();
     
@@ -41,13 +41,13 @@ public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, T
     }
 
     @Override
-    public Triple createStatement(Node subject, Node predicate, Node object) {
-        return Triple.create(subject, predicate, object);
+    public Quad createStatement(Node subject, Node predicate, Node object) {
+        return new Quad(Quad.defaultGraphIRI, subject, predicate, object);
     }
 
     @Override
-    public Triple createStatement(Node subject, Node predicate, Node object, Node context) {
-        return Triple.create(subject, predicate, object);
+    public Quad createStatement(Node subject, Node predicate, Node object, Node context) {
+        return new Quad(context, subject, predicate, object);
     }
 
     @Override
@@ -122,17 +122,17 @@ public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, T
     }
 
     @Override
-    public Node getObject(Triple statement) {
+    public Node getObject(Quad statement) {
         return statement.getObject();
     }
 
     @Override
-    public Node getPredicate(Triple statement) {
+    public Node getPredicate(Quad statement) {
         return statement.getPredicate();
     }
 
     @Override
-    public Node getSubject(Triple statement) {
+    public Node getSubject(Quad statement) {
         return statement.getSubject();
     }
 

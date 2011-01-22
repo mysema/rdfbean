@@ -4,11 +4,11 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
+import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.SPARQLQuery;
@@ -18,13 +18,13 @@ public class TupleQueryImpl implements SPARQLQuery {
 
     private final Query query;
     
-    private final Model model;
+    private final Dataset dataset;
     
     private final JenaDialect dialect;
     
-    public TupleQueryImpl(Query query, Model model, JenaDialect dialect) {
+    public TupleQueryImpl(Query query, Dataset dataset, JenaDialect dialect) {
         this.query = query;
-        this.model = model;
+        this.dataset = dataset;
         this.dialect = dialect;
     }
 
@@ -45,7 +45,7 @@ public class TupleQueryImpl implements SPARQLQuery {
 
     @Override
     public CloseableIterator<Map<String, NODE>> getTuples() {
-        QueryExecution exec = QueryExecutionFactory.create(query, model);
+        QueryExecution exec = QueryExecutionFactory.create(query, dataset);
         ResultSet resultSet = exec.execSelect();
         return new TupleResultIterator(query, resultSet, dialect);
     }

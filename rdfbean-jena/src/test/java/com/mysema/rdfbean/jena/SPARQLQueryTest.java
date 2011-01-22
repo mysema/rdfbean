@@ -158,9 +158,10 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
 
     
     @Test
-    @Ignore
     public void Construct_Multiple_Patterns(){
-        SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "CONSTRUCT { ?s ?p ?o . ?s rdf:type ?type } " +
+        SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL,
+                        "PREFIX rdf: <" + RDF.NS + ">\n" +
+                        "CONSTRUCT { ?s ?p ?o . ?s rdf:type ?type } " +
         		"WHERE {?s ?p ?o . ?s rdf:type ?type } LIMIT 10");
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
         CloseableIterator<STMT> triples = query.getTriples();
@@ -174,7 +175,6 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
 
 
     @Test
-    @Ignore
     public void Construct_Stream_Triples(){        
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, CONSTRUCT_LIMIT_10);
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());

@@ -9,23 +9,24 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.mysema.commons.lang.IteratorAdapter;
+import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
 
 public abstract class AbstractConnectionTest {
     
-    protected Repository repository;
+    protected MemoryRepository repository;
 
     protected RDFConnection connection;
 
     @Before
     public void setUp(){
         repository = new MemoryRepository();
+        repository.addGraph(new UID(TEST.NS));
         repository.initialize();
         connection = repository.openConnection();
     }
