@@ -4,20 +4,19 @@
     <title>Jena</title>
     
     <para>
-    	The RDFBean Jena integration works on top of the Graph interface. It supports in it's current form no named contexts and no inferencing.
-    	Querydsl support is also not yet supported.
+    	The RDFBean Jena integration works on top of the DatasetGraph interface. It supports in it's current no inferencing and no Bean queries.
      </para>
     
     <sect2>
     
     <title>Getting started</title>
     
-    <para>To construct a Repository instance using Jena invoke the JenaRepository constructor with a Model or Graph instance.</para>
+    <para>To construct a Repository instance using Jena invoke the JenaRepository constructor with a Dataset instance.</para>
     
 <programlisting language="java">
 <![CDATA[         
-Graph graph = Factory.createGraphMem();
-JenaRepository repository = new JenaRepository(graph);
+DataSource dataSource = DataSourceImpl.createMem(); 
+JenaRepository repository = new JenaRepository(dataSource);
 repository.initialize();
 ]]>
 </programlisting>    
@@ -38,13 +37,6 @@ repository.initialize();
 </programlisting>    
       
     </sect2>
-    
-    <sect2>
-    
-    	<title>Support for named graphs</title>
-    	
-    	<para>Support for named graphs is missing since Jena doesn't support it natively. Supporting it via the NG4J project is on the roadmap. </para>
-    
-    </sect2>
+   
     
 </sect1>    
