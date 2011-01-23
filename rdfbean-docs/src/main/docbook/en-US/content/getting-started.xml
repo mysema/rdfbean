@@ -350,41 +350,6 @@ session.delete(user);
 
       </sect2>
 	  
-	  <sect2>
-	  	
-		<title>RDF I/O</title>
-		
-		<para>
-			If you want to load data from RDF/XML or Turtle files or serialize data of your repository into files you can
-			use the following methods in the Repository interface.
-		</para>
-		
-<programlisting language="java"><![CDATA[		
-    /**
-     * Load the contents to the Repository
-     * 
-     * @param format Format to be used
-     * @param is input stream
-     * @param context target context or null for default
-     * @param replace whether to replace the contents of the target context
-     */
-    void load(Format format, InputStream is, @Nullable UID context, boolean replace);
-    
-    /**
-     * Export the contents of the Repository 
-     * 
-     * @param format Format to be used
-     * @param os target stream for output
-     */
-    void export(Format format, OutputStream os);		
-]]></programlisting>
-
-	<para>
-		The supported formats are N3, NTRIPLES, RDFA, RDFXML, TRIG and Turtle.
-	</para>		
-	  	
-	  </sect2>
-    
     </sect1>
     
     <sect1>

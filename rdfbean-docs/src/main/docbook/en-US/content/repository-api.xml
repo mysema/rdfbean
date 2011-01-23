@@ -1,0 +1,130 @@
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<chapter id="repository" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>Using the Repository API</title>
+    
+    <para>In cases where the type-safe Object oriented via on the RDF data is not necessary or non-practical, the SPI API level can also be used directly.</para>
+    
+    <para>The Repository API provides a Statement oriented view on the RDF persistence engines including CRUD support and SPARQL querying capabilities.</para>
+    
+    <sect1>
+    
+      <title>Basic persistence</title>
+      
+      <para>Most of the interaction in the Repository API happens through the RDFConnection interface. RDFConnection is the Session equivalent of the 
+      Repository API and represents a single threaded session with the Repository instance.</para>
+      
+      <sect2>
+	  	
+	  	<title>Adding and removing statements</title>
+		
+		<para>Adding and removing statements happens through a single method in the RDFConnection interface. Here is an example :</para>
+		
+<programlisting language="java">
+<![CDATA[         
+RDFConnection connection = repository.openConnection();
+connection.update(null, Arrays.asList(stmtToBeAdded1, stmtToBeAdded2));
+]]>
+</programlisting>    		
+
+		<para>Or to remove statements :</para>
+		
+<programlisting language="java">
+<![CDATA[         
+connection.update(Arrays.asList(stmtToBeRemoved1, stmtToBeRemoved2), null);
+]]>
+</programlisting>		
+		
+	  <para>To remove statements through a pattern matching the statements to be removed, use the remove method like this :</para>	
+
+<programlisting language="java">
+<![CDATA[         
+UID customerType = new UID("http://example.com/", "Customer");
+connection.remove(null, RDF.type, customerType, null);
+]]>
+</programlisting>
+		
+	  <para>The given example removes all statements matching { ?s rdf:type example:Customer } in all named graphs.</para>	
+		
+	  </sect2>
+ 
+      <sect2>
+      
+        <title>SPARQL queries</title>
+      	
+      	<para>SPARQL querying is supported via the generic query support in the RDFConnection interface. Below is an example :</para>
+      	
+<programlisting language="java">
+<![CDATA[         
+SPARQLQuery query= connection.createQuery(QueryLanguage.SPARQL, "SELECT * WHERE { ?s ?p ?o }");
+CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+try{
+    while (rows.hasNext()){
+        Map<String,NODE> row = rows.next();
+        System.out.println(row.get("s") + " " + row.get("p") + " " + row.get("o"));
+    }
+}finally{
+    rows.close();
+}
+]]>
+</programlisting>	      	
+      	
+      	<para>For CONSTRUCT and DESCRIBE queries the usage follows the patterns :</para>
+      	
+<programlisting language="java">
+<![CDATA[         
+SPARQLQuery query= connection.createQuery(QueryLanguage.SPARQL, "CONSTRUCT {?s ?p ?o} WHERE { ?s ?p ?o }");
+CloseableIterator<STMT> triples = query.getTriples();
+try{
+    while (triples.hasNext()){
+        STMT triple = triples.next();
+        System.out.println(triple);
+    }
+}finally{
+    triples.close();
+}
+]]>
+</programlisting>	        	
+      	
+      </sect2>
+      
+      <sect2>
+      
+      	<title>SPARQL Update support</title>
+      
+      	<para>Coming soon!</para>
+      
+      </sect2>
+ 
+ 	  <sect2>
+	  
+	  	<title>RDF I/O</title>
+	  
+	    <para>RDF I/O happens through the Repository interface.</para>
+	  
+	  	<para>The method load is used to load statements from an external source into a named or the default graph :</para>
+	  	
+<programlisting language="java">
+<![CDATA[         
+repository.load(Format.RDFXML, getClass().getResourceAsStream("/example.rdf"), new UID("http://example.com"), false);
+]]>
+</programlisting>	  	
+
+		<para>The given example loads the contents of the classpath:/example.rdf resource into named graph &lt;http://example.com&gt; without 
+		replacing the contents of the named graph.</para>
+
+		<para>To export the contents of the Repository invoke the export method :</para>
+
+<programlisting language="java">
+<![CDATA[         
+ByteArrayOutputStream out = new ByteArrayOutputStream();
+repository.export(Format.RDFXML, null, out);
+]]>
+</programlisting>	  	
+	  
+	  </sect2>
+      
+      
+    </sect1>
+    
+</chapter>    

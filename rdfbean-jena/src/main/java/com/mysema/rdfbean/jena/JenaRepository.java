@@ -85,7 +85,7 @@ public class JenaRepository implements Repository{
     }
 
     @Override
-    public void export(Format format, Map<String, String> ns2prefix, OutputStream os) {
+    public void export(Format format, Map<String, String> ns2prefix, UID context, OutputStream os) {
         RDFWriter writer;
         if (format == Format.RDFXML){
             Basic w = new Basic();
@@ -101,13 +101,18 @@ public class JenaRepository implements Repository{
             throw new IllegalArgumentException(format.toString());
         }
         
-        // TODO : export also other models
-        writer.write(dataset.getDefaultModel(), os, null);        
+        if (context != null){
+            writer.write(dataset.getNamedModel(context.getId()), os, null);
+        }else{
+         // TODO : export also other models
+            writer.write(dataset.getDefaultModel(), os, null);    
+        }
+                
     }
 
     @Override
-    public void export(Format format, OutputStream os) {
-        export(format, Namespaces.DEFAULT, os);        
+    public void export(Format format, UID context, OutputStream os) {
+        export(format, Namespaces.DEFAULT, context, os);        
     }
 
     @Override

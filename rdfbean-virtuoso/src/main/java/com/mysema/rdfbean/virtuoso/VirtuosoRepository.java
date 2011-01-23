@@ -108,11 +108,11 @@ public class VirtuosoRepository implements Repository {
     }
 
     @Override
-    public void export(Format format, Map<String, String> ns2prefix, OutputStream out) {
+    public void export(Format format, Map<String, String> ns2prefix, UID context, OutputStream out) {
         RDFWriter writer = WriterUtils.createWriter(format, out, ns2prefix);
         RDFConnection conn = openConnection();
         try{                
-            CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, null, false);
+            CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, context, false);
             try{
                 writer.begin();
                 while (stmts.hasNext()){
@@ -129,8 +129,8 @@ public class VirtuosoRepository implements Repository {
     }
 
     @Override
-    public void export(Format format, OutputStream out) {
-        export(format, Namespaces.DEFAULT, out);
+    public void export(Format format, UID context, OutputStream out) {
+        export(format, Namespaces.DEFAULT, context, out);
     }
 
     public VirtuosoRepositoryConnection openConnection() {

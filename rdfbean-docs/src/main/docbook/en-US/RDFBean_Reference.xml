@@ -46,6 +46,7 @@
     <xi:include href="content/preface.xml"/>    
     <xi:include href="content/intro.xml" />
     <xi:include href="content/getting-started.xml"/>    
+    <xi:include href="content/repository-api.xml"/>
     
     <chapter>
     

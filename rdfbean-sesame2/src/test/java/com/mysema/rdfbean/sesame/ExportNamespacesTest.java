@@ -55,7 +55,7 @@ public class ExportNamespacesTest {
     @Test
     public void Default_Namespaces() throws UnsupportedEncodingException{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        repository.export(Format.TURTLE, baos);
+        repository.export(Format.TURTLE, null, baos);
         String result = new String(baos.toByteArray(), "UTF-8");
         assertTrue(result.contains("owl:Class a rdfs:Class"));
         assertTrue(result.contains("rdf:type a rdf:Property"));
@@ -68,7 +68,7 @@ public class ExportNamespacesTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Map<String,String> ns2prefix = new HashMap<String,String>();
         ns2prefix.put(RDF.NS, "r");
-        repository.export(Format.TURTLE, ns2prefix, baos);
+        repository.export(Format.TURTLE, ns2prefix, null, baos);
         String result = new String(baos.toByteArray(), "UTF-8");
         assertTrue(result.contains("<http://www.w3.org/2002/07/owl#Class> a <http://www.w3.org/2000/01/rdf-schema#Class>"));
         assertTrue(result.contains("r:type a r:Property"));

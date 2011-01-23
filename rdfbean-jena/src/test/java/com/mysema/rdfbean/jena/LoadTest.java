@@ -48,7 +48,7 @@ public class LoadTest {
         repository.load(Format.TURTLE, is, context, true);
         long count1 = repository.execute(countOp);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        repository.export(Format.TURTLE, baos);
+        repository.export(Format.TURTLE, null, baos);
         
         MemoryRepository repository2 = new MemoryRepository();
         repository2.addGraph(new UID(TEST.NS));

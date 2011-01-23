@@ -77,7 +77,7 @@ public class DateTimePersistenceTest {
         
         // export
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        repository.export(Format.TURTLE, out);
+        repository.export(Format.TURTLE, null, out);
         System.out.println(new String(out.toByteArray()));
         
         // import

@@ -57,7 +57,7 @@ public class VirtuosoRepositoryTest extends AbstractConnectionTest{
     @Ignore
     public void Export() throws UnsupportedEncodingException{
         DummyOutputStream out = new DummyOutputStream();
-        repository.export(Format.NTRIPLES, out);
+        repository.export(Format.NTRIPLES, null, out);
         assertTrue(out.getLength() > 0);
     }
     

@@ -19,6 +19,12 @@
       based schemas and ontologies to make Java based RDF usage as easy as in ORM tools
       and even easier.
       </para>
+      
+      <para>
+      In addition to the type-safe object-oriented layer, RDFBean provides also a Repository API as an SPI 
+      for persistence integration. The Repository API is easy to use and can also be used
+      directly in cases where the type-safe API is impractical.
+      </para>
     
     </sect1>
         

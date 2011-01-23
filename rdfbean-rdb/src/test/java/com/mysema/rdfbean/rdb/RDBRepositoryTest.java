@@ -38,7 +38,7 @@ public class RDBRepositoryTest extends AbstractRDBTest{
     @Test
     public void Export() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        repository.export(Format.TURTLE, baos);
+        repository.export(Format.TURTLE, null, baos);
     }
 
     @Test

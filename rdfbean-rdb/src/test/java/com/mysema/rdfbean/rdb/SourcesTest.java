@@ -49,7 +49,7 @@ public class SourcesTest {
         
         // export
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        repo.export(Format.TURTLE, baos);
+        repo.export(Format.TURTLE, null, baos);
         assertTrue(baos.toByteArray().length > 0);
     }
     

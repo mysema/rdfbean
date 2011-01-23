@@ -43,17 +43,19 @@ public interface Repository {
      * 
      * @param format Format to be used
      * @param ns2prefix Namespace prefix mappings
+     * @param context context to be exported or null for all
      * @param os target stream for output
      */
-    void export(Format format, Map<String,String> ns2prefix, OutputStream os);
+    void export(Format format, Map<String,String> ns2prefix, @Nullable UID context, OutputStream os);
     
     /**
      * Export the contents of the Repository 
      * 
      * @param format Format to be used
+     * @param context context to be exported or null for all
      * @param os target stream for output
      */
-    void export(Format format, OutputStream os);
+    void export(Format format, @Nullable UID context, OutputStream os);
 
     /**
      * Initialize the Repository

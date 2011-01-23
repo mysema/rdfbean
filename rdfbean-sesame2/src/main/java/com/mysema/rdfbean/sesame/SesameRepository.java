@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -63,6 +64,8 @@ public abstract class SesameRepository implements Repository{
     private boolean sesameInference = false;
 
     private Inference inference = Inference.FULL;
+    
+    private final ValueFactory vf = new ValueFactoryImpl();
 
     @Override
     public void close() {
@@ -95,12 +98,12 @@ public abstract class SesameRepository implements Repository{
     }
 
     @Override
-    public void export(Format format, OutputStream out) {
-        export(format, Namespaces.DEFAULT, out);
+    public void export(Format format, UID context, OutputStream out) {
+        export(format, Namespaces.DEFAULT, context, out);
     }
 
     @Override
-    public void export(Format format, Map<String, String> ns2prefix, OutputStream out){
+    public void export(Format format, Map<String, String> ns2prefix, UID context, OutputStream out){
         RDFFormat targetFormat = FormatHelper.getFormat(format);
         RDFWriter writer = Rio.createWriter(targetFormat, out);
         try {
@@ -109,7 +112,11 @@ public abstract class SesameRepository implements Repository{
                 conn.setNamespace(entry.getValue(), entry.getKey());
             }
             try{
-                conn.export(writer);
+                if (context != null){
+                    conn.export(writer, vf.createURI(context.getId()));
+                }else{
+                    conn.export(writer);    
+                }                
             }finally{
                 conn.close();
             }
