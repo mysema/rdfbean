@@ -2,6 +2,7 @@ package com.mysema.rdfbean.model;
 
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
+import com.mysema.query.types.Path;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.Visitor;
 
@@ -13,24 +14,29 @@ public class Pattern implements Block{
     
     private static final long serialVersionUID = -3450122105441266114L;
 
-    public static Pattern create(ID subject, UID predicate, NODE object) {
+    @SuppressWarnings("unchecked")
+    public static Pattern create(Object subject, Object predicate, Object object) {
         Pattern pattern = new Pattern();
         if (subject != null){
-            pattern.subject = new ConstantImpl<ID>(subject);    
+            if (subject instanceof ID){
+                pattern.subject = new ConstantImpl<ID>((ID)subject);    
+            }else{
+                pattern.subject = (Path<ID>)subject;
+            }                
         }
         if (predicate != null){
-            pattern.predicate = new ConstantImpl<UID>(predicate);    
+            if (predicate instanceof UID){
+                pattern.predicate = new ConstantImpl<UID>((UID)predicate);    
+            }else{
+                pattern.predicate = (Path<UID>)predicate;
+            }                
         }
         if (object != null){
-            pattern.object = new ConstantImpl<NODE>(object);    
-        }        
-        return pattern;
-    }
-    
-    public static Pattern create(ID subject, UID predicate, NODE object, UID context) {
-        Pattern pattern = create(subject, predicate, object);
-        if (context != null){
-            pattern.context = new ConstantImpl<UID>(context);    
+            if (object instanceof NODE){
+                pattern.object = new ConstantImpl<NODE>((NODE)object);    
+            }else{
+                pattern.object = (Path<NODE>)object;
+            }                
         }        
         return pattern;
     }
@@ -40,8 +46,6 @@ public class Pattern implements Block{
     private Expression<UID> predicate;
     
     private Expression<NODE> object;
-    
-    private Expression<UID> context;
     
     public Expression<ID> getSubject() {
         return subject;
@@ -65,14 +69,6 @@ public class Pattern implements Block{
 
     public void setObject(Expression<NODE> object) {
         this.object = object;
-    }
-
-    public Expression<UID> getContext() {
-        return context;
-    }
-
-    public void setContext(Expression<UID> context) {
-        this.context = context;
     }
 
     @Override

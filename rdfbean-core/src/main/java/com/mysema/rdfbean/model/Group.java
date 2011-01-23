@@ -22,15 +22,16 @@ public class Group implements Block{
         return group;
     }
     
-    public static Group optional(Block... blocks){
-        Group group = create(blocks);
-        group.optional = true;
+    public static Group filter(Block block, Predicate... filters){
+        Group group = new Group();
+        group.blocks.add(block);
+        group.filters.addAll(Arrays.asList(filters));
         return group;
     }
     
-    public static Group union(Block... blocks){
+    public static Group optional(Block... blocks){
         Group group = create(blocks);
-        group.union = true;
+        group.optional = true;
         return group;
     }
 
@@ -41,8 +42,6 @@ public class Group implements Block{
     private boolean optional;
     
     private Expression<UID> context;
-
-    private boolean union;
     
     @Override
     public Predicate not() {
@@ -80,8 +79,4 @@ public class Group implements Block{
         return context;
     }
 
-    public boolean isUnion() {
-        return union;
-    }
-    
 }
