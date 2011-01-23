@@ -7,29 +7,23 @@ import java.util.Map;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
 
-public class BooleanQueryImpl implements SPARQLQuery {
-    
-    private final Query query;
-    
-    private final Dataset dataset;
-
-    private final JenaDialect dialect;
-    
+/**
+ * @author tiwe
+ *
+ */
+public class BooleanQueryImpl extends AbstractQueryImpl {
+        
     public BooleanQueryImpl(Query query, Dataset dataset, JenaDialect dialect) {
-        this.query = query;
-        this.dataset = dataset;
-        this.dialect = dialect;
+        super(query, dataset, dialect);
     }
 
     @Override
     public boolean getBoolean() {
-        QueryExecution exec = QueryExecutionFactory.create(query, dataset);
+        QueryExecution exec = createExecution();
         return exec.execAsk();
     }
 
@@ -49,23 +43,12 @@ public class BooleanQueryImpl implements SPARQLQuery {
     }
 
     @Override
-    public List<String> getVariables() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setBinding(String variable, NODE node) {
-        // TODO
-    }
-
-    @Override
-    public void setMaxQueryTime(int secs) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
     public void streamTriples(Writer writer, String contentType) {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public List<String> getVariables() {
+        throw new UnsupportedOperationException();
+    }
 }

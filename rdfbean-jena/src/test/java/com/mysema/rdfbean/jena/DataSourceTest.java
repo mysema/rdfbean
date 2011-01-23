@@ -20,6 +20,7 @@ public class DataSourceTest {
         Node predicate = Node.createURI(RDFS.label.getId());
         Node object = Node.createAnon();
         dataSource.asDatasetGraph().add(new Quad(Quad.defaultGraphIRI, subject, predicate, object));        
-        dataSource.asDatasetGraph().deleteAny(null, subject, null, null);
+        dataSource.asDatasetGraph().deleteAny(Node.ANY, subject, Node.ANY, Node.ANY);
     }
+    
 }

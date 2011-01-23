@@ -10,7 +10,6 @@ import com.hp.hpl.jena.n3.N3TurtleJenaWriter;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
-import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFWriter;
 import com.hp.hpl.jena.rdf.model.impl.NTripleWriter;
@@ -18,22 +17,17 @@ import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.xmloutput.impl.Basic;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.io.Format;
 
-public class GraphQueryImpl implements SPARQLQuery {
+/**
+ * @author tiwe
+ *
+ */
+public class GraphQueryImpl extends AbstractQueryImpl {
     
-    private final Query query;
-    
-    private final Dataset dataset;
-    
-    private final JenaDialect dialect;
-
     public GraphQueryImpl(Query query, Dataset dataset, JenaDialect dialect) {
-        this.query = query;
-        this.dataset = dataset;
-        this.dialect = dialect;
+        super(query, dataset, dialect);
     }
 
     @Override
@@ -48,7 +42,7 @@ public class GraphQueryImpl implements SPARQLQuery {
 
     @Override
     public CloseableIterator<STMT> getTriples() {
-        QueryExecution exec = QueryExecutionFactory.create(query, dataset);
+        QueryExecution exec = createExecution();
         Model resultModel = query.isConstructType() ? exec.execConstruct() : exec.execDescribe();
         ExtendedIterator<Triple> triples = resultModel.getGraph().find(Node.ANY, Node.ANY, Node.ANY);
         return new TriplesIterator(dialect, triples);
@@ -65,16 +59,6 @@ public class GraphQueryImpl implements SPARQLQuery {
     }
 
     @Override
-    public void setBinding(String variable, NODE node) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void setMaxQueryTime(int secs) {
-        // TODO
-    }
-
-    @Override
     public void streamTriples(Writer w, String contentType) {
         Format format = Format.getFormat(contentType, Format.RDFXML);
         RDFWriter writer;
@@ -88,7 +72,7 @@ public class GraphQueryImpl implements SPARQLQuery {
             throw new IllegalArgumentException(format.toString());
         }
         
-        QueryExecution exec = QueryExecutionFactory.create(query, dataset);
+        QueryExecution exec = createExecution();
         Model resultModel = query.isConstructType() ? exec.execConstruct() : exec.execDescribe();
         writer.write(resultModel, w, null);     
     }
