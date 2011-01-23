@@ -82,8 +82,7 @@ public class Pattern implements Block{
 
     @Override
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override

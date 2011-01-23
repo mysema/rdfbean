@@ -27,6 +27,12 @@ public class Group implements Block{
         group.optional = true;
         return group;
     }
+    
+    public static Group union(Block... blocks){
+        Group group = create(blocks);
+        group.union = true;
+        return group;
+    }
 
     private final List<Block> blocks = new ArrayList<Block>();
     
@@ -36,6 +42,8 @@ public class Group implements Block{
     
     private Expression<UID> context;
 
+    private boolean union;
+    
     @Override
     public Predicate not() {
         throw new UnsupportedOperationException();
@@ -43,13 +51,38 @@ public class Group implements Block{
 
     @Override
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Class<? extends Boolean> getType() {
         return Boolean.class;
     }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public List<Block> getBlocks() {
+        return blocks;
+    }
+
+    public List<Predicate> getFilters() {
+        return filters;
+    }
+
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public Expression<UID> getContext() {
+        return context;
+    }
+
+    public boolean isUnion() {
+        return union;
+    }
+    
+    
     
 }
