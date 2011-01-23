@@ -59,10 +59,6 @@ public class GroupBlock implements Block{
         return Boolean.class;
     }
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
     public List<Block> getBlocks() {
         return blocks;
     }
