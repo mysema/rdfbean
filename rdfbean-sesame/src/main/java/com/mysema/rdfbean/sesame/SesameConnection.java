@@ -27,6 +27,7 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
+import org.openrdf.query.algebra.Union;
 import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.ModelResult;
