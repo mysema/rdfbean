@@ -32,11 +32,11 @@ import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
+import com.mysema.rdfbean.model.fetch.FetchStrategy;
 
 /**
  * @author sasa

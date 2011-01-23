@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.model;
+package com.mysema.rdfbean.model.fetch;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -13,6 +13,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections15.iterators.SingletonIterator;
+
+import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe

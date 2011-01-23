@@ -10,8 +10,8 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.fetch.FetchStrategy;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**

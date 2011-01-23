@@ -3,11 +3,15 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.model;
+package com.mysema.rdfbean.model.fetch;
 
 import java.util.Set;
 
 import javax.annotation.Nullable;
+
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.UID;
 
 /**
  * @author sasa

@@ -14,11 +14,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.model.fetch.FetchStrategy;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 

@@ -20,13 +20,13 @@ import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.PropertiesDomain;
-import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.model.fetch.FetchStrategy;
 
 /**
  * @author mala

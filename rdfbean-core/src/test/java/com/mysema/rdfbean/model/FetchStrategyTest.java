@@ -14,6 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.rdfbean.model.fetch.FetchOptimizer;
+import com.mysema.rdfbean.model.fetch.FullContextFetch;
+import com.mysema.rdfbean.model.fetch.PredicateWildcardFetch;
 
 public class FetchStrategyTest {
 

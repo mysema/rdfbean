@@ -26,6 +26,8 @@ import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.fetch.FetchOptimizer;
+import com.mysema.rdfbean.model.fetch.FetchStrategy;
 
 
 /**

@@ -15,8 +15,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import com.mysema.rdfbean.model.FetchStrategy;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.fetch.FetchStrategy;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
