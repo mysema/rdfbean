@@ -81,15 +81,14 @@ public class Pattern implements Block{
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        throw new UnsupportedOperationException();
+        return (R)((SPARQLVisitor)v).visit(this, null);
     }
 
     @Override
     public Class<? extends Boolean> getType() {
         return Boolean.class;
     }
-    
-    
-    
+        
 }

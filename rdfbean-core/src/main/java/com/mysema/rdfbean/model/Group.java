@@ -48,10 +48,11 @@ public class Group implements Block{
     public Predicate not() {
         throw new UnsupportedOperationException();
     }
-
+    
     @Override
+    @SuppressWarnings("unchecked")
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        throw new UnsupportedOperationException();
+        return (R)((SPARQLVisitor)v).visit(this, null);        
     }
 
     @Override
@@ -82,7 +83,5 @@ public class Group implements Block{
     public boolean isUnion() {
         return union;
     }
-    
-    
     
 }
