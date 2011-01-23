@@ -13,6 +13,7 @@ import com.hp.hpl.jena.sparql.core.DatasetGraph;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.EmptyCloseableIterator;
+import com.mysema.query.QueryMetadata;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 
@@ -65,6 +66,13 @@ public class JenaConnection implements RDFConnection {
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
             return (Q)createSPARQLQuery((String)definition);
+            
+        }else if (queryLanguage.equals(QueryLanguage.TUPLE)){
+            SPARQLVisitor visitor = new SPARQLVisitor();
+            visitor.visit((QueryMetadata)definition, null);
+            com.hp.hpl.jena.query.Query query = QueryFactory.create(visitor.toString()) ;
+            return (Q)new TupleQueryImpl(query, dataset, dialect);
+            
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);    
         }

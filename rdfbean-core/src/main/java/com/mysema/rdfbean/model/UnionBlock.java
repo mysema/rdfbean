@@ -7,12 +7,16 @@ import java.util.List;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.Visitor;
 
-public class Union implements Block{
+/**
+ * @author tiwe
+ *
+ */
+public class UnionBlock implements Block{
     
     private static final long serialVersionUID = -5081510328796327230L;
 
-    public static Union create(Block... blocks){
-        Union union = new Union();
+    public static UnionBlock create(Block... blocks){
+        UnionBlock union = new UnionBlock();
         union.blocks.addAll(Arrays.asList(blocks));
         return union;
     }

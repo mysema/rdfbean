@@ -12,25 +12,25 @@ import com.mysema.query.types.Visitor;
  * @author tiwe
  *
  */
-public class Group implements Block{
+public class GroupBlock implements Block{
     
     private static final long serialVersionUID = 114999121944301068L;
 
-    public static Group create(Block... blocks){
-        Group group = new Group();
+    public static GroupBlock create(Block... blocks){
+        GroupBlock group = new GroupBlock();
         group.blocks.addAll(Arrays.asList(blocks));
         return group;
     }
     
-    public static Group filter(Block block, Predicate... filters){
-        Group group = new Group();
+    public static GroupBlock filter(Block block, Predicate... filters){
+        GroupBlock group = new GroupBlock();
         group.blocks.add(block);
         group.filters.addAll(Arrays.asList(filters));
         return group;
     }
     
-    public static Group optional(Block... blocks){
-        Group group = create(blocks);
+    public static GroupBlock optional(Block... blocks){
+        GroupBlock group = create(blocks);
         group.optional = true;
         return group;
     }

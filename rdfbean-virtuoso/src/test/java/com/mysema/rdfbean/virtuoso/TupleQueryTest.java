@@ -1,25 +1,27 @@
-package com.mysema.rdfbean.model;
+package com.mysema.rdfbean.virtuoso;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathImpl;
+import com.mysema.rdfbean.model.*;
 
-public class SPARQLVisitorTest {
+
+public class TupleQueryTest extends AbstractConnectionTest {
     
     private static final Path<ID> subject = new PathImpl<ID>(ID.class, "s");
     
     private static final Path<UID> predicate = new PathImpl<UID>(UID.class, "p");
     
     private static final Path<NODE> object = new PathImpl<NODE>(NODE.class, "o");
-    
+
     private QueryMetadata metadata = new DefaultQueryMetadata();
     
-    private SPARQLVisitor visitor = new SPARQLVisitor();
-
     @Test
     public void Pattern(){
         metadata.addProjection(subject);
@@ -27,9 +29,10 @@ public class SPARQLVisitorTest {
         
         query();
     }
-
     
+
     @Test
+    @Ignore
     public void Pattern_with_Filter(){
         metadata.addProjection(subject);
         metadata.addWhere(
@@ -85,10 +88,11 @@ public class SPARQLVisitorTest {
         
         query();
     }
-
+    
 
     private void query() {
-        visitor.visit(metadata, null);
-        System.out.println(visitor.toString());
+        TupleQuery query = connection.createQuery(QueryLanguage.TUPLE, metadata);
+        IteratorAdapter.asList(query.getTuples());
+        
     }
 }

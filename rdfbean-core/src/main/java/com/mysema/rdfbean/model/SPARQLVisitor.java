@@ -22,7 +22,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         add(PathType.VARIABLE, "?{0s}");
     }};
     
-    private Pattern lastPattern;
+    private PatternBlock lastPattern;
     
     public SPARQLVisitor() {
         super(templates);
@@ -46,19 +46,23 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
                 first = false;
             }
             append("\n");
-        }
+        }else{
+            append("ASK \n");
+        }        
+        
         // where
         if (expr.getWhere() != null){
             append("WHERE \n  ");
-            if (expr.getWhere() instanceof Pattern){
+            if (expr.getWhere() instanceof GroupBlock){
+                handle(expr.getWhere());                
+            }else{
                 append("{ ");
                 handle(expr.getWhere());
-                append("}");
-            }else{
-                handle(expr.getWhere());    
+                append("}");    
             }
             append("\n");                
-        }        
+        }      
+        
         // order
         if (!expr.getOrderBy().isEmpty()){
             append("ORDER BY ");
@@ -76,10 +80,14 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
             }
             append("\n");
         }
-        // limit
+        // TODO : group by
+        // TODO : having    
+        
+        // limit        
         if (mod.getLimit() != null){
             append("LIMIT ").append(mod.getLimit().toString()).append("\n");
         }
+        
         // offset
         if (mod.getOffset() != null){
             append("OFFSET ").append(mod.getOffset().toString()).append("\n");
@@ -108,13 +116,13 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         return null;
     }
     
-    public Void visit(Union expr, Void context) {
+    public Void visit(UnionBlock expr, Void context) {
         boolean first = true;
         for (Block block : expr.getBlocks()){
             if (!first){
                 append("UNION ");
             }
-            if (block instanceof Pattern){
+            if (block instanceof PatternBlock){
                 append("{ ").handle(block).append("} ");
             }else{
                 handle(block);
@@ -125,14 +133,14 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         return null;
     }
     
-    public Void visit(Group expr, Void context) {
+    public Void visit(GroupBlock expr, Void context) {
         // TODO : handle context
         if (expr.isOptional()){
             append("OPTIONAL ");
         }
         append("{ ");
         for (Block block : expr.getBlocks()){
-            if (lastPattern != null && !(block instanceof Pattern)){
+            if (lastPattern != null && !(block instanceof PatternBlock)){
                 append(".\n  ");
                 lastPattern = null;
             }
@@ -153,7 +161,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         return null;
     }
     
-    public Void visit(Pattern expr, Void context) {
+    public Void visit(PatternBlock expr, Void context) {
         if (lastPattern == null || !lastPattern.getSubject().equals(expr.getSubject())){
             if (lastPattern != null){
                 append(".\n  ");

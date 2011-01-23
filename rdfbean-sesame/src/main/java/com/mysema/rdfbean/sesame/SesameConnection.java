@@ -36,6 +36,7 @@ import org.openrdf.store.StoreException;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
+import com.mysema.query.QueryMetadata;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
@@ -181,6 +182,9 @@ public class SesameConnection implements RDFConnection {
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
             return (Q)createSPARQLQuery((String) definition);
 
+        }else if (queryLanguage.equals(QueryLanguage.TUPLE)){    
+            return (Q)createTupleQuery((QueryMetadata) definition);
+            
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);
         }
@@ -201,12 +205,16 @@ public class SesameConnection implements RDFConnection {
             query.getMetadata().setDistinct(true);
             return (Q)query;
 
-        }else if (queryLanguage.equals(QueryLanguage.SPARQL)){
-            return (Q)createSPARQLQuery((String) definition);
-
         }else{
-            throw new UnsupportedQueryLanguageException(queryLanguage);
+           return createQuery(queryLanguage, definition);
         }
+    }
+    
+    private com.mysema.rdfbean.model.TupleQuery createTupleQuery(QueryMetadata definition) {
+        // TODO : use direct conversion to TupleQuery
+        SPARQLVisitor visitor = new SPARQLVisitor();
+        visitor.visit(definition, null);
+        return createSPARQLQuery(visitor.toString());
     }
 
     private SPARQLQuery createSPARQLQuery(String queryString) {

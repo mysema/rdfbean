@@ -10,13 +10,13 @@ import com.mysema.query.types.Visitor;
  * @author tiwe
  *
  */
-public class Pattern implements Block{
+public class PatternBlock implements Block{
     
     private static final long serialVersionUID = -3450122105441266114L;
 
     @SuppressWarnings("unchecked")
-    public static Pattern create(Object subject, Object predicate, Object object) {
-        Pattern pattern = new Pattern();
+    public static PatternBlock create(Object subject, Object predicate, Object object) {
+        PatternBlock pattern = new PatternBlock();
         if (subject != null){
             if (subject instanceof ID){
                 pattern.subject = new ConstantImpl<ID>((ID)subject);    
