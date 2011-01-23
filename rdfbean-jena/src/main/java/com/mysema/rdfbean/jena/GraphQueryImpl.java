@@ -45,7 +45,7 @@ public class GraphQueryImpl extends AbstractQueryImpl {
         QueryExecution exec = createExecution();
         Model resultModel = query.isConstructType() ? exec.execConstruct() : exec.execDescribe();
         ExtendedIterator<Triple> triples = resultModel.getGraph().find(Node.ANY, Node.ANY, Node.ANY);
-        return new TriplesIterator(dialect, triples);
+        return new TriplesIterator(dialect, triples, null);
     }
 
     @Override

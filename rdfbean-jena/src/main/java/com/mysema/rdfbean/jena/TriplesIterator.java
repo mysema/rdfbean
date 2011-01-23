@@ -3,10 +3,13 @@
  */
 package com.mysema.rdfbean.jena;
 
+import javax.annotation.Nullable;
+
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
@@ -18,9 +21,13 @@ public final class TriplesIterator implements CloseableIterator<STMT> {
     
     private final ExtendedIterator<Triple> triples;
 
-    public TriplesIterator(JenaDialect dialect, ExtendedIterator<Triple> triples) {
+    @Nullable
+    private final UID context;
+    
+    public TriplesIterator(JenaDialect dialect, ExtendedIterator<Triple> triples, @Nullable UID context) {
         this.dialect = dialect;
         this.triples = triples;
+        this.context = context;
     }
 
     @Override
@@ -39,7 +46,8 @@ public final class TriplesIterator implements CloseableIterator<STMT> {
         return new STMT(
                 dialect.getID(triple.getSubject()),
                 dialect.getUID(triple.getPredicate()),
-                dialect.getNODE(triple.getObject()));
+                dialect.getNODE(triple.getObject()),
+                context);
     }
 
     @Override
