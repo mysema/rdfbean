@@ -66,7 +66,7 @@ public abstract class SesameRepository implements Repository{
 
     private Inference inference = Inference.FULL;
     
-    private final ValueFactory vf = new ValueFactoryImpl();
+    private final ValueFactory valueFactory = new ValueFactoryImpl();
 
     @Override
     public void close() {
@@ -116,7 +116,7 @@ public abstract class SesameRepository implements Repository{
             }
             try{
                 if (context != null){
-                    conn.export(writer, vf.createURI(context.getId()));
+                    conn.export(writer, valueFactory.createURI(context.getId()));
                 }else{
                     conn.export(writer);    
                 }

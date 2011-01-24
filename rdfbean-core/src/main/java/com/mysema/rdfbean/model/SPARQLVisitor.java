@@ -1,5 +1,7 @@
 package com.mysema.rdfbean.model;
 
+import javax.annotation.Nullable;
+
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.support.SerializerBase;
@@ -22,13 +24,15 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         add(PathType.VARIABLE, "?{0s}");
     }};
     
+    @Nullable
     private PatternBlock lastPattern;
     
     public SPARQLVisitor() {
         super(templates);
     }
 
-    public Void visit(QueryMetadata expr, Void context) {
+    @Nullable
+    public Void visit(QueryMetadata expr, @Nullable Void context) {
         QueryModifiers mod = expr.getModifiers();
         // select
         if (!expr.getProjection().isEmpty()){
@@ -116,7 +120,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         return null;
     }
     
-    public Void visit(UnionBlock expr, Void context) {
+    @Nullable
+    public Void visit(UnionBlock expr, @Nullable Void context) {
         boolean first = true;
         for (Block block : expr.getBlocks()){
             if (!first){
@@ -133,7 +138,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         return null;
     }
     
-    public Void visit(GroupBlock expr, Void context) {
+    @Nullable
+    public Void visit(GroupBlock expr, @Nullable Void context) {
         // TODO : handle context
         if (expr.isOptional()){
             append("OPTIONAL ");
@@ -161,7 +167,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         return null;
     }
     
-    public Void visit(PatternBlock expr, Void context) {
+    @Nullable
+    public Void visit(PatternBlock expr, @Nullable Void context) {
         if (lastPattern == null || !lastPattern.getSubject().equals(expr.getSubject())){
             if (lastPattern != null){
                 append(".\n  ");
