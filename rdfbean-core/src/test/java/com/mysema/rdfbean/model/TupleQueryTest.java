@@ -8,7 +8,7 @@ import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Path;
 import com.mysema.query.types.PathImpl;
 
-public class SPARQLVisitorTest {
+public class TupleQueryTest {
     
     private static final Path<ID> subject = new PathImpl<ID>(ID.class, "s");
     
@@ -88,7 +88,7 @@ public class SPARQLVisitorTest {
 
 
     private void query() {
-        visitor.visit(metadata, null);
+        visitor.visit(metadata, QueryLanguage.TUPLE);
         System.out.println(visitor.toString());
     }
 }

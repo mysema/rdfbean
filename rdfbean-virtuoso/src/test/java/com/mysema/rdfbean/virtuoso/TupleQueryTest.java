@@ -19,6 +19,7 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.TupleQuery;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.UnionBlock;
+import com.mysema.rdfbean.owl.OWL;
 
 
 public class TupleQueryTest extends AbstractConnectionTest {
@@ -35,6 +36,15 @@ public class TupleQueryTest extends AbstractConnectionTest {
     public void Pattern(){
         metadata.addProjection(subject);
         metadata.addWhere(PatternBlock.create(subject, RDF.type, RDFS.Class));
+        
+        query();
+    }
+    
+    @Test
+    public void Pattern_with_Group(){
+        metadata.addProjection(subject);
+        metadata.addWhere(PatternBlock.create(subject, RDF.type, RDFS.Class));
+        metadata.addGroupBy(subject);
         
         query();
     }
@@ -75,14 +85,12 @@ public class TupleQueryTest extends AbstractConnectionTest {
     }
     
     @Test
-    @Ignore
     public void Union(){
-        // FIXME
-        metadata.addProjection(subject, predicate, object);
+        metadata.addProjection(subject);
         metadata.addWhere(
                 UnionBlock.create(
                     PatternBlock.create(subject, RDF.type, RDFS.Class),
-                    PatternBlock.create(subject, predicate, object)
+                    PatternBlock.create(subject, RDF.type, OWL.Class)
                 ));
         
         query();

@@ -175,19 +175,16 @@ public class SesameConnection implements RDFConnection {
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
             return (Q)createSPARQLQuery((String) definition);
             
-        }else if (queryLanguage.equals(QueryLanguage.TUPLE)){    
-            return (Q)createTupleQuery((QueryMetadata) definition);
-            
+        }else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
+                queryLanguage.equals(QueryLanguage.GRAPH) ||
+                queryLanguage.equals(QueryLanguage.TUPLE)){    
+          SPARQLVisitor visitor = new SPARQLVisitor();
+          visitor.visit((QueryMetadata)definition, queryLanguage);
+          return (Q)createSPARQLQuery(visitor.toString());
+          
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);
         }
-    }
-
-    private com.mysema.rdfbean.model.TupleQuery createTupleQuery(QueryMetadata definition) {
-        // TODO : use direct conversion to TupleQuery
-        SPARQLVisitor visitor = new SPARQLVisitor();
-        visitor.visit(definition, null);
-        return createSPARQLQuery(visitor.toString());
     }
     
     @SuppressWarnings("unchecked")

@@ -6,7 +6,6 @@ import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.support.SerializerBase;
 import com.mysema.query.types.Constant;
-import com.mysema.query.types.Expression;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.PathType;
 import com.mysema.query.types.Predicate;
@@ -31,47 +30,49 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         super(templates);
     }
 
-    @Nullable
-    public Void visit(QueryMetadata expr, @Nullable Void context) {
-        QueryModifiers mod = expr.getModifiers();
+    public void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
+        QueryModifiers mod = md.getModifiers();
         // select
-        if (!expr.getProjection().isEmpty()){
+        if (queryType == QueryLanguage.TUPLE){
             append("SELECT ");
-            if (expr.isDistinct()){
+            if (md.isDistinct()){
                 append("DISTINCT ");
             }
-            boolean first = true;
-            for (Expression<?> e : expr.getProjection()){
-                if (!first){
-                    append(" ");
-                    
-                }
-                handle(e);
-                first = false;
-            }
+            handle(" ", md.getProjection());
             append("\n");
-        }else{
+            
+        // ask
+        }else if (queryType == QueryLanguage.BOOLEAN){
             append("ASK \n");
-        }        
+            
+        // construct
+        }else if (queryType == QueryLanguage.GRAPH){
+            if (md.getProjection().size() == 1 && md.getProjection().get(0) instanceof GroupBlock){
+                append("CONSTRUCT ").handle("", md.getProjection()).append("\n");
+            }else{
+                append("CONSTRUCT { ").handle("", md.getProjection()).append("}\n");    
+            }            
+        }
+        lastPattern = null;
         
         // where
-        if (expr.getWhere() != null){
+        if (md.getWhere() != null){
             append("WHERE \n  ");
-            if (expr.getWhere() instanceof GroupBlock){
-                handle(expr.getWhere());                
+            if (md.getWhere() instanceof GroupBlock){
+                handle(md.getWhere());                
             }else{
                 append("{ ");
-                handle(expr.getWhere());
+                handle(md.getWhere());
                 append("}");    
             }
             append("\n");                
         }      
         
         // order
-        if (!expr.getOrderBy().isEmpty()){
+        if (!md.getOrderBy().isEmpty()){
             append("ORDER BY ");
             boolean first = true;            
-            for (OrderSpecifier<?> order : expr.getOrderBy()){
+            for (OrderSpecifier<?> order : md.getOrderBy()){
                 if (!first){
                     append(" ");                    
                 }
@@ -84,8 +85,16 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
             }
             append("\n");
         }
-        // TODO : group by
-        // TODO : having    
+        
+        // group by
+        if (!md.getGroupBy().isEmpty()){
+            append("GROUP BY ").handle(" ", md.getGroupBy()).append("\n");
+        }
+        
+        // having
+        if (md.getHaving() != null){
+            append("HAVING (").handle(md.getHaving()).append(")\n");            
+        }    
         
         // limit        
         if (mod.getLimit() != null){
@@ -96,12 +105,12 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         if (mod.getOffset() != null){
             append("OFFSET ").append(mod.getOffset().toString()).append("\n");
         }
-        return null;
     }
     
     @Override
     public Void visit(SubQueryExpression<?> expr, Void context) {
-        return visit(expr.getMetadata(), context);
+        visit(expr.getMetadata(), QueryLanguage.TUPLE);
+        return null;
     }
 
 

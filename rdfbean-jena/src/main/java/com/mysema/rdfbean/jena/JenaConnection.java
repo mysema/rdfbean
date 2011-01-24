@@ -67,11 +67,12 @@ public class JenaConnection implements RDFConnection {
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
             return (Q)createSPARQLQuery((String)definition);
             
-        }else if (queryLanguage.equals(QueryLanguage.TUPLE)){
+        }else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
+                  queryLanguage.equals(QueryLanguage.GRAPH) || 
+                  queryLanguage.equals(QueryLanguage.TUPLE)){
             SPARQLVisitor visitor = new SPARQLVisitor();
-            visitor.visit((QueryMetadata)definition, null);
-            com.hp.hpl.jena.query.Query query = QueryFactory.create(visitor.toString()) ;
-            return (Q)new TupleQueryImpl(query, dataset, dialect);
+            visitor.visit((QueryMetadata)definition, queryLanguage);
+            return (Q)createSPARQLQuery(visitor.toString());
             
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);    

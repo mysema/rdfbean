@@ -24,7 +24,18 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryMetadata;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.SPARQLVisitor;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
@@ -35,6 +46,14 @@ import com.mysema.rdfbean.object.Session;
  *
  */
 public class VirtuosoRepositoryConnection implements RDFConnection {
+    
+    private static final Map<QueryLanguage<?,?>, SPARQLQuery.ResultType> resultTypes = new HashMap<QueryLanguage<?,?>, SPARQLQuery.ResultType>();
+    
+    static{
+        resultTypes.put(QueryLanguage.BOOLEAN, SPARQLQuery.ResultType.BOOLEAN);
+        resultTypes.put(QueryLanguage.GRAPH, SPARQLQuery.ResultType.TRIPLES);
+        resultTypes.put(QueryLanguage.TUPLE, SPARQLQuery.ResultType.TUPLES);        
+    }
     
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
     
@@ -253,23 +272,29 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
             String query = definition.toString();
             SPARQLQuery.ResultType resultType = getResultType(query);                
-            if (resultType == SPARQLQuery.ResultType.BOOLEAN){
-                return (Q)new BooleanQueryImpl(connection, prefetchSize, JAVA_OUTPUT + query);
-            }else if (resultType == SPARQLQuery.ResultType.TUPLES){
-                return (Q)new TupleQueryImpl(connection, converter, prefetchSize, DEFAULT_OUTPUT + query);
-            }else if (resultType == SPARQLQuery.ResultType.TRIPLES){
-                return (Q)new GraphQueryImpl(connection, converter, prefetchSize, JAVA_OUTPUT + query);
-            }else{
-                throw new IllegalArgumentException("No result type for " + definition);
-            }         
+            return (Q)createSPARQLQuery(query, resultType);         
             
-        }else if (queryLanguage.equals(QueryLanguage.TUPLE)){    
+        }else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
+                  queryLanguage.equals(QueryLanguage.GRAPH) ||
+                  queryLanguage.equals(QueryLanguage.TUPLE)){    
             SPARQLVisitor visitor = new SPARQLVisitor();
-            visitor.visit((QueryMetadata)definition, null);
-            return (Q)new TupleQueryImpl(connection, converter, prefetchSize, DEFAULT_OUTPUT + visitor.toString());
+            visitor.visit((QueryMetadata)definition, queryLanguage);
+            return (Q)createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
             
         }else{
             throw new IllegalArgumentException("Unsupported query language " + queryLanguage);
+        }
+    }
+
+    private SPARQLQuery createSPARQLQuery(String query, SPARQLQuery.ResultType resultType) {
+        if (resultType == SPARQLQuery.ResultType.BOOLEAN){
+            return new BooleanQueryImpl(connection, prefetchSize, JAVA_OUTPUT + query);
+        }else if (resultType == SPARQLQuery.ResultType.TUPLES){
+            return new TupleQueryImpl(connection, converter, prefetchSize, DEFAULT_OUTPUT + query);
+        }else if (resultType == SPARQLQuery.ResultType.TRIPLES){
+            return new GraphQueryImpl(connection, converter, prefetchSize, JAVA_OUTPUT + query);
+        }else{
+            throw new IllegalArgumentException("No result type for " + query);
         }
     }
     
