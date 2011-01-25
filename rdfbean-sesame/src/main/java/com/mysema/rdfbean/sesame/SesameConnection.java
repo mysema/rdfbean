@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -27,7 +28,6 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
-import org.openrdf.query.algebra.Union;
 import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.ModelResult;
@@ -187,7 +187,11 @@ public class SesameConnection implements RDFConnection {
                   queryLanguage.equals(QueryLanguage.TUPLE)){    
             SPARQLVisitor visitor = new SPARQLVisitor();
             visitor.visit((QueryMetadata)definition, queryLanguage);
-            return (Q)createSPARQLQuery(visitor.toString());
+            SPARQLQuery query = createSPARQLQuery(visitor.toString());
+            for (Map.Entry<Object,String> entry : visitor.getConstantToLabel().entrySet()){
+                query.setBinding(entry.getValue(), (NODE)entry.getKey());
+            }
+            return (Q)query;
             
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);

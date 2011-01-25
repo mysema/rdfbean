@@ -279,7 +279,11 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                   queryLanguage.equals(QueryLanguage.TUPLE)){    
             SPARQLVisitor visitor = new SPARQLVisitor();
             visitor.visit((QueryMetadata)definition, queryLanguage);
-            return (Q)createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
+            SPARQLQuery query = createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
+            for (Map.Entry<Object,String> entry : visitor.getConstantToLabel().entrySet()){
+                query.setBinding(entry.getValue(), (NODE)entry.getKey());
+            }
+            return (Q)query;
             
         }else{
             throw new IllegalArgumentException("Unsupported query language " + queryLanguage);

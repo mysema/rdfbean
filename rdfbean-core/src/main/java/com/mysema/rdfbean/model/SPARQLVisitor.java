@@ -11,7 +11,6 @@ import com.mysema.query.types.PathType;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.SubQueryExpression;
 import com.mysema.query.types.Templates;
-import com.mysema.rdfbean.model.io.NTriplesWriter;
 
 /**
  * @author tiwe
@@ -113,22 +112,6 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         return null;
     }
 
-
-    @Override
-    public Void visit(Constant<?> expr, Void context) {
-        Object constant = expr.getConstant();
-        if (constant instanceof UID){
-            append(NTriplesWriter.toString((UID)constant));
-        }else if (constant instanceof BID){
-            append(NTriplesWriter.toString((BID)constant));
-        }else if (constant instanceof LIT){
-            append(NTriplesWriter.toString((LIT)constant));
-        }else{
-            throw new IllegalArgumentException(expr.toString());
-        }
-        return null;
-    }
-    
     @Nullable
     public Void visit(UnionBlock expr, @Nullable Void context) {
         boolean first = true;
@@ -173,6 +156,18 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         }
         append("} ");
         lastPattern = null;
+        return null;
+    }
+    
+    @Override
+    public Void visit(Constant<?> expr, Void context) {
+        if (!getConstantToLabel().containsKey(expr.getConstant())) {
+            String constLabel = "_c" + (getConstantToLabel().size() + 1);
+            getConstantToLabel().put(expr.getConstant(), constLabel);
+            append("?" + constLabel);
+        } else {
+            append("?" + getConstantToLabel().get(expr.getConstant()));
+        }
         return null;
     }
     
