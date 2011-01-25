@@ -36,6 +36,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
     public void Pattern(){
         metadata.addProjection(subject);
         metadata.addWhere(PatternBlock.create(subject, RDF.type, RDFS.Class));
+        metadata.setLimit(1l);
         
         query();
     }
@@ -45,6 +46,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
         metadata.addProjection(subject);
         metadata.addWhere(PatternBlock.create(subject, RDF.type, RDFS.Class));
         metadata.addGroupBy(subject);
+        metadata.setLimit(1l);
         
         query();
     }
@@ -58,6 +60,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
                 GroupBlock.filter(
                     PatternBlock.create(subject, RDF.type, RDFS.Class),
                     ExpressionUtils.isNotNull(subject)));
+        metadata.setLimit(1l);
         
         query();
     }
@@ -68,6 +71,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
         metadata.addWhere(PatternBlock.create(subject, RDF.type, RDFS.Class));
         metadata.setLimit(5l);
         metadata.setOffset(20l);
+        metadata.setLimit(1l);
         
         query();
     }
@@ -80,6 +84,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
                     PatternBlock.create(subject, RDF.type, RDFS.Class),
                     PatternBlock.create(subject, predicate, object)
                 ));
+        metadata.setLimit(1l);
         
         query();
     }
@@ -92,6 +97,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
                     PatternBlock.create(subject, RDF.type, RDFS.Class),
                     PatternBlock.create(subject, RDF.type, OWL.Class)
                 ));
+        metadata.setLimit(1l);
         
         query();
     }
@@ -104,6 +110,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
                     PatternBlock.create(subject, RDF.type, RDFS.Class),
                     GroupBlock.optional(PatternBlock.create(subject, predicate, object))
                 ));
+        metadata.setLimit(1l);
         
         query();
     }

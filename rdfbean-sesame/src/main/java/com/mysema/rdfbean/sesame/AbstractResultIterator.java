@@ -6,6 +6,10 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
+/**
+ * @author tiwe
+ *
+ */
 public abstract class AbstractResultIterator implements CloseableIterator<STMT>{
 
     private final SesameDialect dialect;
