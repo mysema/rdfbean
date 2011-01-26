@@ -1,13 +1,17 @@
 package com.mysema.rdfbean.model;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.support.SerializerBase;
 import com.mysema.query.types.Constant;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.Predicate;
 import com.mysema.query.types.SubQueryExpression;
 
 /**
@@ -112,6 +116,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
 
     @Nullable
     public Void visit(UnionBlock expr, @Nullable Void context) {
+        lastPattern = null;
         boolean first = true;
         for (Block block : expr.getBlocks()){
             if (!first){
@@ -130,8 +135,10 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
     
     @Nullable
     public Void visit(GroupBlock expr, @Nullable Void context) {
-        // TODO : handle context
-        if (expr.isOptional()){
+        lastPattern = null;
+        if (expr.getContext() != null){
+            
+        }else if (expr.isOptional()){
             append("OPTIONAL ");
         }
         append("{ ");
@@ -142,15 +149,11 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
             }
             handle(block);
         }
-        if (!expr.getFilters().isEmpty()){
+        if (expr.getFilters() != null){
             if (lastPattern != null){
                 append(". ");
             }
-            append("\n  FILTER(");
-            for (Predicate predicate : expr.getFilters()){
-                handle(predicate);
-            }
-            append(") ");
+            handle(expr.getFilters());
         }
         append("} ");
         lastPattern = null;
@@ -189,6 +192,17 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         handle(expr.getObject()).append(" ");
         lastPattern = expr;
         return null;
+    }
+    
+    @Override
+    protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
+        if (operator == Ops.AND && (args.get(0) instanceof Block || args.get(1) instanceof Block)){
+            handle("", args);
+        }else{
+            append("FILTER(");
+            super.visitOperation(type, operator, args);
+            append(") ");            
+        }
     }
     
 }

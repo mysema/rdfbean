@@ -22,7 +22,7 @@ public class TupleQueryTest {
     @Test
     public void Pattern(){
         metadata.addProjection(subject);
-        metadata.addWhere(PatternBlock.create(subject, RDF.type, RDFS.Class));
+        metadata.addWhere(Blocks.pattern(subject, RDF.type, RDFS.Class));
         
         query();
     }
@@ -31,9 +31,8 @@ public class TupleQueryTest {
     public void Pattern_with_Eq_Filter(){
         metadata.addProjection(subject);
         metadata.addWhere(
-                GroupBlock.filter(
-                    PatternBlock.create(subject, RDF.type, RDFS.Class),
-                    subject.eq(new UID(TEST.NS))));
+                Blocks.pattern(subject, RDF.type, RDFS.Class),
+                subject.eq(new UID(TEST.NS)));
         
         query();
     }
@@ -42,9 +41,8 @@ public class TupleQueryTest {
     public void Pattern_with_Ne_Filter(){
         metadata.addProjection(subject);
         metadata.addWhere(
-                GroupBlock.filter(
-                    PatternBlock.create(subject, RDF.type, RDFS.Class),
-                    subject.ne(new UID(TEST.NS))));
+                Blocks.pattern(subject, RDF.type, RDFS.Class),
+                subject.ne(new UID(TEST.NS)));
         
         query();
     }
@@ -53,9 +51,8 @@ public class TupleQueryTest {
     public void Pattern_with_NotNull_Filter(){
         metadata.addProjection(subject);
         metadata.addWhere(
-                GroupBlock.filter(
-                    PatternBlock.create(subject, RDF.type, RDFS.Class),
-                    subject.isNotNull()));
+                Blocks.pattern(subject, RDF.type, RDFS.Class),
+                subject.isNotNull());
         
         query();
     }
@@ -64,9 +61,8 @@ public class TupleQueryTest {
     public void Pattern_with_Null_Filter(){
         metadata.addProjection(subject);
         metadata.addWhere(
-                GroupBlock.filter(
-                    PatternBlock.create(subject, RDF.type, RDFS.Class),
-                    subject.isNull()));
+                Blocks.pattern(subject, RDF.type, RDFS.Class),
+                subject.isNull());
         
         query();
     }
@@ -74,7 +70,7 @@ public class TupleQueryTest {
     @Test
     public void Pattern_with_Limit_and_Offset(){
         metadata.addProjection(subject);
-        metadata.addWhere(PatternBlock.create(subject, RDF.type, RDFS.Class));
+        metadata.addWhere(Blocks.pattern(subject, RDF.type, RDFS.Class));
         metadata.setLimit(5l);
         metadata.setOffset(20l);
         
@@ -85,10 +81,8 @@ public class TupleQueryTest {
     public void Group(){
         metadata.addProjection(subject, predicate, object);
         metadata.addWhere(
-                GroupBlock.create(
-                    PatternBlock.create(subject, RDF.type, RDFS.Class),
-                    PatternBlock.create(subject, predicate, object)
-                ));
+                Blocks.pattern(subject, RDF.type, RDFS.Class),
+                Blocks.pattern(subject, predicate, object));
         
         query();
     }
@@ -97,9 +91,9 @@ public class TupleQueryTest {
     public void Union(){
         metadata.addProjection(subject, predicate, object);
         metadata.addWhere(
-                UnionBlock.create(
-                    PatternBlock.create(subject, RDF.type, RDFS.Class),
-                    PatternBlock.create(subject, predicate, object)
+                Blocks.union(
+                    Blocks.pattern(subject, RDF.type, RDFS.Class),
+                    Blocks.pattern(subject, predicate, object)
                 ));
         
         query();
@@ -109,10 +103,8 @@ public class TupleQueryTest {
     public void Optional(){
         metadata.addProjection(subject, predicate, object);
         metadata.addWhere(
-                GroupBlock.create(
-                    PatternBlock.create(subject, RDF.type, RDFS.Class),
-                    GroupBlock.optional(PatternBlock.create(subject, predicate, object))
-                ));
+                Blocks.pattern(subject, RDF.type, RDFS.Class),
+                Blocks.optional(Blocks.pattern(subject, predicate, object)));
         
         query();
     }

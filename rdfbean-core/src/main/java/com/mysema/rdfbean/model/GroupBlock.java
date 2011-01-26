@@ -1,9 +1,8 @@
 package com.mysema.rdfbean.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.Visitor;
@@ -16,32 +15,36 @@ public class GroupBlock implements Block{
     
     private static final long serialVersionUID = 114999121944301068L;
 
-    public static GroupBlock create(Block... blocks){
-        GroupBlock group = new GroupBlock();
-        group.blocks.addAll(Arrays.asList(blocks));
-        return group;
+    private final List<Block> blocks;
+    
+    private final Predicate filters;
+    
+    private final boolean optional;
+    
+    private final Expression<UID> context;
+    
+    public GroupBlock(List<Block> blocks, boolean optional, Predicate... filters) {
+        this.blocks = blocks;
+        this.optional = optional;
+        this.context = null;
+        BooleanBuilder builder = new BooleanBuilder();
+        for (Predicate filter : filters){
+            builder.and(filter);    
+        }  
+        this.filters = builder.getValue();
+        
     }
     
-    public static GroupBlock filter(Block block, Predicate... filters){
-        GroupBlock group = new GroupBlock();
-        group.blocks.add(block);
-        group.filters.addAll(Arrays.asList(filters));
-        return group;
+    public GroupBlock(List<Block> blocks, Expression<UID> context, Predicate... filters) {
+        this.blocks = blocks;
+        this.optional = false;
+        this.context = context;
+        BooleanBuilder builder = new BooleanBuilder();
+        for (Predicate filter : filters){
+            builder.and(filter);    
+        }  
+        this.filters = builder.getValue();
     }
-    
-    public static GroupBlock optional(Block... blocks){
-        GroupBlock group = create(blocks);
-        group.optional = true;
-        return group;
-    }
-
-    private final List<Block> blocks = new ArrayList<Block>();
-    
-    private final List<Predicate> filters = new ArrayList<Predicate>();
-    
-    private boolean optional;
-    
-    private Expression<UID> context;
     
     @Override
     public Predicate not() {
@@ -63,7 +66,7 @@ public class GroupBlock implements Block{
         return blocks;
     }
 
-    public List<Predicate> getFilters() {
+    public Predicate getFilters() {
         return filters;
     }
 
