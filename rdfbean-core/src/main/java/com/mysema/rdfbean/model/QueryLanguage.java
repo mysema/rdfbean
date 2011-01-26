@@ -17,13 +17,13 @@ import com.mysema.rdfbean.object.BeanQuery;
  */
 public final class QueryLanguage<D,Q> {
 
-    public static final QueryLanguage<String,SPARQLQuery> SPARQL = create("SPARQL", String.class, SPARQLQuery.class);
+    public static final QueryLanguage<String, SPARQLQuery> SPARQL = create("SPARQL", String.class, SPARQLQuery.class);
    
-    public static final QueryLanguage<QueryMetadata,BooleanQuery> BOOLEAN = create("BOOLEAN", QueryMetadata.class, BooleanQuery.class);
+    public static final QueryLanguage<QueryMetadata, BooleanQuery> BOOLEAN = create("BOOLEAN", QueryMetadata.class, BooleanQuery.class);
     
-    public static final QueryLanguage<QueryMetadata,GraphQuery> GRAPH = create("GRAPH", QueryMetadata.class, GraphQuery.class);
+    public static final QueryLanguage<QueryMetadata, GraphQuery> GRAPH = create("GRAPH", QueryMetadata.class, GraphQuery.class);
     
-    public static final QueryLanguage<QueryMetadata,TupleQuery> TUPLE = create("TUPLE", QueryMetadata.class, TupleQuery.class);
+    public static final QueryLanguage<QueryMetadata, TupleQuery> TUPLE = create("TUPLE", QueryMetadata.class, TupleQuery.class);
     
     public static final QueryLanguage<Void,BeanQuery> QUERYDSL = create("Querydsl", BeanQuery.class);
        
