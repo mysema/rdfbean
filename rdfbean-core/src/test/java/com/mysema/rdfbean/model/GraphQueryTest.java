@@ -4,16 +4,15 @@ import org.junit.Test;
 
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.types.Path;
-import com.mysema.query.types.PathImpl;
+import com.mysema.query.types.path.SimplePath;
 
 public class GraphQueryTest {
     
-    private static final Path<ID> subject = new PathImpl<ID>(ID.class, "s");
+    private static final SimplePath<ID> subject = new SimplePath<ID>(ID.class, "s");
     
-    private static final Path<UID> predicate = new PathImpl<UID>(UID.class, "p");
+    private static final SimplePath<UID> predicate = new SimplePath<UID>(UID.class, "p");
     
-    private static final Path<NODE> object = new PathImpl<NODE>(NODE.class, "o");
+    private static final SimplePath<NODE> object = new SimplePath<NODE>(NODE.class, "o");
     
     private QueryMetadata metadata = new DefaultQueryMetadata();
     

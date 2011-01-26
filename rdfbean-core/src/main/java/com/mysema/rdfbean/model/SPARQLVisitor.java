@@ -7,10 +7,8 @@ import com.mysema.query.QueryModifiers;
 import com.mysema.query.support.SerializerBase;
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.PathType;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.SubQueryExpression;
-import com.mysema.query.types.Templates;
 
 /**
  * @author tiwe
@@ -18,17 +16,17 @@ import com.mysema.query.types.Templates;
  */
 public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
     
-    private static final Templates templates = new Templates(){{
-        add(PathType.VARIABLE, "?{0s}");
-    }};
-    
     @Nullable
     private PatternBlock lastPattern;
-    
-    public SPARQLVisitor() {
+
+    public SPARQLVisitor(SPARQLTemplates templates) {
         super(templates);
     }
-
+    
+    public SPARQLVisitor() {
+        super(SPARQLTemplates.DEFAULT);
+    }
+    
     public void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
         QueryModifiers mod = md.getModifiers();
         // select
