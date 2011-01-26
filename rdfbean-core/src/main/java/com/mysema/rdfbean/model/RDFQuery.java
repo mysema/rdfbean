@@ -16,12 +16,12 @@ public interface RDFQuery extends Query<RDFQuery>{
 
     CloseableIterator<Map<String, NODE>> select(Expression<?>... exprs);
 
-    CloseableIterator<STMT> construct(Expression<?>... exprs);
+    CloseableIterator<STMT> construct(Block... exprs);
 
     BooleanQuery createBooleanQuery();
 
     TupleQuery createTupleQuery(Expression<?>... exprs);
 
-    GraphQuery createGraphQuery(Expression<?>... exprs);
+    GraphQuery createGraphQuery(Block... exprs);
 
 }

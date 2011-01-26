@@ -1,9 +1,11 @@
 package com.mysema.rdfbean.model;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 
-import com.mysema.query.DefaultQueryMetadata;
-import com.mysema.query.QueryMetadata;
+import com.mysema.query.types.Predicate;
 import com.mysema.query.types.path.SimplePath;
 import com.mysema.rdfbean.TEST;
 
@@ -15,103 +17,63 @@ public class TupleQueryTest {
     
     private static final SimplePath<NODE> object = new SimplePath<NODE>(NODE.class, "o");
     
-    private QueryMetadata metadata = new DefaultQueryMetadata();
-    
-    private SPARQLVisitor visitor = new SPARQLVisitor();
+    private RDFQuery query(){
+        return new RDFTestQuery();
+    }    
 
     @Test
     public void Pattern(){
-        metadata.addProjection(subject);
-        metadata.addWhere(Blocks.pattern(subject, RDF.type, RDFS.Class));
-        
-        query();
+        query().where(Blocks.pattern(subject, RDF.type, RDFS.Class)).select(subject);
     }
     
     @Test
-    public void Pattern_with_Eq_Filter(){
-        metadata.addProjection(subject);
-        metadata.addWhere(
-                Blocks.pattern(subject, RDF.type, RDFS.Class),
-                subject.eq(new UID(TEST.NS)));
+    public void Pattern_with_Filters(){
+        Block pattern = Blocks.pattern(subject, predicate, object); 
         
-        query();
-    }
-    
-    @Test
-    public void Pattern_with_Ne_Filter(){
-        metadata.addProjection(subject);
-        metadata.addWhere(
-                Blocks.pattern(subject, RDF.type, RDFS.Class),
-                subject.ne(new UID(TEST.NS)));
+        List<Predicate> filters = Arrays.<Predicate>asList(
+                subject.eq(new UID(TEST.NS)),
+                predicate.eq(RDFS.label),
+                subject.ne(new UID(TEST.NS)),
+                object.isNull(),
+                object.isNotNull()
+        );
         
-        query();
-    }
-    
-    @Test
-    public void Pattern_with_NotNull_Filter(){
-        metadata.addProjection(subject);
-        metadata.addWhere(
-                Blocks.pattern(subject, RDF.type, RDFS.Class),
-                subject.isNotNull());
-        
-        query();
-    }
-    
-    @Test
-    public void Pattern_with_Null_Filter(){
-        metadata.addProjection(subject);
-        metadata.addWhere(
-                Blocks.pattern(subject, RDF.type, RDFS.Class),
-                subject.isNull());
-        
-        query();
+        for (Predicate filter : filters){
+            query().where(pattern, filter).select(subject);
+        }
     }
     
     @Test
     public void Pattern_with_Limit_and_Offset(){
-        metadata.addProjection(subject);
-        metadata.addWhere(Blocks.pattern(subject, RDF.type, RDFS.Class));
-        metadata.setLimit(5l);
-        metadata.setOffset(20l);
-        
-        query();
+        query().where(Blocks.pattern(subject, RDF.type, RDFS.Class))
+                .limit(5)
+                .offset(20)
+                .select(subject);
     }
     
     @Test
     public void Group(){
-        metadata.addProjection(subject, predicate, object);
-        metadata.addWhere(
+        query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
-                Blocks.pattern(subject, predicate, object));
-        
-        query();
+                Blocks.pattern(subject, predicate, object))
+                .select(subject, predicate, object);
     }
     
     @Test
     public void Union(){
-        metadata.addProjection(subject, predicate, object);
-        metadata.addWhere(
+        query().where(
                 Blocks.union(
                     Blocks.pattern(subject, RDF.type, RDFS.Class),
                     Blocks.pattern(subject, predicate, object)
-                ));
-        
-        query();
+                )).select(subject, predicate, object);
     }
     
     @Test
     public void Optional(){
-        metadata.addProjection(subject, predicate, object);
-        metadata.addWhere(
+        query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
-                Blocks.optional(Blocks.pattern(subject, predicate, object)));
-        
-        query();
+                Blocks.optional(Blocks.pattern(subject, predicate, object)))
+                .select(subject, predicate, object);
     }
 
-
-    private void query() {
-        visitor.visit(metadata, QueryLanguage.TUPLE);
-        System.out.println(visitor.toString());
-    }
 }

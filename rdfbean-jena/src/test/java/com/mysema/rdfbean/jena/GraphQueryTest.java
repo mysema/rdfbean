@@ -2,17 +2,13 @@ package com.mysema.rdfbean.jena;
 
 import org.junit.Test;
 
-import com.mysema.commons.lang.IteratorAdapter;
-import com.mysema.query.DefaultQueryMetadata;
-import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.path.SimplePath;
 import com.mysema.rdfbean.model.Blocks;
-import com.mysema.rdfbean.model.GraphQuery;
-import com.mysema.rdfbean.model.GroupBlock;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFQuery;
+import com.mysema.rdfbean.model.RDFQueryImpl;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 
@@ -24,57 +20,46 @@ public class GraphQueryTest extends AbstractConnectionTest{
     
     private static final SimplePath<NODE> object = new SimplePath<NODE>(NODE.class, "o");
     
-    private QueryMetadata metadata = new DefaultQueryMetadata();
+    private RDFQuery query(){
+        return new RDFQueryImpl(connection);
+    }    
     
     @Test
     public void Patterns(){
-        metadata.addProjection(Blocks.pattern(subject, predicate, object));
-        metadata.addWhere(
+        query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
-                Blocks.pattern(subject, predicate, object));
-        
-        query();
+                Blocks.pattern(subject, predicate, object))
+               .construct(Blocks.pattern(subject, predicate, object));
     }
     
     @Test
     public void Patterns_as_Group(){
-        metadata.addProjection(Blocks.pattern(subject, predicate, object));
-        metadata.addWhere(
+        query().where(
                 Blocks.group(
                     Blocks.pattern(subject, RDF.type, RDFS.Class),
-                    Blocks.pattern(subject, predicate, object)));
-        
-        query();
+                    Blocks.pattern(subject, predicate, object)))
+               .construct(Blocks.pattern(subject, predicate, object));
     }
     
     @Test
     public void Two_Patterns(){
-        metadata.addProjection(
-                Blocks.pattern(subject, RDF.type,  RDFS.Class),
-                Blocks.pattern(subject, predicate, object));
-        metadata.addWhere(
+        query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
-                Blocks.pattern(subject, predicate, object));
-        
-        query();
+                Blocks.pattern(subject, predicate, object))
+               .construct(
+                   Blocks.pattern(subject, RDF.type,  RDFS.Class),
+                   Blocks.pattern(subject, predicate, object));
     }
     
     @Test
     public void Group(){
-        metadata.addProjection(
-                Blocks.pattern(subject, RDF.type,  RDFS.Class),
-                Blocks.pattern(subject, predicate, object));
-        metadata.addWhere(
+        query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
-                Blocks.pattern(subject, predicate, object));
-        
-        query();
+                Blocks.pattern(subject, predicate, object))
+               .construct(
+                   Blocks.pattern(subject, RDF.type,  RDFS.Class),
+                   Blocks.pattern(subject, predicate, object));
     }
-    
-    private void query() {
-        GraphQuery query = connection.createQuery(QueryLanguage.GRAPH, metadata);
-        IteratorAdapter.asList(query.getTriples());
-        
-    }
+
 
 }

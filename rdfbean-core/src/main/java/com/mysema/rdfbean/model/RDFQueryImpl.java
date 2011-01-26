@@ -32,7 +32,7 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     }
 
     @Override
-    public CloseableIterator<STMT> construct(Expression<?>... exprs){
+    public CloseableIterator<STMT> construct(Block... exprs){
         return createGraphQuery(exprs).getTriples();
     }
 
@@ -48,7 +48,7 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     }
     
     @Override
-    public GraphQuery createGraphQuery(Expression<?>... exprs){
+    public GraphQuery createGraphQuery(Block... exprs){
         queryMixin.addToProjection(exprs);
         return connection.createQuery(QueryLanguage.GRAPH, queryMixin.getMetadata());
     }
