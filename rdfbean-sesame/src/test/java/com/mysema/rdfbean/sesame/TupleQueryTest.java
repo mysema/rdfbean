@@ -6,12 +6,12 @@ import java.util.List;
 import org.junit.Test;
 
 import com.mysema.query.types.Predicate;
-import com.mysema.query.types.path.SimplePath;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Block;
 import com.mysema.rdfbean.model.Blocks;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QNODE;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFQuery;
 import com.mysema.rdfbean.model.RDFQueryImpl;
@@ -20,11 +20,11 @@ import com.mysema.rdfbean.model.UID;
 
 public class TupleQueryTest extends AbstractConnectionTest{
     
-    private static final SimplePath<ID> subject = new SimplePath<ID>(ID.class, "s");
+    private static final QNODE<ID> subject = new QNODE<ID>(ID.class, "s");
     
-    private static final SimplePath<UID> predicate = new SimplePath<UID>(UID.class, "p");
+    private static final QNODE<UID> predicate = new QNODE<UID>(UID.class, "p");
     
-    private static final SimplePath<NODE> object = new SimplePath<NODE>(NODE.class, "o");
+    private static final QNODE<NODE> object = new QNODE<NODE>(NODE.class, "o");
 
     private RDFQuery query(){
         return new RDFQueryImpl(connection);
@@ -44,7 +44,11 @@ public class TupleQueryTest extends AbstractConnectionTest{
                 predicate.eq(RDFS.label),
                 subject.ne(new UID(TEST.NS)),
                 object.isNull(),
-                object.isNotNull()
+                object.isNotNull(),
+                object.lt("X"),
+                object.gt("X"),
+                object.loe("X"),
+                object.goe("X")
         );
         
         for (Predicate filter : filters){

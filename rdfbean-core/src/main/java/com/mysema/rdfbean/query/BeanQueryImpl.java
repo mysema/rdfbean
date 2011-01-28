@@ -14,7 +14,6 @@ import org.apache.commons.lang.mutable.MutableInt;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
-import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryException;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.SearchResults;
@@ -25,7 +24,6 @@ import com.mysema.query.types.Expression;
 import com.mysema.query.types.FactoryExpression;
 import com.mysema.rdfbean.model.BooleanQuery;
 import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.TupleQuery;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -33,10 +31,7 @@ import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
- * SesameBeanQuery provides a query implementation for Sesame Repository
- * 
  * @author tiwe
- * @version $Id$
  */
 public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         BeanQuery, Closeable {
@@ -78,23 +73,11 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     }
 
     private BooleanQuery createBooleanQuery() {
-        QueryMetadata metadata = new DefaultQueryMetadata();
-        // TODO : populate
-        return connection.createQuery(QueryLanguage.BOOLEAN, metadata);
+        return new RDFQueryBuilder(connection, session, session.getConfiguration(), queryMixin.getMetadata()).createBooleanQuery();
     }
 
     private TupleQuery createTupleQuery(boolean forCount) {
-        QueryMetadata metadata = new DefaultQueryMetadata();
-        // TODO : populate
-        
-        //from 
-        //where
-        //group by
-        //having
-        //order by
-        //select
-        
-        return connection.createQuery(QueryLanguage.TUPLE, metadata);
+        return new RDFQueryBuilder(connection, session, session.getConfiguration(), queryMixin.getMetadata()).createTupleQuery(forCount);
     }
 
     @Override
@@ -107,6 +90,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         return queryMixin.from(o);
     }
 
+    @SuppressWarnings("unchecked")
     private <RT> RT getAsProjectionValue(Expression<RT> expr,
             Map<String, NODE> nodes, List<String> variables, MutableInt offset) {
         if (expr instanceof FactoryExpression<?>) {
@@ -133,6 +117,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         }
     }
 
+    @SuppressWarnings("unchecked")
     private <RT> RT getAsProjectionValue(NODE node, Class<RT> type) {
         if (node.isResource()) {
             if (type.equals(String.class)) {

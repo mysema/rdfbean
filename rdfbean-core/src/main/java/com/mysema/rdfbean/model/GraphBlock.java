@@ -9,13 +9,9 @@ import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.Visitor;
 
-/**
- * @author tiwe
- *
- */
-public class GroupBlock implements Block{
+public class GraphBlock implements Block{
     
-    private static final long serialVersionUID = 114999121944301068L;
+    private static final long serialVersionUID = -4450740702187022383L;
 
     private final List<Block> blocks;
     
@@ -24,14 +20,7 @@ public class GroupBlock implements Block{
     
     private final Expression<UID> context;
     
-    public GroupBlock(List<Block> blocks, Predicate... filters) {
-        this.blocks = blocks;
-        this.context = null;
-        this.filters = ExpressionUtils.allOf(filters);
-        
-    }
-    
-    public GroupBlock(List<Block> blocks, Expression<UID> context, Predicate... filters) {
+    public GraphBlock(Expression<UID> context, List<Block> blocks, Predicate... filters) {
         this.blocks = blocks;
         this.context = context;
         this.filters = ExpressionUtils.allOf(filters);

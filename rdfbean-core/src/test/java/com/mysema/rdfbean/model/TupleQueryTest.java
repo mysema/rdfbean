@@ -6,16 +6,15 @@ import java.util.List;
 import org.junit.Test;
 
 import com.mysema.query.types.Predicate;
-import com.mysema.query.types.path.SimplePath;
 import com.mysema.rdfbean.TEST;
 
 public class TupleQueryTest {
     
-    private static final SimplePath<ID> subject = new SimplePath<ID>(ID.class, "s");
+    private static final QNODE<ID> subject = new QNODE<ID>(ID.class, "s");
     
-    private static final SimplePath<UID> predicate = new SimplePath<UID>(UID.class, "p");
+    private static final QNODE<UID> predicate = new QNODE<UID>(UID.class, "p");
     
-    private static final SimplePath<NODE> object = new SimplePath<NODE>(NODE.class, "o");
+    private static final QNODE<NODE> object = new QNODE<NODE>(NODE.class, "o");
     
     private RDFQuery query(){
         return new RDFTestQuery();
@@ -35,7 +34,11 @@ public class TupleQueryTest {
                 predicate.eq(RDFS.label),
                 subject.ne(new UID(TEST.NS)),
                 object.isNull(),
-                object.isNotNull()
+                object.isNotNull(),
+                object.lt("X"),
+                object.gt("X"),
+                object.loe("X"),
+                object.goe("X")
         );
         
         for (Predicate filter : filters){

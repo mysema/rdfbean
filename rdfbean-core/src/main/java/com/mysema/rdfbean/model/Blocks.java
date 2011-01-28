@@ -30,19 +30,27 @@ public final class Blocks {
     }
     
     public static Block group(Block... blocks){
-        return new GroupBlock(Arrays.asList(blocks), false);
+        return new GroupBlock(Arrays.asList(blocks));
     }
     
     public static Block filter(Block block, Predicate... filters){
-        return new GroupBlock(Collections.singletonList(block), false, filters);
+        return new GroupBlock(Collections.singletonList(block), filters);
     }
     
     public static Block optional(Block... blocks){
-        return new GroupBlock(Arrays.asList(blocks), true);
+        return new OptionalBlock(Arrays.asList(blocks));
     }
     
     public static Block union(Block... blocks){
         return new UnionBlock(Arrays.asList(blocks));
+    }
+    
+    public static Block graph(Expression<UID> context, Block... blocks){
+        return new GraphBlock(context, Arrays.asList(blocks));
+    }
+    
+    public static Block graphFilter(Expression<UID> context, Block block, Predicate... filters){
+        return new GraphBlock(context, Collections.singletonList(block));
     }
     
     @SuppressWarnings("unchecked")
