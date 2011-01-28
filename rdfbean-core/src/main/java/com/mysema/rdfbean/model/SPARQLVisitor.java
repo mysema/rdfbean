@@ -38,7 +38,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
                 append("DISTINCT ");
             }
             handle(" ", md.getProjection());
-            append("\n");
+            append("\n");            
             
         // ask
         }else if (queryType == QueryLanguage.BOOLEAN){
@@ -214,5 +214,5 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         lastPattern = expr;
         return null;
     }
-    
+        
 }

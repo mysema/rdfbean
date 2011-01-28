@@ -85,4 +85,11 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
         }
         return this;
     }
+    
+    @Override
+    public String toString(){
+        SPARQLVisitor visitor = new SPARQLVisitor();
+        visitor.visit(queryMixin.getMetadata(), QueryLanguage.TUPLE);
+        return visitor.toString();
+    }
 }

@@ -7,6 +7,7 @@ package com.mysema.rdfbean.query;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -57,19 +58,29 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
 
     @Override
     public long count() {
-        TupleQuery query = createTupleQuery(false);
-        List<Map<String, NODE>> results = IteratorAdapter.asList(query.getTuples());
-        if (results.size() == 1 && results.get(0).size() == 1) {
+        TupleQuery query = createTupleQuery(true);        
+        if (query.getVariables().equals(Collections.singletonList("counter"))){
+            long counter = 0;
+            CloseableIterator<Map<String,NODE>> tuples = query.getTuples();
+            try{
+                while (tuples.hasNext()){
+                    counter++;
+                    tuples.next();
+                }    
+            }finally{
+                tuples.close();
+            }
+            return counter;
+            
+        }else{
+            List<Map<String, NODE>> results = IteratorAdapter.asList(query.getTuples());
             NODE result = results.get(0).values().iterator().next();
             if (result.isLiteral()) {
                 return Long.valueOf(result.getValue());
             } else {
                 throw new IllegalArgumentException(result.toString());
             }
-        } else {
-            throw new IllegalArgumentException("Illegal result for count " + results);
         }
-
     }
 
     private BooleanQuery createBooleanQuery() {

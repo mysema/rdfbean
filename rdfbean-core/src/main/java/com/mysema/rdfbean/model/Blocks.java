@@ -2,6 +2,7 @@ package com.mysema.rdfbean.model;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
@@ -19,7 +20,7 @@ public final class Blocks {
                 convert(ID.class, subject),
                 convert(UID.class, predicate),
                 convert(NODE.class, object),
-                convert(UID.class, context));
+                context != null ? convert(UID.class, context) : null);
     }
     
     public static Block pattern(Object subject, Object predicate, Object object) {
@@ -39,6 +40,10 @@ public final class Blocks {
     
     public static Block optional(Block... blocks){
         return new OptionalBlock(Arrays.asList(blocks));
+    }
+    
+    public static Block optional(List<Block> blocks, Predicate... predicates){
+        return new OptionalBlock(blocks, predicates);
     }
     
     public static Block union(Block... blocks){

@@ -103,8 +103,8 @@ public final class SessionImpl implements Session {
         clear();
     }
 
-    public SessionImpl(Configuration configuration, RDFConnection connection, @Nullable Locale locale) {
-        this(configuration, connection, locale != null ? Arrays.asList(locale) : Collections.<Locale> emptySet());
+    public SessionImpl(Configuration configuration, RDFConnection connection, Locale... locales) {
+        this(configuration, connection, Arrays.asList(locales));
     }
 
     @Override
