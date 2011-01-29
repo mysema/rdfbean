@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.mysema.query.types.Constant;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Path;
@@ -64,6 +65,8 @@ public final class Blocks {
             return new ConstantImpl<T>((T)o);    
         }else if (o instanceof Path){
             return (Path<T>)o;
+        }else if (o instanceof Constant){
+            return (Constant<T>)o;
         }else{
             throw new IllegalArgumentException(o.toString());
         }

@@ -41,6 +41,7 @@ import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
 import com.mysema.rdfbean.sesame.query.DirectQuery;
+import com.mysema.rdfbean.sesame.query.FunctionTransformer;
 import com.mysema.rdfbean.sesame.query.SesameBeanQuery;
 
 /**
@@ -62,6 +63,8 @@ public class SesameConnection implements RDFConnection {
     private static final ProjectionElemList projections = new ProjectionElemList();
 
     static{
+        new FunctionTransformer();
+        
         RDF_TYPE_VAR.setAnonymous(true);
         projections.addElements(new ProjectionElem("subject"));
         projections.addElements(new ProjectionElem("_rdf_type", "predicate"));
@@ -185,8 +188,9 @@ public class SesameConnection implements RDFConnection {
         }else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
                   queryLanguage.equals(QueryLanguage.GRAPH) ||
                   queryLanguage.equals(QueryLanguage.TUPLE)){    
-            SPARQLVisitor visitor = new SPARQLVisitor();
+            SPARQLVisitor visitor = new SPARQLVisitor(SesameSPARQLTemplates.DEFAULT, "PREFIX q: <functions:>\n");
             visitor.visit((QueryMetadata)definition, queryLanguage);
+            System.err.println(visitor.toString());
             SPARQLQuery query = createSPARQLQuery(visitor.toString());
             for (Map.Entry<Object,String> entry : visitor.getConstantToLabel().entrySet()){
                 query.setBinding(entry.getValue(), (NODE)entry.getKey());
@@ -212,7 +216,8 @@ public class SesameConnection implements RDFConnection {
                     inference);
             query.getMetadata().setDistinct(true);
             return (Q)query;
-
+//            return (Q)new BeanQueryImpl(session, this);
+            
         }else{
            return createQuery(queryLanguage, definition);
         }

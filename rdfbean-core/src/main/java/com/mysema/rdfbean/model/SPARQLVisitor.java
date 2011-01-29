@@ -21,16 +21,21 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
     @Nullable
     private PatternBlock lastPattern;
 
-    public SPARQLVisitor(SPARQLTemplates templates) {
+    private final String prefix;
+    
+    public SPARQLVisitor(SPARQLTemplates templates, String prefix) {
         super(templates);
+        this.prefix = prefix;
     }
     
     public SPARQLVisitor() {
         super(SPARQLTemplates.DEFAULT);
+        this.prefix = "";
     }
     
     public void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
         QueryModifiers mod = md.getModifiers();
+        append(prefix);
         // select
         if (queryType == QueryLanguage.TUPLE){
             append("SELECT ");

@@ -3,9 +3,11 @@ package com.mysema.rdfbean.query;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.model.Block;
 import com.mysema.rdfbean.model.Blocks;
+import com.mysema.rdfbean.model.GroupBlock;
 
 public class Filters {
     
@@ -59,6 +61,19 @@ public class Filters {
     
     public Predicate[] toArray(){
         return filters.toArray(new Predicate[filters.size()]);
+    }
+
+    public Expression<?> asBlock() {
+        List<Block> b = new ArrayList<Block>();
+        List<Predicate> f = new ArrayList<Predicate>();
+        for (Predicate filter : filters){
+            if (filter instanceof Block){
+                b.add((Block)filter);
+            }else{
+                f.add(filter);
+            }
+        }
+        return new GroupBlock(b, f.toArray(new Predicate[f.size()]));
     }
     
 }

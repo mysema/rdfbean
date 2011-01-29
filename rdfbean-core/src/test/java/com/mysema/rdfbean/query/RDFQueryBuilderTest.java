@@ -15,6 +15,7 @@ import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.RDFQueryImpl;
+import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
@@ -81,6 +82,34 @@ public class RDFQueryBuilderTest {
         query.from(user);    
         query.where(user.getString("firstName").startsWith("Bob"));
         assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName . FILTER(regex(?user_firstName, '^Bob')) }");
+    }
+    
+    @Test
+    public void Between() throws Exception{
+        query.from(user);
+        query.where(user.getString("firstName").between("A", "D"));
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName . FILTER(?user_firstName >= ?_c4 && ?user_firstName <= ?_c5) }");
+    }
+    
+    @Test
+    public void In() throws Exception{
+        query.from(user);
+        query.where(user.getString("firstName").in("Dennis", "Bob"));
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName . FILTER(?user_firstName = ?_c4 || ?user_firstName = ?_c5) }");
+    }
+    
+    @Test
+    public void InstanceOf() throws Exception{
+        query.from(user);
+        query.where(user.instanceOf(User.class));
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 , ?_c2 }");
+    }
+    
+    @Test
+    public void SubQuery_Exists() throws Exception{
+        query.from(user);
+        query.where(new BeanSubQuery().from(user2).where(user2.get("firstName").eq(user.get("firstName"))).exists());
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 . FILTER(exists({ ?user2 ?_c1 ?_c2 ; ?_c3 ?user2_firstName . ?user ?_c3 ?user_firstName . FILTER(?user2_firstName = ?user_firstName) } )) }");
     }
     
     @Test
