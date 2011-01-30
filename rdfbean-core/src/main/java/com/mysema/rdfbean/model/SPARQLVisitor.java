@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.model;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -16,7 +17,7 @@ import com.mysema.query.types.SubQueryExpression;
  * @author tiwe
  *
  */
-public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
+public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFVisitor<Void,Void>{
     
     @Nullable
     private PatternBlock lastPattern;
@@ -32,7 +33,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         super(SPARQLTemplates.DEFAULT);
         this.prefix = "";
     }
-    
+
     public void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
         QueryModifiers mod = md.getModifiers();
         append(prefix);
@@ -107,6 +108,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         if (mod.getOffset() != null){
             append("OFFSET ").append(mod.getOffset().toString()).append("\n");
         }
+
     }
     
     @Override
@@ -133,7 +135,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         }
         return null;
     }
-    
+
     @Nullable
     public Void visit(GroupBlock expr, @Nullable Void context) {
         lastPattern = null;
@@ -144,7 +146,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         lastPattern = null;
         return null;
     }
-    
+
     @Nullable
     public Void visit(GraphBlock expr, @Nullable Void context) {
         lastPattern = null;
@@ -155,7 +157,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         lastPattern = null;
         return null;
     }
-    
+
     @Nullable
     public Void visit(OptionalBlock expr, @Nullable Void context) {
         lastPattern = null;
@@ -197,7 +199,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor>{
         }
         return null;
     }
-    
+
     @Nullable
     public Void visit(PatternBlock expr, @Nullable Void context) {
         if (lastPattern == null || !lastPattern.getSubject().equals(expr.getSubject())){

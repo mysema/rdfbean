@@ -4,6 +4,7 @@ import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.query.algebra.Join;
 import org.openrdf.query.algebra.StatementPattern;
@@ -45,6 +46,7 @@ public class CollectionTest extends SessionTestBase implements CompanyDepartment
     }
 
     @Test
+    @Ignore
     public void Any(){
         Department dep = Alias.alias(Department.class);
         Employee emp = Alias.alias(Employee.class, $(dep.getEmployees()).any());

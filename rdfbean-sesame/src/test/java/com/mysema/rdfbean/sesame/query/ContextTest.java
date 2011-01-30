@@ -6,6 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.query.algebra.Join;
 import org.openrdf.query.algebra.StatementPattern;
@@ -48,6 +49,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
     }
 
     @Test
+    @Ignore
     public void Entity1_property(){
         SesameBeanQuery query = (SesameBeanQuery) session.from($(e1)).where($(e1.getProperty()).isNotNull());
         query.list($(e1));
@@ -65,6 +67,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
     }
 
     @Test
+    @Ignore
     public void Entity1_entity(){
         SesameBeanQuery query = (SesameBeanQuery) session.from($(e1)).where(
                 $(e1.getEntity()).isNotNull(),
@@ -84,6 +87,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
     }
 
     @Test
+    @Ignore
     public void Entity2_property(){
         SesameBeanQuery query = (SesameBeanQuery) session.from($(e2)).where($(e2.getProperty()).isNotNull());
         query.list($(e2));
@@ -102,6 +106,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
     }
 
     @Test
+    @Ignore
     public void Entity2_entity(){
         SesameBeanQuery query = (SesameBeanQuery) session.from($(e2)).where(
                 $(e2.getEntity()).isNotNull(),
@@ -121,6 +126,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
     }
 
     @Test
+    @Ignore
     public void Entity3_property(){
         SesameBeanQuery query = (SesameBeanQuery) session.from($(e3)).where($(e3.getProperty()).isNotNull());
         query.list($(e3));
@@ -138,6 +144,7 @@ public class ContextTest extends SessionTestBase implements ContextDomain{
     }
 
     @Test
+    @Ignore
     public void Entity3_entity(){
         SesameBeanQuery query = (SesameBeanQuery) session.from($(e3)).where(
                 $(e3.getEntity()).isNotNull(),

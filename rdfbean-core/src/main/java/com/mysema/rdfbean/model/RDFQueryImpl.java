@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.BooleanBuilder;
+import com.mysema.query.QueryMetadata;
 import com.mysema.query.support.QueryBase;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.Expression;
@@ -84,6 +85,10 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
             }
         }
         return this;
+    }
+    
+    public QueryMetadata getMetadata(){
+        return queryMixin.getMetadata();
     }
     
     @Override
