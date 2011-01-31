@@ -52,7 +52,7 @@ public class Filters {
         if (optBlocks.isEmpty()){
             filters.addAll(optFilters);
         }else{
-            filters.add(Blocks.optional(optBlocks, optFilters.toArray(new Predicate[0])));
+            filters.add(Blocks.optional(optBlocks, optFilters.toArray(new Predicate[optFilters.size()])));
         }
         optBlocks = new ArrayList<Block>();
         optFilters = new ArrayList<Predicate>();

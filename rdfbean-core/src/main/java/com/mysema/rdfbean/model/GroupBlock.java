@@ -22,18 +22,14 @@ public class GroupBlock implements Block{
     @Nullable
     private final Predicate filters;
     
-    private final Expression<UID> context;
-    
     public GroupBlock(List<Block> blocks, Predicate... filters) {
         this.blocks = blocks;
-        this.context = null;
         this.filters = ExpressionUtils.allOf(filters);
         
     }
     
     public GroupBlock(List<Block> blocks, Expression<UID> context, Predicate... filters) {
         this.blocks = blocks;
-        this.context = context;
         this.filters = ExpressionUtils.allOf(filters);
     }
     
@@ -45,7 +41,11 @@ public class GroupBlock implements Block{
     @Override
     @SuppressWarnings("unchecked")
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        return (R)((RDFVisitor)v).visit(this, context);        
+        if (v instanceof RDFVisitor){
+            return (R)((RDFVisitor)v).visit(this, context);    
+        }else{
+            throw new IllegalArgumentException(v.toString());
+        }       
     }
 
     @Override
@@ -60,10 +60,6 @@ public class GroupBlock implements Block{
     @Nullable
     public Predicate getFilters() {
         return filters;
-    }
-
-    public Expression<UID> getContext() {
-        return context;
     }
 
 }

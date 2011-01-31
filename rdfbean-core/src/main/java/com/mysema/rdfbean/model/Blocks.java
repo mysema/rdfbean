@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
@@ -16,7 +18,7 @@ import com.mysema.query.types.Predicate;
  */
 public final class Blocks {
 
-    public static Block pattern(Object subject, Object predicate, Object object, Object context) {
+    public static Block pattern(Object subject, Object predicate, Object object, @Nullable Object context) {
         return new PatternBlock(
                 convert(ID.class, subject),
                 convert(UID.class, predicate),

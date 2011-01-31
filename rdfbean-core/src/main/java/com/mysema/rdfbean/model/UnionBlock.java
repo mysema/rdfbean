@@ -27,7 +27,11 @@ public class UnionBlock implements Block{
     @Override
     @SuppressWarnings("unchecked")
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        return (R)((RDFVisitor)v).visit(this, context);        
+        if (v instanceof RDFVisitor){
+            return (R)((RDFVisitor)v).visit(this, context);    
+        }else{
+            throw new IllegalArgumentException(v.toString());
+        } 
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.mysema.rdfbean.model;
 
+import javax.annotation.Nullable;
+
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.Visitor;
@@ -18,9 +20,10 @@ public class PatternBlock implements Block{
     
     private final Expression<NODE> object;
     
+    @Nullable
     private final Expression<UID> context;
     
-    public PatternBlock(Expression<ID> subject, Expression<UID> predicate, Expression<NODE> object, Expression<UID> context) {
+    public PatternBlock(Expression<ID> subject, Expression<UID> predicate, Expression<NODE> object, @Nullable Expression<UID> context) {
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;
@@ -43,6 +46,7 @@ public class PatternBlock implements Block{
         return object;
     }
 
+    @Nullable
     public Expression<UID> getContext() {
         return context;
     }
@@ -55,7 +59,11 @@ public class PatternBlock implements Block{
     @Override
     @SuppressWarnings("unchecked")
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        return (R)((RDFVisitor)v).visit(this, context);
+        if (v instanceof RDFVisitor){
+            return (R)((RDFVisitor)v).visit(this, context);    
+        }else{
+            throw new IllegalArgumentException(v.toString());
+        }
     }
 
     @Override
