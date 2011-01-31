@@ -35,7 +35,6 @@ import com.mysema.query.types.Templates;
 import com.mysema.query.types.ToStringVisitor;
 import com.mysema.query.types.expr.BooleanOperation;
 import com.mysema.query.types.template.BooleanTemplate;
-import com.mysema.query.types.template.NumberTemplate;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.Block;
 import com.mysema.rdfbean.model.Blocks;
@@ -132,7 +131,7 @@ public class RDFQueryBuilder {
         
         if (forCount){
             // TODO : alternatively COUNT(*), if supported
-            projection.add(NumberTemplate.create(Integer.class, "?counter"));
+            projection.add(new PathImpl<LIT>(LIT.class, "counter"));
         }else{
             // limit + offset
             query.restrict(metadata.getModifiers());
@@ -381,6 +380,8 @@ public class RDFQueryBuilder {
         }
         
         List<Expression<?>> args = new ArrayList<Expression<?>>(operation.getArgs().size());
+        
+        // TODO : add option for startsWith, endsWith, contains as regex
         
         try{
             if (operation.getOperator() == Ops.EQ_OBJECT || operation.getOperator() == Ops.NE_OBJECT){

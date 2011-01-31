@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.sesame.query;
 
 import org.openrdf.query.GraphQuery;
+import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.QueryModel;
@@ -18,6 +19,8 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.GraphResult;
 import org.openrdf.result.TupleResult;
 import org.openrdf.store.StoreException;
+
+import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * DirectQuery provides integration of programmatically constructed queries into Repository connection
@@ -55,23 +58,44 @@ public final class DirectQuery {
             }
         });
     }
-
-    public static TupleResult query(RepositoryConnection connection,
-            TupleQueryModel tupleQueryModel,
-            boolean includeInferred) throws StoreException{
-        QUERY_HOLDER.set(tupleQueryModel);
-        TupleQuery tupleQuery = connection.prepareTupleQuery(DirectQuery.DIRECTQUERY, "");
-        tupleQuery.setIncludeInferred(includeInferred);
-        return  tupleQuery.evaluate();
+    
+    public static TupleQuery getQuery(RepositoryConnection connection, TupleQueryModel tupleQueryModel,
+            boolean includeInferred){        
+        try {
+            QUERY_HOLDER.set(tupleQueryModel);
+            TupleQuery tupleQuery = connection.prepareTupleQuery(DirectQuery.DIRECTQUERY, "");
+            tupleQuery.setIncludeInferred(includeInferred);
+            return  tupleQuery;
+        } catch (StoreException e) {
+            throw new RepositoryException(e);
+        } catch (MalformedQueryException e) {
+            throw new RepositoryException(e);
+        }
+        
     }
 
-    public static GraphResult query(RepositoryConnection connection,
-            GraphQueryModel graphQueryModel,
+    public static GraphQuery getQuery(RepositoryConnection connection, GraphQueryModel graphQueryModel,
+            boolean includeInferred) {
+        try {
+            QUERY_HOLDER.set(graphQueryModel);
+            GraphQuery graphQuery = connection.prepareGraphQuery(DirectQuery.DIRECTQUERY, "");
+            graphQuery.setIncludeInferred(includeInferred);
+            return graphQuery;
+        } catch (StoreException e) {
+            throw new RepositoryException(e);
+        } catch (MalformedQueryException e) {
+            throw new RepositoryException(e);
+        }
+    }
+
+    public static TupleResult query(RepositoryConnection connection, TupleQueryModel tupleQueryModel,
             boolean includeInferred) throws StoreException{
-        QUERY_HOLDER.set(graphQueryModel);
-        GraphQuery graphQuery = connection.prepareGraphQuery(DirectQuery.DIRECTQUERY, "");
-        graphQuery.setIncludeInferred(includeInferred);
-        return graphQuery.evaluate();
+        return getQuery(connection, tupleQueryModel, includeInferred).evaluate();
+    }
+
+    public static GraphResult query(RepositoryConnection connection, GraphQueryModel graphQueryModel,
+            boolean includeInferred) throws StoreException{
+        return getQuery(connection, graphQueryModel, includeInferred).evaluate();
     }
 
 }

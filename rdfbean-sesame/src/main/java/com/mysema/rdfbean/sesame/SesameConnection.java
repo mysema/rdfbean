@@ -27,8 +27,19 @@ import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.algebra.*;
+import org.openrdf.query.algebra.Extension;
+import org.openrdf.query.algebra.ExtensionElem;
+import org.openrdf.query.algebra.Projection;
+import org.openrdf.query.algebra.ProjectionElem;
+import org.openrdf.query.algebra.ProjectionElemList;
+import org.openrdf.query.algebra.Reduced;
+import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.Union;
+import org.openrdf.query.algebra.ValueConstant;
+import org.openrdf.query.algebra.Var;
 import org.openrdf.query.parser.GraphQueryModel;
+import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.ModelResult;
 import org.openrdf.store.StoreException;
@@ -37,7 +48,21 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
 import com.mysema.query.QueryMetadata;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.Dialect;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.Inference;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.SPARQLVisitor;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
 import com.mysema.rdfbean.sesame.query.DirectQuery;
@@ -185,9 +210,15 @@ public class SesameConnection implements RDFConnection {
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
             return (Q)createSPARQLQuery((String) definition);
 
+        }else if (queryLanguage.equals(QueryLanguage.TUPLE)){
+            SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
+            TupleExpr tuple = visitor.visit((QueryMetadata)definition, queryLanguage);
+            TupleQueryModel queryModel = new TupleQueryModel(tuple);
+            TupleQuery query = DirectQuery.getQuery(connection, queryModel, false);
+            return (Q)new TupleQueryImpl(query, dialect);
+            
         }else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
-                  queryLanguage.equals(QueryLanguage.GRAPH) ||
-                  queryLanguage.equals(QueryLanguage.TUPLE)){    
+                  queryLanguage.equals(QueryLanguage.GRAPH)){    
             SPARQLVisitor visitor = new SPARQLVisitor(SesameSPARQLTemplates.DEFAULT, "PREFIX q: <functions:>\n");
             visitor.visit((QueryMetadata)definition, queryLanguage);
             System.err.println(visitor.toString());

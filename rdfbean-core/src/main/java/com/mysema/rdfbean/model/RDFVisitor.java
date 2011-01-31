@@ -11,7 +11,7 @@ import com.mysema.query.types.Visitor;
  */
 public interface RDFVisitor<R,C> extends Visitor<R,C>{
 
-    void visit(QueryMetadata md, QueryLanguage<?, ?> queryType);
+    R visit(QueryMetadata md, QueryLanguage<?, ?> queryType);
 
     @Nullable
     R visit(UnionBlock expr, @Nullable C context);

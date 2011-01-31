@@ -1,7 +1,6 @@
 package com.mysema.rdfbean.model;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -34,7 +33,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         this.prefix = "";
     }
 
-    public void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
+    public Void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
         QueryModifiers mod = md.getModifiers();
         append(prefix);
         // select
@@ -108,6 +107,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         if (mod.getOffset() != null){
             append("OFFSET ").append(mod.getOffset().toString()).append("\n");
         }
+        
+        return null;
 
     }
     
