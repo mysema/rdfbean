@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.mutable.MutableInt;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -102,6 +104,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     }
 
     @SuppressWarnings("unchecked")
+    @Nullable
     private <RT> RT getAsProjectionValue(Expression<RT> expr,
             Map<String, NODE> nodes, List<String> variables, MutableInt offset) {
         if (expr instanceof FactoryExpression<?>) {

@@ -241,6 +241,7 @@ public class RDFQueryBuilder {
         }
     }
     
+    @Nullable
     private Expression<?> transformPath(Filters filters, Path<?> path){
         if (pathToMapped.containsKey(path)){
             return pathToMapped.get(path);
@@ -415,7 +416,7 @@ public class RDFQueryBuilder {
             }else if (operation.getOperator() == Ops.AND){
                 Predicate lhs = (Predicate) transform(filters, operation.getArg(0));
                 Predicate rhs = (Predicate) transform(filters, operation.getArg(1));
-                return lhs == null ? rhs : (rhs == null ? rhs : ExpressionUtils.and(lhs, rhs));
+                return lhs == null ? rhs : (rhs == null ? lhs : ExpressionUtils.and(lhs, rhs));
                     
             }else if (operation.getOperator() == Ops.IN){
                 if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof Path){
@@ -561,7 +562,7 @@ public class RDFQueryBuilder {
     }
 
     public TupleQuery createTupleQuery(boolean forCount) {
-        return build(forCount).createTupleQuery(projection.toArray(new Expression[0]));
+        return build(forCount).createTupleQuery(projection.toArray(new Expression[projection.size()]));
     }
        
 
