@@ -60,4 +60,17 @@ public class ParsingTest {
         }
     }
     
+    @Test
+    public void GraphQuery2(){
+        List<String> queries = new ArrayList<String>();
+        queries.add("CONSTRUCT { ?s ?p ?o ; <test:test> ?o .} WHERE { ?s ?p ?o }");
+        
+        for (String query : queries){
+            GraphQueryModel model = QueryParserUtil.parseGraphQuery(QueryLanguage.SPARQL, query, null);
+            System.out.println(model);
+            System.out.println(new QuerySerializer(model, false).toString());
+            System.out.println();
+        }
+    }
+    
 }

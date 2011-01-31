@@ -13,41 +13,12 @@ import javax.annotation.Nullable;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.types.Constant;
-import com.mysema.query.types.ConstantImpl;
-import com.mysema.query.types.Expression;
-import com.mysema.query.types.ExpressionUtils;
+import com.mysema.query.types.*;
 import com.mysema.query.types.Operation;
-import com.mysema.query.types.OperationImpl;
-import com.mysema.query.types.Operator;
-import com.mysema.query.types.Ops;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.Path;
-import com.mysema.query.types.PathImpl;
-import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.PathType;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.PredicateOperation;
-import com.mysema.query.types.SubQueryExpression;
-import com.mysema.query.types.TemplateExpression;
-import com.mysema.query.types.TemplateExpressionImpl;
-import com.mysema.query.types.Templates;
-import com.mysema.query.types.ToStringVisitor;
 import com.mysema.query.types.expr.BooleanOperation;
 import com.mysema.query.types.template.BooleanTemplate;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.model.Block;
-import com.mysema.rdfbean.model.Blocks;
-import com.mysema.rdfbean.model.BooleanQuery;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RDFQueryImpl;
-import com.mysema.rdfbean.model.TupleQuery;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
@@ -380,49 +351,40 @@ public class RDFQueryBuilder {
         }
         
         List<Expression<?>> args = new ArrayList<Expression<?>>(operation.getArgs().size());
-        
-        // TODO : add option for startsWith, endsWith, contains as regex
+        boolean leftPath = operation.getArg(0) instanceof Path<?>;
+        boolean rightPath = operation.getArgs().size() > 1 ? operation.getArg(1) instanceof Path<?> : false;
+        boolean leftConstant = operation.getArg(0) instanceof Constant<?>;
+        boolean rightConstant = operation.getArgs().size() > 1 ? operation.getArg(1) instanceof Constant<?> : false;
         
         try{
             if (operation.getOperator() == Ops.EQ_OBJECT || operation.getOperator() == Ops.NE_OBJECT){
-                if (operation.getArg(0) instanceof Path && ((Path)operation.getArg(0)).getMetadata().getPathType() != PathType.VARIABLE){
-                    if (operation.getArg(1) instanceof Constant){
-                        Path<?> path = (Path<?>) operation.getArg(0);
-                        Constant<?> constant = (Constant<?>) operation.getArg(1);
-                        MappedPath mappedPath = getMappedPath(path);
-                        // id property
-                        if (path.getMetadata().getPathType() == PathType.PROPERTY 
-                            && constant.getType().equals(String.class)
-                            && mappedPath.getPredicatePath().isEmpty()){                            
-                            operation = new PredicateOperation((Operator)operation.getOperator(), 
-                                    path, 
-                                    new ConstantImpl(session.getId(new LID(constant.toString()))));
-                            
-                        // localized property
-                        }else if (mappedPath.getMappedProperty().isLocalized()){
-                            Locale locale;
-                            if (path.getMetadata().getPathType() == PathType.PROPERTY){
-                                locale = session.getCurrentLocale();
-                            }else{
-                                locale = (Locale)((Constant)path.getMetadata().getExpression()).getConstant();
-                            } 
-                            operation = new PredicateOperation((Operator)operation.getOperator(), 
-                                    path, 
-                                    new ConstantImpl(new LIT(constant.toString(), locale)));
-                        }
-                    }    
+                if (leftPath 
+                        && rightConstant 
+                        && ((Path)operation.getArg(0)).getMetadata().getPathType() != PathType.VARIABLE){
+                    operation = transformPathEqNeConstant(operation);
                 }
                 
-                
+            }else if (operation.getOperator() == Ops.STARTS_WITH && rightConstant){    
+                operation = new PredicateOperation(Ops.MATCHES, 
+                        operation.getArg(0), new ConstantImpl(new LIT("^"+operation.getArg(1))));
+            
+            }else if (operation.getOperator() == Ops.ENDS_WITH && rightConstant){    
+                operation = new PredicateOperation(Ops.MATCHES, 
+                        operation.getArg(0), new ConstantImpl(new LIT(operation.getArg(1) + "$")));
+            
+            }else if (operation.getOperator() == Ops.STRING_CONTAINS && rightConstant){    
+                operation = new PredicateOperation(Ops.MATCHES, 
+                        operation.getArg(0), new ConstantImpl(new LIT(".*" + operation.getArg(1) + ".*")));
+                                
             }else if (operation.getOperator() == Ops.AND){
                 Predicate lhs = (Predicate) transform(filters, operation.getArg(0));
                 Predicate rhs = (Predicate) transform(filters, operation.getArg(1));
                 return lhs == null ? rhs : (rhs == null ? lhs : ExpressionUtils.and(lhs, rhs));
                     
             }else if (operation.getOperator() == Ops.IN){
-                if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof Path){
+                if ((leftPath && rightPath) || (leftConstant && rightPath)){
                     operation = (Operation)ExpressionUtils.eq(operation.getArg(0), (Expression)operation.getArg(1));
-                }else if (operation.getArg(0) instanceof Path && operation.getArg(1) instanceof Constant){
+                }else if (leftPath && rightConstant){
                     Collection col = (Collection)((Constant)operation.getArg(1)).getConstant();
                     if (!col.isEmpty()){
                         BooleanBuilder builder = new BooleanBuilder();
@@ -434,8 +396,6 @@ public class RDFQueryBuilder {
                         throw new IllegalArgumentException(operation.toString());
                     }
                     
-                }else if (operation.getArg(0) instanceof Constant && operation.getArg(1) instanceof Path){
-                    operation = (Operation)ExpressionUtils.eq(operation.getArg(0), (Expression)operation.getArg(1));
                 }else{
                     throw new IllegalArgumentException(operation.toString());
                 }
@@ -454,9 +414,13 @@ public class RDFQueryBuilder {
             }else if (operation.getOperator() == Ops.INSTANCE_OF){
                 Path<?> path = (Path<?>) transform(filters, operation.getArg(0));
                 Constant<?> type = (Constant<?>) transform(filters, operation.getArg(1));
-                // TODO : handle negation properly
-                filters.add(Blocks.pattern(path, RDF.type, type));
-                return null;
+                Block pattern = Blocks.pattern(path, RDF.type, type); 
+                if (inNegation() || inOptionalPath()){
+                    return new PredicateOperation(Ops.EXISTS, new ConstantImpl(Blocks.group(pattern)));
+                }else{
+                    filters.add(pattern);
+                    return null;
+                }               
                 
             }else if (operation.getOperator() == Ops.COL_IS_EMPTY){
                 operation = (Operation<?>) ExpressionUtils.eq(operation.getArg(0), new ConstantImpl(RDF.nil));
@@ -466,20 +430,28 @@ public class RDFQueryBuilder {
                 MappedPath mappedPath = getMappedPath(path);
                 MappedProperty mappedProperty = mappedPath.getMappedProperty();
                 Expression<?> key = transform(filters, operation.getArg(1));
-                // TODO : handle negation properly
-                filters.add(Blocks.pattern(transform(filters, path), mappedProperty.getKeyPredicate(), key));
-                return null;
+                Block pattern = Blocks.pattern(transform(filters, path), mappedProperty.getKeyPredicate(), key);
+                if (inNegation() || inOptionalPath()){
+                    return new PredicateOperation(Ops.EXISTS, new ConstantImpl(Blocks.group(pattern)));
+                }else{
+                    filters.add(pattern);
+                    return null;
+                }
                 
             }else if (operation.getOperator() == Ops.CONTAINS_VALUE){
                 Path<?> path = (Path<?>) operation.getArg(0);
                 MappedPath mappedPath = getMappedPath(path);
                 MappedProperty mappedProperty = mappedPath.getMappedProperty();
                 
-                // TODO : handle negation properly
                 if (mappedProperty.getValuePredicate() != null){
                     Expression<?> value = transform(filters, operation.getArg(1));
-                    filters.add(Blocks.pattern(transform(filters, path), mappedProperty.getValuePredicate(), value));
-                    return null;    
+                    Block pattern = Blocks.pattern(transform(filters, path), mappedProperty.getValuePredicate(), value);
+                    if (inNegation() || inOptionalPath()){
+                        return new PredicateOperation(Ops.EXISTS, new ConstantImpl(Blocks.group(pattern)));
+                    }else{
+                        filters.add(pattern);
+                        return null;
+                    }
                     
                 }else{
                     operation = (Operation<?>) ExpressionUtils.eq((Path)path, operation.getArg(1));
@@ -487,9 +459,7 @@ public class RDFQueryBuilder {
                 
                 
             }else if (operation.getOperator() == Ops.MAP_IS_EMPTY){
-                // TODO : handle negation properly
-                filters.add(new PredicateOperation(Ops.IS_NULL, transform(filters, operation.getArg(0))));
-                return null;
+                return new PredicateOperation(Ops.IS_NULL, transform(filters, operation.getArg(0)));
             }
                 
             for (Expression<?> arg : operation.getArgs()){
@@ -516,6 +486,34 @@ public class RDFQueryBuilder {
             return new OperationImpl(operation.getType(),operation.getOperator(), args);
         }
         
+    }
+
+    @SuppressWarnings("unchecked")
+    private Operation<?> transformPathEqNeConstant(Operation<?> operation) {
+        Path<?> path = (Path<?>) operation.getArg(0);
+        Constant<?> constant = (Constant<?>) operation.getArg(1);
+        MappedPath mappedPath = getMappedPath(path);
+        // id property
+        if (path.getMetadata().getPathType() == PathType.PROPERTY 
+            && constant.getType().equals(String.class)
+            && mappedPath.getPredicatePath().isEmpty()){                            
+            operation = new PredicateOperation((Operator)operation.getOperator(), 
+                    path, 
+                    new ConstantImpl<ID>(session.getId(new LID(constant.toString()))));
+            
+        // localized property
+        }else if (mappedPath.getMappedProperty().isLocalized()){
+            Locale locale;
+            if (path.getMetadata().getPathType() == PathType.PROPERTY){
+                locale = session.getCurrentLocale();
+            }else{
+                locale = (Locale)((Constant<?>)path.getMetadata().getExpression()).getConstant();
+            } 
+            operation = new PredicateOperation((Operator)operation.getOperator(), 
+                    path, 
+                    new ConstantImpl<LIT>(new LIT(constant.toString(), locale)));
+        }
+        return operation;
     }
     
     @SuppressWarnings("unchecked")

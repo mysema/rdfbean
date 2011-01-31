@@ -3,6 +3,7 @@
  */
 package com.mysema.rdfbean.query;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +31,9 @@ public class User{
     
     @Predicate(ln="buddy")
     Set<User> buddies;
+    
+    @Predicate
+    List<User> buddyList;
     
     @Predicate
     @Localized

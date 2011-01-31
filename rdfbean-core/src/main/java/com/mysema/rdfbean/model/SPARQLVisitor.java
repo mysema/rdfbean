@@ -8,6 +8,7 @@ import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.support.SerializerBase;
 import com.mysema.query.types.Constant;
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.SubQueryExpression;
@@ -180,18 +181,22 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         }
     }
     
-    private void visitFilter(@Nullable Predicate filter){
+    private void visitFilter(@Nullable Predicate filter){        
         if (filter != null){
             if (lastPattern != null){
                 append(". ");
             }
+            lastPattern = null;
             append("FILTER(").handle(filter).append(") ");    
         }        
+        lastPattern = null;
     }
     
     @Override
     public Void visit(Constant<?> expr, Void context) {
-        if (!getConstantToLabel().containsKey(expr.getConstant())) {
+        if (expr.getConstant() instanceof Block){
+            handle((Expression<?>)expr.getConstant());
+        }else if (!getConstantToLabel().containsKey(expr.getConstant())) {
             String constLabel = "_c" + (getConstantToLabel().size() + 1);
             getConstantToLabel().put(expr.getConstant(), constLabel);
             append("?" + constLabel);

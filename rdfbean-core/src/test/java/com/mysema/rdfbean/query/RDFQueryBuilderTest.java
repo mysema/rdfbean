@@ -2,10 +2,10 @@ package com.mysema.rdfbean.query;
 
 import java.lang.reflect.Method;
 import java.util.Locale;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.DefaultQueryMetadata;
@@ -83,13 +83,26 @@ public class RDFQueryBuilderTest {
     }
     
     @Test
-    @Ignore
     public void Starts_With() throws Exception{
-        // FIXME
         query.from(user);    
         query.where(user.getString("firstName").startsWith("Bob"));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName . FILTER(regex(?user_firstName, '^Bob')) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName . FILTER(regex(str(?user_firstName), \"^Bob\")) }");
     }
+    
+    @Test
+    public void Ends_With() throws Exception{
+        query.from(user);    
+        query.where(user.getString("firstName").endsWith("Bob"));
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName . FILTER(regex(str(?user_firstName), \"Bob$\")) }");
+    }
+        
+    @Test
+    public void String_Contains() throws Exception{
+        query.from(user);    
+        query.where(user.getString("firstName").contains("Bob"));
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName . FILTER(regex(str(?user_firstName), \".*Bob.*\")) }");
+    }
+    
     
     @Test
     public void Between() throws Exception{
@@ -183,6 +196,29 @@ public class RDFQueryBuilderTest {
     }
     
     @Test
+    public void ListAccess() throws Exception{
+        query.from(user);
+        query.where(user.getList("buddyList", User.class).get(0).getString("name").eq("XXX"));
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_buddyList . " +
+        	"?user_buddyList ?_c4 ?_var_a . " +
+        	"?_var_a ?_c5 ?user_buddyList_0_name . FILTER(?user_buddyList_0_name = ?_c6) }");
+    }
+    
+    @Test
+    public void Map_is_Empty() throws Exception{
+        query.from(user);
+        query.where(user.getMap("buddiesMapped", String.class, User.class).isEmpty());
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 . OPTIONAL {?user ?_c3 ?user_buddiesMapped } FILTER(!bound(?user_buddiesMapped)) }");
+    }
+    
+    @Test
+    public void Map_is_not_Empty() throws Exception{
+        query.from(user);
+        query.where(user.getMap("buddiesMapped", String.class, User.class).isNotEmpty());
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 . OPTIONAL {?user ?_c3 ?user_buddiesMapped } FILTER(!(!bound(?user_buddiesMapped))) }");
+    }
+    
+    @Test
     public void Contains_Key() throws Exception{
         query.from(user);
         query.where(user.getMap("buddiesMapped", String.class, User.class).containsKey("XXX"));
@@ -197,12 +233,10 @@ public class RDFQueryBuilderTest {
     }
     
     @Test
-    @Ignore
     public void Contains_Key_Not() throws Exception{
-        // FIXME
         query.from(user);
         query.where(user.getMap("buddiesMapped", String.class, User.class).containsKey("XXX").not());
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_buddiesMapped . ?user_buddiesMapped ?_c4 ?_c5 }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_buddiesMapped . FILTER(!exists({ ?user_buddiesMapped ?_c4 ?_c5 } )) }");
     }
     
     @Test

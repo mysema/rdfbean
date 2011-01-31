@@ -337,7 +337,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
         }else if (MATH_OPS.containsKey(op)){
             return new MathExpr(toValue(expr.getArg(0)), toValue(expr.getArg(1)), MATH_OPS.get(op));
         }else if (op == Ops.MATCHES){
-            return new Regex(new Str(toValue(expr.getArg(0))), new Str(toValue(expr.getArg(0))), null);
+            return new Regex(new Str(toValue(expr.getArg(0))), new Str(toValue(expr.getArg(1))), null);
         }else if (op == Ops.STRING_IS_EMPTY){    
             return new Regex(new Str(toValue(expr.getArg(0))), "", false);
         }else if (op == Ops.IS_NULL){    
