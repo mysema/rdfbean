@@ -11,14 +11,48 @@ import java.util.Stack;
 import javax.annotation.Nullable;
 
 import com.mysema.query.BooleanBuilder;
+import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.types.*;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.ConstantImpl;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.ExpressionUtils;
+import com.mysema.query.types.FactoryExpression;
 import com.mysema.query.types.Operation;
+import com.mysema.query.types.OperationImpl;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.ParamExpression;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.PathImpl;
+import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.PathType;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.PredicateOperation;
+import com.mysema.query.types.SubQueryExpression;
+import com.mysema.query.types.SubQueryExpressionImpl;
+import com.mysema.query.types.TemplateExpression;
+import com.mysema.query.types.TemplateExpressionImpl;
+import com.mysema.query.types.Templates;
+import com.mysema.query.types.ToStringVisitor;
+import com.mysema.query.types.Visitor;
 import com.mysema.query.types.expr.BooleanOperation;
 import com.mysema.query.types.template.BooleanTemplate;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.Block;
+import com.mysema.rdfbean.model.Blocks;
+import com.mysema.rdfbean.model.BooleanQuery;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RDFQueryImpl;
+import com.mysema.rdfbean.model.TupleQuery;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
@@ -31,7 +65,7 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
  * @author tiwe
  *
  */
-public class RDFQueryBuilder {
+public class RDFQueryBuilder implements Visitor<Object,Filters>{
     
     private static final Templates TEMPLATES = new Templates(){
         {
@@ -86,7 +120,7 @@ public class RDFQueryBuilder {
         
         //group by
         for (Expression<?> expr : metadata.getGroupBy()){
-            query.groupBy(transform(filters, expr));
+            query.groupBy(transform(expr, filters));
         }        
         
         //having
@@ -109,7 +143,7 @@ public class RDFQueryBuilder {
                     
             //select (optional paths);
             for (Expression<?> expr : metadata.getProjection()){
-                projection.add(transform(filters, expr));
+                projection.add(transform(expr, filters));
             }
         }
         
@@ -118,46 +152,59 @@ public class RDFQueryBuilder {
         return query;
     }
     
-
-    private Expression<?> transformQuery(Filters filters, SubQueryExpression<?> expr) {
-        QueryMetadata md = expr.getMetadata();        
-        Filters f = new Filters();
-        
-        // from
-        for (JoinExpression join : md.getJoins()){
-            f.add(handleRootPath((Path<?>) join.getTarget()));
-        }            
-        // where
-        if (md.getWhere() != null){
-            f.add(transform(f, md.getWhere()));
-        } 
-        // select
-        // TODO
-        
-        return f.asBlock();
+    public BooleanQuery createBooleanQuery() {
+        return build(false).createBooleanQuery();
     }
 
-    @Nullable
-    private Predicate transform(Filters filters, Predicate where) {
-        return (Predicate) transform(filters, (Expression<?>)where);
+    public TupleQuery createTupleQuery(boolean forCount) {
+        return build(forCount).createTupleQuery(projection.toArray(new Expression[projection.size()]));
     }
     
     @Nullable
-    private Expression<?> transform(Filters filters, Expression<?> expr) {
-        if (expr instanceof Path<?>){
-            return transformPath(filters, (Path<?>)expr);
-        }else if (expr instanceof Operation<?>){
-            return transformOperation(filters, (Operation<?>)expr);
-        }else if (expr instanceof TemplateExpression<?>){
-            return transformTemplate(filters, (TemplateExpression<?>)expr);
-        }else if (expr instanceof Constant<?>){     
-            return transformConstant(filters, (Constant<?>)expr);
-        }else if (expr instanceof SubQueryExpression<?>){
-            return transformQuery(filters, (SubQueryExpression<?>)expr);
+    private UID getContext(Path<?> path){
+        if (pathToContext.containsKey(path)){
+            return pathToContext.get(path);
+        }else if (path.getMetadata().getParent() != null){
+            return getContext(path.getMetadata().getParent());
         }else{
-            throw new IllegalArgumentException(expr.toString());    
-        }        
+            return null;
+        }
     }    
+    
+    private MappedPath getMappedPath(Path<?> path) {
+        PathMetadata<?> md = path.getMetadata();
+        if (path.getMetadata().getPathType() != PathType.PROPERTY){
+            md = md.getParent().getMetadata();    
+        }
+        MappedClass mc = configuration.getMappedClass(md.getParent().getType());   
+        return mc.getMappedPath(md.getExpression().toString());           
+    }
+
+    protected UID getTypeForDomainClass(Class<?> clazz){        
+        MappedClass mc = configuration.getMappedClass(clazz);
+        if (mc.getUID() != null){
+            return mc.getUID();
+        }else{
+            throw new IllegalArgumentException("Got no RDF type for " + clazz.getName());
+        }
+    }
+    
+    private Block handleRootPath(Path<?> path) {
+        MappedClass mappedClass = configuration.getMappedClass(path.getType());
+        UID rdfType = mappedClass.getUID();
+        UID context = mappedClass.getContext();
+        pathToMapped.put(path, path);
+        if (rdfType != null){
+            if (context != null){
+                pathToContext.put(path, context);
+                return Blocks.pattern(path, RDF.type, rdfType, context);
+            }else{
+                return Blocks.pattern(path, RDF.type, rdfType);
+            }
+        } else {
+            throw new IllegalArgumentException("No types mapped against " + path.getType().getName());
+        }        
+    }
     
     public boolean inNegation(){
         int notIndex = operatorStack.lastIndexOf(Ops.NOT);
@@ -167,14 +214,62 @@ public class RDFQueryBuilder {
         }
         return false;
     }
-
+    
     private boolean inOptionalPath(){
         return operatorStack.contains(Ops.IS_NULL) ||
         operatorStack.contains(Ops.MAP_IS_EMPTY) ||
         (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
     }
     
-    private Expression<?> transformConstant(Filters filters, Constant<?> constant){
+    @Nullable
+    private Expression<?> transform(Expression<?> expr, Filters filters) {
+        return (Expression<?>) expr.accept(this, filters);   
+    }
+    
+    @SuppressWarnings("unchecked")
+    private OrderSpecifier<?> transform(Filters filters, OrderSpecifier<?> os) {
+        Expression<?> expr = transform(os.getTarget(), filters);
+        return new OrderSpecifier(os.getOrder(), expr);
+    }
+    
+    @Nullable
+    private Predicate transform(Filters filters, Predicate where) {
+        return (Predicate) transform((Expression<?>)where, filters);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Operation<?> transformPathEqNeConstant(Operation<?> operation) {
+        Path<?> path = (Path<?>) operation.getArg(0);
+        Constant<?> constant = (Constant<?>) operation.getArg(1);
+        MappedPath mappedPath = getMappedPath(path);
+        // id property
+        if (path.getMetadata().getPathType() == PathType.PROPERTY 
+            && constant.getType().equals(String.class)
+            && mappedPath.getPredicatePath().isEmpty()){                            
+            operation = new PredicateOperation((Operator)operation.getOperator(), 
+                    path, 
+                    new ConstantImpl<ID>(session.getId(new LID(constant.toString()))));
+            
+        // localized property
+        }else if (mappedPath.getMappedProperty().isLocalized()){
+            Locale locale;
+            if (path.getMetadata().getPathType() == PathType.PROPERTY){
+                locale = session.getCurrentLocale();
+            }else{
+                locale = (Locale)((Constant<?>)path.getMetadata().getExpression()).getConstant();
+            } 
+            operation = new PredicateOperation((Operator)operation.getOperator(), 
+                    path, 
+                    new ConstantImpl<LIT>(new LIT(constant.toString(), locale)));
+        }
+        return operation;
+    }
+
+    private Path<NODE> var(String var){
+        return new PathImpl<NODE>(NODE.class, var);
+    }
+    
+    public Expression<?> visit(Constant<?> constant, Filters filters){
         Object javaValue = constant.getConstant();
         ConverterRegistry converter = configuration.getConverterRegistry();
         if (List.class.isAssignableFrom(constant.getType()) && ((List<?>)constant.getConstant()).isEmpty()){
@@ -201,25 +296,178 @@ public class RDFQueryBuilder {
             return new ConstantImpl<ID>(id);
         }
     }
-    
-    protected UID getTypeForDomainClass(Class<?> clazz){        
-        MappedClass mc = configuration.getMappedClass(clazz);
-        if (mc.getUID() != null){
-            return mc.getUID();
-        }else{
-            throw new IllegalArgumentException("Got no RDF type for " + clazz.getName());
-        }
+
+    @Override
+    public Object visit(FactoryExpression<?> expr, Filters context) {
+        throw new UnsupportedOperationException();
     }
-    
+
     @Nullable
-    private Expression<?> transformPath(Filters filters, Path<?> path){
+    @SuppressWarnings("unchecked")
+    public Expression<?> visit(Operation<?> operation, Filters filters){
+        boolean filtersInOptional = filters.inOptional();
+        boolean outerOptional = inOptionalPath();
+        boolean innerOptional = false;
+        operatorStack.push(operation.getOperator());
+        Map<Path<?>, Path<?>> origPathToMapped = null;
+        if (!outerOptional && inOptionalPath()){
+            filters.beginOptional();
+            innerOptional = true;
+            
+            origPathToMapped = pathToMapped;
+        }
+        
+        List<Expression<?>> args = new ArrayList<Expression<?>>(operation.getArgs().size());
+        boolean leftPath = operation.getArg(0) instanceof Path<?>;
+        boolean rightPath = operation.getArgs().size() > 1 ? operation.getArg(1) instanceof Path<?> : false;
+        boolean leftConstant = operation.getArg(0) instanceof Constant<?>;
+        boolean rightConstant = operation.getArgs().size() > 1 ? operation.getArg(1) instanceof Constant<?> : false;
+        
+        try{
+            if (operation.getOperator() == Ops.EQ_OBJECT || operation.getOperator() == Ops.NE_OBJECT){
+                if (leftPath 
+                        && rightConstant 
+                        && ((Path)operation.getArg(0)).getMetadata().getPathType() != PathType.VARIABLE){
+                    operation = transformPathEqNeConstant(operation);
+                }
+                
+            }else if (operation.getOperator() == Ops.STARTS_WITH && rightConstant){    
+                operation = new PredicateOperation(Ops.MATCHES, 
+                        operation.getArg(0), new ConstantImpl(new LIT("^"+operation.getArg(1))));
+            
+            }else if (operation.getOperator() == Ops.ENDS_WITH && rightConstant){    
+                operation = new PredicateOperation(Ops.MATCHES, 
+                        operation.getArg(0), new ConstantImpl(new LIT(operation.getArg(1) + "$")));
+            
+            }else if (operation.getOperator() == Ops.STRING_CONTAINS && rightConstant){    
+                operation = new PredicateOperation(Ops.MATCHES, 
+                        operation.getArg(0), new ConstantImpl(new LIT(".*" + operation.getArg(1) + ".*")));
+                                
+            }else if (operation.getOperator() == Ops.AND){
+                Predicate lhs = (Predicate) transform(operation.getArg(0), filters);
+                Predicate rhs = (Predicate) transform(operation.getArg(1), filters);
+                return lhs == null ? rhs : (rhs == null ? lhs : ExpressionUtils.and(lhs, rhs));
+                    
+            }else if (operation.getOperator() == Ops.IN){
+                if ((leftPath && rightPath) || (leftConstant && rightPath)){
+                    operation = (Operation)ExpressionUtils.eq(operation.getArg(0), (Expression)operation.getArg(1));
+                }else if (leftPath && rightConstant){
+                    Collection col = (Collection)((Constant)operation.getArg(1)).getConstant();
+                    if (!col.isEmpty()){
+                        BooleanBuilder builder = new BooleanBuilder();
+                        for (Object o : col){
+                            builder.or(ExpressionUtils.eq(operation.getArg(0), new ConstantImpl(o)));
+                        }
+                        operation = (Operation)builder.getValue();    
+                    }else{
+                        throw new IllegalArgumentException(operation.toString());
+                    }
+                    
+                }else{
+                    throw new IllegalArgumentException(operation.toString());
+                }
+                
+            }else if (operation.getOperator() == Ops.BETWEEN){
+                operation = (Operation<?>) ExpressionUtils.and(
+                        new PredicateOperation(Ops.GOE, operation.getArg(0), operation.getArg(1)), 
+                        new PredicateOperation(Ops.LOE, operation.getArg(0), operation.getArg(2)));
+                
+            }else if (operation.getOperator() == Ops.ORDINAL){
+                Path<?> path = (Path<?>) transform(operation.getArg(0), filters);
+                Path<?> ordinalPath = new PathImpl<LIT>(LIT.class, path.toString()+"_ordinal");
+                filters.add(Blocks.pattern(path, CORE.enumOrdinal, ordinalPath));
+                return ordinalPath;
+                
+            }else if (operation.getOperator() == Ops.INSTANCE_OF){
+                Path<?> path = (Path<?>) transform(operation.getArg(0), filters);
+                Constant<?> type = (Constant<?>) transform(operation.getArg(1), filters);
+                Block pattern = Blocks.pattern(path, RDF.type, type); 
+                if (inNegation() || inOptionalPath()){
+                    return pattern.exists();
+                }else{
+                    filters.add(pattern);
+                    return null;
+                }               
+                
+            }else if (operation.getOperator() == Ops.COL_IS_EMPTY){
+                operation = (Operation<?>) ExpressionUtils.eq(operation.getArg(0), new ConstantImpl(RDF.nil));
+            
+            }else if (operation.getOperator() == Ops.CONTAINS_KEY){
+                Path<?> path = (Path<?>) operation.getArg(0);
+                MappedPath mappedPath = getMappedPath(path);
+                MappedProperty mappedProperty = mappedPath.getMappedProperty();
+                Expression<?> key = transform(operation.getArg(1), filters);
+                Block pattern = Blocks.pattern(transform(path, filters), mappedProperty.getKeyPredicate(), key);
+                if (inNegation() || inOptionalPath()){
+                    return pattern.exists();
+                }else{
+                    filters.add(pattern);
+                    return null;
+                }
+                
+            }else if (operation.getOperator() == Ops.CONTAINS_VALUE){
+                Path<?> path = (Path<?>) operation.getArg(0);
+                MappedPath mappedPath = getMappedPath(path);
+                MappedProperty mappedProperty = mappedPath.getMappedProperty();
+                
+                if (mappedProperty.getValuePredicate() != null){
+                    Expression<?> value = transform(operation.getArg(1), filters);
+                    Block pattern = Blocks.pattern(transform(path, filters), mappedProperty.getValuePredicate(), value);
+                    if (inNegation() || inOptionalPath()){
+                        return pattern.exists();
+                    }else{
+                        filters.add(pattern);
+                        return null;
+                    }
+                    
+                }else{
+                    operation = (Operation<?>) ExpressionUtils.eq((Path)path, operation.getArg(1));
+                }                
+                
+            }else if (operation.getOperator() == Ops.MAP_IS_EMPTY){
+                return new PredicateOperation(Ops.IS_NULL, transform(operation.getArg(0), filters));
+            }
+                
+            for (Expression<?> arg : operation.getArgs()){
+                Expression<?> transformed = transform(arg, filters);
+                if (transformed != null){
+                    args.add(transformed);
+                }else{
+                    System.err.println(arg + " skipped");
+                }
+            }
+        }finally{
+            operatorStack.pop();
+            if (!outerOptional && innerOptional){
+                if (!filtersInOptional){
+                    filters.endOptional();
+                }
+                pathToMapped = origPathToMapped;
+            }
+        }
+                
+        if (operation.getType().equals(Boolean.class)){
+            return BooleanOperation.create((Operator)operation.getOperator(), args.toArray(new Expression[args.size()]));
+        }else{
+            return new OperationImpl(operation.getType(),operation.getOperator(), args);
+        }
+        
+    }
+
+    @Override
+    public Object visit(ParamExpression<?> expr, Filters context) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    public Expression<?> visit(Path<?> path, Filters filters){
         if (pathToMapped.containsKey(path)){
             return pathToMapped.get(path);
             
         }else if (path.getMetadata().getParent() != null){
             PathMetadata<?> md = path.getMetadata();
             PathType pathType = md.getPathType();
-            Path<?> parent = (Path<?>) transformPath(filters, md.getParent());
+            Path<?> parent = (Path<?>) visit(md.getParent(), filters);
             Path<?> pathNode = null;
             Path<?> rdfPath = pathToMapped.get(path);
             UID context = getContext(path);
@@ -263,7 +511,7 @@ public class RDFQueryBuilder {
                 }
                 
             }else if (pathType.equals(PathType.COLLECTION_ANY)){
-                return transformPath(filters, path.getMetadata().getParent());
+                return visit(path.getMetadata().getParent(), filters);
                 
             }else if (pathType.equals(PathType.ARRAYVALUE) 
                     || pathType.equals(PathType.LISTVALUE)){
@@ -285,7 +533,7 @@ public class RDFQueryBuilder {
                 MappedPath mappedPath = getMappedPath(md.getParent());
                 MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
                 if (!mappedProperty.isLocalized()){
-                    Expression<?> expr = transform(filters, path.getMetadata().getExpression());
+                    Expression<?> expr = transform(path.getMetadata().getExpression(), filters);
                     filters.add(Blocks.pattern(parent, mappedProperty.getKeyPredicate(), expr, context));
                     
                     if (mappedProperty.getValuePredicate() != null){
@@ -309,218 +557,37 @@ public class RDFQueryBuilder {
         }
         
     }
-    
-    private Path<NODE> var(String var){
-        return new PathImpl<NODE>(NODE.class, var);
-    }
-    
-    private MappedPath getMappedPath(Path<?> path) {
-        PathMetadata<?> md = path.getMetadata();
-        if (path.getMetadata().getPathType() != PathType.PROPERTY){
-            md = md.getParent().getMetadata();    
-        }
-        MappedClass mc = configuration.getMappedClass(md.getParent().getType());   
-        return mc.getMappedPath(md.getExpression().toString());
-           
-    }
-    
-    @Nullable
-    private UID getContext(Path<?> path){
-        if (pathToContext.containsKey(path)){
-            return pathToContext.get(path);
-        }else if (path.getMetadata().getParent() != null){
-            return getContext(path.getMetadata().getParent());
+
+    public Expression<?> visit(SubQueryExpression<?> expr, Filters filters) {
+        QueryMetadata md = expr.getMetadata();        
+        Filters f = new Filters();
+        
+        // from
+        for (JoinExpression join : md.getJoins()){
+            f.add(handleRootPath((Path<?>) join.getTarget()));
+        }            
+        // where
+        if (md.getWhere() != null){
+            f.add(transform(f, md.getWhere()));
+        } 
+        // select
+        if (!md.getProjection().isEmpty()){
+            QueryMetadata rv = new DefaultQueryMetadata();
+            for (Expression<?> e : md.getProjection()){
+                rv.addProjection(transform(e, filters));
+            }
+            rv.addWhere(f.asBlock());
+            return new SubQueryExpressionImpl<Object>(Object.class, rv);
         }else{
-            return null;
+            return f.asBlock();    
         }
     }
 
-    @Nullable
     @SuppressWarnings("unchecked")
-    private Expression<?> transformOperation(Filters filters, Operation<?> operation){
-        boolean filtersInOptional = filters.inOptional();
-        boolean outerOptional = inOptionalPath();
-        boolean innerOptional = false;
-        operatorStack.push(operation.getOperator());
-        Map<Path<?>, Path<?>> origPathToMapped = null;
-        if (!outerOptional && inOptionalPath()){
-            filters.beginOptional();
-            innerOptional = true;
-            
-            origPathToMapped = pathToMapped;
-        }
-        
-        List<Expression<?>> args = new ArrayList<Expression<?>>(operation.getArgs().size());
-        boolean leftPath = operation.getArg(0) instanceof Path<?>;
-        boolean rightPath = operation.getArgs().size() > 1 ? operation.getArg(1) instanceof Path<?> : false;
-        boolean leftConstant = operation.getArg(0) instanceof Constant<?>;
-        boolean rightConstant = operation.getArgs().size() > 1 ? operation.getArg(1) instanceof Constant<?> : false;
-        
-        try{
-            if (operation.getOperator() == Ops.EQ_OBJECT || operation.getOperator() == Ops.NE_OBJECT){
-                if (leftPath 
-                        && rightConstant 
-                        && ((Path)operation.getArg(0)).getMetadata().getPathType() != PathType.VARIABLE){
-                    operation = transformPathEqNeConstant(operation);
-                }
-                
-            }else if (operation.getOperator() == Ops.STARTS_WITH && rightConstant){    
-                operation = new PredicateOperation(Ops.MATCHES, 
-                        operation.getArg(0), new ConstantImpl(new LIT("^"+operation.getArg(1))));
-            
-            }else if (operation.getOperator() == Ops.ENDS_WITH && rightConstant){    
-                operation = new PredicateOperation(Ops.MATCHES, 
-                        operation.getArg(0), new ConstantImpl(new LIT(operation.getArg(1) + "$")));
-            
-            }else if (operation.getOperator() == Ops.STRING_CONTAINS && rightConstant){    
-                operation = new PredicateOperation(Ops.MATCHES, 
-                        operation.getArg(0), new ConstantImpl(new LIT(".*" + operation.getArg(1) + ".*")));
-                                
-            }else if (operation.getOperator() == Ops.AND){
-                Predicate lhs = (Predicate) transform(filters, operation.getArg(0));
-                Predicate rhs = (Predicate) transform(filters, operation.getArg(1));
-                return lhs == null ? rhs : (rhs == null ? lhs : ExpressionUtils.and(lhs, rhs));
-                    
-            }else if (operation.getOperator() == Ops.IN){
-                if ((leftPath && rightPath) || (leftConstant && rightPath)){
-                    operation = (Operation)ExpressionUtils.eq(operation.getArg(0), (Expression)operation.getArg(1));
-                }else if (leftPath && rightConstant){
-                    Collection col = (Collection)((Constant)operation.getArg(1)).getConstant();
-                    if (!col.isEmpty()){
-                        BooleanBuilder builder = new BooleanBuilder();
-                        for (Object o : col){
-                            builder.or(ExpressionUtils.eq(operation.getArg(0), new ConstantImpl(o)));
-                        }
-                        operation = (Operation)builder.getValue();    
-                    }else{
-                        throw new IllegalArgumentException(operation.toString());
-                    }
-                    
-                }else{
-                    throw new IllegalArgumentException(operation.toString());
-                }
-                
-            }else if (operation.getOperator() == Ops.BETWEEN){
-                operation = (Operation<?>) ExpressionUtils.and(
-                        new PredicateOperation(Ops.GOE, operation.getArg(0), operation.getArg(1)), 
-                        new PredicateOperation(Ops.LOE, operation.getArg(0), operation.getArg(2)));
-                
-            }else if (operation.getOperator() == Ops.ORDINAL){
-                Path<?> path = (Path<?>) transform(filters, operation.getArg(0));
-                Path<?> ordinalPath = new PathImpl<LIT>(LIT.class, path.toString()+"_ordinal");
-                filters.add(Blocks.pattern(path, CORE.enumOrdinal, ordinalPath));
-                return ordinalPath;
-                
-            }else if (operation.getOperator() == Ops.INSTANCE_OF){
-                Path<?> path = (Path<?>) transform(filters, operation.getArg(0));
-                Constant<?> type = (Constant<?>) transform(filters, operation.getArg(1));
-                Block pattern = Blocks.pattern(path, RDF.type, type); 
-                if (inNegation() || inOptionalPath()){
-                    return new PredicateOperation(Ops.EXISTS, new ConstantImpl(Blocks.group(pattern)));
-                }else{
-                    filters.add(pattern);
-                    return null;
-                }               
-                
-            }else if (operation.getOperator() == Ops.COL_IS_EMPTY){
-                operation = (Operation<?>) ExpressionUtils.eq(operation.getArg(0), new ConstantImpl(RDF.nil));
-            
-            }else if (operation.getOperator() == Ops.CONTAINS_KEY){
-                Path<?> path = (Path<?>) operation.getArg(0);
-                MappedPath mappedPath = getMappedPath(path);
-                MappedProperty mappedProperty = mappedPath.getMappedProperty();
-                Expression<?> key = transform(filters, operation.getArg(1));
-                Block pattern = Blocks.pattern(transform(filters, path), mappedProperty.getKeyPredicate(), key);
-                if (inNegation() || inOptionalPath()){
-                    return new PredicateOperation(Ops.EXISTS, new ConstantImpl(Blocks.group(pattern)));
-                }else{
-                    filters.add(pattern);
-                    return null;
-                }
-                
-            }else if (operation.getOperator() == Ops.CONTAINS_VALUE){
-                Path<?> path = (Path<?>) operation.getArg(0);
-                MappedPath mappedPath = getMappedPath(path);
-                MappedProperty mappedProperty = mappedPath.getMappedProperty();
-                
-                if (mappedProperty.getValuePredicate() != null){
-                    Expression<?> value = transform(filters, operation.getArg(1));
-                    Block pattern = Blocks.pattern(transform(filters, path), mappedProperty.getValuePredicate(), value);
-                    if (inNegation() || inOptionalPath()){
-                        return new PredicateOperation(Ops.EXISTS, new ConstantImpl(Blocks.group(pattern)));
-                    }else{
-                        filters.add(pattern);
-                        return null;
-                    }
-                    
-                }else{
-                    operation = (Operation<?>) ExpressionUtils.eq((Path)path, operation.getArg(1));
-                }
-                
-                
-            }else if (operation.getOperator() == Ops.MAP_IS_EMPTY){
-                return new PredicateOperation(Ops.IS_NULL, transform(filters, operation.getArg(0)));
-            }
-                
-            for (Expression<?> arg : operation.getArgs()){
-                Expression<?> transformed = transform(filters, arg);
-                if (transformed != null){
-                    args.add(transformed);
-                }else{
-                    System.err.println(arg + " skipped");
-                }
-            }
-        }finally{
-            operatorStack.pop();
-            if (!outerOptional && innerOptional){
-                if (!filtersInOptional){
-                    filters.endOptional();
-                }
-                pathToMapped = origPathToMapped;
-            }
-        }
-                
-        if (operation.getType().equals(Boolean.class)){
-            return BooleanOperation.create((Operator)operation.getOperator(), args.toArray(new Expression[args.size()]));
-        }else{
-            return new OperationImpl(operation.getType(),operation.getOperator(), args);
-        }
-        
-    }
-
-    @SuppressWarnings("unchecked")
-    private Operation<?> transformPathEqNeConstant(Operation<?> operation) {
-        Path<?> path = (Path<?>) operation.getArg(0);
-        Constant<?> constant = (Constant<?>) operation.getArg(1);
-        MappedPath mappedPath = getMappedPath(path);
-        // id property
-        if (path.getMetadata().getPathType() == PathType.PROPERTY 
-            && constant.getType().equals(String.class)
-            && mappedPath.getPredicatePath().isEmpty()){                            
-            operation = new PredicateOperation((Operator)operation.getOperator(), 
-                    path, 
-                    new ConstantImpl<ID>(session.getId(new LID(constant.toString()))));
-            
-        // localized property
-        }else if (mappedPath.getMappedProperty().isLocalized()){
-            Locale locale;
-            if (path.getMetadata().getPathType() == PathType.PROPERTY){
-                locale = session.getCurrentLocale();
-            }else{
-                locale = (Locale)((Constant<?>)path.getMetadata().getExpression()).getConstant();
-            } 
-            operation = new PredicateOperation((Operator)operation.getOperator(), 
-                    path, 
-                    new ConstantImpl<LIT>(new LIT(constant.toString(), locale)));
-        }
-        return operation;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Expression<?> transformTemplate(Filters filters, TemplateExpression<?> template){
+    public Expression<?> visit(TemplateExpression<?> template, Filters filters){
         List<Expression<?>> args = new ArrayList<Expression<?>>(template.getArgs().size());
         for (Expression<?> arg : args){
-            Expression<?> transformed = transform(filters, arg);
+            Expression<?> transformed = transform(arg, filters);
             if (transformed != null){
                 args.add(transformed);
             }
@@ -531,38 +598,7 @@ public class RDFQueryBuilder {
             return new TemplateExpressionImpl(template.getType(), template.getTemplate(), args);    
         }        
     }
-
-    @SuppressWarnings("unchecked")
-    private OrderSpecifier<?> transform(Filters filters, OrderSpecifier<?> os) {
-        Expression<?> expr = transform(filters, os.getTarget());
-        return new OrderSpecifier(os.getOrder(), expr);
-    }
-
-    private Block handleRootPath(Path<?> path) {
-        MappedClass mappedClass = configuration.getMappedClass(path.getType());
-        UID rdfType = mappedClass.getUID();
-        UID context = mappedClass.getContext();
-        pathToMapped.put(path, path);
-        if (rdfType != null){
-            if (context != null){
-                pathToContext.put(path, context);
-                return Blocks.pattern(path, RDF.type, rdfType, context);
-            }else{
-                return Blocks.pattern(path, RDF.type, rdfType);
-            }
-        } else {
-            throw new IllegalArgumentException("No types mapped against " + path.getType().getName());
-        }
-        
-    }
-
-    public BooleanQuery createBooleanQuery() {
-        return build(false).createBooleanQuery();
-    }
-
-    public TupleQuery createTupleQuery(boolean forCount) {
-        return build(forCount).createTupleQuery(projection.toArray(new Expression[projection.size()]));
-    }
-       
+    
+    
 
 }

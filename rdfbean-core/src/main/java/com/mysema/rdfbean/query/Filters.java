@@ -3,7 +3,6 @@ package com.mysema.rdfbean.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysema.query.types.Expression;
 import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.model.Block;
 import com.mysema.rdfbean.model.Blocks;
@@ -63,7 +62,7 @@ public class Filters {
         return filters.toArray(new Predicate[filters.size()]);
     }
 
-    public Expression<?> asBlock() {
+    public Block asBlock() {
         List<Block> b = new ArrayList<Block>();
         List<Predicate> f = new ArrayList<Predicate>();
         for (Predicate filter : filters){

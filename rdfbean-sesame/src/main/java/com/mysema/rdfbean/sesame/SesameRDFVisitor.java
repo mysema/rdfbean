@@ -95,13 +95,13 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
         MATH_OPS.put(Ops.MULT, MathOp.MULTIPLY);
         MATH_OPS.put(Ops.DIV, MathOp.DIVIDE);      
         
+        // string
         FUNCTION_OPS.put(Ops.TRIM,            "functions:trim");
         FUNCTION_OPS.put(Ops.UPPER,           "functions:upper");
         FUNCTION_OPS.put(Ops.LOWER,           "functions:lower");
         FUNCTION_OPS.put(Ops.CONCAT,          "functions:concat");
         FUNCTION_OPS.put(Ops.SUBSTR_1ARG,     "functions:substring");
-        FUNCTION_OPS.put(Ops.SUBSTR_2ARGS,    "functions:substring2");
-        FUNCTION_OPS.put(Ops.StringOps.SPACE, "functions:space");
+        FUNCTION_OPS.put(Ops.SUBSTR_2ARGS,    "functions:substring2");        
         FUNCTION_OPS.put(Ops.CHAR_AT,         "functions:charAt");
         FUNCTION_OPS.put(Ops.STARTS_WITH,     "functions:startsWith");
         FUNCTION_OPS.put(Ops.ENDS_WITH,       "functions:endsWith");
@@ -113,11 +113,17 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
         FUNCTION_OPS.put(Ops.STRING_LENGTH,   "functions:stringLength");
         FUNCTION_OPS.put(Ops.INDEX_OF,        "functions:indexOf");
         FUNCTION_OPS.put(Ops.INDEX_OF_2ARGS,  "functions:indexOf2");
+        FUNCTION_OPS.put(Ops.LIKE,            "functions:like");        
+        FUNCTION_OPS.put(Ops.StringOps.SPACE, "functions:space");
+        
+        // math
         FUNCTION_OPS.put(Ops.MathOps.CEIL,    "functions:ceil");
         FUNCTION_OPS.put(Ops.MathOps.FLOOR,   "functions:floor");
         FUNCTION_OPS.put(Ops.MathOps.SQRT,    "functions:sqrt");
-        FUNCTION_OPS.put(Ops.MathOps.ABS,     "functions:sqrt");
-        // TODO : xsd transformations
+        FUNCTION_OPS.put(Ops.MathOps.ABS,     "functions:abs");
+        FUNCTION_OPS.put(Ops.MOD,             "functions:modulo");
+        
+        // date / time
         FUNCTION_OPS.put(Ops.DateTimeOps.YEAR,"functions:year");
         FUNCTION_OPS.put(Ops.DateTimeOps.YEAR_MONTH,"functions:yearMonth");
         FUNCTION_OPS.put(Ops.DateTimeOps.MONTH,"functions:month");
@@ -130,8 +136,10 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
         FUNCTION_OPS.put(Ops.DateTimeOps.SECOND,"functions:second");
         FUNCTION_OPS.put(Ops.DateTimeOps.MILLISECOND,"functions:millisecond");
         
-        FUNCTION_OPS.put(Ops.LIKE,            "functions:like");
-        FUNCTION_OPS.put(Ops.MOD,             "functions:modulo");
+        // other
+        FUNCTION_OPS.put(Ops.COALESCE, "functions:coalesce");
+        
+    
     }
 
     private final SesameDialect dialect;
@@ -167,6 +175,10 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
         
         // where
         TupleExpr tuple = toTuple(md.getWhere());
+        
+        if (queryType == QueryLanguage.BOOLEAN){
+            return tuple;
+        }
         
         // order
         if (!md.getOrderBy().isEmpty()){
@@ -348,6 +360,12 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
             return new Exists(toTuple(expr.getArg(0)));
         }else if (op == Ops.DELEGATE){
             return toValue(expr.getArg(0));
+        }else if (op == Ops.STRING_CAST){
+                return new Str(toValue(expr.getArg(0)));   
+        }else if (op == Ops.NUMCAST){
+            return new FunctionCall(toVar(expr.getArg(1)).getValue().stringValue(), toValue(expr.getArg(0)));
+//        }else if (op == Ops.DELEGATE){
+//            // TODO
         }else if (FUNCTION_OPS.containsKey(op)){
             List<ValueExpr> args = new ArrayList<ValueExpr>(expr.getArgs().size());
             for (Expression<?> e : expr.getArgs()){

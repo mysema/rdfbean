@@ -8,4 +8,6 @@ import com.mysema.query.types.Predicate;
  */
 public interface Block extends Predicate{
 
+    Predicate exists();
+    
 }

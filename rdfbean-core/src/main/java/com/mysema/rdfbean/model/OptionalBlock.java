@@ -4,8 +4,11 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.ExpressionUtils;
+import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
+import com.mysema.query.types.PredicateOperation;
 import com.mysema.query.types.Visitor;
 
 public class OptionalBlock implements Block{
@@ -49,6 +52,11 @@ public class OptionalBlock implements Block{
     @Nullable
     public Predicate getFilters() {
         return filters;
+    }
+    
+    @Override
+    public Predicate exists(){
+        return new PredicateOperation(Ops.EXISTS, this);
     }
     
 }

@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.model;
 
 import java.util.List;
+import java.util.Stack;
 
 import javax.annotation.Nullable;
 
@@ -9,6 +10,8 @@ import com.mysema.query.QueryModifiers;
 import com.mysema.query.support.SerializerBase;
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.Expression;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.SubQueryExpression;
@@ -23,6 +26,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     private PatternBlock lastPattern;
 
     private final String prefix;
+    
+    private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
     
     public SPARQLVisitor(SPARQLTemplates templates, String prefix) {
         super(templates);
@@ -115,7 +120,12 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     
     @Override
     public Void visit(SubQueryExpression<?> expr, Void context) {
-        visit(expr.getMetadata(), QueryLanguage.TUPLE);
+        if (!operators.isEmpty() && operators.peek() == Ops.EXISTS){
+            handle(expr.getMetadata().getWhere());
+        }else{
+            visit(expr.getMetadata(), QueryLanguage.TUPLE);    
+        }
+        
         return null;
     }
 
@@ -194,7 +204,10 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     
     @Override
     public Void visit(Constant<?> expr, Void context) {
-        if (expr.getConstant() instanceof Block){
+        if (expr.getConstant() instanceof QueryMetadata){
+            QueryMetadata md = (QueryMetadata)expr.getConstant();
+            handle(md.getWhere());
+        }else if (expr.getConstant() instanceof Block){
             handle((Expression<?>)expr.getConstant());
         }else if (!getConstantToLabel().containsKey(expr.getConstant())) {
             String constLabel = "_c" + (getConstantToLabel().size() + 1);
@@ -226,6 +239,16 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         handle(expr.getObject()).append(" ");
         lastPattern = expr;
         return null;
+    }
+    
+    @Override
+    protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
+        operators.push(operator);
+        try{
+            super.visitOperation(type, operator, args);
+        }finally{
+            operators.pop();
+        }
     }
         
 }

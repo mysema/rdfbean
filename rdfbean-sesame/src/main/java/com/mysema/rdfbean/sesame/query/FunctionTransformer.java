@@ -231,6 +231,21 @@ public class FunctionTransformer implements OperationTransformer{
             }
             
         });
+        
+        register(Ops.COALESCE, new BaseFunction("functions:coalesce"){            
+            public Value evaluate(ValueFactory vf, Value... args) throws ValueExprEvaluationException {
+                for (Value arg : args){
+                    if (arg != null){
+                        return arg;
+                    }
+                }
+                return null;
+            }
+            public String evaluate(Value[] args) {
+                return "";
+            }
+        });
+        
 //        register(Ops.COALESCE, new BaseFunction("functions:coalesce"){
 //            public String evaluate(Value[] args) {
 //                for (Value arg : args){

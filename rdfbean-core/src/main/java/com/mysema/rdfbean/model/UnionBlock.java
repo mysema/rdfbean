@@ -2,7 +2,10 @@ package com.mysema.rdfbean.model;
 
 import java.util.List;
 
+import com.mysema.query.types.ConstantImpl;
+import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
+import com.mysema.query.types.PredicateOperation;
 import com.mysema.query.types.Visitor;
 
 /**
@@ -45,6 +48,11 @@ public class UnionBlock implements Block{
 
     public List<Block> getBlocks() {
         return blocks;
+    }
+    
+    @Override
+    public Predicate exists(){
+        return new PredicateOperation(Ops.EXISTS, new ConstantImpl<Block>(this));
     }
 
 }

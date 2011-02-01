@@ -2,8 +2,11 @@ package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
+import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
+import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
+import com.mysema.query.types.PredicateOperation;
 import com.mysema.query.types.Visitor;
 
 /**
@@ -69,6 +72,11 @@ public class PatternBlock implements Block{
     @Override
     public Class<? extends Boolean> getType() {
         return Boolean.class;
+    }
+    
+    @Override
+    public Predicate exists(){
+        return new PredicateOperation(Ops.EXISTS, Blocks.group(this));
     }
         
 }
