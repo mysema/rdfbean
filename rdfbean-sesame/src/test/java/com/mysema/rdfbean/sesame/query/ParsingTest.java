@@ -37,7 +37,8 @@ public class ParsingTest {
         queries.add("SELECT xsd:integer(L) FROM {R} rdfs:label {L}");
         queries.add("SELECT R FROM {R} rdfs:label {L} LIMIT 1");        
         queries.add("SELECT R FROM {R} rdfs:label {L} OFFSET 2");
-        queries.add("SELECT R FROM {R} rdfs:label {L} LIMIT 2 OFFSET 3");
+        queries.add("SELECT R FROM {R} rdfs:label {L} LIMIT 2 OFFSET 3");        
+        queries.add("SELECT val FROM {node} <ex:value> {val} WHERE val >= ANY ( SELECT value FROM {} <ex:value> {value} )");
         
         for (String query : queries){
             TupleQueryModel model = QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL, query, null);

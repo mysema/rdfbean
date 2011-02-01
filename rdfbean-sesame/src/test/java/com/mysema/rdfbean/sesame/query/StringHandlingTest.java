@@ -43,6 +43,9 @@ public class StringHandlingTest extends SessionTestBase{
     public void Matches(){
         assertEquals(1, where(var.directProperty.matches("propertym.*")).count());
         assertEquals(1, where(var.directProperty.matches(".*opertym.*")).count());
+        
+        assertEquals(1, where(var.directProperty.startsWith("propertym")).count());
+        assertEquals(1, where(var.directProperty.contains("opertym")).count());
     }
     
     @Test

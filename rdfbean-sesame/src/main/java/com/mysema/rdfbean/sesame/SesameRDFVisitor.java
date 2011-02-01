@@ -6,59 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.openrdf.query.algebra.And;
-import org.openrdf.query.algebra.Bound;
-import org.openrdf.query.algebra.Compare;
-import org.openrdf.query.algebra.Distinct;
-import org.openrdf.query.algebra.Exists;
-import org.openrdf.query.algebra.Extension;
-import org.openrdf.query.algebra.ExtensionElem;
-import org.openrdf.query.algebra.Filter;
-import org.openrdf.query.algebra.FunctionCall;
-import org.openrdf.query.algebra.Join;
-import org.openrdf.query.algebra.LeftJoin;
-import org.openrdf.query.algebra.MathExpr;
-import org.openrdf.query.algebra.Not;
-import org.openrdf.query.algebra.Or;
+import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.Order;
-import org.openrdf.query.algebra.OrderElem;
-import org.openrdf.query.algebra.Projection;
-import org.openrdf.query.algebra.ProjectionElem;
-import org.openrdf.query.algebra.ProjectionElemList;
-import org.openrdf.query.algebra.Regex;
-import org.openrdf.query.algebra.Slice;
-import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.algebra.Str;
-import org.openrdf.query.algebra.TupleExpr;
-import org.openrdf.query.algebra.Union;
-import org.openrdf.query.algebra.ValueExpr;
-import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.types.Constant;
-import com.mysema.query.types.Expression;
-import com.mysema.query.types.FactoryExpression;
+import com.mysema.query.types.*;
 import com.mysema.query.types.Operation;
-import com.mysema.query.types.Operator;
-import com.mysema.query.types.Ops;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.ParamExpression;
-import com.mysema.query.types.Path;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.SubQueryExpression;
-import com.mysema.query.types.TemplateExpression;
-import com.mysema.rdfbean.model.Block;
-import com.mysema.rdfbean.model.GraphBlock;
-import com.mysema.rdfbean.model.GroupBlock;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.OptionalBlock;
-import com.mysema.rdfbean.model.PatternBlock;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDFVisitor;
-import com.mysema.rdfbean.model.UnionBlock;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.query.VarNameIterator;
 import com.mysema.rdfbean.sesame.query.FunctionTransformer;
 
@@ -345,11 +302,15 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
         }else if (op == Ops.NOT){
             return new Not(toValue(expr.getArg(0)));
         }else if (COMPARE_OPS.containsKey(op)){
-            return new Compare(toValue(expr.getArg(0)), toValue(expr.getArg(1)), COMPARE_OPS.get(op));
+            if (expr.getArg(1) instanceof SubQueryExpression<?>){
+                return new CompareAll(toValue(expr.getArg(0)), toTuple(expr.getArg(1)), COMPARE_OPS.get(op));
+            }else{
+                return new Compare(toValue(expr.getArg(0)), toValue(expr.getArg(1)), COMPARE_OPS.get(op));    
+            }            
         }else if (MATH_OPS.containsKey(op)){
             return new MathExpr(toValue(expr.getArg(0)), toValue(expr.getArg(1)), MATH_OPS.get(op));
         }else if (op == Ops.MATCHES){
-            return new Regex(new Str(toValue(expr.getArg(0))), new Str(toValue(expr.getArg(1))), null);
+            return new Regex(new Str(toValue(expr.getArg(0))), new Str(toValue(expr.getArg(1))), null);            
         }else if (op == Ops.STRING_IS_EMPTY){    
             return new Regex(new Str(toValue(expr.getArg(0))), "", false);
         }else if (op == Ops.IS_NULL){    
@@ -364,8 +325,6 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
                 return new Str(toValue(expr.getArg(0)));   
         }else if (op == Ops.NUMCAST){
             return new FunctionCall(toVar(expr.getArg(1)).getValue().stringValue(), toValue(expr.getArg(0)));
-//        }else if (op == Ops.DELEGATE){
-//            // TODO
         }else if (FUNCTION_OPS.containsKey(op)){
             List<ValueExpr> args = new ArrayList<ValueExpr>(expr.getArgs().size());
             for (Expression<?> e : expr.getArgs()){
