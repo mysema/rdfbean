@@ -208,6 +208,15 @@ public class RDFQueryBuilderTest {
     }
     
     @Test
+    public void ListAccess2() throws Exception{
+        query.from(user);
+        query.where(user.getList("buddyList", User.class).get(1).getString("name").eq("XXX"));
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_buddyList . " +
+        	"?user_buddyList ?_c4 ?_var_a . ?_var_a ?_c5 ?_var_b . " +
+        	"?_var_b ?_c6 ?user_buddyList_1_name . FILTER(?user_buddyList_1_name = ?_c7) }");
+    }
+    
+    @Test
     public void Map_is_Empty() throws Exception{
         query.from(user);
         query.where(user.getMap("buddiesMapped", String.class, User.class).isEmpty());
