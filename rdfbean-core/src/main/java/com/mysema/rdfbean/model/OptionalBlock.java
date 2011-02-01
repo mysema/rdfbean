@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;

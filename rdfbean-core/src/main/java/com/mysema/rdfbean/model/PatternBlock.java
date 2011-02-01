@@ -2,7 +2,6 @@ package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
-import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;

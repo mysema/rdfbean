@@ -2,7 +2,6 @@ package com.mysema.rdfbean.query;
 
 import java.lang.reflect.Method;
 import java.util.Locale;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
