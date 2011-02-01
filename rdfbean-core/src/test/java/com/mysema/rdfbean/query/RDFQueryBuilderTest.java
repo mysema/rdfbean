@@ -171,7 +171,10 @@ public class RDFQueryBuilderTest {
     public void Or() throws Exception{
         query.from(user);
         query.where(user.getString("firstName").eq("X").or(user.getString("firstName").eq("Y")));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 . OPTIONAL {?user ?_c3 ?user_firstName } FILTER(?user_firstName = ?_c4 || ?user_firstName = ?_c5) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 . " +
+            "OPTIONAL {?user ?_c3 ?user_firstName } " +
+            "OPTIONAL {?user ?_c3 ?user_firstName } " +
+            "FILTER(?user_firstName = ?_c4 || ?user_firstName = ?_c5) }");
     }
     
     @Test

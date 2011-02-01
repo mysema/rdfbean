@@ -14,45 +14,12 @@ import com.mysema.query.BooleanBuilder;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.types.Constant;
-import com.mysema.query.types.ConstantImpl;
-import com.mysema.query.types.Expression;
-import com.mysema.query.types.ExpressionUtils;
-import com.mysema.query.types.FactoryExpression;
+import com.mysema.query.types.*;
 import com.mysema.query.types.Operation;
-import com.mysema.query.types.OperationImpl;
-import com.mysema.query.types.Operator;
-import com.mysema.query.types.Ops;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.ParamExpression;
-import com.mysema.query.types.Path;
-import com.mysema.query.types.PathImpl;
-import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.PathType;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.PredicateOperation;
-import com.mysema.query.types.SubQueryExpression;
-import com.mysema.query.types.SubQueryExpressionImpl;
-import com.mysema.query.types.TemplateExpression;
-import com.mysema.query.types.TemplateExpressionImpl;
-import com.mysema.query.types.Templates;
-import com.mysema.query.types.ToStringVisitor;
-import com.mysema.query.types.Visitor;
 import com.mysema.query.types.expr.BooleanOperation;
 import com.mysema.query.types.template.BooleanTemplate;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.model.Block;
-import com.mysema.rdfbean.model.Blocks;
-import com.mysema.rdfbean.model.BooleanQuery;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RDFQueryImpl;
-import com.mysema.rdfbean.model.TupleQuery;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
@@ -315,6 +282,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             innerOptional = true;
             
             origPathToMapped = pathToMapped;
+            pathToMapped = new HashMap<Path<?>, Path<?>>(pathToMapped);
         }
         
         List<Expression<?>> args = new ArrayList<Expression<?>>(operation.getArgs().size());
@@ -426,6 +394,10 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 
             }else if (operation.getOperator() == Ops.MAP_IS_EMPTY){
                 return new PredicateOperation(Ops.IS_NULL, transform(operation.getArg(0), filters));
+                
+            }else if (operation.getOperator() == Ops.COALESCE){
+                List<Expression<?>> elements = new ArrayList<Expression<?>>();                
+                operation = new OperationImpl(operation.getType(), Ops.COALESCE, transformList(operation.getArg(0), elements));
             }
                 
             for (Expression<?> arg : operation.getArgs()){
@@ -452,6 +424,17 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             return new OperationImpl(operation.getType(),operation.getOperator(), args);
         }
         
+    }
+
+    private List<Expression<?>> transformList(Expression<?> expr, List<Expression<?>> elements) {
+        if (expr instanceof Operation<?> && ((Operation<?>)expr).getOperator() == Ops.LIST){
+            Operation<?> list = (Operation<?>)expr;
+            transformList(list.getArg(0), elements);
+            elements.add(list.getArg(1));
+        }else{
+            elements.add(expr);
+        }
+        return elements;
     }
 
     @Override
