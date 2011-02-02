@@ -6,10 +6,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.mysema.query.types.Constant;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
-import com.mysema.query.types.Path;
 import com.mysema.query.types.Predicate;
 
 /**
