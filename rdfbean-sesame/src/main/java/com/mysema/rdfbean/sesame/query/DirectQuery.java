@@ -62,7 +62,6 @@ public final class DirectQuery {
     public static TupleQuery getQuery(RepositoryConnection connection, TupleQueryModel tupleQueryModel,
             boolean includeInferred){        
         try {
-//            System.err.println(tupleQueryModel.getTupleExpr());
             QUERY_HOLDER.set(tupleQueryModel);
             TupleQuery tupleQuery = connection.prepareTupleQuery(DirectQuery.DIRECTQUERY, "");
             tupleQuery.setIncludeInferred(includeInferred);

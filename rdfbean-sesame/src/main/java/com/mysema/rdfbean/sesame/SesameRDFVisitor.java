@@ -105,9 +105,9 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
     
     private final Map<Object, Var> constantToVar = new HashMap<Object, Var>();
     
-    private final VarNameIterator varNames = new VarNameIterator("_var_");
+    private final VarNameIterator varNames = new VarNameIterator("__v");
     
-    private final VarNameIterator extNames = new VarNameIterator("_ext_");
+    private final VarNameIterator extNames = new VarNameIterator("__e");
     
     private final Stack<Var> graphs = new Stack<Var>();
     
