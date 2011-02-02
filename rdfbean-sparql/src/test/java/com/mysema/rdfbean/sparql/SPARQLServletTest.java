@@ -155,7 +155,7 @@ public class SPARQLServletTest {
     public void Select_as_JSON_with_JSONP() throws ServletException, IOException{
         request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
         request.setParameter("type", "json");
-        request.setParameter("jsonp", "handleResponse");
+        request.setParameter("callback", "handleResponse");
         servlet.service(request, response);
         assertTrue(response.getContentAsString().startsWith("handleResponse("));
         assertTrue(response.getContentAsString().endsWith(")"));

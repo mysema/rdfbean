@@ -162,7 +162,7 @@ public class SPARQLServlet extends HttpServlet{
                 }
                 response.setContentType(contentType);
                 if (contentType.equals(SPARQL_RESULTS_JSON)){
-                    String jsonpCallback = request.getParameter("jsonp");
+                    String jsonpCallback = request.getParameter("callback");
                     if (jsonpCallback != null){
                         response.getWriter().write(jsonpCallback + "(");
                     }
