@@ -13,7 +13,6 @@ import com.mysema.query.types.Expression;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.Path;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.SubQueryExpression;
 
@@ -30,16 +29,16 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     
     private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
     
+    public SPARQLVisitor() {
+        this(SPARQLTemplates.DEFAULT, "");
+    }
+    
     public SPARQLVisitor(SPARQLTemplates templates, String prefix) {
         super(templates);
         this.prefix = prefix;
-    }
+        setParamPrefix("?");
+    }    
     
-    public SPARQLVisitor() {
-        super(SPARQLTemplates.DEFAULT);
-        this.prefix = "";
-    }
-
     public Void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
         QueryModifiers mod = md.getModifiers();
         append(prefix);

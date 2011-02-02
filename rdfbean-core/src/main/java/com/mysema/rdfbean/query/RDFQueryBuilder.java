@@ -14,45 +14,13 @@ import com.mysema.query.BooleanBuilder;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.types.Constant;
-import com.mysema.query.types.ConstantImpl;
-import com.mysema.query.types.Expression;
-import com.mysema.query.types.ExpressionUtils;
-import com.mysema.query.types.FactoryExpression;
+import com.mysema.query.types.*;
 import com.mysema.query.types.Operation;
-import com.mysema.query.types.OperationImpl;
-import com.mysema.query.types.Operator;
-import com.mysema.query.types.Ops;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.ParamExpression;
-import com.mysema.query.types.Path;
-import com.mysema.query.types.PathImpl;
-import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.PathType;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.PredicateOperation;
-import com.mysema.query.types.SubQueryExpression;
-import com.mysema.query.types.SubQueryExpressionImpl;
-import com.mysema.query.types.TemplateExpression;
-import com.mysema.query.types.TemplateExpressionImpl;
-import com.mysema.query.types.Templates;
-import com.mysema.query.types.ToStringVisitor;
-import com.mysema.query.types.Visitor;
 import com.mysema.query.types.expr.BooleanOperation;
+import com.mysema.query.types.expr.Param;
 import com.mysema.query.types.template.BooleanTemplate;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.model.Block;
-import com.mysema.rdfbean.model.Blocks;
-import com.mysema.rdfbean.model.BooleanQuery;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RDFQueryImpl;
-import com.mysema.rdfbean.model.TupleQuery;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
@@ -92,9 +60,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     
     private final Map<Path<?>, UID> pathToContext = new HashMap<Path<?>, UID>();
     
-    private Map<Path<?>, Constant<?>> pathToConstant = new HashMap<Path<?>, Constant<?>>();
+    private Map<ParamExpression<?>, Object> params = new HashMap<ParamExpression<?>, Object>();
     
-    private Map<Path<?>, Expression<?>> pathToMapped = new HashMap<Path<?>, Expression<?>>();
+    private Map<Path<?>, ParamExpression<?>> pathToMapped = new HashMap<Path<?>, ParamExpression<?>>();
     
     public RDFQueryBuilder(RDFConnection connection,
             Session session,
@@ -107,6 +75,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         this.projection = new ArrayList<Expression<?>>();
     }
 
+    @SuppressWarnings("unchecked")
     RDFQueryImpl build(boolean forCount){
         RDFQueryImpl query = new RDFQueryImpl(connection);
         Filters filters = new Filters();
@@ -151,6 +120,11 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         
         filters.endOptional();
         query.where(filters.toArray());
+        
+        for (Map.Entry<ParamExpression<?>, Object> entry : params.entrySet()){
+            query.set((Param)entry.getKey(), entry.getValue());
+        }
+        
         return query;
     }
     
@@ -195,11 +169,11 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         MappedClass mappedClass = configuration.getMappedClass(path.getType());
         UID rdfType = mappedClass.getUID();
         UID context = mappedClass.getContext();
-        Path<?> pathNode = new PathImpl<ID>(ID.class, path.toString());
+        Param<?> pathNode = new Param<ID>(ID.class, path.toString());
         pathToMapped.put(path, pathNode);
         if (rdfType != null){
             if (context != null){
-                pathToContext.put(pathNode, context);
+                pathToContext.put(path, context);
                 return Blocks.pattern(pathNode, RDF.type, rdfType, context);
             }else{
                 return Blocks.pattern(pathNode, RDF.type, rdfType);
@@ -268,8 +242,8 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         return operation;
     }
 
-    private Path<NODE> var(String var){
-        return new PathImpl<NODE>(NODE.class, var);
+    private Param<NODE> var(String var){
+        return new Param<NODE>(NODE.class, var);
     }
     
     public Expression<?> visit(Constant<?> constant, Filters filters){
@@ -312,13 +286,13 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         boolean outerOptional = inOptionalPath();
         boolean innerOptional = false;
         operatorStack.push(operation.getOperator());
-        Map<Path<?>, Expression<?>> origPathToMapped = null;
+        Map<Path<?>, ParamExpression<?>> origPathToMapped = null;
         if (!outerOptional && inOptionalPath()){
             filters.beginOptional();
             innerOptional = true;
             
             origPathToMapped = pathToMapped;
-            pathToMapped = new HashMap<Path<?>, Expression<?>>(pathToMapped);
+            pathToMapped = new HashMap<Path<?>, ParamExpression<?>>(pathToMapped);
         }
         
         List<Expression<?>> args = new ArrayList<Expression<?>>(operation.getArgs().size());
@@ -337,15 +311,14 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     operation = transformPathEqNeConstant(operation);
                 }
                 
-                // TODO : simplify this
                 if ((operation.getOperator() == Ops.EQ_OBJECT || operation.getOperator() == Ops.EQ_PRIMITIVE)
                         && operation.getArg(0) instanceof Path
                         && operation.getArg(1) instanceof Constant
                         && !inOptionalPath() && !inNegation()){
                     
+                    ParamExpression<?> lhs = (ParamExpression<?>) transform(operation.getArg(0), filters);
                     Constant<?> rhs = (Constant<?>)transform(operation.getArg(1), filters);
-                    pathToConstant.put((Path<?>)operation.getArg(0), rhs);
-                    transform(operation.getArg(0), filters);
+                    params.put(lhs, rhs.getConstant());
                     return null;
                 }
                                 
@@ -391,13 +364,13 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                         new PredicateOperation(Ops.LOE, operation.getArg(0), operation.getArg(2)));
                 
             }else if (operation.getOperator() == Ops.ORDINAL){
-                Path<?> path = (Path<?>) transform(operation.getArg(0), filters);
-                Path<?> ordinalPath = new PathImpl<LIT>(LIT.class, path.toString()+"_ordinal");
+                Param<?> path = (Param<?>) transform(operation.getArg(0), filters);
+                Param<?> ordinalPath = new Param<LIT>(LIT.class, path.toString()+"_ordinal");
                 filters.add(Blocks.pattern(path, CORE.enumOrdinal, ordinalPath));
                 return ordinalPath;
                 
             }else if (operation.getOperator() == Ops.INSTANCE_OF){
-                Path<?> path = (Path<?>) transform(operation.getArg(0), filters);
+                Param<?> path = (Param<?>) transform(operation.getArg(0), filters);
                 Constant<?> type = (Constant<?>) transform(operation.getArg(1), filters);
                 Block pattern = Blocks.pattern(path, RDF.type, type); 
                 if (inNegation() || inOptionalPath()){
@@ -505,9 +478,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }else if (path.getMetadata().getParent() != null){
             PathMetadata<?> md = path.getMetadata();
             PathType pathType = md.getPathType();
-            Expression<?> parent = visit(md.getParent(), filters);
-            Expression<?> pathNode = null;
-            Expression<?> rdfPath = pathToMapped.get(path);
+            ParamExpression<?> parent = (ParamExpression<?>) visit(md.getParent(), filters);
+            ParamExpression<?> pathNode = null;
+            ParamExpression<?> rdfPath = pathToMapped.get(path);
             UID context = getContext(path);
             
             if (pathType.equals(PathType.PROPERTY)){
@@ -536,9 +509,6 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                         }else{
                             pathNode = var(varNames.next());
                         }
-                        if (i == predPath.size() -1){
-                            pathNode = normalize(path, pathNode);
-                        }
                         if (!pred.inv()){
                             filters.add(Blocks.pattern(parent, pred.getUID(), pathNode, c));
                         }else{
@@ -548,7 +518,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     }
                     
                 }else{
-                    pathNode = normalize(path, md.getParent(), pathNode);
+                    pathNode = parent;
                 }
                 
             }else if (pathType.equals(PathType.COLLECTION_ANY)){
@@ -566,7 +536,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     filters.add(Blocks.pattern(parent, RDF.rest, pathNode, context));
                     parent = pathNode;
                 }
-                pathNode = normalize(path, var(varNames.next()));
+                pathNode = var(varNames.next());
                 filters.add(Blocks.pattern(parent, RDF.first, pathNode, context));
                 
             }else if (pathType.equals(PathType.MAPVALUE)
@@ -578,14 +548,13 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     filters.add(Blocks.pattern(parent, mappedProperty.getKeyPredicate(), expr, context));
                     
                     if (mappedProperty.getValuePredicate() != null){
-                        pathNode = normalize(path, var(varNames.next()));
+                        pathNode = var(varNames.next());
                         filters.add(Blocks.pattern(parent, mappedProperty.getValuePredicate(), pathNode, context));
                     }else{
                         pathNode = parent;
                     }
                     
                 }else{
-//                    pathNode = normalize(path, parent;
                     pathNode = parent;
                 }
                 
@@ -600,25 +569,6 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         
     }
     
-    private Expression<?> normalize(Path<?> path, Path<?> parent, Expression<?> pathNode){
-        if (pathToConstant.containsKey(path) && pathNode instanceof Path<?>){
-            return new OperationImpl(pathNode.getType(), Ops.ALIAS, pathToConstant.get(path), pathNode); 
-        }else if (pathToConstant.containsKey(parent) && pathNode instanceof Path<?>){
-            return new OperationImpl(pathNode.getType(), Ops.ALIAS, pathToConstant.get(parent), pathNode);            
-        }else{
-            return pathNode;
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Expression<?> normalize(Path<?> path, Expression<?> pathNode){
-        if (pathToConstant.containsKey(path) && pathNode instanceof Path){
-            return new OperationImpl(pathNode.getType(), Ops.ALIAS, pathToConstant.get(path), pathNode); 
-        }else{
-            return pathNode;
-        }
-    }
-
     public Expression<?> visit(SubQueryExpression<?> expr, Filters filters) {
         QueryMetadata md = expr.getMetadata();        
         Filters f = new Filters();
