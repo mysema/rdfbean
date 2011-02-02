@@ -65,10 +65,8 @@ public final class Blocks {
     private static <T extends NODE> Expression<T> convert(Class<T> cl, Object o){
         if (cl.isAssignableFrom(o.getClass())){
             return new ConstantImpl<T>((T)o);    
-        }else if (o instanceof Path){
-            return (Path<T>)o;
-        }else if (o instanceof Constant){
-            return (Constant<T>)o;
+        }else if (o instanceof Expression && NODE.class.isAssignableFrom(((Expression)o).getType())){
+            return (Expression<T>)o;
         }else{
             throw new IllegalArgumentException(o.toString());
         }

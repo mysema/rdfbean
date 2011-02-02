@@ -6,16 +6,64 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.openrdf.query.algebra.*;
+import org.openrdf.model.Literal;
+import org.openrdf.model.vocabulary.XMLSchema;
+import org.openrdf.query.algebra.And;
+import org.openrdf.query.algebra.Bound;
+import org.openrdf.query.algebra.Compare;
+import org.openrdf.query.algebra.CompareAll;
+import org.openrdf.query.algebra.Distinct;
+import org.openrdf.query.algebra.Exists;
+import org.openrdf.query.algebra.Extension;
+import org.openrdf.query.algebra.ExtensionElem;
+import org.openrdf.query.algebra.Filter;
+import org.openrdf.query.algebra.FunctionCall;
+import org.openrdf.query.algebra.Join;
+import org.openrdf.query.algebra.LeftJoin;
+import org.openrdf.query.algebra.MathExpr;
+import org.openrdf.query.algebra.Not;
+import org.openrdf.query.algebra.Or;
 import org.openrdf.query.algebra.Order;
+import org.openrdf.query.algebra.OrderElem;
+import org.openrdf.query.algebra.Projection;
+import org.openrdf.query.algebra.ProjectionElem;
+import org.openrdf.query.algebra.ProjectionElemList;
+import org.openrdf.query.algebra.Regex;
+import org.openrdf.query.algebra.Slice;
+import org.openrdf.query.algebra.StatementPattern;
+import org.openrdf.query.algebra.Str;
+import org.openrdf.query.algebra.TupleExpr;
+import org.openrdf.query.algebra.Union;
+import org.openrdf.query.algebra.ValueExpr;
+import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.types.*;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.FactoryExpression;
 import com.mysema.query.types.Operation;
-import com.mysema.rdfbean.model.*;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.ParamExpression;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.SubQueryExpression;
+import com.mysema.query.types.TemplateExpression;
+import com.mysema.rdfbean.model.Block;
+import com.mysema.rdfbean.model.GraphBlock;
+import com.mysema.rdfbean.model.GroupBlock;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.OptionalBlock;
+import com.mysema.rdfbean.model.PatternBlock;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFVisitor;
+import com.mysema.rdfbean.model.UnionBlock;
 import com.mysema.rdfbean.query.VarNameIterator;
 import com.mysema.rdfbean.sesame.query.FunctionTransformer;
 
@@ -262,13 +310,26 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
         Var subject = toVar(expr.getSubject());
         Var predicate = toVar(expr.getPredicate());
         Var object = toVar(expr.getObject());
+        StatementPattern pattern;
         if (expr.getContext() != null){
-            return new StatementPattern(subject, predicate, object, toVar(expr.getContext()));
+            pattern = new StatementPattern(subject, predicate, object, toVar(expr.getContext()));
         }else if (!graphs.isEmpty()){
-            return new StatementPattern(subject, predicate, object, graphs.peek());
+            pattern = new StatementPattern(subject, predicate, object, graphs.peek());
         }else{
-            return new StatementPattern(subject, predicate, object);
+            pattern = new StatementPattern(subject, predicate, object);
         }
+        
+        // datatype inference (string typed literal can be replaced with untyped) via union
+        if (object.getValue() != null 
+            && object.getValue() instanceof Literal 
+            && XMLSchema.STRING.equals(((Literal)object.getValue()).getDatatype())){
+            Var object2 = new Var(object.getName(), dialect.getLiteral(new LIT(object.getValue().stringValue(), RDF.text)));
+            return new Union(pattern, new StatementPattern(subject, predicate, object2, pattern.getContextVar()));
+                    
+        }else{
+            return pattern;    
+        }
+        
     }
 
     @Override
@@ -301,6 +362,12 @@ public class SesameRDFVisitor implements RDFVisitor<Object, Void>{
             return new Or(toValue(expr.getArg(0)), toValue(expr.getArg(1)));
         }else if (op == Ops.NOT){
             return new Not(toValue(expr.getArg(0)));
+        }else if (op == Ops.ALIAS){   
+            Var var = toVar(expr.getArg(0));
+            var.setAnonymous(false);
+            var.setName(expr.getArg(1).toString());
+            pathToVar.put((Path<?>) expr.getArg(1), var);
+            return var;
         }else if (COMPARE_OPS.containsKey(op)){
             if (expr.getArg(1) instanceof SubQueryExpression<?>){
                 return new CompareAll(toValue(expr.getArg(0)), toTuple(expr.getArg(1)), COMPARE_OPS.get(op));

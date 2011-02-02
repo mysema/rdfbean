@@ -2,6 +2,8 @@ package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
@@ -78,4 +80,24 @@ public class PatternBlock implements Block{
         return new PredicateOperation(Ops.EXISTS, Blocks.group(this));
     }
         
+    @Override
+    public int hashCode(){
+        return subject.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o){
+        if (o == this){
+            return true;
+        }else if (o instanceof PatternBlock){
+            PatternBlock p = (PatternBlock)o;
+            return p.subject.equals(subject)
+                && p.predicate.equals(predicate)
+                && p.object.equals(object)
+                && ObjectUtils.equals(p.context, context);
+        }else{
+            return false;
+        }
+    }
+    
 }

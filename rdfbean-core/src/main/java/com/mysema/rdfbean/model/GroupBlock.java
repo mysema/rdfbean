@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Ops;
@@ -67,6 +69,23 @@ public class GroupBlock implements Block{
     @Override
     public Predicate exists(){
         return new PredicateOperation(Ops.EXISTS, this);
+    }
+    
+    @Override
+    public int hashCode(){
+        return blocks.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o){
+        if (o == this){
+            return true;
+        }else if (o instanceof GroupBlock){
+            GroupBlock gb = (GroupBlock)o;
+            return ObjectUtils.equals(filters, gb.filters) && blocks.equals(gb.blocks);
+        }else{
+            return false;
+        }
     }
 
 }

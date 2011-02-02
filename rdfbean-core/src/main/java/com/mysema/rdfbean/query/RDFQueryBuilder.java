@@ -14,12 +14,45 @@ import com.mysema.query.BooleanBuilder;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.types.*;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.ConstantImpl;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.ExpressionUtils;
+import com.mysema.query.types.FactoryExpression;
 import com.mysema.query.types.Operation;
+import com.mysema.query.types.OperationImpl;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.ParamExpression;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.PathImpl;
+import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.PathType;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.PredicateOperation;
+import com.mysema.query.types.SubQueryExpression;
+import com.mysema.query.types.SubQueryExpressionImpl;
+import com.mysema.query.types.TemplateExpression;
+import com.mysema.query.types.TemplateExpressionImpl;
+import com.mysema.query.types.Templates;
+import com.mysema.query.types.ToStringVisitor;
+import com.mysema.query.types.Visitor;
 import com.mysema.query.types.expr.BooleanOperation;
 import com.mysema.query.types.template.BooleanTemplate;
 import com.mysema.rdfbean.CORE;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.Block;
+import com.mysema.rdfbean.model.Blocks;
+import com.mysema.rdfbean.model.BooleanQuery;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RDFQueryImpl;
+import com.mysema.rdfbean.model.TupleQuery;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
@@ -59,7 +92,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     
     private final Map<Path<?>, UID> pathToContext = new HashMap<Path<?>, UID>();
     
-    private Map<Path<?>, Path<?>> pathToMapped = new HashMap<Path<?>, Path<?>>();
+    private Map<Path<?>, Constant<?>> pathToConstant = new HashMap<Path<?>, Constant<?>>();
+    
+    private Map<Path<?>, Expression<?>> pathToMapped = new HashMap<Path<?>, Expression<?>>();
     
     public RDFQueryBuilder(RDFConnection connection,
             Session session,
@@ -160,13 +195,14 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         MappedClass mappedClass = configuration.getMappedClass(path.getType());
         UID rdfType = mappedClass.getUID();
         UID context = mappedClass.getContext();
-        pathToMapped.put(path, path);
+        Path<?> pathNode = new PathImpl<ID>(ID.class, path.toString());
+        pathToMapped.put(path, pathNode);
         if (rdfType != null){
             if (context != null){
-                pathToContext.put(path, context);
-                return Blocks.pattern(path, RDF.type, rdfType, context);
+                pathToContext.put(pathNode, context);
+                return Blocks.pattern(pathNode, RDF.type, rdfType, context);
             }else{
-                return Blocks.pattern(path, RDF.type, rdfType);
+                return Blocks.pattern(pathNode, RDF.type, rdfType);
             }
         } else {
             throw new IllegalArgumentException("No types mapped against " + path.getType().getName());
@@ -276,13 +312,13 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         boolean outerOptional = inOptionalPath();
         boolean innerOptional = false;
         operatorStack.push(operation.getOperator());
-        Map<Path<?>, Path<?>> origPathToMapped = null;
+        Map<Path<?>, Expression<?>> origPathToMapped = null;
         if (!outerOptional && inOptionalPath()){
             filters.beginOptional();
             innerOptional = true;
             
             origPathToMapped = pathToMapped;
-            pathToMapped = new HashMap<Path<?>, Path<?>>(pathToMapped);
+            pathToMapped = new HashMap<Path<?>, Expression<?>>(pathToMapped);
         }
         
         List<Expression<?>> args = new ArrayList<Expression<?>>(operation.getArgs().size());
@@ -292,13 +328,27 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         boolean rightConstant = operation.getArgs().size() > 1 ? operation.getArg(1) instanceof Constant<?> : false;
         
         try{
-            if (operation.getOperator() == Ops.EQ_OBJECT || operation.getOperator() == Ops.NE_OBJECT){
-                if (leftPath 
-                        && rightConstant 
+            if (operation.getOperator() == Ops.EQ_OBJECT 
+              || operation.getOperator() == Ops.NE_OBJECT 
+              || operation.getOperator() == Ops.EQ_PRIMITIVE 
+              || operation.getOperator() == Ops.NE_PRIMITIVE){
+                if (leftPath && rightConstant 
                         && ((Path)operation.getArg(0)).getMetadata().getPathType() != PathType.VARIABLE){
                     operation = transformPathEqNeConstant(operation);
                 }
                 
+                // TODO : simplify this
+                if ((operation.getOperator() == Ops.EQ_OBJECT || operation.getOperator() == Ops.EQ_PRIMITIVE)
+                        && operation.getArg(0) instanceof Path
+                        && operation.getArg(1) instanceof Constant
+                        && !inOptionalPath() && !inNegation()){
+                    
+                    Constant<?> rhs = (Constant<?>)transform(operation.getArg(1), filters);
+                    pathToConstant.put((Path<?>)operation.getArg(0), rhs);
+                    transform(operation.getArg(0), filters);
+                    return null;
+                }
+                                
             }else if (operation.getOperator() == Ops.STARTS_WITH && rightConstant){    
                 operation = new PredicateOperation(Ops.MATCHES, 
                         operation.getArg(0), new ConstantImpl(new LIT("^"+operation.getArg(1))));
@@ -399,6 +449,11 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 List<Expression<?>> elements = new ArrayList<Expression<?>>();                
                 operation = new OperationImpl(operation.getType(), Ops.COALESCE, transformList(operation.getArg(0), elements));
             }
+            
+            if (operatorStack.peek() != operation.getOperator()){
+                operatorStack.pop();
+                operatorStack.push(operation.getOperator());    
+            }            
                 
             for (Expression<?> arg : operation.getArgs()){
                 Expression<?> transformed = transform(arg, filters);
@@ -450,9 +505,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }else if (path.getMetadata().getParent() != null){
             PathMetadata<?> md = path.getMetadata();
             PathType pathType = md.getPathType();
-            Path<?> parent = (Path<?>) visit(md.getParent(), filters);
-            Path<?> pathNode = null;
-            Path<?> rdfPath = pathToMapped.get(path);
+            Expression<?> parent = visit(md.getParent(), filters);
+            Expression<?> pathNode = null;
+            Expression<?> rdfPath = pathToMapped.get(path);
             UID context = getContext(path);
             
             if (pathType.equals(PathType.PROPERTY)){
@@ -481,6 +536,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                         }else{
                             pathNode = var(varNames.next());
                         }
+                        if (i == predPath.size() -1){
+                            pathNode = normalize(path, pathNode);
+                        }
                         if (!pred.inv()){
                             filters.add(Blocks.pattern(parent, pred.getUID(), pathNode, c));
                         }else{
@@ -490,7 +548,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     }
                     
                 }else{
-                    pathNode = parent;
+                    pathNode = normalize(path, md.getParent(), pathNode);
                 }
                 
             }else if (pathType.equals(PathType.COLLECTION_ANY)){
@@ -508,7 +566,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     filters.add(Blocks.pattern(parent, RDF.rest, pathNode, context));
                     parent = pathNode;
                 }
-                pathNode = var(varNames.next());
+                pathNode = normalize(path, var(varNames.next()));
                 filters.add(Blocks.pattern(parent, RDF.first, pathNode, context));
                 
             }else if (pathType.equals(PathType.MAPVALUE)
@@ -520,13 +578,14 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     filters.add(Blocks.pattern(parent, mappedProperty.getKeyPredicate(), expr, context));
                     
                     if (mappedProperty.getValuePredicate() != null){
-                        pathNode = var(varNames.next());
+                        pathNode = normalize(path, var(varNames.next()));
                         filters.add(Blocks.pattern(parent, mappedProperty.getValuePredicate(), pathNode, context));
                     }else{
                         pathNode = parent;
                     }
                     
                 }else{
+//                    pathNode = normalize(path, parent;
                     pathNode = parent;
                 }
                 
@@ -539,6 +598,25 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             throw new IllegalArgumentException("Undeclared path " + path);
         }
         
+    }
+    
+    private Expression<?> normalize(Path<?> path, Path<?> parent, Expression<?> pathNode){
+        if (pathToConstant.containsKey(path) && pathNode instanceof Path<?>){
+            return new OperationImpl(pathNode.getType(), Ops.ALIAS, pathToConstant.get(path), pathNode); 
+        }else if (pathToConstant.containsKey(parent) && pathNode instanceof Path<?>){
+            return new OperationImpl(pathNode.getType(), Ops.ALIAS, pathToConstant.get(parent), pathNode);            
+        }else{
+            return pathNode;
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Expression<?> normalize(Path<?> path, Expression<?> pathNode){
+        if (pathToConstant.containsKey(path) && pathNode instanceof Path){
+            return new OperationImpl(pathNode.getType(), Ops.ALIAS, pathToConstant.get(path), pathNode); 
+        }else{
+            return pathNode;
+        }
     }
 
     public Expression<?> visit(SubQueryExpression<?> expr, Filters filters) {

@@ -78,7 +78,7 @@ public class RDFQueryBuilderTest {
     public void Single_From_With_Property() throws Exception {
         query.from(user);    
         query.where(user.getString("firstName").eq("Bob"));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName . FILTER(?user_firstName = ?_c4) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName }");
     }
     
     @Test
@@ -114,7 +114,8 @@ public class RDFQueryBuilderTest {
     public void In_Strings() throws Exception{
         query.from(user);
         query.where(user.getString("firstName").in("Dennis", "Bob"));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_firstName . FILTER(?user_firstName = ?_c4 || ?user_firstName = ?_c5) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 . OPTIONAL {?user ?_c3 ?user_firstName } FILTER(?user_firstName = ?_c4 || ?user_firstName = ?_c5) }");
+        
     }
     
     @Test
@@ -142,7 +143,7 @@ public class RDFQueryBuilderTest {
     public void Id_Eq_Constant() throws Exception{
         query.from(user);
         query.where(user.get("id").eq(new UID(TEST.NS)));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 . FILTER(?user = ?_c3) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 }");
     }
     
     @Test
@@ -170,24 +171,21 @@ public class RDFQueryBuilderTest {
     public void Or() throws Exception{
         query.from(user);
         query.where(user.getString("firstName").eq("X").or(user.getString("firstName").eq("Y")));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 . " +
-            "OPTIONAL {?user ?_c3 ?user_firstName } " +
-            "OPTIONAL {?user ?_c3 ?user_firstName } " +
-            "FILTER(?user_firstName = ?_c4 || ?user_firstName = ?_c5) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 . OPTIONAL {?user ?_c3 ?user_firstName } FILTER(?user_firstName = ?_c4 || ?user_firstName = ?_c5) }");
     }
     
     @Test
     public void Localized_Map() throws Exception{
         query.from(user);
         query.where(user.getMap("names", Locale.class, String.class).get(new Locale("fi")).eq("XXX"));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_names . FILTER(?user_names = ?_c4) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_names }");
     }
     
     @Test
     public void Localized_String_eq_Const() throws Exception{
         query.from(user);
         query.where(user.getString("name").eq("XXX"));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_name . FILTER(?user_name = ?_c4) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_name }");
     }
     
     @Test
@@ -201,18 +199,14 @@ public class RDFQueryBuilderTest {
     public void ListAccess() throws Exception{
         query.from(user);
         query.where(user.getList("buddyList", User.class).get(0).getString("name").eq("XXX"));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_buddyList . " +
-        	"?user_buddyList ?_c4 ?_var_a . " +
-        	"?_var_a ?_c5 ?user_buddyList_0_name . FILTER(?user_buddyList_0_name = ?_c6) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_buddyList . ?user_buddyList ?_c4 ?_var_a . ?_var_a ?_c5 ?user_buddyList_0_name }");
     }
     
     @Test
     public void ListAccess2() throws Exception{
         query.from(user);
         query.where(user.getList("buddyList", User.class).get(1).getString("name").eq("XXX"));
-        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_buddyList . " +
-        	"?user_buddyList ?_c4 ?_var_a . ?_var_a ?_c5 ?_var_b . " +
-        	"?_var_b ?_c6 ?user_buddyList_1_name . FILTER(?user_buddyList_1_name = ?_c7) }");
+        assertEquals("SELECT WHERE { ?user ?_c1 ?_c2 ; ?_c3 ?user_buddyList . ?user_buddyList ?_c4 ?_var_a . ?_var_a ?_c5 ?_var_b . ?_var_b ?_c6 ?user_buddyList_1_name }");
     }
     
     @Test

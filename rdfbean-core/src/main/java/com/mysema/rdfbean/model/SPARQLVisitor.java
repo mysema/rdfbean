@@ -13,6 +13,7 @@ import com.mysema.query.types.Expression;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.Path;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.SubQueryExpression;
 
@@ -245,7 +246,13 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
         operators.push(operator);
         try{
-            super.visitOperation(type, operator, args);
+            if (operator == Ops.ALIAS){
+                getConstantToLabel().put(((Constant<?>)args.get(0)).getConstant(), args.get(1).toString());
+                handle(args.get(1));                
+            }else{
+                super.visitOperation(type, operator, args);    
+            }
+            
         }finally{
             operators.pop();
         }

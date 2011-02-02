@@ -54,5 +54,22 @@ public class UnionBlock implements Block{
     public Predicate exists(){
         return new PredicateOperation(Ops.EXISTS, new ConstantImpl<Block>(this));
     }
+    
+    @Override
+    public int hashCode(){
+        return blocks.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o){
+        if (o == this){
+            return true;
+        }else if (o instanceof UnionBlock){
+            UnionBlock gb = (UnionBlock)o;
+            return blocks.equals(gb.blocks);
+        }else{
+            return false;
+        }
+    }
 
 }

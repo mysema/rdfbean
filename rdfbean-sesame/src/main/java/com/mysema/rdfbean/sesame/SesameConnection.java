@@ -65,9 +65,9 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
+import com.mysema.rdfbean.query.BeanQueryImpl;
 import com.mysema.rdfbean.sesame.query.DirectQuery;
 import com.mysema.rdfbean.sesame.query.FunctionTransformer;
-import com.mysema.rdfbean.sesame.query.SesameBeanQuery;
 
 /**
  * SaesameConnection is the RDFConnection implementation for RepositoryConnection usage
@@ -237,17 +237,17 @@ public class SesameConnection implements RDFConnection {
     @Override
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
-            SesameBeanQuery query = new SesameBeanQuery(
-                    session,
-                    dialect,
-                    dialect.getValueFactory(),
-                    connection,
-                    StatementPattern.Scope.DEFAULT_CONTEXTS,
-                    ontology,
-                    inference);
-            query.getMetadata().setDistinct(true);
-            return (Q)query;
-//            return (Q)new BeanQueryImpl(session, this);
+//            SesameBeanQuery query = new SesameBeanQuery(
+//                    session,
+//                    dialect,
+//                    dialect.getValueFactory(),
+//                    connection,
+//                    StatementPattern.Scope.DEFAULT_CONTEXTS,
+//                    ontology,
+//                    inference);
+//            query.getMetadata().setDistinct(true);
+//            return (Q)query;
+            return (Q)new BeanQueryImpl(session, this);
             
         }else{
            return createQuery(queryLanguage, definition);

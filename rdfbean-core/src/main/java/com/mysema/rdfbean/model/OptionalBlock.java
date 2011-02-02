@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
@@ -56,6 +58,23 @@ public class OptionalBlock implements Block{
     @Override
     public Predicate exists(){
         return new PredicateOperation(Ops.EXISTS, this);
+    }
+    
+    @Override
+    public int hashCode(){
+        return blocks.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o){
+        if (o == this){
+            return true;
+        }else if (o instanceof OptionalBlock){
+            OptionalBlock gb = (OptionalBlock)o;
+            return ObjectUtils.equals(filters, gb.filters) && blocks.equals(gb.blocks);
+        }else{
+            return false;
+        }
     }
     
 }

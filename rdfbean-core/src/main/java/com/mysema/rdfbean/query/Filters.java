@@ -1,7 +1,9 @@
 package com.mysema.rdfbean.query;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.model.Block;
@@ -10,15 +12,15 @@ import com.mysema.rdfbean.model.GroupBlock;
 
 public class Filters {
     
-    private List<Predicate> filters = new ArrayList<Predicate>();
+    private Set<Predicate> filters = new LinkedHashSet<Predicate>();
     
-    private List<Block> optBlocks = new ArrayList<Block>();
+    private Set<Block> optBlocks = new LinkedHashSet<Block>();
     
-    private List<Predicate> optFilters = new ArrayList<Predicate>();
+    private Set<Predicate> optFilters = new LinkedHashSet<Predicate>();
     
     private boolean inOptional = false;
     
-    public List<Predicate> getFilters(){
+    public Set<Predicate> getFilters(){
         return filters;
     }
 
@@ -51,10 +53,12 @@ public class Filters {
         if (optBlocks.isEmpty()){
             filters.addAll(optFilters);
         }else{
-            filters.add(Blocks.optional(optBlocks, optFilters.toArray(new Predicate[optFilters.size()])));
+            filters.add(Blocks.optional(
+                    new ArrayList<Block>(optBlocks), 
+                    optFilters.toArray(new Predicate[optFilters.size()])));
         }
-        optBlocks = new ArrayList<Block>();
-        optFilters = new ArrayList<Predicate>();
+        optBlocks = new LinkedHashSet<Block>();
+        optFilters = new LinkedHashSet<Predicate>();
         inOptional = false;
     }
     
