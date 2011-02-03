@@ -53,7 +53,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             
         // ask
         }else if (queryType == QueryLanguage.BOOLEAN){
-            append("ASK \n");
+            append("ASK ");
             
         // construct
         }else if (queryType == QueryLanguage.GRAPH){
@@ -67,7 +67,9 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         
         // where
         if (md.getWhere() != null){
-            append("WHERE \n  ");
+            if (queryType != QueryLanguage.BOOLEAN){
+                append("WHERE \n  ");    
+            }            
             if (md.getWhere() instanceof GroupBlock){
                 handle(md.getWhere());                
             }else{
@@ -245,13 +247,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
         operators.push(operator);
         try{
-            if (operator == Ops.ALIAS){
-                getConstantToLabel().put(((Constant<?>)args.get(0)).getConstant(), args.get(1).toString());
-                handle(args.get(1));                
-            }else{
-                super.visitOperation(type, operator, args);    
-            }
-            
+            super.visitOperation(type, operator, args);
         }finally{
             operators.pop();
         }

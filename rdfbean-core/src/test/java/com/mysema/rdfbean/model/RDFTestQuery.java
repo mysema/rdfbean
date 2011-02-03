@@ -13,6 +13,15 @@ public class RDFTestQuery extends RDFQueryImpl{
     }
 
     @Override
+    public boolean ask(){
+        aggregateFilters();
+        SPARQLVisitor visitor = new SPARQLVisitor();
+        visitor.visit(queryMixin.getMetadata(), QueryLanguage.BOOLEAN);
+        System.out.println(visitor.toString());
+        return false;
+    }
+    
+    @Override
     public CloseableIterator<Map<String,NODE>> select(Expression<?>... exprs){
         aggregateFilters();
         queryMixin.addToProjection(exprs);

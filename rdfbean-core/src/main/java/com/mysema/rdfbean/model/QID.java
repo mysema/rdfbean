@@ -1,13 +1,13 @@
 package com.mysema.rdfbean.model;
 
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.EntityPathBase;
+import com.mysema.query.types.path.SimplePath;
 
 /**
  * @author tiwe
  *
  */
-public class QID extends EntityPathBase<ID>{
+public class QID extends SimplePath<ID>{
 
     private static final long serialVersionUID = -2696989113637909131L;
 

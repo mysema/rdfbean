@@ -6,14 +6,14 @@ import com.mysema.query.types.Ops;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.expr.BooleanOperation;
-import com.mysema.query.types.path.EntityPathBase;
+import com.mysema.query.types.path.SimplePath;
 
 /**
  * @author tiwe
  *
  * @param <T>
  */
-public class QNODE<T extends NODE> extends EntityPathBase<T>{
+public class QNODE<T extends NODE> extends SimplePath<T>{
 
     private static final long serialVersionUID = 1134119241723346776L;
 
