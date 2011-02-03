@@ -212,7 +212,6 @@ public class SesameConnection implements RDFConnection {
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
             return (Q)new BeanQueryImpl(session, this);
-
         }else{
            return createQuery(queryLanguage, definition);
         }
