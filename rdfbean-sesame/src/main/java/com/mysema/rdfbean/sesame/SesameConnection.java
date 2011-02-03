@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -28,6 +27,7 @@ import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.*;
+import org.openrdf.query.parser.BooleanQueryModel;
 import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
@@ -190,17 +190,20 @@ public class SesameConnection implements RDFConnection {
             TupleQueryModel queryModel = new TupleQueryModel(tuple);
             TupleQuery query = DirectQuery.getQuery(connection, queryModel, false);
             return (Q)new TupleQueryImpl(query, dialect);
+            
+        }else if (queryLanguage.equals(QueryLanguage.GRAPH)){
+            SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
+            TupleExpr tuple = visitor.visit((QueryMetadata)definition, queryLanguage);
+            GraphQueryModel queryModel = new GraphQueryModel(tuple);
+            GraphQuery query = DirectQuery.getQuery(connection, queryModel, false);
+            return (Q)new GraphQueryImpl(query, dialect);
 
-        }else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
-                  queryLanguage.equals(QueryLanguage.GRAPH)){
-            SPARQLVisitor visitor = new SPARQLVisitor(SesameSPARQLTemplates.DEFAULT, "PREFIX q: <functions:>\n");
-            visitor.visit((QueryMetadata)definition, queryLanguage);
-            System.err.println(visitor.toString());
-            SPARQLQuery query = createSPARQLQuery(visitor.toString());
-            for (Map.Entry<Object,String> entry : visitor.getConstantToLabel().entrySet()){
-                query.setBinding(entry.getValue(), (NODE)entry.getKey());
-            }
-            return (Q)query;
+        }else if (queryLanguage.equals(QueryLanguage.BOOLEAN)){
+            SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
+            TupleExpr tuple = visitor.visit((QueryMetadata)definition, queryLanguage);
+            BooleanQueryModel queryModel = new BooleanQueryModel(tuple);
+            BooleanQuery query = DirectQuery.getQuery(connection, queryModel, false);
+            return (Q)new BooleanQueryImpl(query, dialect);
 
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);

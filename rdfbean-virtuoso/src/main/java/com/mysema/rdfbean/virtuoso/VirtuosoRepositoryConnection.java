@@ -40,6 +40,7 @@ import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.query.BeanQueryImpl;
 
 /**
  * @author tiwe
@@ -302,9 +303,14 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
-        return createQuery(queryLanguage, definition);
+        if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
+            return (Q)new BeanQueryImpl(session, this);
+        }else{
+            return createQuery(queryLanguage, definition);    
+        }        
     }
 
     @Override

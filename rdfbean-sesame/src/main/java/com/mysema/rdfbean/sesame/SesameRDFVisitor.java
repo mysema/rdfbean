@@ -154,22 +154,68 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
         // projection
         ProjectionElemList projection = new ProjectionElemList();
+        List<ProjectionElemList> projectionElements = new ArrayList<ProjectionElemList>();
         List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
-        for (Expression<?> expr : md.getProjection()){
-            ValueExpr val = toValue(expr, md);
-            if (val instanceof Var){
-                projection.addElement(new ProjectionElem(((Var)val).getName()));
-            }else{
-                String extLabel = extNames.next();
-                projection.addElement(new ProjectionElem(extLabel));
-                extensions.add(new ExtensionElem(val, extLabel));
-            }
+        if (queryType == QueryLanguage.TUPLE){
+            for (Expression<?> expr : md.getProjection()){
+                ValueExpr val = toValue(expr, md);
+                if (val instanceof Var){
+                    projection.addElement(new ProjectionElem(((Var)val).getName()));
+                }else{
+                    String extLabel = extNames.next();
+                    projection.addElement(new ProjectionElem(extLabel));
+                    extensions.add(new ExtensionElem(val, extLabel));
+                }
+            }    
+        }else{
+            for (Expression<?> expr : md.getProjection()){
+                Stack<Block> blocks = new Stack<Block>();
+                blocks.addAll((List)md.getProjection());
+                while (!blocks.isEmpty()){
+                    Block bl = blocks.pop();
+                    // TODO : shorten
+                    if (bl instanceof PatternBlock){
+                        PatternBlock pa = (PatternBlock)expr;
+                        ProjectionElemList p = new ProjectionElemList();
+                        ValueExpr subject = toValue(pa.getSubject(), md);
+                        if (subject instanceof Var){
+                            p.addElement(new ProjectionElem(((Var)subject).getName(),"subject"));
+                        }else{
+                            String extLabel = extNames.next();
+                            projection.addElement(new ProjectionElem(extLabel, "subject"));
+                            extensions.add(new ExtensionElem(subject, extLabel));
+                        }
+                        ValueExpr predicate = toValue(pa.getPredicate(), md);
+                        if (predicate instanceof Var){
+                            p.addElement(new ProjectionElem(((Var)predicate).getName(),"predicate"));
+                        }else{
+                            String extLabel = extNames.next();
+                            projection.addElement(new ProjectionElem(extLabel, "predicate"));
+                            extensions.add(new ExtensionElem(predicate, extLabel));
+                        }
+                        ValueExpr object = toValue(pa.getObject(), md);    
+                        if (object instanceof Var){
+                            p.addElement(new ProjectionElem(((Var)object).getName(),"object"));
+                        }else{
+                            String extLabel = extNames.next();
+                            projection.addElement(new ProjectionElem(extLabel, "object"));
+                            extensions.add(new ExtensionElem(object, extLabel));
+                        }
+                        projectionElements.add(p);
+                    }else{
+                        blocks.addAll(((GroupBlock)bl).getBlocks());
+                    }
+                }                                
+            }    
         }
+        
         if (!extensions.isEmpty()){
             tuple = new Extension(tuple, extensions);
         }
         if (!projection.getElements().isEmpty()){
             tuple = new Projection(tuple, projection);
+        }else if (!projectionElements.isEmpty()){
+            tuple = new MultiProjection(tuple, projectionElements);
         }
 
         // limit / offset
@@ -261,7 +307,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     }
 
     @Override
-    public Object visit(PatternBlock expr, QueryMetadata md) {
+    public TupleExpr visit(PatternBlock expr, QueryMetadata md) {
         Var subject = toVar(expr.getSubject(), md);
         Var predicate = toVar(expr.getPredicate(), md);
         Var object = toVar(expr.getObject(), md);

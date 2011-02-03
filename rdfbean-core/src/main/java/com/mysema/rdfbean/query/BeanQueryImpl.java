@@ -84,13 +84,17 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
             }
         }
     }
+    
+    private RDFQueryBuilder createBuilder(){
+        return new RDFQueryBuilder(connection, session, session.getConfiguration(), queryMixin.getMetadata());
+    }
 
     private BooleanQuery createBooleanQuery() {
-        return new RDFQueryBuilder(connection, session, session.getConfiguration(), queryMixin.getMetadata()).createBooleanQuery();
+        return createBuilder().createBooleanQuery();
     }
 
     private TupleQuery createTupleQuery(boolean forCount) {
-        return new RDFQueryBuilder(connection, session, session.getConfiguration(), queryMixin.getMetadata()).createTupleQuery(forCount);
+        return createBuilder().createTupleQuery(forCount);
     }
 
     @Override

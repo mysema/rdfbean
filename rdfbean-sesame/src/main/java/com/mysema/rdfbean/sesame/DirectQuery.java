@@ -5,17 +5,20 @@
  */
 package com.mysema.rdfbean.sesame;
 
+import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
 import org.openrdf.query.algebra.QueryModel;
+import org.openrdf.query.parser.BooleanQueryModel;
 import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.query.parser.QueryParser;
 import org.openrdf.query.parser.QueryParserFactory;
 import org.openrdf.query.parser.QueryParserRegistry;
 import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
+import org.openrdf.result.BooleanResult;
 import org.openrdf.result.GraphResult;
 import org.openrdf.result.TupleResult;
 import org.openrdf.store.StoreException;
@@ -83,6 +86,21 @@ public final class DirectQuery {
             throw new RepositoryException(e);
         }
     }
+    
+    public static BooleanQuery getQuery(RepositoryConnection connection, BooleanQueryModel booleanQueryModel,
+            boolean includeInferred) {
+        try {
+//            System.err.println(booleanQueryModel.getTupleExpr());
+            QUERY_HOLDER.set(booleanQueryModel);
+            BooleanQuery booleanQuery = connection.prepareBooleanQuery(DirectQuery.DIRECTQUERY, "");
+            booleanQuery.setIncludeInferred(includeInferred);
+            return booleanQuery;
+        } catch (StoreException e) {
+            throw new RepositoryException(e);
+        } catch (MalformedQueryException e) {
+            throw new RepositoryException(e);
+        }
+    }
 
     public static TupleResult query(RepositoryConnection connection, TupleQueryModel tupleQueryModel,
             boolean includeInferred) throws StoreException{
@@ -94,6 +112,12 @@ public final class DirectQuery {
         return getQuery(connection, graphQueryModel, includeInferred).evaluate();
     }
 
+    public static BooleanResult query(RepositoryConnection connection, BooleanQueryModel booleanQueryModel,
+            boolean includeInferred) throws StoreException{
+        return getQuery(connection, booleanQueryModel, includeInferred).evaluate();
+    }
+
+    
     private DirectQuery(){}
 
 }

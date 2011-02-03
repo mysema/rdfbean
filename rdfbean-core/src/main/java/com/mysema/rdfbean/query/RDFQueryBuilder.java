@@ -44,6 +44,11 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             add(PathType.MAPVALUE_CONSTANT, "{0}_{1}");
         }};
 
+    private static final Path<LIT> COUNTER = new PathImpl<LIT>(LIT.class, "counter");
+    
+    // TODO : replace with something simpler
+    private static final Operation<LIT> COUNT_ALL = new OperationImpl<LIT>(LIT.class, (Operator)Ops.AggOps.COUNT_ALL_AGG);
+        
     private final RDFConnection connection;
 
     private final Session session;
@@ -66,6 +71,8 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     private Map<Path<?>, ParamExpression<?>> pathToKnown = new HashMap<Path<?>, ParamExpression<?>>();
 
+    private boolean countViaAggreation = false;
+    
     public RDFQueryBuilder(RDFConnection connection,
             Session session,
             Configuration configuration,
@@ -108,8 +115,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
 
         if (forCount){
-            // TODO : alternatively COUNT(*), if supported
-            projection.add(new PathImpl<LIT>(LIT.class, "counter"));
+            projection.add(countViaAggreation ? COUNT_ALL : COUNTER);
         }else{
             // limit + offset
             query.restrict(metadata.getModifiers());
@@ -630,6 +636,10 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }else{
             return new TemplateExpressionImpl(template.getType(), template.getTemplate(), args);
         }
+    }
+
+    public void setCountViaAggreation(boolean countViaAggreation) {
+        this.countViaAggreation = countViaAggreation;
     }
 
 
