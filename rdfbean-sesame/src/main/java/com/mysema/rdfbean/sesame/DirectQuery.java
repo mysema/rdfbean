@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
-package com.mysema.rdfbean.sesame.query;
+package com.mysema.rdfbean.sesame;
 
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
@@ -23,14 +23,10 @@ import org.openrdf.store.StoreException;
 import com.mysema.rdfbean.model.RepositoryException;
 
 /**
- * DirectQuery provides integration of programmatically constructed queries into Repository connection
- *
  * @author tiwe
- * @version $Id$
+ *
  */
 public final class DirectQuery {
-
-    private DirectQuery(){}
 
     private static final ThreadLocal<QueryModel> QUERY_HOLDER = new ThreadLocal<QueryModel>();
 
@@ -58,11 +54,10 @@ public final class DirectQuery {
             }
         });
     }
-    
+
     public static TupleQuery getQuery(RepositoryConnection connection, TupleQueryModel tupleQueryModel,
-            boolean includeInferred){        
+            boolean includeInferred){
         try {
-//            System.err.println(tupleQueryModel.getTupleExpr());
             QUERY_HOLDER.set(tupleQueryModel);
             TupleQuery tupleQuery = connection.prepareTupleQuery(DirectQuery.DIRECTQUERY, "");
             tupleQuery.setIncludeInferred(includeInferred);
@@ -72,7 +67,7 @@ public final class DirectQuery {
         } catch (MalformedQueryException e) {
             throw new RepositoryException(e);
         }
-        
+
     }
 
     public static GraphQuery getQuery(RepositoryConnection connection, GraphQueryModel graphQueryModel,
@@ -98,5 +93,7 @@ public final class DirectQuery {
             boolean includeInferred) throws StoreException{
         return getQuery(connection, graphQueryModel, includeInferred).evaluate();
     }
+
+    private DirectQuery(){}
 
 }

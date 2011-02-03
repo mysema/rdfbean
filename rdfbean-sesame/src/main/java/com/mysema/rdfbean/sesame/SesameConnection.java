@@ -41,9 +41,7 @@ import com.mysema.query.QueryMetadata;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
-import com.mysema.rdfbean.sesame.query.DirectQuery;
-import com.mysema.rdfbean.sesame.query.FunctionTransformer;
-import com.mysema.rdfbean.sesame.query.SesameBeanQuery;
+import com.mysema.rdfbean.query.BeanQueryImpl;
 
 /**
  * SaesameConnection is the RDFConnection implementation for RepositoryConnection usage
@@ -64,8 +62,8 @@ public class SesameConnection implements RDFConnection {
     private static final ProjectionElemList projections = new ProjectionElemList();
 
     static{
-        new FunctionTransformer();
-        
+        SesameFunctions.init();
+
         RDF_TYPE_VAR.setAnonymous(true);
         projections.addElements(new ProjectionElem("subject"));
         projections.addElements(new ProjectionElem("_rdf_type", "predicate"));
@@ -192,9 +190,9 @@ public class SesameConnection implements RDFConnection {
             TupleQueryModel queryModel = new TupleQueryModel(tuple);
             TupleQuery query = DirectQuery.getQuery(connection, queryModel, false);
             return (Q)new TupleQueryImpl(query, dialect);
-            
+
         }else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
-                  queryLanguage.equals(QueryLanguage.GRAPH)){    
+                  queryLanguage.equals(QueryLanguage.GRAPH)){
             SPARQLVisitor visitor = new SPARQLVisitor(SesameSPARQLTemplates.DEFAULT, "PREFIX q: <functions:>\n");
             visitor.visit((QueryMetadata)definition, queryLanguage);
             System.err.println(visitor.toString());
@@ -203,7 +201,7 @@ public class SesameConnection implements RDFConnection {
                 query.setBinding(entry.getValue(), (NODE)entry.getKey());
             }
             return (Q)query;
-            
+
         }else{
             throw new UnsupportedQueryLanguageException(queryLanguage);
         }
@@ -213,23 +211,13 @@ public class SesameConnection implements RDFConnection {
     @Override
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
-            SesameBeanQuery query = new SesameBeanQuery(
-                    session,
-                    dialect,
-                    dialect.getValueFactory(),
-                    connection,
-                    StatementPattern.Scope.DEFAULT_CONTEXTS,
-                    ontology,
-                    inference);
-            query.getMetadata().setDistinct(true);
-            return (Q)query;
-//            return (Q)new BeanQueryImpl(session, this);
-            
+            return (Q)new BeanQueryImpl(session, this);
+
         }else{
            return createQuery(queryLanguage, definition);
         }
     }
-    
+
     private SPARQLQuery createSPARQLQuery(String queryString) {
         try {
             Query query = connection.prepareQuery(org.openrdf.query.QueryLanguage.SPARQL, queryString);
@@ -372,7 +360,7 @@ public class SesameConnection implements RDFConnection {
     public RDFBeanTransaction getTransaction() {
         return localTxn;
     }
-    
+
     @Override
     public void remove(ID subject, UID predicate, NODE object, UID context) {
         Resource subj = subject != null ? dialect.getResource(subject) : null;

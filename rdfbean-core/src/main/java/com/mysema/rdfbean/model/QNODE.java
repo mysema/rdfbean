@@ -25,11 +25,11 @@ public class QNODE<T extends NODE> extends EntityPathBase<T>{
         super(type, metadata);
     }
     
-    private Constant<LIT> literal(String val){
+    private static Constant<LIT> literal(String val){
         return new ConstantImpl<LIT>(LIT.class, new LIT(val));
     }
     
-    private Constant<LIT> literal(LIT val) {
+    private static Constant<LIT> literal(LIT val) {
         return new ConstantImpl<LIT>(LIT.class, val);
     }
     

@@ -8,81 +8,34 @@ import java.util.Stack;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.vocabulary.XMLSchema;
-import org.openrdf.query.algebra.And;
-import org.openrdf.query.algebra.Bound;
-import org.openrdf.query.algebra.Compare;
-import org.openrdf.query.algebra.CompareAll;
-import org.openrdf.query.algebra.Distinct;
-import org.openrdf.query.algebra.Exists;
-import org.openrdf.query.algebra.Extension;
-import org.openrdf.query.algebra.ExtensionElem;
-import org.openrdf.query.algebra.Filter;
-import org.openrdf.query.algebra.FunctionCall;
-import org.openrdf.query.algebra.Join;
-import org.openrdf.query.algebra.LeftJoin;
-import org.openrdf.query.algebra.MathExpr;
-import org.openrdf.query.algebra.Not;
-import org.openrdf.query.algebra.Or;
+import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.Order;
-import org.openrdf.query.algebra.OrderElem;
-import org.openrdf.query.algebra.Projection;
-import org.openrdf.query.algebra.ProjectionElem;
-import org.openrdf.query.algebra.ProjectionElemList;
-import org.openrdf.query.algebra.Regex;
-import org.openrdf.query.algebra.Slice;
-import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.algebra.Str;
-import org.openrdf.query.algebra.TupleExpr;
-import org.openrdf.query.algebra.Union;
-import org.openrdf.query.algebra.ValueExpr;
-import org.openrdf.query.algebra.Var;
 import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.types.Constant;
-import com.mysema.query.types.Expression;
-import com.mysema.query.types.FactoryExpression;
+import com.mysema.query.types.*;
 import com.mysema.query.types.Operation;
-import com.mysema.query.types.Operator;
-import com.mysema.query.types.Ops;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.ParamExpression;
-import com.mysema.query.types.Path;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.SubQueryExpression;
-import com.mysema.query.types.TemplateExpression;
-import com.mysema.rdfbean.model.Block;
-import com.mysema.rdfbean.model.GraphBlock;
-import com.mysema.rdfbean.model.GroupBlock;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.OptionalBlock;
-import com.mysema.rdfbean.model.PatternBlock;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFVisitor;
-import com.mysema.rdfbean.model.UnionBlock;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.query.VarNameIterator;
-import com.mysema.rdfbean.sesame.query.FunctionTransformer;
 
 /**
  * @author tiwe
  *
  */
 public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
-    
+
     private static final Map<Operator<?>,CompareOp> COMPARE_OPS = new HashMap<Operator<?>,CompareOp>();
-    
+
     private static final Map<Operator<?>, MathOp> MATH_OPS = new HashMap<Operator<?>,MathOp>();
-    
+
     private static final Map<Operator<?>, String> FUNCTION_OPS = new HashMap<Operator<?>, String>();
-    
+
     static{
-        new FunctionTransformer();
-        
-        COMPARE_OPS.put(Ops.EQ_OBJECT, CompareOp.EQ); 
+        SesameFunctions.init();
+
+        COMPARE_OPS.put(Ops.EQ_OBJECT, CompareOp.EQ);
         COMPARE_OPS.put(Ops.EQ_PRIMITIVE, CompareOp.EQ);
         COMPARE_OPS.put(Ops.NE_OBJECT,  CompareOp.NE);
         COMPARE_OPS.put(Ops.NE_PRIMITIVE, CompareOp.NE);
@@ -94,19 +47,19 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         COMPARE_OPS.put(Ops.AFTER, CompareOp.GT);
         COMPARE_OPS.put(Ops.GOE, CompareOp.GE);
         COMPARE_OPS.put(Ops.AOE, CompareOp.GE);
-        
+
         MATH_OPS.put(Ops.ADD, MathOp.PLUS);
         MATH_OPS.put(Ops.SUB, MathOp.MINUS);
         MATH_OPS.put(Ops.MULT, MathOp.MULTIPLY);
-        MATH_OPS.put(Ops.DIV, MathOp.DIVIDE);      
-        
+        MATH_OPS.put(Ops.DIV, MathOp.DIVIDE);
+
         // string
         FUNCTION_OPS.put(Ops.TRIM,            "functions:trim");
         FUNCTION_OPS.put(Ops.UPPER,           "functions:upper");
         FUNCTION_OPS.put(Ops.LOWER,           "functions:lower");
         FUNCTION_OPS.put(Ops.CONCAT,          "functions:concat");
         FUNCTION_OPS.put(Ops.SUBSTR_1ARG,     "functions:substring");
-        FUNCTION_OPS.put(Ops.SUBSTR_2ARGS,    "functions:substring2");        
+        FUNCTION_OPS.put(Ops.SUBSTR_2ARGS,    "functions:substring2");
         FUNCTION_OPS.put(Ops.CHAR_AT,         "functions:charAt");
         FUNCTION_OPS.put(Ops.STARTS_WITH,     "functions:startsWith");
         FUNCTION_OPS.put(Ops.ENDS_WITH,       "functions:endsWith");
@@ -118,16 +71,16 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         FUNCTION_OPS.put(Ops.STRING_LENGTH,   "functions:stringLength");
         FUNCTION_OPS.put(Ops.INDEX_OF,        "functions:indexOf");
         FUNCTION_OPS.put(Ops.INDEX_OF_2ARGS,  "functions:indexOf2");
-        FUNCTION_OPS.put(Ops.LIKE,            "functions:like");        
+        FUNCTION_OPS.put(Ops.LIKE,            "functions:like");
         FUNCTION_OPS.put(Ops.StringOps.SPACE, "functions:space");
-        
+
         // math
         FUNCTION_OPS.put(Ops.MathOps.CEIL,    "functions:ceil");
         FUNCTION_OPS.put(Ops.MathOps.FLOOR,   "functions:floor");
         FUNCTION_OPS.put(Ops.MathOps.SQRT,    "functions:sqrt");
         FUNCTION_OPS.put(Ops.MathOps.ABS,     "functions:abs");
         FUNCTION_OPS.put(Ops.MOD,             "functions:modulo");
-        
+
         // date / time
         FUNCTION_OPS.put(Ops.DateTimeOps.YEAR,"functions:year");
         FUNCTION_OPS.put(Ops.DateTimeOps.YEAR_MONTH,"functions:yearMonth");
@@ -140,53 +93,53 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         FUNCTION_OPS.put(Ops.DateTimeOps.MINUTE,"functions:minute");
         FUNCTION_OPS.put(Ops.DateTimeOps.SECOND,"functions:second");
         FUNCTION_OPS.put(Ops.DateTimeOps.MILLISECOND,"functions:millisecond");
-        
+
         // other
         FUNCTION_OPS.put(Ops.COALESCE, "functions:coalesce");
-        
-    
+
+
     }
 
     private final SesameDialect dialect;
-    
+
     private final Map<Path<?>,Var> pathToVar = new HashMap<Path<?>,Var>();
-    
+
     private final Map<ParamExpression<?>,Var> paramToVar = new HashMap<ParamExpression<?>,Var>();
-    
+
     private final Map<Object, Var> constantToVar = new HashMap<Object, Var>();
-    
+
     private final VarNameIterator varNames = new VarNameIterator("__v");
-    
+
     private final VarNameIterator extNames = new VarNameIterator("__e");
-    
+
     private final Stack<Var> graphs = new Stack<Var>();
-    
+
     public SesameRDFVisitor(SesameDialect dialect) {
         this.dialect = dialect;
     }
-    
+
     private Var toVar(Expression<?> expr, QueryMetadata md) {
         return (Var)expr.accept(this, md);
     }
-    
+
     private TupleExpr toTuple(Expression<?> expr, QueryMetadata md) {
         return (TupleExpr)expr.accept(this, md);
     }
-    
+
     private ValueExpr toValue(Expression<?> expr, QueryMetadata md) {
         return (ValueExpr)expr.accept(this, md);
     }
-    
+
     @Override
     public TupleExpr visit(QueryMetadata md, QueryLanguage<?, ?> queryType) {
-        
+
         // where
         TupleExpr tuple = toTuple(md.getWhere(), md);
-        
+
         if (queryType == QueryLanguage.BOOLEAN){
             return tuple;
         }
-        
+
         // order
         if (!md.getOrderBy().isEmpty()){
             List<OrderElem> orderElements = new ArrayList<OrderElem>();
@@ -195,10 +148,10 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             }
             tuple = new Order(tuple, orderElements);
         }
-        
+
         // TODO : group by
         // TODO : having
-        
+
         // projection
         ProjectionElemList projection = new ProjectionElemList();
         List<ExtensionElem> extensions = new ArrayList<ExtensionElem>();
@@ -211,30 +164,30 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 projection.addElement(new ProjectionElem(extLabel));
                 extensions.add(new ExtensionElem(val, extLabel));
             }
-        }        
+        }
         if (!extensions.isEmpty()){
             tuple = new Extension(tuple, extensions);
         }
         if (!projection.getElements().isEmpty()){
             tuple = new Projection(tuple, projection);
         }
-        
+
         // limit / offset
         QueryModifiers modifiers = md.getModifiers();
         if (modifiers.isRestricting()){
             Long limit = modifiers.getLimit();
             Long offset = modifiers.getOffset();
             tuple = new Slice(
-                    tuple, 
-                    offset != null ? offset.intValue() : 0, 
+                    tuple,
+                    offset != null ? offset.intValue() : 0,
                     limit != null ? limit.intValue() : -1);
         }
-        
+
         // distinct
         if (md.isDistinct()){
             tuple = new Distinct(tuple);
         }
-        
+
         return tuple;
     }
 
@@ -243,13 +196,13 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         List<TupleExpr> tuples = new ArrayList<TupleExpr>(expr.getBlocks().size());
         for (Block block : expr.getBlocks()){
             tuples.add(toTuple(block, md));
-        } 
+        }
         return new Union(tuples);
     }
 
     @Override
     public TupleExpr visit(GroupBlock expr, QueryMetadata md) {
-        TupleExpr rv = merge(expr.getBlocks(), md);        
+        TupleExpr rv = merge(expr.getBlocks(), md);
         if (expr.getFilters() != null){
             rv = filter(rv, expr.getFilters(), md);
         }
@@ -260,27 +213,27 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     public Object visit(GraphBlock expr, QueryMetadata md) {
         graphs.push(toVar(expr.getContext(), md));
         try{
-            TupleExpr rv = merge(expr.getBlocks(), md);        
+            TupleExpr rv = merge(expr.getBlocks(), md);
             if (expr.getFilters() != null){
                 rv = filter(rv, expr.getFilters(), md);
             }
             return rv;
         }finally{
             graphs.pop();
-        }               
+        }
     }
 
     @Override
     public Object visit(OptionalBlock expr, QueryMetadata md) {
-        TupleExpr rv = merge(expr.getBlocks(), md);        
+        TupleExpr rv = merge(expr.getBlocks(), md);
         if (expr.getFilters() != null){
             rv = filter(rv, expr.getFilters(), md);
         }
         return rv;
     }
-    
+
     private TupleExpr merge(List<Block> blocks, QueryMetadata md){
-        List<TupleExpr> tuples = new ArrayList<TupleExpr>(blocks.size());        
+        List<TupleExpr> tuples = new ArrayList<TupleExpr>(blocks.size());
         for (Block block : blocks){
             if (block instanceof OptionalBlock){
                 TupleExpr right = toTuple(block, md);
@@ -288,25 +241,25 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 tuples = new ArrayList<TupleExpr>();
                 tuples.add(lj);
             }else{
-                tuples.add(toTuple(block, md));    
-            }            
-        }        
+                tuples.add(toTuple(block, md));
+            }
+        }
         if (tuples.size() > 1){
-            return new Join(tuples);            
+            return new Join(tuples);
         }else{
             return tuples.get(0);
-        }        
+        }
     }
 
     private TupleExpr filter(TupleExpr tuple, Predicate expr, QueryMetadata md){
         ValueExpr filter = toValue(expr, md);
         if (filter != null){
-            return new Filter(tuple, filter);    
+            return new Filter(tuple, filter);
         }else{
             return tuple;
         }
     }
-    
+
     @Override
     public Object visit(PatternBlock expr, QueryMetadata md) {
         Var subject = toVar(expr.getSubject(), md);
@@ -320,18 +273,18 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         }else{
             pattern = new StatementPattern(subject, predicate, object);
         }
-        
+
         // datatype inference (string typed literal can be replaced with untyped) via union
-        if (object.getValue() != null 
-            && object.getValue() instanceof Literal 
+        if (object.getValue() != null
+            && object.getValue() instanceof Literal
             && XMLSchema.STRING.equals(((Literal)object.getValue()).getDatatype())){
             Var object2 = new Var(object.getName(), dialect.getLiteral(new LIT(object.getValue().stringValue(), RDF.text)));
             return new Union(pattern, new StatementPattern(subject, predicate, object2, pattern.getContextVar()));
-                    
+
         }else{
-            return pattern;    
+            return pattern;
         }
-        
+
     }
 
     @Override
@@ -368,24 +321,24 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             if (expr.getArg(1) instanceof SubQueryExpression<?>){
                 return new CompareAll(toValue(expr.getArg(0), md), toTuple(expr.getArg(1), md), COMPARE_OPS.get(op));
             }else{
-                return new Compare(toValue(expr.getArg(0), md), toValue(expr.getArg(1), md), COMPARE_OPS.get(op));    
-            }            
+                return new Compare(toValue(expr.getArg(0), md), toValue(expr.getArg(1), md), COMPARE_OPS.get(op));
+            }
         }else if (MATH_OPS.containsKey(op)){
             return new MathExpr(toValue(expr.getArg(0), md), toValue(expr.getArg(1), md), MATH_OPS.get(op));
         }else if (op == Ops.MATCHES){
-            return new Regex(new Str(toValue(expr.getArg(0), md)), new Str(toValue(expr.getArg(1), md)), null);            
-        }else if (op == Ops.STRING_IS_EMPTY){    
+            return new Regex(new Str(toValue(expr.getArg(0), md)), new Str(toValue(expr.getArg(1), md)), null);
+        }else if (op == Ops.STRING_IS_EMPTY){
             return new Regex(new Str(toValue(expr.getArg(0), md)), "", false);
-        }else if (op == Ops.IS_NULL){    
+        }else if (op == Ops.IS_NULL){
             return new Not(new Bound(toVar(expr.getArg(0), md)));
-        }else if (op == Ops.IS_NOT_NULL){    
-            return new Bound(toVar(expr.getArg(0), md));            
+        }else if (op == Ops.IS_NOT_NULL){
+            return new Bound(toVar(expr.getArg(0), md));
         }else if (op == Ops.EXISTS){
             return new Exists(toTuple(expr.getArg(0), md));
         }else if (op == Ops.DELEGATE){
             return toValue(expr.getArg(0), md);
         }else if (op == Ops.STRING_CAST){
-                return new Str(toValue(expr.getArg(0), md));   
+                return new Str(toValue(expr.getArg(0), md));
         }else if (op == Ops.NUMCAST){
             return new FunctionCall(toVar(expr.getArg(1), md).getValue().stringValue(), toValue(expr.getArg(0), md));
         }else if (FUNCTION_OPS.containsKey(op)){
