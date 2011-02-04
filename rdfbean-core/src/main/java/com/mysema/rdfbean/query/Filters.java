@@ -11,15 +11,15 @@ import com.mysema.rdfbean.model.Blocks;
 import com.mysema.rdfbean.model.GroupBlock;
 
 public class Filters {
-    
-    private Set<Predicate> filters = new LinkedHashSet<Predicate>();
-    
+
+    private final Set<Predicate> filters = new LinkedHashSet<Predicate>();
+
     private Set<Block> optBlocks = new LinkedHashSet<Block>();
-    
+
     private Set<Predicate> optFilters = new LinkedHashSet<Predicate>();
-    
+
     private boolean inOptional = false;
-    
+
     public Set<Predicate> getFilters(){
         return filters;
     }
@@ -36,11 +36,11 @@ public class Filters {
                optFilters.add(predicate);
            }
        }else{
-           filters.add(predicate);    
+           filters.add(predicate);
        }
-        
+
     }
-    
+
     public boolean inOptional(){
         return inOptional;
     }
@@ -48,20 +48,20 @@ public class Filters {
     public void beginOptional() {
         inOptional = true;
     }
-    
+
     public void endOptional() {
         if (optBlocks.isEmpty()){
             filters.addAll(optFilters);
         }else{
             filters.add(Blocks.optional(
-                    new ArrayList<Block>(optBlocks), 
+                    new ArrayList<Block>(optBlocks),
                     optFilters.toArray(new Predicate[optFilters.size()])));
         }
         optBlocks = new LinkedHashSet<Block>();
         optFilters = new LinkedHashSet<Predicate>();
         inOptional = false;
     }
-    
+
     public Predicate[] toArray(){
         return filters.toArray(new Predicate[filters.size()]);
     }
@@ -78,5 +78,5 @@ public class Filters {
         }
         return new GroupBlock(b, f.toArray(new Predicate[f.size()]));
     }
-    
+
 }
