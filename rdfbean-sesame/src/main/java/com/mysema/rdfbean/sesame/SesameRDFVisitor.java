@@ -10,6 +10,7 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.Order;
+import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
