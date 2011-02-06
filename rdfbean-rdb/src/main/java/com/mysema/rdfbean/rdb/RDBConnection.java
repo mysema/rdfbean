@@ -27,6 +27,7 @@ import org.apache.commons.collections15.Transformer;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
+import com.mysema.query.QueryMetadata;
 import com.mysema.query.dml.DeleteClause;
 import com.mysema.query.dml.StoreClause;
 import com.mysema.query.sql.SQLQuery;
@@ -81,6 +82,13 @@ public class RDBConnection implements RDFConnection{
                 throw new IllegalArgumentException("Found no node for id " + id);
             }
         }
+    };
+    
+    private final Transformer<Long,NODE> cachingNodeTransformer = new Transformer<Long,NODE>(){
+        @Override
+        public NODE transform(Long input) {
+            return context.getNode(input, nodeTransformer);
+        }        
     };
 
     public RDBConnection(RDBContext context) {
@@ -190,9 +198,17 @@ public class RDBConnection implements RDFConnection{
         return new BID(UUID.randomUUID().toString());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-        throw new UnsupportedOperationException();
+        if (queryLanguage.equals(QueryLanguage.TUPLE) || 
+            queryLanguage.equals(QueryLanguage.BOOLEAN) || 
+            queryLanguage.equals(QueryLanguage.GRAPH)){
+            RDBRDFVisitor visitor = new RDBRDFVisitor(context, cachingNodeTransformer);
+            return (Q) visitor.visit((QueryMetadata)definition, queryLanguage);
+        }else{
+            throw new UnsupportedOperationException();    
+        }                
     }
 
     @SuppressWarnings("unchecked")
@@ -200,8 +216,12 @@ public class RDBConnection implements RDFConnection{
     public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
             return (Q)new RDBBeanQuery(context, session);
+//            BeanQueryImpl query = new BeanQueryImpl(session, this);
+//            query.setCountViaAggregation(true);
+//            query.setPreserveStringOps(true);
+//            return (Q)query;
         }else{
-            throw new UnsupportedQueryLanguageException(queryLanguage);
+            return createQuery(queryLanguage, definition);
         }
     }
 

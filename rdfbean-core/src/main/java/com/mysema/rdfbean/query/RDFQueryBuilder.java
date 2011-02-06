@@ -47,8 +47,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     private static final Path<LIT> COUNTER = new PathImpl<LIT>(LIT.class, "counter");
 
     // TODO : replace with something simpler
-    private static final Operation<LIT> COUNT_ALL =
-        new OperationImpl<LIT>(LIT.class, (Operator)Ops.AggOps.COUNT_ALL_AGG);
+    private static final Operation<Long> COUNT_ALL = new OperationImpl<Long>(Long.class, (Operator)Ops.AggOps.COUNT_ALL_AGG);
 
     private final RDFConnection connection;
 
@@ -72,7 +71,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     private Map<Path<?>, ParamExpression<?>> pathToKnown = new HashMap<Path<?>, ParamExpression<?>>();
 
-    private boolean countViaAggreation = false;
+    private boolean countViaAggrgeation = false;
+    
+    private boolean preserveStringOps = false;
 
     public RDFQueryBuilder(RDFConnection connection,
             Session session,
@@ -116,7 +117,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
 
         if (forCount){
-            projection.add(countViaAggreation ? COUNT_ALL : COUNTER);
+            projection.add(countViaAggrgeation ? COUNT_ALL : COUNTER);
         }else{
             // limit + offset
             query.restrict(metadata.getModifiers());
@@ -350,15 +351,15 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
                 }
 
-            }else if (expr.getOperator() == Ops.STARTS_WITH && rightConstant){
+            }else if (expr.getOperator() == Ops.STARTS_WITH && rightConstant && !preserveStringOps){
                 expr = new PredicateOperation(Ops.MATCHES,
                         expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
 
-            }else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant){
+            }else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant && !preserveStringOps){
                 expr = new PredicateOperation(Ops.MATCHES,
                         expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
 
-            }else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant){
+            }else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant && !preserveStringOps){
                 expr = new PredicateOperation(Ops.MATCHES,
                         expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
 
@@ -639,10 +640,12 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
     }
 
-    public void setCountViaAggreation(boolean countViaAggreation) {
-        this.countViaAggreation = countViaAggreation;
+    public void setCountViaAggregation(boolean countViaAggrgeation) {
+        this.countViaAggrgeation = countViaAggrgeation;
     }
 
-
+    public void setPreserveStringOps(boolean preserveStringOps) {
+        this.preserveStringOps = preserveStringOps;
+    }
 
 }

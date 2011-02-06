@@ -12,7 +12,7 @@ import com.mysema.query.types.Predicate;
 import com.mysema.query.types.PredicateOperation;
 import com.mysema.query.types.Visitor;
 
-public class OptionalBlock implements Block{
+public class OptionalBlock implements ContainerBlock{
     
     private static final long serialVersionUID = 7345721586959129539L;
     

@@ -248,36 +248,30 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     @Override
     public TupleExpr visit(GroupBlock expr, QueryMetadata md) {
-        TupleExpr rv = merge(expr.getBlocks(), md);
-        if (expr.getFilters() != null){
-            rv = filter(rv, expr.getFilters(), md);
-        }
-        return rv;
+        return visit((ContainerBlock)expr, md);
     }
 
     @Override
-    public Object visit(GraphBlock expr, QueryMetadata md) {
+    public TupleExpr visit(GraphBlock expr, QueryMetadata md) {
         graphs.push(toVar(expr.getContext(), md));
-        try{
-            TupleExpr rv = merge(expr.getBlocks(), md);
-            if (expr.getFilters() != null){
-                rv = filter(rv, expr.getFilters(), md);
-            }
-            return rv;
-        }finally{
-            graphs.pop();
-        }
+        TupleExpr rv = visit((ContainerBlock)expr, md);
+        graphs.pop();
+        return rv;
     }
 
     @Override
-    public Object visit(OptionalBlock expr, QueryMetadata md) {
+    public TupleExpr visit(OptionalBlock expr, QueryMetadata md) {
+        return visit((ContainerBlock)expr, md);
+    }
+
+    private TupleExpr visit(ContainerBlock expr, QueryMetadata md){
         TupleExpr rv = merge(expr.getBlocks(), md);
         if (expr.getFilters() != null){
             rv = filter(rv, expr.getFilters(), md);
         }
         return rv;
     }
-
+    
     private TupleExpr merge(List<Block> blocks, QueryMetadata md){
         List<TupleExpr> tuples = new ArrayList<TupleExpr>(blocks.size());
         for (Block block : blocks){

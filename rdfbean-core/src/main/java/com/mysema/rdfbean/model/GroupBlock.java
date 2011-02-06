@@ -17,7 +17,7 @@ import com.mysema.query.types.Visitor;
  * @author tiwe
  *
  */
-public class GroupBlock implements Block{
+public class GroupBlock implements ContainerBlock{
     
     private static final long serialVersionUID = 114999121944301068L;
 

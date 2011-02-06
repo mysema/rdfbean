@@ -13,7 +13,7 @@ import com.mysema.query.types.Predicate;
 import com.mysema.query.types.PredicateOperation;
 import com.mysema.query.types.Visitor;
 
-public class GraphBlock implements Block{
+public class GraphBlock implements ContainerBlock{
     
     private static final long serialVersionUID = -4450740702187022383L;
 

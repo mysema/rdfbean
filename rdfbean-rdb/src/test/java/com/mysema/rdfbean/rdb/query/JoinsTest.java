@@ -9,6 +9,7 @@ import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -23,6 +24,7 @@ import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.rdb.RDBBeanQuery;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
+@Ignore
 @SessionConfig({User.class, Department.class, Company.class})
 public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyDomain{
     

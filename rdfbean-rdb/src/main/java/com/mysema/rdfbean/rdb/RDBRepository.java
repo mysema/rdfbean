@@ -354,11 +354,15 @@ public class RDBRepository implements Repository{
             nodes.add(new UID("default:default"));
             nodes.add(CORE.localId);
             nodes.add(RDB.nullContext);
+            nodes.addAll(DC.ALL);
+            nodes.addAll(DCTERMS.ALL);
+            nodes.addAll(GEO.ALL);
+            nodes.addAll(OWL.ALL);
             nodes.addAll(RDF.ALL);
             nodes.addAll(RDFS.ALL);
+            nodes.addAll(SKOS.ALL);
             nodes.addAll(XSD.ALL);
-            nodes.addAll(OWL.ALL);   
-            
+                         
             // common literals
             nodes.add(new LIT(""));
             nodes.add(new LIT("true",XSD.booleanType));

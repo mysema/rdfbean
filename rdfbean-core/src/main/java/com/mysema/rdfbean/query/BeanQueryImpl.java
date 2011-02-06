@@ -45,6 +45,10 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
 
     private final RDFConnection connection;
     
+    private boolean countViaAggregation = false;
+    
+    private boolean preserveStringOps = false;
+    
     public BeanQueryImpl(Session session, RDFConnection connection) {
         super(new QueryMixin<BeanQueryImpl>());
         queryMixin.setSelf(this);
@@ -86,7 +90,10 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     }
     
     private RDFQueryBuilder createBuilder(){
-        return new RDFQueryBuilder(connection, session, session.getConfiguration(), queryMixin.getMetadata());
+        RDFQueryBuilder builder = new RDFQueryBuilder(connection, session, session.getConfiguration(), queryMixin.getMetadata());
+        builder.setCountViaAggregation(countViaAggregation);
+        builder.setPreserveStringOps(preserveStringOps);
+        return builder;
     }
 
     private BooleanQuery createBooleanQuery() {
@@ -227,4 +234,12 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 total);
     }
 
+    public void setCountViaAggregation(boolean countViaAggregation) {
+        this.countViaAggregation = countViaAggregation;
+    }
+
+    public void setPreserveStringOps(boolean preserveStringOps) {
+        this.preserveStringOps = preserveStringOps;
+    }
+    
 }

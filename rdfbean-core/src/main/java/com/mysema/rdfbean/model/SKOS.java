@@ -1,5 +1,8 @@
 package com.mysema.rdfbean.model;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import com.mysema.rdfbean.model.UID;
 
 /**
@@ -71,6 +74,11 @@ public final class SKOS {
     public static final UID semanticRelation = new UID(NS, "semanticRelation");
     
     public static final UID topConceptOf = new UID(NS, "topConceptOf");
+    
+    public static final Collection<UID> ALL = Arrays.asList(Collection, Concept, ConceptScheme, OrderedCollection, altLabel, broadMatch, broaderTransitive,
+            changeNote, closeMatch, definition, editorialNote, exactMatch, example, hasTopConcept, hiddenLabel, historyNote, inScheme, mappingRelation,
+            member, memberList, narrowMatch, narrower, narrowerTransitive, notation, note, prefLabel, related, relatedMatch, scopeNote, semanticRelation,
+            topConceptOf);
     
     private SKOS() {}
 
