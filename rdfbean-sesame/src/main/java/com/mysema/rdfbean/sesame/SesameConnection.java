@@ -39,9 +39,7 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
 import com.mysema.query.QueryMetadata;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.ontology.Ontology;
-import com.mysema.rdfbean.query.BeanQueryImpl;
 
 /**
  * SaesameConnection is the RDFConnection implementation for RepositoryConnection usage

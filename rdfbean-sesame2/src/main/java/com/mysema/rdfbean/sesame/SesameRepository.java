@@ -31,7 +31,6 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.Operation;
-import com.mysema.rdfbean.model.QueryOptions;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
@@ -219,7 +218,7 @@ public abstract class SesameRepository implements Repository{
     @Override
     public RDFConnection openConnection() {
         try {
-            return new SesameConnection(this, repository.getConnection(), ontology, getInferenceOptions());
+            return new SesameConnection(this, repository.getConnection());
         } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }

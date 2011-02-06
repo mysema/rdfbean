@@ -3,16 +3,11 @@ package com.mysema.rdfbean.sesame.query;
 import static com.mysema.query.alias.Alias.$;
 import static com.mysema.query.alias.Alias.alias;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.query.algebra.Join;
-import org.openrdf.query.algebra.StatementPattern;
 
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.ContextDomain;
-import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 

@@ -16,7 +16,6 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.EmptyCloseableIterator;
 import com.mysema.query.QueryMetadata;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.object.Session;
 
 /**
  * @author tiwe

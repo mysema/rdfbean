@@ -2,7 +2,6 @@ package com.mysema.rdfbean.model;
 
 import java.util.List;
 
-import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.PredicateOperation;

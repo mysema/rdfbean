@@ -15,7 +15,6 @@ import java.util.Set;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.object.Session;
 
 /**
  * FetchOptimizer is an adapter implementation of the RDFConnection to provide

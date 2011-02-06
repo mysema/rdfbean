@@ -134,6 +134,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         return (ValueExpr)expr.accept(this, md);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TupleExpr visit(QueryMetadata md, QueryLanguage<?, ?> queryType) {
 

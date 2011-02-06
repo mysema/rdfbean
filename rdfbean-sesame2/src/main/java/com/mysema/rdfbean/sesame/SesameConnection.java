@@ -39,7 +39,6 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
 import com.mysema.query.QueryMetadata;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.ontology.Ontology;
 
 /**
  * SaesameConnection is the RDFConnection implementation for RepositoryConnection usage
@@ -66,12 +65,8 @@ public class SesameConnection implements RDFConnection {
 
     private final SesameDialect dialect;
 
-    private final Inference inference;
-
     @Nullable
     private SesameTransaction localTxn = null;
-
-    private final Ontology<UID> ontology;
 
     private boolean readonlyTnx = false;
 
@@ -86,13 +81,11 @@ public class SesameConnection implements RDFConnection {
 
     private final SesameRepository repository;
 
-    public SesameConnection(SesameRepository repository, RepositoryConnection connection, Ontology<UID> ontology, Inference inference) {
+    public SesameConnection(SesameRepository repository, RepositoryConnection connection) {
         this.repository = Assert.notNull(repository,"repository");
         this.connection = Assert.notNull(connection,"connection");
         this.vf = connection.getValueFactory();
         this.dialect = new SesameDialect(vf);
-        this.ontology = Assert.notNull(ontology,"ontology");
-        this.inference = Assert.notNull(inference,"inference");
     }
 
     @Override

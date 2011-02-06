@@ -32,7 +32,6 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.Operation;
-import com.mysema.rdfbean.model.QueryOptions;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;

@@ -47,6 +47,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     private static final Path<LIT> COUNTER = new PathImpl<LIT>(LIT.class, "counter");
 
     // TODO : replace with something simpler
+    @SuppressWarnings("unchecked")
     private static final Operation<Long> COUNT_ALL = new OperationImpl<Long>(Long.class, (Operator)Ops.AggOps.COUNT_ALL_AGG);
 
     private final RDFConnection connection;
@@ -500,6 +501,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     public Expression<?> visit(Path<?> path, Filters filters){
         if (pathToMapped.containsKey(path)){

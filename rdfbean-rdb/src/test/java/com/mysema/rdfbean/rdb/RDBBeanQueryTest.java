@@ -7,10 +7,7 @@ package com.mysema.rdfbean.rdb;
 
 import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import org.junit.Before;

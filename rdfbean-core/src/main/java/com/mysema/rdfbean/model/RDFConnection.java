@@ -11,7 +11,6 @@ import java.util.Collection;
 import javax.annotation.Nullable;
 
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.object.Session;
 
 /**
  * RDFConnection defines a session interface to the Repository

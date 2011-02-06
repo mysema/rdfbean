@@ -5,17 +5,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.query.algebra.Join;
-import org.openrdf.query.algebra.StatementPattern;
-import org.openrdf.query.algebra.TupleExpr;
 
 import com.mysema.query.alias.Alias;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain;
 import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain.Company;
 import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain.Department;
 import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain.Employee;
-import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
