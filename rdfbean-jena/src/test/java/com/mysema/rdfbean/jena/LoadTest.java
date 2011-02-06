@@ -16,12 +16,12 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Addition;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.CountOperation;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.Operation;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.io.Format;
 
 public class LoadTest {
     

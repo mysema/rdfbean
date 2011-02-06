@@ -25,7 +25,6 @@ import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryMetadata;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
 

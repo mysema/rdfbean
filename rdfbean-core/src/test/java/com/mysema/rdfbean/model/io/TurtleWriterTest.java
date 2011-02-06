@@ -2,6 +2,8 @@ package com.mysema.rdfbean.model.io;
 
 import java.io.Writer;
 
+import com.mysema.rdfbean.model.Format;
+
 import junit.framework.Assert;
 
 

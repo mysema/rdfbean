@@ -13,6 +13,10 @@ import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
+/**
+ * @author tiwe
+ *
+ */
 public class RDFXMLWriter implements RDFWriter{
 
     private final Writer writer;

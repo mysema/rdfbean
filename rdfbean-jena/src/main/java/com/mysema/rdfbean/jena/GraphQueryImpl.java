@@ -16,9 +16,9 @@ import com.hp.hpl.jena.rdf.model.impl.NTripleWriter;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.xmloutput.impl.Basic;
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.io.Format;
 
 /**
  * @author tiwe

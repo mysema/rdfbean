@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import net.jcip.annotations.Immutable;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.model.Format;
 
 /**
  * @author tiwe

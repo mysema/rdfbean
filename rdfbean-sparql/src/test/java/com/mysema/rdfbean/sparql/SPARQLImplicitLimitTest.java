@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
 public class SPARQLImplicitLimitTest {

@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.util.Map;
 
 import com.mysema.rdfbean.Namespaces;
+import com.mysema.rdfbean.model.Format;
 
 /**
  * @author tiwe

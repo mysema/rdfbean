@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.io.Format;
 
 
 public class MiniRepositoryTest {

@@ -8,6 +8,10 @@ import java.util.Map;
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.UID;
 
+/**
+ * @author tiwe
+ *
+ */
 public class TurtleStringWriter extends TurtleWriter {
     
     private final Map<String, String> prefixes = new HashMap<String,String>();

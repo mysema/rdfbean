@@ -12,10 +12,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.NTriplesWriter;
 
 public class VirtuosoRepositoryTest extends AbstractConnectionTest{

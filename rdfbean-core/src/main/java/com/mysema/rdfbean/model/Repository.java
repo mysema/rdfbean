@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import com.mysema.rdfbean.model.io.Format;
 
 
 /**

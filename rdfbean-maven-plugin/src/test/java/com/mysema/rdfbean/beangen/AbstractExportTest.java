@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;

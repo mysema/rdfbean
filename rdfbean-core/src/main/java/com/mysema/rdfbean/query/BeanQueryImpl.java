@@ -27,7 +27,6 @@ import com.mysema.query.types.Expression;
 import com.mysema.query.types.FactoryExpression;
 import com.mysema.rdfbean.model.BooleanQuery;
 import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryOptions;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.TupleQuery;
 import com.mysema.rdfbean.object.BeanQuery;

@@ -10,6 +10,10 @@ import com.mysema.rdfbean.model.Block;
 import com.mysema.rdfbean.model.Blocks;
 import com.mysema.rdfbean.model.GroupBlock;
 
+/**
+ * @author tiwe
+ *
+ */
 public class Filters {
 
     private final Set<Predicate> filters = new LinkedHashSet<Predicate>();

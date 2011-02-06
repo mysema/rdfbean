@@ -14,9 +14,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
 public class SPARQLServletTest {

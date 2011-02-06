@@ -6,8 +6,8 @@ import java.io.InputStream;
 import org.junit.After;
 import org.junit.Test;
 
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.RepositoryException;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 
 public class SesameRepositoryTest {

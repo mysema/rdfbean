@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.Format;
 
 @Ignore
 public class DBPediaLoadTest {

@@ -46,7 +46,6 @@ import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.model.io.RDFWriter;
 import com.mysema.rdfbean.model.io.WriterUtils;

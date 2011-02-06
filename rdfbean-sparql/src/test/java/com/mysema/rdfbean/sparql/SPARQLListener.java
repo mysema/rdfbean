@@ -3,8 +3,8 @@ package com.mysema.rdfbean.sparql;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
 public class SPARQLListener implements ServletContextListener{

@@ -17,9 +17,9 @@ import org.junit.Test;
 
 import com.mysema.query.sql.H2Templates;
 import com.mysema.query.sql.SQLTemplates;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.IdSequence;
 import com.mysema.rdfbean.model.MemoryIdSequence;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;

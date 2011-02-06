@@ -22,7 +22,6 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.fetch.PredicateCache;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFWriter;
 import com.mysema.rdfbean.model.io.WriterUtils;
 

@@ -8,6 +8,7 @@ import junit.framework.Assert;
 
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.DC;
+import com.mysema.rdfbean.model.Format;
 
 public class RDFXMLWriterTest extends AbstractWriterTest{
 

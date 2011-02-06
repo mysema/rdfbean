@@ -7,7 +7,7 @@ package com.mysema.rdfbean.sesame;
 
 import org.openrdf.rio.RDFFormat;
 
-import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.Format;
 
 /**
  * FormatHelper provides Format to RDFFormat conversion functionality

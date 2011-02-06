@@ -13,7 +13,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 import com.mysema.rdfbean.beangen.JavaBeanExporter;
-import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;

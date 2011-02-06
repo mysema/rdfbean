@@ -9,11 +9,11 @@ import java.util.Map;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.STMTComparator;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.RDFWriter;
 import com.mysema.rdfbean.model.io.WriterUtils;
 

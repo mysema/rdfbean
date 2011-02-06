@@ -1,6 +1,10 @@
 package com.mysema.rdfbean.model.io;
 
 
+/**
+ * @author tiwe
+ *
+ */
 final class NTriplesUtil {
 
     public static String escapeString(String label) {

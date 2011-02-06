@@ -15,6 +15,8 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import com.mysema.rdfbean.model.Format;
+
 
 
 /**

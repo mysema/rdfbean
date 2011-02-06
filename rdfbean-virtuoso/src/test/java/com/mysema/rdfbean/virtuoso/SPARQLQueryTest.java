@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.QueryLanguage;
@@ -23,7 +24,6 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.io.Format;
 
 public class SPARQLQueryTest extends AbstractConnectionTest {
 

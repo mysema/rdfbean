@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.openrdf.rio.RDFParseException;
 
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.model.io.Format;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.SessionFactoryImpl;

@@ -17,13 +17,13 @@ import com.mysema.rdfbean.domains.EntityRevisionTermDomain;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Entity;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.EntityRevision;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Term;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.QueryLanguage;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.SPARQLQuery;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({Entity.class, EntityRevision.class, Term.class})

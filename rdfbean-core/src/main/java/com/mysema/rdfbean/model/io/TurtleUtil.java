@@ -2,6 +2,10 @@ package com.mysema.rdfbean.model.io;
 
 
 
+/**
+ * @author tiwe
+ *
+ */
 final class TurtleUtil {
 
     public static String encodeString(String s) {

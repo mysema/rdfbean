@@ -18,7 +18,6 @@ import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.model.io.Format;
 
 /**
  * RDBRepositoryTest provides

@@ -15,13 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.owl.OWL;
 
 public class ExportNamespacesTest extends AbstractRDBTest{

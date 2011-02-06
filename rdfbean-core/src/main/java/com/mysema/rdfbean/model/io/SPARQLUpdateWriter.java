@@ -9,6 +9,10 @@ import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 
+/**
+ * @author tiwe
+ *
+ */
 public class SPARQLUpdateWriter extends TurtleWriter{
     
     private final Map<String, String> prefixes = new HashMap<String,String>();
