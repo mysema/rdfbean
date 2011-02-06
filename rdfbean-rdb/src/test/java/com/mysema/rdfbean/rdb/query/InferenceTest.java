@@ -8,6 +8,7 @@ package com.mysema.rdfbean.rdb.query;
 import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -18,6 +19,7 @@ import com.mysema.rdfbean.domains.InferenceDomain.Entity3;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
+@Ignore
 @SessionConfig({Entity1.class, Entity2.class, Entity3.class})
 public class InferenceTest extends AbstractRDBTest implements InferenceDomain{
         

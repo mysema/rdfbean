@@ -28,9 +28,9 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     private final RDBContext context;
     
-    private final Map<Expression<?>, Expression<?>> exprToSymbol = new HashMap<Expression<?>, Expression<?>>();
+    private Map<Expression<?>, Expression<?>> exprToSymbol = new HashMap<Expression<?>, Expression<?>>();
     
-    private final Map<Expression<?>, Path<Long>> exprToMapped = new HashMap<Expression<?>, Path<Long>>();
+    private Map<Expression<?>, Path<Long>> exprToMapped = new HashMap<Expression<?>, Path<Long>>();
     
     private final Stack<Expression<UID>> graphs = new Stack<Expression<UID>>();
     
@@ -40,15 +40,13 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     
     private final VarNameIterator symbols = new VarNameIterator("symbols");
     
-    private SQLCommonQuery query;
+    private SQLCommonQuery<?> query;
     
     private boolean inOptional;   
     
     private boolean firstSource = true;
     
     private boolean asLiteral = false;
-    
-    private boolean preserveStringOps = false;
     
     public RDBRDFVisitor(RDBContext context, Transformer<Long, NODE> transformer) {
         this.context = context;
@@ -73,7 +71,9 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
          || op.getOperator() == Ops.IN
          || op.getOperator() == Ops.ORDINAL){
             for (Expression<?> arg : op.getArgs()){
-                if (!(arg instanceof Path<?>) && !(arg instanceof Constant<?>)){
+                if (!(arg instanceof Path<?>) 
+                  && !(arg instanceof ParamExpression<?>)
+                  && !(arg instanceof Constant<?>)){
                     return true;
                 }
             }
@@ -280,8 +280,16 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     @Override
     public SubQueryExpression<?> visit(SubQueryExpression<?> expr, QueryMetadata context) {
-        SQLCommonQuery q = query;
+        SQLCommonQuery<?> q = query;
+        boolean firstS = firstSource;
+        
+        firstSource = true;
         query = new SQLSubQuery();
+        Map<Expression<?>, Path<Long>> exprToM = exprToMapped;
+        Map<Expression<?>, Expression<?>> exprToS = exprToSymbol;
+        exprToMapped = new HashMap<Expression<?>, Path<Long>>(exprToMapped);
+        exprToSymbol = new HashMap<Expression<?>, Expression<?>>(exprToSymbol);
+        
         QueryMetadata md = expr.getMetadata();
         
         // where
@@ -317,8 +325,13 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         for (Expression<?> e : md.getProjection()){
             projection.add(handle(e, md));
         }        
-        SubQueryExpression sqe = ((SQLSubQuery)query).list(projection.toArray(new Expression[projection.size()])); 
+        SubQueryExpression<?> sqe = ((SQLSubQuery)query).list(projection.toArray(new Expression[projection.size()])); 
+        
+        firstSource = firstS;
         query = q;
+        exprToMapped = exprToM;
+        exprToSymbol = exprToS;
+        
         return sqe;
     }
 
@@ -331,14 +344,13 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         if (expr.getType().equals(Boolean.class)){
             return new BooleanTemplate(expr.getTemplate(), args);
         }else{
-            return new TemplateExpressionImpl(expr.getType(), expr.getTemplate(), args);
+            return new TemplateExpressionImpl<Object>(expr.getType(), expr.getTemplate(), args);
         }
     }
 
     @Override
     public Object visit(UnionBlock expr, QueryMetadata context) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
 }
