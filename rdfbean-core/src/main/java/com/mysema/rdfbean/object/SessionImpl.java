@@ -28,6 +28,7 @@ import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.fetch.FetchOptimizer;
 import com.mysema.rdfbean.model.fetch.FetchStrategy;
+import com.mysema.rdfbean.query.BeanQueryImpl;
 
 
 /**
@@ -597,12 +598,12 @@ public final class SessionImpl implements Session {
 
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-        return connection.createQuery(this, queryLanguage, definition);
+        return connection.createQuery(queryLanguage, definition);
     }
 
     @Override
     public <Q> Q createQuery(QueryLanguage<Void, Q> queryLanguage) {
-        return connection.createQuery(this, queryLanguage, null);
+        return connection.createQuery(queryLanguage, null);
     }
 
     private ID createResource(BeanMap instance) {
@@ -817,7 +818,7 @@ public final class SessionImpl implements Session {
 
     @Override
     public BeanQuery from(EntityPath<?>... expr) {
-        return connection.createQuery(this, QueryLanguage.QUERYDSL, null).from(expr);
+        return new BeanQueryImpl(this, connection).from(expr);
     }
 
     @Override

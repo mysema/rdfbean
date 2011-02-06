@@ -74,5 +74,5 @@ public interface Repository {
      * @return
      */
     <RT> RT execute(Operation<RT> operation);
-           
+               
 }

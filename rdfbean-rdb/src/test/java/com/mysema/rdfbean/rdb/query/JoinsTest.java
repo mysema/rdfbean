@@ -9,22 +9,18 @@ import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
-import com.mysema.query.sql.AbstractSQLQuery;
-import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Company;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Department;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.User;
+import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
-import com.mysema.rdfbean.rdb.RDBBeanQuery;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@Ignore
 @SessionConfig({User.class, Department.class, Company.class})
 public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyDomain{
     
@@ -57,57 +53,57 @@ public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyD
         assertEquals(0, from($(u)).where($(u.getUserName()).ne("Bobby")).list($(u)).size());
     }
     
-    @Test
-    public void From_list(){
-        assertEquals(2, countJoins(from($(u)).createQuery($(u))));
-        // u rdf:type  :User
-        // u-symbol
-    }    
+//    @Test
+//    public void From_list(){
+//        assertEquals(2, countJoins(from($(u)).createQuery($(u))));
+//        // u rdf:type  :User
+//        // u-symbol
+//    }    
+//    
+//    @Test
+//    public void From_where_list(){                
+//        assertEquals(2, countJoins(from($(u)).where($(u).eq(sample)).createQuery($(u))));
+//        // u rdf:type  :User
+//        // u-symbol
+//    }
+//    
+//    @Test
+//    public void From_where2_list(){                
+//        assertEquals(3, countJoins(from($(u)).where($(u.getUserName()).eq("Bobby")).createQuery($(u))));
+//        // u rdf:type  :User
+//        // u :userName  username
+//        // u-symbol
+//    }    
+//    
+//    @Test
+//    public void From_listName(){
+//        assertEquals(3, countJoins(from($(u)).createQuery($(u.getUserName()))));
+//        // u rdf:type  :User
+//        // u :userName userName
+//        // userName-symbol        
+//    }
+//    
+//    @Test
+//    public void From_where_listName(){
+//        assertEquals(3, countJoins(from($(u)).where($(u).eq(sample)).createQuery($(u.getUserName()))));
+//        // u rdf:type  :User
+//        // u :userName userName
+//        // userName-symbol        
+//    }
+//    
+//    @Test
+//    public void From_where2_listName(){
+//        assertEquals(3, countJoins(from($(u)).where($(u.getUserName()).eq("Bobby")).createQuery($(u.getUserName()))));
+//        // u rdf:type  :User
+//        // u :userName userName
+//        // userName-symbol        
+//    }    
     
-    @Test
-    public void From_where_list(){                
-        assertEquals(2, countJoins(from($(u)).where($(u).eq(sample)).createQuery($(u))));
-        // u rdf:type  :User
-        // u-symbol
+    private BeanQuery from(EntityPath<?> entity){
+        return session.from(entity);
     }
     
-    @Test
-    public void From_where2_list(){                
-        assertEquals(3, countJoins(from($(u)).where($(u.getUserName()).eq("Bobby")).createQuery($(u))));
-        // u rdf:type  :User
-        // u :userName  username
-        // u-symbol
-    }    
-    
-    @Test
-    public void From_listName(){
-        assertEquals(3, countJoins(from($(u)).createQuery($(u.getUserName()))));
-        // u rdf:type  :User
-        // u :userName userName
-        // userName-symbol        
-    }
-    
-    @Test
-    public void From_where_listName(){
-        assertEquals(3, countJoins(from($(u)).where($(u).eq(sample)).createQuery($(u.getUserName()))));
-        // u rdf:type  :User
-        // u :userName userName
-        // userName-symbol        
-    }
-    
-    @Test
-    public void From_where2_listName(){
-        assertEquals(3, countJoins(from($(u)).where($(u.getUserName()).eq("Bobby")).createQuery($(u.getUserName()))));
-        // u rdf:type  :User
-        // u :userName userName
-        // userName-symbol        
-    }    
-    
-    private RDBBeanQuery from(EntityPath<?> entity){
-        return (RDBBeanQuery) session.from(entity);
-    }
-    
-    private int countJoins(SQLQuery query){
-        return ((AbstractSQLQuery<?>)query).getMetadata().getJoins().size();
-    }
+//    private int countJoins(SQLQuery query){
+//        return ((AbstractSQLQuery<?>)query).getMetadata().getJoins().size();
+//    }
 }

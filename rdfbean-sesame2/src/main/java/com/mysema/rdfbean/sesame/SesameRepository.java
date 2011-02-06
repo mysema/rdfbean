@@ -30,6 +30,7 @@ import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Inference;
 import com.mysema.rdfbean.model.Operation;
+import com.mysema.rdfbean.model.QueryOptions;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
@@ -223,7 +224,7 @@ public abstract class SesameRepository implements Repository{
             throw new RepositoryException(e);
         }
     }
-
+    
     public final void setOntology(Ontology<UID> ontology) {
         this.ontology = ontology;
     }

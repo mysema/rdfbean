@@ -112,11 +112,6 @@ public class FetchOptimizer implements RDFConnection {
     }
 
     @Override
-    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
-        return connection.createQuery(session, queryLanguage, definition);
-    }
-
-    @Override
     public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
         CloseableIterator<STMT> iter = findStatements(subject, predicate, object, context, includeInferred);
         try {
@@ -182,6 +177,12 @@ public class FetchOptimizer implements RDFConnection {
 
     public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
         this.fetchStrategies = fetchStrategies;
+    }
+    
+
+    @Override
+    public QueryOptions getQueryOptions() {
+        return connection.getQueryOptions();
     }
     
 }

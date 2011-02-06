@@ -7,21 +7,20 @@ package com.mysema.rdfbean.sesame;
 
 import org.openrdf.query.BooleanQuery;
 import org.openrdf.query.GraphQuery;
+import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.algebra.QueryModel;
-import org.openrdf.query.parser.BooleanQueryModel;
-import org.openrdf.query.parser.GraphQueryModel;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.parser.ParsedBooleanQuery;
+import org.openrdf.query.parser.ParsedGraphQuery;
+import org.openrdf.query.parser.ParsedQuery;
+import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.QueryParser;
 import org.openrdf.query.parser.QueryParserFactory;
 import org.openrdf.query.parser.QueryParserRegistry;
-import org.openrdf.query.parser.TupleQueryModel;
 import org.openrdf.repository.RepositoryConnection;
-import org.openrdf.result.BooleanResult;
-import org.openrdf.result.GraphResult;
-import org.openrdf.result.TupleResult;
-import org.openrdf.store.StoreException;
 
 import com.mysema.rdfbean.model.RepositoryException;
 
@@ -31,7 +30,7 @@ import com.mysema.rdfbean.model.RepositoryException;
  */
 public final class DirectQuery {
 
-    private static final ThreadLocal<QueryModel> QUERY_HOLDER = new ThreadLocal<QueryModel>();
+    private static final ThreadLocal<ParsedQuery> QUERY_HOLDER = new ThreadLocal<ParsedQuery>();
 
     private static final QueryLanguage DIRECTQUERY = new QueryLanguage("DIRECTQUERY");
 
@@ -40,7 +39,7 @@ public final class DirectQuery {
         /**
          * Returns the thread bound query, ignores the parameters of the method invocation
          */
-        public QueryModel parseQuery(String queryStr, String baseURI) {
+        public ParsedQuery parseQuery(String queryStr, String baseURI) {
             return QUERY_HOLDER.get();
         }
     };
@@ -58,7 +57,7 @@ public final class DirectQuery {
         });
     }
 
-    public static TupleQuery getQuery(RepositoryConnection connection, TupleQueryModel tupleQueryModel,
+    public static TupleQuery getQuery(RepositoryConnection connection, ParsedTupleQuery tupleQueryModel,
             boolean includeInferred){
         try {
 //            System.err.println(tupleQueryModel.getTupleExpr());
@@ -66,54 +65,54 @@ public final class DirectQuery {
             TupleQuery tupleQuery = connection.prepareTupleQuery(DirectQuery.DIRECTQUERY, "");
             tupleQuery.setIncludeInferred(includeInferred);
             return  tupleQuery;
-        } catch (StoreException e) {
-            throw new RepositoryException(e);
         } catch (MalformedQueryException e) {
+            throw new RepositoryException(e);
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
 
     }
 
-    public static GraphQuery getQuery(RepositoryConnection connection, GraphQueryModel graphQueryModel,
+    public static GraphQuery getQuery(RepositoryConnection connection, ParsedGraphQuery graphQueryModel,
             boolean includeInferred) {
         try {
             QUERY_HOLDER.set(graphQueryModel);
             GraphQuery graphQuery = connection.prepareGraphQuery(DirectQuery.DIRECTQUERY, "");
             graphQuery.setIncludeInferred(includeInferred);
             return graphQuery;
-        } catch (StoreException e) {
-            throw new RepositoryException(e);
         } catch (MalformedQueryException e) {
+            throw new RepositoryException(e);
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
     }
     
-    public static BooleanQuery getQuery(RepositoryConnection connection, BooleanQueryModel booleanQueryModel,
+    public static BooleanQuery getQuery(RepositoryConnection connection, ParsedBooleanQuery booleanQueryModel,
             boolean includeInferred) {
         try {
             QUERY_HOLDER.set(booleanQueryModel);
             BooleanQuery booleanQuery = connection.prepareBooleanQuery(DirectQuery.DIRECTQUERY, "");
             booleanQuery.setIncludeInferred(includeInferred);
             return booleanQuery;
-        } catch (StoreException e) {
-            throw new RepositoryException(e);
         } catch (MalformedQueryException e) {
+            throw new RepositoryException(e);
+        } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
     }
 
-    public static TupleResult query(RepositoryConnection connection, TupleQueryModel tupleQueryModel,
-            boolean includeInferred) throws StoreException{
+    public static TupleQueryResult query(RepositoryConnection connection, ParsedTupleQuery tupleQueryModel,
+            boolean includeInferred) throws org.openrdf.repository.RepositoryException, QueryEvaluationException{
         return getQuery(connection, tupleQueryModel, includeInferred).evaluate();
     }
 
-    public static GraphResult query(RepositoryConnection connection, GraphQueryModel graphQueryModel,
-            boolean includeInferred) throws StoreException{
+    public static GraphQueryResult query(RepositoryConnection connection, ParsedGraphQuery graphQueryModel,
+            boolean includeInferred) throws org.openrdf.repository.RepositoryException, QueryEvaluationException{
         return getQuery(connection, graphQueryModel, includeInferred).evaluate();
     }
 
-    public static BooleanResult query(RepositoryConnection connection, BooleanQueryModel booleanQueryModel,
-            boolean includeInferred) throws StoreException{
+    public static boolean query(RepositoryConnection connection, ParsedBooleanQuery booleanQueryModel,
+            boolean includeInferred) throws org.openrdf.repository.RepositoryException, QueryEvaluationException{
         return getQuery(connection, booleanQueryModel, includeInferred).evaluate();
     }
 

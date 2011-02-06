@@ -244,5 +244,6 @@ public final class MiniRepository implements Repository{
             throw new RepositoryException(io);
         }
     }
+
     
 }

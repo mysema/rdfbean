@@ -13,12 +13,6 @@
   </parent>
 
   <dependencies>
-    <!-- Mysema Source component -->
-    <dependency>
-      <groupId>com.mysema.querydsl</groupId>
-      <artifactId>querydsl-collections</artifactId>
-      <version>${querydsl.version}</version>
-    </dependency>
     <dependency>
       <!-- Mysema Source component -->
       <groupId>com.mysema.querydsl</groupId>

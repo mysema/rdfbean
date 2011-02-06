@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  */
-package com.mysema.rdfbean.rdb;
+package com.mysema.rdfbean.query;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,12 +26,12 @@ final class Constants {
     public static final Set<UID> dateTypes = Collections.singleton(XSD.date);
     
     public static final Set<UID> dateTimeTypes = Collections.singleton(XSD.dateTime);
-
-    private Constants(){}
     
     private static <T> Set<T> asSet(T... args){
         return new HashSet<T>(Arrays.asList(args));
     }
 
+    private Constants(){}
+    
     
 }

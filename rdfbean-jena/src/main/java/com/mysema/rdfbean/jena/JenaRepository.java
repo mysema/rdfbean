@@ -18,6 +18,7 @@ import com.hp.hpl.jena.xmloutput.impl.Basic;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.Operation;
+import com.mysema.rdfbean.model.QueryOptions;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.RepositoryException;

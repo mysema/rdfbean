@@ -13,10 +13,12 @@ import com.mysema.query.types.Expression;
 import com.mysema.query.types.ExpressionBase;
 import com.mysema.query.types.FactoryExpression;
 import com.mysema.query.types.Operation;
+import com.mysema.query.types.TemplateExpression;
 import com.mysema.query.types.Visitor;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
  * @author tiwe
@@ -26,6 +28,8 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
     
     private static final long serialVersionUID = -3344381241177858414L;
 
+    private final ConverterRegistry converters;
+    
     private final List<String> variables;
     
     private final List<Expression<?>> projection;
@@ -33,8 +37,13 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
     private final Transformer<Long, NODE> transformer;
     
     @SuppressWarnings("unchecked")
-    public TupleFactoryExpression(List<String> variables, List<Expression<?>> pr, Transformer<Long, NODE> transformer) {
+    public TupleFactoryExpression(
+            ConverterRegistry converters,
+            List<String> variables, 
+            List<Expression<?>> pr, 
+            Transformer<Long, NODE> transformer) {
         super((Class)Map.class);
+        this.converters = converters;
         this.variables = variables;
         this.projection = pr;
         this.transformer = transformer;
@@ -49,10 +58,11 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
     public Map<String, NODE> newInstance(Object... args) {
         Map<String, NODE> rv = new HashMap<String, NODE>(args.length);
         for (int i = 0; i < args.length; i++){
-            // FIXME
             if (args[i] != null){
-                if (projection.get(i) instanceof Operation){
-                    rv.put(variables.get(i), new LIT(args[i].toString(), XSD.longType));
+                if (projection.get(i) instanceof Operation<?> || projection.get(i) instanceof TemplateExpression<?>){
+                    String val = converters.toString(args[i]);
+                    UID dtype = converters.getDatatype(args[i].getClass());
+                    rv.put(variables.get(i), new LIT(val, dtype));
                 }else{
                     rv.put(variables.get(i), transformer.transform((Long)args[i]));    
                 }    

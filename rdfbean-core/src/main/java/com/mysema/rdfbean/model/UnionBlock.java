@@ -52,7 +52,7 @@ public class UnionBlock implements Block{
     
     @Override
     public Predicate exists(){
-        return new PredicateOperation(Ops.EXISTS, new ConstantImpl<Block>(this));
+        return new PredicateOperation(Ops.EXISTS, this);
     }
     
     @Override

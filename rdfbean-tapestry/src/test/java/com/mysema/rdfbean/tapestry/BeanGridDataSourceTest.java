@@ -25,10 +25,10 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
+import com.mysema.rdfbean.sesame.MemoryRepository;
 
 /**
  * RDFBeanGridDataSourceTest provides
@@ -75,7 +75,7 @@ public class BeanGridDataSourceTest {
     public static void before() throws IOException{
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(new DefaultConfiguration(User.class));
-        sessionFactory.setRepository(new MiniRepository());
+        sessionFactory.setRepository(new MemoryRepository());
         sessionFactory.initialize();
         
         Session session = sessionFactory.openSession();

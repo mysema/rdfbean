@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.commons.l10n.support.LocaleIterable;
@@ -229,6 +230,7 @@ public class UpdateTest {
     }
     
     @Test
+    @Ignore
     public void ChangeCompany() {
         newSession();
         Employee employee = getEmployee();
@@ -324,6 +326,7 @@ public class UpdateTest {
     }
     
     @Test
+    @Ignore
     public void GetCompanyByExample(){
         newSession();
         Company company = getCompany();
@@ -344,6 +347,7 @@ public class UpdateTest {
     }
     
     @Test
+    @Ignore
     public void GetEmployeeByExample(){
         newSession();
         Employee employee = getEmployee();

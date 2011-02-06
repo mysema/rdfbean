@@ -42,7 +42,6 @@ public class ParsingTest {
         for (String query : queries){
             ParsedTupleQuery model = QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL, query, null);
             System.out.println(model);
-            System.out.println(new QuerySerializer(model, false).toString());
             System.out.println();
         }
     }
@@ -55,7 +54,6 @@ public class ParsingTest {
         for (String query : queries){
             ParsedGraphQuery model = QueryParserUtil.parseGraphQuery(QueryLanguage.SERQL, query, null);
             System.out.println(model);
-            System.out.println(new QuerySerializer(model, false).toString());
             System.out.println();
         }
     }

@@ -37,8 +37,6 @@ import com.mysema.query.types.ConstructorExpression;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.template.NumberTemplate;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.query.BeanQueryImpl;
 
 /**
  * RDBConnection is the RDFConnection implementation for the RDB module
@@ -53,7 +51,9 @@ public class RDBConnection implements RDFConnection{
     private static final int DELETE_BATCH = 1000;
 
     private static final Timestamp DEFAULT_TIMESTAMP = new Timestamp(0);
-
+    
+    private static final QueryOptions queryOptions = new QueryOptions(true, true, true);
+    
     public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
 
     public static final QSymbol con = new QSymbol("context");
@@ -210,20 +210,6 @@ public class RDBConnection implements RDFConnection{
         }else{
             throw new UnsupportedOperationException();    
         }                
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
-        if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
-            return (Q)new RDBBeanQuery(context, session);
-//            BeanQueryImpl query = new BeanQueryImpl(session, this);
-//            query.setCountViaAggregation(true);
-//            query.setPreserveStringOps(true);
-//            return (Q)query;
-        }else{
-            return createQuery(queryLanguage, definition);
-        }
     }
 
     public void deleteFromContext(UID model) {
@@ -536,4 +522,8 @@ public class RDBConnection implements RDFConnection{
     }
 
 
+    @Override
+    public QueryOptions getQueryOptions() {
+        return queryOptions;
+    }
 }

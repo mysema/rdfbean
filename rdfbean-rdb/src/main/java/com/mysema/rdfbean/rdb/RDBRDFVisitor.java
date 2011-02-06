@@ -83,6 +83,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         }
     }
         
+    @SuppressWarnings("unchecked")
     @Override
     public Object visit(QueryMetadata md, QueryLanguage<?, ?> queryType) {
         query = context.createQuery();
@@ -127,7 +128,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 variables.add(expr.toString());
                 pr.add(handle(expr, md));
             }
-            return new TupleQueryImpl((SQLQuery)query, variables, pr, transformer);
+            return new TupleQueryImpl((SQLQuery)query, context.getConverters(), variables, pr, transformer);
                 
         }else{
             // TODO
@@ -177,12 +178,22 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         List<Expression<?>> args = new ArrayList<Expression<?>>(expr.getArgs().size());
         boolean asLit = asLiteral;
         asLiteral = needsSymbolResolving(expr);
-        for (Expression<?> arg : expr.getArgs()){
-            args.add(handle(arg, context));
-        }
+        
+        if (expr.getOperator() == Ops.NUMCAST){
+            args.add(handle(expr.getArg(0), context));
+            UID datatype = (UID) ((Constant)expr.getArg(1)).getConstant();
+            args.add(new ConstantImpl<Class>(this.context.getConverters().getClass(datatype)));
+            System.err.println(args);
+        }else{
+            for (Expression<?> arg : expr.getArgs()){
+                args.add(handle(arg, context));
+            }    
+        }        
+        
         asLiteral = asLit;
         if (expr.getType().equals(Boolean.class)){
-            return new PredicateOperation((Operator)expr.getOperator(), args);
+            // FIXME
+            return new PredicateOperation((Operator)expr.getOperator(), args.toArray(new Expression[args.size()]));
         }else{
             return new OperationImpl(expr.getType(), expr.getOperator(), args);
         }
@@ -209,23 +220,31 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     @Override
     public Expression<?> visit(ParamExpression<?> expr, QueryMetadata context) {
-        return visitPathOrParam(expr, context);
+        return visitPathOrParam(expr, expr.getName(), context);
     }
 
     @Override
     public Expression<?> visit(Path<?> expr, QueryMetadata context) {
-        return visitPathOrParam(expr, context);
+        return visitPathOrParam(expr, expr.toString(), context);
     }
 
-    private Expression<?> visitPathOrParam(Expression<?> expr, QueryMetadata context){
+    private Expression<?> visitPathOrParam(Expression<?> expr, String exprToString, QueryMetadata context){
         if (asLiteral){
             if (exprToSymbol.containsKey(expr)){
                 return exprToSymbol.get(expr);
             }else{
                 QSymbol symbol = new QSymbol(symbols.next());
                 query.leftJoin(symbol).on(symbol.id.eq(exprToMapped.get(expr)));
-                exprToSymbol.put(expr, symbol.lexical);
-                return symbol.lexical;
+                Expression<?> lexical = symbol.lexical;
+                if (exprToString.endsWith("_int")){
+                    lexical = symbol.intval;
+                }else if (exprToString.endsWith("_dec")){
+                    lexical = symbol.floatval;
+                }else if (exprToString.endsWith("_tst")){
+                    lexical = symbol.datetimeval;
+                }
+                exprToSymbol.put(expr, lexical);
+                return lexical;
             }            
         }else{
             return exprToMapped.get(expr);    
@@ -278,6 +297,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public SubQueryExpression<?> visit(SubQueryExpression<?> expr, QueryMetadata context) {
         SQLCommonQuery<?> q = query;

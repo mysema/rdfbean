@@ -96,11 +96,6 @@ public class JenaConnection implements RDFConnection {
     }
 
     @Override
-    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
-        return createQuery(queryLanguage, definition);
-    }
-
-    @Override
     public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
         return graph.contains(convert(context), convert(subject), convert(predicate), convert(object));
     }
@@ -182,4 +177,8 @@ public class JenaConnection implements RDFConnection {
         return node != null ? dialect.getNode(node) : Node.ANY;
     }
 
+    @Override
+    public QueryOptions getQueryOptions() {
+        return QueryOptions.DEFAULT;
+    }
 }

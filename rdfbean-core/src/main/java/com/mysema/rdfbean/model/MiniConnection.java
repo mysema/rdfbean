@@ -8,8 +8,6 @@ package com.mysema.rdfbean.model;
 import java.util.Collection;
 
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SimpleBeanQuery;
 
 /**
  * MiniConnection is an RDFConnection implementation for the MiniRepository
@@ -52,16 +50,6 @@ public class MiniConnection implements RDFConnection {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
-        if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
-            return (Q) new SimpleBeanQuery(session);
-        }else{
-            throw new UnsupportedQueryLanguageException(queryLanguage);
-        }
-    }
-
     @Override
     public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
         return repository.exists(subject, predicate, object, context);
@@ -97,4 +85,8 @@ public class MiniConnection implements RDFConnection {
         }
     }
 
+    @Override
+    public QueryOptions getQueryOptions() {
+        return QueryOptions.DEFAULT;
+    }
 }

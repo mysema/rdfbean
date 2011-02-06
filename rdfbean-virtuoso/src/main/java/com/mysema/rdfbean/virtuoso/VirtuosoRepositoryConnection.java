@@ -24,23 +24,10 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryMetadata;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QueryLanguage;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.RepositoryException;
-import com.mysema.rdfbean.model.SPARQLQuery;
-import com.mysema.rdfbean.model.SPARQLVisitor;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.Format;
 import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
-import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.query.BeanQueryImpl;
 
 /**
  * @author tiwe
@@ -302,17 +289,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             throw new IllegalArgumentException("No result type for " + query);
         }
     }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
-        if (queryLanguage.equals(QueryLanguage.QUERYDSL)){
-            return (Q)new BeanQueryImpl(session, this);
-        }else{
-            return createQuery(queryLanguage, definition);    
-        }        
-    }
-
+ 
     @Override
     public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
         STMTIterator stmts = findStatements(subject, predicate, object, context, includeInferred, true);
@@ -619,4 +596,9 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
     }
 
+
+    @Override
+    public QueryOptions getQueryOptions() {
+        return QueryOptions.DEFAULT;
+    }
 }

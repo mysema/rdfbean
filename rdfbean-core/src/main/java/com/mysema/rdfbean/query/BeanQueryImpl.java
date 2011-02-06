@@ -27,6 +27,7 @@ import com.mysema.query.types.Expression;
 import com.mysema.query.types.FactoryExpression;
 import com.mysema.rdfbean.model.BooleanQuery;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryOptions;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.TupleQuery;
 import com.mysema.rdfbean.object.BeanQuery;
@@ -44,10 +45,6 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     private final ConverterRegistry converterRegistry;
 
     private final RDFConnection connection;
-    
-    private boolean countViaAggregation = false;
-    
-    private boolean preserveStringOps = false;
     
     public BeanQueryImpl(Session session, RDFConnection connection) {
         super(new QueryMixin<BeanQueryImpl>());
@@ -90,9 +87,11 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     }
     
     private RDFQueryBuilder createBuilder(){
-        RDFQueryBuilder builder = new RDFQueryBuilder(connection, session, session.getConfiguration(), queryMixin.getMetadata());
-        builder.setCountViaAggregation(countViaAggregation);
-        builder.setPreserveStringOps(preserveStringOps);
+        RDFQueryBuilder builder = new RDFQueryBuilder(
+                connection, 
+                session, 
+                session.getConfiguration(),
+                queryMixin.getMetadata());
         return builder;
     }
 
@@ -233,13 +232,4 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 md.getModifiers().getOffset(), 
                 total);
     }
-
-    public void setCountViaAggregation(boolean countViaAggregation) {
-        this.countViaAggregation = countViaAggregation;
-    }
-
-    public void setPreserveStringOps(boolean preserveStringOps) {
-        this.preserveStringOps = preserveStringOps;
-    }
-    
 }

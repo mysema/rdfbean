@@ -22,6 +22,8 @@ public class ConverterRegistryImpl implements ConverterRegistry{
     private final Map<Class<?>,Converter<?>> classToConverter = new HashMap<Class<?>,Converter<?>>();
 
     private final Map<Class<?>,UID> classToType = new HashMap<Class<?>,UID>();
+    
+    private final Map<UID, Class<?>> typeToClass = new HashMap<UID, Class<?>>();
 
     public ConverterRegistryImpl(){
         register(XSD.anyURI, new URIConverter());
@@ -77,6 +79,9 @@ public class ConverterRegistryImpl implements ConverterRegistry{
 
     private <T> void register(UID type, Class<T> clazz) {
         classToType.put(clazz, type);
+        if (!clazz.isPrimitive()){
+            typeToClass.put(type, clazz);    
+        }        
     }
 
     private <T> void register(UID type, Converter<T> converter) {
@@ -106,5 +111,10 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         }else{
             throw new IllegalArgumentException("No conversion for " + javaValue.getClass().getName() + " available");
         }
+    }
+
+    @Override
+    public Class<?> getClass(UID datatype) {
+        return typeToClass.get(datatype);
     }
 }

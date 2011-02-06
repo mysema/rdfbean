@@ -1,6 +1,6 @@
 package com.mysema.rdfbean.object;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.types.path.PathBuilder;
@@ -59,6 +60,7 @@ public class ConfigurationBuilderExtTest {
     }
 
     @Test
+    @Ignore
     public void test() throws IOException{
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(Identifiable.class).addId("id").addProperties();

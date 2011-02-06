@@ -55,6 +55,8 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     private final Configuration configuration;
 
+    private final QueryOptions options;
+    
     private final QueryMetadata metadata;
 
     private final List<Expression<?>> projection;
@@ -71,10 +73,6 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     private Map<Path<?>, ParamExpression<?>> pathToKnown = new HashMap<Path<?>, ParamExpression<?>>();
 
-    private boolean countViaAggrgeation = false;
-    
-    private boolean preserveStringOps = false;
-
     public RDFQueryBuilder(RDFConnection connection,
             Session session,
             Configuration configuration,
@@ -82,6 +80,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         this.connection = connection;
         this.session = session;
         this.configuration = configuration;
+        this.options = connection.getQueryOptions();
         this.metadata = metadata;
         this.projection = new ArrayList<Expression<?>>();
     }
@@ -117,7 +116,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
 
         if (forCount){
-            projection.add(countViaAggrgeation ? COUNT_ALL : COUNTER);
+            projection.add(options.isCountViaAggregation() ? COUNT_ALL : COUNTER);
         }else{
             // limit + offset
             query.restrict(metadata.getModifiers());
@@ -205,6 +204,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     private boolean inOptionalPath(){
         return operatorStack.contains(Ops.IS_NULL) ||
         operatorStack.contains(Ops.MAP_IS_EMPTY) ||
+        operatorStack.contains(Ops.CASE_WHEN) ||
         (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
     }
 
@@ -351,15 +351,15 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
                 }
 
-            }else if (expr.getOperator() == Ops.STARTS_WITH && rightConstant && !preserveStringOps){
+            }else if (expr.getOperator() == Ops.STARTS_WITH && rightConstant && !options.isPreserveStringOps()){
                 expr = new PredicateOperation(Ops.MATCHES,
                         expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
 
-            }else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant && !preserveStringOps){
+            }else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant && !options.isPreserveStringOps()){
                 expr = new PredicateOperation(Ops.MATCHES,
                         expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
 
-            }else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant && !preserveStringOps){
+            }else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant && !options.isPreserveStringOps()){
                 expr = new PredicateOperation(Ops.MATCHES,
                         expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
 
@@ -534,8 +534,19 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                         if (rdfPath != null && (i == predPath.size()-1)){
                             pathNode = rdfPath;
                         }else if (i == predPath.size() -1){
-                            pathNode = var(path.accept(ToStringVisitor.DEFAULT, TEMPLATES));
-                            varNames.disallow(path.toString());
+                            String var = path.accept(ToStringVisitor.DEFAULT, TEMPLATES);
+                            if (options.isAddTypeSuffix() && configuration.getConverterRegistry().supports(path.getType())){
+                                UID type = configuration.getConverterRegistry().getDatatype(path.getType());
+                                if (Constants.decimalTypes.contains(type)){
+                                    var += "_dec";
+                                }else if (Constants.integerTypes.contains(type)){
+                                    var += "_int";
+                                }else if (Constants.dateTimeTypes.contains(type) || Constants.dateTypes.contains(type)){
+                                    var += "_tst";
+                                }
+                            }
+                            pathNode = var(var);
+                            varNames.disallow(var);
                         }else{
                             pathNode = var(varNames.next());
                         }
@@ -639,13 +650,5 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             return new TemplateExpressionImpl(template.getType(), template.getTemplate(), args);
         }
     }
-
-    public void setCountViaAggregation(boolean countViaAggrgeation) {
-        this.countViaAggrgeation = countViaAggrgeation;
-    }
-
-    public void setPreserveStringOps(boolean preserveStringOps) {
-        this.preserveStringOps = preserveStringOps;
-    }
-
+    
 }

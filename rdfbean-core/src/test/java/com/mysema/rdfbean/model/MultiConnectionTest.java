@@ -39,10 +39,10 @@ public class MultiConnectionTest {
             public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
                 throw new UnsupportedOperationException();
             }
-            
+
             @Override
-            public <D, Q> Q createQuery(Session session, QueryLanguage<D, Q> queryLanguage, D definition) {
-                throw new UnsupportedOperationException();
+            public QueryOptions getQueryOptions() {
+                return QueryOptions.DEFAULT;
             }
             
         };

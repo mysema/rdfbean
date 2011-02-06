@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -26,6 +27,7 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
  * @author tiwe
  * @version $Id$
  */
+@Ignore
 public class PagedBeanQueryTest {
     
     private SessionFactoryImpl sessionFactory;

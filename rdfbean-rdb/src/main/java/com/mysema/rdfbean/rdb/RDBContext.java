@@ -215,5 +215,9 @@ public final class RDBContext implements Closeable{
     public java.sql.Timestamp toTimestamp(LIT literal){
         return converterRegistry.fromString(literal.getValue(), java.sql.Timestamp.class);
     }
+    
+    public ConverterRegistry getConverters(){
+        return converterRegistry;
+    }
         
 }

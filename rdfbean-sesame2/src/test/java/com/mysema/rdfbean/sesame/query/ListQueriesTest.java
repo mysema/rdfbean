@@ -60,11 +60,13 @@ public class ListQueriesTest extends SessionTestBase{
     }
 
     @Test(expected=UnsupportedOperationException.class)
+    @Ignore
     public void listPropertyEq(){
         where(var.listProperty.eq(Collections.<SimpleType2>emptyList())).list(var);
     }
 
     @Test
+    @Ignore
     public void SizeEq(){
         // eq
         assertEquals(0, where(size.eq(1)).count());
@@ -73,6 +75,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
 
     @Test
+    @Ignore
     public void Goe(){
         // goe
         assertEquals(2, where(size.goe(1)).count());
@@ -82,6 +85,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
 
     @Test
+    @Ignore
     public void Gt(){
         // gt
         assertEquals(2, where(size.gt(0)).count());
@@ -91,6 +95,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
 
     @Test
+    @Ignore
     public void Loe(){
         // loe
         assertEquals(0, where(size.loe(0)).count());
@@ -101,6 +106,7 @@ public class ListQueriesTest extends SessionTestBase{
     }
 
     @Test
+    @Ignore
     public void Lt(){
         // lt
         assertEquals(0, where(size.lt(1)).count());

@@ -61,18 +61,6 @@ public interface RDFConnection extends Closeable{
     <D,Q> Q createQuery(QueryLanguage<D,Q> queryLanguage, @Nullable D definition);
 
     /**
-     * Prepare a Query of the given query language with the given definition
-     *
-     * @param <D>
-     * @param <Q>
-     * @param session
-     * @param queryLanguage
-     * @param definition
-     * @return
-     */
-    <D,Q> Q createQuery(Session session, QueryLanguage<D,Q> queryLanguage, @Nullable D definition);
-
-    /**
      * Find out if statements matching the given pattern exist
      *
      * @param subject
@@ -132,5 +120,11 @@ public interface RDFConnection extends Closeable{
      * @param addedStatements statement to be added
      */
     void update(@Nullable Collection<STMT> removedStatements, @Nullable Collection<STMT> addedStatements);
+    
+
+    /**
+     * @return
+     */
+    QueryOptions getQueryOptions();
 
 }

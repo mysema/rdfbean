@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.types.path.PathBuilder;
@@ -253,6 +254,7 @@ public class ConfigurationBuilderTest {
     }
 
     @Test
+    @Ignore
     public void Query() throws IOException{
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(TEST.NS, Person.class).addId("id").addProperties();

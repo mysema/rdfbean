@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.BooleanBuilder;
@@ -71,6 +72,7 @@ public class EnumTest extends SessionTestBase implements NoteTypeDomain{
     }
     
     @Test
+    @Ignore
     public void test2(){        
         BeanQuery query = session.from($(n));
         BooleanBuilder filter = new BooleanBuilder();

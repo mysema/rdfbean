@@ -21,6 +21,9 @@ public interface ConverterRegistry {
 
     @Nullable
     UID getDatatype(Class<?> javaClass);
+    
+    @Nullable
+    Class<?> getClass(UID datatype);
 
     boolean supports(Class<?> cl);
 

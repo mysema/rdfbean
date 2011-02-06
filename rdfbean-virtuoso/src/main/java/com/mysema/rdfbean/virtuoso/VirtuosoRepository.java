@@ -197,6 +197,10 @@ public class VirtuosoRepository implements Repository {
             connection.close();
         }
     }
+       
+    public boolean isInitialized() {
+        return initialized;
+    }
 
     public void setDataDir(File dataDir) {
         this.dataDir = Assert.notNull(dataDir,"dataDir");
@@ -205,11 +209,7 @@ public class VirtuosoRepository implements Repository {
     public void setFetchSize(int sz) {
         this.prefetchSize = sz;
     }
-
-    public boolean isInitialized() {
-        return initialized;
-    }
-
+    
     public void setSources(RDFSource... sources) {
         this.sources = sources;
     }

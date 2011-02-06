@@ -22,6 +22,11 @@
       <artifactId>rdfbean-core</artifactId>
       <version>${project.version}</version>
     </dependency>  
+        <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-sesame</artifactId>
+      <version>${project.version}</version>
+    </dependency> 
     <dependency>
       <groupId>org.apache.tapestry</groupId>
       <artifactId>tapestry-core</artifactId>
