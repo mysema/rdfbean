@@ -38,6 +38,7 @@ import com.mysema.query.types.Expression;
 import com.mysema.query.types.template.NumberTemplate;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.query.BeanQueryImpl;
 
 /**
  * RDBConnection is the RDFConnection implementation for the RDB module
