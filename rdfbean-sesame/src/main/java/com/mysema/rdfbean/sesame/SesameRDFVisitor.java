@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.Literal;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.algebra.*;
@@ -127,6 +129,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         return (TupleExpr)expr.accept(this, md);
     }
 
+    @Nullable
     private ValueExpr toValue(Expression<?> expr, QueryMetadata md) {
         return (ValueExpr)expr.accept(this, md);
     }

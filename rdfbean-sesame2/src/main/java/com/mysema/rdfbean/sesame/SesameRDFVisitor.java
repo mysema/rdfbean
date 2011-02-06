@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.annotation.Nullable;
+
 import org.openrdf.model.Literal;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -16,7 +18,6 @@ import org.openrdf.query.algebra.MathExpr.MathOp;
 
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.Tuple;
 import com.mysema.query.types.*;
 import com.mysema.query.types.Operation;
 import com.mysema.rdfbean.model.*;
@@ -128,6 +129,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         return (TupleExpr)expr.accept(this, md);
     }
 
+    @Nullable
     private ValueExpr toValue(Expression<?> expr, QueryMetadata md) {
         return (ValueExpr)expr.accept(this, md);
     }

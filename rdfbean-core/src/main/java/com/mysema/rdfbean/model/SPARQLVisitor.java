@@ -39,6 +39,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         setParamPrefix("?");
     }    
     
+    @Nullable
     public Void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
         QueryModifiers mod = md.getModifiers();
         append(prefix);

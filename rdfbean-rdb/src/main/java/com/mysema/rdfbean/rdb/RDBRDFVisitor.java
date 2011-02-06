@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.Transformer;
 
 import com.mysema.query.BooleanBuilder;
@@ -132,7 +134,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 
         }else{
             // TODO
-            return null;    
+            throw new UnsupportedOperationException();
         }
         
         
@@ -208,6 +210,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         return null;
     }
     
+    @Nullable
     private Object visit(ContainerBlock expr, QueryMetadata context){
         for (Block block : expr.getBlocks()){
             handle(block, context);
@@ -278,6 +281,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     }
 
     @SuppressWarnings("unchecked")
+    @Nullable
     private Predicate visitPatternElement(QueryMetadata context, NumberPath<Long> path, Expression<? extends NODE> s) {
         if (s instanceof Constant<?>){
             return path.eq(getId((Constant)s));
