@@ -33,8 +33,9 @@ import com.mysema.query.dml.StoreClause;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.dml.SQLDeleteClause;
 import com.mysema.query.sql.dml.SQLMergeClause;
-import com.mysema.query.types.ConstructorExpression;
 import com.mysema.query.types.Expression;
+import com.mysema.query.types.FactoryExpression;
+import com.mysema.query.types.Visitor;
 import com.mysema.query.types.template.NumberTemplate;
 import com.mysema.rdfbean.model.*;
 
@@ -235,7 +236,7 @@ public class RDBConnection implements RDFConnection{
             @Nullable final UID model, boolean includeInferred) {
         SQLQuery query = this.context.createQuery();
         query.from(statement);
-        List<Expression<?>> exprs = new ArrayList<Expression<?>>();
+        final List<Expression<?>> exprs = new ArrayList<Expression<?>>();
         if (subject != null){
             query.where(statement.subject.eq(getId(subject)));
         }else{
@@ -280,7 +281,7 @@ public class RDBConnection implements RDFConnection{
             exprs.add(one);
         }
 
-        Expression<STMT> stmt = new ConstructorExpression<STMT>(STMT.class, new Class[0],exprs.toArray(new Expression[exprs.size()])){
+        Expression<STMT> stmt = new FactoryExpression<STMT>(){
             @Override
             public STMT newInstance(Object... args) {
                 ID s = subject;
@@ -304,6 +305,21 @@ public class RDBConnection implements RDFConnection{
                     }
                 }
                 return new STMT(s, p, o, m);
+            }
+
+            @Override
+            public List<Expression<?>> getArgs() {
+                return exprs;
+            }
+
+            @Override
+            public <R, C> R accept(Visitor<R, C> v, C context) {
+                return v.visit(this, context);
+            }
+
+            @Override
+            public Class<? extends STMT> getType() {
+                return STMT.class;
             }
 
         };
