@@ -13,6 +13,7 @@ import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.Order;
+import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
@@ -171,7 +172,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                     projection.addElement(new ProjectionElem(extLabel));
                     extensions.add(new ExtensionElem(val, extLabel));
                 }
-            }    
+            }
         }else{
             for (Expression<?> expr : md.getProjection()){
                 Stack<Block> blocks = new Stack<Block>();
@@ -198,7 +199,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                             projection.addElement(new ProjectionElem(extLabel, "predicate"));
                             extensions.add(new ExtensionElem(predicate, extLabel));
                         }
-                        ValueExpr object = toValue(pa.getObject(), md);    
+                        ValueExpr object = toValue(pa.getObject(), md);
                         if (object instanceof Var){
                             p.addElement(new ProjectionElem(((Var)object).getName(),"object"));
                         }else{
@@ -210,10 +211,10 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                     }else{
                         blocks.addAll(((GroupBlock)bl).getBlocks());
                     }
-                }                                
-            }    
+                }
+            }
         }
-        
+
         if (!extensions.isEmpty()){
             tuple = new Extension(tuple, extensions);
         }
@@ -280,7 +281,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         }
         return rv;
     }
-    
+
     private TupleExpr merge(List<Block> blocks, QueryMetadata md){
         List<TupleExpr> tuples = new ArrayList<TupleExpr>(blocks.size());
         for (Block block : blocks){
@@ -295,7 +296,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         }
         return join(tuples);
     }
-    
+
     private TupleExpr join(List<TupleExpr> tuples){
         if (tuples.size() > 1){
             Join rv = new Join(tuples.get(0), tuples.get(1));
