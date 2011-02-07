@@ -193,7 +193,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
     }
 
-    public boolean inNegation(){
+    private boolean inNegation(){
         int notIndex = operatorStack.lastIndexOf(Ops.NOT);
         if (notIndex > -1){
             int existsIndex = operatorStack.lastIndexOf(Ops.EXISTS);
@@ -216,8 +216,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     @SuppressWarnings("unchecked")
     private OrderSpecifier<?> transform(Filters filters, OrderSpecifier<?> os) {
-        Expression<?> expr = transform(os.getTarget(), filters);
-        return new OrderSpecifier(os.getOrder(), expr);
+        return new OrderSpecifier(os.getOrder(), transform(os.getTarget(), filters));
     }
 
     @Nullable
