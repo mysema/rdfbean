@@ -425,9 +425,9 @@ public class RDBConnection implements RDFConnection{
             }else if (Constants.decimalTypes.contains(literal.getDatatype())){
                 floatVal = Double.valueOf(literal.getValue());
             }else if (Constants.dateTypes.contains(literal.getDatatype())){
-                datetimeVal = new Timestamp(context.toDate(literal).getTime());
+                datetimeVal = new Timestamp(context.convert(literal.getValue(), java.sql.Date.class).getTime());
             }else if (Constants.dateTimeTypes.contains(literal.getDatatype())){
-                datetimeVal = context.toTimestamp(literal);
+                datetimeVal = context.convert(literal.getValue(), Timestamp.class);
             }
         }
 

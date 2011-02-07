@@ -35,9 +35,6 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.rdb.support.DateTimeType;
-import com.mysema.rdfbean.rdb.support.LocalDateType;
-import com.mysema.rdfbean.rdb.support.LocalTimeType;
 import com.mysema.rdfbean.rdb.support.SortableQueryMetadata;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
@@ -86,9 +83,6 @@ public final class RDBContext implements Closeable{
         this.langCache = langCache;
         this.connection = connection;
         this.configuration = new Configuration(templates);
-        configuration.register(new DateTimeType());
-        configuration.register(new LocalDateType());
-        configuration.register(new LocalTimeType());
     }
     
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
@@ -207,13 +201,9 @@ public final class RDBContext implements Closeable{
     public RDBOntology getOntology() {
         return ontology;
     }
-
-    public java.sql.Date toDate(LIT literal){
-        return converterRegistry.fromString(literal.getValue(), java.sql.Date.class);
-    }
-
-    public java.sql.Timestamp toTimestamp(LIT literal){
-        return converterRegistry.fromString(literal.getValue(), java.sql.Timestamp.class);
+    
+    public <T> T convert(String value, Class<T> requiredType){
+        return converterRegistry.fromString(value, requiredType);
     }
     
     public ConverterRegistry getConverters(){
