@@ -12,7 +12,7 @@ package com.mysema.rdfbean.model;
  * @author tiwe
  * @version $Id$
  */
-public enum Inference {
+public enum InferenceOptions {
     
     /**
      * 
@@ -56,7 +56,7 @@ public enum Inference {
     
     private final boolean subClassOf, subPropertyOf, untypedAsString;
     
-    private Inference(boolean subClassOf, boolean subPropertyOf, boolean untypedAsString){
+    private InferenceOptions(boolean subClassOf, boolean subPropertyOf, boolean untypedAsString){
         this.subClassOf = subClassOf;
         this.subPropertyOf = subPropertyOf;
         this.untypedAsString = untypedAsString;

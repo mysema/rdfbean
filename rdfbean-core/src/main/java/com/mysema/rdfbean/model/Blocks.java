@@ -1,20 +1,36 @@
 package com.mysema.rdfbean.model;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.mysema.query.types.Constant;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Predicate;
+import com.mysema.rdfbean.owl.OWL;
 
 /**
  * @author tiwe
  *
  */
+@SuppressWarnings("unchecked")
 public final class Blocks {
+    
+    private static final Map<UID, Constant<UID>> CACHE = new HashMap<UID, Constant<UID>>(1024);
+    
+    static{
+        for (Collection<UID> uids : Arrays.asList(RDF.ALL, RDFS.ALL, DC.ALL, OWL.ALL, SKOS.ALL, XSD.ALL)){
+            for (UID uid : uids){
+                CACHE.put(uid, new ConstantImpl<UID>(UID.class, uid));
+            }
+        }
+    }
 
     public static Block pattern(Object subject, Object predicate, Object object, @Nullable Object context) {
         return new PatternBlock(
@@ -59,9 +75,10 @@ public final class Blocks {
         return new GraphBlock(context, Collections.singletonList(block));
     }
     
-    @SuppressWarnings("unchecked")
     private static <T extends NODE> Expression<T> convert(Class<T> cl, Object o){
-        if (cl.isAssignableFrom(o.getClass())){
+        if (o instanceof UID && CACHE.containsKey(o)){
+            return (Expression<T>)CACHE.get(o);
+        }else if (cl.isAssignableFrom(o.getClass())){
             return new ConstantImpl<T>((T)o);    
         }else if (o instanceof Expression && NODE.class.isAssignableFrom(((Expression)o).getType())){
             return (Expression<T>)o;

@@ -1,7 +1,5 @@
 package com.mysema.rdfbean.model;
 
-import com.mysema.query.types.Constant;
-import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.SimplePath;
 
@@ -10,8 +8,6 @@ import com.mysema.query.types.path.SimplePath;
  *
  */
 public class QID extends SimplePath<ID>{
-
-    public static final Constant<UID> RDF_TYPE = new ConstantImpl<UID>(UID.class, RDF.type);
 
     private static final long serialVersionUID = -2696989113637909131L;
 
@@ -24,7 +20,7 @@ public class QID extends SimplePath<ID>{
     }
 
     public Block a(Object type){
-        return Blocks.pattern(this, RDF_TYPE, type);
+        return Blocks.pattern(this, RDF.type, type);
     }
 
     public Block has(Object predicate, Object object){

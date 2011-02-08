@@ -12,7 +12,7 @@ public class InferenceTest {
     
     @Test
     public void test(){
-	for (Inference inf : Inference.values()){
+	for (InferenceOptions inf : InferenceOptions.values()){
 	    System.out.println(inf);
 	}
     }
