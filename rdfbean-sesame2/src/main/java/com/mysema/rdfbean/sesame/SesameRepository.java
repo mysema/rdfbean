@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Format;
-import com.mysema.rdfbean.model.Inference;
+import com.mysema.rdfbean.model.InferenceOptions;
 import com.mysema.rdfbean.model.Operation;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
@@ -63,7 +63,7 @@ public abstract class SesameRepository implements Repository{
 
     private boolean sesameInference = false;
 
-    private Inference inference = Inference.FULL;
+    private InferenceOptions inference = InferenceOptions.FULL;
     
     private final ValueFactory valueFactory = new ValueFactoryImpl();
 
@@ -127,7 +127,7 @@ public abstract class SesameRepository implements Repository{
         }
     }
 
-    protected Inference getInferenceOptions() {
+    protected InferenceOptions getInferenceOptions() {
         return inference;
     }
 
@@ -230,7 +230,7 @@ public abstract class SesameRepository implements Repository{
 
     public final void setSesameInference(boolean sesameInference) {
         this.sesameInference = sesameInference;
-        this.inference = sesameInference ? Inference.LITERAL : Inference.FULL;
+        this.inference = sesameInference ? InferenceOptions.LITERAL : InferenceOptions.FULL;
     }
 
     public void setSources(RDFSource... sources) {

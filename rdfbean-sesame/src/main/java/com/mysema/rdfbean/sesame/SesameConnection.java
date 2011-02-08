@@ -72,7 +72,7 @@ public class SesameConnection implements RDFConnection {
 
     private final SesameDialect dialect;
 
-    private final Inference inference;
+    private final InferenceOptions inference;
 
     @Nullable
     private SesameTransaction localTxn = null;
@@ -92,7 +92,7 @@ public class SesameConnection implements RDFConnection {
 
     private final SesameRepository repository;
 
-    public SesameConnection(SesameRepository repository, RepositoryConnection connection, Ontology<UID> ontology, Inference inference) {
+    public SesameConnection(SesameRepository repository, RepositoryConnection connection, Ontology<UID> ontology, InferenceOptions inference) {
         this.repository = Assert.notNull(repository,"repository");
         this.connection = Assert.notNull(connection,"connection");
         this.vf = connection.getValueFactory();
