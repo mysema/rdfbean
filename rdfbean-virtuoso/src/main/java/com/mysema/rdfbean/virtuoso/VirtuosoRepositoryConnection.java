@@ -110,6 +110,8 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             throw new IllegalArgumentException(n.toString());
         }
     }
+    
+    private final IdSequence idSequence;
 
     private final Collection<UID> allowedGraphs;
     
@@ -122,11 +124,13 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     private final int prefetchSize;
     
     protected VirtuosoRepositoryConnection(
+            IdSequence idSequence,
             Converter converter, 
             int prefetchSize, 
             UID defGraph,
             Collection<UID> allowedGraphs,
             Connection connection) {
+        this.idSequence = idSequence;
         this.converter = converter;
         this.connection = connection;
         this.prefetchSize = prefetchSize;
@@ -265,11 +269,10 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                   queryLanguage.equals(QueryLanguage.GRAPH) ||
                   queryLanguage.equals(QueryLanguage.TUPLE)){    
             SPARQLVisitor visitor = new SPARQLVisitor();
-            visitor.visit((QueryMetadata)definition, queryLanguage);
+            QueryMetadata md = (QueryMetadata)definition;
+            visitor.visit(md, queryLanguage);
             SPARQLQuery query = createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
-            for (Map.Entry<Object,String> entry : visitor.getConstantToLabel().entrySet()){
-                query.setBinding(entry.getValue(), (NODE)entry.getKey());
-            }
+            visitor.addBindings(query, md);
             return (Q)query;
             
         }else{
@@ -368,7 +371,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     @Override
     public long getNextLocalId() {
-        throw new UnsupportedOperationException("getNextLocalId has not been implemented");
+        return idSequence.getNextId();
     }
 
     private SPARQLQuery.ResultType getResultType(String definition){

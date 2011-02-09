@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.annotation.Nullable;
@@ -13,6 +14,7 @@ import com.mysema.query.types.Expression;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.ParamExpression;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.SubQueryExpression;
 
@@ -36,7 +38,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     public SPARQLVisitor(SPARQLTemplates templates, String prefix) {
         super(templates);
         this.prefix = prefix;
-        setParamPrefix("?");
+//        setParamPrefix("?");
     }    
     
     @Nullable
@@ -251,6 +253,25 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             super.visitOperation(type, operator, args);
         }finally{
             operators.pop();
+        }
+    }
+    
+    @Nullable
+    public Void visit(ParamExpression<?> param, @Nullable Void context){
+        getConstantToLabel().put(param, param.getName());
+        append("?"+param.getName());
+        return null;
+    }
+
+    public void addBindings(SPARQLQuery query, QueryMetadata md) {
+        for (Map.Entry<Object,String> entry :getConstantToLabel().entrySet()){
+            if (entry.getKey() instanceof ParamExpression<?>){
+                if (md.getParams().containsKey(entry.getKey())){
+                    query.setBinding(entry.getValue(), (NODE)md.getParams().get(entry.getKey()));    
+                }                    
+            }else{
+                query.setBinding(entry.getValue(), (NODE)entry.getKey());    
+            }                
         }
     }
         

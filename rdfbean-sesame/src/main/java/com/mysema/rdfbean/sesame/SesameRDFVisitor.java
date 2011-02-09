@@ -9,10 +9,10 @@ import java.util.Stack;
 import javax.annotation.Nullable;
 
 import org.openrdf.model.Literal;
+import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.algebra.*;
 import org.openrdf.query.algebra.Order;
-import org.openrdf.query.algebra.Projection;
 import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
@@ -28,6 +28,8 @@ import com.mysema.rdfbean.query.VarNameIterator;
  *
  */
 public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
+    
+    private static final ValueConstant CASE_INSENSITIVE = new ValueConstant(new LiteralImpl("i"));
 
     private static final Map<Operator<?>,CompareOp> COMPARE_OPS = new HashMap<Operator<?>,CompareOp>();
 
@@ -372,6 +374,8 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             return new MathExpr(toValue(expr.getArg(0), md), toValue(expr.getArg(1), md), MATH_OPS.get(op));
         }else if (op == Ops.MATCHES){
             return new Regex(new Str(toValue(expr.getArg(0), md)), new Str(toValue(expr.getArg(1), md)), null);
+        }else if (op == Ops.MATCHES_IC){
+            return new Regex(new Str(toValue(expr.getArg(0), md)), new Str(toValue(expr.getArg(1), md)), CASE_INSENSITIVE);
         }else if (op == Ops.STRING_IS_EMPTY){
             return new Regex(new Str(toValue(expr.getArg(0), md)), "", false);
         }else if (op == Ops.IS_NULL){

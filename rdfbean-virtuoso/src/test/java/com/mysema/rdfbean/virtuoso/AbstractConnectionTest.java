@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
@@ -18,6 +19,8 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.testutil.SessionRule;
 
 public abstract class AbstractConnectionTest {
 
@@ -30,6 +33,11 @@ public abstract class AbstractConnectionTest {
     protected VirtuosoRepositoryConnection connection;
     
     protected Collection<STMT> toBeRemoved;
+    
+    @Rule
+    public SessionRule sessionRule = new SessionRule(repository);
+    
+    public Session session;
     
     @BeforeClass
     public static void setUpClass(){

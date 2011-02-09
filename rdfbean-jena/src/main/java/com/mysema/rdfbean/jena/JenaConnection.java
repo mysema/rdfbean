@@ -2,7 +2,6 @@ package com.mysema.rdfbean.jena;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
@@ -71,11 +70,10 @@ public class JenaConnection implements RDFConnection {
                   queryLanguage.equals(QueryLanguage.GRAPH) || 
                   queryLanguage.equals(QueryLanguage.TUPLE)){
             SPARQLVisitor visitor = new SPARQLVisitor();
+            QueryMetadata md = (QueryMetadata)definition;
             visitor.visit((QueryMetadata)definition, queryLanguage);
             SPARQLQuery query = createSPARQLQuery(visitor.toString());
-            for (Map.Entry<Object,String> entry : visitor.getConstantToLabel().entrySet()){
-                query.setBinding(entry.getValue(), (NODE)entry.getKey());
-            }
+            visitor.addBindings(query, md);
             return (Q)query;
             
         }else{

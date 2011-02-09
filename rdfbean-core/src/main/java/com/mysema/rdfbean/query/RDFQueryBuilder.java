@@ -292,6 +292,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         boolean outerOptional = inOptionalPath();
         boolean innerOptional = false;
         operatorStack.push(expr.getOperator());
+
         Map<Path<?>, ParamExpression<?>> origPathToMapped = null;
         Map<Path<?>, ParamExpression<?>> origPathToKnown = null;
         if (!outerOptional && inOptionalPath()){
@@ -309,8 +310,31 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         boolean rightPath = expr.getArgs().size() > 1 ? expr.getArg(1) instanceof Path<?> : false;
         boolean leftConstant = expr.getArg(0) instanceof Constant<?>;
         boolean rightConstant = expr.getArgs().size() > 1 ? expr.getArg(1) instanceof Constant<?> : false;
-
+        
         try{
+    
+            if (!options.isPreserveStringOps()){
+                if (expr.getOperator() == Ops.STARTS_WITH && rightConstant){
+                    expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
+    
+                }else if (expr.getOperator() == Ops.STARTS_WITH_IC && rightConstant){
+                        expr = new PredicateOperation(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
+                    
+                }else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant){
+                    expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
+                    
+                }else if (expr.getOperator() == Ops.ENDS_WITH_IC && rightConstant){
+                    expr = new PredicateOperation(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
+    
+                }else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant){
+                    expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
+                    
+                }else if (expr.getOperator() == Ops.STRING_CONTAINS_IC && rightConstant){
+                    expr = new PredicateOperation(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
+                    
+                }
+            }
+        
             if (expr.getOperator() == Ops.EQ_OBJECT
               || expr.getOperator() == Ops.NE_OBJECT
               || expr.getOperator() == Ops.EQ_PRIMITIVE
@@ -346,18 +370,6 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     }
 
                 }
-
-            }else if (expr.getOperator() == Ops.STARTS_WITH && rightConstant && !options.isPreserveStringOps()){
-                expr = new PredicateOperation(Ops.MATCHES,
-                        expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
-
-            }else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant && !options.isPreserveStringOps()){
-                expr = new PredicateOperation(Ops.MATCHES,
-                        expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
-
-            }else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant && !options.isPreserveStringOps()){
-                expr = new PredicateOperation(Ops.MATCHES,
-                        expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
 
             }else if (expr.getOperator() == Ops.AND){
                 Predicate lhs = (Predicate) transform(expr.getArg(0), filters);

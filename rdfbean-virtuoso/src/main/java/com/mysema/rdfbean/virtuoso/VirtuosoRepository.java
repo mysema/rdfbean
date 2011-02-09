@@ -17,14 +17,7 @@ import virtuoso.jdbc4.VirtuosoConnectionPoolDataSource;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.Namespaces;
-import com.mysema.rdfbean.model.Format;
-import com.mysema.rdfbean.model.Operation;
-import com.mysema.rdfbean.model.RDFBeanTransaction;
-import com.mysema.rdfbean.model.RDFConnection;
-import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.model.RepositoryException;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.model.io.RDFWriter;
 import com.mysema.rdfbean.model.io.WriterUtils;
@@ -58,6 +51,8 @@ public class VirtuosoRepository implements Repository {
 
     private boolean initialized = false;
 
+    private IdSequence idSequence;
+    
     public VirtuosoRepository(String hostlist, String user, String password) {
         this(hostlist, user, password, "rdfbean:nil");
     }
@@ -137,7 +132,7 @@ public class VirtuosoRepository implements Repository {
         try {
             javax.sql.PooledConnection pconn = pds.getPooledConnection();
             java.sql.Connection connection = pconn.getConnection();
-            return new VirtuosoRepositoryConnection(converter, prefetchSize, defGraph, allowedGraphs, connection);
+            return new VirtuosoRepositoryConnection(idSequence, converter, prefetchSize, defGraph, allowedGraphs, connection);
         } catch (SQLException e) {
             logger.error("Connection to " + host + " FAILED.");
             throw new RepositoryException(e);
@@ -153,31 +148,39 @@ public class VirtuosoRepository implements Repository {
     }
     
     public void initialize() {
-        VirtuosoRepositoryConnection connection = openConnection();
-        RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
-        try {
-            if (sources != null) {
-                for (RDFSource source : sources) {
-                    if (source.getResource() != null){
-                        logger.info("loading " + source.getResource());
-                    }
-                    UID context = new UID(source.getContext());
-                    InputStream is = source.openStream();
-                    try{
-                        connection.load(source.getFormat(), is, context, false);    
-                    }finally{
-                        is.close();
-                    }                    
-                }
+        if (!initialized) {
+            if (dataDir != null){
+                idSequence = new FileIdSequence(new File(dataDir, "lastLocalId"));    
+            }else{
+                idSequence = new MemoryIdSequence();
             }
-            tx.commit();
-        } catch(Exception e){
-            tx.rollback();
-            throw new RepositoryException(e);
-        } finally {
-            connection.close();
-        }
-        initialized = true;
+            
+            VirtuosoRepositoryConnection connection = openConnection();
+            RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
+            try {
+                if (sources != null) {
+                    for (RDFSource source : sources) {
+                        if (source.getResource() != null){
+                            logger.info("loading " + source.getResource());
+                        }
+                        UID context = new UID(source.getContext());
+                        InputStream is = source.openStream();
+                        try{
+                            connection.load(source.getFormat(), is, context, false);    
+                        }finally{
+                            is.close();
+                        }                    
+                    }
+                }
+                tx.commit();
+            } catch(Exception e){
+                tx.rollback();
+                throw new RepositoryException(e);
+            } finally {
+                connection.close();
+            }
+            initialized = true;    
+        }        
     }
     
     @Override
@@ -217,5 +220,6 @@ public class VirtuosoRepository implements Repository {
     public void setAllowedGraphs(Collection<UID> allowedGraphs) {
         this.allowedGraphs = Assert.notNull(allowedGraphs,"allowedGraphs");
     }
+    
     
 }
