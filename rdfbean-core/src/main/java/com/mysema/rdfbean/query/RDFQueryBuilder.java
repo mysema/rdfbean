@@ -16,8 +16,8 @@ import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.*;
 import com.mysema.query.types.Operation;
-import com.mysema.query.types.expr.BooleanOperation;
 import com.mysema.query.types.expr.Param;
+import com.mysema.query.types.expr.Wildcard;
 import com.mysema.query.types.template.BooleanTemplate;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.*;
@@ -46,10 +46,6 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     private static final Path<LIT> COUNTER = new PathImpl<LIT>(LIT.class, "counter");
 
-    // TODO : replace with something simpler
-    @SuppressWarnings("unchecked")
-    private static final Operation<Long> COUNT_ALL = new OperationImpl<Long>(Long.class, (Operator)Ops.AggOps.COUNT_ALL_AGG);
-
     private final RDFConnection connection;
 
     private final Session session;
@@ -57,7 +53,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     private final Configuration configuration;
 
     private final QueryOptions options;
-    
+
     private final QueryMetadata metadata;
 
     private final List<Expression<?>> projection;
@@ -117,7 +113,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
 
         if (forCount){
-            projection.add(options.isCountViaAggregation() ? COUNT_ALL : COUNTER);
+            projection.add(options.isCountViaAggregation() ? Wildcard.count : COUNTER);
         }else{
             // limit + offset
             query.restrict(metadata.getModifiers());
@@ -477,7 +473,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
 
         if (expr.getType().equals(Boolean.class)){
-            return BooleanOperation.create((Operator)expr.getOperator(), args.toArray(new Expression[args.size()]));
+            return new PredicateOperation((Operator)expr.getOperator(), args);
         }else{
             return new OperationImpl(expr.getType(),expr.getOperator(), args);
         }
@@ -651,5 +647,5 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             return new TemplateExpressionImpl(template.getType(), template.getTemplate(), args);
         }
     }
-    
+
 }
