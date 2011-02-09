@@ -24,7 +24,7 @@ import com.mysema.rdfbean.model.SPARQLQuery;
  */
 public abstract class AbstractQueryImpl implements SPARQLQuery{
     
-    private static final Pattern VARIABLE = Pattern.compile("\\?[a-zA-Z]\\w*");
+    private static final Pattern VARIABLE = Pattern.compile("\\?[a-zA-Z_]\\w*");
     
     private final Connection connection;
     
@@ -94,7 +94,7 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         stmt.setFetchSize(prefetch);
         rs = stmt.executeQuery();
         return rs;
-    }
+    }    
     
     static String normalize(String query, Map<String, NODE> bindings, List<NODE> nodes) {
         String queryLower = query.toLowerCase();
@@ -103,19 +103,35 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         while (matcher.find()){
             String variable = matcher.group().substring(1);
             String replacement = matcher.group();
+            boolean inFilter = inFilter(query, matcher);
             if (bindings.containsKey(variable) && queryLower.substring(0, matcher.start()).contains("where")){
                 NODE node = bindings.get(variable);
                 nodes.add(node);
                 if (node.isResource()){
-                    replacement = "`iri(??)`";    
+                    replacement = inFilter ? "iri(??)" : "`iri(??)`";    
                 }else{
-                    replacement = "`bif:__rdf_long_from_batch_params(??,??,??)`";
+                    replacement = inFilter ? "bif:__rdf_long_from_batch_params(??,??,??)" : "`bif:__rdf_long_from_batch_params(??,??,??)`";
                 }                
             }
             matcher.appendReplacement(buffer, replacement);
         }
         matcher.appendTail(buffer);
         return buffer.toString();
+    }
+
+    private static boolean inFilter(String query, Matcher matcher) {
+        int i;
+        for (i = matcher.start()-1; i >= 0; i-- ){
+            if (query.charAt(i) == ')') return false;
+            if (query.charAt(i) == '(') break;
+        }
+        if (i > 0){
+            for (i = matcher.end()-1; i < query.length(); i++ ){
+                if (query.charAt(i) == '(') return false;
+                if (query.charAt(i) == ')') return true;
+            }    
+        }
+        return false;
     }
 
 }

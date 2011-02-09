@@ -33,7 +33,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
 
     @Test
     public void Pattern(){
-        query().where(Blocks.pattern(subject, RDF.type, RDFS.Class)).select(subject);
+        query().where(Blocks.pattern(subject, RDF.type, RDFS.Class)).limit(1).select(subject);
     }
     
     @Test
@@ -53,7 +53,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
         );
         
         for (Predicate filter : filters){
-            query().where(pattern, filter).select(subject);
+            query().where(pattern, filter).limit(1).select(subject);
         }
     }
     
@@ -70,6 +70,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
+                .limit(1)
                 .select(subject, predicate, object);
     }
     
@@ -79,7 +80,9 @@ public class TupleQueryTest extends AbstractConnectionTest {
                 Blocks.union(
                     Blocks.pattern(subject, RDF.type, RDFS.Class),
                     Blocks.pattern(subject, predicate, object)
-                )).select(subject, predicate, object);
+                ))
+                .limit(1)
+                .select(subject, predicate, object);
     }
     
     @Test
@@ -87,6 +90,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.optional(Blocks.pattern(subject, predicate, object)))
+                .limit(1)
                 .select(subject, predicate, object);
     }
 }

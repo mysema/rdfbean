@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.RepositoryException;
@@ -16,6 +19,8 @@ import com.mysema.rdfbean.model.STMT;
  *
  */
 public class BooleanQueryImpl extends AbstractQueryImpl {
+    
+    private static final Logger logger = LoggerFactory.getLogger(GraphQueryImpl.class);
     
     public BooleanQueryImpl(Connection connection, int prefetch, String query) {
         super(connection, prefetch, query);
@@ -28,6 +33,7 @@ public class BooleanQueryImpl extends AbstractQueryImpl {
             rs.next();
             return rs.getShort(1) > 0;
         } catch (SQLException e) {
+            logger.error(query);
             throw new RepositoryException(e);
         }finally{
             close();

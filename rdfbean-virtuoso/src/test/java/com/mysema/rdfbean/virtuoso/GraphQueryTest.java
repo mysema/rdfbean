@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.virtuoso;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.Blocks;
@@ -29,6 +30,7 @@ public class GraphQueryTest extends AbstractConnectionTest{
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
+               .limit(1)
                .construct(Blocks.pattern(subject, predicate, object));
     }
     
@@ -38,24 +40,29 @@ public class GraphQueryTest extends AbstractConnectionTest{
                 Blocks.group(
                     Blocks.pattern(subject, RDF.type, RDFS.Class),
                     Blocks.pattern(subject, predicate, object)))
+               .limit(1)
                .construct(Blocks.pattern(subject, predicate, object));
     }
     
     @Test
+    @Ignore
     public void Two_Patterns(){
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
+               .limit(1)
                .construct(
                    Blocks.pattern(subject, RDF.type,  RDFS.Class),
                    Blocks.pattern(subject, predicate, object));
     }
     
     @Test
+    @Ignore
     public void Group(){
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
+               .limit(1)
                .construct(
                    Blocks.pattern(subject, RDF.type,  RDFS.Class),
                    Blocks.pattern(subject, predicate, object));

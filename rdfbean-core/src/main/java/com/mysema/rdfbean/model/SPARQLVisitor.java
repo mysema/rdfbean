@@ -17,6 +17,7 @@ import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.ParamExpression;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.SubQueryExpression;
+import com.mysema.query.types.TemplateExpression;
 
 /**
  * @author tiwe
@@ -51,7 +52,14 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             if (md.isDistinct()){
                 append("DISTINCT ");
             }
-            handle(" ", md.getProjection());
+            for (Expression<?> expr : md.getProjection()){
+                if (expr instanceof TemplateExpression<?> || expr instanceof com.mysema.query.types.Operation<?>){
+                    append("(").handle(expr).append(")");
+                }else{
+                    handle(expr);
+                }
+                append(" ");
+            }
             append("\n");            
             
         // ask

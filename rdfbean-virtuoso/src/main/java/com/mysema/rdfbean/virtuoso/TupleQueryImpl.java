@@ -10,6 +10,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
 import com.mysema.rdfbean.model.NODE;
@@ -20,6 +23,8 @@ import com.mysema.rdfbean.model.STMT;
  *
  */
 public class TupleQueryImpl extends AbstractQueryImpl {
+    
+    private static final Logger logger = LoggerFactory.getLogger(TupleQueryImpl.class);
     
     private final Converter converter;
     
@@ -76,13 +81,19 @@ public class TupleQueryImpl extends AbstractQueryImpl {
     }
     
     private void produceResults() throws SQLException{
-        rs = executeQuery(query);
-        ResultSetMetaData md = rs.getMetaData();
-        variables = new ArrayList<String>(md.getColumnCount());
-        for (int i = 0; i < md.getColumnCount(); i++){
-            variables.add(md.getColumnName(i+1));
+        try{
+            rs = executeQuery(query);
+            ResultSetMetaData md = rs.getMetaData();
+            variables = new ArrayList<String>(md.getColumnCount());
+            for (int i = 0; i < md.getColumnCount(); i++){
+                variables.add(md.getColumnName(i+1));
+            }
+            tuples = new TupleResultIterator(stmt, rs, query, converter, variables, bindings);    
+        }catch(SQLException e){
+            logger.error(query);
+            throw e;
         }
-        tuples = new TupleResultIterator(stmt, rs, query, converter, variables, bindings);
+        
     }
 
     @Override

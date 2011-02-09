@@ -402,7 +402,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
             }else if (expr.getOperator() == Ops.ORDINAL){
                 Param<?> path = (Param<?>) transform(expr.getArg(0), filters);
-                Param<?> ordinalPath = new Param<LIT>(LIT.class, path.toString()+"_ordinal");
+                Param<?> ordinalPath = new Param<LIT>(LIT.class, path.getName()+"_ordinal");
                 filters.add(Blocks.pattern(path, CORE.enumOrdinal, ordinalPath));
                 return ordinalPath;
 

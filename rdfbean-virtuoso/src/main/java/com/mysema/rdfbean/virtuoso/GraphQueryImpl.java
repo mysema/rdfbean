@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.model.Format;
@@ -22,6 +25,8 @@ import com.mysema.rdfbean.model.io.WriterUtils;
  *
  */
 public class GraphQueryImpl extends AbstractQueryImpl{
+    
+    private static final Logger logger = LoggerFactory.getLogger(GraphQueryImpl.class);
     
     private final Converter converter;
     
@@ -48,6 +53,7 @@ public class GraphQueryImpl extends AbstractQueryImpl{
             Collections.sort(stmts, STMTComparator.DEFAULT);
             return new IteratorAdapter<STMT>(stmts.iterator());
         } catch (SQLException e) {
+            logger.error(query);
             close();
             throw new RepositoryException(e);
         }        

@@ -44,7 +44,7 @@ public class SesameSPARQLTemplates extends SPARQLTemplates {
         add(Ops.DateTimeOps.MILLISECOND,"q:millisecond({0})");
         
         add(Ops.LIKE,            "q:like({0},{1})");
-        add(Ops.MOD,             "q:like({0},{1})");
+        add(Ops.MOD,             "q:mod({0},{1})");
     }
     
 }

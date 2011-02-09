@@ -44,6 +44,8 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
     
+    private static final QueryOptions queryOptions = new QueryOptions(true, false, false);
+    
     private static final int BATCH_SIZE = 5000;
     
     private static final String DEFAULT_OUTPUT = "sparql\n ";
@@ -268,7 +270,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
                   queryLanguage.equals(QueryLanguage.GRAPH) ||
                   queryLanguage.equals(QueryLanguage.TUPLE)){    
-            SPARQLVisitor visitor = new SPARQLVisitor();
+            SPARQLVisitor visitor = new SPARQLVisitor(VirtuosoSPARQLTemplates.DEFAULT, "");
             QueryMetadata md = (QueryMetadata)definition;
             visitor.visit(md, queryLanguage);
             SPARQLQuery query = createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
@@ -601,6 +603,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     @Override
     public QueryOptions getQueryOptions() {
-        return QueryOptions.DEFAULT;
+        return queryOptions;
     }
 }
