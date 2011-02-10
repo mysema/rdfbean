@@ -5,7 +5,6 @@ import java.io.Writer;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 
 import com.mysema.commons.l10n.support.LocaleUtil;
@@ -21,8 +20,8 @@ import com.mysema.rdfbean.model.SPARQLQuery;
  */
 public class JSONResultProducer extends AbstractResultProducer {
 
-    private JsonFactory jsonFactory = new JsonFactory();
-    
+    private final JsonFactory jsonFactory = new JsonFactory();
+
     @Override
     public void stream(SPARQLQuery query, Writer writer) throws IOException {
         JsonGenerator generator = jsonFactory.createJsonGenerator(writer);
@@ -30,18 +29,18 @@ public class JSONResultProducer extends AbstractResultProducer {
             streamBoolean(query, generator);
         }else{
             streamTuple(query, generator);
-        }            
+        }
         generator.flush();
     }
-   
+
     private void streamBoolean(SPARQLQuery query, JsonGenerator generator) throws IOException {
-        generator.writeStartObject(); 
+        generator.writeStartObject();
         generator.writeNullField("head");
         generator.writeBooleanField("boolean", query.getBoolean());
-        generator.writeEndObject();           
-    }    
+        generator.writeEndObject();
+    }
 
-    private void streamTuple(SPARQLQuery query, JsonGenerator generator) throws JsonGenerationException, IOException {
+    private void streamTuple(SPARQLQuery query, JsonGenerator generator) throws IOException {
         generator.writeStartObject();
         generator.writeObjectFieldStart("head");
         generator.writeArrayFieldStart("vars");
@@ -50,10 +49,10 @@ public class JSONResultProducer extends AbstractResultProducer {
         }
         generator.writeEndArray();  // vars
         generator.writeEndObject(); // head
-        
+
         generator.writeObjectFieldStart("results");
         generator.writeArrayFieldStart("bindings");
-                
+
         CloseableIterator<Map<String, NODE>> rows = query.getTuples();
         while (rows.hasNext()) {
             Map<String, NODE> row = rows.next();
@@ -75,7 +74,7 @@ public class JSONResultProducer extends AbstractResultProducer {
             generator.writeEndObject();
         }
         rows.close();
-        
+
         generator.writeEndArray();  // bindings
         generator.writeEndObject(); // results
         generator.writeEndObject(); // root

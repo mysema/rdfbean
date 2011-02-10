@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.sparql;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,15 +35,15 @@ public class SPARQLServlet extends HttpServlet{
     private static final Logger logger = LoggerFactory.getLogger(SPARQLServlet.class);
 
     private static final long serialVersionUID = 5726683938555535282L;
-    
+
     public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
 
     public static final String SPARQL_RESULTS_XML = "application/sparql-results+xml";
-  
+
     private static final Pattern LIMIT_PATTERN = Pattern.compile("\\s+limit\\s+(\\d+)", Pattern.CASE_INSENSITIVE);
 
     private static final ResultProducer xmlProducer = new XMLResultProducer();
-    
+
     private static final ResultProducer jsonProducer = new JSONResultProducer();
 
     @Nullable
@@ -94,7 +95,7 @@ public class SPARQLServlet extends HttpServlet{
 
         // handle implicit limit
         if (limit != null){
-            String normalized = queryString.toLowerCase().replaceAll("\\s+", " ");
+            String normalized = queryString.toLowerCase(Locale.ENGLISH).replaceAll("\\s+", " ");
             if (!normalized.startsWith("ask") && !normalized.contains(" ask ")){
                 Matcher m = LIMIT_PATTERN.matcher(queryString);
                 if (m.find()){
@@ -106,8 +107,8 @@ public class SPARQLServlet extends HttpServlet{
                     }
                 }else{
                     queryString += " LIMIT " + limit;
-                }    
-            }            
+                }
+            }
         }
 
         try{
@@ -115,12 +116,12 @@ public class SPARQLServlet extends HttpServlet{
         }catch(Exception e){
             if (e.getMessage() != null){
                 logger.error(e.getMessage(), e);
-                response.sendError(400, e.getMessage().replace("<", "&lt;").replace(">","&gt;"));    
+                response.sendError(400, e.getMessage().replace("<", "&lt;").replace(">","&gt;"));
             }else{
                 logger.error("Caught Exception", e);
                 response.sendError(400);
             }
-            
+
         }
     }
 
