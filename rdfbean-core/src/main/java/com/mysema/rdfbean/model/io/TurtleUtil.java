@@ -43,11 +43,11 @@ final class TurtleUtil {
         }
         return builder.toString();
     }
-    
+
     public static boolean isPrefixChar(int c) {
         return isNameChar(c);
     }
-    
+
     public static boolean isPrefixStartChar(int c) {
         return
         Character.isLetter(c) ||
@@ -86,10 +86,11 @@ final class TurtleUtil {
                     return false;
                 }
             }
-            return true;    
+            return true;
         }else{
             return false;
-        }        
+        }
     }
-    
+
+    private TurtleUtil(){}
 }

@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,41 +24,41 @@ import com.mysema.rdfbean.model.SPARQLQuery;
  *
  */
 public abstract class AbstractQueryImpl implements SPARQLQuery{
-    
+
     private static final Pattern VARIABLE = Pattern.compile("\\?[a-zA-Z_]\\w*");
-    
+
     private final Connection connection;
-    
+
     private final int prefetch;
-    
+
     protected PreparedStatement stmt;
-    
+
     protected ResultSet rs;
-    
+
     protected final String query;
-    
+
     protected final Map<String, NODE> bindings = new HashMap<String,NODE>();
-    
+
     public AbstractQueryImpl(Connection connection, int prefetch, String query) {
         this.connection = connection;
         this.prefetch = prefetch;
         this.query = query;
-    }    
+    }
 
     @Override
     public final void setBinding(String variable, NODE node) {
-        bindings.put(variable, node);        
+        bindings.put(variable, node);
     }
-    
+
     @Override
     public final void setMaxQueryTime(int secs) {
-        // do nothing        
+        // do nothing
     }
 
     protected void close(){
         close(stmt, rs);
     }
-    
+
     public static void close(@Nullable Statement stmt, @Nullable ResultSet rs){
         try{
             try {
@@ -73,10 +74,10 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
             throw new QueryException(e);
         }
     }
-    
+
     protected ResultSet executeQuery(String query) throws SQLException{
         if (bindings.isEmpty()){
-            stmt = connection.prepareStatement(query);            
+            stmt = connection.prepareStatement(query);
         }else{
             List<NODE> nodes = new ArrayList<NODE>(bindings.size());
             String normalized = normalize(query, bindings, nodes);
@@ -89,15 +90,15 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
                     VirtuosoRepositoryConnection.bindValue(stmt, offset, node.asLiteral());
                     offset += 3;
                 }
-            }            
+            }
         }
         stmt.setFetchSize(prefetch);
         rs = stmt.executeQuery();
         return rs;
-    }    
-    
+    }
+
     static String normalize(String query, Map<String, NODE> bindings, List<NODE> nodes) {
-        String queryLower = query.toLowerCase();
+        String queryLower = query.toLowerCase(Locale.ENGLISH);
         Matcher matcher = VARIABLE.matcher(query);
         StringBuffer buffer = new StringBuffer();
         while (matcher.find()){
@@ -108,10 +109,10 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
                 NODE node = bindings.get(variable);
                 nodes.add(node);
                 if (node.isResource()){
-                    replacement = inFilter ? "iri(??)" : "`iri(??)`";    
+                    replacement = inFilter ? "iri(??)" : "`iri(??)`";
                 }else{
                     replacement = inFilter ? "bif:__rdf_long_from_batch_params(??,??,??)" : "`bif:__rdf_long_from_batch_params(??,??,??)`";
-                }                
+                }
             }
             matcher.appendReplacement(buffer, replacement);
         }
@@ -129,7 +130,7 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
             for (i = matcher.end()-1; i < query.length(); i++ ){
                 if (query.charAt(i) == '(') return false;
                 if (query.charAt(i) == ')') return true;
-            }    
+            }
         }
         return false;
     }

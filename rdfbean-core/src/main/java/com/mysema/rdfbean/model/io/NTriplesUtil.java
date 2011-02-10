@@ -1,5 +1,7 @@
 package com.mysema.rdfbean.model.io;
 
+import java.util.Locale;
+
 
 /**
  * @author tiwe
@@ -43,7 +45,7 @@ final class NTriplesUtil {
 
     private static String toHexString(int decimal, int stringLength) {
         StringBuilder sb = new StringBuilder(stringLength);
-        String hexVal = Integer.toHexString(decimal).toUpperCase();
+        String hexVal = Integer.toHexString(decimal).toUpperCase(Locale.ENGLISH);
         // insert zeros if hexVal has less than stringLength characters:
         int nofZeros = stringLength - hexVal.length();
         for (int i = 0; i < nofZeros; i++) {
@@ -51,7 +53,7 @@ final class NTriplesUtil {
         }
         sb.append(hexVal);
         return sb.toString();
-    }    
+    }
 
     private NTriplesUtil() {
     }

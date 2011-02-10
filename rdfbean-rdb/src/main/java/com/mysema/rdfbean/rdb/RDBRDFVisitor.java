@@ -28,6 +28,8 @@ import com.mysema.rdfbean.query.VarNameIterator;
  */
 public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
+//    private static final Logger logger = LoggerFactory.getLogger(RDBRDFVisitor.class);
+
     private final RDBContext context;
 
     private Map<Expression<?>, Expression<?>> exprToSymbol = new HashMap<Expression<?>, Expression<?>>();
@@ -185,7 +187,6 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             args.add(handle(expr.getArg(0), context));
             UID datatype = (UID) ((Constant)expr.getArg(1)).getConstant();
             args.add(new ConstantImpl<Class>(this.context.getConverters().getClass(datatype)));
-            System.err.println(args);
         }else{
             for (Expression<?> arg : expr.getArgs()){
                 args.add(handle(arg, context));

@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,29 +36,32 @@ public class VirtuosoRepository implements Repository {
     private final VirtuosoConnectionPoolDataSource pds = new VirtuosoConnectionPoolDataSource();
 
     private final String host;
-    
+
     private final Converter converter = new Converter(new ConverterRegistryImpl());
 
+    @Nullable
     private RDFSource[] sources;
 
+    @Nullable
     private File dataDir;
-    
-    private final String charset = "UTF-8";
+
+    private static final String charset = "UTF-8";
 
     private final UID defGraph;
-    
+
     private Collection<UID> allowedGraphs = Collections.emptySet();
 
     private int prefetchSize = 200;
 
     private boolean initialized = false;
 
+    @Nullable
     private IdSequence idSequence;
-    
+
     public VirtuosoRepository(String hostlist, String user, String password) {
         this(hostlist, user, password, "rdfbean:nil");
     }
-    
+
     public VirtuosoRepository(String host, int port, String user, String password) {
         this(host, port, user, password, "rdfbean:nil");
     }
@@ -64,7 +69,7 @@ public class VirtuosoRepository implements Repository {
     public VirtuosoRepository(String hostlist, String user, String password, String defGraph) {
         this(hostlist, 1111, user, password, defGraph);
     }
-    
+
     public VirtuosoRepository(String host, int port, String user, String password, String defGraph) {
         this.defGraph = new UID(defGraph);
         this.host = host;
@@ -106,7 +111,7 @@ public class VirtuosoRepository implements Repository {
     public void export(Format format, Map<String, String> ns2prefix, UID context, OutputStream out) {
         RDFWriter writer = WriterUtils.createWriter(format, out, ns2prefix);
         RDFConnection conn = openConnection();
-        try{                
+        try{
             CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, context, false);
             try{
                 writer.begin();
@@ -117,10 +122,10 @@ public class VirtuosoRepository implements Repository {
             }finally{
                 stmts.close();
             }
-            
+
         }finally{
             conn.close();
-        }    
+        }
     }
 
     @Override
@@ -146,15 +151,15 @@ public class VirtuosoRepository implements Repository {
     public int getFetchSize() {
         return this.prefetchSize;
     }
-    
+
     public void initialize() {
         if (!initialized) {
             if (dataDir != null){
-                idSequence = new FileIdSequence(new File(dataDir, "lastLocalId"));    
+                idSequence = new FileIdSequence(new File(dataDir, "lastLocalId"));
             }else{
                 idSequence = new MemoryIdSequence();
             }
-            
+
             VirtuosoRepositoryConnection connection = openConnection();
             RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
             try {
@@ -166,10 +171,10 @@ public class VirtuosoRepository implements Repository {
                         UID context = new UID(source.getContext());
                         InputStream is = source.openStream();
                         try{
-                            connection.load(source.getFormat(), is, context, false);    
+                            connection.load(source.getFormat(), is, context, false);
                         }finally{
                             is.close();
-                        }                    
+                        }
                     }
                 }
                 tx.commit();
@@ -179,19 +184,19 @@ public class VirtuosoRepository implements Repository {
             } finally {
                 connection.close();
             }
-            initialized = true;    
-        }        
+            initialized = true;
+        }
     }
-    
+
     @Override
     public void load(Format format, InputStream is, UID context, boolean replace) {
         VirtuosoRepositoryConnection connection = openConnection();
         try{
             try{
-                connection.load(format, is, context, replace);    
+                connection.load(format, is, context, replace);
             }finally{
                 is.close();
-            }            
+            }
         } catch (SQLException e) {
             throw new RepositoryException(e);
         } catch (IOException e) {
@@ -200,7 +205,7 @@ public class VirtuosoRepository implements Repository {
             connection.close();
         }
     }
-       
+
     public boolean isInitialized() {
         return initialized;
     }
@@ -208,11 +213,11 @@ public class VirtuosoRepository implements Repository {
     public void setDataDir(File dataDir) {
         this.dataDir = Assert.notNull(dataDir,"dataDir");
     }
-    
+
     public void setFetchSize(int sz) {
         this.prefetchSize = sz;
     }
-    
+
     public void setSources(RDFSource... sources) {
         this.sources = sources;
     }
@@ -220,6 +225,6 @@ public class VirtuosoRepository implements Repository {
     public void setAllowedGraphs(Collection<UID> allowedGraphs) {
         this.allowedGraphs = Assert.notNull(allowedGraphs,"allowedGraphs");
     }
-    
-    
+
+
 }

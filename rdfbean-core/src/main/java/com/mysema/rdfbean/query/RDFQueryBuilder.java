@@ -10,6 +10,9 @@ import java.util.Stack;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
@@ -34,6 +37,8 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
  *
  */
 public class RDFQueryBuilder implements Visitor<Object,Filters>{
+
+    private static final Logger logger = LoggerFactory.getLogger(RDFQueryBuilder.class);
 
     private static final Templates TEMPLATES = new Templates(){
         {
@@ -93,7 +98,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
         //where
         if (metadata.getWhere() != null){
-            query.where(transform(filters, metadata.getWhere()));
+            query.where(transform(metadata.getWhere(), filters));
         }
 
         //group by
@@ -103,7 +108,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
         //having
         if (metadata.getHaving() != null){
-            query.having(transform(filters, metadata.getHaving()));
+            query.having(transform(metadata.getHaving(), filters));
         }
         filters.beginOptional();
 
@@ -216,8 +221,8 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     }
 
     @Nullable
-    private Predicate transform(Filters filters, Predicate where) {
-        return (Predicate) transform(where, filters);
+    private Predicate transform(Predicate expr, Filters filters) {
+        return (Predicate) expr.accept(this, filters);
     }
 
     @SuppressWarnings("unchecked")
@@ -310,31 +315,31 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         boolean rightPath = expr.getArgs().size() > 1 ? expr.getArg(1) instanceof Path<?> : false;
         boolean leftConstant = expr.getArg(0) instanceof Constant<?>;
         boolean rightConstant = expr.getArgs().size() > 1 ? expr.getArg(1) instanceof Constant<?> : false;
-        
+
         try{
-    
+
             if (!options.isPreserveStringOps()){
                 if (expr.getOperator() == Ops.STARTS_WITH && rightConstant){
                     expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
-    
+
                 }else if (expr.getOperator() == Ops.STARTS_WITH_IC && rightConstant){
                         expr = new PredicateOperation(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
-                    
+
                 }else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant){
                     expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
-                    
+
                 }else if (expr.getOperator() == Ops.ENDS_WITH_IC && rightConstant){
                     expr = new PredicateOperation(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
-    
+
                 }else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant){
                     expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
-                    
+
                 }else if (expr.getOperator() == Ops.STRING_CONTAINS_IC && rightConstant){
                     expr = new PredicateOperation(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
-                    
+
                 }
             }
-        
+
             if (expr.getOperator() == Ops.EQ_OBJECT
               || expr.getOperator() == Ops.NE_OBJECT
               || expr.getOperator() == Ops.EQ_PRIMITIVE
@@ -470,7 +475,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 if (transformed != null){
                     args.add(transformed);
                 }else{
-                    System.err.println(arg + " skipped");
+                    logger.error(arg + " skipped");
                 }
             }
         }finally{
@@ -629,7 +634,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
         // where
         if (md.getWhere() != null){
-            f.add(transform(f, md.getWhere()));
+            f.add(transform(md.getWhere(), f));
         }
         // select
         if (!md.getProjection().isEmpty()){
