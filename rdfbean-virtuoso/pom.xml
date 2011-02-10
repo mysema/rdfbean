@@ -37,6 +37,13 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>   
+    <dependency>
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-core</artifactId>
+      <version>${querydsl.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>       
 		   
   </dependencies>
   
