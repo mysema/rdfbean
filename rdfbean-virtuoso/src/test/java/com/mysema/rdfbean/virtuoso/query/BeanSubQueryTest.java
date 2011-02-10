@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -27,7 +26,6 @@ import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.testutil.SessionConfig;
 import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
-@Ignore
 @SessionConfig(Entity.class)
 public class BeanSubQueryTest extends AbstractConnectionTest implements EntityDomain{
     

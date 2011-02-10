@@ -22,7 +22,7 @@ public class SPARQLTemplates extends Templates{
         add(Ops.ENDS_WITH_IC,    "regex({0}, '{1s}$','i')");
         add(Ops.STRING_CONTAINS_IC,"regex({0}, '.*{1s}.*','i')");
 
-        add(Ops.EXISTS,          "exists({0})");
+        add(Ops.EXISTS,          "exists {{0}}"); // ?!?
     }
 
 }
