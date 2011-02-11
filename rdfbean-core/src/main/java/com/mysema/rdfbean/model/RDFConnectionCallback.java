@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
  * @author tiwe
  *
  */
-public interface Operation<RT> {
+public interface RDFConnectionCallback<RT> {
 
     /**
      * @return

@@ -31,7 +31,7 @@ import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.InferenceOptions;
-import com.mysema.rdfbean.model.Operation;
+import com.mysema.rdfbean.model.RDFConnectionCallback;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
@@ -83,7 +83,7 @@ public abstract class SesameRepository implements Repository{
     protected abstract org.openrdf.repository.Repository createRepository(boolean sesameInference);
 
     @Override
-    public <RT> RT execute(Operation<RT> operation) {
+    public <RT> RT execute(RDFConnectionCallback<RT> operation) {
         RDFConnection connection = openConnection();
         try{
             RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);

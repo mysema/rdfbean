@@ -72,6 +72,6 @@ public interface Repository {
      * @param operation
      * @return
      */
-    <RT> RT execute(Operation<RT> operation);
+    <RT> RT execute(RDFConnectionCallback<RT> operation);
                
 }

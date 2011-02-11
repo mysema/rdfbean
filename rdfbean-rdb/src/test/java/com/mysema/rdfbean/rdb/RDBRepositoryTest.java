@@ -27,7 +27,7 @@ import com.mysema.rdfbean.model.*;
  */
 public class RDBRepositoryTest extends AbstractRDBTest{
     
-    private Operation<Long> countOp = new CountOperation(); 
+    private RDFConnectionCallback<Long> countOp = new CountOperation(); 
     
     @Test
     public void Execute() {

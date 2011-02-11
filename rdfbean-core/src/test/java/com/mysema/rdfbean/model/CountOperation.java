@@ -10,7 +10,7 @@ import com.mysema.commons.lang.CloseableIterator;
  * @author tiwe
  *
  */
-public class CountOperation implements Operation<Long>{
+public class CountOperation implements RDFConnectionCallback<Long>{
 
     @Nullable
     private final ID subject;

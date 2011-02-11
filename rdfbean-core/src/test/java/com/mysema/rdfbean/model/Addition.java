@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class Addition implements Operation<Void>{
+public class Addition implements RDFConnectionCallback<Void>{
     
     private final STMT[] stmts;
     

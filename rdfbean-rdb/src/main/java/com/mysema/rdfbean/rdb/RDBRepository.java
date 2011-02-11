@@ -124,7 +124,7 @@ public class RDBRepository implements Repository{
     }
 
     @Override
-    public <RT> RT execute(Operation<RT> operation) {
+    public <RT> RT execute(RDFConnectionCallback<RT> operation) {
         RDFConnection connection = openConnection();
         try{
             try{

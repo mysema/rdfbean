@@ -18,7 +18,7 @@ import com.hp.hpl.jena.xmloutput.impl.Basic;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.model.Format;
-import com.mysema.rdfbean.model.Operation;
+import com.mysema.rdfbean.model.RDFConnectionCallback;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.RepositoryException;
@@ -57,7 +57,7 @@ public class JenaRepository implements Repository{
     }
 
     @Override
-    public <RT> RT execute(Operation<RT> operation) {        
+    public <RT> RT execute(RDFConnectionCallback<RT> operation) {        
         RDFConnection connection = openConnection();
         try{
 //            if (graph.getTransactionHandler().transactionsSupported()){
