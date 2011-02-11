@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.QueryModifiers;
@@ -24,7 +23,6 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.testutil.SessionConfig;
 import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
-@Ignore
 @SessionConfig(Entity.class)
 public class PagingTest extends AbstractConnectionTest implements EntityDomain{
 

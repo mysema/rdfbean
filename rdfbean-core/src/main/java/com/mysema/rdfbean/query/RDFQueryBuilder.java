@@ -112,14 +112,14 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
         filters.beginOptional();
 
-        //order by (optional paths)
-        for (OrderSpecifier<?> os : metadata.getOrderBy()){
-            query.orderBy(transform(filters, os));
-        }
-
         if (forCount){
             projection.add(options.isCountViaAggregation() ? Wildcard.count : COUNTER);
         }else{
+            //order by (optional paths)
+            for (OrderSpecifier<?> os : metadata.getOrderBy()){
+                query.orderBy(transform(filters, os));
+            }
+            
             // limit + offset
             query.restrict(metadata.getModifiers());
 
@@ -358,6 +358,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                         Constant<?> rhs = (Constant<?>)transform(expr.getArg(1), filters);
                         params.put(lhs, rhs.getConstant());
                         return null;
+                        
                     }else if (expr.getArg(1) instanceof Path){
                         if (pathToMapped.containsKey(expr.getArg(0))){
                             if (!pathToMapped.containsKey(expr.getArg(1))){
@@ -382,14 +383,18 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 return lhs == null ? rhs : (rhs == null ? lhs : ExpressionUtils.and(lhs, rhs));
 
             }else if (expr.getOperator() == Ops.IN){
+                Expression<?> lhs = expr.getArg(0);
+                if (leftPath){
+                    lhs = transform(lhs, filters);
+                }                
                 if ((leftPath && rightPath) || (leftConstant && rightPath)){
-                    expr = (Operation)ExpressionUtils.eq(expr.getArg(0), (Expression)expr.getArg(1));
+                    expr = (Operation)ExpressionUtils.eq(lhs, (Expression)expr.getArg(1));
                 }else if (leftPath && rightConstant){
                     Collection col = (Collection)((Constant)expr.getArg(1)).getConstant();
                     if (!col.isEmpty()){
                         BooleanBuilder builder = new BooleanBuilder();
                         for (Object o : col){
-                            builder.or(ExpressionUtils.eq(expr.getArg(0), new ConstantImpl(o)));
+                            builder.or(ExpressionUtils.eq(lhs, new ConstantImpl(o)));
                         }
                         expr = (Operation)builder.getValue();
                     }else{
@@ -510,7 +515,11 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     @Override
     public Object visit(ParamExpression<?> expr, Filters context) {
-        throw new UnsupportedOperationException();
+        if (NODE.class.isAssignableFrom(expr.getType())){
+            return expr;
+        }else{
+            throw new UnsupportedOperationException();    
+        }        
     }
 
     @SuppressWarnings("unchecked")

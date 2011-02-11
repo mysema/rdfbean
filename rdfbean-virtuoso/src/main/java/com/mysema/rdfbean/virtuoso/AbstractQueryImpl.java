@@ -81,6 +81,7 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         }else{
             List<NODE> nodes = new ArrayList<NODE>(bindings.size());
             String normalized = normalize(query, bindings, nodes);
+//            System.err.println(normalized);
             stmt = connection.prepareStatement(normalized);
             int offset = 1;
             for (NODE node : nodes){
@@ -123,13 +124,15 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
     private static boolean inFilter(String query, Matcher matcher) {
         int i;
         for (i = matcher.start()-1; i >= 0; i-- ){
-            if (query.charAt(i) == ')') return false;
-            if (query.charAt(i) == '(') break;
+            char c = query.charAt(i);
+            if (c == '}' || c == '{') return false;
+            if (c == '(') break;
         }
         if (i > 0){
             for (i = matcher.end(); i < query.length(); i++ ){
-                if (query.charAt(i) == '(') return false;
-                if (query.charAt(i) == ')') return true;
+                char c = query.charAt(i);
+                if (c == '}' || c == '{') return false;
+                if (c == ')' || c == '(') return true;
             }
         }
         return false;

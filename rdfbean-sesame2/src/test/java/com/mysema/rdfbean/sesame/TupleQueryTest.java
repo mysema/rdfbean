@@ -45,10 +45,10 @@ public class TupleQueryTest extends AbstractConnectionTest{
                 subject.ne(new UID(TEST.NS)),
                 object.isNull(),
                 object.isNotNull(),
-                object.lt("X"),
-                object.gt("X"),
-                object.loe("X"),
-                object.goe("X")
+                object.lit().lt("X"),
+                object.lit().gt("X"),
+                object.lit().loe("X"),
+                object.lit().goe("X")
         );
         
         for (Predicate filter : filters){

@@ -1,13 +1,12 @@
 package com.mysema.rdfbean.model;
 
 import com.mysema.query.types.PathMetadata;
-import com.mysema.query.types.path.SimplePath;
 
 /**
  * @author tiwe
  *
  */
-public class QID extends SimplePath<ID>{
+public class QID extends QNODE<ID>{
 
     private static final long serialVersionUID = -2696989113637909131L;
 
@@ -27,8 +26,6 @@ public class QID extends SimplePath<ID>{
         return Blocks.pattern(this, predicate, object);
     }
 
-    public Block is(Object predicate, Object subject){
-        return Blocks.pattern(subject, predicate, this);
-    }
+
 
 }

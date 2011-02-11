@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.BooleanBuilder;
@@ -25,7 +24,6 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.testutil.SessionConfig;
 import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
-@Ignore
 @SessionConfig({Note.class, NoteType.class})
 public class EnumTest extends AbstractConnectionTest implements NoteTypeDomain{
     

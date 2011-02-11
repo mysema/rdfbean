@@ -26,7 +26,6 @@ import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.testutil.SessionConfig;
 import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
-@Ignore
 @SessionConfig({Document.class, Entity.class, Revision.class})
 public class BeanSubQuery2Test extends AbstractConnectionTest implements EntityDocumentRevisionDomain{
     

@@ -5,7 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,11 +17,16 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 
 import com.mysema.commons.lang.IteratorAdapter;
+import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.domains.NoteTypeDomain.NoteType;
 import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.testutil.SessionRule;
 
@@ -44,6 +52,21 @@ public abstract class AbstractConnectionTest {
         repository = new VirtuosoRepository("localhost:1111", "dba", "dba", TEST.NS);
         repository.setAllowedGraphs(Arrays.asList(context, context2));
         repository.initialize();
+        
+        // enums
+        Set<STMT> added = new HashSet<STMT>();
+        for (NoteType nt : NoteType.values()){
+            added.add(new STMT(
+                    new UID(TEST.NS, nt.name()), 
+                    CORE.enumOrdinal, 
+                    new LIT(String.valueOf(nt.ordinal()), XSD.integerType)));
+        }
+        RDFConnection conn = repository.openConnection();
+        try{
+            conn.update(Collections.<STMT>emptySet(), added);    
+        }finally{
+            conn.close();    
+        }
     }
 
     @AfterClass
@@ -53,7 +76,7 @@ public abstract class AbstractConnectionTest {
 
     @Before
     public void setUp(){
-        connection = repository.openConnection();
+        connection = repository.openConnection();        
     }
 
     @After

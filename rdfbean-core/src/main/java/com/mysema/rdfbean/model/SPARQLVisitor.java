@@ -257,7 +257,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     @Override
     protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
         operators.push(operator);
-        try{
+        try{            
             super.visitOperation(type, operator, args);
         }finally{
             operators.pop();
