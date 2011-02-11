@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.support.SerializerBase;
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Operator;
@@ -31,6 +30,9 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     private final String prefix;
     
     private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
+
+    @Nullable
+    private QueryMetadata metadata;
     
     public SPARQLVisitor() {
         this(SPARQLTemplates.DEFAULT, "");
@@ -39,11 +41,33 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     public SPARQLVisitor(SPARQLTemplates templates, String prefix) {
         super(templates);
         this.prefix = prefix;
-//        setParamPrefix("?");
     }    
+    
+    @Override
+    protected void appendAsString(Expression<?> expr) {
+        Object constant;
+        if (expr instanceof Constant<?>){
+            constant = ((Constant<?>)expr).getConstant();
+        }else if (expr instanceof ParamExpression<?> && metadata != null){
+            if (metadata.getParams().containsKey(expr)){
+                constant = metadata.getParams().get(expr);    
+            }else{
+                constant = ((ParamExpression<?>)expr).getName();
+            }
+            
+        }else{
+            constant = expr.toString();
+        }
+        if (constant instanceof NODE){
+            append(((NODE)constant).getValue());
+        }else{
+            append(constant.toString());    
+        }        
+    }
     
     @Nullable
     public Void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
+        metadata = md;
         QueryModifiers mod = md.getModifiers();
         append(prefix);
         // select
@@ -127,6 +151,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             append("OFFSET ").append(mod.getOffset().toString()).append("\n");
         }
         
+        metadata = null;
         return null;
 
     }
