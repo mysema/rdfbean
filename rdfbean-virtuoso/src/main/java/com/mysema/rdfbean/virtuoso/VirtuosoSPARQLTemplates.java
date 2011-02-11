@@ -25,10 +25,34 @@ public class VirtuosoSPARQLTemplates extends SPARQLTemplates {
         add(Ops.CHAR_AT,         "bif:substring({0},{1s}+1,1)");
         
         add(Ops.EXISTS,          "bif:exists ((select * where {0}))");
+        add(Ops.COALESCE,        "bif:coalesce({0})");       
+
+//        add(Ops.CASE,            "case {0} end");
+//        add(Ops.CASE_WHEN,       "when {0} then {1} {2}");
+//        add(Ops.CASE_ELSE,       "else {0}");
+        add(Ops.CASE,            "{0}");
+        add(Ops.CASE_WHEN,       "if({0},{1},{2})");
+        add(Ops.CASE_ELSE,       "{0}");
         
+        
+        // numeric
         add(Ops.MOD,             "bif:mod({0},{1})");
-        add(Ops.MathOps.ABS,     "bif:abs({0})");
+        add(Ops.MathOps.ABS,     "bif:abs(xsd:double({0}))");
         add(Ops.MathOps.SQRT,    "bif:sqrt({0})");
+        
+        // date and time
+        add(Ops.DateTimeOps.SECOND,      "bif:second({0})");
+        add(Ops.DateTimeOps.MILLISECOND, "0");
+        add(Ops.DateTimeOps.MINUTE,      "bif:minute({0})");
+        add(Ops.DateTimeOps.HOUR,        "bif:hour({0})");
+        add(Ops.DateTimeOps.WEEK,        "bif:week({0})");
+        add(Ops.DateTimeOps.MONTH,       "bif:month({0})");
+        add(Ops.DateTimeOps.YEAR,        "bif:year({0})");
+        add(Ops.DateTimeOps.YEAR_MONTH,  "bif:year({0}) * 100 + bif:month({0})");
+        add(Ops.DateTimeOps.DAY_OF_WEEK, "bif:dayofweek({0})");
+        add(Ops.DateTimeOps.DAY_OF_MONTH,"bif:dayofmonth({0})");
+        add(Ops.DateTimeOps.DAY_OF_YEAR, "bif:dayofyear({0})");
+        
     }
     
 }
