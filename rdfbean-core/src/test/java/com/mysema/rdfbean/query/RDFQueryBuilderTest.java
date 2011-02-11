@@ -136,7 +136,7 @@ public class RDFQueryBuilderTest {
     public void SubQuery_Exists() throws Exception{
         query.from(user);
         query.where(new BeanSubQuery().from(user2).where(user2.get("firstName").eq(user.get("firstName"))).exists());
-        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 . FILTER(exists({ ?user2 ?_c2 ?_c3 . ?user ?_c5 ?user_firstName . ?user2 ?_c5 ?user_firstName } )) }");
+        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 . FILTER(exists {{ ?user2 ?_c2 ?_c3 . ?user ?_c5 ?user_firstName . ?user2 ?_c5 ?user_firstName } }) }");
     }
 
     @Test
@@ -241,7 +241,7 @@ public class RDFQueryBuilderTest {
     public void Contains_Key_Not() throws Exception{
         query.from(user);
         query.where(user.getMap("buddiesMapped", String.class, User.class).containsKey("XXX").not());
-        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_buddiesMapped . FILTER(!exists({ ?user_buddiesMapped ?_c6 ?_c7 } )) }");
+        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_buddiesMapped . FILTER(!exists {{ ?user_buddiesMapped ?_c6 ?_c7 } }) }");
     }
 
     @Test
