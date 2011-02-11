@@ -283,7 +283,14 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
         operators.push(operator);
         try{            
-            super.visitOperation(type, operator, args);
+            if (operator == Ops.NUMCAST){
+                UID datatype = (UID) ((Constant<?>)args.get(1)).getConstant();
+                append("xsd:"+datatype.ln()+"(");
+                handle(args.get(0));
+                append(")");
+            }else{
+                super.visitOperation(type, operator, args);    
+            }            
         }finally{
             operators.pop();
         }
