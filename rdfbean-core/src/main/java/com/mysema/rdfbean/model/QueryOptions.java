@@ -31,5 +31,14 @@ public final class QueryOptions {
     public boolean isAddTypeSuffix() {
         return addTypeSuffix;
     }
+    
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("countViaAggregation=").append(countViaAggregation);
+        builder.append(",preserveStringOps=").append(preserveStringOps);
+        builder.append(",addTypeSuffix=").append(addTypeSuffix);
+        return builder.toString();
+    }
 
 }
