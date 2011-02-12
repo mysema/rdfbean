@@ -240,7 +240,9 @@ public final class SessionImpl implements Session {
         setId(mappedClass, subject, beanMap);
         // loadStack.add(instance);
 
-        bindDynamicProperties(subject, beanMap, mappedClass);
+        if (!mappedClass.getDynamicProperties().isEmpty()){
+            bindDynamicProperties(subject, beanMap, mappedClass);    
+        }        
 
         for (MappedPath path : mappedClass.getProperties()) {
             if (!path.isConstructorParameter()) {
@@ -424,7 +426,7 @@ public final class SessionImpl implements Session {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    private <T> T convertMappedObject(ID subject, Class<?> requiredClass, boolean polymorphic, boolean injection) {
+    private <T> T convertMappedObject(ID subject, Class<T> requiredClass, boolean polymorphic, boolean injection) {
         // XXX defaultContext?
         UID context = getContext(requiredClass, subject, null);
         Object instance = get(subject, requiredClass);
@@ -827,7 +829,7 @@ public final class SessionImpl implements Session {
         boolean polymorphic = true;
         MappedClass mappedClass = conf.getMappedClass(clazz);
         polymorphic = mappedClass.isPolymorphic();
-        return this.<T> convertMappedObject(subject, clazz, polymorphic, false);
+        return convertMappedObject(subject, clazz, polymorphic, false);
     }
 
     @Override
