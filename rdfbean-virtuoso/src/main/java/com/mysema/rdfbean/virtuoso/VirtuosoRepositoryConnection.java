@@ -274,6 +274,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             SPARQLVisitor visitor = new SPARQLVisitor(VirtuosoSPARQLTemplates.DEFAULT, "");
             QueryMetadata md = (QueryMetadata)definition;
             visitor.visit(md, queryLanguage);
+//            System.err.println(visitor.toString());
             SPARQLQuery query = createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
             visitor.addBindings(query, md);
             return (Q)query;
