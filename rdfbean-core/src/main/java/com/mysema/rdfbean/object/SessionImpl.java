@@ -693,7 +693,7 @@ public final class SessionImpl implements Session {
                     return true;
                 }
             } finally {
-                close(stmts);
+                stmts.close();
             }
         }
         return false;
@@ -707,7 +707,7 @@ public final class SessionImpl implements Session {
                 objects.add(statement.getObject());
             }
         } finally {
-            close(statements);
+            statements.close();
         }
         return objects;
     }
@@ -721,13 +721,9 @@ public final class SessionImpl implements Session {
                 subjects.add((T) statement.getSubject());
             }
         } finally {
-            close(statements);
+            statements.close();
         }
         return subjects;
-    }
-
-    private void close(CloseableIterator<STMT> statements) {
-        statements.close();
     }
 
     @Override
