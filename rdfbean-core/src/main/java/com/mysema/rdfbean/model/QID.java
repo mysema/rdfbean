@@ -7,9 +7,9 @@ import com.mysema.query.types.PathMetadata;
  *
  */
 public class QID extends QNODE<ID>{
-
+    
     private static final long serialVersionUID = -2696989113637909131L;
-
+    
     public QID(String variable) {
         super(ID.class, variable);
     }

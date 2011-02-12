@@ -2,7 +2,6 @@ package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
-import com.mysema.query.types.Expression;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.path.SimplePath;
@@ -16,6 +15,14 @@ public class QNODE<T extends NODE> extends SimplePath<T>{
 
     private static final long serialVersionUID = 1134119241723346776L;
 
+    public static final QID s = new QID("s");
+    
+    public static final QID p = new QID("p");
+    
+    public static final QNODE<NODE> o = new QNODE<NODE>(NODE.class,"o");
+    
+    public static final QID c = new QID("c");
+    
     @Nullable
     private volatile QLIT lit;
     
