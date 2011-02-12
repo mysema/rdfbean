@@ -11,7 +11,6 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.IOException;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.BooleanBuilder;
@@ -24,7 +23,6 @@ import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Term;
 import com.mysema.rdfbean.testutil.SessionConfig;
 import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
-@Ignore
 @SessionConfig({Note.class, NoteRevision.class, Term.class})
 public class ComplexPathsTest extends AbstractConnectionTest implements NoteRevisionTermDomain{
     

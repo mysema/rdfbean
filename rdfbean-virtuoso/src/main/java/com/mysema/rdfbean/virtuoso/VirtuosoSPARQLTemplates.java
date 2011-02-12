@@ -22,19 +22,19 @@ public class VirtuosoSPARQLTemplates extends SPARQLTemplates {
         add(Ops.INDEX_OF,        "bif:locate({1},{0})-1");
         add(Ops.INDEX_OF_2ARGS,  "bif:locate({1},{0},{2s}+1)-1");
         
+        add(Ops.STARTS_WITH,     "bif:locate({1},{0}) = 1");
+        add(Ops.ENDS_WITH,       "regex({0}, bif:concat({1},'$'))");
+        add(Ops.STRING_CONTAINS, "bif:locate({1},{0}) > 0");        
+        
+        add(Ops.STARTS_WITH_IC,  "bif:locate({1l},{0l}) = 1");
+        add(Ops.ENDS_WITH_IC,    "regex({0}, bif:concat({1},'$'), 'i')");
+        add(Ops.STRING_CONTAINS_IC, "bif:locate({1l},{0l}) > 0");
+        
         add(Ops.CHAR_AT,         "bif:substring({0},{1s}+1,1)");
         
         add(Ops.EXISTS,          "bif:exists ((select * where {0}))");
         add(Ops.COALESCE,        "bif:coalesce({0})");       
 
-//        add(Ops.CASE,            "case {0} end");
-//        add(Ops.CASE_WHEN,       "when {0} then {1} {2}");
-//        add(Ops.CASE_ELSE,       "else {0}");
-        add(Ops.CASE,            "{0}");
-        add(Ops.CASE_WHEN,       "if({0},{1},{2})");
-        add(Ops.CASE_ELSE,       "{0}");
-        
-        
         // numeric
         add(Ops.MOD,             "bif:mod({0},{1})");
         add(Ops.MathOps.ABS,     "bif:abs(xsd:double({0}))");

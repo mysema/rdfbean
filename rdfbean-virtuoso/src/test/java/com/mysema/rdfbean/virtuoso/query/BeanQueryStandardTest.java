@@ -42,7 +42,7 @@ public class BeanQueryStandardTest extends AbstractConnectionTest implements Sim
     
     private SimpleType2 other;
     
-    private QueryExecution standardTest = new QueryExecution(Module.SQL, Target.H2){        
+    private QueryExecution standardTest = new QueryExecution(Module.RDFBEAN, Target.MEM){        
         @Override
         protected Pair<Projectable, List<Expression<?>>> createQuery() {
             return Pair.of((Projectable)session.from(v1, v2), Collections.<Expression<?>>emptyList());
