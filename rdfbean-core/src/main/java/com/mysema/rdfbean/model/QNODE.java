@@ -2,7 +2,9 @@ package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
+import com.mysema.query.types.Expression;
 import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.path.SimplePath;
 
 /**
@@ -46,4 +48,13 @@ public class QNODE<T extends NODE> extends SimplePath<T>{
         return lit;
     }
         
+    @Override
+    public BooleanExpression in(T... values){
+        BooleanExpression[] ors = new BooleanExpression[values.length];
+        for (int i = 0; i < values.length; i++){
+            ors[i] = eq(values[i]);
+        }
+        return BooleanExpression.anyOf(ors);
+    }
+
 }
