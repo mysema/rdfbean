@@ -31,7 +31,11 @@ public final class Blocks {
             }
         }
     }
-
+    
+    public static Block SPO = pattern(QNODE.s, QNODE.p, QNODE.o);
+    
+    public static Block SPOC = pattern(QNODE.s, QNODE.p, QNODE.o, QNODE.c);
+             
     public static Block pattern(Object subject, Object predicate, Object object, @Nullable Object context) {
         return new PatternBlock(
                 convert(ID.class, subject),

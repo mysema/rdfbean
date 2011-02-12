@@ -258,8 +258,26 @@ public final class SessionImpl implements Session {
 
     private MultiMap<UID, STMT> getProperties(ID subject, MappedClass mappedClass) {
         MultiMap<UID, STMT> properties = new MultiHashMap<UID, STMT>();
-        for (STMT stmt : findStatements(subject, null, null, null, false)){
-            properties.put(stmt.getPredicate(), stmt);
+        if (mappedClass.getDynamicProperties().isEmpty() && !(connection instanceof MiniConnection)){
+            RDFQuery query = new RDFQueryImpl(connection);
+            Block pattern = Blocks.pattern(subject, QNODE.p, QNODE.o);
+            query.where(
+                    pattern, 
+                    QNODE.p.in(mappedClass.getMappedPredicates()));
+            CloseableIterator<STMT> stmts = query.construct(pattern);
+            try{
+                while (stmts.hasNext()){
+                    STMT stmt = stmts.next();                    
+                    properties.put(stmt.getPredicate(), stmt);
+                }
+            }finally{
+                stmts.close();
+            }            
+            
+        }else{
+            for (STMT stmt : findStatements(subject, null, null, null, false)){
+                properties.put(stmt.getPredicate(), stmt);
+            }   
         }
         return properties;
     }

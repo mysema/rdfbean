@@ -205,7 +205,10 @@ public final class MappedClass {
         return clazz.isEnum();
     }
 
-    // TODO Marko : should maybe be named isDirectlyMappedPredicate
+    public Collection<UID> getMappedPredicates(){
+        return mappedPredicates;
+    }
+    
     public boolean isMappedPredicate(UID predicate) {
         return mappedPredicates.contains(predicate);
     }
