@@ -24,7 +24,6 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.model.fetch.FetchStrategy;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
@@ -52,11 +51,6 @@ public final class DefaultConfiguration implements Configuration {
     private final Set<MappedClass> mappedClasses = new LinkedHashSet<MappedClass>();
 
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
-    
-//    @Nullable
-//    private UID defaultContext;
-    
-    private List<FetchStrategy> fetchStrategies = Collections.emptyList();
     
     private final MappedClassFactory mappedClassFactory = new MappedClassFactory();
     
@@ -128,10 +122,6 @@ public final class DefaultConfiguration implements Configuration {
     @Override
     public ConverterRegistry getConverterRegistry() {
         return converterRegistry;
-    }
-
-    public List<FetchStrategy> getFetchStrategies() {
-        return fetchStrategies;
     }
 
     @Override
@@ -219,15 +209,6 @@ public final class DefaultConfiguration implements Configuration {
             }
         }
         return classes;
-    }
-    
-
-//    public void setDefaultContext(String ctx) {
-//        this.defaultContext = new UID(ctx);
-//    }
-
-    public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
-        this.fetchStrategies = fetchStrategies;
     }
     
 }

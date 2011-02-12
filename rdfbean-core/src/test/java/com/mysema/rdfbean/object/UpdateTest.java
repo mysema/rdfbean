@@ -13,7 +13,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +36,6 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
-import com.mysema.rdfbean.model.fetch.FetchStrategy;
 
 /**
  * @author sasa
@@ -167,7 +165,7 @@ public class UpdateTest {
         };
         sessionFactory.setRepository(repository);
         DefaultConfiguration configuration = new DefaultConfiguration(Employee.class, Company.class, EmployeeInfo.class);
-        configuration.setFetchStrategies(Collections.<FetchStrategy>emptyList());
+//        configuration.setFetchStrategies(Collections.<FetchStrategy>emptyList());
         sessionFactory.setConfiguration(configuration);
         sessionFactory.initialize();
         ids = newSession().saveAll(employee, company);

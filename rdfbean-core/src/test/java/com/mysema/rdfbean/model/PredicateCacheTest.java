@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import com.mysema.rdfbean.model.fetch.PredicateCache;
 
 public class PredicateCacheTest {
 

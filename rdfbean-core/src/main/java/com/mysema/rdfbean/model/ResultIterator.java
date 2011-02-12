@@ -13,7 +13,6 @@ import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.iterators.FilterIterator;
 
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.model.fetch.STMTMatcher;
 
 /**
  * @author tiwe

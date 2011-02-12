@@ -18,7 +18,6 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.model.fetch.FetchStrategy;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
@@ -48,14 +47,10 @@ class SimpleConfiguration implements Configuration{
 
     private final ConverterRegistry converterRegistry;
     
-    private final List<FetchStrategy> fetchStrategies;
-    
     public SimpleConfiguration(
             ConverterRegistry converterRegistry,
-            List<FetchStrategy> fetchStrategies,
             Set<MappedClass> mappedClasses){
         this.converterRegistry = converterRegistry;
-        this.fetchStrategies = fetchStrategies;
         this.mappedClasses = mappedClasses;
         for (MappedClass mappedClass : mappedClasses){
             uidToMappedClass.put(mappedClass.getUID(), mappedClass);
@@ -86,11 +81,6 @@ class SimpleConfiguration implements Configuration{
     @Override
     public ConverterRegistry getConverterRegistry() {
         return converterRegistry;
-    }
-
-    @Override
-    public List<FetchStrategy> getFetchStrategies() {
-        return fetchStrategies;
     }
 
     @Override

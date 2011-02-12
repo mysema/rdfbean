@@ -11,7 +11,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.fetch.FetchStrategy;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
@@ -41,7 +40,5 @@ public interface Configuration {
 
     @Nullable
     UID createURI(Object instance);
-
-    List<FetchStrategy> getFetchStrategies();
         
 }

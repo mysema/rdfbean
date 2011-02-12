@@ -10,13 +10,11 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.fetch.FetchStrategy;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
@@ -31,8 +29,6 @@ public class ConfigurationBuilder {
     
     @Nullable
     private ConverterRegistry converterRegistry;
-    
-    private List<FetchStrategy> fetchStrategies = new ArrayList<FetchStrategy>();
     
     public Configuration build() {
         if (converterRegistry == null){
@@ -64,7 +60,7 @@ public class ConfigurationBuilder {
             }
         }
         
-        return new SimpleConfiguration(converterRegistry, fetchStrategies, new HashSet<MappedClass>(mappedClasses.values()));
+        return new SimpleConfiguration(converterRegistry, new HashSet<MappedClass>(mappedClasses.values()));
     }
 
     public MappedClassBuilder addClass(Class<?> clazz) {
@@ -85,17 +81,8 @@ public class ConfigurationBuilder {
         return new MappedClassBuilder(mappedClass);
     }
     
-    public ConfigurationBuilder addFetchStrategy(FetchStrategy fetchStrategy){
-        fetchStrategies.add(fetchStrategy);
-        return this;
-    }
-    
     public void setConverterRegistry(ConverterRegistry converterRegistry) {
         this.converterRegistry = converterRegistry;
-    }
-
-    public void setFetchStrategies(List<FetchStrategy> fetchStrategies) {
-        this.fetchStrategies = fetchStrategies;
     }
    
 

@@ -3,7 +3,7 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.model.fetch;
+package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
@@ -11,10 +11,6 @@ import net.jcip.annotations.Immutable;
 
 import org.apache.commons.lang.ObjectUtils;
 
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.model.UID;
 
 /**
  * @author sasa

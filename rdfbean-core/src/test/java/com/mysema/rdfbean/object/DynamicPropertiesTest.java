@@ -10,7 +10,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 
 import org.joda.time.LocalDate;
@@ -26,7 +25,6 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
-import com.mysema.rdfbean.model.fetch.FetchStrategy;
 
 /**
  * @author mala
@@ -57,7 +55,6 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         repository = new MiniRepository();
         
         configuration = new DefaultConfiguration(Project.class, Person.class);
-        configuration.setFetchStrategies(Collections.<FetchStrategy> emptyList());
         
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setRepository(repository);

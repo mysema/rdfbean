@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import com.mysema.rdfbean.model.fetch.STMTMatcher;
 
 public class STMTMatcherTest {
 
