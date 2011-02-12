@@ -378,8 +378,14 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 }
 
             }else if (expr.getOperator() == Ops.AND){
-                Predicate lhs = (Predicate) transform(expr.getArg(0), filters);
-                Predicate rhs = (Predicate) transform(expr.getArg(1), filters);
+                Predicate lhs, rhs;
+                if (expr.getArg(0) instanceof Operation && ((Operation)expr.getArg(0)).getOperator() == Ops.OR){
+                    lhs = (Predicate) transform(expr.getArg(1), filters);
+                    rhs = (Predicate) transform(expr.getArg(0), filters);
+                }else{
+                    lhs = (Predicate) transform(expr.getArg(0), filters);
+                    rhs = (Predicate) transform(expr.getArg(1), filters);    
+                }
                 return lhs == null ? rhs : (rhs == null ? lhs : ExpressionUtils.and(lhs, rhs));
 
             }else if (expr.getOperator() == Ops.IN){
