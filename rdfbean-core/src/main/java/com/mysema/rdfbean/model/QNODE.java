@@ -4,16 +4,16 @@ import java.util.Collection;
 
 import javax.annotation.Nullable;
 
-import com.mysema.query.types.PathMetadata;
+import com.mysema.query.types.TemplateFactory;
 import com.mysema.query.types.expr.BooleanExpression;
-import com.mysema.query.types.path.SimplePath;
+import com.mysema.query.types.expr.Param;
 
 /**
  * @author tiwe
  *
  * @param <T>
  */
-public class QNODE<T extends NODE> extends SimplePath<T>{
+public class QNODE<T extends NODE> extends Param<T>{
 
     private static final long serialVersionUID = 1134119241723346776L;
 
@@ -34,10 +34,6 @@ public class QNODE<T extends NODE> extends SimplePath<T>{
     public QNODE(Class<T> type, String variable) {
         super(type, variable);
     }
-    
-    public QNODE(Class<T> type, PathMetadata<?> metadata) {
-        super(type, metadata);
-    }
         
     public Block is(Object predicate, Object subject){
         return Blocks.pattern(subject, predicate, this);
@@ -45,14 +41,14 @@ public class QNODE<T extends NODE> extends SimplePath<T>{
     
     public QID id(){
         if (id == null){
-            id = new QID(getMetadata());
+            id = new QID(getName());
         }
         return id;
     }
     
     public QLIT lit(){
         if (lit == null){
-            lit = new QLIT(getMetadata());
+            lit = new QLIT(getName());
         }
         return lit;
     }

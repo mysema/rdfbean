@@ -1,6 +1,5 @@
 package com.mysema.rdfbean.model;
 
-import com.mysema.query.types.PathMetadata;
 
 /**
  * @author tiwe
@@ -12,10 +11,6 @@ public class QID extends QNODE<ID>{
     
     public QID(String variable) {
         super(ID.class, variable);
-    }
-
-    public QID(PathMetadata<?> metadata) {
-        super(ID.class, metadata);
     }
 
     public Block a(Object type){

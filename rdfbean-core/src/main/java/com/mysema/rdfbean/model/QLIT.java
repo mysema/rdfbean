@@ -18,10 +18,6 @@ public class QLIT extends QNODE<LIT>{
     public QLIT(String variable) {
         super(LIT.class, variable);
     }
-
-    public QLIT(PathMetadata<?> metadata) {
-        super(LIT.class, metadata);
-    }
     
     private static Constant<LIT> literal(String val){
         return new ConstantImpl<LIT>(LIT.class, new LIT(val));

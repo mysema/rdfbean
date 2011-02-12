@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
 
 /**
@@ -58,6 +59,7 @@ public final class MappedClass {
         this.uid = uid;
         this.context = context;
         this.mappedSuperClasses = mappedSuperClasses;
+        mappedPredicates.add(RDF.type);
     }
     
     public static String getClassNs(Class<?> clazz) {

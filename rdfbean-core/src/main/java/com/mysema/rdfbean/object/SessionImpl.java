@@ -260,11 +260,11 @@ public final class SessionImpl implements Session {
         MultiMap<UID, STMT> properties = new MultiHashMap<UID, STMT>();
         if (mappedClass.getDynamicProperties().isEmpty() && !(connection instanceof MiniConnection)){
             RDFQuery query = new RDFQueryImpl(connection);
-            Block pattern = Blocks.pattern(subject, QNODE.p, QNODE.o);
             query.where(
-                    pattern, 
+                    Blocks.SPO, 
                     QNODE.p.in(mappedClass.getMappedPredicates()));
-            CloseableIterator<STMT> stmts = query.construct(pattern);
+            query.set(QNODE.s, subject);
+            CloseableIterator<STMT> stmts = query.construct(Blocks.SPO);
             try{
                 while (stmts.hasNext()){
                     STMT stmt = stmts.next();                    
@@ -275,7 +275,7 @@ public final class SessionImpl implements Session {
             }            
             
         }else{
-            for (STMT stmt : findStatements(subject, null, null, null, false)){
+            for (STMT stmt : findStatements(subject, null, null, null, true)){
                 properties.put(stmt.getPredicate(), stmt);
             }   
         }
@@ -458,10 +458,10 @@ public final class SessionImpl implements Session {
             }
             
             MappedClass mappedClass = conf.getMappedClass(requiredClass);
-            MultiMap<UID, STMT> properties = getProperties(subject, mappedClass);
+            MultiMap<UID, STMT> properties = getProperties(subject, mappedClass);            
             
             if (polymorphic) {
-                Collection mappedTypes = findMappedTypes(subject, context);
+                Collection mappedTypes = findMappedTypes(subject, context, properties);
                 if (!mappedTypes.isEmpty()) {
                     instance = createInstance(subject, requiredClass, mappedTypes, properties);
                 }
@@ -687,14 +687,7 @@ public final class SessionImpl implements Session {
     private boolean exists(ID subject, MappedClass mappedClass, UID context) {
         UID type = mappedClass.getUID();
         if (type != null) {
-            CloseableIterator<STMT> stmts = connection.findStatements(subject, RDF.type, type, context, true);
-            try {
-                if (stmts.hasNext()) {
-                    return true;
-                }
-            } finally {
-                stmts.close();
-            }
+            return connection.exists(subject, RDF.type, type, context, true);
         }
         return false;
     }
@@ -758,7 +751,6 @@ public final class SessionImpl implements Session {
 
     private <T> void findInstances(Class<T> clazz, UID uri, final Set<T> instances) {
         UID context = getContext(clazz, null, null);
-        // try {
         Set<ID> resources = new LinkedHashSet<ID>();
         resources.addAll(this.<ID> filterSubject(connection.findStatements(null, RDF.type, uri, context, true)));
         for (ID subject : resources) {
@@ -767,18 +759,16 @@ public final class SessionImpl implements Session {
                 instances.add(instance);
             }
         }
-        // } catch (Exception e) {
-        // throw new SessionException(e);
-        // }
     }
 
-    private List<ID> findMappedTypes(ID subject, UID context) {
+    private List<ID> findMappedTypes(ID subject, UID context, MultiMap<UID, STMT> properties) {
         List<ID> types = new ArrayList<ID>();
-        List<STMT> statements = findStatements(subject, RDF.type, null, context, true);
-        for (STMT stmt : statements) {
-            NODE type = stmt.getObject();
-            if (type instanceof UID && conf.getMappedClasses((UID) type) != null) {
-                types.add((UID) type);
+        if (properties.containsKey(RDF.type)){
+            for (STMT stmt : properties.get(RDF.type)){
+                NODE type = stmt.getObject();
+                if (type instanceof UID && conf.getMappedClasses((UID) type) != null) {
+                    types.add((UID) type);
+                }            
             }
         }
         return types;
