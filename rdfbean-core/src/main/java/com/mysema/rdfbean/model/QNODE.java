@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import javax.annotation.Nullable;
 
-import com.mysema.query.types.TemplateFactory;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.expr.Param;
 

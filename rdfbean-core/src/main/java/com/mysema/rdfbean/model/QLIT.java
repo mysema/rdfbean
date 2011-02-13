@@ -3,7 +3,6 @@ package com.mysema.rdfbean.model;
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Ops;
-import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.expr.BooleanOperation;
 
