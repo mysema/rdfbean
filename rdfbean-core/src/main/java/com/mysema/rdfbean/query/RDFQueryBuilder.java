@@ -274,6 +274,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 return new ConstantImpl<UID>(getTypeForDomainClass((Class<?>)javaValue));
             }
 
+        }else if (javaValue instanceof String){
+            return new ConstantImpl<LIT>(new LIT(javaValue.toString(), XSD.stringType));
+            
         }else if (converter.supports(javaValue.getClass())){
             String label = converter.toString(javaValue);
             UID datatype = converter.getDatatype(javaValue.getClass());
