@@ -9,13 +9,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-
-/**
- * NODETest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class NODETest {
     
     @Test

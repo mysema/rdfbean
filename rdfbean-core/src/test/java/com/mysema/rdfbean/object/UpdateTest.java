@@ -37,10 +37,6 @@ import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
 
-/**
- * @author sasa
- *
- */
 public class UpdateTest {
 
     @ClassMapping(ns=TEST.NS)

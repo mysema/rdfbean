@@ -8,12 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.inject.Inject;
 import com.mysema.rdfbean.object.SessionFactory;
 
-/**
- * ServiceC provides
- *
- * @author tiwe
- * @version $Id$
- */
 @Transactional
 public class ServiceC {
 

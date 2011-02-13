@@ -18,12 +18,6 @@ import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFConnection;
 
-/**
- * AbstractIdentityServiceTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class IdentityServiceTest {
 
     private IdentityService identityService;

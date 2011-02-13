@@ -9,12 +9,6 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-/**
- * VarNameIteratorTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class VarNameIteratorTest {
 
     @Test

@@ -9,12 +9,6 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * MultiTransactionTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class MultiTransactionTest {
 
     private MultiTransaction tx;

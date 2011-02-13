@@ -21,12 +21,6 @@ import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 
-/**
- * SchemaExport provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class SchemaExport {
     
     public static void main(String[] args) throws SQLException{

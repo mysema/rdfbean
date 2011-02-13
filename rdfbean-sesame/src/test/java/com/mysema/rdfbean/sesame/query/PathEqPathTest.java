@@ -16,12 +16,6 @@ import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-/**
- * PathEqPathTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig(Entity.class)
 public class PathEqPathTest extends SessionTestBase implements EntityDomain {
 

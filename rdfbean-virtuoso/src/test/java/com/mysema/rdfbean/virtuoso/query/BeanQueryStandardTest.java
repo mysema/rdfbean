@@ -26,12 +26,6 @@ import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.testutil.SessionConfig;
 import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
-/**
- * BeanQueryStandardTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @Ignore
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class BeanQueryStandardTest extends AbstractConnectionTest implements SimpleDomain {

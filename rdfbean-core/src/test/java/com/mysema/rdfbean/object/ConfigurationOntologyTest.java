@@ -18,13 +18,6 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.ontology.Ontology;
 
-
-/**
- * ConfigurationTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class ConfigurationOntologyTest {
     
     @ClassMapping(ns=TEST.NS)

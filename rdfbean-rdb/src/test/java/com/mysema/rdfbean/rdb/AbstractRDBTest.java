@@ -37,12 +37,6 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.testutil.SessionRule;
 
-/**
- * AbstractRepositoryTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public abstract class AbstractRDBTest {
     
     protected static JdbcConnectionPool dataSource;

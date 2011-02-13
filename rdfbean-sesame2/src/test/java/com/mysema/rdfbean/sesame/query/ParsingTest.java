@@ -16,14 +16,6 @@ import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
 import org.openrdf.query.parser.QueryParserUtil;
 
-
-
-/**
- * ParsingTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class ParsingTest {
 
     @Test

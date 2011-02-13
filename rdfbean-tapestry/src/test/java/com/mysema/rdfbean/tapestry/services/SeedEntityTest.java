@@ -23,12 +23,6 @@ import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
-/**
- * SeedEntityTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class SeedEntityTest {
     
     private static Configuration configuration;

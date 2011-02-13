@@ -36,12 +36,6 @@ import com.mysema.rdfbean.sesame.NativeRepository;
 import com.mysema.rdfbean.sesame.SesameRepository;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
-/**
- * SavingTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class LoadTest extends SessionTestBase implements LoadDomain{    
     
     private StringWriter writer = new StringWriter();

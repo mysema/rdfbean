@@ -12,13 +12,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-
-/**
- * TxMethodMatcherTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class TransactionalMethodMatcherTest {
     
     @SuppressWarnings("unchecked")

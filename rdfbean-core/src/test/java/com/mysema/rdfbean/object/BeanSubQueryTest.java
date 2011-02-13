@@ -11,12 +11,6 @@ import org.junit.Test;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.query.types.path.StringPath;
 
-/**
- * BeanSubQueryTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class BeanSubQueryTest {
     
     private BeanSubQuery beanSubQuery = new BeanSubQuery();

@@ -25,12 +25,6 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.Restriction;
 
-/**
- * TransactionHandlingTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class TransactionHandlingTest extends SessionTestBase{
     
     private static final Locale FI = new Locale("fi");

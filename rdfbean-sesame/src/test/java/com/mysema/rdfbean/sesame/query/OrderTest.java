@@ -21,13 +21,6 @@ import com.mysema.rdfbean.domains.UserDomain.User;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-
-/**
- * OrderTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig(User.class)
 public class OrderTest extends SessionTestBase implements UserDomain{
 

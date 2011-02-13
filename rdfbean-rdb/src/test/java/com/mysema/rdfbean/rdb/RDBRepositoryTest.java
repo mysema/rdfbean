@@ -19,12 +19,6 @@ import org.junit.Test;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.*;
 
-/**
- * RDBRepositoryTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class RDBRepositoryTest extends AbstractRDBTest{
     
     private RDFConnectionCallback<Long> countOp = new CountOperation(); 

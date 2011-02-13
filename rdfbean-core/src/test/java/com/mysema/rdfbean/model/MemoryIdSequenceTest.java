@@ -9,12 +9,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-/**
- * MemoryIdSequenceTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class MemoryIdSequenceTest {
 
     @Test

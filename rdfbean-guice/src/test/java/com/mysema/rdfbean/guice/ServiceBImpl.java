@@ -10,12 +10,6 @@ import static org.junit.Assert.assertTrue;
 import com.google.inject.Inject;
 import com.mysema.rdfbean.object.SessionFactory;
 
-/**
- * ServiceBImpl provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class ServiceBImpl implements ServiceB {
 
     @Inject 

@@ -9,12 +9,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-/**
- * LIDEditorTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class LIDEditorTest {
 
     private LIDEditor editor = new LIDEditor();

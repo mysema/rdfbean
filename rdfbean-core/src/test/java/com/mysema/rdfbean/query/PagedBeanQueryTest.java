@@ -21,12 +21,6 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 
-/**
- * PagedBeanQueryTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @Ignore
 public class PagedBeanQueryTest {
     

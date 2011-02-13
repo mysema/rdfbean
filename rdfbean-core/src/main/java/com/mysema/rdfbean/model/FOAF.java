@@ -3,14 +3,8 @@
  * All rights reserved.
  * 
  */
-package com.mysema.rdfbean.sesame;
+package com.mysema.rdfbean.model;
 
-/**
- * FOAF provides
- *
- * @author tiwe
- * @version $Id$
- */
 public final class FOAF {
     
     public static final String NS = "http://xmlns.com/foaf/0.1/";

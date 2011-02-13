@@ -20,12 +20,6 @@ import com.mysema.rdfbean.domains.NoteTermDomain.Term;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-/**
- * OptionalPathsTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig({Note.class, Term.class})
 public class OptionalPathsTest extends SessionTestBase implements NoteTermDomain{
 

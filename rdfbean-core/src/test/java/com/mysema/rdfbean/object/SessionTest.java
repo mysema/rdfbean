@@ -11,12 +11,6 @@ import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 
-/**
- * SessionTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class SessionTest {
     
     @ClassMapping(ns=TEST.NS)

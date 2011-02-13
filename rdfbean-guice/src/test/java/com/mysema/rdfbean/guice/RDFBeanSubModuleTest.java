@@ -17,12 +17,6 @@ import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
-/**
- * RDFBeanModuleTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class RDFBeanSubModuleTest {
 
     private static Injector injector;

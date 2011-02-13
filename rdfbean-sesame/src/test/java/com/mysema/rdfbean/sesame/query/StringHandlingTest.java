@@ -18,13 +18,6 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-
-/**
- * StringHandlingTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class StringHandlingTest extends SessionTestBase{
     

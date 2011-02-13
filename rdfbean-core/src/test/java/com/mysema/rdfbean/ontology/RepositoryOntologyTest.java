@@ -22,12 +22,6 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.owl.OWL;
 
-/**
- * RepositoryOntologyTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class RepositoryOntologyTest {
         
     @Test

@@ -26,12 +26,6 @@ import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 
-/**
- * AbstractRepositoryTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public abstract class AbstractConnectionTest {
     
     private static JdbcConnectionPool dataSource;

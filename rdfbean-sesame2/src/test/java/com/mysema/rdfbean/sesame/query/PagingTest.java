@@ -23,12 +23,6 @@ import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-/**
- * PagingTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig(Entity.class)
 public class PagingTest extends SessionTestBase implements EntityDomain {
 

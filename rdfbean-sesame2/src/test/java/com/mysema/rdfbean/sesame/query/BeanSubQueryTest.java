@@ -26,12 +26,6 @@ import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-/**
- * SubQueryTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig(Entity.class)
 public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     

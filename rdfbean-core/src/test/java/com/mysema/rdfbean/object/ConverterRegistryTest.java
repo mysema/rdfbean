@@ -14,13 +14,6 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 import com.mysema.rdfbean.xsd.Year;
 
-
-/**
- * ConverterTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class ConverterRegistryTest {
 
     private ConverterRegistry converter = new ConverterRegistryImpl();

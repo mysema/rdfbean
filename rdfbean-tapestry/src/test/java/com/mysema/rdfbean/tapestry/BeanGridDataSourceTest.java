@@ -30,12 +30,6 @@ import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
-/**
- * RDFBeanGridDataSourceTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class BeanGridDataSourceTest {
     
     // TODO : better tests

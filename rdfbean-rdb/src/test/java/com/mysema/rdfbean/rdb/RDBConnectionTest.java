@@ -36,12 +36,6 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
-/**
- * RDBConnectionTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class RDBConnectionTest extends AbstractRDBTest{
 
     private final IdFactory idFactory = new MD5IdFactory();

@@ -23,12 +23,6 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
 
-/**
- * MD5Test provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class MD5IdFactoryTest {
     
     private IdFactory idFactory = new MD5IdFactory();

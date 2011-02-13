@@ -13,12 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.inject.Inject;
 import com.mysema.rdfbean.object.SessionFactory;
 
-/**
- * ServiceA provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class ServiceA{
     
     @Inject 

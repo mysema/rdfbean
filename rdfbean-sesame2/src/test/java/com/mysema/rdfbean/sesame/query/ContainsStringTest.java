@@ -20,12 +20,6 @@ import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Term;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-/**
- * ContainsStringTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig({Entity.class, EntityRevision.class, Term.class})
 public class ContainsStringTest extends SessionTestBase implements EntityRevisionTermDomain{
     

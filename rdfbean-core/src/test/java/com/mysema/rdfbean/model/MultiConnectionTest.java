@@ -15,13 +15,6 @@ import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
 
-
-/**
- * MultiConnectionTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class MultiConnectionTest {
 
     private final MiniDialect dialect = new MiniDialect();

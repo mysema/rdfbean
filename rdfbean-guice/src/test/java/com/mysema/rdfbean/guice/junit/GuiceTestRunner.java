@@ -13,12 +13,6 @@ import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
-/**
- * GuiceTestRunner provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class GuiceTestRunner extends BlockJUnit4ClassRunner {
 
     private static final Injector injector = Guice.createInjector(new RDFBeanModule(){

@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.model.FOAF;
 import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.io.RDFSource;

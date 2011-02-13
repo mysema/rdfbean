@@ -11,12 +11,6 @@ import org.openrdf.sail.memory.MemoryStore;
 
 import com.mysema.rdfbean.sesame.SesameRepository;
 
-/**
- * DirectMemoryRepository provides
- *
- * @author tiwe
- * @version $Id$
- */
 class DirectMemoryRepository extends SesameRepository{
 
     private long nextLocalId = 1;

@@ -11,12 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.inject.Inject;
 import com.mysema.rdfbean.object.SessionFactory;
 
-/**
- * TxTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @Transactional
 @RunWith(GuiceTestRunner.class)
 public class TxTest {

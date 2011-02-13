@@ -16,12 +16,6 @@ import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-/**
- * PlainLiteralTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class PlainLiteralTest extends SessionTestBase{
     

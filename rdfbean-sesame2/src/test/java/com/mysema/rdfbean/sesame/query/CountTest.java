@@ -15,12 +15,6 @@ import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-/**
- * CountTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class CountTest extends SessionTestBase{
         

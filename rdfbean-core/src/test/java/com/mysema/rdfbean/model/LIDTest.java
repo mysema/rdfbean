@@ -9,12 +9,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-/**
- * LIDTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class LIDTest {
     
     private LID lid = new LID("1");

@@ -17,13 +17,6 @@ import org.junit.Test;
 
 import com.mysema.query.types.Ops;
 
-
-/**
- * FunctionsTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class QueryFunctionsTest {
     
     @Test

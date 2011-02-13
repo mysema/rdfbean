@@ -16,12 +16,6 @@ import com.mysema.rdfbean.domains.UserProfileDomain.User;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-/**
- * QueryByExampleTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig({User.class, Profile.class, Identifiable.class})
 public class QueryByExampleTest extends SessionTestBase implements UserProfileDomain{
         

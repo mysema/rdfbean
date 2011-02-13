@@ -7,12 +7,6 @@ package com.mysema.rdfbean.guice;
 
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * ServiceB provides
- *
- * @author tiwe
- * @version $Id$
- */
 public interface ServiceB {
 
     @Transactional

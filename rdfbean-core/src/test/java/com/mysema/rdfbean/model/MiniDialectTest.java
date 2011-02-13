@@ -11,12 +11,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-/**
- * MiniDialectTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class MiniDialectTest {
     
     private MiniDialect dialect = new MiniDialect();

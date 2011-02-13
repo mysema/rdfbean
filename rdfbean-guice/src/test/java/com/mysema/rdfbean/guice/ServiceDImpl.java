@@ -5,12 +5,6 @@ import static org.junit.Assert.assertTrue;
 import com.google.inject.Inject;
 import com.mysema.rdfbean.object.SessionFactory;
 
-/**
- * ServiceDImpl provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class ServiceDImpl implements ServiceD{
 
     @Inject 

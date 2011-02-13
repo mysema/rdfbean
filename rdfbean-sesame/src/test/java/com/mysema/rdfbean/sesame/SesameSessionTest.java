@@ -5,13 +5,6 @@ import org.junit.Test;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-
-/**
- * SesameSessionTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig({})
 public class SesameSessionTest extends SessionTestBase {
     

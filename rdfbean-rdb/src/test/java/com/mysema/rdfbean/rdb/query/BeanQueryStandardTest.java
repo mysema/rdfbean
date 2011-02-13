@@ -25,12 +25,6 @@ import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-/**
- * BeanQueryStandardTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDomain {
     

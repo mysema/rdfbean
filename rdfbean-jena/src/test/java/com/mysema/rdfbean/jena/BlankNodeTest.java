@@ -23,12 +23,6 @@ import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.STMT;
 
-/**
- * BlankNodeTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class BlankNodeTest {
     
     private Repository repository;

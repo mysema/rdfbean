@@ -17,14 +17,6 @@ import org.junit.Test;
 
 import com.mysema.rdfbean.model.Format;
 
-
-
-/**
- * RDFSourceTest provides
- *
- * @author tiwe
- * @version $Id$
- */
 public class RDFSourceTest {
 
     @Test
