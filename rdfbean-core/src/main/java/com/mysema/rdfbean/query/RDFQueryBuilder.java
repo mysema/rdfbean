@@ -57,7 +57,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     private final Configuration configuration;
 
-    private final QueryOptions options;
+    private final QueryOptions queryOptions;
+    
+    private final InferenceOptions inferenceOptions;
 
     private final QueryMetadata metadata;
 
@@ -82,7 +84,8 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         this.connection = connection;
         this.session = session;
         this.configuration = configuration;
-        this.options = connection.getQueryOptions();
+        this.queryOptions = connection.getQueryOptions();
+        this.inferenceOptions = connection.getInferenceOptions();
         this.metadata = metadata;
         this.projection = new ArrayList<Expression<?>>();
     }
@@ -113,7 +116,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         filters.beginOptional();
 
         if (forCount){
-            projection.add(options.isCountViaAggregation() ? Wildcard.count : COUNTER);
+            projection.add(queryOptions.isCountViaAggregation() ? Wildcard.count : COUNTER);
         }else{
             //order by (optional paths)
             for (OrderSpecifier<?> os : metadata.getOrderBy()){
@@ -321,7 +324,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
         try{
 
-            if (!options.isPreserveStringOps()){
+            if (!queryOptions.isPreserveStringOps()){
                 if (expr.getOperator() == Ops.STARTS_WITH && rightConstant){
                     expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
 
@@ -567,7 +570,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                             pathNode = rdfPath;
                         }else if (i == predPath.size() -1){
                             String var = path.accept(ToStringVisitor.DEFAULT, TEMPLATES);
-                            if (options.isAddTypeSuffix() && configuration.getConverterRegistry().supports(path.getType())){
+                            if (queryOptions.isAddTypeSuffix() && configuration.getConverterRegistry().supports(path.getType())){
                                 UID type = configuration.getConverterRegistry().getDatatype(path.getType());
                                 if (Constants.decimalTypes.contains(type)){
                                     var += "_dec";

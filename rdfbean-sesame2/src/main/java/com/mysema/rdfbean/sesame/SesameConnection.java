@@ -311,4 +311,9 @@ public class SesameConnection implements RDFConnection {
     public QueryOptions getQueryOptions() {
         return QueryOptions.DEFAULT;
     }
+    
+    @Override
+    public InferenceOptions getInferenceOptions() {
+        return InferenceOptions.FULL;
+    }
 }

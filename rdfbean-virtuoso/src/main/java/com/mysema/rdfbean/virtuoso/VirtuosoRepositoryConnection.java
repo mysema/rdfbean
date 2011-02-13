@@ -602,9 +602,13 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
     }
 
-
     @Override
     public QueryOptions getQueryOptions() {
         return QUERY_OPTIONS;
+    }
+    
+    @Override
+    public InferenceOptions getInferenceOptions() {
+        return InferenceOptions.FULL;
     }
 }

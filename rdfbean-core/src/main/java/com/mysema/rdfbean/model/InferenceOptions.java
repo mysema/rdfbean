@@ -10,7 +10,6 @@ package com.mysema.rdfbean.model;
  * engine and are to be supported on RDFBean level
  *
  * @author tiwe
- * @version $Id$
  */
 public enum InferenceOptions {
     

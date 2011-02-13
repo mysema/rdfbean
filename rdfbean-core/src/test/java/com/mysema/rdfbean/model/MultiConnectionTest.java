@@ -37,6 +37,10 @@ public class MultiConnectionTest {
                 return QueryOptions.DEFAULT;
             }
 
+            @Override
+            public InferenceOptions getInferenceOptions() {
+                return InferenceOptions.FULL;
+            }
         };
 
         // find

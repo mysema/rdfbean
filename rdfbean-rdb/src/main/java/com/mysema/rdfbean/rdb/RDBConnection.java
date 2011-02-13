@@ -537,9 +537,13 @@ public class RDBConnection implements RDFConnection{
 
     }
 
-
     @Override
     public QueryOptions getQueryOptions() {
         return queryOptions;
+    }
+    
+    @Override
+    public InferenceOptions getInferenceOptions() {
+        return InferenceOptions.FULL;
     }
 }

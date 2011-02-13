@@ -125,5 +125,10 @@ public interface RDFConnection extends Closeable{
      * @return
      */
     QueryOptions getQueryOptions();
+    
+    /**
+     * @return
+     */
+    InferenceOptions getInferenceOptions();
 
 }

@@ -29,6 +29,11 @@ public class MultiTransactionTest {
                 public QueryOptions getQueryOptions() {
                     return QueryOptions.DEFAULT;
                 }
+                
+                @Override
+                public InferenceOptions getInferenceOptions() {
+                    return InferenceOptions.FULL;
+                }
 
         };
 
