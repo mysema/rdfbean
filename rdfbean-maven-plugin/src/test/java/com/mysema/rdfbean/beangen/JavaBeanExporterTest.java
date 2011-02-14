@@ -32,6 +32,9 @@ public class JavaBeanExporterTest extends AbstractExportTest{
         List<RDFSClass> rdfTypes = session.findInstances(RDFSClass.class);
         assertFalse(rdfTypes.isEmpty());
         for (RDFSClass<?> rdfType : rdfTypes){
+            if (rdfType.getId().isBNode()){
+                continue;
+            }
             EntityType entityType = exporter.createBeanType(rdfType);
             
             // supertype count
