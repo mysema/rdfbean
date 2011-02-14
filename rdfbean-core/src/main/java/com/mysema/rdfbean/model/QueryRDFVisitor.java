@@ -166,7 +166,8 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         };
     }
 
-    private Transformer< Map<String, NODE>, STMT> createStatementTransformer(final PatternBlock expr, final QueryMetadata context){
+    private Transformer< Map<String, NODE>, STMT> createStatementTransformer(
+            final PatternBlock expr, final QueryMetadata context){
         return new Transformer<Map<String,NODE>, STMT>(){
             @Override
             public STMT transform(Map<String, NODE> input) {
