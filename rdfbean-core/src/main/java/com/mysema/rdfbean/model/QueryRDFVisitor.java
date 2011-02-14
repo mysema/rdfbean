@@ -12,6 +12,7 @@ import org.apache.commons.collections15.functors.AndPredicate;
 import org.apache.commons.collections15.functors.AnyPredicate;
 import org.apache.commons.collections15.functors.NotPredicate;
 import org.apache.commons.collections15.iterators.FilterIterator;
+import org.apache.commons.collections15.iterators.IteratorChain;
 import org.apache.commons.collections15.iterators.TransformIterator;
 import org.apache.commons.lang.ObjectUtils;
 
@@ -26,6 +27,8 @@ import com.mysema.query.types.*;
  *
  */
 public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
+
+    private static final NODEComparator nodeComparator = new NODEComparator();
 
     private final RDFConnection connection;
 
@@ -88,14 +91,42 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object visit(UnionBlock expr, QueryMetadata context) {
+        final List<Iterable<Map<String,NODE>>> iterables = new ArrayList<Iterable<Map<String,NODE>>>();
+        for (Block block : expr.getBlocks()){
+            iterables.add((Iterable) block.accept(this, context));
+        }
+        return new Iterable<Map<String,NODE>>() {
+            @Override
+            public Iterator<Map<String, NODE>> iterator() {
+                IteratorChain<Map<String,NODE>> chain = new IteratorChain<Map<String,NODE>>();
+                for (Iterable iterable : iterables){
+                    chain.addIterator(iterable.iterator());
+                }
+                return chain;
+            }
+        };
+    }
+
+    @Override
+    public Object visit(GroupBlock expr, QueryMetadata context) {
+        return visit((ContainerBlock)expr, context);
+    }
+
+    @Override
+    public Object visit(GraphBlock expr, QueryMetadata context) {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Object visit(GroupBlock expr, QueryMetadata context) {
+    public Object visit(OptionalBlock expr, QueryMetadata context) {
+        // TODO : handle optional correctly
+        return visit((ContainerBlock)expr, context);
+    }
+
+    private Iterable<Map<String,NODE>> visit(ContainerBlock expr, QueryMetadata context){
         List<Iterable<Map<String,NODE>>> iterables = new ArrayList<Iterable<Map<String,NODE>>>();
         for (Block block : expr.getBlocks()){
             iterables.add((Iterable) block.accept(this, context));
@@ -118,16 +149,6 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     }
 
     @Override
-    public Object visit(GraphBlock expr, QueryMetadata context) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Object visit(OptionalBlock expr, QueryMetadata context) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Iterable<Map<String, NODE>> visit(final PatternBlock expr, final QueryMetadata context) {
         final Transformer<STMT, Map<String, NODE>> transformer = createBindingsTransformer(expr);
         return new Iterable<Map<String,NODE>>(){
@@ -136,7 +157,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 ID s = (ID) expr.getSubject().accept(QueryRDFVisitor.this, context);
                 UID p = (UID) expr.getPredicate().accept(QueryRDFVisitor.this, context);
                 NODE o = (NODE) expr.getObject().accept(QueryRDFVisitor.this, context);
-                UID c = (UID) expr.getContext().accept(QueryRDFVisitor.this, context);
+                UID c = null;
+                if (expr.getContext() != null){
+                    c = (UID) expr.getContext().accept(QueryRDFVisitor.this, context);
+                }
                 return new TransformIterator<STMT, Map<String, NODE>>(connection.findStatements(s, p, o, c, false), transformer);
             }
         };
@@ -211,7 +235,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     @SuppressWarnings("unchecked")
     @Override
     public Predicate visit(final Operation<?> expr, final QueryMetadata context) {
-        Operator<?> op = expr.getOperator();
+        final Operator<?> op = expr.getOperator();
         if (op == Ops.EQ_OBJECT || op == Ops.EQ_PRIMITIVE){
             return new Predicate(){
                 @Override
@@ -242,6 +266,42 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
         }else if (op == Ops.NOT){
             return new NotPredicate( (Predicate) expr.getArg(0).accept(this, context));
+
+        }else if (op == Ops.IS_NULL || op == Ops.IS_NOT_NULL){
+            final String key = getKey(expr.getArg(0));
+            return new Predicate(){
+                @Override
+                public boolean evaluate(Object object) {
+                    boolean rv =  bindings.get(key) != null;
+                    return op == Ops.IS_NOT_NULL ? rv : !rv;
+                }
+            };
+
+        }else if (op == Ops.IS_NOT_NULL){
+            final String key = getKey(expr.getArg(0));
+            return new Predicate(){
+                @Override
+                public boolean evaluate(Object object) {
+                    return bindings.get(key) != null;
+                }
+            };
+
+        }else if (op == Ops.LT || op == Ops.GT || op == Ops.LOE || op == Ops.GOE){
+            return new Predicate(){
+                @Override
+                public boolean evaluate(Object object) {
+                    NODE lhs = (NODE)expr.getArg(0).accept(QueryRDFVisitor.this, context);
+                    NODE rhs = (NODE)expr.getArg(1).accept(QueryRDFVisitor.this, context);
+                    int rv = nodeComparator.compare(lhs, rhs);
+                    if (rv < 0){
+                        return op == Ops.LT || op == Ops.LOE;
+                    }else if (rv == 0){
+                        return op == Ops.LOE || op == Ops.GOE;
+                    }else{
+                        return op == Ops.GT || op == Ops.GOE;
+                    }
+                }
+            };
 
         }else{
             throw new IllegalArgumentException(expr.toString());
