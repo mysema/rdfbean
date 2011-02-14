@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.mysema.rdfbean.tapestry;
 
@@ -16,12 +16,12 @@ import com.mysema.rdfbean.object.SimpleSessionContext;
  *
  */
 public final class TransactionalMethodAdvice implements MethodAdvice {
-    
+
     private final TransactionalAdvisor transactionalAdvisor;
 
     private final SimpleSessionContext sessionContext;
-    
-    TransactionalMethodAdvice(TransactionalAdvisor transactionalAdvisor, SimpleSessionContext sessionContext) {
+
+    public TransactionalMethodAdvice(TransactionalAdvisor transactionalAdvisor, SimpleSessionContext sessionContext) {
         this.transactionalAdvisor = transactionalAdvisor;
         this.sessionContext = sessionContext;
     }
@@ -35,35 +35,39 @@ public final class TransactionalMethodAdvice implements MethodAdvice {
             Session session = sessionContext.getCurrentSession();
             inTx = session.getTransaction() != null && session.getTransaction().isActive();
         }
-        
+
         if (!inTx){
             Session session = sessionContext.getOrCreateSession();
             FlushMode savedFlushMode = session.getFlushMode();
 
             try {
-                RDFBeanTransaction txn = transactionalAdvisor.doBegin(session);  
-                try {
-                    invocation.proceed();                
-                } catch(Exception e) {                
-                    if (txn.isRollbackOnly()){
-                        transactionalAdvisor.doRollback(txn);
+                RDFBeanTransaction txn = transactionalAdvisor.doBegin(session);
+                invocation.proceed();
+                if (invocation.getThrown(Throwable.class) != null){
+                    Throwable throwable = invocation.getThrown(Throwable.class);
+                    transactionalAdvisor.doRollback(txn);
+                    if (throwable instanceof RuntimeException){
+                        throw (RuntimeException)throwable;
                     }else{
-                        transactionalAdvisor.doCommit(session, txn);
+                        throw new RuntimeException(throwable);
                     }
-                    throw new RuntimeException(e);
                 }
-                transactionalAdvisor.doCommit(session, txn);
-                
+                if (!txn.isRollbackOnly()){
+                    transactionalAdvisor.doCommit(session, txn);
+                }else{
+                    transactionalAdvisor.doRollback(txn);
+                }
+
             } finally {
                 session.setFlushMode(savedFlushMode);
                 sessionContext.releaseSession();
                 if (!inSession){
                     session.close();
-                }                                    
-            }    
+                }
+            }
         }else{
             invocation.proceed();
-        }                   
-        
+        }
+
     }
 }

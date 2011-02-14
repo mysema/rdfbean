@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.tapestry;
 
@@ -11,6 +11,7 @@ import org.apache.tapestry5.ioc.MethodAdvice;
 import org.apache.tapestry5.ioc.MethodAdviceReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.NotTransactional;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mysema.rdfbean.model.RDFBeanTransaction;
@@ -22,18 +23,17 @@ import com.mysema.rdfbean.object.SimpleSessionContext;
 /**
  * @author tiwe
  */
-// TODO : merge with tx support of Guice module
 public class TransactionalAdvisorImpl implements TransactionalAdvisor {
-    
+
     static final Logger logger = LoggerFactory.getLogger(TransactionalAdvisorImpl.class);
-    
+
     private final MethodAdvice advice;
-    
+
     private final SimpleSessionContext sessionContext;
-    
+
     public TransactionalAdvisorImpl(SessionFactory sessionFactory) {
         this.sessionContext = new SimpleSessionContext(sessionFactory);
-        this.advice = new TransactionalMethodAdvice(this, sessionContext); 
+        this.advice = new TransactionalMethodAdvice(this, sessionContext);
         sessionFactory.setSessionContext(sessionContext);
     }
 
@@ -41,25 +41,50 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
     @SuppressWarnings("unchecked")
     public void addTransactionCommitAdvice(MethodAdviceReceiver receiver) {
         if (receiver.getInterface().getAnnotation(Transactional.class) != null){
-            for (Method m : receiver.getInterface().getMethods()) {
-                receiver.adviseMethod(m, advice);
+            Transactional annotation = (Transactional) receiver.getInterface().getAnnotation(Transactional.class);
+            if (isIntercepted(annotation)){
+                for (Method m : receiver.getInterface().getMethods()) {
+                    if (m.getAnnotation(NotTransactional.class) == null){
+                        receiver.adviseMethod(m, advice);
+                    }
+                }
             }
+
         }else{
             for (Method m : receiver.getInterface().getMethods()) {
                 if (m.getAnnotation(Transactional.class) != null) {
-                    receiver.adviseMethod(m, advice);
+                    Transactional annotation = m.getAnnotation(Transactional.class);
+                    if (isIntercepted(annotation)){
+                        receiver.adviseMethod(m, advice);
+                    }
                 }
-            }    
+            }
         }
-        
+
+    }
+
+    private boolean isIntercepted(Transactional annotation) {
+        switch(annotation.propagation()){
+        case REQUIRED:
+        case REQUIRES_NEW:
+        case NESTED:
+        case MANDATORY:
+            return true;
+
+        case NOT_SUPPORTED:
+        case NEVER:
+        case SUPPORTS:
+            return false;
+        }
+        return true;
     }
 
     public RDFBeanTransaction doBegin(Session session) {
         RDFBeanTransaction txn = session.beginTransaction(
-                false, // not readonly 
+                false, // not readonly
                 -1,    // default timeout
                 -1);   // default isolation
-        
+
         session.setFlushMode(FlushMode.COMMIT);
         return txn;
     }
@@ -69,7 +94,7 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
         try {
             session.flush();
             txn.commit();
-            
+
         } catch(RuntimeException re) {
             doRollback(txn);
             commitException = re;
@@ -80,7 +105,7 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
         }
     }
 
-    public void doRollback(RDFBeanTransaction txn) {       
+    public void doRollback(RDFBeanTransaction txn) {
         txn.rollback();
     }
 }
