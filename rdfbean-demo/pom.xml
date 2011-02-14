@@ -6,6 +6,7 @@
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-root</artifactId>
       <version>1.4.9-SNAPSHOT</version>
+      <relativePath>../rdfbean-root/pom.xml</relativePath>
     </parent>
 
 	<groupId>com.mysema.rdf</groupId>
