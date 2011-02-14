@@ -31,7 +31,7 @@ public class QueryRDFVisitorTest {
     
     @Test
     public void PatternBlock(){
-        Iterable<Bindings> iterable = visitor.visit((PatternBlock)Blocks.SPO, context);
+        Iterable<Bindings> iterable = visitor.visit((PatternBlock)Blocks.SPO, context).getFirst();
         List<Bindings> rows = IteratorAdapter.asList(iterable.iterator());
         assertEquals(2, rows.size());
         assertEquals(3, rows.get(0).toMap().size());
@@ -43,7 +43,7 @@ public class QueryRDFVisitorTest {
     @Test
     public void PatternBlock_with_unmatching_Filter(){
         GroupBlock block = (GroupBlock) Blocks.filter(Blocks.SPO, QNODE.p.eq(RDF.predicate));
-        Iterable<Bindings> iterable = visitor.visit(block, context);
+        Iterable<Bindings> iterable = visitor.visit(block, context).getFirst();
         List<Bindings> rows = IteratorAdapter.asList(iterable.iterator());
         assertEquals(0, rows.size());        
     }
@@ -52,7 +52,7 @@ public class QueryRDFVisitorTest {
     @Test
     public void PatternBlock_with_Filter(){
         GroupBlock block = (GroupBlock) Blocks.filter(Blocks.SPO, QNODE.p.eq(RDF.type));
-        Iterator<Bindings> iterator = visitor.visit(block, context).iterator();
+        Iterator<Bindings> iterator = visitor.visit(block, context).getFirst().iterator();
         Map<String, NODE> row = iterator.next().toMap();
         assertFalse(iterator.hasNext());
         assertEquals(3, row.size());

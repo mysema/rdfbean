@@ -1,6 +1,5 @@
 package com.mysema.rdfbean.rdb;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.model.Blocks;
@@ -13,7 +12,6 @@ import com.mysema.rdfbean.model.RDFQueryImpl;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 
-@Ignore
 public class BooleanQueryTest extends AbstractConnectionTest{
     
     private static final QNODE<ID> subject = new QNODE<ID>(ID.class, "s");

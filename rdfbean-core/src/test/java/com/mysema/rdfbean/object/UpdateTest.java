@@ -320,7 +320,6 @@ public class UpdateTest {
     }
     
     @Test
-    @Ignore
     public void GetCompanyByExample(){
         newSession();
         Company company = getCompany();
@@ -341,7 +340,6 @@ public class UpdateTest {
     }
     
     @Test
-    @Ignore
     public void GetEmployeeByExample(){
         newSession();
         Employee employee = getEmployee();

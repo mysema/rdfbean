@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.types.path.PathBuilder;
@@ -60,7 +59,6 @@ public class ConfigurationBuilderExtTest {
     }
 
     @Test
-    @Ignore
     public void test() throws IOException{
         ConfigurationBuilder builder = new ConfigurationBuilder();        
         builder.addClass(Identifiable.class).addId("id").addProperties();
@@ -94,7 +92,7 @@ public class ConfigurationBuilderExtTest {
         PathBuilder<Product> _product = new PathBuilder<Product>(Product.class,"product");
         PathBuilder<User> _user = new PathBuilder<User>(User.class,"user");
         assertEquals(1, session.from(_category).list(_category).size());
-        assertEquals(0, session.from(_identifiable).list(_identifiable).size());
+        assertEquals(3, session.from(_identifiable).list(_identifiable).size());
         assertEquals(1, session.from(_product).list(_product).size());
         assertEquals(1, session.from(_user).list(_user).size());
         

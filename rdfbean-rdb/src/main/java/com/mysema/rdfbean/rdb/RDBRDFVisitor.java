@@ -134,23 +134,28 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             }
             return new TupleQueryImpl((SQLQuery)query, context.getConverters(), variables, pr, transformer);
 
-        }else if (queryType.equals(QueryLanguage.GRAPH)){    
+        // construct
+        }else if (queryType.equals(QueryLanguage.GRAPH)){
+            // TODO : add also support for larger patterns
             if (md.getProjection().size() == 1 && md.getProjection().get(0) instanceof PatternBlock){
                 List<Expression<?>> pr = new ArrayList<Expression<?>>();
                 PatternBlock pattern = (PatternBlock)md.getProjection().get(0);
                 for (Expression<?> expr : Arrays.asList(pattern.getSubject(), pattern.getPredicate(), pattern.getObject(), pattern.getContext())){
-                    if (!(expr instanceof Constant)){
+                    if (expr != null && !(expr instanceof Constant)){
                         pr.add(handle(expr, md));
                     }
                 }
-                return new GraphQueryImpl((SQLQuery)query, context.getConverters(), pattern, pr, transformer); 
+                return new GraphQueryImpl((SQLQuery)query, pattern, pr, transformer); 
                 
             }else{
                 throw new UnsupportedOperationException();
             }
             
+        // ask
+        }else if (queryType.equals(QueryLanguage.BOOLEAN)){            
+            return new BooleanQueryImpl((SQLQuery) query);
+        
         }else{
-            // TODO
             throw new UnsupportedOperationException();
         }
 

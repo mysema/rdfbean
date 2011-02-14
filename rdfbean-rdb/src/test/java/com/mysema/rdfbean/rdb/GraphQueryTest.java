@@ -13,7 +13,6 @@ import com.mysema.rdfbean.model.RDFQueryImpl;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 
-@Ignore
 public class GraphQueryTest extends AbstractConnectionTest{
     
     private static final QNODE<ID> subject = new QNODE<ID>(ID.class, "s");
@@ -44,7 +43,9 @@ public class GraphQueryTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Two_Patterns(){
+        // FIXME
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
@@ -54,7 +55,9 @@ public class GraphQueryTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Group(){
+        // FIXME
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))

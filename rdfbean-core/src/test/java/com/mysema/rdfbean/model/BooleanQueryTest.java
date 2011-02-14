@@ -10,9 +10,11 @@ public class BooleanQueryTest {
     
     private static final QNODE<NODE> object = new QNODE<NODE>(NODE.class, "o");
     
+    private final MiniConnection connection = new MiniConnection(new MiniRepository());
+
     private RDFQuery query(){
-        return new RDFTestQuery();
-    }    
+        return new RDFQueryImpl(connection);
+    } 
     
     @Test
     public void Patterns(){

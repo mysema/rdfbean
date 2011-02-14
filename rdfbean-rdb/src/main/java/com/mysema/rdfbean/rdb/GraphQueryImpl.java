@@ -17,7 +17,7 @@ public class GraphQueryImpl implements GraphQuery{
 
     private final SQLQuery query;
     
-    private final ConverterRegistry converters;
+//    private final ConverterRegistry converters;
     
     private final PatternBlock pattern;
     
@@ -27,12 +27,12 @@ public class GraphQueryImpl implements GraphQuery{
     
     public GraphQueryImpl(
             SQLQuery query, 
-            ConverterRegistry converters, 
+//            ConverterRegistry converters, 
             PatternBlock pattern,
             List<Expression<?>> pr, 
             Transformer<Long, NODE> transformer) {
         this.query = query;
-        this.converters = converters;
+//        this.converters = converters;
         this.pattern = pattern;
         this.projection = pr;
         this.transformer = transformer;
