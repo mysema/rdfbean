@@ -44,7 +44,7 @@ public class Person extends Party {
 
     @Override
     public String getDisplayName() {
-	return "" + firstName + " " + lastName;
+	return firstName + " " + lastName;
     }
 
     public String getLastName() {

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.guice;
 
@@ -75,7 +75,11 @@ class TransactionalInterceptor implements MethodInterceptor{
                 }
                 throw e;
             }
-            doCommit(session, txn);
+            if (!txn.isRollbackOnly()){
+                doCommit(session, txn);
+            }else{
+                doRollback(txn);
+            }
             return result;
 
         } finally {
