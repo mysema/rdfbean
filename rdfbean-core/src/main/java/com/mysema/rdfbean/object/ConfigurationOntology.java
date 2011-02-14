@@ -20,7 +20,7 @@ import com.mysema.util.MultiMapFactory;
  * @author tiwe
  * @version $Id$
  */
-public class ConfigurationOntology extends AbstractOntology<UID>{
+public class ConfigurationOntology extends AbstractOntology{
 
     public ConfigurationOntology(Configuration configuration){
         Set<UID> types = new HashSet<UID>();

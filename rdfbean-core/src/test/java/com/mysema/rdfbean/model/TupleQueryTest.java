@@ -19,7 +19,6 @@ public class TupleQueryTest {
     private final MiniConnection connection = new MiniConnection(new MiniRepository());
 
     private RDFQuery query(){
-//        return new RDFTestQuery();
         return new RDFQueryImpl(connection);
     }
 

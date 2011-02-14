@@ -92,7 +92,7 @@ public class ConfigurationBuilderTest extends AbstractConnectionTest {
         PathBuilder<Product> _product = new PathBuilder<Product>(Product.class,"product");
         PathBuilder<User> _user = new PathBuilder<User>(User.class,"user");
         assertEquals(1, session.from(_category).list(_category).size());
-        assertEquals(0, session.from(_identifiable).list(_identifiable).size());
+        assertEquals(3, session.from(_identifiable).list(_identifiable).size());
         assertEquals(1, session.from(_product).list(_product).size());
         assertEquals(1, session.from(_user).list(_user).size());
         

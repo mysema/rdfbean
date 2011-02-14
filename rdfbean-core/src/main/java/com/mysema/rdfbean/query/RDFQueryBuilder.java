@@ -18,7 +18,6 @@ import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.*;
-import com.mysema.query.types.Operation;
 import com.mysema.query.types.expr.Param;
 import com.mysema.query.types.expr.Wildcard;
 import com.mysema.query.types.template.BooleanTemplate;
@@ -30,6 +29,7 @@ import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.MappedPredicate;
 import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.ontology.Ontology;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
@@ -56,6 +56,8 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     private final Session session;
 
     private final Configuration configuration;
+    
+    private final Ontology ontology;
 
     private final QueryOptions queryOptions;
     
@@ -80,10 +82,12 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     public RDFQueryBuilder(RDFConnection connection,
             Session session,
             Configuration configuration,
+            Ontology ontology,
             QueryMetadata metadata) {
         this.connection = connection;
         this.session = session;
         this.configuration = configuration;
+        this.ontology = ontology;
         this.queryOptions = connection.getQueryOptions();
         this.inferenceOptions = connection.getInferenceOptions();
         this.metadata = metadata;
@@ -96,7 +100,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         Filters filters = new Filters();
         //from
         for (JoinExpression join : metadata.getJoins()){
-            query.where(handleRootPath((Path<?>) join.getTarget()));
+            query.where(handleRootPath((Path<?>) join.getTarget(), filters));
         }
 
         //where
@@ -179,19 +183,26 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
     }
 
-    private Block handleRootPath(Path<?> path) {
+    private Block handleRootPath(Path<?> path, Filters filters) {
         MappedClass mappedClass = configuration.getMappedClass(path.getType());
         UID rdfType = mappedClass.getUID();
         UID context = mappedClass.getContext();
-        Param<?> pathNode = new Param<ID>(ID.class, path.toString());
+        QID pathNode = new QID(path.toString());
         pathToMapped.put(path, pathNode);
         if (rdfType != null){
-            if (context != null){
-                pathToContext.put(path, context);
-                return Blocks.pattern(pathNode, RDF.type, rdfType, context);
+            Collection<UID> types = ontology.getSubtypes(rdfType);
+            if (types.size() > 1){
+                QID type = new QID(path+"_type");
+                filters.add(type.in(types));
+                return Blocks.pattern(pathNode, RDF.type, type);
             }else{
-                return Blocks.pattern(pathNode, RDF.type, rdfType);
-            }
+                if (context != null){
+                    pathToContext.put(path, context);
+                    return Blocks.pattern(pathNode, RDF.type, rdfType, context);
+                }else{
+                    return Blocks.pattern(pathNode, RDF.type, rdfType);
+                }    
+            }            
         } else {
             throw new IllegalArgumentException("No types mapped against " + path.getType().getName());
         }
@@ -257,7 +268,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     }
 
     private Param<NODE> var(String var){
-        return new Param<NODE>(NODE.class, var);
+        return new QNODE<NODE>(NODE.class, var);
     }
 
     public Expression<?> visit(Constant<?> constant, Filters filters){
@@ -424,7 +435,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
             }else if (expr.getOperator() == Ops.ORDINAL){
                 Param<?> path = (Param<?>) transform(expr.getArg(0), filters);
-                Param<?> ordinalPath = new Param<LIT>(LIT.class, path.getName()+"_ordinal");
+                Param<?> ordinalPath = new QLIT(path.getName()+"_ordinal");
                 filters.add(Blocks.pattern(path, CORE.enumOrdinal, ordinalPath));
                 return ordinalPath;
 
@@ -651,7 +662,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
         // from
         for (JoinExpression join : md.getJoins()){
-            f.add(handleRootPath((Path<?>) join.getTarget()));
+            f.add(handleRootPath((Path<?>) join.getTarget(), f));
         }
         // where
         if (md.getWhere() != null){

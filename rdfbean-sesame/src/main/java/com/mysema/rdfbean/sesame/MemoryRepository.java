@@ -17,8 +17,6 @@ import org.openrdf.sail.memory.MemoryStore;
 import com.mysema.rdfbean.model.FileIdSequence;
 import com.mysema.rdfbean.model.IdSequence;
 import com.mysema.rdfbean.model.MemoryIdSequence;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.ontology.Ontology;
 
 /**
  * Implementation of the Repository interface using MemoryStore
@@ -54,13 +52,8 @@ public class MemoryRepository extends SesameRepository {
         setSesameInference(sesameInference);
     }
 
-    public MemoryRepository(@Nullable File dataDir, Ontology<UID> ontology) {
+    public MemoryRepository(@Nullable File dataDir) {
         this.dataDir = dataDir;
-        setOntology(ontology);
-    }
-    
-    public MemoryRepository(Ontology<UID> ontology) {
-        setOntology(ontology);
     }
     
     @Override

@@ -7,13 +7,15 @@ package com.mysema.rdfbean.ontology;
 
 import java.util.Collection;
 
+import com.mysema.rdfbean.model.UID;
+
 /**
  * Ontology provides access to type and property hierarchies
  *
  * @author tiwe
  * @version $Id$
  */
-public interface Ontology<T> {
+public interface Ontology {
     
     /**
      * Get the transitive and recursive sub types for the given type
@@ -21,7 +23,7 @@ public interface Ontology<T> {
      * @param uid
      * @return
      */
-    Collection<T> getSubtypes(T uid);
+    Collection<UID> getSubtypes(UID uid);
     
     /**
      * Get the transitive super types for the given type 
@@ -29,7 +31,7 @@ public interface Ontology<T> {
      * @param uid
      * @return
      */
-    Collection<T> getSupertypes(T uid);
+    Collection<UID> getSupertypes(UID uid);
     
     /**
      * Get the transitive and recursive sub properties for the given property
@@ -37,7 +39,7 @@ public interface Ontology<T> {
      * @param uid
      * @return
      */
-    Collection<T> getSubproperties(T uid);
+    Collection<UID> getSubproperties(UID uid);
     
     /**
      * Get the transitive super properties for the given property
@@ -45,5 +47,5 @@ public interface Ontology<T> {
      * @param uid
      * @return
      */
-    Collection<T> getSuperproperties(T uid);
+    Collection<UID> getSuperproperties(UID uid);
 }

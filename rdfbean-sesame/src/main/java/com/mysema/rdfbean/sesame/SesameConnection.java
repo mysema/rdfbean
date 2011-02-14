@@ -5,10 +5,8 @@
  */
 package com.mysema.rdfbean.sesame;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -26,7 +24,7 @@ import org.openrdf.query.GraphQuery;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.Query;
 import org.openrdf.query.TupleQuery;
-import org.openrdf.query.algebra.*;
+import org.openrdf.query.algebra.TupleExpr;
 import org.openrdf.query.parser.BooleanQueryModel;
 import org.openrdf.query.parser.GraphQueryModel;
 import org.openrdf.query.parser.TupleQueryModel;
@@ -39,7 +37,6 @@ import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
 import com.mysema.query.QueryMetadata;
 import com.mysema.rdfbean.model.*;
-import com.mysema.rdfbean.ontology.Ontology;
 
 /**
  * SaesameConnection is the RDFConnection implementation for RepositoryConnection usage
@@ -49,23 +46,8 @@ import com.mysema.rdfbean.ontology.Ontology;
  */
 public class SesameConnection implements RDFConnection {
 
-    private static final URI RDF_TYPE = org.openrdf.model.vocabulary.RDF.TYPE;
-
-    private static final Var RDF_TYPE_VAR = new Var("rdf_type", RDF_TYPE);;
-
-    private static final Var SUBJECT_VAR = new Var("subject");
-
-    private static final ExtensionElem extensionElem = new ExtensionElem(new ValueConstant(RDF_TYPE),"_rdf_type");
-
-    private static final ProjectionElemList projections = new ProjectionElemList();
-
     static{
         SesameFunctions.init();
-
-        RDF_TYPE_VAR.setAnonymous(true);
-        projections.addElements(new ProjectionElem("subject"));
-        projections.addElements(new ProjectionElem("_rdf_type", "predicate"));
-        projections.addElements(new ProjectionElem("object"));
     }
 
     private final RepositoryConnection connection;
@@ -76,8 +58,6 @@ public class SesameConnection implements RDFConnection {
 
     @Nullable
     private SesameTransaction localTxn = null;
-
-    private final Ontology<UID> ontology;
 
     private boolean readonlyTnx = false;
 
@@ -92,12 +72,11 @@ public class SesameConnection implements RDFConnection {
 
     private final SesameRepository repository;
 
-    public SesameConnection(SesameRepository repository, RepositoryConnection connection, Ontology<UID> ontology, InferenceOptions inference) {
+    public SesameConnection(SesameRepository repository, RepositoryConnection connection, InferenceOptions inference) {
         this.repository = Assert.notNull(repository,"repository");
         this.connection = Assert.notNull(connection,"connection");
         this.vf = connection.getValueFactory();
         this.dialect = new SesameDialect(vf);
-        this.ontology = Assert.notNull(ontology,"ontology");
         this.inference = Assert.notNull(inference,"inference");
     }
 
@@ -227,76 +206,13 @@ public class SesameConnection implements RDFConnection {
         }
     }
 
-    private ModelResult findOfType(Collection<UID> types, @Nullable URI context){
-        try {
-            List<StatementPattern> patterns = new ArrayList<StatementPattern>();
-            Var contextVar = context != null ? new Var("context", context) : null;
-            for (UID type : types){
-                Var objectVar = new Var("object", dialect.getURI(type));
-                patterns.add(new StatementPattern(SUBJECT_VAR, RDF_TYPE_VAR, objectVar, contextVar));
-            }
-            Union union = new Union(patterns);
-            Extension extension = new Extension(union, extensionElem);
-            Projection projection = new Projection(extension, projections);
-            Reduced reduced = new Reduced(projection);
-            return DirectQuery.query(connection, new GraphQueryModel(reduced), false);
-        } catch (StoreException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-
-    private ModelResult findWithPredicates(Collection<UID> predicates, @Nullable URI context, Resource subject, Value object) {
-        try {
-            List<StatementPattern> patterns = new ArrayList<StatementPattern>();
-            Var subjectVar = new Var("subject", subject);
-            Var objectVar = new Var("object", object);
-            Var contextVar = context != null ? new Var("context", context) : null;
-            for (UID predicate : predicates){
-                Var predicateVar = new Var("predicate", dialect.getURI(predicate));
-                patterns.add(new StatementPattern(subjectVar, predicateVar, objectVar, contextVar));
-            }
-            Union union = new Union(patterns);
-            Extension extension = new Extension(union, extensionElem);
-            Projection projection = new Projection(extension, projections);
-            Reduced reduced = new Reduced(projection);
-            return DirectQuery.query(connection, new GraphQueryModel(reduced), false);
-        } catch (StoreException e) {
-            throw new RepositoryException(e);
-        }
-    }
-
-
     @Override
     public CloseableIterator<STMT> findStatements(ID sub, UID pre, NODE obj, UID con, boolean includeInferred) {
         Resource subject = convert(sub);
         URI predicate = convert(pre);
         Value object = convert(obj);
         URI context = convert(con);
-
-        if (includeInferred){
-            // subClassOf inference
-            if (subject == null && RDF.type.equals(pre) && obj instanceof UID && inference.subClassOf()){
-                Collection<UID> types = ontology.getSubtypes((UID)obj);
-                if (types.size() > 1){
-                    return new ModelResultIterator(dialect, findOfType(types, context), includeInferred);
-                }
-            }
-
-            // subPropertyOf inference
-            if (pre != null && inference.subPropertyOf()){
-                Collection<UID> predicates = ontology.getSubproperties(pre);
-                if (predicates.size() > 1){
-                    return new ModelResultIterator(dialect,
-                            findWithPredicates(predicates, context, subject, object), includeInferred);
-                }
-            }
-
-        }
-
-        // default results
-        return new ModelResultIterator(dialect,
-                findStatements(subject, predicate, object, includeInferred, context), includeInferred);
+        return new ModelResultIterator(dialect,findStatements(subject, predicate, object, includeInferred, context), includeInferred);
     }
 
     @Override
@@ -387,6 +303,6 @@ public class SesameConnection implements RDFConnection {
     
     @Override
     public InferenceOptions getInferenceOptions() {
-        return InferenceOptions.FULL;
+        return inference;
     }
 }

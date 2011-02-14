@@ -37,7 +37,7 @@ public class ConfigurationOntologyTest {
     
     private Configuration configuration;
     
-    private Ontology<UID> ontology;
+    private Ontology ontology;
     
     @Before
     public void setUp(){

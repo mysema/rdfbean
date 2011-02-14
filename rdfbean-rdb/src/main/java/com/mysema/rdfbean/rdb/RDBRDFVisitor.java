@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.rdb;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,6 @@ import com.mysema.query.sql.SQLCommonQuery;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLSubQuery;
 import com.mysema.query.types.*;
-import com.mysema.query.types.Operation;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.template.BooleanTemplate;
 import com.mysema.rdfbean.model.*;
@@ -134,6 +134,21 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             }
             return new TupleQueryImpl((SQLQuery)query, context.getConverters(), variables, pr, transformer);
 
+        }else if (queryType.equals(QueryLanguage.GRAPH)){    
+            if (md.getProjection().size() == 1 && md.getProjection().get(0) instanceof PatternBlock){
+                List<Expression<?>> pr = new ArrayList<Expression<?>>();
+                PatternBlock pattern = (PatternBlock)md.getProjection().get(0);
+                for (Expression<?> expr : Arrays.asList(pattern.getSubject(), pattern.getPredicate(), pattern.getObject(), pattern.getContext())){
+                    if (!(expr instanceof Constant)){
+                        pr.add(handle(expr, md));
+                    }
+                }
+                return new GraphQueryImpl((SQLQuery)query, context.getConverters(), pattern, pr, transformer); 
+                
+            }else{
+                throw new UnsupportedOperationException();
+            }
+            
         }else{
             // TODO
             throw new UnsupportedOperationException();

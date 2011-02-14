@@ -17,8 +17,6 @@ import org.openrdf.sail.nativerdf.NativeStore;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.FileIdSequence;
 import com.mysema.rdfbean.model.IdSequence;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.ontology.Ontology;
 
 
 /**
@@ -43,13 +41,8 @@ public class NativeRepository extends SesameRepository {
         setSesameInference(sesameInference);
     }
 
-    public NativeRepository(File dataDir, Ontology<UID> ontology) {
+    public NativeRepository(File dataDir) {
         this.dataDir = dataDir;
-        setOntology(ontology);
-    }
-
-    public NativeRepository(Ontology<UID> ontology) {
-        setOntology(ontology);
     }
 
     @Override

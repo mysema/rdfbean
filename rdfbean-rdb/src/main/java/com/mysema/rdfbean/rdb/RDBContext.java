@@ -48,8 +48,6 @@ public final class RDBContext implements Closeable{
         
     private final ConverterRegistry converterRegistry;
     
-    private final RDBOntology ontology;
-    
     private final Connection connection;
     
     private final IdFactory idFactory;
@@ -68,7 +66,6 @@ public final class RDBContext implements Closeable{
     
     public RDBContext(
             ConverterRegistry converterRegistry,
-            RDBOntology ontology,
             IdFactory idFactory, 
             BidiMap<NODE,Long> nodeCache,  
             BidiMap<Locale,Integer> langCache,
@@ -76,7 +73,6 @@ public final class RDBContext implements Closeable{
             Connection connection, 
             SQLTemplates templates) {
         this.converterRegistry = converterRegistry;
-        this.ontology = ontology;
         this.idFactory = idFactory;
         this.idSequence = idSequence;
         this.nodeCache = nodeCache;
@@ -196,10 +192,6 @@ public final class RDBContext implements Closeable{
     
     public Collection<NODE> getNodes() {
         return nodeCache.keySet();
-    }
-    
-    public RDBOntology getOntology() {
-        return ontology;
     }
     
     public <T> T convert(String value, Class<T> requiredType){

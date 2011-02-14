@@ -1,7 +1,6 @@
 package com.mysema.rdfbean.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,33 +25,42 @@ import com.mysema.query.types.*;
  * @author tiwe
  *
  */
-public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
+public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     private static final NODEComparator nodeComparator = new NODEComparator();
 
+    private static final Transformer<Bindings, Map<String,NODE>> bindingsToMap = new Transformer<Bindings, Map<String,NODE>>(){
+        @Override
+        public Map<String, NODE> transform(Bindings input) {
+            return input.toMap();
+        }        
+    };
+    
     private final RDFConnection connection;
 
-    private final Map<String, NODE> bindings;
-
+    
     public QueryRDFVisitor(RDFConnection connection) {
         this.connection = connection;
-        this.bindings = new HashMap<String, NODE>();
     }
 
     @Override
     public Object visit(QueryMetadata md, QueryLanguage<?, ?> queryType) {
-        final Iterable<Map<String, NODE>> iterable = (Iterable<Map<String, NODE>>) md.getWhere().accept(this, md);
+        Bindings initialBindings = new Bindings();
+        for (Map.Entry<ParamExpression<?>, Object> entry : md.getParams().entrySet()){
+            initialBindings.put(entry.getKey().getName(), (NODE) entry.getValue());
+        }
+        
+        Bindings whereBindings = new Bindings(initialBindings);
+        final Iterable<Bindings> iterable = (Iterable<Bindings>) md.getWhere().accept(this, whereBindings);
 
         // GRAPH
         if (queryType == QueryLanguage.GRAPH){
             if (md.getProjection().size() == 1 && md.getProjection().get(0) instanceof PatternBlock){
-                final Transformer<Map<String,NODE>, STMT> transformer =
-                    createStatementTransformer((PatternBlock)md.getProjection().get(0), md);
+                final Transformer<Bindings, STMT> transformer = createStatementTransformer((PatternBlock)md.getProjection().get(0));
                 return new GraphQuery(){
                     @Override
                     public CloseableIterator<STMT> getTriples() {
-                        return new IteratorAdapter<STMT>(
-                                new TransformIterator<Map<String, NODE>, STMT>(iterable.iterator(), transformer));
+                        return new IteratorAdapter<STMT>(new TransformIterator<Bindings, STMT>(iterable.iterator(), transformer));
                     }
                 };
             }else{
@@ -69,7 +77,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             return new TupleQuery(){
                 @Override
                 public CloseableIterator<Map<String, NODE>> getTuples() {
-                    return new IteratorAdapter<Map<String,NODE>>(iterable.iterator());
+                    return new IteratorAdapter<Map<String, NODE>>(new TransformIterator<Bindings, Map<String,NODE>>(iterable.iterator(), bindingsToMap));
                 }
                 @Override
                 public List<String> getVariables() {
@@ -93,10 +101,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     @SuppressWarnings("unchecked")
     @Override
-    public Object visit(UnionBlock expr, QueryMetadata context) {
+    public Iterable<Map<String, NODE>> visit(UnionBlock expr, Bindings context) {
         final List<Iterable<Map<String,NODE>>> iterables = new ArrayList<Iterable<Map<String,NODE>>>();
         for (Block block : expr.getBlocks()){
-            iterables.add((Iterable) block.accept(this, context));
+            iterables.add((Iterable) block.accept(this, new Bindings(context)));
         }
         return new Iterable<Map<String,NODE>>() {
             @Override
@@ -111,36 +119,38 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     }
 
     @Override
-    public Object visit(GroupBlock expr, QueryMetadata context) {
+    public Iterable<Bindings> visit(GroupBlock expr, Bindings context) {
         return visit((ContainerBlock)expr, context);
     }
 
     @Override
-    public Object visit(GraphBlock expr, QueryMetadata context) {
+    public Iterable<Bindings> visit(GraphBlock expr, Bindings context) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object visit(OptionalBlock expr, QueryMetadata context) {
+    public Iterable<Bindings> visit(OptionalBlock expr, Bindings context) {
         // TODO : handle optional correctly
         return visit((ContainerBlock)expr, context);
     }
 
-    private Iterable<Map<String,NODE>> visit(ContainerBlock expr, QueryMetadata context){
-        List<Iterable<Map<String,NODE>>> iterables = new ArrayList<Iterable<Map<String,NODE>>>();
+    private Iterable<Bindings> visit(ContainerBlock expr, Bindings context){
+        List<Iterable<Bindings>> iterables = new ArrayList<Iterable<Bindings>>();
+        Bindings blockContext = context;
         for (Block block : expr.getBlocks()){
-            iterables.add((Iterable) block.accept(this, context));
+            blockContext = new Bindings(blockContext);
+            iterables.add((Iterable) block.accept(this, blockContext));
         }
 
         // TODO : merge
-        final Iterable<Map<String,NODE>> iterable = iterables.get(0);
+        final Iterable<Bindings> iterable = iterables.get(0);
 
         if (expr.getFilters() != null){
-            final Predicate<Map<String,NODE>> predicate = (Predicate) expr.getFilters().accept(this, context);
-            return new Iterable<Map<String, NODE>>(){
+            final Predicate<Bindings> predicate = (Predicate) expr.getFilters().accept(this, blockContext);
+            return new Iterable<Bindings>(){
                 @Override
-                public Iterator<Map<String, NODE>> iterator() {
-                    return new FilterIterator<Map<String, NODE>>(iterable.iterator(), predicate);
+                public Iterator<Bindings> iterator() {
+                    return new FilterIterator<Bindings>(iterable.iterator(), predicate);
                 }
             };
         }else{
@@ -149,11 +159,11 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     }
 
     @Override
-    public Iterable<Map<String, NODE>> visit(final PatternBlock expr, final QueryMetadata context) {
-        final Transformer<STMT, Map<String, NODE>> transformer = createBindingsTransformer(expr);
-        return new Iterable<Map<String,NODE>>(){
+    public Iterable<Bindings> visit(final PatternBlock expr, final Bindings context) {
+        final Transformer<STMT, Bindings> transformer = createBindingsTransformer(expr, context);
+        return new Iterable<Bindings>(){
             @Override
-            public Iterator<Map<String,NODE>> iterator() {
+            public Iterator<Bindings> iterator() {
                 ID s = (ID) expr.getSubject().accept(QueryRDFVisitor.this, context);
                 UID p = (UID) expr.getPredicate().accept(QueryRDFVisitor.this, context);
                 NODE o = (NODE) expr.getObject().accept(QueryRDFVisitor.this, context);
@@ -161,53 +171,59 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 if (expr.getContext() != null){
                     c = (UID) expr.getContext().accept(QueryRDFVisitor.this, context);
                 }
-                return new TransformIterator<STMT, Map<String, NODE>>(connection.findStatements(s, p, o, c, false), transformer);
+                return new TransformIterator<STMT, Bindings>(connection.findStatements(s, p, o, c, false), transformer);
             }
         };
     }
 
-    private Transformer< Map<String, NODE>, STMT> createStatementTransformer(
-            final PatternBlock expr, final QueryMetadata context){
-        return new Transformer<Map<String,NODE>, STMT>(){
-            @Override
-            public STMT transform(Map<String, NODE> input) {
-                if (expr.getContext() != null){
+    private Transformer<Bindings, STMT> createStatementTransformer(final PatternBlock expr){
+        if (expr.getContext() != null){
+            return new Transformer<Bindings, STMT>(){
+                @Override
+                public STMT transform(Bindings input) {
                     return new STMT(
-                            (ID)expr.getSubject().accept(QueryRDFVisitor.this, context),
-                            (UID)expr.getPredicate().accept(QueryRDFVisitor.this, context),
-                            (NODE)expr.getObject().accept(QueryRDFVisitor.this, context)
-                    );
-                }else{
-                    return new STMT(
-                            (ID)expr.getSubject().accept(QueryRDFVisitor.this, context),
-                            (UID)expr.getPredicate().accept(QueryRDFVisitor.this, context),
-                            (NODE)expr.getObject().accept(QueryRDFVisitor.this, context),
-                            (UID)expr.getContext().accept(QueryRDFVisitor.this, context)
+                            (ID)expr.getSubject().accept(QueryRDFVisitor.this, input),
+                            (UID)expr.getPredicate().accept(QueryRDFVisitor.this, input),
+                            (NODE)expr.getObject().accept(QueryRDFVisitor.this, input),
+                            (UID)expr.getContext().accept(QueryRDFVisitor.this, input)
                     );
                 }
-
-            }
-        };
+            };    
+        }else{
+            return new Transformer<Bindings, STMT>(){
+                @Override
+                public STMT transform(Bindings input) {
+                    return new STMT(
+                            (ID)expr.getSubject().accept(QueryRDFVisitor.this, input),
+                            (UID)expr.getPredicate().accept(QueryRDFVisitor.this, input),
+                            (NODE)expr.getObject().accept(QueryRDFVisitor.this, input)
+                    );
+                }
+            };            
+        }
+        
     }
 
-    private Transformer<STMT, Map<String, NODE>> createBindingsTransformer(PatternBlock expr){
+    private Transformer<STMT, Bindings> createBindingsTransformer(PatternBlock expr, final Bindings bindings){
         final String s = getKey(expr.getSubject());
         final String p = getKey(expr.getPredicate());
         final String o = getKey(expr.getObject());
         final String c = getKey(expr.getContext());
-        return new Transformer<STMT, Map<String, NODE>>(){
+        
+        return new Transformer<STMT, Bindings>(){
             @Override
-            public Map<String, NODE> transform(STMT input) {
-                bind(s, input.getSubject());
-                bind(p, input.getPredicate());
-                bind(o, input.getObject());
-                bind(c, input.getContext());
+            public Bindings transform(STMT input) {
+                bindings.clear();
+                bind(bindings, s, input.getSubject());
+                bind(bindings, p, input.getPredicate());
+                bind(bindings, o, input.getObject());
+                bind(bindings, c, input.getContext());
                 return bindings;
             }
         };
     }
 
-    private void bind(String key, NODE value) {
+    private void bind(Bindings bindings, String key, NODE value) {
         if (key != null){
             bindings.put(key, value);
         }
@@ -224,18 +240,18 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     }
 
     @Override
-    public NODE visit(Constant<?> expr, QueryMetadata context) {
+    public NODE visit(Constant<?> expr, Bindings context) {
         return (NODE) expr.getConstant();
     }
 
     @Override
-    public Object visit(FactoryExpression<?> expr, QueryMetadata context) {
+    public Object visit(FactoryExpression<?> expr, Bindings context) {
         throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Predicate visit(final Operation<?> expr, final QueryMetadata context) {
+    public Predicate visit(final Operation<?> expr, final Bindings context) {
         final Operator<?> op = expr.getOperator();
         if (op == Ops.EQ_OBJECT || op == Ops.EQ_PRIMITIVE){
             return new Predicate(){
@@ -249,7 +265,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         }else if (op == Ops.NE_OBJECT || op == Ops.NE_PRIMITIVE){
             return new Predicate(){
                 @Override
-                public boolean evaluate(Object object) {
+                public boolean evaluate(Object object) {                    
                     return !ObjectUtils.equals(
                             expr.getArg(0).accept(QueryRDFVisitor.this, context),
                             expr.getArg(1).accept(QueryRDFVisitor.this, context));
@@ -273,7 +289,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             return new Predicate(){
                 @Override
                 public boolean evaluate(Object object) {
-                    boolean rv =  bindings.get(key) != null;
+                    boolean rv =  context.get(key) != null;
                     return op == Ops.IS_NOT_NULL ? rv : !rv;
                 }
             };
@@ -283,7 +299,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             return new Predicate(){
                 @Override
                 public boolean evaluate(Object object) {
-                    return bindings.get(key) != null;
+                    return context.get(key) != null;
                 }
             };
 
@@ -310,22 +326,22 @@ public class QueryRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     }
 
     @Override
-    public NODE visit(ParamExpression<?> expr, QueryMetadata context) {
-        return (NODE) context.getParams().get(expr);
+    public NODE visit(ParamExpression<?> expr, Bindings context) {
+        return context.get(expr.getName());
     }
 
     @Override
-    public NODE visit(Path<?> expr, QueryMetadata context) {
-        return bindings.get(expr.getMetadata().getExpression().toString());
+    public NODE visit(Path<?> expr, Bindings context) {
+        return context.get(expr.getMetadata().getExpression().toString());
     }
 
     @Override
-    public Object visit(SubQueryExpression<?> expr, QueryMetadata context) {
+    public Object visit(SubQueryExpression<?> expr, Bindings context) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Object visit(TemplateExpression<?> expr, QueryMetadata context) {
+    public Object visit(TemplateExpression<?> expr, Bindings context) {
         throw new UnsupportedOperationException();
     }
 

@@ -31,6 +31,7 @@ import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.TupleQuery;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.object.Session;
+import com.mysema.rdfbean.ontology.Ontology;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
@@ -41,14 +42,17 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
 
     private final Session session;
     
+    private final Ontology ontology;
+    
     private final ConverterRegistry converterRegistry;
 
     private final RDFConnection connection;
     
-    public BeanQueryImpl(Session session, RDFConnection connection) {
+    public BeanQueryImpl(Session session, Ontology ontology, RDFConnection connection) {
         super(new QueryMixin<BeanQueryImpl>());
         queryMixin.setSelf(this);
         this.session = session;
+        this.ontology = ontology;
         this.converterRegistry = session.getConfiguration().getConverterRegistry();
         this.connection = connection;
     }
@@ -90,6 +94,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 connection, 
                 session, 
                 session.getConfiguration(),
+                ontology,
                 queryMixin.getMetadata());
         return builder;
     }

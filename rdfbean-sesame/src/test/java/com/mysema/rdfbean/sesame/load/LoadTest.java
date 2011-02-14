@@ -23,17 +23,13 @@ import org.junit.Test;
 import com.mysema.rdfbean.domains.LoadDomain;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.Repository;
-import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.object.ConfigurationOntology;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.FlushMode;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
-import com.mysema.rdfbean.ontology.Ontology;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 import com.mysema.rdfbean.sesame.NativeRepository;
-import com.mysema.rdfbean.sesame.SesameRepository;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 
 public class LoadTest extends SessionTestBase implements LoadDomain{    
@@ -42,12 +38,9 @@ public class LoadTest extends SessionTestBase implements LoadDomain{
 
     private Configuration configuration;
     
-    private Ontology<UID> ontology;
-    
     @Before
     public void setUp(){
         configuration = new DefaultConfiguration(Revision.class, Entity.class, Document.class);
-        ontology = new ConfigurationOntology(configuration);
     }
     
     @After
@@ -75,9 +68,9 @@ public class LoadTest extends SessionTestBase implements LoadDomain{
     private void loadTest(String label, Repository repository) throws IOException{
         writer.write("testing " + label + "\n");
         
-        if (repository instanceof SesameRepository){
-            ((SesameRepository)repository).setOntology(ontology);
-        }
+//        if (repository instanceof SesameRepository){
+//            ((SesameRepository)repository).setOntology(ontology);
+//        }
         
         for (int size : Arrays.asList(10, 50, 100, 500, 1000, 5000, 10000, 50000)){
             SessionFactoryImpl sessionFactory = new SessionFactoryImpl(Locale.ENGLISH);

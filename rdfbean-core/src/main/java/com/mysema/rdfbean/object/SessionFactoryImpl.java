@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.ontology.Ontology;
 
 /**
  * SessionFactoryImpl is the default implementation of the SessionFactory interface
@@ -22,6 +23,8 @@ import com.mysema.rdfbean.model.Repository;
 public class SessionFactoryImpl implements SessionFactory {
 
     private Configuration configuration;
+    
+    private Ontology ontology;
     
     private Iterable<Locale> locales;
     
@@ -78,7 +81,7 @@ public class SessionFactoryImpl implements SessionFactory {
     @Override
     public Session openSession() {
         RDFConnection connection = repository.openConnection();
-        SessionImpl session = new SessionImpl(configuration, connection, getLocales());
+        SessionImpl session = new SessionImpl(configuration, ontology, connection, getLocales());
         if (objectRepositories != null) {
             for (Map.Entry<String, ObjectRepository> entry : objectRepositories.entrySet()) {
                 session.addParent(entry.getKey(), entry.getValue());
@@ -89,6 +92,7 @@ public class SessionFactoryImpl implements SessionFactory {
     
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
+        this.ontology = new ConfigurationOntology(configuration);
     }
 
     public void setLocale(Locale locale) {

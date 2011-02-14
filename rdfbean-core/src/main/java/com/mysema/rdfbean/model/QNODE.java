@@ -71,5 +71,17 @@ public class QNODE<T extends NODE> extends Param<T>{
         }
         return BooleanExpression.anyOf(ors);
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this){
+            return true;
+        }else if (o instanceof QNODE<?>){
+            QNODE<?> other = (QNODE<?>)o;
+            return other.getName().equals(getName());
+        }else{
+            return false;
+        }
+    }
 
 }

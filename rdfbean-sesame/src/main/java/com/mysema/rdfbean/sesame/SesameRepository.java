@@ -8,7 +8,6 @@ package com.mysema.rdfbean.sesame;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -31,16 +30,13 @@ import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.InferenceOptions;
-import com.mysema.rdfbean.model.RDFConnectionCallback;
 import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RDFConnectionCallback;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.RDFSource;
-import com.mysema.rdfbean.ontology.EmptyOntology;
-import com.mysema.rdfbean.ontology.Ontology;
-import com.mysema.rdfbean.ontology.RepositoryOntology;
 
 /**
  * SesameRepository provides a base class for Sesame repository based RDFBean repositories
@@ -52,9 +48,6 @@ import com.mysema.rdfbean.ontology.RepositoryOntology;
 public abstract class SesameRepository implements Repository{
 
     private static final Logger logger = LoggerFactory.getLogger(SesameRepository.class);
-
-    @Nullable
-    private Ontology<UID> ontology;
 
     private RDFSource[] sources;
 
@@ -170,16 +163,6 @@ public abstract class SesameRepository implements Repository{
                     connection.close();
                 }
 
-                if (ontology == null){
-                    ontology = EmptyOntology.DEFAULT;
-                    RepositoryOntology schemaOntology = new RepositoryOntology(this);
-                    ontology = schemaOntology;
-                }
-
-            } catch (MalformedURLException e) {
-                throw new RepositoryException(e);
-            } catch (IOException e) {
-                throw new RepositoryException(e);
             } catch (StoreException e) {
                 throw new RepositoryException(e);
             }
@@ -223,16 +206,12 @@ public abstract class SesameRepository implements Repository{
     @Override
     public RDFConnection openConnection() {
         try {
-            return new SesameConnection(this, repository.getConnection(), ontology, getInferenceOptions());
+            return new SesameConnection(this, repository.getConnection(), getInferenceOptions());
         } catch (StoreException e) {
             throw new RepositoryException(e);
         }
     }
     
-    public final void setOntology(Ontology<UID> ontology) {
-        this.ontology = ontology;
-    }
-
     public final void setSesameInference(boolean sesameInference) {
         this.sesameInference = sesameInference;
         this.inference = sesameInference ? InferenceOptions.LITERAL : InferenceOptions.FULL;

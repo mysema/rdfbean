@@ -22,9 +22,11 @@ import com.mysema.rdfbean.model.SPARQLVisitor;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanSubQuery;
 import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.ConfigurationOntology;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionImpl;
+import com.mysema.rdfbean.ontology.Ontology;
 
 @SuppressWarnings("unchecked")
 public class RDFQueryBuilderTest {
@@ -44,8 +46,9 @@ public class RDFQueryBuilderTest {
         metadata = new DefaultQueryMetadata();
         RDFConnection connection = new MiniRepository().openConnection();
         Configuration configuration = new DefaultConfiguration(User.class);
-        Session session = new SessionImpl(configuration, connection);
-        builder = new RDFQueryBuilder(connection, session, configuration, metadata);
+        Ontology ontology = new ConfigurationOntology(configuration);
+        Session session = new SessionImpl(configuration, new ConfigurationOntology(configuration), connection);
+        builder = new RDFQueryBuilder(connection, session, configuration, ontology, metadata);
         query = new QueryMixin(metadata);
     }
 

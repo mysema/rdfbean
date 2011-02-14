@@ -249,12 +249,7 @@ public class RDBConnection implements RDFConnection{
             exprs.add(statement.predicate);
         }
         if (object != null){
-            if (RDF.type.equals(predicate) && includeInferred){
-                Collection<Long> ids = context.getOntology().getSubtypes(getId(object));
-                query.where(statement.object.in(ids));
-            }else{
-                query.where(statement.object.eq(getId(object)));
-            }
+            query.where(statement.object.eq(getId(object)));
         }else{
             query.innerJoin(statement.objectFk, obj);
             exprs.add(obj.resource);
