@@ -1,22 +1,23 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.model;
 
 import java.util.Collection;
 
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.query.QueryMetadata;
 
 /**
  * MiniConnection is an RDFConnection implementation for the MiniRepository
- * 
+ *
  * @author sasa
  *
  */
 public class MiniConnection implements RDFConnection {
-    
+
     private final MiniRepository repository;
 
     public MiniConnection(MiniRepository repository) {
@@ -35,7 +36,7 @@ public class MiniConnection implements RDFConnection {
     @Override
     public void clear() {
     }
-    
+
     @Override
     public void close() {
     }
@@ -45,9 +46,18 @@ public class MiniConnection implements RDFConnection {
         return new BID();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-        throw new UnsupportedOperationException();
+        if (queryLanguage == QueryLanguage.TUPLE
+            || queryLanguage == QueryLanguage.GRAPH
+            || queryLanguage == QueryLanguage.BOOLEAN){
+            QueryRDFVisitor visitor = new QueryRDFVisitor(this);
+            return (Q) visitor.visit((QueryMetadata)definition, queryLanguage);
+
+        }else{
+            throw new UnsupportedOperationException(queryLanguage.toString());
+        }
     }
 
     @Override
@@ -60,7 +70,7 @@ public class MiniConnection implements RDFConnection {
             NODE object, UID context, boolean includeInferred) {
         return repository.findStatements(subject, predicate, object, context, includeInferred);
     }
-    
+
     @Override
     public long getNextLocalId() {
         return repository.getNextLocalId();
