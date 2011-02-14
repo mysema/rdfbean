@@ -36,7 +36,6 @@ import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.RDFSource;
-import com.mysema.rdfbean.ontology.Ontology;
 
 /**
  * SesameRepository provides a base class for Sesame repository based RDFBean repositories
