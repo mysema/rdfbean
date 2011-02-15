@@ -56,11 +56,11 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     private final Session session;
 
     private final Configuration configuration;
-    
+
     private final Ontology ontology;
 
     private final QueryOptions queryOptions;
-    
+
     private final InferenceOptions inferenceOptions;
 
     private final QueryMetadata metadata;
@@ -126,7 +126,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             for (OrderSpecifier<?> os : metadata.getOrderBy()){
                 query.orderBy(transform(filters, os));
             }
-            
+
             // limit + offset
             query.restrict(metadata.getModifiers());
 
@@ -191,7 +191,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         pathToMapped.put(path, pathNode);
         if (rdfType != null){
             Collection<UID> types = ontology.getSubtypes(rdfType);
-            if (types.size() > 1){
+            if (types.size() > 1 && inferenceOptions.subClassOf()){
                 QID type = new QID(path+"_type");
                 filters.add(type.in(types));
                 return Blocks.pattern(pathNode, RDF.type, type);
@@ -201,8 +201,8 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     return Blocks.pattern(pathNode, RDF.type, rdfType, context);
                 }else{
                     return Blocks.pattern(pathNode, RDF.type, rdfType);
-                }    
-            }            
+                }
+            }
         } else {
             throw new IllegalArgumentException("No types mapped against " + path.getType().getName());
         }
@@ -290,7 +290,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
         }else if (javaValue instanceof String){
             return new ConstantImpl<LIT>(new LIT(javaValue.toString(), XSD.stringType));
-            
+
         }else if (converter.supports(javaValue.getClass())){
             String label = converter.toString(javaValue);
             UID datatype = converter.getDatatype(javaValue.getClass());
@@ -375,7 +375,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                         Constant<?> rhs = (Constant<?>)transform(expr.getArg(1), filters);
                         params.put(lhs, rhs.getConstant());
                         return null;
-                        
+
                     }else if (expr.getArg(1) instanceof Path){
                         if (pathToMapped.containsKey(expr.getArg(0))){
                             if (!pathToMapped.containsKey(expr.getArg(1))){
@@ -401,7 +401,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                     rhs = (Predicate) transform(expr.getArg(0), filters);
                 }else{
                     lhs = (Predicate) transform(expr.getArg(0), filters);
-                    rhs = (Predicate) transform(expr.getArg(1), filters);    
+                    rhs = (Predicate) transform(expr.getArg(1), filters);
                 }
                 return lhs == null ? rhs : (rhs == null ? lhs : ExpressionUtils.and(lhs, rhs));
 
@@ -409,7 +409,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 Expression<?> lhs = expr.getArg(0);
                 if (leftPath){
                     lhs = transform(lhs, filters);
-                }                
+                }
                 if ((leftPath && rightPath) || (leftConstant && rightPath)){
                     expr = (Operation)ExpressionUtils.eq(lhs, (Expression)expr.getArg(1));
                 }else if (leftPath && rightConstant){
@@ -541,8 +541,8 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         if (NODE.class.isAssignableFrom(expr.getType())){
             return expr;
         }else{
-            throw new UnsupportedOperationException();    
-        }        
+            throw new UnsupportedOperationException();
+        }
     }
 
     @SuppressWarnings("unchecked")

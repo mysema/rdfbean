@@ -153,6 +153,11 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     @SuppressWarnings("unchecked")
+    private Predicate<Bindings> createNotPredicate(Operation<?> expr, Bindings bindings) {
+        return new NotPredicate<Bindings>( (Predicate<Bindings>) expr.getArg(0).accept(this, bindings));
+    }
+
+    @SuppressWarnings("unchecked")
     private Predicate<Bindings> createOrPredicate(final Operation<?> expr,
             Bindings bindings) {
         return new AnyPredicate<Bindings>( new Predicate[]{
@@ -303,7 +308,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             return createOrPredicate(expr, bindings);
 
         }else if (op == Ops.NOT){
-            return new NotPredicate( (Predicate) expr.getArg(0).accept(this, bindings));
+            return createNotPredicate(expr, bindings);
 
         }else if (op == Ops.IS_NULL || op == Ops.IS_NOT_NULL){
             return createBoundPredicate(expr, op);
@@ -351,6 +356,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         return Pair.of(iterable, bindings);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object visit(QueryMetadata md, QueryLanguage<?, ?> queryType) {
         Bindings initialBindings = new Bindings();
@@ -398,6 +404,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             Pair<Iterable<Bindings>, Bindings> iterableAndBindings = (Pair)block.accept(this, bindings);
             iterables.add(iterableAndBindings.getFirst());
         }
+
         Iterable<Bindings> iterable =  new Iterable<Bindings>() {
             @Override
             public Iterator<Bindings> iterator() {
@@ -408,6 +415,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 return chain;
             }
         };
+
         return Pair.of(iterable, bindings);
     }
 
