@@ -21,10 +21,17 @@ public class SessionRule implements MethodRule{
     
     private final Repository repository;
     
-    public SessionRule(Repository repository) {
+    private final boolean transactional;
+    
+    public SessionRule(Repository repository, boolean transactional) {
         this.repository = repository;
+        this.transactional = transactional;
     }
 
+    public SessionRule(Repository repository) {
+        this(repository, true);
+    }
+    
     @Override
     public Statement apply(final Statement base, FrameworkMethod method, final Object target) {
         final SessionConfig config = target.getClass().getAnnotation(SessionConfig.class);
@@ -33,14 +40,16 @@ public class SessionRule implements MethodRule{
                 @Override
                 public void evaluate() throws Throwable {
                     Session session = SessionUtil.openSession(repository, new Locale("fi"), config.value());
-                    RDFBeanTransaction tx = session.beginTransaction();     
+                    RDFBeanTransaction tx = transactional ? session.beginTransaction() : null;     
                     try{
                         Field field = target.getClass().getField("session");
                         field.setAccessible(true);
                         field.set(target, session);
                         base.evaluate();    
                     }finally{
-                        tx.rollback();
+                        if (tx != null){
+                            tx.rollback();    
+                        }
                         session.close();
                     }                    
                 }                

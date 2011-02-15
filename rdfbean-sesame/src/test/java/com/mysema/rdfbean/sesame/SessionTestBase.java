@@ -38,7 +38,7 @@ import com.mysema.rdfbean.testutil.SessionRule;
  * @author sasa
  *
  */
-public class SessionTestBase implements SimpleDomain{
+public abstract class SessionTestBase implements SimpleDomain{
     
     protected static final QSimpleType var = new QSimpleType("var");
     

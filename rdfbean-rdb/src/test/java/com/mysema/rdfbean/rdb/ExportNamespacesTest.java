@@ -46,6 +46,7 @@ public class ExportNamespacesTest extends AbstractRDBTest{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         repository.export(Format.TURTLE, null, baos);
         String result = new String(baos.toByteArray(), "UTF-8");
+//        System.err.println(result);
         assertTrue(result.contains("owl:Class a rdfs:Class"));
         assertTrue(result.contains("rdf:type a rdf:Property"));
         assertTrue(result.contains("rdf:Property a rdfs:Class"));
@@ -59,7 +60,7 @@ public class ExportNamespacesTest extends AbstractRDBTest{
         ns2prefix.put(RDF.NS, "r");
         repository.export(Format.TURTLE, ns2prefix, null, baos);
         String result = new String(baos.toByteArray(), "UTF-8");
-        System.err.println(result);
+//        System.err.println(result);
         assertTrue(result.contains("<http://www.w3.org/2002/07/owl#Class> a <http://www.w3.org/2000/01/rdf-schema#Class>"));
         assertTrue(result.contains("r:type a r:Property"));
         assertTrue(result.contains("r:Property a <http://www.w3.org/2000/01/rdf-schema#Class>"));

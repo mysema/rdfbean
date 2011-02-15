@@ -73,6 +73,13 @@ public final class MiniRepository implements Repository{
         }
     }
 
+    public void clear(){
+        subjects.clear();
+        if (objects != null){
+            objects.clear();
+        }
+    }
+    
     @Override
     public void close() {
 

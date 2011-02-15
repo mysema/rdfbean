@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  */
-package com.mysema.rdfbean.rdb.query;
+package com.mysema.rdfbean.query;
 
 import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
@@ -18,11 +18,10 @@ import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Company;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.Department;
 import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.User;
 import com.mysema.rdfbean.object.BeanQuery;
-import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({User.class, Department.class, Company.class})
-public class JoinsTest extends AbstractRDBTest implements UserDepartmentCompanyDomain{
+public class JoinsTest extends SessionTestBase implements UserDepartmentCompanyDomain{
     
     private User u = Alias.alias(User.class);
     

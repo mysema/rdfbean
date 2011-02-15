@@ -88,4 +88,18 @@ public class GroupBlock implements ContainerBlock{
         }
     }
 
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("{ ");
+        for (Block block : blocks){
+            builder.append(block.toString()).append(" ");
+        }
+        if (filters != null){
+            builder.append(" FILTER(").append(filters).append(")");
+        }
+        builder.append(" }");
+        return builder.toString();
+    }
+    
 }

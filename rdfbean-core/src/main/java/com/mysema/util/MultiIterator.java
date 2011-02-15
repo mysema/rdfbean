@@ -3,7 +3,7 @@
  * All rights reserved.
  *
  */
-package com.mysema.rdfbean.model;
+package com.mysema.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,28 +13,28 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nullable;
 
 /**
- * MultiBindingsIterator provides a cartesian view on the given iterators
+ * MultiIterator provides a cartesian view on the given iterators
  *
  * @author tiwe
  */
-public class MultiBindingsIterator implements Iterator<Bindings> {
+public class MultiIterator<T> implements Iterator<T> {
 
     @Nullable
     private Boolean hasNext;
 
     private int index = 0;
 
-    private final List<Iterable<Bindings>> iterables;
+    private final List<? extends Iterable<T>> iterables;
 
-    private final List<Iterator<Bindings>> iterators;
+    private final List<Iterator<T>> iterators;
 
     private final boolean[] lastEntry;
 
-    private Bindings last;
+    private T last;
 
-    public MultiBindingsIterator(List<Iterable<Bindings>> iterables){
+    public MultiIterator(List<? extends Iterable<T>> iterables){
         this.iterables = iterables;
-        this.iterators = new ArrayList<Iterator<Bindings>>(iterables.size());
+        this.iterators = new ArrayList<Iterator<T>>(iterables.size());
         for (int i = 0; i < iterables.size(); i++){
             iterators.add(null);
         }
@@ -50,7 +50,7 @@ public class MultiBindingsIterator implements Iterator<Bindings> {
     }
 
     @Override
-    public Bindings next() {
+    public T next() {
         while (hasNext == null) {
             produceNext();
         }
@@ -71,9 +71,9 @@ public class MultiBindingsIterator implements Iterator<Bindings> {
                 hasNext = i == 0 ? Boolean.FALSE : null;
                 return;
             }
-            Bindings bindings = iterators.get(i).next();
+            T value = iterators.get(i).next();
             if (i == iterables.size() -1){
-                last = bindings;
+                last = value;
             }
             lastEntry[i] = !iterators.get(i).hasNext();
             hasNext = Boolean.TRUE;

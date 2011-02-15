@@ -5,6 +5,10 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+/**
+ * @author tiwe
+ *
+ */
 public class Bindings {
 
     private final Map<String, NODE> bindings = new HashMap<String, NODE>();
@@ -41,13 +45,20 @@ public class Bindings {
     }
 
     public Map<String, NODE> toMap(){
-        if (parent != null){
-            Map<String, NODE> rv = new HashMap<String, NODE>(bindings);
+        Map<String, NODE> rv = new HashMap<String, NODE>(bindings);
+        if (parent != null){            
             rv.putAll(parent.toMap());
-            return rv;
-        }else{
-            return bindings;
         }
+        return rv;
     }
 
+    @Override
+    public String toString(){
+        if (parent != null){
+            return parent + " " + bindings;    
+        }else{
+            return bindings.toString();
+        }
+        
+    }
 }

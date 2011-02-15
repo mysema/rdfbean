@@ -100,4 +100,13 @@ public class PatternBlock implements Block{
         }
     }
     
+    @Override
+    public String toString(){
+        if (context != null){
+            return subject + " " + predicate + " " + object + " " + context + " .";
+        }else{
+            return subject + " " + predicate + " " + object + " .";
+        }
+    }
+    
 }

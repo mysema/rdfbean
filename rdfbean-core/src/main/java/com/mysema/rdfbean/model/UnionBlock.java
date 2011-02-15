@@ -70,5 +70,17 @@ public class UnionBlock implements Block{
             return false;
         }
     }
+    
+    @Override
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        for (Block block : blocks){
+            if (builder.length() > 0){
+                builder.append(" UNION ");
+            }
+            builder.append(block.toString());
+        }
+        return builder.toString();
+    }
 
 }
