@@ -52,9 +52,7 @@ public class RDBConnection implements RDFConnection{
     private static final int DELETE_BATCH = 1000;
 
     private static final Timestamp DEFAULT_TIMESTAMP = new Timestamp(0);
-    
-    private static final QueryOptions queryOptions = new QueryOptions(true, true, true);
-    
+
     public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
 
     public static final QSymbol con = new QSymbol("context");
@@ -66,7 +64,7 @@ public class RDBConnection implements RDFConnection{
     public static final QSymbol sub = new QSymbol("subject");
 
     private final RDBContext context;
-    
+
     private final long defaultDatatypeId;
 
     private final int defaultLocaleId;
@@ -85,12 +83,12 @@ public class RDBConnection implements RDFConnection{
             }
         }
     };
-    
+
     private final Transformer<Long,NODE> cachingNodeTransformer = new Transformer<Long,NODE>(){
         @Override
         public NODE transform(Long input) {
             return context.getNode(input, nodeTransformer);
-        }        
+        }
     };
 
     public RDBConnection(RDBContext context) {
@@ -203,14 +201,14 @@ public class RDBConnection implements RDFConnection{
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-        if (queryLanguage.equals(QueryLanguage.TUPLE) || 
-            queryLanguage.equals(QueryLanguage.BOOLEAN) || 
+        if (queryLanguage.equals(QueryLanguage.TUPLE) ||
+            queryLanguage.equals(QueryLanguage.BOOLEAN) ||
             queryLanguage.equals(QueryLanguage.GRAPH)){
             RDBRDFVisitor visitor = new RDBRDFVisitor(context, cachingNodeTransformer);
             return (Q) visitor.visit((QueryMetadata)definition, queryLanguage);
         }else{
-            throw new UnsupportedOperationException();    
-        }                
+            throw new UnsupportedOperationException();
+        }
     }
 
     public void deleteFromContext(UID model) {
@@ -534,11 +532,11 @@ public class RDBConnection implements RDFConnection{
 
     @Override
     public QueryOptions getQueryOptions() {
-        return queryOptions;
+        return QueryOptions.ALL;
     }
-    
+
     @Override
     public InferenceOptions getInferenceOptions() {
-        return InferenceOptions.FULL;
+        return InferenceOptions.DEFAULT;
     }
 }

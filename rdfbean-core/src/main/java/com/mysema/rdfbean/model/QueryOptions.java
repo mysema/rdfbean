@@ -4,17 +4,26 @@ package com.mysema.rdfbean.model;
  * @author tiwe
  *
  */
-public final class QueryOptions {
-    
-    public static final QueryOptions DEFAULT = new QueryOptions(false, false, false);
-    
-    private final boolean countViaAggregation;
-    
-    private final boolean preserveStringOps;
+public enum QueryOptions {
 
-    private final boolean addTypeSuffix;
+    /**
+     *
+     */
+    ALL(true, true, true),
 
-    public QueryOptions(boolean countViaAggregation, boolean preserveStringOps, boolean addTypeSuffix) {
+    /**
+     *
+     */
+    COUNT_VIA_AGGREGATION(true, false, false),
+
+    /**
+     *
+     */
+    DEFAULT(false, false, false);
+
+    private final boolean countViaAggregation, preserveStringOps, addTypeSuffix;
+
+    private QueryOptions(boolean countViaAggregation, boolean preserveStringOps, boolean addTypeSuffix) {
         this.countViaAggregation = countViaAggregation;
         this.preserveStringOps = preserveStringOps;
         this.addTypeSuffix = addTypeSuffix;
@@ -30,15 +39,6 @@ public final class QueryOptions {
 
     public boolean isAddTypeSuffix() {
         return addTypeSuffix;
-    }
-    
-    @Override
-    public String toString(){
-        StringBuilder builder = new StringBuilder();
-        builder.append("countViaAggregation=").append(countViaAggregation);
-        builder.append(",preserveStringOps=").append(preserveStringOps);
-        builder.append(",addTypeSuffix=").append(addTypeSuffix);
-        return builder.toString();
     }
 
 }

@@ -32,7 +32,7 @@ public class MultiTransactionTest {
                 
                 @Override
                 public InferenceOptions getInferenceOptions() {
-                    return InferenceOptions.FULL;
+                    return InferenceOptions.DEFAULT;
                 }
 
         };

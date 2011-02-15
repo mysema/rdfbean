@@ -56,7 +56,7 @@ public abstract class SesameRepository implements Repository{
 
     private boolean sesameInference = false;
 
-    private InferenceOptions inference = InferenceOptions.FULL;
+    private InferenceOptions inference = InferenceOptions.DEFAULT;
     
     private final ValueFactory valueFactory = new ValueFactoryImpl();
 
@@ -209,7 +209,7 @@ public abstract class SesameRepository implements Repository{
     
     public final void setSesameInference(boolean sesameInference) {
         this.sesameInference = sesameInference;
-        this.inference = sesameInference ? InferenceOptions.LITERAL : InferenceOptions.FULL;
+        this.inference = sesameInference ? InferenceOptions.LITERAL : InferenceOptions.DEFAULT;
     }
 
     public void setSources(RDFSource... sources) {

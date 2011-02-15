@@ -102,6 +102,6 @@ public class MiniConnection implements RDFConnection {
 
     @Override
     public InferenceOptions getInferenceOptions() {
-        return InferenceOptions.FULL;
+        return InferenceOptions.DEFAULT;
     }
 }

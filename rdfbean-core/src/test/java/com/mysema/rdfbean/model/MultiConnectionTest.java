@@ -39,7 +39,7 @@ public class MultiConnectionTest {
 
             @Override
             public InferenceOptions getInferenceOptions() {
-                return InferenceOptions.FULL;
+                return InferenceOptions.DEFAULT;
             }
         };
 

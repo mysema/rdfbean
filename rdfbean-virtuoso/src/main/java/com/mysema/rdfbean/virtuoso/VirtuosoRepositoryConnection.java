@@ -45,8 +45,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
 
-    private static final QueryOptions QUERY_OPTIONS = new QueryOptions(true, false, false);
-
     private static final int BATCH_SIZE = 5000;
 
     private static final String DEFAULT_OUTPUT = "sparql\n ";
@@ -604,11 +602,11 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     @Override
     public QueryOptions getQueryOptions() {
-        return QUERY_OPTIONS;
+        return QueryOptions.COUNT_VIA_AGGREGATION;
     }
-    
+
     @Override
     public InferenceOptions getInferenceOptions() {
-        return InferenceOptions.FULL;
+        return InferenceOptions.DEFAULT;
     }
 }
