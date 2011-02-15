@@ -2,6 +2,8 @@ package com.mysema.rdfbean.rdb;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.Transformer;
 
 import com.mysema.query.types.Constant;
@@ -17,19 +19,23 @@ import com.mysema.rdfbean.model.UID;
 public class STMTFactoryExpression implements FactoryExpression<STMT>{
 
     private static final long serialVersionUID = 2264837934860429836L;
-    
+
     private final List<Expression<?>> args;
-    
+
     private final Transformer<Long, NODE> transformer;
-    
+
+    @Nullable
     private final ID subject;
-    
+
+    @Nullable
     private final UID predicate;
-    
+
+    @Nullable
     private final NODE object;
-    
+
+    @Nullable
     private final UID context;
-    
+
     public STMTFactoryExpression(PatternBlock pattern, List<Expression<?>> args, Transformer<Long, NODE> transformer) {
         this.args = args;
         this.transformer = transformer;
@@ -38,7 +44,8 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
         this.object = getConstant(pattern.getObject());
         this.context = (UID) getConstant(pattern.getContext());
     }
-    
+
+    @Nullable
     private NODE getConstant(Expression<?> expr){
         if (expr instanceof Constant<?>){
             return (NODE)((Constant<?>) expr).getConstant();
@@ -46,7 +53,7 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
             return null;
         }
     }
-    
+
     @Override
     public List<Expression<?>> getArgs() {
         return args;
@@ -64,7 +71,7 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
         }
         return new STMT(s, p, o, c);
     }
-    
+
     @Override
     public <R, C> R accept(Visitor<R, C> v, C context) {
         return v.visit(this, context);

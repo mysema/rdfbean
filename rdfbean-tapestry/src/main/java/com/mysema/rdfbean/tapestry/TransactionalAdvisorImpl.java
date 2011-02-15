@@ -65,18 +65,14 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
 
     private boolean isIntercepted(Transactional annotation) {
         switch(annotation.propagation()){
-        case REQUIRED:
-        case REQUIRES_NEW:
-        case NESTED:
-        case MANDATORY:
-            return true;
-
         case NOT_SUPPORTED:
         case NEVER:
         case SUPPORTS:
             return false;
+        default:
+            return true;
         }
-        return true;
+
     }
 
     public RDFBeanTransaction doBegin(Session session) {
