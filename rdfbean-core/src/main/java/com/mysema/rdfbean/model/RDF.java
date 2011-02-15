@@ -1,18 +1,16 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.model;
 
-import java.util.Arrays;
-import java.util.Collection;
 
 
 
 /**
  * Namespace file for the RDF namespace
- * 
+ *
  * @author sasa
  *
  */
@@ -52,27 +50,7 @@ public final class RDF {
     public static final UID nil = new UID(NS, "nil");
 
     public static final UID text = new UID(NS, "text");
-    
-    public static final Collection<UID> ALL = Arrays.asList(
-            type,
-            Property,
-            XMLLiteral,
-            subject,
-            predicate,
-            object,
-            Statement,
-            Bag,
-            Alt,
-            Seq,
-            value,
-            li,
-            List,
-            first,
-            rest,
-            nil,
-            text);
-    
-    
+
     private RDF() {}
 
     public static UID getContainerMembershipProperty(int i) {
@@ -85,7 +63,7 @@ public final class RDF {
     public static boolean isContainerMembershipProperty(UID predicate) {
         return NS.equals(predicate.ns()) && isContainerMembershipPropertyLocalName(predicate.ln());
     }
-    
+
     public static boolean isContainerMembershipPropertyLocalName(String ln) {
         boolean result = false;
         if (ln.length() >= 2 && ln.charAt(0) == '_') {

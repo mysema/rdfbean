@@ -1,7 +1,6 @@
 package com.mysema.rdfbean.model;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,10 +23,8 @@ public final class Blocks {
     private static final Map<UID, Constant<UID>> CACHE = new HashMap<UID, Constant<UID>>(1024);
 
     static{
-        for (Collection<UID> uids : Arrays.asList(RDF.ALL, RDFS.ALL, DC.ALL, SKOS.ALL, XSD.ALL)){
-            for (UID uid : uids){
-                CACHE.put(uid, new ConstantImpl<UID>(UID.class, uid));
-            }
+        for (UID uid : Nodes.all){
+            CACHE.put(uid, new ConstantImpl<UID>(UID.class, uid));
         }
     }
 

@@ -1,20 +1,17 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.owl;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 import com.mysema.rdfbean.model.UID;
 
 /**
  * OWL defines concepts from the OWL ontology
- * 
+ *
  * @author sasa
- * 
+ *
  */
 public final class OWL {
 
@@ -95,48 +92,8 @@ public final class OWL {
     public static final UID unionOf = new UID(NS, "unionOf");
 
     public static final UID complementOf = new UID(NS, "complementOf");
-    
+
     public static final UID Thing = new UID(NS, "Thing");
-    
-    public static final Collection<UID> ALL = Arrays.asList(
-            AllDifferent,
-            allValuesFrom,
-            AnnotationProperty,
-            backwardCompatibleWith,
-            cardinality,
-            Class,
-            complementOf,
-            DatatypeProperty,
-            DeprecatedClass,
-            DeprecatedProperty,
-            differentFrom,
-            disjointWith,
-            distinctMembers,
-            equivalentClass,
-            equivalentProperty,
-            FunctionalProperty,
-            hasValue,
-            imports,
-            incompatibleWith,
-            Individual,
-            intersectionOf,
-            InverseFunctionalProperty,
-            inverseOf,
-            maxCardinality,
-            minCardinality,
-            ObjectProperty,
-            oneOf,
-            onProperty,
-            Ontology,
-            OntologyProperty,
-            priorVersion,
-            Restriction,
-            sameAs,
-            someValuesFrom,
-            SymmetricProperty,
-            Thing,
-            TransitiveProperty
-    );
 
     private OWL() {
     }

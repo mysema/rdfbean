@@ -11,15 +11,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.mysema.commons.l10n.support.LocaleUtil;
-import com.mysema.rdfbean.model.AbstractDialect;
-import com.mysema.rdfbean.model.BID;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.LIT;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.NodeType;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
+import com.mysema.rdfbean.model.*;
 
 /**
  * @author tiwe
@@ -28,13 +20,13 @@ import com.mysema.rdfbean.model.XSD;
 public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, Quad>{
 
     private static final Map<UID, RDFDatatype> datatypes = new HashMap<UID, RDFDatatype>();
-    
+
     static{
-        for (UID uid : XSD.ALL){
+        for (UID uid : Nodes.get(XSD.NS)){
             datatypes.put(uid, new BaseDatatype(uid.getId()));
         }
     }
-    
+
     @Override
     public Node createBNode() {
         return Node.createAnon();
@@ -89,13 +81,13 @@ public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, Q
             return Node.createLiteral(lit.getValue(), LocaleUtil.toLang(lit.getLang()), false);
         }else if (!lit.getDatatype().equals(RDF.text)){
             if (lit.getDatatype().getNamespace().equals(XSD.NS)){
-                return Node.createLiteral(lit.getValue(), null, datatypes.get(lit.getDatatype()));   
+                return Node.createLiteral(lit.getValue(), null, datatypes.get(lit.getDatatype()));
             }else{
-                return Node.createLiteral(lit.getValue(), null, new BaseDatatype(lit.getDatatype().getId()));    
-            }            
+                return Node.createLiteral(lit.getValue(), null, new BaseDatatype(lit.getDatatype().getId()));
+            }
         }else{
             return Node.createLiteral(lit.getValue(), null, null);
-        }                
+        }
     }
 
     @Override

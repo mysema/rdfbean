@@ -18,11 +18,11 @@ import java.util.Map;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.Nodes;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
 
 /**
@@ -32,17 +32,17 @@ import com.mysema.rdfbean.owl.OWL;
  * @version $Id$
  */
 public class MD5IdFactory implements IdFactory {
-    
+
     private final Map<UID,String> uid2string = new HashMap<UID,String>();
-    
+
     public MD5IdFactory() {
-        register("rdf",RDF.ALL);
-        register("rdfs",RDFS.ALL);
-        register("owl",OWL.ALL);
-        register("xsd",XSD.ALL);
-        register("core",Arrays.asList(CORE.localId));                
+        register("rdf", Nodes.get(RDF.NS));
+        register("rdfs", Nodes.get(RDFS.NS));
+        register("owl", Nodes.get(OWL.NS));
+        register("xsd", Nodes.get(RDF.NS));
+        register("core", Arrays.asList(CORE.localId));
     }
-    
+
     private void register(String prefix, Collection<UID> all) {
         for (UID id : all){
             uid2string.put(id, prefix+":"+id.ln());
@@ -56,13 +56,13 @@ public class MD5IdFactory implements IdFactory {
         }
         return rv;
     }
-    
+
     @Override
     public Long getId(NODE node) {
         int mask;
         String value;
         if (node.isLiteral()){
-            LIT literal = node.asLiteral();            
+            LIT literal = node.asLiteral();
             if (literal.getLang() != null){
                 mask = 0;
                 value = literal.getValue() + literal.getLang();
@@ -83,14 +83,14 @@ public class MD5IdFactory implements IdFactory {
             byte[] hash = digest.digest();
             byte[] longBytes = new byte[8];
             System.arraycopy(hash, 0, longBytes, 0, longBytes.length);
-            longBytes[0] = (byte)(mask(longBytes[0], mask));            
+            longBytes[0] = (byte)(mask(longBytes[0], mask));
             return new BigInteger(longBytes).longValue();
         } catch (NoSuchAlgorithmException e) {
             throw new RepositoryException(e);
         } catch (UnsupportedEncodingException e) {
             throw new RepositoryException(e);
         }
-        
+
     }
 
     int mask(byte b, int mask) {

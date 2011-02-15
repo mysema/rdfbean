@@ -5,8 +5,6 @@
  */
 package com.mysema.rdfbean.model;
 
-import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Namespace file for XML Schema namespace
@@ -59,27 +57,6 @@ public final class XSD {
 
     public static final UID time = new UID(NS, "time");
 
-    public static final Collection<UID> ALL = Arrays.asList(
-            anyURI,
-            booleanType,
-            byteType,
-            date,
-            dateTime,
-            decimalType,
-            duration,
-            floatType,
-            gDay,
-            gMonth,
-            gMonthDay,
-            gYear,
-            gYearMonth,
-            hexBinary,
-            integerType,
-            intType,
-            longType,
-            shortType,
-            stringType,
-            time);
     private XSD() {
     }
 }

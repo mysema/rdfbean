@@ -1,17 +1,15 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.model;
 
-import java.util.Arrays;
-import java.util.Collection;
 
 
 /**
  * Namespace file for the RDF Schema namespace
- * 
+ *
  * @author sasa
  *
  */
@@ -49,22 +47,5 @@ public final class RDFS {
     public static final UID ContainerMembershipProperty = new UID(NS,
             "ContainerMembershipProperty");
 
-    public static final Collection<UID> ALL = Arrays.asList(
-            Resource,
-            Literal,
-            Class,
-            subClassOf,
-            subPropertyOf,
-            domain,
-            range,
-            comment,
-            label,
-            Datatype,
-            Container,
-            member,
-            isDefinedBy,
-            seeAlso,
-            ContainerMembershipProperty);
-    
     private RDFS() {}
 }
