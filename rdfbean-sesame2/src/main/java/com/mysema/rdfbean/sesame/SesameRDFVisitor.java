@@ -19,7 +19,6 @@ import org.openrdf.query.algebra.MathExpr.MathOp;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.types.*;
-import com.mysema.query.types.Operation;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.query.VarNameIterator;
 
@@ -30,7 +29,7 @@ import com.mysema.rdfbean.query.VarNameIterator;
 public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     private static final ValueConstant EMPTY_STRING = new ValueConstant(new LiteralImpl("^$"));
-    
+
     private static final ValueConstant CASE_INSENSITIVE = new ValueConstant(new LiteralImpl("i"));
 
     private static final Map<Operator<?>,CompareOp> COMPARE_OPS = new HashMap<Operator<?>,CompareOp>();
@@ -425,8 +424,12 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         return var;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public TupleExpr visit(SubQueryExpression<?> expr, QueryMetadata md) {
+        for (Map.Entry<ParamExpression<?>, Object> entry : md.getParams().entrySet()){
+            expr.getMetadata().setParam((ParamExpression)entry.getKey(), entry.getValue());
+        }
         return visit(expr.getMetadata(), QueryLanguage.TUPLE);
     }
 

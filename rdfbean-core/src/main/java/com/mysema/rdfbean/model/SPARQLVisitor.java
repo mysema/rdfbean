@@ -23,26 +23,26 @@ import com.mysema.query.types.TemplateExpression;
  *
  */
 public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFVisitor<Void,Void>{
-    
+
     @Nullable
     private PatternBlock lastPattern;
 
     private final String prefix;
-    
+
     private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
 
     @Nullable
     private QueryMetadata metadata;
-    
+
     public SPARQLVisitor() {
         this(SPARQLTemplates.DEFAULT, "");
     }
-    
+
     public SPARQLVisitor(SPARQLTemplates templates, String prefix) {
         super(templates);
         this.prefix = prefix;
-    }    
-    
+    }
+
     @Override
     protected void appendAsString(Expression<?> expr) {
         Object constant;
@@ -50,21 +50,21 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             constant = ((Constant<?>)expr).getConstant();
         }else if (expr instanceof ParamExpression<?> && metadata != null){
             if (metadata.getParams().containsKey(expr)){
-                constant = metadata.getParams().get(expr);    
+                constant = metadata.getParams().get(expr);
             }else{
                 constant = ((ParamExpression<?>)expr).getName();
             }
-            
+
         }else{
             constant = expr.toString();
         }
         if (constant instanceof NODE){
             append(((NODE)constant).getValue());
         }else{
-            append(constant.toString());    
-        }        
+            append(constant.toString());
+        }
     }
-    
+
     @Nullable
     public Void visit(QueryMetadata md, QueryLanguage<?,?> queryType) {
         metadata = md;
@@ -84,42 +84,42 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
                 }
                 append(" ");
             }
-            append("\n");            
-            
+            append("\n");
+
         // ask
         }else if (queryType == QueryLanguage.BOOLEAN){
             append("ASK ");
-            
+
         // construct
         }else if (queryType == QueryLanguage.GRAPH){
             if (md.getProjection().size() == 1 && md.getProjection().get(0) instanceof GroupBlock){
                 append("CONSTRUCT ").handle("", md.getProjection()).append("\n");
             }else{
-                append("CONSTRUCT { ").handle("", md.getProjection()).append("}\n");    
-            }            
+                append("CONSTRUCT { ").handle("", md.getProjection()).append("}\n");
+            }
         }
         lastPattern = null;
-        
+
         // where
         if (md.getWhere() != null){
             if (queryType != QueryLanguage.BOOLEAN){
-                append("WHERE \n  ");    
-            }            
-            if (md.getWhere() instanceof GroupBlock){
-                handle(md.getWhere());                
-            }else{
-                append("{ ").handle(md.getWhere()).append("}");    
+                append("WHERE \n  ");
             }
-            append("\n");                
-        }      
-        
+            if (md.getWhere() instanceof GroupBlock){
+                handle(md.getWhere());
+            }else{
+                append("{ ").handle(md.getWhere()).append("}");
+            }
+            append("\n");
+        }
+
         // order
         if (!md.getOrderBy().isEmpty()){
             append("ORDER BY ");
-            boolean first = true;            
+            boolean first = true;
             for (OrderSpecifier<?> order : md.getOrderBy()){
                 if (!first){
-                    append(" ");                    
+                    append(" ");
                 }
                 if (order.isAscending()){
                     handle(order.getTarget());
@@ -130,40 +130,45 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             }
             append("\n");
         }
-        
+
         // group by
         if (!md.getGroupBy().isEmpty()){
             append("GROUP BY ").handle(" ", md.getGroupBy()).append("\n");
         }
-        
+
         // having
         if (md.getHaving() != null){
-            append("HAVING (").handle(md.getHaving()).append(")\n");            
-        }    
-        
-        // limit        
+            append("HAVING (").handle(md.getHaving()).append(")\n");
+        }
+
+        // limit
         if (mod.getLimit() != null){
             append("LIMIT ").append(mod.getLimit().toString()).append("\n");
         }
-        
+
         // offset
         if (mod.getOffset() != null){
             append("OFFSET ").append(mod.getOffset().toString()).append("\n");
         }
-        
+
         metadata = null;
         return null;
 
     }
-    
+
+    @SuppressWarnings("unchecked")
     @Override
     public Void visit(SubQueryExpression<?> expr, Void context) {
+        for (Map.Entry<ParamExpression<?>, Object> entry : metadata.getParams().entrySet()){
+            expr.getMetadata().setParam((ParamExpression)entry.getKey(), entry.getValue());
+        }
+
         if (!operators.isEmpty() && operators.peek() == Ops.EXISTS){
             handle(expr.getMetadata().getWhere());
         }else{
-            visit(expr.getMetadata(), QueryLanguage.TUPLE);    
+            visit(expr.getMetadata(), QueryLanguage.TUPLE);
         }
-        
+
         return null;
     }
 
@@ -218,7 +223,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         lastPattern = null;
         return null;
     }
-    
+
     private void visitBlocks(List<Block> blocks){
         for (Block block : blocks){
             if (lastPattern != null && !(block instanceof PatternBlock)){
@@ -228,18 +233,18 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             handle(block);
         }
     }
-    
-    private void visitFilter(@Nullable Predicate filter){        
+
+    private void visitFilter(@Nullable Predicate filter){
         if (filter != null){
             if (lastPattern != null){
                 append(". ");
             }
             lastPattern = null;
-            append("FILTER(").handle(filter).append(") ");    
-        }        
+            append("FILTER(").handle(filter).append(") ");
+        }
         lastPattern = null;
     }
-    
+
     @Override
     public Void visit(Constant<?> expr, Void context) {
         if (expr.getConstant() instanceof QueryMetadata){
@@ -265,37 +270,38 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             }
             handle(expr.getSubject()).append(" ");
             handle(expr.getPredicate()).append(" ");
-            
+
         }else if (!lastPattern.getPredicate().equals(expr.getPredicate())){
             append("; ");
             handle(expr.getPredicate()).append(" ");
-            
+
         }else{
             append(", ");
         }
-        
+
         handle(expr.getObject()).append(" ");
         lastPattern = expr;
         return null;
     }
-    
+
     @Override
     protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
         operators.push(operator);
-        try{            
+        try{
             if (operator == Ops.NUMCAST){
                 UID datatype = (UID) ((Constant<?>)args.get(1)).getConstant();
                 append("xsd:"+datatype.ln()+"(");
                 handle(args.get(0));
                 append(")");
             }else{
-                super.visitOperation(type, operator, args);    
-            }            
+                super.visitOperation(type, operator, args);
+            }
         }finally{
             operators.pop();
         }
     }
-    
+
+    @Override
     @Nullable
     public Void visit(ParamExpression<?> param, @Nullable Void context){
         getConstantToLabel().put(param, param.getName());
@@ -307,12 +313,12 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         for (Map.Entry<Object,String> entry :getConstantToLabel().entrySet()){
             if (entry.getKey() instanceof ParamExpression<?>){
                 if (md.getParams().containsKey(entry.getKey())){
-                    query.setBinding(entry.getValue(), (NODE)md.getParams().get(entry.getKey()));    
-                }                    
+                    query.setBinding(entry.getValue(), (NODE)md.getParams().get(entry.getKey()));
+                }
             }else{
-                query.setBinding(entry.getValue(), (NODE)entry.getKey());    
-            }                
+                query.setBinding(entry.getValue(), (NODE)entry.getKey());
+            }
         }
     }
-        
+
 }

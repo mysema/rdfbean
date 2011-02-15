@@ -11,25 +11,24 @@ import com.mysema.rdfbean.model.GraphQuery;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.PatternBlock;
 import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 public class GraphQueryImpl implements GraphQuery{
 
     private final SQLQuery query;
-    
+
 //    private final ConverterRegistry converters;
-    
+
     private final PatternBlock pattern;
-    
+
     private final List<Expression<?>> projection;
-    
+
     private final Transformer<Long, NODE> transformer;
-    
+
     public GraphQueryImpl(
-            SQLQuery query, 
-//            ConverterRegistry converters, 
+            SQLQuery query,
+//            ConverterRegistry converters,
             PatternBlock pattern,
-            List<Expression<?>> pr, 
+            List<Expression<?>> pr,
             Transformer<Long, NODE> transformer) {
         this.query = query;
 //        this.converters = converters;

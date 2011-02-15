@@ -145,16 +145,16 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                         pr.add(handle(expr, md));
                     }
                 }
-                return new GraphQueryImpl((SQLQuery)query, pattern, pr, transformer); 
-                
+                return new GraphQueryImpl((SQLQuery)query, pattern, pr, transformer);
+
             }else{
                 throw new UnsupportedOperationException();
             }
-            
+
         // ask
-        }else if (queryType.equals(QueryLanguage.BOOLEAN)){            
+        }else if (queryType.equals(QueryLanguage.BOOLEAN)){
             return new BooleanQueryImpl((SQLQuery) query);
-        
+
         }else{
             throw new UnsupportedOperationException();
         }
@@ -334,6 +334,10 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         exprToMapped = new HashMap<Expression<?>, Path<Long>>(exprToMapped);
         exprToSymbol = new HashMap<Expression<?>, Expression<?>>(exprToSymbol);
 
+        // copy bindings from parent
+        for (Map.Entry<ParamExpression<?>, Object> entry : context.getParams().entrySet()){
+            expr.getMetadata().setParam((ParamExpression)entry.getKey(), entry.getValue());
+        }
         QueryMetadata md = expr.getMetadata();
 
         // where
