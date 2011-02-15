@@ -380,14 +380,16 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         return Pair.of(iterable, bindings);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object visit(QueryMetadata md, QueryLanguage<?, ?> queryType) {
         Bindings initialBindings = new Bindings();
         for (Map.Entry<ParamExpression<?>, Object> entry : md.getParams().entrySet()){
             initialBindings.put(entry.getKey().getName(), (NODE) entry.getValue());
-        }        
+        }      
+        
         Bindings whereBindings = new Bindings(initialBindings);
-        Iterable<Bindings> iterable = ((Pair<Iterable<Bindings>,Bindings>) md.getWhere().accept(this, whereBindings)).getFirst();
+        Iterable<Bindings> iterable = (Iterable<Bindings>) ((Pair)md.getWhere().accept(this, whereBindings)).getFirst();
 
         // TODO : sort
         
