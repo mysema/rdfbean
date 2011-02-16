@@ -41,13 +41,13 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         BeanQuery, Closeable {
 
     private final Session session;
-    
+
     private final Ontology ontology;
-    
+
     private final ConverterRegistry converterRegistry;
 
     private final RDFConnection connection;
-    
+
     public BeanQueryImpl(Session session, Ontology ontology, RDFConnection connection) {
         super(new QueryMixin<BeanQueryImpl>());
         queryMixin.setSelf(this);
@@ -64,7 +64,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
 
     @Override
     public long count() {
-        TupleQuery query = createTupleQuery(true);        
+        TupleQuery query = createTupleQuery(true);
         if (query.getVariables().equals(Collections.singletonList("counter"))){
             long counter = 0;
             CloseableIterator<Map<String,NODE>> tuples = query.getTuples();
@@ -72,12 +72,12 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 while (tuples.hasNext()){
                     counter++;
                     tuples.next();
-                }    
+                }
             }finally{
                 tuples.close();
             }
             return counter;
-            
+
         }else{
             List<Map<String, NODE>> results = IteratorAdapter.asList(query.getTuples());
             NODE result = results.get(0).values().iterator().next();
@@ -88,15 +88,14 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
             }
         }
     }
-    
+
     private RDFQueryBuilder createBuilder(){
-        RDFQueryBuilder builder = new RDFQueryBuilder(
-                connection, 
-                session, 
+        return new RDFQueryBuilder(
+                connection,
+                session,
                 session.getConfiguration(),
                 ontology,
                 queryMixin.getMetadata());
-        return builder;
     }
 
     private BooleanQuery createBooleanQuery() {
@@ -231,9 +230,9 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         QueryMetadata md = queryMixin.getMetadata();
         md.clearProjection();
         List<RT> results = list(projection);
-        return new SearchResults<RT>(results, 
-                md.getModifiers().getLimit(), 
-                md.getModifiers().getOffset(), 
+        return new SearchResults<RT>(results,
+                md.getModifiers().getLimit(),
+                md.getModifiers().getOffset(),
                 total);
     }
 }
