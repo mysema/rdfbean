@@ -2,6 +2,7 @@ package com.mysema.rdfbean.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             return input.toMap();
         }
     };
+
+    private static final Map<String, Pattern> patterns = new HashMap<String, Pattern>();
+
+    private static final Map<String, Pattern> caseInsensitivePatterns = new HashMap<String, Pattern>();
 
     private static final NODEComparator nodeComparator = new NODEComparator();
 
@@ -140,8 +145,13 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 if (lhs != null && rhs != null){
-                    // TODO : cache patterns
-                    Pattern pattern = Pattern.compile(rhs.getValue(), op == Ops.MATCHES ? 0 : Pattern.CASE_INSENSITIVE);
+                    Pattern pattern;
+                    Map<String, Pattern> cache = op == Ops.MATCHES ? patterns : caseInsensitivePatterns;
+                    pattern = cache.get(rhs.getValue());
+                    if (pattern == null){
+                        pattern = Pattern.compile(rhs.getValue(), op == Ops.MATCHES ? 0 : Pattern.CASE_INSENSITIVE);
+                        cache.put(rhs.getValue(), pattern);
+                    }
                     return pattern.matcher(lhs.getValue()).matches();
                 }else{
                     return false;
