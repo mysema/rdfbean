@@ -20,7 +20,7 @@ public class QueryRDFVisitorTest {
 
     private QueryRDFVisitor visitor = new QueryRDFVisitor(connection);
     
-    private Bindings context = new Bindings();
+    private Bindings context = new Bindings(new Bindings());
     
     @Before
     public void setUp(){        

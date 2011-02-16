@@ -113,8 +113,12 @@ public class TupleQueryTest {
                 ).select(u, u2);
 
         assertTrue(iterator.hasNext());
+        int counter = 0;
         while (iterator.hasNext()){
             assertFalse(iterator.next().isEmpty());
+            if (counter++ == 2){
+                break;
+            }
         }
     }
 

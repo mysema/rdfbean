@@ -65,12 +65,14 @@ public class MultiIterator<T> implements Iterator<T> {
     private void produceNext() {
         for (int i = index; i < iterables.size(); i++) {
             if (iterators.get(i) == null || (!iterators.get(i).hasNext() && i > 0)) {
+//                System.err.println("c"+i);
                 iterators.set(i, iterables.get(i).iterator());
             }
             if (!iterators.get(i).hasNext()) {
                 hasNext = i == 0 ? Boolean.FALSE : null;
                 return;
             }
+//            System.err.println("n"+i);
             T value = iterators.get(i).next();
             if (i == iterables.size() -1){
                 last = value;

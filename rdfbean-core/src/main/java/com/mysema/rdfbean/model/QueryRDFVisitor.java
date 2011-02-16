@@ -379,13 +379,13 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         Iterable<Bindings> iterable = new Iterable<Bindings>(){
             @Override
             public Iterator<Bindings> iterator() {
-//                Bindings parent = bindings.getParent();
-                ID s = (ID) expr.getSubject().accept(QueryRDFVisitor.this, bindings);
-                UID p = (UID) expr.getPredicate().accept(QueryRDFVisitor.this, bindings);
-                NODE o = (NODE) expr.getObject().accept(QueryRDFVisitor.this, bindings);
+                Bindings parent = bindings.getParent();
+                ID s = (ID) expr.getSubject().accept(QueryRDFVisitor.this, parent);
+                UID p = (UID) expr.getPredicate().accept(QueryRDFVisitor.this, parent);
+                NODE o = (NODE) expr.getObject().accept(QueryRDFVisitor.this, parent);
                 UID c = null;
                 if (expr.getContext() != null){
-                    c = (UID) expr.getContext().accept(QueryRDFVisitor.this, bindings);
+                    c = (UID) expr.getContext().accept(QueryRDFVisitor.this, parent);
                 }
                 bindings.clear();
                 return new TransformIterator<STMT, Bindings>(connection.findStatements(s, p, o, c, false), transformer);
