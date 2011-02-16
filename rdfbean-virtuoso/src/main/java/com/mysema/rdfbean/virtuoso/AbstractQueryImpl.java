@@ -125,14 +125,22 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         int i;
         for (i = matcher.start()-1; i >= 0; i-- ){
             char c = query.charAt(i);
-            if (c == '}' || c == '{') return false;
-            if (c == '(') break;
+            if (c == '}' || c == '{'){
+                return false;
+            }
+            if (c == '('){
+                break;
+            }
         }
         if (i > 0){
             for (i = matcher.end(); i < query.length(); i++ ){
                 char c = query.charAt(i);
-                if (c == '}' || c == '{') return false;
-                if (c == ')' || c == '(') return true;
+                if (c == '}' || c == '{'){
+                    return false;
+                }
+                if (c == ')' || c == '('){
+                    return true;
+                }
             }
         }
         return false;
