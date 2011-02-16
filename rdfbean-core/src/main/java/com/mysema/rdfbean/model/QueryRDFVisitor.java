@@ -379,6 +379,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         Iterable<Bindings> iterable = new Iterable<Bindings>(){
             @Override
             public Iterator<Bindings> iterator() {
+//                Bindings parent = bindings.getParent();
                 ID s = (ID) expr.getSubject().accept(QueryRDFVisitor.this, bindings);
                 UID p = (UID) expr.getPredicate().accept(QueryRDFVisitor.this, bindings);
                 NODE o = (NODE) expr.getObject().accept(QueryRDFVisitor.this, bindings);
@@ -389,6 +390,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 bindings.clear();
                 return new TransformIterator<STMT, Bindings>(connection.findStatements(s, p, o, c, false), transformer);
             }
+            
         };
         return Pair.of(iterable, bindings);
     }

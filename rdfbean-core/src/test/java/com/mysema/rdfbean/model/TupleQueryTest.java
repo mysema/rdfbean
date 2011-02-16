@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.model;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -113,7 +114,7 @@ public class TupleQueryTest {
 
         assertTrue(iterator.hasNext());
         while (iterator.hasNext()){
-            System.err.println(iterator.next());
+            assertFalse(iterator.next().isEmpty());
         }
     }
 

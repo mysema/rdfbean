@@ -28,6 +28,10 @@ public class Bindings {
         bindings.clear();
     }
 
+    public Bindings getParent(){
+        return parent;
+    }
+    
     @Nullable
     public NODE get(String key){
         if (bindings.containsKey(key)){
