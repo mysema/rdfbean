@@ -99,8 +99,8 @@ public class TupleQueryTest {
                 new STMT(id2, RDF.type, User),
                 new STMT(id3, RDF.type, User),
                 new STMT(id, RDFS.label, new LIT("x")),
-                new STMT(id, RDFS.label, new LIT("x")),
-                new STMT(id, RDFS.label, new LIT("y")));
+                new STMT(id2, RDFS.label, new LIT("x")),
+                new STMT(id3, RDFS.label, new LIT("y")));
 
         CloseableIterator<Map<String, NODE>> iterator =
             query().where(
@@ -115,6 +115,6 @@ public class TupleQueryTest {
         while (iterator.hasNext()){
             System.err.println(iterator.next());
         }
-
     }
+
 }
