@@ -23,18 +23,9 @@ public final class Nodes {
     static{
         Set<UID> uids = new HashSet<UID>();
         try {
-            for (Class<?> cl : Arrays.<Class<?>> asList(
-                    DC.class, DCTERMS.class, FOAF.class, GEO.class,
+            for (Class<?> cl : Arrays.<Class<?>> asList(DC.class, DCTERMS.class, FOAF.class, GEO.class,
                     OWL.class, RDF.class, RDFS.class, SKOS.class, XSD.class)) {
-                Set<UID> ns = new HashSet<UID>();
-                for (Field field : cl.getDeclaredFields()) {
-                    if (field.getType().equals(UID.class)) {
-                        UID uid = (UID) field.get(null);
-                        ns.add(uid);
-                    }
-                }
-                uids.addAll(ns);
-                namespaces.put(ns.iterator().next().ns(), Collections.unmodifiableSet(ns));
+                handleClass(cl, uids);
             }
             all = Collections.unmodifiableSet(uids);
         } catch (IllegalArgumentException e) {
@@ -45,10 +36,22 @@ public final class Nodes {
 
     }
 
-    private Nodes(){}
+    private static void handleClass(Class<?> cl, Set<UID> uids) throws IllegalAccessException {
+        Set<UID> ns = new HashSet<UID>();
+        for (Field field : cl.getDeclaredFields()) {
+            if (field.getType().equals(UID.class)) {
+                UID uid = (UID) field.get(null);
+                ns.add(uid);
+            }
+        }
+        uids.addAll(ns);
+        namespaces.put(ns.iterator().next().ns(), Collections.unmodifiableSet(ns));
+    }
 
     public static Set<UID> get(String ns){
         return namespaces.get(ns);
     }
+
+    private Nodes(){}
 
 }

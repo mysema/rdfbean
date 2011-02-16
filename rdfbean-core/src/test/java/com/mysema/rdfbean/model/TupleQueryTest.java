@@ -1,10 +1,15 @@
 package com.mysema.rdfbean.model;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.TEST;
 
@@ -81,4 +86,35 @@ public class TupleQueryTest {
                 .select(subject, predicate, object);
     }
 
+    @Test
+    @Ignore
+    public void Complex(){
+        QID u = new QID("u"), u2 = new QID("u2");
+        QLIT label = new QLIT("label");
+        UID User = new UID(TEST.NS, "User");
+
+        ID id = new BID(), id2 = new BID(), id3 = new BID();
+        connection.addStatements(
+                new STMT(id, RDF.type, User),
+                new STMT(id2, RDF.type, User),
+                new STMT(id3, RDF.type, User),
+                new STMT(id, RDFS.label, new LIT("x")),
+                new STMT(id, RDFS.label, new LIT("x")),
+                new STMT(id, RDFS.label, new LIT("y")));
+
+        CloseableIterator<Map<String, NODE>> iterator =
+            query().where(
+                Blocks.pattern(u,  RDF.type, User),
+                Blocks.pattern(u2, RDF.type, User),
+                Blocks.pattern(u2, RDFS.label, label),
+                Blocks.pattern(u,  RDFS.label, label),
+                u.ne(u2)
+                ).select(u, u2);
+
+        assertTrue(iterator.hasNext());
+        while (iterator.hasNext()){
+            System.err.println(iterator.next());
+        }
+
+    }
 }

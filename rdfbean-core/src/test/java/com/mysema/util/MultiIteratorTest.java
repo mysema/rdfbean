@@ -1,6 +1,6 @@
 package com.mysema.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class MultiIteratorTest {
         MultiIterator<String> iterator = new MultiIterator<String>(strs);
         assertEquals(Arrays.asList("1","2","3","1","2","3"), IteratorAdapter.asList(iterator));
     }
-    
+
     @Test
     public void Three_times_three(){
         List<List<String>> strs = new ArrayList<List<String>>();
@@ -30,5 +30,15 @@ public class MultiIteratorTest {
         MultiIterator<String> iterator = new MultiIterator<String>(strs);
         assertEquals(Arrays.asList("1","2","3","1","2","3","1","2","3"), IteratorAdapter.asList(iterator));
     }
-    
+
+    @Test
+    public void Two_times_two_times_two(){
+        List<List<String>> strs = new ArrayList<List<String>>();
+        strs.add(Arrays.asList("1","2"));
+        strs.add(Arrays.asList("1","2"));
+        strs.add(Arrays.asList("1","2"));
+        MultiIterator<String> iterator = new MultiIterator<String>(strs);
+        assertEquals(Arrays.asList("1","2","1","2","1","2","1","2"), IteratorAdapter.asList(iterator));
+    }
+
 }
