@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.functors.AndPredicate;
@@ -37,23 +39,23 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         public Map<String, NODE> transform(Bindings input) {
 //            System.err.println(input.toString()+" matched\n");
             return input.toMap();
-        }        
+        }
     };
 
     private static final NODEComparator nodeComparator = new NODEComparator();
-    
+
     private final RDFConnection connection;
-    
+
     public QueryRDFVisitor(RDFConnection connection) {
         this.connection = connection;
     }
 
     private void bind(Bindings bindings, String key, NODE value) {
-        if (key != null && bindings.get(key) == null){            
+        if (key != null && bindings.get(key) == null){
             bindings.put(key, value);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private Predicate<Bindings> createAndPredicate(final Operation<?> expr, Bindings bindings) {
         return new AndPredicate<Bindings>(
@@ -66,7 +68,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         final String p = getKey(expr.getPredicate());
         final String o = getKey(expr.getObject());
         final String c = getKey(expr.getContext());
-        
+
         return new Transformer<STMT, Bindings>(){
             @Override
             public Bindings transform(STMT input) {
@@ -129,23 +131,23 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             }
         };
     }
-    
+
 
     private Predicate<Bindings> createMatchesPredicate(final Operation<?> expr, final Operator<?> op) {
         return new Predicate<Bindings>(){
             @Override
             public boolean evaluate(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
-                NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings); 
+                NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 if (lhs != null && rhs != null){
                     // TODO : cache patterns
                     Pattern pattern = Pattern.compile(rhs.getValue(), op == Ops.MATCHES ? 0 : Pattern.CASE_INSENSITIVE);
-                    return pattern.matcher(lhs.getValue()).matches();                    
+                    return pattern.matcher(lhs.getValue()).matches();
                 }else{
                     return false;
                 }
             }
-        };   
+        };
     }
 
     private GraphQuery createGraphQuery(QueryMetadata md, final Iterable<Bindings> iterable) {
@@ -165,7 +167,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private Predicate<Bindings> createNePredicate(final Operation<?> expr) {
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {              
+            public boolean evaluate(Bindings bindings) {
                 return !ObjectUtils.equals(
                         expr.getArg(0).accept(QueryRDFVisitor.this, bindings),
                         expr.getArg(1).accept(QueryRDFVisitor.this, bindings));
@@ -196,10 +198,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     private Transformer<Bindings, STMT> createStatementTransformer(final PatternBlock expr){
         if (expr.getContext() != null){
-            return createQuadTransformer(expr);    
+            return createQuadTransformer(expr);
         }else{
-            return createTripleTransformer(expr);            
-        }        
+            return createTripleTransformer(expr);
+        }
     }
 
     private Transformer<Bindings, STMT> createTripleTransformer(final PatternBlock expr) {
@@ -234,6 +236,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         };
     }
 
+    @Nullable
     private String getKey(Expression<?> expr){
         if (expr instanceof Path<?>){
             return expr.toString();
@@ -254,14 +257,14 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         final List<Iterable<Bindings>> iterables = new ArrayList<Iterable<Bindings>>(expr.getBlocks().size());
         Bindings previous = null;
         for (Block block : expr.getBlocks()){
-            Bindings input = previous != null ? new Bindings(previous) : bindings; 
+            Bindings input = previous != null ? new Bindings(previous) : bindings;
             Pair<Iterable<Bindings>, Bindings> iterableAndBindings = (Pair) block.accept(this, input);
             iterables.add(iterableAndBindings.getFirst());
             previous = iterableAndBindings.getSecond();
         }
-        
+
         // merge
-        Iterable<Bindings> iterable;        
+        Iterable<Bindings> iterable;
         if (iterables.size() == 1){
             iterable = iterables.get(0);
         }else{
@@ -269,7 +272,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 @Override
                 public Iterator<Bindings> iterator() {
                     return new MultiIterator<Bindings>(iterables);
-                }                
+                }
             };
         }
 
@@ -278,7 +281,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             Predicate<Bindings> predicate = (Predicate) expr.getFilters().accept(this, previous);
             iterable = new FilterIterable<Bindings>(iterable, predicate);
         }
-        
+
         return Pair.of(iterable, bindings);
     }
 
@@ -303,10 +306,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         final Operator<?> op = expr.getOperator();
         if (op == Ops.EQ_OBJECT || op == Ops.EQ_PRIMITIVE){
             return createEqPredicate(expr);
-            
+
         }else if (op == Ops.NE_OBJECT || op == Ops.NE_PRIMITIVE){
             return createNePredicate(expr);
-            
+
         }else if (op == Ops.AND){
             return createAndPredicate(expr, bindings);
 
@@ -322,9 +325,9 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         }else if (op == Ops.LT || op == Ops.GT || op == Ops.LOE || op == Ops.GOE){
             return createComparePredicate(expr, op);
 
-        }else if (op == Ops.MATCHES || op == Ops.MATCHES_IC){    
+        }else if (op == Ops.MATCHES || op == Ops.MATCHES_IC){
             return createMatchesPredicate(expr, op);
-            
+
         }else{
             throw new IllegalArgumentException(expr.toString());
         }
@@ -344,10 +347,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                     return Collections.singleton(bindings).iterator();
                 }
             }
-            
+
         };
         return Pair.of(iterable, pair.getSecond());
-        
+
     }
 
     @Override
@@ -386,18 +389,18 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         Bindings initialBindings = new Bindings();
         for (Map.Entry<ParamExpression<?>, Object> entry : md.getParams().entrySet()){
             initialBindings.put(entry.getKey().getName(), (NODE) entry.getValue());
-        }      
-        
+        }
+
         Bindings whereBindings = new Bindings(initialBindings);
         Iterable<Bindings> iterable = (Iterable<Bindings>) ((Pair)md.getWhere().accept(this, whereBindings)).getFirst();
 
         // TODO : sort
-        
+
         // paging
         if (md.getModifiers().isRestricting()){
             iterable = new LimitingIterable<Bindings>(iterable, md.getModifiers());
         }
-                
+
         if (queryType == QueryLanguage.GRAPH){
             return createGraphQuery(md, iterable);
 
@@ -408,7 +411,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             return createBooleanQuery(iterable);
 
         }else{
-            return null;
+            throw new IllegalArgumentException(queryType.toString());
         }
     }
 
