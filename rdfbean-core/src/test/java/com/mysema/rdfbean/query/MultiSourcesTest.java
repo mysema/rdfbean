@@ -19,17 +19,17 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 @Ignore
 @SessionConfig({User.class, Department.class, Company.class})
 public class MultiSourcesTest extends SessionTestBase implements UserDepartmentCompanyDomain{
-    
+
     @Before
     public void setUp(){
         for (String username : Arrays.asList("X","X","Y")){
             User user = new User();
             user.userName = username;
-            session.save(user);    
+            session.save(user);
         }
-        session.clear();   
+        session.clear();
     }
-    
+
     @Test
     public void test(){
         User u = Alias.alias(User.class,"u");
@@ -38,5 +38,5 @@ public class MultiSourcesTest extends SessionTestBase implements UserDepartmentC
         assertEquals(2, session.from($(u),$(u2)).where($(u).ne($(u2)), $(u.getUserName()).eq($(u2.getUserName()))).count());
         assertEquals(2, session.from($(u),$(u2)).where($(u).ne($(u2)), $(u.getUserName()).eq($(u2.getUserName()))).list($(u),$(u2)).size());
     }
-        
+
 }
