@@ -26,7 +26,7 @@ import com.mysema.query.types.*;
 import com.mysema.util.FilterIterable;
 import com.mysema.util.IterableChain;
 import com.mysema.util.LimitingIterable;
-import com.mysema.util.MultiIterator;
+import com.mysema.util.PairIterator;
 
 
 /**
@@ -278,12 +278,26 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         if (iterables.size() == 1){
             iterable = iterables.get(0);
         }else{
-            iterable = new Iterable<Bindings>(){
-                @Override
-                public Iterator<Bindings> iterator() {
-                    return new MultiIterator<Bindings>(iterables);
-                }
-            };
+            iterable = iterables.get(0);
+
+            // FIXME
+            for (int i = 1; i < iterables.size(); i++){
+                final Iterable<Bindings> pr = iterable, next = iterables.get(i);
+                iterable = new Iterable<Bindings>(){
+                    @Override
+                    public Iterator<Bindings> iterator() {
+                        return new PairIterator<Bindings>(pr, next);
+                    }
+
+                };
+            }
+
+//            iterable = new Iterable<Bindings>(){
+//                @Override
+//                public Iterator<Bindings> iterator() {
+//                    return new MultiIterator<Bindings>(iterables);
+//                }
+//            };
         }
 
         // filter
@@ -345,6 +359,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     @Override
     public Pair<Iterable<Bindings>, Bindings> visit(OptionalBlock expr, final Bindings bindings) {
+        // FIXME
         final Pair<Iterable<Bindings>, Bindings> pair =  visit((ContainerBlock)expr, bindings);
         Iterable<Bindings> iterable = new Iterable<Bindings>(){
             @Override
@@ -390,7 +405,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 bindings.clear();
                 return new TransformIterator<STMT, Bindings>(connection.findStatements(s, p, o, c, false), transformer);
             }
-            
+
         };
         return Pair.of(iterable, bindings);
     }

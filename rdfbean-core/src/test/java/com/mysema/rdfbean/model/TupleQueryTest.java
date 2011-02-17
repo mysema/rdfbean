@@ -1,7 +1,6 @@
 package com.mysema.rdfbean.model;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +10,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.TEST;
 
@@ -112,14 +112,8 @@ public class TupleQueryTest {
                 u.ne(u2)
                 ).select(u, u2);
 
-        assertTrue(iterator.hasNext());
-        int counter = 0;
-        while (iterator.hasNext()){
-            assertFalse(iterator.next().isEmpty());
-            if (counter++ == 2){
-                break;
-            }
-        }
+        List<Map<String, NODE>> list = IteratorAdapter.asList(iterator);
+        assertEquals(2, list.size());
     }
 
 }

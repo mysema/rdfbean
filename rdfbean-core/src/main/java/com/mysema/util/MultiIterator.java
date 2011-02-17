@@ -88,7 +88,7 @@ public class MultiIterator<T> implements Iterator<T> {
 
     @Override
     public void remove() {
-        // do nothing
+        throw new UnsupportedOperationException();
     }
 
 }
