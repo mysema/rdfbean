@@ -42,15 +42,16 @@ public final class TransactionalMethodAdvice implements MethodAdvice {
 
             try {
                 RDFBeanTransaction txn = transactionalAdvisor.doBegin(session);
-                invocation.proceed();
-                if (invocation.getThrown(Throwable.class) != null){
-                    Throwable throwable = invocation.getThrown(Throwable.class);
+                try{
+                    invocation.proceed();
+                }catch(RuntimeException e){
                     transactionalAdvisor.doRollback(txn);
-                    if (throwable instanceof RuntimeException){
-                        throw (RuntimeException)throwable;
-                    }else{
-                        throw new RuntimeException(throwable);
-                    }
+                    throw e;
+                }
+                // checked exception
+                if (invocation.isFail()){
+                    transactionalAdvisor.doRollback(txn);
+                    invocation.rethrow();
                 }
                 if (!txn.isRollbackOnly()){
                     transactionalAdvisor.doCommit(session, txn);
