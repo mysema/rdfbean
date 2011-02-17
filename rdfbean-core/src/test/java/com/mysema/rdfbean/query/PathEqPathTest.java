@@ -8,7 +8,6 @@ package com.mysema.rdfbean.query;
 import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -16,7 +15,6 @@ import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.domains.EntityDomain.Entity;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@Ignore
 @SessionConfig(Entity.class)
 public class PathEqPathTest extends SessionTestBase implements EntityDomain {
 

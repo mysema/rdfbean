@@ -9,7 +9,6 @@ import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.BooleanBuilder;
@@ -20,7 +19,6 @@ import com.mysema.rdfbean.domains.EntityRevisionTermDomain.EntityRevision;
 import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Term;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@Ignore
 @SessionConfig({Entity.class, EntityRevision.class, Term.class})
 public class ContainsStringTest extends SessionTestBase implements EntityRevisionTermDomain{
 
