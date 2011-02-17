@@ -97,7 +97,7 @@ public class MiniConnection implements RDFConnection {
 
     @Override
     public QueryOptions getQueryOptions() {
-        return QueryOptions.DEFAULT;
+        return QueryOptions.PRESERVE_STRING_OPS;
     }
 
     @Override

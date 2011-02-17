@@ -116,11 +116,11 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 NODE rhs = (NODE)expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 int rv = nodeComparator.compare(lhs, rhs);
                 if (rv < 0){
-                    return op == Ops.LT || op == Ops.LOE;
+                    return op == Ops.LT || op == Ops.LOE || op == Ops.BEFORE || op == Ops.BOE;
                 }else if (rv == 0){
-                    return op == Ops.LOE || op == Ops.GOE;
+                    return op == Ops.LOE || op == Ops.GOE || op == Ops.BOE || op == Ops.AOE;
                 }else{
-                    return op == Ops.GT || op == Ops.GOE;
+                    return op == Ops.GT || op == Ops.GOE || op == Ops.AFTER || op == Ops.AOE;
                 }
             }
         };
@@ -133,6 +133,30 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 return ObjectUtils.equals(
                         expr.getArg(0).accept(QueryRDFVisitor.this, bindings),
                         expr.getArg(1).accept(QueryRDFVisitor.this, bindings));
+            }
+        };
+    }
+    
+    private Predicate<Bindings> createLikePredicate(final Operation<?> expr){
+        
+        return new Predicate<Bindings>(){
+            @Override
+            public boolean evaluate(Bindings bindings) {
+                NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
+                NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
+                if (lhs != null && rhs != null){
+                    Pattern pattern;
+                    Map<String, Pattern> cache = patterns;
+                    pattern = cache.get(rhs.getValue());
+                    if (pattern == null){
+                        String regex = rhs.getValue().replace("%", ".*").replaceAll("_", ".");
+                        pattern = Pattern.compile(regex);
+                        cache.put(rhs.getValue(), pattern);
+                    }
+                    return pattern.matcher(lhs.getValue()).matches();
+                }else{
+                    return false;
+                }
             }
         };
     }
@@ -279,8 +303,6 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             iterable = iterables.get(0);
         }else{
             iterable = iterables.get(0);
-
-            // FIXME
             for (int i = 1; i < iterables.size(); i++){
                 final Iterable<Bindings> pr = iterable, next = iterables.get(i);
                 iterable = new Iterable<Bindings>(){
@@ -288,16 +310,8 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                     public Iterator<Bindings> iterator() {
                         return new PairIterator<Bindings>(pr, next);
                     }
-
                 };
             }
-
-//            iterable = new Iterable<Bindings>(){
-//                @Override
-//                public Iterator<Bindings> iterator() {
-//                    return new MultiIterator<Bindings>(iterables);
-//                }
-//            };
         }
 
         // filter
@@ -324,9 +338,8 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         return visit((ContainerBlock)expr, bindings);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public Predicate visit(final Operation<?> expr, Bindings bindings) {
+    public Object visit(final Operation<?> expr, Bindings bindings) {
         final Operator<?> op = expr.getOperator();
         if (op == Ops.EQ_OBJECT || op == Ops.EQ_PRIMITIVE){
             return createEqPredicate(expr);
@@ -341,20 +354,117 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             return createOrPredicate(expr, bindings);
 
         }else if (op == Ops.NOT){
-            return new NotPredicate( (Predicate) expr.getArg(0).accept(this, bindings));
+            return new NotPredicate<Bindings>( (Predicate) expr.getArg(0).accept(this, bindings));
 
         }else if (op == Ops.IS_NULL || op == Ops.IS_NOT_NULL){
             return createBoundPredicate(expr, op);
 
-        }else if (op == Ops.LT || op == Ops.GT || op == Ops.LOE || op == Ops.GOE){
+        }else if (op == Ops.LT || op == Ops.GT || op == Ops.LOE || op == Ops.GOE
+               || op == Ops.BEFORE || op == Ops.AFTER || op == Ops.BOE || op == Ops.AOE){
             return createComparePredicate(expr, op);
 
         }else if (op == Ops.MATCHES || op == Ops.MATCHES_IC){
             return createMatchesPredicate(expr, op);
+            
+        }else if (op == Ops.STARTS_WITH || op == Ops.ENDS_WITH || op == Ops.STRING_CONTAINS 
+               || op == Ops.STARTS_WITH_IC || op == Ops.ENDS_WITH_IC || op == Ops.STRING_CONTAINS_IC){
+            return createStringMatchPredicate(expr, op);
+            
+        }else if (op == Ops.LIKE){
+            return createLikePredicate(expr);
+            
+        }else if (op == Ops.EQ_IGNORE_CASE){
+            return createEqIgnoreCasePredicate(expr);
+            
+        }else if (op == Ops.STRING_IS_EMPTY){
+            return createStringIsEmptyPredicate(expr);
 
+        }else if (op == Ops.CONCAT){    
+            NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
+            NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
+            return new LIT(lhs.getValue()+rhs.getValue());
+            
+        }else if (op == Ops.LOWER){    
+            NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
+            return new LIT(lhs.getValue().toLowerCase());
+            
+        }else if (op == Ops.UPPER){    
+            NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
+            return new LIT(lhs.getValue().toUpperCase());
+            
+        }else if (op == Ops.TRIM){    
+            NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
+            return new LIT(lhs.getValue().trim());
+            
+        }else if (op == Ops.SUBSTR_1ARG){
+            NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
+            NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
+            return new LIT(lhs.getValue().substring(Integer.parseInt(rhs.getValue())));
+            
+        }else if (op == Ops.SUBSTR_2ARGS){
+            NODE arg0 = (NODE) expr.getArg(0).accept(this, bindings);
+            NODE arg1 = (NODE) expr.getArg(1).accept(this, bindings);
+            NODE arg2 = (NODE) expr.getArg(2).accept(this, bindings);
+            return new LIT(arg0.getValue().substring(
+                    Integer.parseInt(arg1.getValue()),
+                    Integer.parseInt(arg2.getValue())));
+        
+        }else if (op == Ops.CHAR_AT){
+            NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
+            NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
+            return new LIT(String.valueOf(lhs.getValue().charAt(Integer.parseInt(rhs.getValue()))));
+            
         }else{
             throw new IllegalArgumentException(expr.toString());
         }
+    }
+
+    private Predicate<Bindings> createStringMatchPredicate(final Operation<?> expr, final Operator<?> op) {
+        return new Predicate<Bindings>(){
+            @Override
+            public boolean evaluate(Bindings bindings) {
+                NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
+                NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
+                if (lhs == null || rhs == null){
+                    return false;
+                }else if (op == Ops.STARTS_WITH){
+                    return lhs.getValue().startsWith(rhs.getValue());
+                }else if (op == Ops.STARTS_WITH_IC){
+                    return lhs.getValue().toLowerCase().startsWith(rhs.getValue().toLowerCase());
+                }else if (op == Ops.ENDS_WITH){
+                    return lhs.getValue().endsWith(rhs.getValue());
+                }else if (op == Ops.ENDS_WITH_IC){
+                    return lhs.getValue().toLowerCase().endsWith(rhs.getValue().toLowerCase());
+                }else if (op == Ops.STRING_CONTAINS){
+                    return lhs.getValue().contains(rhs.getValue());
+                }else if (op == Ops.STRING_CONTAINS_IC){
+                    return lhs.getValue().toLowerCase().contains(rhs.getValue().toLowerCase());
+                }else{
+                    throw new IllegalArgumentException(op.toString());
+                }
+            }
+        };
+    }
+
+    private Predicate<Bindings> createEqIgnoreCasePredicate(final Operation<?> expr) {
+        return new Predicate<Bindings>(){
+            @Override
+            public boolean evaluate(Bindings bindings) {
+                NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
+                NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
+                return lhs.getValue().equalsIgnoreCase(rhs.getValue());
+            }
+        };
+    }
+    
+    private Predicate<Bindings> createStringIsEmptyPredicate(final Operation<?> expr) {
+        return new Predicate<Bindings>(){
+            @Override
+            public boolean evaluate(Bindings bindings) {
+                NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);                
+                return lhs != null ? lhs.getValue().isEmpty() : false;
+            }
+        };
     }
 
     @Override
@@ -404,6 +514,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 }
                 bindings.clear();
                 return new TransformIterator<STMT, Bindings>(connection.findStatements(s, p, o, c, false), transformer);
+            }
+            
+            public String toString(){
+                return expr.toString();
             }
 
         };

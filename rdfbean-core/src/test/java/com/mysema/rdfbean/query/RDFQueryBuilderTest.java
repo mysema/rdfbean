@@ -88,21 +88,21 @@ public class RDFQueryBuilderTest {
     public void Starts_With() throws Exception{
         query.from(user);
         query.where(user.getString("firstName").startsWith("Bob"));
-        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName . FILTER(regex(str(?user_firstName), ?_c6)) }");
+        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName . FILTER(regex(?user_firstName, '^Bob')) }");
     }
 
     @Test
     public void Ends_With() throws Exception{
         query.from(user);
         query.where(user.getString("firstName").endsWith("Bob"));
-        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName . FILTER(regex(str(?user_firstName), ?_c6)) }");
+        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName . FILTER(regex(?user_firstName, 'Bob$')) }");
     }
 
     @Test
     public void String_Contains() throws Exception{
         query.from(user);
         query.where(user.getString("firstName").contains("Bob"));
-        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName . FILTER(regex(str(?user_firstName), ?_c6)) }");
+        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName . FILTER(regex(?user_firstName, '.*Bob.*')) }");
     }
 
     @Test

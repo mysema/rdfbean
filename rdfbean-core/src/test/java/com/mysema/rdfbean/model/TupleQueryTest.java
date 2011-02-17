@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -88,7 +87,6 @@ public class TupleQueryTest {
     }
 
     @Test
-    @Ignore
     public void Complex(){
         QID u = new QID("u"), u2 = new QID("u2");
         QLIT label = new QLIT("label");

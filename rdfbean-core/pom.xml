@@ -50,6 +50,21 @@
       <artifactId>annotations</artifactId>
       <version>1.3.2</version>
     </dependency>  
+    
+    <dependency>
+      <groupId>com.mysema.querydsl</groupId>
+      <artifactId>querydsl-core</artifactId>
+      <version>${querydsl.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+        
   </dependencies>
 
   <build>

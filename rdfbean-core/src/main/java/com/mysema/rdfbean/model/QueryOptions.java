@@ -15,6 +15,11 @@ public enum QueryOptions {
      *
      */
     COUNT_VIA_AGGREGATION(true, false, false),
+    
+    /**
+     * 
+     */
+    PRESERVE_STRING_OPS(false, true, false),
 
     /**
      *
