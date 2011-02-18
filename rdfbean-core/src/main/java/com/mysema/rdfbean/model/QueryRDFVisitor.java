@@ -136,9 +136,9 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             }
         };
     }
-    
+
     private Predicate<Bindings> createLikePredicate(final Operation<?> expr){
-        
+
         return new Predicate<Bindings>(){
             @Override
             public boolean evaluate(Bindings bindings) {
@@ -365,42 +365,42 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
         }else if (op == Ops.MATCHES || op == Ops.MATCHES_IC){
             return createMatchesPredicate(expr, op);
-            
-        }else if (op == Ops.STARTS_WITH || op == Ops.ENDS_WITH || op == Ops.STRING_CONTAINS 
+
+        }else if (op == Ops.STARTS_WITH || op == Ops.ENDS_WITH || op == Ops.STRING_CONTAINS
                || op == Ops.STARTS_WITH_IC || op == Ops.ENDS_WITH_IC || op == Ops.STRING_CONTAINS_IC){
             return createStringMatchPredicate(expr, op);
-            
+
         }else if (op == Ops.LIKE){
             return createLikePredicate(expr);
-            
+
         }else if (op == Ops.EQ_IGNORE_CASE){
             return createEqIgnoreCasePredicate(expr);
-            
+
         }else if (op == Ops.STRING_IS_EMPTY){
             return createStringIsEmptyPredicate(expr);
 
-        }else if (op == Ops.CONCAT){    
+        }else if (op == Ops.CONCAT){
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
             return new LIT(lhs.getValue()+rhs.getValue());
-            
-        }else if (op == Ops.LOWER){    
+
+        }else if (op == Ops.LOWER){
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             return new LIT(lhs.getValue().toLowerCase());
-            
-        }else if (op == Ops.UPPER){    
+
+        }else if (op == Ops.UPPER){
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             return new LIT(lhs.getValue().toUpperCase());
-            
-        }else if (op == Ops.TRIM){    
+
+        }else if (op == Ops.TRIM){
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             return new LIT(lhs.getValue().trim());
-            
+
         }else if (op == Ops.SUBSTR_1ARG){
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
             return new LIT(lhs.getValue().substring(Integer.parseInt(rhs.getValue())));
-            
+
         }else if (op == Ops.SUBSTR_2ARGS){
             NODE arg0 = (NODE) expr.getArg(0).accept(this, bindings);
             NODE arg1 = (NODE) expr.getArg(1).accept(this, bindings);
@@ -408,12 +408,12 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             return new LIT(arg0.getValue().substring(
                     Integer.parseInt(arg1.getValue()),
                     Integer.parseInt(arg2.getValue())));
-        
+
         }else if (op == Ops.CHAR_AT){
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
             return new LIT(String.valueOf(lhs.getValue().charAt(Integer.parseInt(rhs.getValue()))));
-            
+
         }else{
             throw new IllegalArgumentException(expr.toString());
         }
@@ -452,16 +452,21 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             public boolean evaluate(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
-                return lhs.getValue().equalsIgnoreCase(rhs.getValue());
+                if (lhs != null && rhs != null){
+                    return lhs.getValue().equalsIgnoreCase(rhs.getValue());
+                }else{
+                    return lhs == rhs;
+                }
+
             }
         };
     }
-    
+
     private Predicate<Bindings> createStringIsEmptyPredicate(final Operation<?> expr) {
         return new Predicate<Bindings>(){
             @Override
             public boolean evaluate(Bindings bindings) {
-                NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);                
+                NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 return lhs != null ? lhs.getValue().isEmpty() : false;
             }
         };
@@ -515,7 +520,8 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 bindings.clear();
                 return new TransformIterator<STMT, Bindings>(connection.findStatements(s, p, o, c, false), transformer);
             }
-            
+
+            @Override
             public String toString(){
                 return expr.toString();
             }

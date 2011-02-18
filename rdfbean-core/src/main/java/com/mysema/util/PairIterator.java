@@ -3,16 +3,21 @@ package com.mysema.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import javax.annotation.Nullable;
+
 public class PairIterator<T> implements Iterator<T> {
 
     private final Iterator<T> firstIterator;
 
+    @Nullable
     private Iterator<T> secondIterator;
 
     private final Iterable<T> second;
 
+    @Nullable
     private Boolean hasNext;
 
+    @Nullable
     private T value;
 
     public PairIterator(Iterable<T> first, Iterable<T> second) {
