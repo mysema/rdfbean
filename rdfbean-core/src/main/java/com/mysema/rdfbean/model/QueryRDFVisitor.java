@@ -338,6 +338,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         return visit((ContainerBlock)expr, bindings);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object visit(final Operation<?> expr, Bindings bindings) {
         final Operator<?> op = expr.getOperator();
