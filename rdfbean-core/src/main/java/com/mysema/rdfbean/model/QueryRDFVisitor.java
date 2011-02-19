@@ -35,13 +35,12 @@ import com.mysema.util.PairIterator;
  */
 public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
-    private static final Transformer<Bindings, Map<String,NODE>> bindingsToMap = new Transformer<Bindings, Map<String,NODE>>(){
-        @Override
-        public Map<String, NODE> transform(Bindings input) {
-//            System.err.println(input.toString()+" matched\n");
-            return input.toMap();
-        }
-    };
+//    private static final Transformer<Bindings, Map<String,NODE>> bindingsToMap = new Transformer<Bindings, Map<String,NODE>>(){
+//        @Override
+//        public Map<String, NODE> transform(Bindings input) {
+//            return input.toMap();
+//        }
+//    };
 
     private static final Map<String, Pattern> patterns = new HashMap<String, Pattern>();
 
@@ -257,6 +256,14 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             String key = getKey(expr);
             variables.add(key != null ? key : expr.toString());
         }
+        
+        final Transformer<Bindings, Map<String,NODE>> bindingsToMap = new Transformer<Bindings, Map<String,NODE>>(){
+            @Override
+            public Map<String, NODE> transform(Bindings input) {
+                return input.toMap(variables);
+            }
+        };
+        
         return new TupleQuery(){
             @Override
             public CloseableIterator<Map<String, NODE>> getTuples() {

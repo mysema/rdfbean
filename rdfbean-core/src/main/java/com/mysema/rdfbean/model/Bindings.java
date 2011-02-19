@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.model;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +55,17 @@ public class Bindings {
             rv.putAll(parent.toMap());
         }
         return rv;
+    }
+    
+    public Map<String, NODE> toMap(Collection<String> vars){
+        Map<String, NODE> rv = new HashMap<String, NODE>(vars.size());
+        for (String var : vars){
+            NODE node = get(var);
+            if (node != null){
+                rv.put(var, node);
+            }
+        }
+        return rv;   
     }
 
     @Override

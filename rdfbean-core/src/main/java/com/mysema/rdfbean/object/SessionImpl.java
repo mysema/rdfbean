@@ -875,18 +875,28 @@ public final class SessionImpl implements Session {
 
     @Override
     public <T> List<T> getAll(Class<T> clazz, ID... subjects) {
+        // TODO : improve performance
         List<T> instances = new ArrayList<T>(subjects.length);
         for (ID subject : subjects) {
-            instances.add(get(clazz, subject));
+            if (subject != null){
+                instances.add(get(clazz, subject));    
+            }else{
+                instances.add(null);
+            }            
         }
         return instances;
     }
 
     @Override
     public <T> List<T> getAll(Class<T> clazz, LID... subjects) {
+        // TODO : improve performance
         List<T> instances = new ArrayList<T>(subjects.length);
         for (LID subject : subjects) {
-            instances.add(get(clazz, subject));
+            if (subject != null){
+                instances.add(get(clazz, subject));    
+            }else{
+                instances.add(null);
+            }  
         }
         return instances;
     }
