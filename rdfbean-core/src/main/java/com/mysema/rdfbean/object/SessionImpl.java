@@ -262,6 +262,9 @@ public final class SessionImpl implements Session {
     private MultiMap<UID, STMT> getProperties(ID subject, MappedClass mappedClass, boolean polymorphic) {
         MultiMap<UID, STMT> properties = new MultiHashMap<UID, STMT>();
         if (mappedClass.getDynamicProperties().isEmpty() && !polymorphic){
+            if (logger.isDebugEnabled()){
+                logger.debug("query for properties of " +  subject); 
+            }
             RDFQuery query = new RDFQueryImpl(connection);
             CloseableIterator<STMT> stmts = query.where(
                     Blocks.SPOC, 
@@ -750,15 +753,49 @@ public final class SessionImpl implements Session {
         return new ArrayList<T>(instances);
     }
 
-    private <T> void findInstances(Class<T> clazz, UID uri, final Set<T> instances) {
-        UID context = getContext(clazz, null, null);
-        Set<ID> resources = new LinkedHashSet<ID>();
-        resources.addAll(this.<ID> filterSubject(findStatements(null, RDF.type, uri, context, true)));
-        for (ID subject : resources) {
-            T instance = get(clazz, subject);
-            if (instance != null) {
-                instances.add(instance);
+    private <T> void findInstances(Class<T> clazz, UID type, final Set<T> instances) {
+        MappedClass mappedClass = configuration.getMappedClass(clazz);
+        boolean polymorphic = isPolymorphic(mappedClass);
+        UID context = mappedClass.getContext();
+        
+        if (logger.isDebugEnabled()){
+            logger.debug("query for " + type.ln() + " instance data");
+        }
+        
+        RDFQuery query = new RDFQueryImpl(connection);
+        query.where(
+                Blocks.S_TYPE, // TODO : this could use the context
+                Blocks.SPOC);
+        
+        if (polymorphic){
+            Collection<UID> types = ontology.getSubtypes(type);
+            if (types.size() > 1){
+                query.where(QNODE.type.in(types));
+            }else{
+                query.set(QNODE.type, type);                        
+            }                
+        }else{
+            if (context != null){
+                query.set(QNODE.typeContext, context);
             }
+            query.set(QNODE.type, type);
+            if (mappedClass.getDynamicProperties().isEmpty()){
+                query.where(QNODE.p.in(mappedClass.getMappedPredicates()));    
+            }                
+        }                   
+        
+        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
+        
+        Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
+                    
+        // TODO : preload other referenced types
+        
+        for (ID subject : propertiesMap.keySet()){
+            T instance = getCached(subject, clazz);
+            if (instance == null){
+                instance = getMappedObject(subject, clazz, propertiesMap.get(subject), polymorphic, context);
+            }
+            instances.add(instance);
         }
     }
 
@@ -812,6 +849,9 @@ public final class SessionImpl implements Session {
 
     private List<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object,
             @Nullable UID context, boolean includeInferred) {
+        if (logger.isDebugEnabled()){
+            logger.debug("findStatements " + subject + " " + predicate + " " + object + " " + context);
+        }
         // rdf type inference
         if (RDF.type.equals(predicate) && subject == null && object != null 
                 && connection.getInferenceOptions().subClassOf()){
@@ -900,9 +940,14 @@ public final class SessionImpl implements Session {
             }
             
             MappedClass mappedClass = configuration.getMappedClass(clazz);
-            boolean polymorphic = isPolymorphic(mappedClass);            
+            boolean polymorphic = isPolymorphic(mappedClass);
+            UID type = mappedClass.getUID();
             UID context = mappedClass.getContext();
-            Map<ID, MultiMap<UID, STMT>> propertiesMap = new HashMap<ID, MultiMap<UID, STMT>>();
+            
+            if (logger.isDebugEnabled()){
+                logger.debug("query for " + type.ln() + " instance data");
+            }
+            
             RDFQuery query = new RDFQueryImpl(connection);
             query.where(
                     Blocks.S_TYPE, // TODO : this could use the context
@@ -910,34 +955,22 @@ public final class SessionImpl implements Session {
                     QNODE.s.in(ids));
             
             if (polymorphic){
-                Collection<UID> types = ontology.getSubtypes(mappedClass.getUID());
+                Collection<UID> types = ontology.getSubtypes(type);
                 if (types.size() > 1){
                     query.where(QNODE.type.in(types));
                 }else{
-                    query.set(QNODE.type, mappedClass.getUID());                        
+                    query.set(QNODE.type, type);                        
                 }                
             }else{
-                query.set(QNODE.type, mappedClass.getUID());
+                query.set(QNODE.type, type);
                 if (mappedClass.getDynamicProperties().isEmpty()){
                     query.where(QNODE.p.in(mappedClass.getMappedPredicates()));    
                 }                
-            }                    
+            }                   
             
             CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
             
-            try{
-                while (stmts.hasNext()){
-                    STMT stmt = stmts.next();
-                    MultiMap<UID, STMT> properties = propertiesMap.get(stmt.getSubject());
-                    if (properties == null){
-                        properties = new MultiHashMap<UID, STMT>();
-                        propertiesMap.put(stmt.getSubject(), properties);
-                    }
-                    properties.put(stmt.getPredicate(), stmt);
-                }    
-            }finally{
-                stmts.close();
-            }
+            Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
                         
             // TODO : preload other referenced types
             
@@ -947,7 +980,7 @@ public final class SessionImpl implements Session {
                 }else{
                     MultiMap<UID, STMT> properties = propertiesMap.get(subject);
                     if (properties != null){
-                        instances.add(getMappedObject(subject, clazz, properties, false, context));
+                        instances.add(getMappedObject(subject, clazz, properties, polymorphic, context));
                     }else{
                         instances.add(null);
                     }    
@@ -964,6 +997,24 @@ public final class SessionImpl implements Session {
             }    
         }
         return instances;
+    }
+
+    private Map<ID, MultiMap<UID, STMT>> getPropertiesMap(CloseableIterator<STMT> stmts) {
+        Map<ID, MultiMap<UID, STMT>> propertiesMap = new HashMap<ID, MultiMap<UID, STMT>>();
+        try{
+            while (stmts.hasNext()){
+                STMT stmt = stmts.next();
+                MultiMap<UID, STMT> properties = propertiesMap.get(stmt.getSubject());
+                if (properties == null){
+                    properties = new MultiHashMap<UID, STMT>();
+                    propertiesMap.put(stmt.getSubject(), properties);
+                }
+                properties.put(stmt.getPredicate(), stmt);
+            }    
+        }finally{
+            stmts.close();
+        }
+        return propertiesMap;
     }
 
     @Override

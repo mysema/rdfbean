@@ -55,5 +55,10 @@ public final class QueryLanguage<D,Q> {
     public Class<Q> getQueryType() {
         return queryType;
     }
+    
+    @Override
+    public String toString(){
+        return name;
+    }
 
 }

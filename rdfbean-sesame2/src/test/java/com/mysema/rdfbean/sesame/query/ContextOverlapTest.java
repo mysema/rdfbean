@@ -46,8 +46,8 @@ public class ContextOverlapTest extends SessionTestBase{
     @Test
     public void Find_Instances_Of_Types_In_Different_Contexts(){
         assertEquals(3, session.findInstances(Entity1.class).size());
-        assertEquals(2, session.findInstances(Entity2.class).size()); // because inferred triples are queried as well
-        assertEquals(2, session.findInstances(Entity3.class).size()); // because inferred triples are queried as well
+        assertEquals(1, session.findInstances(Entity2.class).size()); 
+        assertEquals(1, session.findInstances(Entity3.class).size()); 
     }
 
 }

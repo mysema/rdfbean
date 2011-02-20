@@ -26,6 +26,8 @@ public class QNODE<T extends NODE> extends Param<T>{
 
     public static final QID type = new QID("type");
     
+    public static final QID typeContext = new QID("typeContext");
+    
     @Nullable
     private volatile QLIT lit;
 

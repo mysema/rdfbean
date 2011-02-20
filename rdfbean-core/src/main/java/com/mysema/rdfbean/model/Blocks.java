@@ -28,7 +28,7 @@ public final class Blocks {
         }
     }
 
-    public static final Block S_TYPE = pattern(QNODE.s, RDF.type, QNODE.type);
+    public static final Block S_TYPE = pattern(QNODE.s, RDF.type, QNODE.type, QNODE.typeContext);
     
     public static final Block SPO = pattern(QNODE.s, QNODE.p, QNODE.o);
 

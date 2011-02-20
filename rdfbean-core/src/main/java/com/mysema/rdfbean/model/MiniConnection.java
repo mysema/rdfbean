@@ -7,6 +7,9 @@ package com.mysema.rdfbean.model;
 
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryMetadata;
 
@@ -17,6 +20,8 @@ import com.mysema.query.QueryMetadata;
  *
  */
 public class MiniConnection implements RDFConnection {
+    
+    private static final Logger logger = LoggerFactory.getLogger(MiniConnection.class);
 
     private final MiniRepository repository;
 
@@ -52,6 +57,10 @@ public class MiniConnection implements RDFConnection {
         if (queryLanguage == QueryLanguage.TUPLE
             || queryLanguage == QueryLanguage.GRAPH
             || queryLanguage == QueryLanguage.BOOLEAN){
+            if (logger.isDebugEnabled()){
+                QueryMetadata metadata = (QueryMetadata)definition;
+                logger.debug(queryLanguage + " : " + metadata.getWhere().toString());
+            }
             QueryRDFVisitor visitor = new QueryRDFVisitor(this);
             return (Q) visitor.visit((QueryMetadata)definition, queryLanguage);
 
@@ -62,12 +71,18 @@ public class MiniConnection implements RDFConnection {
 
     @Override
     public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        if (logger.isDebugEnabled()){
+            logger.debug("exists " + subject + " " + predicate + " " + object + " " + context);
+        }
         return repository.exists(subject, predicate, object, context);
     }
 
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, boolean includeInferred) {
+        if (logger.isDebugEnabled()){
+            logger.debug("find " + subject + " " + predicate + " " + object + " " + context);
+        }
         return repository.findStatements(subject, predicate, object, context, includeInferred);
     }
 
