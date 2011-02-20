@@ -910,10 +910,17 @@ public final class SessionImpl implements Session {
                     QNODE.s.in(ids));
             
             if (polymorphic){
-                query.where(QNODE.type.in(ontology.getSubtypes(mappedClass.getUID())));
+                Collection<UID> types = ontology.getSubtypes(mappedClass.getUID());
+                if (types.size() > 1){
+                    query.where(QNODE.type.in(types));
+                }else{
+                    query.set(QNODE.type, mappedClass.getUID());                        
+                }                
             }else{
-                query.where(QNODE.p.in(mappedClass.getMappedPredicates()))
-                    .set(QNODE.type, mappedClass.getUID());
+                query.set(QNODE.type, mappedClass.getUID());
+                if (mappedClass.getDynamicProperties().isEmpty()){
+                    query.where(QNODE.p.in(mappedClass.getMappedPredicates()));    
+                }                
             }                    
             
             CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
