@@ -762,27 +762,7 @@ public final class SessionImpl implements Session {
             logger.debug("query for " + type.ln() + " instance data");
         }
         
-        RDFQuery query = new RDFQueryImpl(connection);
-        query.where(
-                Blocks.S_TYPE, // TODO : this could use the context
-                Blocks.SPOC);
-        
-        if (polymorphic){
-            Collection<UID> types = ontology.getSubtypes(type);
-            if (types.size() > 1){
-                query.where(QNODE.type.in(types));
-            }else{
-                query.set(QNODE.type, type);                        
-            }                
-        }else{
-            if (context != null){
-                query.set(QNODE.typeContext, context);
-            }
-            query.set(QNODE.type, type);
-            if (mappedClass.getDynamicProperties().isEmpty()){
-                query.where(QNODE.p.in(mappedClass.getMappedPredicates()));    
-            }                
-        }                   
+        RDFQuery query = createQuery(mappedClass, polymorphic);                   
         
         CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
         
@@ -797,6 +777,34 @@ public final class SessionImpl implements Session {
             }
             instances.add(instance);
         }
+    }
+
+    private RDFQuery createQuery(MappedClass mappedClass, boolean polymorphic) {
+        UID type = mappedClass.getUID();
+        UID context = mappedClass.getContext();
+        RDFQuery query = new RDFQueryImpl(connection);
+        query.where(
+                Blocks.S_TYPE, // TODO : this could use the context
+                Blocks.SPOC);
+        
+        if (context != null){
+            query.set(QNODE.typeContext, context);
+        }
+        
+        if (polymorphic){
+            Collection<UID> types = ontology.getSubtypes(type);
+            if (types.size() > 1){
+                query.where(QNODE.type.in(types));
+            }else{
+                query.set(QNODE.type, type);                        
+            }                
+        }else{            
+            query.set(QNODE.type, type);
+            if (mappedClass.getDynamicProperties().isEmpty()){
+                query.where(QNODE.p.in(mappedClass.getMappedPredicates()));    
+            }                
+        }
+        return query;
     }
 
     private List<ID> findMappedTypes(ID subject, UID context, MultiMap<UID, STMT> properties) {
@@ -948,26 +956,8 @@ public final class SessionImpl implements Session {
                 logger.debug("query for " + type.ln() + " instance data");
             }
             
-            RDFQuery query = new RDFQueryImpl(connection);
-            query.where(
-                    Blocks.S_TYPE, // TODO : this could use the context
-                    Blocks.SPOC,
-                    QNODE.s.in(ids));
-            
-            if (polymorphic){
-                Collection<UID> types = ontology.getSubtypes(type);
-                if (types.size() > 1){
-                    query.where(QNODE.type.in(types));
-                }else{
-                    query.set(QNODE.type, type);                        
-                }                
-            }else{
-                query.set(QNODE.type, type);
-                if (mappedClass.getDynamicProperties().isEmpty()){
-                    query.where(QNODE.p.in(mappedClass.getMappedPredicates()));    
-                }                
-            }                   
-            
+            RDFQuery query = createQuery(mappedClass, polymorphic);           
+            query.where(QNODE.s.in(ids));
             CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
             
             Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
