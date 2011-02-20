@@ -49,6 +49,8 @@ public final class DefaultConfiguration implements Configuration {
     }
 
     private final Set<MappedClass> mappedClasses = new LinkedHashSet<MappedClass>();
+    
+    private final Set<Class<?>> polymorphicClasses = new HashSet<Class<?>>();
 
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
     
@@ -80,6 +82,9 @@ public final class DefaultConfiguration implements Configuration {
                     }                    
                     classList.add(mappedClass);                    
                 }   
+                for (MappedClass superClass : mappedClass.getMappedSuperClasses()){
+                    polymorphicClasses.add(superClass.getJavaClass());
+                }
                 mappedClasses.add(mappedClass);
             }else{
                 throw new IllegalArgumentException("No @ClassMapping annotation for " + clazz.getName());
@@ -140,6 +145,10 @@ public final class DefaultConfiguration implements Configuration {
 
     public boolean isMapped(Class<?> clazz){
         return clazz.getAnnotation(ClassMapping.class) != null;
+    }
+    
+    public boolean isPolymorphic(Class<?> clazz){
+        return polymorphicClasses.contains(clazz);
     }
     
     @Override

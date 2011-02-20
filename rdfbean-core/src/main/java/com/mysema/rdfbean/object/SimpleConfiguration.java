@@ -41,6 +41,8 @@ class SimpleConfiguration implements Configuration{
     
     private final Set<MappedClass> mappedClasses;
     
+    private final Set<Class<?>> polymorphicClasses = new HashSet<Class<?>>();
+    
     private final Map<UID,MappedClass> uidToMappedClass = new HashMap<UID,MappedClass>();
 
     private final Map<Class<?>,MappedClass> classToMappedClass = new HashMap<Class<?>,MappedClass>();
@@ -55,6 +57,9 @@ class SimpleConfiguration implements Configuration{
         for (MappedClass mappedClass : mappedClasses){
             uidToMappedClass.put(mappedClass.getUID(), mappedClass);
             classToMappedClass.put(mappedClass.getJavaClass(), mappedClass);
+            for (MappedClass superClass : mappedClass.getMappedSuperClasses()){
+                polymorphicClasses.add(superClass.getJavaClass());
+            }
         }
     }
     
@@ -99,6 +104,10 @@ class SimpleConfiguration implements Configuration{
         return mappedClasses;
     }
 
+    public boolean isPolymorphic(Class<?> clazz){
+        return polymorphicClasses.contains(clazz);
+    }
+    
     public boolean isMapped(Class<?> clazz){
         return classToMappedClass.containsKey(clazz);
     }

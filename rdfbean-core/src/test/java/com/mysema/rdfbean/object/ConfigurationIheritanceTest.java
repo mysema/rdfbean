@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.object;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -62,6 +63,16 @@ public class ConfigurationIheritanceTest {
         builder.addClass(Identifiable.class).addId("id").addProperties();
         builder.addClass(Category.class).addProperties();
         configuration = builder.build();
+    }
+    
+    @Test
+    public void Identifiable_Is_Polymorphic(){
+        assertTrue(configuration.isPolymorphic(Identifiable.class));
+    }
+    
+    @Test
+    public void Category_Isnt_Polymorphic(){
+        assertFalse(configuration.isPolymorphic(Category.class));
     }
     
     @Test

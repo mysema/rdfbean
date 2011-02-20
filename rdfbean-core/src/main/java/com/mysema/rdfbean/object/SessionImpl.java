@@ -258,16 +258,16 @@ public final class SessionImpl implements Session {
         }
         return instance;
     }
-    
-    private MultiMap<UID, STMT> getProperties(ID subject, MappedClass mappedClass) {
+        
+    private MultiMap<UID, STMT> getProperties(ID subject, MappedClass mappedClass, boolean polymorphic) {
         MultiMap<UID, STMT> properties = new MultiHashMap<UID, STMT>();
-        if (mappedClass.getDynamicProperties().isEmpty() && !mappedClass.isPolymorphic()){
+        if (mappedClass.getDynamicProperties().isEmpty() && !polymorphic){
             RDFQuery query = new RDFQueryImpl(connection);
             CloseableIterator<STMT> stmts = query.where(
-                    Blocks.SPO, 
+                    Blocks.SPOC, 
                     QNODE.p.in(mappedClass.getMappedPredicates()))
                     .set(QNODE.s, subject)
-                    .construct(Blocks.SPO);
+                    .construct(Blocks.SPOC);
             try{
                 while (stmts.hasNext()){
                     STMT stmt = stmts.next();                    
@@ -446,7 +446,7 @@ public final class SessionImpl implements Session {
     private <T> T convertMappedObject(ID subject, Class<T> requiredClass, boolean polymorphic, boolean injection) {
         // XXX defaultContext?
         UID context = getContext(requiredClass, subject, null);
-        Object instance = get(subject, requiredClass);
+        Object instance = getCached(subject, requiredClass);
         if (instance == null) {
             if (injection) {
                 if (subject instanceof UID && requiredClass != null) {
@@ -458,26 +458,34 @@ public final class SessionImpl implements Session {
                         throw new IllegalArgumentException("No such parent repository: " + uri.ns());
                     }
                 }
+                
+            }else if (requiredClass.isEnum() && subject.isURI()){
+                return (T)Enum.valueOf((Class)requiredClass, subject.asURI().ln());
             }
-            
+        
             MappedClass mappedClass = configuration.getMappedClass(requiredClass);
-            MultiMap<UID, STMT> properties = getProperties(subject, mappedClass);            
-            
-            if (polymorphic) {
-                Collection mappedTypes = findMappedTypes(subject, context, properties);
-                if (!mappedTypes.isEmpty()) {
-                    instance = createInstance(subject, requiredClass, mappedTypes, properties);
-                }
-
-            } else {
-                instance = createInstance(subject, requiredClass, Collections.<ID> emptyList(), properties);
-            }
-            if (instance != null){
-                put(subject, instance);
-                bind(subject, instance, properties);    
-            }            
+            MultiMap<UID, STMT> properties = getProperties(subject, mappedClass, polymorphic);
+            instance = getMappedObject(subject, requiredClass, properties, polymorphic, context);            
         }
         return (T) instance;
+    }
+
+    private <T> T getMappedObject(ID subject, Class<T> requiredClass, MultiMap<UID, STMT> properties, boolean polymorphic, UID context) {                    
+        T instance = null;        
+        if (polymorphic) {
+            Collection<ID> mappedTypes = findMappedTypes(subject, context, properties);
+            if (!mappedTypes.isEmpty()) {
+                instance = createInstance(subject, requiredClass, mappedTypes, properties);
+            }
+
+        } else {
+            instance = createInstance(subject, requiredClass, Collections.<ID> emptyList(), properties);
+        }
+        if (instance != null){
+            put(subject, instance);
+            bind(subject, instance, properties);    
+        }
+        return instance;
     }
 
     @SuppressWarnings("unchecked")
@@ -550,7 +558,7 @@ public final class SessionImpl implements Session {
     private Object convertMappedClass(NODE value, Class<?> targetClass, MappedPath propertyPath,
             MappedProperty mappedProperty) {
         if (value instanceof ID) {
-            return convertMappedObject((ID) value, targetClass, mappedProperty.isPolymorphic(), mappedProperty.isInjection());
+            return convertMappedObject((ID) value, targetClass, isPolymorphic(mappedProperty), mappedProperty.isInjection());
         } else {
             throw new BindException(propertyPath, value);
         }
@@ -811,9 +819,9 @@ public final class SessionImpl implements Session {
             if (types.size() > 1){
                 RDFQuery query = new RDFQueryImpl(connection);
                 CloseableIterator<STMT> stmts = query.where(
-                        Blocks.SPO, QNODE.o.in(types))
+                        Blocks.SPOC, QNODE.o.in(types))
                       .set(QNODE.p,predicate)
-                      .construct(Blocks.SPO);
+                      .construct(Blocks.SPOC);
                 return IteratorAdapter.asList(stmts);
             }
         }
@@ -853,7 +861,7 @@ public final class SessionImpl implements Session {
         Assert.notNull(subject, "subject");
         boolean polymorphic = true;
         MappedClass mappedClass = configuration.getMappedClass(clazz);
-        polymorphic = mappedClass.isPolymorphic();
+        polymorphic = isPolymorphic(mappedClass);
         return convertMappedObject(subject, clazz, polymorphic, false);
     }
 
@@ -863,11 +871,12 @@ public final class SessionImpl implements Session {
         return id != null ? get(clazz, id) : null;
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
-    private Object get(ID resource, Class<?> clazz) {
+    private <T> T getCached(ID resource, Class<T> clazz) {
         for (Object instance : instanceCache.get(resource)) {
             if (clazz == null || clazz.isInstance(instance)) {
-                return instance;
+                return (T)instance;
             }
         }
         return null;
@@ -875,14 +884,68 @@ public final class SessionImpl implements Session {
 
     @Override
     public <T> List<T> getAll(Class<T> clazz, ID... subjects) {
-        // TODO : improve performance
         List<T> instances = new ArrayList<T>(subjects.length);
-        for (ID subject : subjects) {
-            if (subject != null){
-                instances.add(get(clazz, subject));    
-            }else{
-                instances.add(null);
-            }            
+        if (!configuration.isPolymorphic(clazz) && !clazz.isEnum()){
+            List<ID> ids = new ArrayList<ID>(subjects.length);
+            Map<ID, T> cache = new HashMap<ID, T>(subjects.length);
+            for (ID id : subjects){
+                if (id != null){
+                    T cached = getCached(id, clazz);
+                    if (cached != null){
+                        cache.put(id, cached);
+                    }else{
+                        ids.add(id);    
+                    }                    
+                }
+            }
+            MappedClass mappedClass = configuration.getMappedClass(clazz);
+            UID context = mappedClass.getContext();
+            Map<ID, MultiMap<UID, STMT>> propertiesMap = new HashMap<ID, MultiMap<UID, STMT>>();
+            RDFQuery query = new RDFQueryImpl(connection);
+            CloseableIterator<STMT> stmts = query.where(
+                    Blocks.S_RDFTYPE_TYPE, // TODO : this could use the context
+                    Blocks.SPOC,
+                    QNODE.s.in(ids))
+                    .set(QNODE.type, mappedClass.getUID())
+                    .construct(Blocks.SPOC);
+            
+            try{
+                while (stmts.hasNext()){
+                    STMT stmt = stmts.next();
+                    MultiMap<UID, STMT> properties = propertiesMap.get(stmt.getSubject());
+                    if (properties == null){
+                        properties = new MultiHashMap<UID, STMT>();
+                        propertiesMap.put(stmt.getSubject(), properties);
+                    }
+                    properties.put(stmt.getPredicate(), stmt);
+                }    
+            }finally{
+                stmts.close();
+            }
+                        
+            // TODO : preload other referenced types
+            
+            for (ID subject : subjects){
+                if (cache.containsKey(subject)){
+                    instances.add(cache.get(subject));
+                }else{
+                    MultiMap<UID, STMT> properties = propertiesMap.get(subject);
+                    if (properties != null){
+                        instances.add(getMappedObject(subject, clazz, properties, false, context));
+                    }else{
+                        instances.add(null);
+                    }    
+                }
+            }
+            
+        }else{
+            for (ID subject : subjects) {
+                if (subject != null){
+                    instances.add(get(clazz, subject));    
+                }else{
+                    instances.add(null);
+                }            
+            }    
         }
         return instances;
     }
@@ -1105,6 +1168,19 @@ public final class SessionImpl implements Session {
             }
         }
         return false;
+    }
+    
+    private boolean isPolymorphic(MappedClass mappedClass){
+        return configuration.isPolymorphic(mappedClass.getJavaClass());
+    }
+    
+    private boolean isPolymorphic(MappedProperty<?> mappedProperty) {
+        // TODO : how to handle maps ?!?
+        if (mappedProperty.isCollection()){
+            return configuration.isPolymorphic(mappedProperty.getComponentType());
+        }else{
+            return configuration.isPolymorphic(mappedProperty.getType());    
+        }        
     }
 
     @Nullable

@@ -53,8 +53,8 @@ public final class MappedClass {
 
     @Nullable
     private final UID context;
-
-    MappedClass(Class<?> clazz, @Nullable UID uid, @Nullable UID context,List<MappedClass> mappedSuperClasses) {
+    
+    MappedClass(Class<?> clazz, @Nullable UID uid, @Nullable UID context, List<MappedClass> mappedSuperClasses) {
         this.clazz = Assert.notNull(clazz,"clazz");
         this.uid = uid;
         this.context = context;
@@ -71,11 +71,6 @@ public final class MappedClass {
         }
     }
 
-    public static boolean isPolymorphic(Class<?> clazz) {
-        // TODO use configuration to check if there's any mapped subclasses
-        return !Modifier.isFinal(clazz.getModifiers());
-    }
-
     void addDynamicProperty(MappedProperty<?> property) {
         // FIXME How to handle mapped keys from superclass?
         dynamicProperties.add(property);
@@ -83,7 +78,7 @@ public final class MappedClass {
 
     @SuppressWarnings("unchecked")
     void addMappedPath(MappedPath path) {
-        if (path.getPredicatePath().size() == 1 && !path.getPredicatePath().get(0).inv()) {
+        if (path.getPredicatePath().size() > 0 && !path.getPredicatePath().get(0).inv()) {
             mappedPredicates.add(path.getPredicatePath().get(0).getUID());
         }
 
@@ -213,10 +208,6 @@ public final class MappedClass {
 
     public boolean isMappedPredicate(UID predicate) {
         return mappedPredicates.contains(predicate);
-    }
-
-    public boolean isPolymorphic() {
-        return isPolymorphic(clazz);
     }
 
     Type resolveTypeVariable(String typeVariableName, MappedClass declaringClass) {

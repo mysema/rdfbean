@@ -25,6 +25,7 @@ import com.mysema.rdfbean.domains.NoteTypeDomain.NoteType;
 import com.mysema.rdfbean.model.FOAF;
 import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
@@ -66,11 +67,11 @@ public abstract class SessionTestBase implements SimpleDomain{
         
         // enums
         Set<STMT> added = new HashSet<STMT>();
+        UID ntType = new UID(TEST.NS, NoteType.class.getSimpleName());
         for (NoteType nt : NoteType.values()){
-            added.add(new STMT(
-                    new UID(TEST.NS, nt.name()), 
-                    CORE.enumOrdinal, 
-                    new LIT(String.valueOf(nt.ordinal()), XSD.integerType)));
+            UID ntId = new UID(TEST.NS, nt.name());
+            added.add(new STMT(ntId, RDF.type, ntType));
+            added.add(new STMT(ntId, CORE.enumOrdinal, new LIT(String.valueOf(nt.ordinal()), XSD.integerType)));
         }
         RDFConnection connection = repository.openConnection();
         connection.update(Collections.<STMT>emptySet(), added);

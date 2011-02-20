@@ -377,9 +377,9 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return isAnnotationPresent(Properties.class);
     }
     
-    public boolean isPolymorphic() {
-        return MappedClass.isPolymorphic(getTargetType());
-    }
+//    public boolean isPolymorphic() {
+//        return MappedClass.isPolymorphic(getTargetType());
+//    }
     
     public boolean isConstructorParameter() {
         return getMember() instanceof Constructor<?>;

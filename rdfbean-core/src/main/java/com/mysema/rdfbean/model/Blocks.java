@@ -28,6 +28,8 @@ public final class Blocks {
         }
     }
 
+    public static final Block S_RDFTYPE_TYPE = pattern(QNODE.s, RDF.type, QNODE.type);
+    
     public static final Block SPO = pattern(QNODE.s, QNODE.p, QNODE.o);
 
     public static final Block SPOC = pattern(QNODE.s, QNODE.p, QNODE.o, QNODE.c);

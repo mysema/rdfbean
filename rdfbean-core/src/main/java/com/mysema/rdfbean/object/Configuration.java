@@ -30,6 +30,8 @@ public interface Configuration {
     
     boolean isMapped(Class<?> javaClass);
     
+    boolean isPolymorphic(Class<?> javaClass);
+    
     MappedClass getMappedClass(Class<?> javaClass);
     
     List<MappedClass> getMappedClasses(UID uid);
@@ -37,8 +39,9 @@ public interface Configuration {
     Set<MappedClass> getMappedClasses();
 
     boolean isRestricted(UID uid);
-
+    
     @Nullable
     UID createURI(Object instance);
+
         
 }
