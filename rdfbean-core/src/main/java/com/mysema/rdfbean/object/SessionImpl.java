@@ -759,9 +759,9 @@ public final class SessionImpl implements Session {
         UID context = mappedClass.getContext();
         
         if (logger.isDebugEnabled()){
-            logger.debug("query for " + type.ln() + " instance data");
+            logger.debug("query for " + clazz.getSimpleName() + " instance data");
         }        
-        RDFQuery query = createQuery(mappedClass, polymorphic);                          
+        RDFQuery query = createQuery(mappedClass, type, polymorphic);                          
         CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);        
         Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
                     
@@ -820,17 +820,12 @@ public final class SessionImpl implements Session {
     private void loadAll(Class<?> clazz, Collection<ID> ids, Set<ID> handled) {
         MappedClass mappedClass = configuration.getMappedClass(clazz);
         boolean polymorphic = isPolymorphic(mappedClass);
-        UID type = mappedClass.getUID();
         UID context = mappedClass.getContext();
         
-        if (type == null){
-            throw new RuntimeException(clazz.getSimpleName());
-        }
-        
         if (logger.isDebugEnabled()){
-            logger.debug("query for " + type.ln() + " instance data");
+            logger.debug("query for " + clazz.getSimpleName() + " instance data");
         }            
-        RDFQuery query = createQuery(mappedClass, polymorphic);           
+        RDFQuery query = createQuery(mappedClass, mappedClass.getUID(), polymorphic);           
         query.where(QNODE.s.in(ids));
         CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);            
         Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
@@ -844,8 +839,7 @@ public final class SessionImpl implements Session {
         }
     }
 
-    private RDFQuery createQuery(MappedClass mappedClass, boolean polymorphic) {
-        UID type = mappedClass.getUID();
+    private RDFQuery createQuery(MappedClass mappedClass, UID type, boolean polymorphic) {
         UID context = mappedClass.getContext();
         RDFQuery query = new RDFQueryImpl(connection);
         query.where(
@@ -1013,13 +1007,12 @@ public final class SessionImpl implements Session {
             
             MappedClass mappedClass = configuration.getMappedClass(clazz);
             boolean polymorphic = isPolymorphic(mappedClass);
-            UID type = mappedClass.getUID();
             UID context = mappedClass.getContext();
             
             if (logger.isDebugEnabled()){
-                logger.debug("query for " + type.ln() + " instance data");
+                logger.debug("query for " + clazz.getSimpleName() + " instance data");
             }            
-            RDFQuery query = createQuery(mappedClass, polymorphic);           
+            RDFQuery query = createQuery(mappedClass, mappedClass.getUID(), polymorphic);           
             query.where(QNODE.s.in(ids));
             CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);            
             Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
