@@ -838,7 +838,9 @@ public final class SessionImpl implements Session {
         loadReferences(mappedClass, propertiesMap, handled);
         
         for (Map.Entry<ID, MultiMap<UID, STMT>> entry : propertiesMap.entrySet()){
-            getMappedObject(entry.getKey(), clazz, entry.getValue(), polymorphic, context);
+            if (getCached(entry.getKey(), clazz) == null){
+                getMappedObject(entry.getKey(), clazz, entry.getValue(), polymorphic, context);    
+            }            
         }
     }
 
@@ -1026,16 +1028,15 @@ public final class SessionImpl implements Session {
             loadReferences(mappedClass, propertiesMap, propertiesMap.keySet());
             
             for (ID subject : subjects){
+                T instance = null;
                 if (cache.containsKey(subject)){
-                    instances.add(cache.get(subject));
-                }else{
+                    instance = cache.get(subject);
+                }else if ((instance = getCached(subject,clazz)) == null 
+                        && propertiesMap.containsKey(subject)){
                     MultiMap<UID, STMT> properties = propertiesMap.get(subject);
-                    if (properties != null){
-                        instances.add(getMappedObject(subject, clazz, properties, polymorphic, context));
-                    }else{
-                        instances.add(null);
-                    }    
+                    instance = getMappedObject(subject, clazz, properties, polymorphic, context);
                 }
+                instances.add(instance);
             }
             
         }else{
