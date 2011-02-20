@@ -763,8 +763,7 @@ public final class SessionImpl implements Session {
         }
         
         RDFQuery query = createQuery(mappedClass, polymorphic);                          
-        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
-        
+        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);        
         Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
                     
         // TODO : preload other referenced types
@@ -783,7 +782,7 @@ public final class SessionImpl implements Session {
         UID context = mappedClass.getContext();
         RDFQuery query = new RDFQueryImpl(connection);
         query.where(
-                Blocks.S_TYPE, // TODO : this could use the context
+                Blocks.S_TYPE,
                 Blocks.SPOC);
         
         if (context != null){
@@ -957,8 +956,7 @@ public final class SessionImpl implements Session {
             
             RDFQuery query = createQuery(mappedClass, polymorphic);           
             query.where(QNODE.s.in(ids));
-            CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
-            
+            CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);            
             Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
                         
             // TODO : preload other referenced types
