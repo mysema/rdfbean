@@ -885,7 +885,7 @@ public final class SessionImpl implements Session {
     @Override
     public <T> List<T> getAll(Class<T> clazz, ID... subjects) {
         List<T> instances = new ArrayList<T>(subjects.length);
-        if (!configuration.isPolymorphic(clazz) && !clazz.isEnum()){
+        if (!clazz.isEnum()){
             List<ID> ids = new ArrayList<ID>(subjects.length);
             Map<ID, T> cache = new HashMap<ID, T>(subjects.length);
             for (ID id : subjects){
@@ -898,16 +898,25 @@ public final class SessionImpl implements Session {
                     }                    
                 }
             }
+            
             MappedClass mappedClass = configuration.getMappedClass(clazz);
+            boolean polymorphic = isPolymorphic(mappedClass);            
             UID context = mappedClass.getContext();
             Map<ID, MultiMap<UID, STMT>> propertiesMap = new HashMap<ID, MultiMap<UID, STMT>>();
             RDFQuery query = new RDFQueryImpl(connection);
-            CloseableIterator<STMT> stmts = query.where(
-                    Blocks.S_RDFTYPE_TYPE, // TODO : this could use the context
+            query.where(
+                    Blocks.S_TYPE, // TODO : this could use the context
                     Blocks.SPOC,
-                    QNODE.s.in(ids))
-                    .set(QNODE.type, mappedClass.getUID())
-                    .construct(Blocks.SPOC);
+                    QNODE.s.in(ids));
+            
+            if (polymorphic){
+                query.where(QNODE.type.in(ontology.getSubtypes(mappedClass.getUID())));
+            }else{
+                query.where(QNODE.p.in(mappedClass.getMappedPredicates()))
+                    .set(QNODE.type, mappedClass.getUID());
+            }                    
+            
+            CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
             
             try{
                 while (stmts.hasNext()){
