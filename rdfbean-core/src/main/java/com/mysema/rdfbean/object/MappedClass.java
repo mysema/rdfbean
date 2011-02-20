@@ -78,8 +78,8 @@ public final class MappedClass {
 
     @SuppressWarnings("unchecked")
     void addMappedPath(MappedPath path) {
-        if (path.getPredicatePath().size() > 0 && !path.getPredicatePath().get(0).inv()) {
-            mappedPredicates.add(path.getPredicatePath().get(0).getUID());
+        if (path.getPredicatePath().size() > 0 && !path.get(0).inv()) {
+            mappedPredicates.add(path.get(0).getUID());
         }
 
         MappedProperty property = path.getMappedProperty();

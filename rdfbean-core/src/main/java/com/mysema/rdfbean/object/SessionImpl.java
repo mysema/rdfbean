@@ -760,13 +760,12 @@ public final class SessionImpl implements Session {
         
         if (logger.isDebugEnabled()){
             logger.debug("query for " + type.ln() + " instance data");
-        }
-        
+        }        
         RDFQuery query = createQuery(mappedClass, polymorphic);                          
         CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);        
         Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
                     
-        // TODO : preload other referenced types
+        loadReferences(mappedClass, propertiesMap, propertiesMap.keySet());
         
         for (ID subject : propertiesMap.keySet()){
             T instance = getCached(subject, clazz);
@@ -774,6 +773,72 @@ public final class SessionImpl implements Session {
                 instance = getMappedObject(subject, clazz, propertiesMap.get(subject), polymorphic, context);
             }
             instances.add(instance);
+        }
+    }
+
+    private void loadReferences(MappedClass mappedClass, Map<ID, MultiMap<UID, STMT>> propertiesMap, Set<ID> handled) {
+        // TODO : this should be cached
+        Map<UID, Class<?>> predToType = new HashMap<UID, Class<?>>(mappedClass.getProperties().size());
+        for (MappedPath mappedPath : mappedClass.getProperties()){
+            if (mappedPath.isReference() && !mappedPath.getPredicatePath().isEmpty() && !mappedPath.isInverse(0)){
+                MappedProperty<?> property = mappedPath.getMappedProperty();
+                Class<?> type = property.getType();
+                if (property.isCollection() || property.isMap()){
+                    type = property.getComponentType();
+                }
+                if (!type.isEnum()){
+                    predToType.put(mappedPath.get(0).getUID(), type);    
+                }                
+            }
+        }
+     
+        Map<Class<?>, Set<ID>> typeToIds = new HashMap<Class<?>, Set<ID>>();
+        Set<ID> newHandled = new HashSet<ID>(handled);
+        for (MultiMap<UID, STMT> properties : propertiesMap.values()){
+            for (STMT stmt : properties.values()){
+                if (stmt.getObject().isResource() && predToType.containsKey(stmt.getPredicate())){
+                    if (!instanceCache.containsKey(stmt.getObject()) && !handled.contains(stmt.getObject())){
+                        Class<?> cl = predToType.get(stmt.getPredicate());
+                        Set<ID> ids = typeToIds.get(cl);
+                        if (ids == null){
+                            ids = new HashSet<ID>();
+                            typeToIds.put(cl, ids);
+                        }
+                        newHandled.add(stmt.getObject().asResource());
+                        ids.add(stmt.getObject().asResource());    
+                    }                    
+                }
+            }
+        }
+        
+        // load
+        for (Map.Entry<Class<?>, Set<ID>> entry : typeToIds.entrySet()){
+            loadAll(entry.getKey(), entry.getValue(), newHandled);
+        }
+    }
+
+    private void loadAll(Class<?> clazz, Collection<ID> ids, Set<ID> handled) {
+        MappedClass mappedClass = configuration.getMappedClass(clazz);
+        boolean polymorphic = isPolymorphic(mappedClass);
+        UID type = mappedClass.getUID();
+        UID context = mappedClass.getContext();
+        
+        if (type == null){
+            throw new RuntimeException(clazz.getSimpleName());
+        }
+        
+        if (logger.isDebugEnabled()){
+            logger.debug("query for " + type.ln() + " instance data");
+        }            
+        RDFQuery query = createQuery(mappedClass, polymorphic);           
+        query.where(QNODE.s.in(ids));
+        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);            
+        Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
+                    
+        loadReferences(mappedClass, propertiesMap, handled);
+        
+        for (Map.Entry<ID, MultiMap<UID, STMT>> entry : propertiesMap.entrySet()){
+            getMappedObject(entry.getKey(), clazz, entry.getValue(), polymorphic, context);
         }
     }
 
@@ -952,14 +1017,13 @@ public final class SessionImpl implements Session {
             
             if (logger.isDebugEnabled()){
                 logger.debug("query for " + type.ln() + " instance data");
-            }
-            
+            }            
             RDFQuery query = createQuery(mappedClass, polymorphic);           
             query.where(QNODE.s.in(ids));
             CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);            
             Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
                         
-            // TODO : preload other referenced types
+            loadReferences(mappedClass, propertiesMap, propertiesMap.keySet());
             
             for (ID subject : subjects){
                 if (cache.containsKey(subject)){
@@ -1227,8 +1291,7 @@ public final class SessionImpl implements Session {
     }
     
     private boolean isPolymorphic(MappedProperty<?> mappedProperty) {
-        // TODO : how to handle maps ?!?
-        if (mappedProperty.isCollection()){
+        if (mappedProperty.isCollection() || mappedProperty.isMap()){
             return configuration.isPolymorphic(mappedProperty.getComponentType());
         }else{
             return configuration.isPolymorphic(mappedProperty.getType());    

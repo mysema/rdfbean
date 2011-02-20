@@ -150,10 +150,6 @@ public final class MappedPath {
         return predicatePath;
     }
 
-    public UID getPropertyUri(int index) {
-        return predicatePath.get(index).getUID();
-    }
-
     public boolean isConstructorParameter() {
         return constructorArgument;
     }
