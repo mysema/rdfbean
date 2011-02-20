@@ -999,13 +999,12 @@ public final class SessionImpl implements Session {
     public <T> List<T> getAll(Class<T> clazz, ID... subjects) {
         List<T> instances = new ArrayList<T>(subjects.length);
         if (!clazz.isEnum()){
-            List<ID> ids = new ArrayList<ID>(subjects.length);
-            Map<ID, T> cache = new HashMap<ID, T>(subjects.length);
+            Set<ID> ids = new HashSet<ID>(subjects.length);
+            Set<ID> cached = new HashSet<ID>();
             for (ID id : subjects){
-                if (id != null){
-                    T cached = getCached(id, clazz);
-                    if (cached != null){
-                        cache.put(id, cached);
+                if (id != null){                    
+                    if (getCached(id, clazz) != null){
+                        cached.add(id);
                     }else{
                         ids.add(id);    
                     }                    
@@ -1029,10 +1028,9 @@ public final class SessionImpl implements Session {
             
             for (ID subject : subjects){
                 T instance = null;
-                if (cache.containsKey(subject)){
-                    instance = cache.get(subject);
-                }else if ((instance = getCached(subject,clazz)) == null 
-                        && propertiesMap.containsKey(subject)){
+                if (subject != null
+                     && (instance = getCached(subject,clazz)) == null 
+                     && propertiesMap.containsKey(subject)){
                     MultiMap<UID, STMT> properties = propertiesMap.get(subject);
                     instance = getMappedObject(subject, clazz, properties, polymorphic, context);
                 }
