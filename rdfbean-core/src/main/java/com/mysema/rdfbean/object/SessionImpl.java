@@ -762,8 +762,7 @@ public final class SessionImpl implements Session {
             logger.debug("query for " + type.ln() + " instance data");
         }
         
-        RDFQuery query = createQuery(mappedClass, polymorphic);                   
-        
+        RDFQuery query = createQuery(mappedClass, polymorphic);                          
         CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
         
         Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
@@ -793,7 +792,7 @@ public final class SessionImpl implements Session {
         
         if (polymorphic){
             Collection<UID> types = ontology.getSubtypes(type);
-            if (types.size() > 1){
+            if (types.size() > 1 && connection.getInferenceOptions().subClassOf()){
                 query.where(QNODE.type.in(types));
             }else{
                 query.set(QNODE.type, type);                        
@@ -989,6 +988,18 @@ public final class SessionImpl implements Session {
         return instances;
     }
 
+    @Override
+    public <T> List<T> getAll(Class<T> clazz, LID... subjects) {
+        ID[] ids = new ID[subjects.length];
+        // TODO : bulk fetch
+        for (int i=0; i < ids.length; i++){
+            if (subjects[i] != null){
+                ids[i] = identityService.getID(subjects[i]);
+            }
+        }
+        return getAll(clazz, ids);
+    }
+
     private Map<ID, MultiMap<UID, STMT>> getPropertiesMap(CloseableIterator<STMT> stmts) {
         Map<ID, MultiMap<UID, STMT>> propertiesMap = new HashMap<ID, MultiMap<UID, STMT>>();
         try{
@@ -1005,20 +1016,6 @@ public final class SessionImpl implements Session {
             stmts.close();
         }
         return propertiesMap;
-    }
-
-    @Override
-    public <T> List<T> getAll(Class<T> clazz, LID... subjects) {
-        // TODO : improve performance
-        List<T> instances = new ArrayList<T>(subjects.length);
-        for (LID subject : subjects) {
-            if (subject != null){
-                instances.add(get(clazz, subject));    
-            }else{
-                instances.add(null);
-            }  
-        }
-        return instances;
     }
 
     @Override

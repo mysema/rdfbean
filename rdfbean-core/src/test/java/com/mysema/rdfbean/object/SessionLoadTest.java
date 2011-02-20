@@ -28,6 +28,10 @@ public class SessionLoadTest {
         term.meaning = "X";
         term.id = new BID("Term"+UUID.randomUUID());
         
+        Term term2 = new Term();
+        term2.meaning = "X";
+        term2.id = new BID("Term"+UUID.randomUUID());
+                
         Note note1 = new Note();
         note1.basicForm = "A";
         note1.lemma = "B";
@@ -37,10 +41,10 @@ public class SessionLoadTest {
         Note note2 = new Note();
         note2.basicForm = "A";
         note2.lemma = "B";
-        note2.term = term;
+        note2.term = term2;
         note2.id = new BID("Note"+UUID.randomUUID());
         
-        session.saveAll(term, note1, note2);
+        session.saveAll(term, term2, note1, note2);
         
         termId = term.id;
         note1Id = note1.id;

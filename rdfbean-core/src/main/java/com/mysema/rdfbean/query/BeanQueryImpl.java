@@ -67,7 +67,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     @Override
     public long count() {
         TupleQuery query = createTupleQuery(true);
-        if (query.getVariables().equals(Collections.singletonList("counter"))){
+        if (!connection.getQueryOptions().isCountViaAggregation()){
             long counter = 0;
             CloseableIterator<Map<String,NODE>> tuples = query.getTuples();
             try{
