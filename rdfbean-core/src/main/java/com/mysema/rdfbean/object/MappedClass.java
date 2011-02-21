@@ -44,6 +44,8 @@ public final class MappedClass {
 
     private final Set<UID> mappedPredicates = new HashSet<UID>();
 
+    private final Set<UID> invMappedPredicates = new HashSet<UID>();
+
     private Map<String, MappedPath> properties = new LinkedHashMap<String, MappedPath>();
 
     private final List<MappedClass> mappedSuperClasses;
@@ -53,7 +55,7 @@ public final class MappedClass {
 
     @Nullable
     private final UID context;
-    
+
     MappedClass(Class<?> clazz, @Nullable UID uid, @Nullable UID context, List<MappedClass> mappedSuperClasses) {
         this.clazz = Assert.notNull(clazz,"clazz");
         this.uid = uid;
@@ -78,8 +80,12 @@ public final class MappedClass {
 
     @SuppressWarnings("unchecked")
     void addMappedPath(MappedPath path) {
-        if (path.getPredicatePath().size() > 0 && !path.get(0).inv()) {
-            mappedPredicates.add(path.get(0).getUID());
+        if (path.getPredicatePath().size() > 0) {
+            if (!path.get(0).inv()){
+                mappedPredicates.add(path.get(0).getUID());
+            }else{
+                invMappedPredicates.add(path.get(0).getUID());
+            }
         }
 
         MappedProperty property = path.getMappedProperty();
@@ -204,6 +210,10 @@ public final class MappedClass {
 
     public Collection<UID> getMappedPredicates(){
         return mappedPredicates;
+    }
+
+    public Collection<UID> getInvMappedPredicates(){
+        return invMappedPredicates;
     }
 
     public boolean isMappedPredicate(UID predicate) {
