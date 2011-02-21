@@ -673,12 +673,8 @@ public final class SessionImpl implements Session {
     private ID createResource(@Nullable UID type, BeanMap instance) {
         ID id = configuration.createURI(instance.getBean());
         if (id == null) {
-            if (type != null){
-                // TODO : make UID generation configurable
-                id = connection.createBNode();
-            }else{
-                id = connection.createBNode();
-            }
+            // TODO : make ID generation configurable
+            id = connection.createBNode();
         }
         return id;
     }
