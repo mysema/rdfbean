@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -20,11 +20,10 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
-import com.mysema.rdfbean.model.UID;
 
 /**
  * @author sasa
- * 
+ *
  */
 public final class MappedPath {
 
@@ -58,7 +57,7 @@ public final class MappedPath {
             return getMappedPath(constructorParameter, path);
         }
     }
-    
+
     @Nullable
     static MappedPath getPathMapping(String classNs, Method method, MappedClass declaringClass) {
         MethodProperty property = MethodProperty.getMethodPropertyOrNull(method, declaringClass);
@@ -71,7 +70,7 @@ public final class MappedPath {
     }
 
     @Nullable
-    private static List<MappedPredicate> getPredicatePath(String classNs, 
+    private static List<MappedPredicate> getPredicatePath(String classNs,
             MappedProperty<?> property) {
         String parentNs = classNs;
         Path path = property.getAnnotation(Path.class);
@@ -90,12 +89,12 @@ public final class MappedPath {
             }
         }
         if (predicates != null) {
-            List<MappedPredicate> predicatePath = 
+            List<MappedPredicate> predicatePath =
                 new ArrayList<MappedPredicate>(predicates.length);
             boolean first = true;
             for (Predicate predicate : predicates) {
                 predicatePath.add(
-                        new MappedPredicate(parentNs, predicate, 
+                        new MappedPredicate(parentNs, predicate,
                                 first ? property.getName() : null));
                 first = false;
             }
@@ -108,15 +107,15 @@ public final class MappedPath {
     private final boolean ignoreInvalid;
 
     private final MappedProperty<?> mappedProperty;
-    
+
     private List<MappedPredicate> predicatePath;
-    
+
     private boolean constructorArgument;
-    
+
     private boolean inherited;
-    
-    public MappedPath(MappedProperty<?> property, 
-            List<MappedPredicate> predicatePath, 
+
+    public MappedPath(MappedProperty<?> property,
+            List<MappedPredicate> predicatePath,
             boolean inherited) {
         this.mappedProperty = property;
         this.predicatePath = predicatePath;
@@ -141,7 +140,7 @@ public final class MappedPath {
     public MappedProperty<?> getMappedProperty() {
         return mappedProperty;
     }
-    
+
     public String getName() {
         return mappedProperty.getName();
     }
@@ -153,7 +152,7 @@ public final class MappedPath {
     public boolean isConstructorParameter() {
         return constructorArgument;
     }
-    
+
     public boolean isIgnoreInvalid() {
         return ignoreInvalid;
     }
@@ -161,17 +160,17 @@ public final class MappedPath {
     public boolean isWildcard() {
         return isWildcard(mappedProperty.getType());
     }
-    
+
     public static boolean isWildcard(Class<?> type) {
         return type == null || Object.class.equals(type);
     }
-    
+
     public boolean isClassReference() {
         return mappedProperty.isClassReference();
     }
-    
+
     public boolean isReference() {
-        return isMappedClass(mappedProperty.getTargetType()) 
+        return isMappedClass(mappedProperty.getTargetType())
             || mappedProperty.isURI()
             || mappedProperty.isInjection();
     }
@@ -180,7 +179,7 @@ public final class MappedPath {
     private static boolean isMappedClass(Class<?> type) {
         return type != null && type.isAnnotationPresent(ClassMapping.class);
     }
-    
+
     public boolean isInverse(int index) {
         return predicatePath.get(index).inv();
     }
@@ -192,23 +191,24 @@ public final class MappedPath {
     void setConstructorArgument(boolean constructorArgument) {
         this.constructorArgument = constructorArgument;
     }
-    
+
     void merge(MappedPath other) {
         mappedProperty.addAnnotations(other.mappedProperty);
         if (other.predicatePath != null && !other.predicatePath.isEmpty()) {
             if (this.predicatePath != null && !this.predicatePath.isEmpty()) {
-                throw new IllegalArgumentException("Cannot override predicate path of " + this 
+                throw new IllegalArgumentException("Cannot override predicate path of " + this
                         + " with " + other);
             }
             this.predicatePath = other.predicatePath;
         }
         this.inherited = this.inherited || other.inherited;
     }
-    
+
     public int size() {
         return predicatePath.size();
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(mappedProperty.toString());
@@ -251,5 +251,5 @@ public final class MappedPath {
     public boolean isInherited() {
         return inherited;
     }
-    
+
 }

@@ -8,7 +8,6 @@ package com.mysema.rdfbean.query;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -200,27 +199,27 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         if (!converterRegistry.supports(projection.getType())){
             // bulk load of resources
             queryMixin.addToProjection(projection);
-            TupleQuery query = createTupleQuery(false);    
+            TupleQuery query = createTupleQuery(false);
             CloseableIterator<Map<String, NODE>> results = query.getTuples();
             List<ID> ids = new ArrayList<ID>();
             try{
                 while (results.hasNext()){
                     Map<String, NODE> row = results.next();
                     if (!row.isEmpty()){
-                        ids.add(row.values().iterator().next().asResource());    
+                        ids.add(row.values().iterator().next().asResource());
                     }else{
                         ids.add(null);
-                    }                    
+                    }
                 }
             }finally{
                 results.close();
             }
-            return (List)session.getAll(projection.getType(), ids.toArray(new ID[ids.size()]));            
+            return (List)session.getAll(projection.getType(), ids.toArray(new ID[ids.size()]));
         }else{
             return super.list(projection);
-        }        
+        }
     }
-    
+
     @Override
     public <RT> CloseableIterator<RT> iterate(final Expression<RT> projection) {
         queryMixin.addToProjection(projection);
