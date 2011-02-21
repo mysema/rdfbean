@@ -48,8 +48,6 @@ public final class SessionImpl implements Session {
         }
     };
 
-    private static final MultiMap<UID, STMT> EMPTY_PROPERTIES = new MultiHashMap<UID, STMT>();
-
     public static final Set<UID> CONTAINER_TYPES = Collections.unmodifiableSet(new HashSet<UID>(Arrays.<UID> asList(
             RDF.Alt, RDF.Seq, RDF.Bag, RDFS.Container)));
 
@@ -118,7 +116,7 @@ public final class SessionImpl implements Session {
         Assert.notNull(instance,"instance");
         BeanMap beanMap = toBeanMap(instance);
         MappedClass mappedClass = configuration.getMappedClass(getClass(instance));
-        bind(getId(mappedClass, beanMap), beanMap, EMPTY_PROPERTIES, EMPTY_PROPERTIES);
+        bind(getId(mappedClass, beanMap), beanMap, new PropertiesMap());
     }
 
     @Override
@@ -220,7 +218,7 @@ public final class SessionImpl implements Session {
         }
     }
 
-    private <T> T bind(ID subject, T instance, MultiMap<UID, STMT> properties, MultiMap<UID, STMT> invProperties) {
+    private <T> T bind(ID subject, T instance, PropertiesMap properties) {
         if (instance instanceof LifeCycleAware) {
             ((LifeCycleAware) instance).beforeBinding();
         }
@@ -232,7 +230,7 @@ public final class SessionImpl implements Session {
         // loadStack.add(instance);
 
         if (!mappedClass.getDynamicProperties().isEmpty()){
-            bindDynamicProperties(subject, properties, beanMap, mappedClass);
+            bindDynamicProperties(subject, properties.getDirect(), beanMap, mappedClass);
         }
 
         for (MappedPath path : mappedClass.getProperties()) {
@@ -241,7 +239,7 @@ public final class SessionImpl implements Session {
                 if (!property.isVirtual()) {
                     Object convertedValue;
                     try {
-                        convertedValue = getValue(path, getPathValue(path, subject, properties, invProperties, context), context);
+                        convertedValue = getValue(path, getPathValue(path, subject, properties, context), context);
                     } catch (InstantiationException e) {
                         throw new SessionException(e);
                     } catch (IllegalAccessException e) {
@@ -489,33 +487,32 @@ public final class SessionImpl implements Session {
             }
 
             MappedClass mappedClass = configuration.getMappedClass(requiredClass);
-            MultiMap<UID, STMT> properties = getProperties(subject, mappedClass, polymorphic);
-            MultiMap<UID, STMT> invProperties = null;
+            MultiMap<UID, STMT> direct = getProperties(subject, mappedClass, polymorphic);
+            MultiMap<UID, STMT> inverse = null;
             if (mappedClass.getInvMappedPredicates().isEmpty()){
-                invProperties = new MultiHashMap<UID, STMT>();
+                inverse = new MultiHashMap<UID, STMT>();
             }else{
-                invProperties = getInvProperties(subject, mappedClass, polymorphic);
+                inverse = getInvProperties(subject, mappedClass, polymorphic);
             }
-            instance = getMappedObject(subject, requiredClass, properties, invProperties, polymorphic, context);
+            instance = getMappedObject(subject, requiredClass, new PropertiesMap(direct, inverse), polymorphic, context);
         }
         return (T) instance;
     }
 
-    private <T> T getMappedObject(ID subject, Class<T> requiredClass, MultiMap<UID, STMT> properties, MultiMap<UID, STMT> invProperties,
-            boolean polymorphic, UID context) {
+    private <T> T getMappedObject(ID subject, Class<T> requiredClass, PropertiesMap properties, boolean polymorphic, UID context) {
         T instance = null;
         if (polymorphic) {
-            Collection<ID> mappedTypes = findMappedTypes(subject, context, properties);
+            Collection<ID> mappedTypes = findMappedTypes(subject, context, properties.getDirect());
             if (!mappedTypes.isEmpty()) {
-                instance = createInstance(subject, requiredClass, mappedTypes, properties, invProperties);
+                instance = createInstance(subject, requiredClass, mappedTypes, properties);
             }
 
         } else {
-            instance = createInstance(subject, requiredClass, Collections.<ID> emptyList(), properties, invProperties);
+            instance = createInstance(subject, requiredClass, Collections.<ID> emptyList(), properties);
         }
         if (instance != null){
             put(subject, instance);
-            bind(subject, instance, properties, invProperties);
+            bind(subject, instance, properties);
         }
         return instance;
     }
@@ -617,8 +614,7 @@ public final class SessionImpl implements Session {
     }
 
     @Nullable
-    private <T> T createInstance(ID subject, Class<T> requiredType, Collection<ID> mappedTypes,
-            MultiMap<UID, STMT> properties, MultiMap<UID, STMT> invProperties) {
+    private <T> T createInstance(ID subject, Class<T> requiredType, Collection<ID> mappedTypes, PropertiesMap properties) {
         T instance;
         Class<? extends T> actualType = matchType(mappedTypes, requiredType);
         if (actualType != null) {
@@ -631,7 +627,7 @@ public final class SessionImpl implements Session {
                     if (mappedConstructor == null) {
                         instance = actualType.newInstance();
                     } else {
-                        List<Object> constructorArguments = getConstructorArguments(mappedClass, subject, properties, invProperties, mappedConstructor);
+                        List<Object> constructorArguments = getConstructorArguments(mappedClass, subject, properties, mappedConstructor);
                         @SuppressWarnings("unchecked")
                         Constructor<T> constructor = (Constructor<T>) mappedConstructor.getConstructor();
                         instance = constructor.newInstance(constructorArguments.toArray());
@@ -805,9 +801,8 @@ public final class SessionImpl implements Session {
         for (ID subject : propertiesMap.keySet()){
             T instance = getCached(subject, clazz);
             if (instance == null){
-
-                instance = getMappedObject(subject, clazz,
-                        propertiesMap.get(subject), invPropertiesMap.get(subject), polymorphic, context);
+                PropertiesMap properties = new PropertiesMap(propertiesMap.get(subject), invPropertiesMap.get(subject));
+                instance = getMappedObject(subject, clazz, properties, polymorphic, context);
             }
             instances.add(instance);
         }
@@ -876,8 +871,8 @@ public final class SessionImpl implements Session {
 
         for (Map.Entry<ID, MultiMap<UID, STMT>> entry : propertiesMap.entrySet()){
             if (getCached(entry.getKey(), clazz) == null){
-                getMappedObject(entry.getKey(), clazz, entry.getValue(),
-                        invPropertiesMap.get(entry.getKey()), polymorphic, context);
+                PropertiesMap properties = new PropertiesMap(entry.getValue(), invPropertiesMap.get(entry.getKey()));
+                getMappedObject(entry.getKey(), clazz, properties, polymorphic, context);
             }
         }
     }
@@ -924,7 +919,15 @@ public final class SessionImpl implements Session {
         }
 
         CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
-        return getPropertiesMap(stmts, true);
+        Map<ID, MultiMap<UID, STMT>> invProperties = getPropertiesMap(stmts, true);
+
+        for (ID id : objects){
+            if (!invProperties.containsKey(id)){
+                invProperties.put(id, new MultiHashMap<UID, STMT>());
+            }
+        }
+
+        return invProperties;
     }
 
     private List<ID> findMappedTypes(ID subject, UID context, MultiMap<UID, STMT> properties) {
@@ -940,17 +943,16 @@ public final class SessionImpl implements Session {
         return types;
     }
 
-    private Set<NODE> findPathValues(ID resource, MappedPath path, int index,
-            @Nullable MultiMap<UID, STMT> properties, @Nullable MultiMap<UID, STMT> invProperties, UID context) {
+    private Set<NODE> findPathValues(ID resource, MappedPath path, int index, PropertiesMap properties, UID context) {
         MappedPredicate predicate = path.get(index);
         if (predicate.getContext() != null) {
             context = predicate.getContext();
         }
         Set<NODE> values;
-        if (!predicate.inv() && properties != null){
-            values = findValues(predicate.getUID(), properties, context, predicate.inv());
-        }else if (predicate.inv() && invProperties != null){
-            values = findValues(predicate.getUID(), invProperties, null, predicate.inv());
+        if (!predicate.inv() && properties.getDirect() != null){
+            values = findValues(predicate.getUID(), properties.getDirect(), context, predicate.inv());
+        }else if (predicate.inv() && properties.getInverse() != null){
+            values = findValues(predicate.getUID(), properties.getInverse(), null, predicate.inv());
         }else{
             values = findValues(resource, predicate.getUID(), predicate.inv(), predicate.includeInferred(), context);
         }
@@ -958,7 +960,7 @@ public final class SessionImpl implements Session {
             Set<NODE> nestedValues = new LinkedHashSet<NODE>();
             for (NODE value : values) {
                 if (value.isResource()) {
-                    nestedValues.addAll(findPathValues((ID) value, path, index + 1, null, null, context));
+                    nestedValues.addAll(findPathValues((ID) value, path, index + 1, new PropertiesMap(null, null), context));
                 }
             }
             return nestedValues;
@@ -1093,9 +1095,8 @@ public final class SessionImpl implements Session {
                 if (subject != null
                      && (instance = getCached(subject,clazz)) == null
                      && propertiesMap.containsKey(subject)){
-                    MultiMap<UID, STMT> properties = propertiesMap.get(subject);
-                    MultiMap<UID, STMT> invProperties = invPropertiesMap.get(subject);
-                    instance = getMappedObject(subject, clazz, properties, invProperties, polymorphic, context);
+                    PropertiesMap properties = new PropertiesMap(propertiesMap.get(subject), invPropertiesMap.get(subject));
+                    instance = getMappedObject(subject, clazz, properties, polymorphic, context);
                 }
                 instances.add(instance);
             }
@@ -1172,13 +1173,12 @@ public final class SessionImpl implements Session {
     }
 
     private List<Object> getConstructorArguments(MappedClass mappedClass, ID subject,
-            MultiMap<UID, STMT> properties, MultiMap<UID, STMT> invProperties,
-            MappedConstructor mappedConstructor) throws InstantiationException, IllegalAccessException {
+            PropertiesMap properties, MappedConstructor mappedConstructor) throws InstantiationException, IllegalAccessException {
         List<Object> constructorArguments = new ArrayList<Object>(mappedConstructor.getArgumentCount());
         // TODO parentContext?
         UID context = getContext(mappedConstructor.getDeclaringClass(), subject, null);
         for (MappedPath path : mappedConstructor.getMappedArguments()) {
-            constructorArguments.add(getValue(path, getPathValue(path, subject, properties, invProperties, context), context));
+            constructorArguments.add(getValue(path, getPathValue(path, subject, properties, context), context));
         }
         return constructorArguments;
     }
@@ -1278,15 +1278,14 @@ public final class SessionImpl implements Session {
         return identityService.getLID(id);
     }
 
-    private Set<NODE> getPathValue(MappedPath path, ID subject,
-            MultiMap<UID, STMT> properties, MultiMap<UID, STMT> invProperties, UID context) {
+    private Set<NODE> getPathValue(MappedPath path, ID subject, PropertiesMap properties, UID context) {
         if (configuration.allowRead(path)) {
             Set<NODE> values;
             MappedProperty<?> property = path.getMappedProperty();
             if (property.isMixin()) {
                 values = Collections.<NODE> singleton(subject);
             } else if (path.size() > 0) {
-                values = findPathValues(subject, path, 0, properties, invProperties, context);
+                values = findPathValues(subject, path, 0, properties, context);
             } else {
                 values = new LinkedHashSet<NODE>();
             }
