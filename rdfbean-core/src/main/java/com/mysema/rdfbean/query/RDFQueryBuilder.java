@@ -139,6 +139,10 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         filters.endOptional();
         query.where(filters.toArray());
 
+        if (metadata.isDistinct()){
+            query.distinct();
+        }
+        
         for (Map.Entry<ParamExpression<?>, Object> entry : params.entrySet()){
             query.set((Param)entry.getKey(), entry.getValue());
         }

@@ -33,7 +33,7 @@
         </list>
     </property>
     <property name="dataDirName" value="${persistence.sesame.mem.dir}"/>
-     <property name="sesameInference" value="true"/>
+    <property name="sesameInference" value="true"/>
   </bean>
  
   <bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">

@@ -214,7 +214,7 @@ public abstract class SesameRepository implements Repository{
     
     public final void setSesameInference(boolean sesameInference) {
         this.sesameInference = sesameInference;
-        this.inference = sesameInference ? InferenceOptions.LITERAL : InferenceOptions.DEFAULT;
+        this.inference = sesameInference ? InferenceOptions.NONE : InferenceOptions.DEFAULT;
     }
 
     public void setSources(RDFSource... sources) {

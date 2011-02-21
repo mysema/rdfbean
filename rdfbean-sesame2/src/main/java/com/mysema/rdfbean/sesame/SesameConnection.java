@@ -80,12 +80,15 @@ public class SesameConnection implements RDFConnection {
     private final ValueFactory vf;
 
     private final SesameRepository repository;
+    
+    private final InferenceOptions inference;
 
-    public SesameConnection(SesameRepository repository, RepositoryConnection connection) {
+    public SesameConnection(SesameRepository repository, RepositoryConnection connection, InferenceOptions inference) {
         this.repository = Assert.notNull(repository,"repository");
         this.connection = Assert.notNull(connection,"connection");
         this.vf = connection.getValueFactory();
         this.dialect = new SesameDialect(vf);
+        this.inference = inference;
     }
 
     @Override
@@ -166,6 +169,7 @@ public class SesameConnection implements RDFConnection {
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
+        boolean queryInference = !inference.subClassOf();
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
             return (Q)createSPARQLQuery((String) definition);
 
@@ -173,21 +177,21 @@ public class SesameConnection implements RDFConnection {
             SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
             TupleExpr tuple = visitor.visit((QueryMetadata)definition, queryLanguage);
             ParsedTupleQuery queryModel = new ParsedTupleQuery(tuple);
-            TupleQuery query = DirectQuery.getQuery(connection, queryModel, false);
+            TupleQuery query = DirectQuery.getQuery(connection, queryModel, queryInference);
             return (Q)new TupleQueryImpl(query, dialect);
             
         }else if (queryLanguage.equals(QueryLanguage.GRAPH)){
             SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
             TupleExpr tuple = visitor.visit((QueryMetadata)definition, queryLanguage);
             ParsedGraphQuery queryModel = new ParsedGraphQuery(tuple);
-            GraphQuery query = DirectQuery.getQuery(connection, queryModel, false);
+            GraphQuery query = DirectQuery.getQuery(connection, queryModel, queryInference);
             return (Q)new GraphQueryImpl(query, dialect);
 
         }else if (queryLanguage.equals(QueryLanguage.BOOLEAN)){
             SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
             TupleExpr tuple = visitor.visit((QueryMetadata)definition, queryLanguage);
             ParsedBooleanQuery queryModel = new ParsedBooleanQuery(tuple);
-            BooleanQuery query = DirectQuery.getQuery(connection, queryModel, false);
+            BooleanQuery query = DirectQuery.getQuery(connection, queryModel, queryInference);
             return (Q)new BooleanQueryImpl(query, dialect);
 
         }else{
@@ -314,6 +318,6 @@ public class SesameConnection implements RDFConnection {
     
     @Override
     public InferenceOptions getInferenceOptions() {
-        return InferenceOptions.DEFAULT;
+        return inference;
     }
 }

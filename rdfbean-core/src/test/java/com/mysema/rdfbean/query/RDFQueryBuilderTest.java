@@ -57,6 +57,13 @@ public class RDFQueryBuilderTest {
         query.from(user);
         assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 }");
     }
+    
+    @Test
+    public void Distinct() throws Exception{
+        query.from(user);
+        query.distinct();
+        assertEquals("SELECT DISTINCT WHERE { ?user ?_c2 ?_c3 }");
+    }
 
     @Test(expected=IllegalArgumentException.class)
     public void From_Unknown_Type() throws Exception{

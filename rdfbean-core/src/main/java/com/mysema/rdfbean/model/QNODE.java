@@ -58,6 +58,9 @@ public class QNODE<T extends NODE> extends Param<T>{
 
     @Override
     public BooleanExpression in(T... values){
+        if (values.length == 0){
+            throw new IllegalArgumentException("empty array is not allowed");
+        }
         BooleanExpression[] ors = new BooleanExpression[values.length];
         int i = 0;
         for (T value : values){
@@ -68,6 +71,9 @@ public class QNODE<T extends NODE> extends Param<T>{
 
     @Override
     public BooleanExpression in(Collection<? extends T> values){
+        if (values.isEmpty()){
+            throw new IllegalArgumentException("empty collection is not allowed");
+        }
         BooleanExpression[] ors = new BooleanExpression[values.size()];
         int i = 0;
         for (T value : values){

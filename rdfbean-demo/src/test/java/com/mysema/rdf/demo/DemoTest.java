@@ -74,9 +74,9 @@ public class DemoTest {
     public void findMysema() throws IOException {
 	newSession();
 	List<Company> companies = session.from(company).where(
-	        company.displayName.eq("Mysema")).list(company);
+	        company.displayName.eq("Mysema")).distinct().list(company);
 
-	assertEquals(1, companies.size());
+	assertEquals(companies.toString(), 1, companies.size());
 	Company mysema = companies.get(0);
 	assertEquals("Mysema Oy", mysema.getOfficialName());
     }

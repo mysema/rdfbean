@@ -90,14 +90,21 @@ public class SessionInvLoadTest {
     }
 
     @Test
-    public void FindInstances(){
+    public void FindInstances_Of_Note(){
         System.out.println("Get all notes");
         List<Note> notes = session.findInstances(Note.class);
         assertEquals(2, notes.size());
     }
 
     @Test
-    public void QueryAll(){
+    public void FindInstances_Of_Comment(){
+        System.out.println("Get all comments");
+        List<Comment> comments = session.findInstances(Comment.class);
+        assertEquals(4, comments.size());
+    }
+    
+    @Test
+    public void Query_For_Notes(){
         System.out.println("Query all notes");
         PathBuilder<Note> note = new PathBuilder<Note>(Note.class, "note");
         List<Note> notes = session.from(note).list(note);

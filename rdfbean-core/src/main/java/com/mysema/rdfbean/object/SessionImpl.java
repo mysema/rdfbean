@@ -494,17 +494,20 @@ public final class SessionImpl implements Session {
             }else{
                 inverse = getInvProperties(subject, mappedClass);
             }
-            instance = getMappedObject(subject, requiredClass, new PropertiesMap(direct, inverse), polymorphic, context);
+            instance = getMappedObject(subject, requiredClass, new PropertiesMap(direct, inverse), polymorphic, context, true);
         }
         return (T) instance;
     }
 
-    private <T> T getMappedObject(ID subject, Class<T> requiredClass, PropertiesMap properties, boolean polymorphic, UID context) {
+    @Nullable
+    private <T> T getMappedObject(ID subject, Class<T> requiredClass, PropertiesMap properties, boolean polymorphic, UID context, boolean bind) {
         T instance = null;
         if (polymorphic) {
             Collection<ID> mappedTypes = findMappedTypes(subject, context, properties.getDirect());
             if (!mappedTypes.isEmpty()) {
                 instance = createInstance(subject, requiredClass, mappedTypes, properties);
+            }else{
+                logger.error("got no type for " + subject.getId());
             }
 
         } else {
@@ -512,7 +515,9 @@ public final class SessionImpl implements Session {
         }
         if (instance != null){
             put(subject, instance);
-            bind(subject, instance, properties);
+            if (bind){
+                bind(subject, instance, properties);    
+            }                         
         }
         return instance;
     }
@@ -669,7 +674,8 @@ public final class SessionImpl implements Session {
         ID id = configuration.createURI(instance.getBean());
         if (id == null) {
             if (type != null){
-                id = new BID(type.getLocalName()+UUID.randomUUID());
+                // TODO : make UID generation configurable
+                id = connection.createBNode();
             }else{
                 id = connection.createBNode();
             }
@@ -794,22 +800,43 @@ public final class SessionImpl implements Session {
         RDFQuery query = createQuery(mappedClass, type, polymorphic);
         CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
         Map<ID, MultiMap<UID, STMT>> directProps = getPropertiesMap(stmts, false);
-
+        
         Map<ID, MultiMap<UID, STMT>> inverseProps = Collections.emptyMap();
         if (!polymorphic && !mappedClass.getInvMappedPredicates().isEmpty()){
             inverseProps = getInvProperties(mappedClass, directProps.keySet());
         }
-
+        
+        // create
+        Map<ID, T> idToInstance = createInstances(clazz, polymorphic, context, directProps, inverseProps);
+        
+        // load references
         loadReferences(mappedClass, directProps, directProps.keySet());
 
-        for (ID subject : directProps.keySet()){
-            T instance = getCached(subject, clazz);
-            if (instance == null){
-                PropertiesMap properties = new PropertiesMap(directProps.get(subject), inverseProps.get(subject));
-                instance = getMappedObject(subject, clazz, properties, polymorphic, context);
+        // bind
+        for (Map.Entry<ID, MultiMap<UID, STMT>> entry : directProps.entrySet()){
+            T instance = getCached(entry.getKey(), clazz);
+            if (idToInstance.containsKey(entry.getKey())){
+                PropertiesMap properties = new PropertiesMap(entry.getValue(), inverseProps.get(entry.getKey()));
+                bind(entry.getKey(), instance, properties);    
             }
             instances.add(instance);
         }
+    }    
+
+    private <T> Map<ID, T> createInstances(Class<T> clazz, boolean polymorphic, UID context,
+            Map<ID, MultiMap<UID, STMT>> directProps, Map<ID, MultiMap<UID, STMT>> inverseProps) {
+        Map<ID, T> idToInstance = new HashMap<ID, T>(directProps.size());
+        for (Map.Entry<ID, MultiMap<UID, STMT>> entry : directProps.entrySet()){
+            T instance = getCached(entry.getKey(), clazz);
+            if (instance == null){
+                PropertiesMap properties = new PropertiesMap(entry.getValue(), inverseProps.get(entry.getKey()));
+                instance = getMappedObject(entry.getKey(), clazz, properties, polymorphic, context, false);
+                if (instance != null){
+                    idToInstance.put(entry.getKey(), instance);    
+                }                
+            }
+        }
+        return idToInstance;
     }
 
     private void loadReferences(MappedClass mappedClass, Map<ID, MultiMap<UID, STMT>> directProps, Set<ID> handled) {
@@ -853,33 +880,7 @@ public final class SessionImpl implements Session {
         }
     }
 
-    private void loadAll(Class<?> clazz, Collection<ID> ids, Set<ID> handled) {
-        MappedClass mappedClass = configuration.getMappedClass(clazz);
-        boolean polymorphic = isPolymorphic(mappedClass);
-        UID context = mappedClass.getContext();
 
-        if (logger.isDebugEnabled()){
-            logger.debug("query for " + clazz.getSimpleName() + " instance data");
-        }
-        RDFQuery query = createQuery(mappedClass, null, polymorphic);
-        query.where(QNODE.s.in(ids));
-        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
-        Map<ID, MultiMap<UID, STMT>> directProps = getPropertiesMap(stmts, false);
-
-        Map<ID, MultiMap<UID, STMT>> inverseProps = Collections.emptyMap();
-        if (!polymorphic && !mappedClass.getInvMappedPredicates().isEmpty()){
-            inverseProps = getInvProperties(mappedClass, directProps.keySet());
-        }
-
-        loadReferences(mappedClass, directProps, handled);
-
-        for (Map.Entry<ID, MultiMap<UID, STMT>> entry : directProps.entrySet()){
-            if (getCached(entry.getKey(), clazz) == null){
-                PropertiesMap properties = new PropertiesMap(entry.getValue(), inverseProps.get(entry.getKey()));
-                getMappedObject(entry.getKey(), clazz, properties, polymorphic, context);
-            }
-        }
-    }
 
     private RDFQuery createQuery(MappedClass mappedClass, @Nullable UID type, boolean polymorphic) {
         RDFQuery query = new RDFQueryImpl(connection);
@@ -972,7 +973,7 @@ public final class SessionImpl implements Session {
         return values;
     }
 
-    private Set<NODE> findValues(UID predicate, MultiMap<UID, STMT> properties, UID context, boolean inv) {
+    private Set<NODE> findValues(UID predicate, MultiMap<UID, STMT> properties, @Nullable UID context, boolean inv) {
         Set<NODE> nodes = new HashSet<NODE>();
         if (properties.containsKey(predicate)){
             for (STMT stmt : properties.get(predicate)){
@@ -1064,15 +1065,18 @@ public final class SessionImpl implements Session {
         List<T> instances = new ArrayList<T>(subjects.length);
         if (!clazz.isEnum()){
             Set<ID> ids = new HashSet<ID>(subjects.length);
-            Set<ID> cached = new HashSet<ID>();
             for (ID id : subjects){
-                if (id != null){
-                    if (getCached(id, clazz) != null){
-                        cached.add(id);
-                    }else{
-                        ids.add(id);
-                    }
+                if (id != null && getCached(id, clazz) == null){
+                    ids.add(id);
                 }
+            }
+            
+            // return from cache
+            if (ids.isEmpty()){
+                for (ID id : subjects){
+                    instances.add(id != null ? getCached(id, clazz) : null);
+                }
+                return instances;
             }
 
             MappedClass mappedClass = configuration.getMappedClass(clazz);
@@ -1086,21 +1090,26 @@ public final class SessionImpl implements Session {
             query.where(QNODE.s.in(ids));
             CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
             Map<ID, MultiMap<UID, STMT>> directProps = getPropertiesMap(stmts, false);
-
+            
             Map<ID, MultiMap<UID, STMT>> inverseProps = Collections.emptyMap();
             if (!polymorphic && !mappedClass.getInvMappedPredicates().isEmpty()){
                 inverseProps = getInvProperties(mappedClass, directProps.keySet());
             }
+            
+            // create
+            Map<ID, T> idToInstance = createInstances(clazz, polymorphic, context, directProps, inverseProps);
 
+            // load references
             loadReferences(mappedClass, directProps, directProps.keySet());
 
             for (ID subject : subjects){
                 T instance = null;
-                if (subject != null
-                     && (instance = getCached(subject,clazz)) == null
-                     && directProps.containsKey(subject)){
-                    PropertiesMap properties = new PropertiesMap(directProps.get(subject), inverseProps.get(subject));
-                    instance = getMappedObject(subject, clazz, properties, polymorphic, context);
+                if (subject != null && directProps.containsKey(subject)){
+                    instance = getCached(subject, clazz);
+                    if (idToInstance.containsKey(subject)){
+                        PropertiesMap properties = new PropertiesMap(directProps.get(subject), inverseProps.get(subject));
+                        bind(subject, instance, properties);
+                    }
                 }
                 instances.add(instance);
             }
@@ -1116,7 +1125,7 @@ public final class SessionImpl implements Session {
         }
         return instances;
     }
-
+    
     @Override
     public <T> List<T> getAll(Class<T> clazz, LID... subjects) {
         ID[] ids = new ID[subjects.length];
@@ -1365,6 +1374,40 @@ public final class SessionImpl implements Session {
         }
     }
 
+
+    private <T> void loadAll(Class<T> clazz, Collection<ID> ids, Set<ID> handled) {
+        MappedClass mappedClass = configuration.getMappedClass(clazz);
+        boolean polymorphic = isPolymorphic(mappedClass);
+        UID context = mappedClass.getContext();
+
+        if (logger.isDebugEnabled()){
+            logger.debug("query for " + clazz.getSimpleName() + " instance data");
+        }
+        RDFQuery query = createQuery(mappedClass, null, polymorphic);
+        query.where(QNODE.s.in(ids));
+        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
+        Map<ID, MultiMap<UID, STMT>> directProps = getPropertiesMap(stmts, false);
+
+        Map<ID, MultiMap<UID, STMT>> inverseProps = Collections.emptyMap();
+        if (!polymorphic && !mappedClass.getInvMappedPredicates().isEmpty()){
+            inverseProps = getInvProperties(mappedClass, directProps.keySet());
+        }
+        
+        // create
+        Map<ID, T> idToInstance = createInstances(clazz, polymorphic, context, directProps, inverseProps);
+        
+        // load references
+        loadReferences(mappedClass, directProps, handled);
+
+        for (Map.Entry<ID, MultiMap<UID, STMT>> entry : directProps.entrySet()){
+            T instance = getCached(entry.getKey(), clazz);
+            if (idToInstance.containsKey(entry.getKey())){
+                PropertiesMap properties = new PropertiesMap(entry.getValue(), inverseProps.get(entry.getKey()));
+                bind(entry.getKey(), instance, properties);    
+            }
+        }
+    }
+    
     @Nullable
     @SuppressWarnings("unchecked")
     private <T> Class<? extends T> matchType(Collection<ID> types, Class<T> targetType) {

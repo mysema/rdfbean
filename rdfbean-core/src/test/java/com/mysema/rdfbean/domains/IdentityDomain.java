@@ -23,6 +23,10 @@ public interface IdentityDomain {
             return id;
         }
         
+        public String toString(){
+            return id.toString();
+        }
+        
         
     }
     
@@ -36,7 +40,9 @@ public interface IdentityDomain {
             return id;
         }
         
-        
+        public String toString(){
+            return id.toString();
+        }
     }
 
 }
