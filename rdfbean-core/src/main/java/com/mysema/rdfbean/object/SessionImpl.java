@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -34,10 +34,10 @@ import com.mysema.rdfbean.query.BeanQueryImpl;
 
 /**
  * Default implementation of the Session interface
- * 
+ *
  * @author sasa
  * @author tiwe
- * 
+ *
  */
 public final class SessionImpl implements Session {
 
@@ -47,7 +47,7 @@ public final class SessionImpl implements Session {
             return new ArrayList<Object>();
         }
     };
-    
+
     private static final MultiMap<UID, STMT> EMPTY_PROPERTIES = new MultiHashMap<UID, STMT>();
 
     public static final Set<UID> CONTAINER_TYPES = Collections.unmodifiableSet(new HashSet<UID>(Arrays.<UID> asList(
@@ -58,7 +58,7 @@ public final class SessionImpl implements Session {
     private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
 
     private final Configuration configuration;
-    
+
     private final Ontology ontology;
 
     private final RDFConnection connection;
@@ -72,11 +72,11 @@ public final class SessionImpl implements Session {
     private final Map<String, ObjectRepository> parentRepositories = new HashMap<String, ObjectRepository>();
 
     private FlushMode flushMode = FlushMode.ALWAYS;
-    
+
     private Map<ID, List<Object>> instanceCache;
 
     private Set<STMT> addedStatements;
-    
+
     private Set<STMT> removedStatements;
 
     private Map<Object, ID> resourceCache;
@@ -90,7 +90,7 @@ public final class SessionImpl implements Session {
     public SessionImpl(Configuration configuration, Ontology ontology, RDFConnection connection, Iterable<Locale> locales) {
         this.configuration = configuration;
         this.ontology = ontology;
-        this.connection = connection;        
+        this.connection = connection;
         this.locales = locales;
         this.identityService = new SessionIdentityService(connection);
         clear();
@@ -136,7 +136,7 @@ public final class SessionImpl implements Session {
     }
 
     @SuppressWarnings("unchecked")
-    private void bindDynamicProperties(ID subject, MultiMap<UID, STMT> properties, BeanMap beanMap, MappedClass mappedClass) {            
+    private void bindDynamicProperties(ID subject, MultiMap<UID, STMT> properties, BeanMap beanMap, MappedClass mappedClass) {
         for (MappedProperty<?> property : mappedClass.getDynamicProperties()) {
             Map<UID, Object> values = new HashMap<UID, Object>();
 
@@ -145,15 +145,15 @@ public final class SessionImpl implements Session {
                     // skip local ids
                     continue;
                 }
-                
-                if (property.isIncludeMapped() || !mappedClass.isMappedPredicate(stmt.getPredicate())) {                    
-                    Class<?> componentType;                    
+
+                if (property.isIncludeMapped() || !mappedClass.isMappedPredicate(stmt.getPredicate())) {
+                    Class<?> componentType;
                     if (property.isDynamicCollection()) {
                         componentType = property.getDynamicCollectionComponentType();
                     } else {
                         componentType = property.getComponentType();
                     }
-                    
+
                     // for resources make sure that componentType is compatible with the resource
                     if (stmt.getObject().isResource()){
                         List<STMT> typeStmts = findStatements(stmt.getObject().asResource(), RDF.type, null, null, false);
@@ -162,27 +162,27 @@ public final class SessionImpl implements Session {
                             for (MappedClass cl : configuration.getMappedClasses(typeStmt.getObject().asURI())){
                                 if (componentType.isAssignableFrom(cl.getJavaClass())){
                                     matched = true;
-                                }                                   
-                            }    
-                        }                       
+                                }
+                            }
+                        }
                         if (!matched){
                             continue;
-                        }    
-                    // for literals, make sure that componentType is a literal type     
+                        }
+                    // for literals, make sure that componentType is a literal type
                     }else{
                         UID dataType = configuration.getConverterRegistry().getDatatype(componentType);
                         if (dataType == null || !stmt.getObject().asLiteral().getDatatype().equals(dataType)){
                             continue;
                         }
                     }
-                    
-                    Object value = convertValue(stmt.getObject(), componentType);                    
+
+                    Object value = convertValue(stmt.getObject(), componentType);
                     if (value != null) {
                         if (property.isDynamicCollection()) {
                             Collection<Object> collection = (Collection<Object>) values.get(stmt.getPredicate());
                             if (collection == null) {
                                 try {
-                                    collection = (Collection<Object>) property.getDynamicCollectionType().newInstance();
+                                    collection = property.getDynamicCollectionType().newInstance();
                                     values.put(stmt.getPredicate(), collection);
                                 } catch (InstantiationException e) {
                                     throw new SessionException(e);
@@ -203,12 +203,12 @@ public final class SessionImpl implements Session {
     }
 
     private Object convertValue(NODE node, Class<?> targetClass) {
-        UID targetType = configuration.getConverterRegistry().getDatatype(targetClass);        
+        UID targetType = configuration.getConverterRegistry().getDatatype(targetClass);
         if (targetClass.isAssignableFrom(node.getClass())){
             return node;
         } else if (targetType != null && node.isLiteral()) {
             // TODO : make sure this works also with untyped literals etc
-            if (((LIT) node).getDatatype().equals(targetType)) {    
+            if (((LIT) node).getDatatype().equals(targetType)) {
                 return configuration.getConverterRegistry().fromString(node.getValue(), targetClass);
             }else{
                 throw new IllegalArgumentException("Literal " + node + " is not of type " + targetType);
@@ -230,10 +230,10 @@ public final class SessionImpl implements Session {
         MappedClass mappedClass = configuration.getMappedClass(getClass(instance));
         setId(mappedClass, subject, beanMap);
         // loadStack.add(instance);
-        
+
         if (!mappedClass.getDynamicProperties().isEmpty()){
-            bindDynamicProperties(subject, properties, beanMap, mappedClass);    
-        }        
+            bindDynamicProperties(subject, properties, beanMap, mappedClass);
+        }
 
         for (MappedPath path : mappedClass.getProperties()) {
             if (!path.isConstructorParameter()) {
@@ -258,32 +258,32 @@ public final class SessionImpl implements Session {
         }
         return instance;
     }
-        
+
     private MultiMap<UID, STMT> getProperties(ID subject, MappedClass mappedClass, boolean polymorphic) {
         MultiMap<UID, STMT> properties = new MultiHashMap<UID, STMT>();
         if (mappedClass.getDynamicProperties().isEmpty() && !polymorphic){
             if (logger.isDebugEnabled()){
-                logger.debug("query for properties of " +  subject); 
+                logger.debug("query for properties of " +  subject);
             }
             RDFQuery query = new RDFQueryImpl(connection);
             CloseableIterator<STMT> stmts = query.where(
-                    Blocks.SPOC, 
+                    Blocks.SPOC,
                     QNODE.p.in(mappedClass.getMappedPredicates()))
                     .set(QNODE.s, subject)
                     .construct(Blocks.SPOC);
             try{
                 while (stmts.hasNext()){
-                    STMT stmt = stmts.next();                    
+                    STMT stmt = stmts.next();
                     properties.put(stmt.getPredicate(), stmt);
                 }
             }finally{
                 stmts.close();
-            }            
-            
+            }
+
         }else{
             for (STMT stmt : findStatements(subject, null, null, null, true)){
                 properties.put(stmt.getPredicate(), stmt);
-            }   
+            }
         }
         return properties;
     }
@@ -340,11 +340,11 @@ public final class SessionImpl implements Session {
         Collection collection = (Collection) collectionType.newInstance();
         for (NODE value : values) {
             if (value != null){
-                collection.add(convertValue(value, targetType, propertyPath));    
+                collection.add(convertValue(value, targetType, propertyPath));
             }else{
                 collection.add(null);
             }
-            
+
         }
         return collection;
     }
@@ -387,7 +387,7 @@ public final class SessionImpl implements Session {
         while (subject != null && !subject.equals(RDF.nil)) {
             NODE value = getFunctionalValue(subject, RDF.first, false, context);
             if (value != null){
-                list.add(value);    
+                list.add(value);
             }else{
                 list.add(null);
             }
@@ -456,25 +456,25 @@ public final class SessionImpl implements Session {
                     UID uri = (UID) subject;
                     ObjectRepository orepo = parentRepositories.get(uri.ns());
                     if (orepo != null) {
-                        return (T) orepo.getBean(requiredClass, uri);
+                        return orepo.getBean(requiredClass, uri);
                     } else {
                         throw new IllegalArgumentException("No such parent repository: " + uri.ns());
                     }
                 }
-                
+
             }else if (requiredClass.isEnum() && subject.isURI()){
                 return (T)Enum.valueOf((Class)requiredClass, subject.asURI().ln());
             }
-        
+
             MappedClass mappedClass = configuration.getMappedClass(requiredClass);
             MultiMap<UID, STMT> properties = getProperties(subject, mappedClass, polymorphic);
-            instance = getMappedObject(subject, requiredClass, properties, polymorphic, context);            
+            instance = getMappedObject(subject, requiredClass, properties, polymorphic, context);
         }
         return (T) instance;
     }
 
-    private <T> T getMappedObject(ID subject, Class<T> requiredClass, MultiMap<UID, STMT> properties, boolean polymorphic, UID context) {                    
-        T instance = null;        
+    private <T> T getMappedObject(ID subject, Class<T> requiredClass, MultiMap<UID, STMT> properties, boolean polymorphic, UID context) {
+        T instance = null;
         if (polymorphic) {
             Collection<ID> mappedTypes = findMappedTypes(subject, context, properties);
             if (!mappedTypes.isEmpty()) {
@@ -486,7 +486,7 @@ public final class SessionImpl implements Session {
         }
         if (instance != null){
             put(subject, instance);
-            bind(subject, instance, properties);    
+            bind(subject, instance, properties);
         }
         return instance;
     }
@@ -500,7 +500,7 @@ public final class SessionImpl implements Session {
             return convertValue(values.iterator().next(), targetType, propertyPath);
         }else{
             return null;
-        } 
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -709,8 +709,8 @@ public final class SessionImpl implements Session {
     private Set<NODE> filterObjects(List<STMT> statements) {
         Set<NODE> objects = new LinkedHashSet<NODE>();
         for (STMT statement : statements){
-            objects.add(statement.getObject());    
-        }        
+            objects.add(statement.getObject());
+        }
         return objects;
     }
 
@@ -729,11 +729,11 @@ public final class SessionImpl implements Session {
         if (type != null){
             Set<T> instances = new LinkedHashSet<T>();
             findInstances(clazz, type, instances);
-            return new ArrayList<T>(instances);    
+            return new ArrayList<T>(instances);
         }else{
             throw new IllegalArgumentException("No RDF type specified for " + clazz.getName());
         }
-        
+
     }
 
     @Override
@@ -757,16 +757,16 @@ public final class SessionImpl implements Session {
         MappedClass mappedClass = configuration.getMappedClass(clazz);
         boolean polymorphic = isPolymorphic(mappedClass);
         UID context = mappedClass.getContext();
-        
+
         if (logger.isDebugEnabled()){
             logger.debug("query for " + clazz.getSimpleName() + " instance data");
-        }        
-        RDFQuery query = createQuery(mappedClass, type, polymorphic);                          
-        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);        
+        }
+        RDFQuery query = createQuery(mappedClass, type, polymorphic);
+        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
         Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
-                    
+
         loadReferences(mappedClass, propertiesMap, propertiesMap.keySet());
-        
+
         for (ID subject : propertiesMap.keySet()){
             T instance = getCached(subject, clazz);
             if (instance == null){
@@ -787,11 +787,11 @@ public final class SessionImpl implements Session {
                     type = property.getComponentType();
                 }
                 if (!type.isEnum()){
-                    predToType.put(mappedPath.get(0).getUID(), type);    
-                }                
+                    predToType.put(mappedPath.get(0).getUID(), type);
+                }
             }
         }
-     
+
         Map<Class<?>, Set<ID>> typeToIds = new HashMap<Class<?>, Set<ID>>();
         Set<ID> newHandled = new HashSet<ID>(handled);
         for (MultiMap<UID, STMT> properties : propertiesMap.values()){
@@ -805,12 +805,12 @@ public final class SessionImpl implements Session {
                             typeToIds.put(cl, ids);
                         }
                         newHandled.add(stmt.getObject().asResource());
-                        ids.add(stmt.getObject().asResource());    
-                    }                    
+                        ids.add(stmt.getObject().asResource());
+                    }
                 }
             }
         }
-        
+
         // load
         for (Map.Entry<Class<?>, Set<ID>> entry : typeToIds.entrySet()){
             loadAll(entry.getKey(), entry.getValue(), newHandled);
@@ -821,48 +821,50 @@ public final class SessionImpl implements Session {
         MappedClass mappedClass = configuration.getMappedClass(clazz);
         boolean polymorphic = isPolymorphic(mappedClass);
         UID context = mappedClass.getContext();
-        
+
         if (logger.isDebugEnabled()){
             logger.debug("query for " + clazz.getSimpleName() + " instance data");
-        }            
-        RDFQuery query = createQuery(mappedClass, mappedClass.getUID(), polymorphic);           
+        }
+        RDFQuery query = createQuery(mappedClass, null, polymorphic);
         query.where(QNODE.s.in(ids));
-        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);            
+        CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
         Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
-                    
+
         loadReferences(mappedClass, propertiesMap, handled);
-        
+
         for (Map.Entry<ID, MultiMap<UID, STMT>> entry : propertiesMap.entrySet()){
             if (getCached(entry.getKey(), clazz) == null){
-                getMappedObject(entry.getKey(), clazz, entry.getValue(), polymorphic, context);    
-            }            
+                getMappedObject(entry.getKey(), clazz, entry.getValue(), polymorphic, context);
+            }
         }
     }
 
-    private RDFQuery createQuery(MappedClass mappedClass, UID type, boolean polymorphic) {
-        UID context = mappedClass.getContext();
+    private RDFQuery createQuery(MappedClass mappedClass, @Nullable UID type, boolean polymorphic) {
         RDFQuery query = new RDFQueryImpl(connection);
-        query.where(
-                Blocks.S_TYPE,
-                Blocks.SPOC);
-        
-        if (context != null){
-            query.set(QNODE.typeContext, context);
-        }
-        
-        if (polymorphic){
-            Collection<UID> types = ontology.getSubtypes(type);
-            if (types.size() > 1 && connection.getInferenceOptions().subClassOf()){
-                query.where(QNODE.type.in(types));
+
+        if (type != null){
+            query.where(Blocks.S_TYPE);
+            if (mappedClass.getContext() != null){
+                query.set(QNODE.typeContext, mappedClass.getContext());
+            }
+
+            if (polymorphic){
+                Collection<UID> types = ontology.getSubtypes(type);
+                if (types.size() > 1 && connection.getInferenceOptions().subClassOf()){
+                    query.where(QNODE.type.in(types));
+                }else{
+                    query.set(QNODE.type, type);
+                }
             }else{
-                query.set(QNODE.type, type);                        
-            }                
-        }else{            
-            query.set(QNODE.type, type);
-            if (mappedClass.getDynamicProperties().isEmpty()){
-                query.where(QNODE.p.in(mappedClass.getMappedPredicates()));    
-            }                
+                query.set(QNODE.type, type);
+            }
         }
+
+        query.where(Blocks.SPOC);
+        if (!polymorphic && mappedClass.getDynamicProperties().isEmpty()){
+            query.where(QNODE.p.in(mappedClass.getMappedPredicates()));
+        }
+
         return query;
     }
 
@@ -873,7 +875,7 @@ public final class SessionImpl implements Session {
                 NODE type = stmt.getObject();
                 if (type instanceof UID && configuration.getMappedClasses((UID) type) != null) {
                     types.add((UID) type);
-                }            
+                }
             }
         }
         return types;
@@ -904,12 +906,12 @@ public final class SessionImpl implements Session {
 
     private Set<NODE> findValues(UID predicate, MultiMap<UID, STMT> properties, UID context) {
         Set<NODE> nodes = new HashSet<NODE>();
-        if (properties.containsKey(predicate)){            
+        if (properties.containsKey(predicate)){
             for (STMT stmt : properties.get(predicate)){
                 if (context == null || context.equals(stmt.getContext())){
                     nodes.add(stmt.getObject());
                 }
-            }            
+            }
         }
         return nodes;
     }
@@ -920,7 +922,7 @@ public final class SessionImpl implements Session {
             logger.debug("findStatements " + subject + " " + predicate + " " + object + " " + context);
         }
         // rdf type inference
-        if (RDF.type.equals(predicate) && subject == null && object != null 
+        if (RDF.type.equals(predicate) && subject == null && object != null
                 && connection.getInferenceOptions().subClassOf()){
             Collection<UID> types = ontology.getSubtypes(object.asURI());
             if (types.size() > 1){
@@ -973,7 +975,7 @@ public final class SessionImpl implements Session {
     }
 
     @Override
-    public <T> T get(Class<T> clazz, LID subject) {        
+    public <T> T get(Class<T> clazz, LID subject) {
         ID id = identityService.getID(subject);
         return id != null ? get(clazz, id) : null;
     }
@@ -996,48 +998,48 @@ public final class SessionImpl implements Session {
             Set<ID> ids = new HashSet<ID>(subjects.length);
             Set<ID> cached = new HashSet<ID>();
             for (ID id : subjects){
-                if (id != null){                    
+                if (id != null){
                     if (getCached(id, clazz) != null){
                         cached.add(id);
                     }else{
-                        ids.add(id);    
-                    }                    
+                        ids.add(id);
+                    }
                 }
             }
-            
+
             MappedClass mappedClass = configuration.getMappedClass(clazz);
             boolean polymorphic = isPolymorphic(mappedClass);
             UID context = mappedClass.getContext();
-            
+
             if (logger.isDebugEnabled()){
                 logger.debug("query for " + clazz.getSimpleName() + " instance data");
-            }            
-            RDFQuery query = createQuery(mappedClass, mappedClass.getUID(), polymorphic);           
+            }
+            RDFQuery query = createQuery(mappedClass, null, polymorphic);
             query.where(QNODE.s.in(ids));
-            CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);            
+            CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
             Map<ID, MultiMap<UID, STMT>> propertiesMap = getPropertiesMap(stmts);
-                        
+
             loadReferences(mappedClass, propertiesMap, propertiesMap.keySet());
-            
+
             for (ID subject : subjects){
                 T instance = null;
                 if (subject != null
-                     && (instance = getCached(subject,clazz)) == null 
+                     && (instance = getCached(subject,clazz)) == null
                      && propertiesMap.containsKey(subject)){
                     MultiMap<UID, STMT> properties = propertiesMap.get(subject);
                     instance = getMappedObject(subject, clazz, properties, polymorphic, context);
                 }
                 instances.add(instance);
             }
-            
+
         }else{
             for (ID subject : subjects) {
                 if (subject != null){
-                    instances.add(get(clazz, subject));    
+                    instances.add(get(clazz, subject));
                 }else{
                     instances.add(null);
-                }            
-            }    
+                }
+            }
         }
         return instances;
     }
@@ -1065,7 +1067,7 @@ public final class SessionImpl implements Session {
                     propertiesMap.put(stmt.getSubject(), properties);
                 }
                 properties.put(stmt.getPredicate(), stmt);
-            }    
+            }
         }finally{
             stmts.close();
         }
@@ -1074,7 +1076,7 @@ public final class SessionImpl implements Session {
 
     @Override
     public <T> T getBean(Class<T> clazz, UID subject) {
-        return (T) get(clazz, subject);
+        return get(clazz, subject);
     }
 
     @Override
@@ -1277,17 +1279,17 @@ public final class SessionImpl implements Session {
         }
         return false;
     }
-    
+
     private boolean isPolymorphic(MappedClass mappedClass){
         return configuration.isPolymorphic(mappedClass.getJavaClass());
     }
-    
+
     private boolean isPolymorphic(MappedProperty<?> mappedProperty) {
         if (mappedProperty.isCollection() || mappedProperty.isMap()){
             return configuration.isPolymorphic(mappedProperty.getComponentType());
         }else{
-            return configuration.isPolymorphic(mappedProperty.getType());    
-        }        
+            return configuration.isPolymorphic(mappedProperty.getType());
+        }
     }
 
     @Nullable
@@ -1370,7 +1372,7 @@ public final class SessionImpl implements Session {
         }
         return instance;
     }
-    
+
     private <T> T assertHasIdProperty(T instance){
         MappedClass mappedClass = configuration.getMappedClass(instance.getClass());
         if (mappedClass.getIdProperty() == null){
@@ -1467,7 +1469,7 @@ public final class SessionImpl implements Session {
                 if (mappedPredicate.getContext() != null){
                     context = mappedPredicate.getContext();
                 }
-                
+
                 if (update) {
                     for (STMT statement : findStatements(subject, predicate, null, context, false)) {
                         if (property.isLocalized() && String.class.equals(property.getType())) {
@@ -1527,7 +1529,7 @@ public final class SessionImpl implements Session {
                         }
                     }
                 }
-                
+
             } else if (property.isMixin()) {
                 Object object = property.getValue(beanMap);
                 if (object != null) {
@@ -1536,7 +1538,7 @@ public final class SessionImpl implements Session {
                 }
             }
         }
-        
+
         for (MappedProperty<?> property : mappedClass.getDynamicProperties()){
             Map<?,?> properties = (Map) property.getValue(beanMap);
             if (properties != null){
@@ -1544,13 +1546,13 @@ public final class SessionImpl implements Session {
                     UID predicate = toRDF(entry.getKey(), context).asURI();
                     if (entry.getValue() instanceof Collection){
                         for (Object value : ((Collection)entry.getValue())){
-                            NODE object = toRDFValue(value, context);    
+                            NODE object = toRDFValue(value, context);
                             recordAddStatement(subject, predicate, object, context);
                         }
                     }else{
-                        NODE object = toRDFValue(entry.getValue(), context);    
+                        NODE object = toRDFValue(entry.getValue(), context);
                         recordAddStatement(subject, predicate, object, context);
-                    }                        
+                    }
                 }
             }
         }
@@ -1597,7 +1599,7 @@ public final class SessionImpl implements Session {
         ID container = connection.createBNode();
         recordAddStatement(container, RDF.type, containerType.getUID(), context);
         for (Object o : collection) {
-            i++;            
+            i++;
             if (o != null) {
                 NODE value = toRDFValue(o, context);
                 recordAddStatement(container, RDF.getContainerMembershipProperty(i), value, context);
