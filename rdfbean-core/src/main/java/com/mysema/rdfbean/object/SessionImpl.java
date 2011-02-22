@@ -467,7 +467,6 @@ public final class SessionImpl implements Session {
     @SuppressWarnings("unchecked")
     @Nullable
     private <T> T convertMappedObject(ID subject, Class<T> requiredClass, boolean polymorphic, boolean injection) {
-        // XXX defaultContext?
         UID context = getContext(requiredClass, subject, null);
         Object instance = getCached(subject, requiredClass);
         if (instance == null) {
@@ -488,13 +487,17 @@ public final class SessionImpl implements Session {
 
             MappedClass mappedClass = configuration.getMappedClass(requiredClass);
             MultiMap<UID, STMT> direct = getProperties(subject, mappedClass, polymorphic);
-            MultiMap<UID, STMT> inverse = null;
-            if (mappedClass.getInvMappedPredicates().isEmpty()){
-                inverse = new MultiHashMap<UID, STMT>();
-            }else{
-                inverse = getInvProperties(subject, mappedClass);
+
+            if (!direct.isEmpty()){
+                MultiMap<UID, STMT> inverse = null;
+                if (mappedClass.getInvMappedPredicates().isEmpty()){
+                    inverse = new MultiHashMap<UID, STMT>();
+                }else{
+                    inverse = getInvProperties(subject, mappedClass);
+                }
+                instance = getMappedObject(subject, requiredClass, new PropertiesMap(direct, inverse), polymorphic, context, true);
             }
-            instance = getMappedObject(subject, requiredClass, new PropertiesMap(direct, inverse), polymorphic, context, true);
+
         }
         return (T) instance;
     }
@@ -516,8 +519,8 @@ public final class SessionImpl implements Session {
         if (instance != null){
             put(subject, instance);
             if (bind){
-                bind(subject, instance, properties);    
-            }                         
+                bind(subject, instance, properties);
+            }
         }
         return instance;
     }
@@ -796,15 +799,20 @@ public final class SessionImpl implements Session {
         RDFQuery query = createQuery(mappedClass, type, polymorphic);
         CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
         Map<ID, MultiMap<UID, STMT>> directProps = getPropertiesMap(stmts, false);
-        
+
+        // no results
+        if (directProps.isEmpty()){
+            return;
+        }
+
         Map<ID, MultiMap<UID, STMT>> inverseProps = Collections.emptyMap();
         if (!polymorphic && !mappedClass.getInvMappedPredicates().isEmpty()){
             inverseProps = getInvProperties(mappedClass, directProps.keySet());
         }
-        
+
         // create
         Map<ID, T> idToInstance = createInstances(clazz, polymorphic, context, directProps, inverseProps);
-        
+
         // load references
         loadReferences(mappedClass, directProps, directProps.keySet());
 
@@ -813,11 +821,11 @@ public final class SessionImpl implements Session {
             T instance = getCached(entry.getKey(), clazz);
             if (idToInstance.containsKey(entry.getKey())){
                 PropertiesMap properties = new PropertiesMap(entry.getValue(), inverseProps.get(entry.getKey()));
-                bind(entry.getKey(), instance, properties);    
+                bind(entry.getKey(), instance, properties);
             }
             instances.add(instance);
         }
-    }    
+    }
 
     private <T> Map<ID, T> createInstances(Class<T> clazz, boolean polymorphic, UID context,
             Map<ID, MultiMap<UID, STMT>> directProps, Map<ID, MultiMap<UID, STMT>> inverseProps) {
@@ -828,8 +836,8 @@ public final class SessionImpl implements Session {
                 PropertiesMap properties = new PropertiesMap(entry.getValue(), inverseProps.get(entry.getKey()));
                 instance = getMappedObject(entry.getKey(), clazz, properties, polymorphic, context, false);
                 if (instance != null){
-                    idToInstance.put(entry.getKey(), instance);    
-                }                
+                    idToInstance.put(entry.getKey(), instance);
+                }
             }
         }
         return idToInstance;
@@ -1066,13 +1074,10 @@ public final class SessionImpl implements Session {
                     ids.add(id);
                 }
             }
-            
+
             // return from cache
             if (ids.isEmpty()){
-                for (ID id : subjects){
-                    instances.add(id != null ? getCached(id, clazz) : null);
-                }
-                return instances;
+                return getFromCache(clazz, instances, subjects);
             }
 
             MappedClass mappedClass = configuration.getMappedClass(clazz);
@@ -1086,12 +1091,17 @@ public final class SessionImpl implements Session {
             query.where(QNODE.s.in(ids));
             CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
             Map<ID, MultiMap<UID, STMT>> directProps = getPropertiesMap(stmts, false);
-            
+
+            // no results, return from cache
+            if (directProps.isEmpty()){
+                return getFromCache(clazz, instances, subjects);
+            }
+
             Map<ID, MultiMap<UID, STMT>> inverseProps = Collections.emptyMap();
             if (!polymorphic && !mappedClass.getInvMappedPredicates().isEmpty()){
                 inverseProps = getInvProperties(mappedClass, directProps.keySet());
             }
-            
+
             // create
             Map<ID, T> idToInstance = createInstances(clazz, polymorphic, context, directProps, inverseProps);
 
@@ -1121,7 +1131,15 @@ public final class SessionImpl implements Session {
         }
         return instances;
     }
-    
+
+    private <T> List<T> getFromCache(Class<T> clazz, List<T> instances,
+            ID... subjects) {
+        for (ID id : subjects){
+            instances.add(id != null ? getCached(id, clazz) : null);
+        }
+        return instances;
+    }
+
     @Override
     public <T> List<T> getAll(Class<T> clazz, LID... subjects) {
         ID[] ids = new ID[subjects.length];
@@ -1388,10 +1406,10 @@ public final class SessionImpl implements Session {
         if (!polymorphic && !mappedClass.getInvMappedPredicates().isEmpty()){
             inverseProps = getInvProperties(mappedClass, directProps.keySet());
         }
-        
+
         // create
         Map<ID, T> idToInstance = createInstances(clazz, polymorphic, context, directProps, inverseProps);
-        
+
         // load references
         loadReferences(mappedClass, directProps, handled);
 
@@ -1399,11 +1417,11 @@ public final class SessionImpl implements Session {
             T instance = getCached(entry.getKey(), clazz);
             if (idToInstance.containsKey(entry.getKey())){
                 PropertiesMap properties = new PropertiesMap(entry.getValue(), inverseProps.get(entry.getKey()));
-                bind(entry.getKey(), instance, properties);    
+                bind(entry.getKey(), instance, properties);
             }
         }
     }
-    
+
     @Nullable
     @SuppressWarnings("unchecked")
     private <T> Class<? extends T> matchType(Collection<ID> types, Class<T> targetType) {

@@ -1,12 +1,13 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
@@ -19,8 +20,9 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author sasa
- * 
+ *
  */
+@Ignore
 public class ConstructorParametersTest {
 
     @ClassMapping(ns = TEST.NS)
@@ -41,7 +43,7 @@ public class ConstructorParametersTest {
             assertNotNull(service);
         }
     }
-    
+
     @ClassMapping(ns = TEST.NS)
     public static final class ParentServiceType {
 

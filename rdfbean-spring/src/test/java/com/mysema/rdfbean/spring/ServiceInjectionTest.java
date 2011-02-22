@@ -1,13 +1,14 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.spring;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.support.StaticApplicationContext;
 
@@ -33,23 +34,23 @@ import com.mysema.rdfbean.object.SessionUtil;
  *
  */
 public class ServiceInjectionTest {
-    
+
     public static interface ServiceInterface {
         public String doYourThing(RichBean rbean);
     }
-    
+
     public static class HelloWorldService implements ServiceInterface {
         public String doYourThing(RichBean rbean) {
             return "Hello " + rbean.getLabel()+"!";
         }
     }
-    
+
     public static class HelloUnderWorldService implements ServiceInterface {
         public String doYourThing(RichBean rbean) {
             return "Welcome to the Underworld, " + rbean.getLabel()+"!";
         }
     }
-    
+
     @ClassMapping(ns=TEST.NS)
     public static class RichBean {
         @Predicate(ns=RDFS.NS)
@@ -59,7 +60,7 @@ public class ServiceInjectionTest {
         @Default(ns=SRV.NS, ln="helloWorld")
         @InjectService
         private ServiceInterface service;
-        
+
         public String executeService() {
             return service.doYourThing(this);
         }
@@ -67,7 +68,7 @@ public class ServiceInjectionTest {
             return this.label;
         }
     }
-    
+
     @ClassMapping(ns=TEST.NS)
     public final static class MixinInjection {
         @Mixin
@@ -81,7 +82,7 @@ public class ServiceInjectionTest {
         applicationContext.registerSingleton("helloWorld", HelloWorldService.class);
         applicationContext.registerSingleton("helloUnderWorld", HelloUnderWorldService.class);
     }
-    
+
     @Test
     public void InjectSpringServices() throws ClassNotFoundException {
         BID subject = new BID("foobar");
@@ -94,9 +95,9 @@ public class ServiceInjectionTest {
         session.addParent(SRV.NS, new SpringObjectRepository(applicationContext));
         RichBean rbean = session.findInstances(RichBean.class).get(0);
         assertEquals("Hello RichBean!", rbean.executeService());
-        
+
         session.clear();
-        
+
         // Override default value
         repository.add(new STMT(subject, new UID(TEST.NS, "service"), new UID(SRV.NS, "helloUnderWorld")));
         rbean = session.findInstances(RichBean.class).get(0);
@@ -104,6 +105,7 @@ public class ServiceInjectionTest {
     }
 
     @Test
+    @Ignore
     public void MixinInjection() {
         UID uid = new UID(SRV.NS, "helloWorld");
         Session session = SessionUtil.openSession(MixinInjection.class);

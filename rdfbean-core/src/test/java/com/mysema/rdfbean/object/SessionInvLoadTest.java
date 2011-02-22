@@ -1,7 +1,10 @@
 package com.mysema.rdfbean.object;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +16,7 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
@@ -90,6 +94,24 @@ public class SessionInvLoadTest {
     }
 
     @Test
+    public void FindInstances_Empty_Result(){
+        session.deleteAll(session.findInstances(Note.class).toArray());
+        session.clear();
+
+        assertTrue(session.findInstances(Note.class).isEmpty());
+    }
+
+    @Test
+    public void GetAll_Empty_Result(){
+        assertEquals(Arrays.asList(null, null, null), session.getAll(Note.class, new BID(), new BID(), new BID()));
+    }
+
+    @Test
+    public void Get_Null_Result(){
+        assertNull(session.get(Note.class, new BID()));
+    }
+
+    @Test
     public void FindInstances_Of_Note(){
         System.out.println("Get all notes");
         List<Note> notes = session.findInstances(Note.class);
@@ -102,7 +124,7 @@ public class SessionInvLoadTest {
         List<Comment> comments = session.findInstances(Comment.class);
         assertEquals(4, comments.size());
     }
-    
+
     @Test
     public void Query_For_Notes(){
         System.out.println("Query all notes");
