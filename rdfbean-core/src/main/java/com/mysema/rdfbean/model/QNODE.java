@@ -21,13 +21,17 @@ public class QNODE<T extends NODE> extends Param<T>{
     public static final QID p = new QID("p");
 
     public static final QNODE<NODE> o = new QNODE<NODE>(NODE.class,"o");
-    
+
     public static final QID c = new QID("c");
 
     public static final QID type = new QID("type");
-    
+
     public static final QID typeContext = new QID("typeContext");
-    
+
+    public static final QNODE<NODE> first = new QNODE<NODE>(NODE.class, "first");
+
+    public static final QID rest = new QID("rest");
+
     @Nullable
     private volatile QLIT lit;
 

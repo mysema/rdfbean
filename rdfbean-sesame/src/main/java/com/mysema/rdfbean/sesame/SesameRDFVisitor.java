@@ -280,12 +280,25 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     private TupleExpr merge(List<Block> blocks, QueryMetadata md){
         List<TupleExpr> tuples = new ArrayList<TupleExpr>(blocks.size());
+        boolean asLeftJoin = false;
         for (Block block : blocks){
             if (block instanceof OptionalBlock){
-                TupleExpr right = toTuple(block, md);
-                LeftJoin lj = new LeftJoin(tuples.size() == 1 ? tuples.get(0) : new Join(tuples), right);
+                if (!tuples.isEmpty()){
+                    TupleExpr right = toTuple(block, md);
+                    LeftJoin lj = new LeftJoin(tuples.size() == 1 ? tuples.get(0) : new Join(tuples), right);
+                    tuples = new ArrayList<TupleExpr>();
+                    tuples.add(lj);
+                }else{
+                    asLeftJoin = true;
+                    tuples.add(toTuple(block, md));
+                }
+
+            }else if (asLeftJoin){
+                LeftJoin lj = new LeftJoin(toTuple(block,md), tuples.get(0));
                 tuples = new ArrayList<TupleExpr>();
                 tuples.add(lj);
+                asLeftJoin = false;
+
             }else{
                 tuples.add(toTuple(block, md));
             }

@@ -19,25 +19,38 @@ import com.mysema.query.types.Predicate;
 public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
 
     private final RDFConnection connection;
-    
+
     private List<Block> blocks = new ArrayList<Block>();
-    
+
     private BooleanBuilder filters = new BooleanBuilder();
-    
+
     public RDFQueryImpl(RDFConnection connection) {
         super(new QueryMixin<RDFQueryImpl>());
         queryMixin.setSelf(this);
         this.connection = connection;
     }
-    
+
     @Override
     public boolean ask(){
         return createBooleanQuery().getBoolean();
     }
-    
+
     @Override
     public CloseableIterator<Map<String,NODE>> select(Expression<?>... exprs){
         return createTupleQuery(exprs).getTuples();
+    }
+
+    public Map<String, NODE> selectSingle(Expression<?>... exprs){
+        CloseableIterator<Map<String,NODE>> it = select(exprs);
+        try{
+            if (it.hasNext()){
+                return it.next();
+            }else{
+                return null;
+            }
+        }finally{
+            it.close();
+        }
     }
 
     @Override
@@ -48,23 +61,23 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     @Override
     public BooleanQuery createBooleanQuery(){
         aggregateFilters();
-        return connection.createQuery(QueryLanguage.BOOLEAN, queryMixin.getMetadata());    
+        return connection.createQuery(QueryLanguage.BOOLEAN, queryMixin.getMetadata());
     }
-    
+
     @Override
     public TupleQuery createTupleQuery(Expression<?>... exprs){
         aggregateFilters();
         queryMixin.addToProjection(exprs);
-        return connection.createQuery(QueryLanguage.TUPLE, queryMixin.getMetadata());   
+        return connection.createQuery(QueryLanguage.TUPLE, queryMixin.getMetadata());
     }
-    
+
     @Override
     public GraphQuery createGraphQuery(Block... exprs){
         aggregateFilters();
         queryMixin.addToProjection(exprs);
         return connection.createQuery(QueryLanguage.GRAPH, queryMixin.getMetadata());
     }
-    
+
     protected void aggregateFilters(){
         if (filters.getValue() == null){
             super.where(new GroupBlock(blocks));
@@ -74,7 +87,7 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
         blocks = new ArrayList<Block>();
         filters = new BooleanBuilder();
     }
-    
+
     @Override
     public RDFQueryImpl where(Predicate... o) {
         for (Predicate predicate : o){
@@ -86,11 +99,11 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
         }
         return this;
     }
-    
+
     public QueryMetadata getMetadata(){
         return queryMixin.getMetadata();
     }
-    
+
     @Override
     public String toString(){
         SPARQLVisitor visitor = new SPARQLVisitor();

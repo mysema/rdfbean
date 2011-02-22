@@ -6,6 +6,7 @@
 package com.mysema.rdfbean.object;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
 
@@ -20,19 +21,21 @@ import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.Repository;
 
 public class ListHandlingTest {
-    
+
     @Test
     public void test(){
         Repository repository = new MiniRepository();
         Session session = SessionUtil.openSession(repository, Identifiable.class, Elements.class, Element.class, LinkElement.class, TextElement.class);
-        
+
         Elements elements = new Elements();
         elements.elements = Arrays.<Element>asList(new LinkElement(), new TextElement());
         session.save(elements);
         session.clear();
-        
+
         Elements other = session.getById(elements.id, Elements.class);
-        assertEquals(elements.elements.size(), other.elements.size());                        
+        assertEquals(elements.elements.size(), other.elements.size());
+        assertNotNull(other.elements.get(0));
+        assertNotNull(other.elements.get(1));
     }
 
 }

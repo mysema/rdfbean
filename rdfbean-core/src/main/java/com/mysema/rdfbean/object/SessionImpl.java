@@ -41,7 +41,7 @@ import com.mysema.rdfbean.query.BeanQueryImpl;
  */
 public final class SessionImpl implements Session {
 
-    private static final Factory<List<Object>> listFactory = new Factory<List<Object>>() {
+    private static final Factory<List<Object>> LIST_FACTORY = new Factory<List<Object>>() {
         @Override
         public List<Object> create() {
             return new ArrayList<Object>();
@@ -72,6 +72,8 @@ public final class SessionImpl implements Session {
     private FlushMode flushMode = FlushMode.ALWAYS;
 
     private Map<ID, List<Object>> instanceCache;
+
+    private Map<ID, Map<String, NODE>> listCache;
 
     private Set<STMT> addedStatements;
 
@@ -310,10 +312,11 @@ public final class SessionImpl implements Session {
 
     @Override
     public void clear() {
-        instanceCache = LazyMap.decorate(new HashMap<ID, List<Object>>(DEFAULT_INITIAL_CAPACITY), listFactory);
+        instanceCache = LazyMap.decorate(new HashMap<ID, List<Object>>(DEFAULT_INITIAL_CAPACITY), LIST_FACTORY);
         resourceCache = new IdentityHashMap<Object, ID>(DEFAULT_INITIAL_CAPACITY);
         addedStatements = new LinkedHashSet<STMT>(DEFAULT_INITIAL_CAPACITY);
         removedStatements = new LinkedHashSet<STMT>(DEFAULT_INITIAL_CAPACITY);
+        listCache = new LinkedHashMap<ID, Map<String,NODE>>(DEFAULT_INITIAL_CAPACITY);
         seen = null;
     }
 
@@ -405,13 +408,27 @@ public final class SessionImpl implements Session {
     private Collection<NODE> convertList(ID subject, UID context) {
         List<NODE> list = new ArrayList<NODE>();
         while (subject != null && !subject.equals(RDF.nil)) {
-            NODE value = getFunctionalValue(subject, RDF.first, false, context);
+            if (logger.isDebugEnabled()){
+                logger.debug("query for list elements of " +  subject);
+            }
+            Map<String,NODE> nodes = listCache.get(subject);
+            if (nodes == null){
+                nodes = new RDFQueryImpl(connection)
+                    .where(Blocks.S_REST, Blocks.optional(Blocks.S_FIRST))
+                    .set(QNODE.s, subject)
+                    .selectSingle(QNODE.first, QNODE.rest);
+            }
+
+            if (nodes == null){
+                break;
+            }
+            NODE value = nodes.get(QNODE.first.getName());
             if (value != null){
                 list.add(value);
             }else{
                 list.add(null);
             }
-            subject = (ID) getFunctionalValue(subject, RDF.rest, false, context);
+            subject = (ID) nodes.get(QNODE.rest.getName());
         }
         return list;
     }
@@ -509,6 +526,13 @@ public final class SessionImpl implements Session {
             Collection<ID> mappedTypes = findMappedTypes(subject, context, properties.getDirect());
             if (!mappedTypes.isEmpty()) {
                 instance = createInstance(subject, requiredClass, mappedTypes, properties);
+            }else if (properties.getDirect().containsKey(RDF.rest)){
+                Map<String,NODE> values = new HashMap<String,NODE>();
+                values.put(RDF.rest.ln(), properties.getDirect().get(RDF.rest).iterator().next().getObject());
+                if (properties.getDirect().containsKey(RDF.first)){
+                    values.put(RDF.first.ln(), properties.getDirect().get(RDF.first).iterator().next().getObject());
+                }
+                listCache.put(subject, values);
             }else{
                 logger.error("got no type for " + subject.getId());
             }

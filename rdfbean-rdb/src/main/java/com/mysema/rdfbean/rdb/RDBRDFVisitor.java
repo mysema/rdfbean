@@ -129,7 +129,11 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             List<String> variables = new ArrayList<String>();
             List<Expression<?>> pr = new ArrayList<Expression<?>>();
             for (Expression<?> expr : md.getProjection()){
-                variables.add(expr.toString());
+                if (expr instanceof ParamExpression){
+                    variables.add(((ParamExpression)expr).getName());
+                }else{
+                    variables.add(expr.toString());
+                }
                 pr.add(handle(expr, md));
             }
             return new TupleQueryImpl((SQLQuery)query, context.getConverters(), variables, pr, transformer);
