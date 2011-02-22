@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.sesame.query;
 
@@ -25,16 +25,16 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({SimpleType.class, SimpleType2.class})
 public class BeanQueryStandardTest extends SessionTestBase {
-    
-    private String knownStringValue = "propertymap";
-    
+
+    private final String knownStringValue = "propertymap";
+
     protected QSimpleType v1 = new QSimpleType("v1");
-    
+
     protected QSimpleType v2 = new QSimpleType("v2");
-    
+
     private SimpleType2 other;
-    
-    private QueryExecution standardTest = new QueryExecution(Module.RDFBEAN, Target.MEM){        
+
+    private final QueryExecution standardTest = new QueryExecution(Module.RDFBEAN, Target.MEM){
         @Override
         protected Pair<Projectable, List<Expression<?>>> createQuery() {
             return Pair.of((Projectable)session.from(v1, v2), Collections.<Expression<?>>emptyList());
@@ -42,18 +42,18 @@ public class BeanQueryStandardTest extends SessionTestBase {
         @Override
         protected Pair<Projectable, List<Expression<?>>> createQuery(BooleanExpression filter) {
             return Pair.of((Projectable)session.from(v1, v2).where(filter), Arrays.<Expression<?>>asList(v1, v2));
-        }        
+        }
     };
-    
+
     @Test
     public void test() throws InterruptedException{
-        SimpleType st = session.from(v1).uniqueResult(v1);
+        SimpleType st = session.from(v1).limit(1).uniqueResult(v1);
         SimpleType2 inMap = st.getMapProperty().values().iterator().next();
         SimpleType2 inList = st.getListProperty().iterator().next();
         SimpleType2 inSet = st.getSetProperty().iterator().next();
-        other = new SimpleType2();        
+        other = new SimpleType2();
         session.save(other);
-        
+
         standardTest.runBooleanTests(v1.directProperty.isNull(), v2.numericProperty.isNotNull());
         standardTest.runCollectionTests(v1.setProperty, v2.setProperty, inSet, other);
 //        standardTest.dateTests(v1.dateProperty, v2.dateProperty, st.getDateProperty());
@@ -64,11 +64,11 @@ public class BeanQueryStandardTest extends SessionTestBase {
         standardTest.runNumericTests(v1.numericProperty, v2.numericProperty, 10);
         standardTest.runStringTests(v1.directProperty, v2.directProperty, knownStringValue);
 //        standardTest.timeTests(null, null, null);
-        
+
         // delay the report slightly
         Thread.sleep(10);
-        standardTest.report();        
+        standardTest.report();
     }
-     
+
 
 }

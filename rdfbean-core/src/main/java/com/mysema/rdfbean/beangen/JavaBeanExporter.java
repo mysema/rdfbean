@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.beangen;
 
@@ -55,80 +55,80 @@ import com.mysema.rdfbean.rdfs.RDFSClass;
  * @version $Id$
  */
 public class JavaBeanExporter {
-    
+
     private static final Pattern normalizePattern = Pattern.compile("[\\-]");
-    
+
     private final Set<String> exportNamespaces = new HashSet<String>();
-    
+
     private final Map<String,String> nsToPackage = new HashMap<String,String>();
-    
+
     private final Map<String,String> nsToClassPrefix = new HashMap<String,String>();
-    
+
     private final Map<String,String> nsToPropertyPrefix = new HashMap<String,String>();
-    
+
     private final Set<UID> localizedProperties = new HashSet<UID>();
-    
+
     private final Set<UID> propertyAsSet = new HashSet<UID>();
-    
+
     private final Set<UID> propertyAsList = new HashSet<UID>();
-    
+
     private final Map<UID,Type> uidToType = new HashMap<UID,Type>();
-    
+
     private boolean oneOfAsEnum = true;
-    
+
     private boolean stripHasOff = true;
-    
-    private List<UID> skippedSupertypes = Arrays.asList(OWL.Thing, RDFS.Resource);
-    
+
+    private final List<UID> skippedSupertypes = Arrays.asList(OWL.Thing, RDFS.Resource);
+
     private final TypeMapping typeMapping;
-    
+
     public JavaBeanExporter(boolean usePrimitives){
         this.typeMapping = new TypeMapping(usePrimitives);
     }
-    
+
     public JavaBeanExporter addClassPrefix(String ns, String prefix){
         nsToClassPrefix.put(ns, prefix);
         return this;
     }
-    
+
     public JavaBeanExporter addExportNamespaces(String... namespaces) {
         for (String ns : namespaces){
-            exportNamespaces.add(ns);    
-        }        
+            exportNamespaces.add(ns);
+        }
         return this;
     }
-    
+
     public JavaBeanExporter addLocalizedProperty(UID... properties){
         for (UID property : properties){
-            localizedProperties.add(property);    
-        }        
+            localizedProperties.add(property);
+        }
         return this;
     }
 
     public JavaBeanExporter addPackage(String ns, String packageName){
         nsToPackage.put(ns, packageName);
         return this;
-    }    
+    }
 
     public JavaBeanExporter addPropertyAsList(UID... properties){
         for (UID property : properties){
-            propertyAsSet.add(property);    
-        }        
+            propertyAsSet.add(property);
+        }
         return this;
     }
-    
+
     public JavaBeanExporter addPropertyAsSet(UID... properties){
         for (UID property : properties){
-            propertyAsList.add(property);    
-        }        
+            propertyAsList.add(property);
+        }
         return this;
     }
-    
+
     public JavaBeanExporter addPropertyPrefix(String ns, String prefix){
         nsToPropertyPrefix.put(ns, prefix);
         return this;
-    }        
-    
+    }
+
     EntityType createBeanType(RDFSClass<?> rdfType) {
         // type
         UID id = rdfType.getId().asURI();
@@ -136,11 +136,11 @@ public class JavaBeanExporter {
         String simpleName = getClassName(id);
         Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
         uidToType.put(id, type);
-        EntityType entityType = new EntityType("Q", type);
+        EntityType entityType = new EntityType("Q", "", type);
         entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
-        
+
         Map<RDFProperty, Property> properties = new HashMap<RDFProperty, Property>();
-        
+
         // iterate over properties
         for (RDFProperty rdfProperty : rdfType.getProperties()){
             if (rdfProperty.getId().isURI()){
@@ -151,50 +151,50 @@ public class JavaBeanExporter {
                     }
                     properties.put(rdfProperty, createProperty(entityType, id, rdfProperty, range));
                 }
-            }                    
+            }
         }
-        
+
         // iterate over supertypes
         for (RDFSClass<?> superType : rdfType.getSuperClasses()){
             if (superType != null && !superType.equals(rdfType) && !skippedSupertypes.contains(superType.getId())){
-                
+
                 // handle restriction
                 if (superType instanceof Restriction){
                     handleRestriction(entityType, id, (Restriction)superType, properties);
-                                    
+
                 // handle other supertypes
                 }else if (superType.getId().isURI()){
                     UID superTypeId = (UID)superType.getId();
                     entityType.addSupertype(new Supertype(getJavaType(superTypeId)));
-                }                    
+                }
             }
         }
-                
+
         // add properties to bean model
         for (Property property : properties.values()){
             entityType.addProperty(property);
         }
-        
+
         return entityType;
     }
 
     private EntityType createEnumType(RDFSClass<?> rdfType) {
-//        EnumType enumType = new EnumType(classId, getPackage(classId), getClassName(classId));        
+//        EnumType enumType = new EnumType(classId, getPackage(classId), getClassName(classId));
 //        for (Object object : rdfType.getOneOf()){
 //            if (object instanceof MappedResourceBase  && ((MappedResourceBase)object).getId().isURI()){
 //                UID id = (UID) ((MappedResourceBase)object).getId();
 //                enumType.addEnum(id.getLocalName());
 //            }
-//        }        
+//        }
 //        return enumType;
-        
+
      // type
         UID id = rdfType.getId().asURI();
         String pkgName = getPackage(id);
         String simpleName = getClassName(id);
         Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
         uidToType.put(id, type);
-        EntityType entityType = new EntityType("Q", type);
+        EntityType entityType = new EntityType("Q", "", type);
         entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
         return entityType;
     }
@@ -202,36 +202,36 @@ public class JavaBeanExporter {
     private Property createProperty(EntityType entityType, UID entityId, RDFProperty rdfProperty, @Nullable RDFSClass<?> range) {
         UID propertyId = rdfProperty.getId().asURI();
         Type propertyType = getPropertyType(rdfProperty, range);
-        String propertyName = getPropertyName(propertyId);        
+        String propertyName = getPropertyName(propertyId);
         Property property = new Property(entityType, propertyName, propertyType, new String[0]);
         if (propertyId.getNamespace().equals(entityId.getNamespace())){
             if (propertyName.equals(propertyId.getLocalName())){
-                property.addAnnotation(new PredicateImpl("","","",false));   
+                property.addAnnotation(new PredicateImpl("","","",false));
             }else{
-                property.addAnnotation(new PredicateImpl("","",propertyId.getLocalName(),false));    
-            }            
+                property.addAnnotation(new PredicateImpl("","",propertyId.getLocalName(),false));
+            }
         }else{
             property.addAnnotation(new PredicateImpl("",propertyId,false));
         }
         return property;
     }
-    
-    public void export(Session session, File targetFolder) throws IOException{        
+
+    public void export(Session session, File targetFolder) throws IOException{
         List<EntityType> entityTypes = new ArrayList<EntityType>();
-        
+
         // collect entity types
         for (OWLClass owlClass : session.findInstances(OWLClass.class)){
             if (owlClass.getId().isURI()){
                 EntityType entityType;
                 if (oneOfAsEnum && !owlClass.getOneOf().isEmpty()){
-                    entityType = createEnumType(owlClass);                
+                    entityType = createEnumType(owlClass);
                 }else{
-                    entityType = createBeanType(owlClass); 
+                    entityType = createBeanType(owlClass);
                 }
                 entityTypes.add(entityType);
-            }            
+            }
         }
-        
+
         // serialize
         BeanSerializer beanSerializer = new BeanSerializer();
         for (EntityType entityType : entityTypes){
@@ -241,14 +241,14 @@ public class JavaBeanExporter {
             javaFile.createNewFile();
             Writer writer = new OutputStreamWriter(new FileOutputStream(javaFile), "UTF-8");
             try{
-                beanSerializer.serialize(entityType, SimpleSerializerConfig.DEFAULT, new JavaWriter(writer));    
+                beanSerializer.serialize(entityType, SimpleSerializerConfig.DEFAULT, new JavaWriter(writer));
             }finally{
                 writer.close();
-            }            
-            
+            }
+
         }
     }
-    
+
     private Type getJavaType(UID id){
         Type type = uidToType.get(id);
         if (type == null){
@@ -258,7 +258,7 @@ public class JavaBeanExporter {
             uidToType.put(id, type);
         }
         return type;
-        
+
     }
 
     private String getClassName(UID classId) {
@@ -276,8 +276,8 @@ public class JavaBeanExporter {
             throw new IllegalArgumentException("No package declared for " + id.getNamespace());
         }
     }
-           
-    
+
+
     private String getPropertyName(UID propertyId) {
         String propertyName = normalize(propertyId.getLocalName());
         if (nsToPropertyPrefix.containsKey(propertyId.getNamespace())){
@@ -301,25 +301,25 @@ public class JavaBeanExporter {
                 String simpleName = getClassName(id);
                 propertyType = new SimpleType(TypeCategory.SIMPLE, pkgName+"."+simpleName, pkgName, simpleName, false, false);
             }
-        }        
+        }
         if (propertyAsList.contains(rdfProperty.getId())){
             propertyType = new SimpleType(Types.LIST, propertyType);
         }else if (propertyAsSet.contains(rdfProperty.getId())){
             propertyType = new SimpleType(Types.LIST, propertyType);
-        }        
+        }
         return propertyType;
     }
 
     private void handleRestriction(EntityType entityType, UID entityId, Restriction restriction, Map<RDFProperty, Property> properties) {
         if (restriction.getHasValue() != null){
             return;
-        }        
-        Collection<RDFProperty> rdfProperties = Collections.emptySet();        
+        }
+        Collection<RDFProperty> rdfProperties = Collections.emptySet();
         if (restriction.getOnProperty() != null){
             rdfProperties = Collections.singleton(restriction.getOnProperty());
         }else if (!restriction.getOnProperties().isEmpty()){
-            rdfProperties = restriction.getOnProperties();                                        
-        }   
+            rdfProperties = restriction.getOnProperties();
+        }
 
         for (RDFProperty rdfProperty : rdfProperties){
             // allValueForm
@@ -336,7 +336,7 @@ public class JavaBeanExporter {
             }else{
                 if (properties.containsKey(rdfProperty)){
                     property = properties.get(rdfProperty);
-                }else{    
+                }else{
                     RDFSClass<?> range = null;
                     if (!rdfProperty.getRange().isEmpty()){
                         range = rdfProperty.getRange().iterator().next();
@@ -348,8 +348,8 @@ public class JavaBeanExporter {
 
             // FIXME
 //            for (Integer cardinality : Arrays.asList(
-//                    restriction.getCardinality(), 
-//                    restriction.getMinCardinality(), 
+//                    restriction.getCardinality(),
+//                    restriction.getMinCardinality(),
 //                    restriction.getMaxCardinality())){
 //                if (cardinality != null){
 //                    property.setMultipleValues(true);
@@ -357,11 +357,11 @@ public class JavaBeanExporter {
 //            }
         }
     }
-    
+
     private String normalize(String str) {
         return normalizePattern.matcher(str).replaceAll("_");
     }
-    
+
     public JavaBeanExporter setDefaultType(Type type){
         typeMapping.setDefaultType(type);
         return this;
@@ -371,10 +371,10 @@ public class JavaBeanExporter {
         this.oneOfAsEnum = b;
         return this;
     }
-    
+
     public JavaBeanExporter setStripHasOff(boolean b) {
         this.stripHasOff = b;
         return this;
     }
-    
+
 }

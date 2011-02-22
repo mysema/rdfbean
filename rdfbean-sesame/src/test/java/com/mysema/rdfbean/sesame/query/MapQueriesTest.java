@@ -30,7 +30,7 @@ public class MapQueriesTest extends SessionTestBase{
 
     @Before
     public void setUp(){
-        instance = session.from(QSimpleType2.simpleType2).uniqueResult(QSimpleType2.simpleType2);
+        instance = session.from(QSimpleType2.simpleType2).limit(1).uniqueResult(QSimpleType2.simpleType2);
     }
 
     @Test
