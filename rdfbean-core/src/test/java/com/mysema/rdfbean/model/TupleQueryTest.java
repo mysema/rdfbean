@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -26,6 +27,13 @@ public class TupleQueryTest {
     private RDFQuery query(){
         return new RDFQueryImpl(connection);
     }
+    
+    @Before
+    public void setUp(){
+        connection.addStatements(
+                new STMT(new BID(), RDFS.label, new LIT("C")),
+                new STMT(new BID(), RDF.type, RDFS.Resource));
+    }
 
     @Test
     public void Pattern(){
@@ -42,14 +50,18 @@ public class TupleQueryTest {
                 subject.ne(new UID(TEST.NS)),
                 object.isNull(),
                 object.isNotNull(),
-                object.lit().lt("X"),
-                object.lit().gt("X"),
-                object.lit().loe("X"),
-                object.lit().goe("X")
+                object.lit().like("X%"),
+                object.lit().matches(".*"),
+                object.lit().lt("D"),
+                object.lit().gt("B"),
+                object.lit().loe("C"),
+                object.lit().goe("C"),
+                object.lit().eqIgnoreCase("X"),
+                object.lit().isEmpty()
         );
 
         for (Predicate filter : filters){
-            query().where(pattern, filter).select(subject);
+            query().where(pattern, filter).selectSingle(subject);
         }
     }
 

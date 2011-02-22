@@ -74,7 +74,7 @@ public class JenaRepository implements Repository{
 //                }    
 //            }else{
                 try{
-                    return operation.execute(connection);
+                    return operation.doInConnection(connection);
                 }catch(IOException io){
                     throw new RepositoryException(io);
                 }

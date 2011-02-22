@@ -570,7 +570,6 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         }
     }
 
-
     @Override
     public Object visit(SubQueryExpression<?> expr, Bindings bindings) {
         throw new UnsupportedOperationException();

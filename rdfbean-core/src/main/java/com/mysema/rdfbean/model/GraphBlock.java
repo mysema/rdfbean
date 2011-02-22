@@ -11,6 +11,7 @@ import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.PredicateOperation;
+import com.mysema.query.types.ToStringVisitor;
 import com.mysema.query.types.Visitor;
 
 public class GraphBlock implements ContainerBlock{
@@ -40,6 +41,8 @@ public class GraphBlock implements ContainerBlock{
     public <R, C> R accept(Visitor<R, C> v, C context) {
         if (v instanceof RDFVisitor){
             return (R)((RDFVisitor)v).visit(this, context);    
+        }else if (v instanceof ToStringVisitor){    
+            return (R)toString();
         }else{
             throw new IllegalArgumentException(v.toString());
         }

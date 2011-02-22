@@ -286,6 +286,21 @@ public class RDFQueryBuilderTest {
         query.orderBy(user.getString("firstName").asc());
         assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 . OPTIONAL {?user ?_c4 ?user_firstName } } ORDER BY ?user_firstName");
     }
+    
+    @Test
+    public void Order_By_Desc() throws Exception{
+        query.from(user);
+        query.orderBy(user.getString("firstName").desc());
+        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 . OPTIONAL {?user ?_c4 ?user_firstName } } ORDER BY DESC(?user_firstName)");
+    }
+    
+    @Test
+    public void Group_By_Having() throws Exception{
+        query.from(user);
+        query.groupBy(user.getString("firstName"));
+        query.having(user.getString("lastName").isNotNull());
+        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName ; ?_c6 ?user_lastName } GROUP BY ?user_firstName HAVING (bound(?user_lastName))");
+    }
 
     private void assertEquals(String query) throws Exception{
         RDFQueryImpl rdfQuery = builder.build(false);

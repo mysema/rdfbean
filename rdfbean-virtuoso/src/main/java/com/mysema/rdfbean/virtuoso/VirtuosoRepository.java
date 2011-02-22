@@ -92,7 +92,7 @@ public class VirtuosoRepository implements Repository {
             try{
                 RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
                 try{
-                    RT retVal = operation.execute(connection);
+                    RT retVal = operation.doInConnection(connection);
                     tx.commit();
                     return retVal;
                 }catch(IOException io){

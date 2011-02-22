@@ -64,11 +64,15 @@ public final class Blocks {
     public static Block optional(Block... blocks){
         return new OptionalBlock(Arrays.asList(blocks));
     }
-
+    
     public static Block optional(List<Block> blocks, Predicate... predicates){
         return new OptionalBlock(blocks, predicates);
+    }    
+    
+    public static Block optionalFilter(Block block, Predicate... predicates){
+        return new OptionalBlock(Collections.singletonList(block), predicates);
     }
-
+    
     public static Block union(Block... blocks){
         return new UnionBlock(Arrays.asList(blocks));
     }
@@ -78,7 +82,7 @@ public final class Blocks {
     }
 
     public static Block graphFilter(Expression<UID> context, Block block, Predicate... filters){
-        return new GraphBlock(context, Collections.singletonList(block));
+        return new GraphBlock(context, Collections.singletonList(block), filters);
     }
 
     private static <T extends NODE> Expression<T> convert(Class<T> cl, Object o){

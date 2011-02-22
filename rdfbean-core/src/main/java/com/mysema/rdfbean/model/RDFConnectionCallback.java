@@ -20,6 +20,6 @@ public interface RDFConnectionCallback<RT> {
      * @throws IOException 
      */
     @Nullable
-    RT execute(RDFConnection connection) throws IOException;
+    RT doInConnection(RDFConnection connection) throws IOException;
     
 }

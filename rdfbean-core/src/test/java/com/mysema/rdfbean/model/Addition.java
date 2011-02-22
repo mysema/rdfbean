@@ -14,7 +14,7 @@ public class Addition implements RDFConnectionCallback<Void>{
     }
 
     @Override
-    public Void execute(RDFConnection connection) throws IOException {
+    public Void doInConnection(RDFConnection connection) throws IOException {
         connection.update(Collections.<STMT>emptySet(), new HashSet<STMT>(Arrays.asList(stmts)));
         return null;
     }

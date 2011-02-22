@@ -241,7 +241,7 @@ public final class MiniRepository implements Repository{
         RDFConnection connection = openConnection();
         try{
             try{
-                return operation.execute(connection);
+                return operation.doInConnection(connection);
             }finally{
                 connection.close();
             }    

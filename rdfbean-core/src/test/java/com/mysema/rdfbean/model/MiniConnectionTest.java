@@ -1,5 +1,7 @@
 package com.mysema.rdfbean.model;
 
+import static org.junit.Assert.*;
+
 import java.util.Collections;
 
 import org.junit.Test;
@@ -13,6 +15,15 @@ public class MiniConnectionTest {
         conn.update(Collections.<STMT>emptySet(), null);
         conn.update(null, Collections.<STMT>emptySet());
         conn.update(null, null);
+    }
+    
+    @Test
+    public void Remove(){
+        MiniConnection conn = new MiniRepository().openConnection();
+        conn.addStatements(new STMT(new BID(), RDF.type, RDFS.Resource));
+        assertTrue(conn.exists(null, null, null, null, false));
+        conn.remove(null, null, null, null);
+        assertFalse(conn.exists(null, null, null, null, false));
     }
 
 }

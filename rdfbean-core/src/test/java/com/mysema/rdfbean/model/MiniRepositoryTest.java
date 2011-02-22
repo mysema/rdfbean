@@ -33,6 +33,13 @@ public class MiniRepositoryTest {
     }
 
     @Test
+    public void Exists(){
+        assertTrue(repository.exists(null, null, null, null));
+        repository.remove(null, null, null, null);
+        assertFalse(repository.exists(null, null, null, null));
+    }
+    
+    @Test
     public void Export_RDFXML() throws UnsupportedEncodingException{
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         repository.export(Format.RDFXML, null, baos);

@@ -127,7 +127,7 @@ public class RDBRepository implements Repository{
                 RDFBeanTransaction tx = connection.beginTransaction(false, 0,
                         Connection.TRANSACTION_READ_COMMITTED);
                 try{
-                    RT retVal = operation.execute(connection);
+                    RT retVal = operation.doInConnection(connection);
                     tx.commit();
                     return retVal;
                 }catch(IOException io){

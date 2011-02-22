@@ -6,11 +6,11 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang.ObjectUtils;
 
-import com.mysema.query.types.Expression;
 import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
 import com.mysema.query.types.PredicateOperation;
+import com.mysema.query.types.ToStringVisitor;
 import com.mysema.query.types.Visitor;
 
 /**
@@ -32,11 +32,6 @@ public class GroupBlock implements ContainerBlock{
         
     }
     
-    public GroupBlock(List<Block> blocks, Expression<UID> context, Predicate... filters) {
-        this.blocks = blocks;
-        this.filters = ExpressionUtils.allOf(filters);
-    }
-    
     @Override
     public Predicate not() {
         throw new UnsupportedOperationException();
@@ -47,6 +42,8 @@ public class GroupBlock implements ContainerBlock{
     public <R, C> R accept(Visitor<R, C> v, C context) {
         if (v instanceof RDFVisitor){
             return (R)((RDFVisitor)v).visit(this, context);    
+        }else if (v instanceof ToStringVisitor){    
+            return (R)toString();
         }else{
             throw new IllegalArgumentException(v.toString());
         }       

@@ -39,7 +39,7 @@ public class CountOperation implements RDFConnectionCallback<Long>{
     }
 
     @Override
-    public Long execute(RDFConnection connection) throws IOException {
+    public Long doInConnection(RDFConnection connection) throws IOException {
         long count = 0l;
         CloseableIterator<STMT> stmts = connection.findStatements(subject, predicate, object, context, includeInferred);
         try{

@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import javax.annotation.Nullable;
 
+import com.mysema.query.types.Order;
+import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.expr.Param;
 
@@ -38,12 +40,32 @@ public class QNODE<T extends NODE> extends Param<T>{
     @Nullable
     private volatile QID id;
 
+    @Nullable
+    @SuppressWarnings("unchecked")
+    private volatile OrderSpecifier asc, desc;
+    
     public QNODE(Class<T> type, String variable) {
         super(type, variable);
     }
 
     public Block is(Object predicate, Object subject){
         return Blocks.pattern(subject, predicate, this);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public OrderSpecifier asc(){
+        if (asc == null){
+            asc = new OrderSpecifier(Order.ASC, this);
+        }
+        return asc;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public OrderSpecifier desc(){
+        if (desc == null){
+            desc = new OrderSpecifier(Order.DESC, this);
+        }
+        return desc;
     }
 
     public QID id(){
@@ -102,5 +124,5 @@ public class QNODE<T extends NODE> extends Param<T>{
     public int hashCode(){
         return getName().hashCode();
     }
-
+    
 }
