@@ -25,6 +25,7 @@ import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.FactoryExpression;
+import com.mysema.query.types.FactoryExpressionUtils;
 import com.mysema.rdfbean.model.BooleanQuery;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
@@ -196,7 +197,8 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     @SuppressWarnings("unchecked")
     @Override
     public <RT> List<RT> list(Expression<RT> projection){
-        if (!converterRegistry.supports(projection.getType())){
+        if (!converterRegistry.supports(projection.getType()) 
+                && !(projection instanceof FactoryExpression<?>)){ 
             // bulk load of resources
             queryMixin.addToProjection(projection);
             TupleQuery query = createTupleQuery(false);
@@ -221,7 +223,8 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     }
 
     @Override
-    public <RT> CloseableIterator<RT> iterate(final Expression<RT> projection) {
+    public <RT> CloseableIterator<RT> iterate(Expression<RT> p) {
+        final Expression<RT> projection = normalize(p);
         queryMixin.addToProjection(projection);
         final TupleQuery query = createTupleQuery(false);
         final CloseableIterator<Map<String, NODE>> results = query.getTuples();
@@ -251,7 +254,8 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     }
 
     @Override
-    public <RT> SearchResults<RT> listResults(Expression<RT> projection) {
+    public <RT> SearchResults<RT> listResults(Expression<RT> p) {
+        Expression<RT> projection = normalize(p);
         queryMixin.addToProjection(projection);
         long total = count();
 
@@ -263,4 +267,14 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 md.getModifiers().getOffset(),
                 total);
     }
+    
+    @SuppressWarnings("unchecked")
+    private <T> Expression<T> normalize(Expression<T> expr){
+        if (expr instanceof FactoryExpression<?>){
+            return (Expression<T>) FactoryExpressionUtils.wrap((FactoryExpression<?>)expr);
+        }else{
+            return expr;
+        }
+    }
+    
 }

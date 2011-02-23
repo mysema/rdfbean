@@ -132,7 +132,15 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
             //select (optional paths);
             for (Expression<?> expr : metadata.getProjection()){
-                projection.add(transform(expr, filters));
+                if (expr instanceof FactoryExpression){
+                    FactoryExpression<?> fe = (FactoryExpression<?>)expr;
+                    for (Expression<?> e : fe.getArgs()){
+                        projection.add(transform(e, filters));
+                    }
+                }else{
+                    projection.add(transform(expr, filters));    
+                }
+                
             }
         }
 

@@ -95,7 +95,9 @@ public class SessionInvLoadTest {
 
     @Test
     public void FindInstances_Empty_Result(){
-        session.deleteAll(session.findInstances(Note.class).toArray());
+        System.out.println("Delete all notes");
+        List<Note> notes = session.findInstances(Note.class);
+        session.deleteAll(notes.toArray());
         session.clear();
 
         assertTrue(session.findInstances(Note.class).isEmpty());
@@ -103,6 +105,7 @@ public class SessionInvLoadTest {
 
     @Test
     public void GetAll_Empty_Result(){
+        System.out.println("Get all notes, empty result");
         assertEquals(Arrays.asList(null, null, null), session.getAll(Note.class, new BID(), new BID(), new BID()));
     }
 

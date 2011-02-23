@@ -66,6 +66,12 @@ public interface SimpleDomain {
         @Predicate 
         public Date dateProperty;
 
+        public SimpleType() {}
+        
+        public SimpleType(String property) {
+            this.directProperty = property;
+        }
+        
         public String getId() {
             return id;
         }
