@@ -1,4 +1,4 @@
-package com.mysema.rdfbean.object;
+package com.mysema.rdfbean.query;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.io.IOException;
 import org.junit.Test;
 
 import com.mysema.rdfbean.domains.*;
+import com.mysema.rdfbean.object.DefaultConfiguration;
+import com.mysema.rdfbean.query.DomainExporter;
 
 public class DomainExporterTest {
 

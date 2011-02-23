@@ -1,4 +1,4 @@
-package com.mysema.rdfbean.object;
+package com.mysema.rdfbean.query;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,6 +36,10 @@ import com.mysema.query.codegen.SimpleSerializerConfig;
 import com.mysema.query.codegen.Supertype;
 import com.mysema.query.codegen.TypeFactory;
 import com.mysema.query.codegen.TypeMappings;
+import com.mysema.rdfbean.object.Configuration;
+import com.mysema.rdfbean.object.MappedClass;
+import com.mysema.rdfbean.object.MappedPath;
+import com.mysema.rdfbean.object.MappedProperty;
 
 /**
  * @author tiwe
