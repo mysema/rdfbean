@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -32,16 +32,16 @@ import com.mysema.rdfbean.model.UID;
  *
  */
 public abstract class MappedProperty<M extends Member & AnnotatedElement> implements Cloneable {
-    
+
     @SuppressWarnings("unchecked")
-    public static final List<Class<? extends Annotation>> MAPPING_ANNOTATIONS = 
+    public static final List<Class<? extends Annotation>> MAPPING_ANNOTATIONS =
         Collections.unmodifiableList(Arrays.<Class<? extends Annotation>>asList(
             ComponentType.class,
             Container.class,
-            Default.class, 
+            Default.class,
             Defaults.class,
             Id.class,
-            InjectService.class, 
+            InjectService.class,
             Localized.class,
             MapElements.class,
             Mixin.class,
@@ -57,22 +57,22 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
 
     @Nullable
-    private String name;
-    
+    private final String name;
+
     @Nullable
     private Class<?> type;
-    
+
     @Nullable
     private Class<?> componentType;
-    
+
     private Class<?> keyType;
-    
+
     private boolean collection;
-    
+
     private MappedClass declaringClass;
-    
+
     private TypeVariable<?>[] typeVariables = new TypeVariable<?>[4];
-    
+
     private Map<Class<? extends Annotation>, Annotation> annotations =
         new HashMap<Class<? extends Annotation>, Annotation>();
 
@@ -87,11 +87,11 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             this.annotations.put(aclass, annotation);
         }
     }
-    
+
     public MappedClass getDeclaringClass() {
         return declaringClass;
     }
-    
+
     static Class<?> getUpper(@Nullable Class<?> clazz, Class<?> other) {
         if (clazz == null) {
             return other;
@@ -102,9 +102,9 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         }
         return clazz;
     }
-    
+
     @SuppressWarnings("unchecked")
-    
+
     void resolve(@Nullable MappedClass owner) {
         if (this.type == null) {
             this.type = getTypeInternal();
@@ -115,7 +115,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         }
 
         this.collection = Collection.class.isAssignableFrom(type);
-        
+
         ComponentType ctypeAnno = getAnnotation(ComponentType.class);
         if (ctypeAnno != null) {
             this.componentType = ctypeAnno.value();
@@ -132,13 +132,13 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         } else {
             this.componentType = null;
         }
-        
+
         Properties propertiesAnno = getAnnotation(Properties.class);
         if (propertiesAnno != null) {
             includeMapped = propertiesAnno.includeMapped();
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Nullable
     public Class<? extends Collection> getCollectionType() {
@@ -147,12 +147,12 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         } else {
             return null;
         }
-    } 
+    }
 
     @Nullable
     @SuppressWarnings("unchecked")
     private Class<? extends Collection> getConcreteCollectionType(Class<?> collectionType) {
-        
+
         if (collectionType.isInterface()) {
             if (List.class.isAssignableFrom(collectionType)) {
                 return ArrayList.class;
@@ -169,15 +169,15 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         else if (Collection.class.isAssignableFrom(collectionType)) {
             return (Class<? extends Collection>) collectionType;
         }
-        
+
         return null;
     }
-    
+
     @Nullable
     public Class<?> getComponentType() {
         return componentType;
     }
-    
+
     public Class<?> getTargetType() {
         Class<?> clazz = getComponentType();
         if (clazz == null) {
@@ -206,7 +206,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         }
         return rs;
     }
-    
+
     public boolean isAnnotationPresent(Class<? extends Annotation> atype) {
         return annotations.containsKey(atype);
     }
@@ -223,7 +223,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             }
             if (gtype instanceof Class) {
                 return (Class) gtype;
-            } else if (gtype instanceof WildcardType) { 
+            } else if (gtype instanceof WildcardType) {
                 return getGenericClass((WildcardType) gtype);
             } else if (gtype instanceof TypeVariable) {
                 return getGenericClass(owner, typeVariableIndex, (TypeVariable) gtype);
@@ -241,7 +241,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         Type upperBound = null;
         if (owner == null || declaringClass.equals(owner)) {
             typeVariables[typeVariableIndex] = type;
-            upperBound = typeVariables[typeVariableIndex].getBounds()[0]; 
+            upperBound = typeVariables[typeVariableIndex].getBounds()[0];
         } else if (typeVariables[typeVariableIndex] != null) {
             Type genericType = owner.resolveTypeVariable(typeVariables[typeVariableIndex].getName(), declaringClass);
             if (genericType instanceof TypeVariable) {
@@ -251,7 +251,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             } else {
                 typeVariables[typeVariableIndex] = null;
                 upperBound = genericType;
-            } 
+            }
             declaringClass = owner;
         }
         return getGenericClass(upperBound, -1, owner, -1);
@@ -268,48 +268,52 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             return Object.class;
         }
     }
-    
+
+    public Map<Class<? extends Annotation>, Annotation> getAnnotations() {
+        return Collections.unmodifiableMap(annotations);
+    }
+
     @SuppressWarnings("unchecked")
     @Nullable
     public <T extends Annotation> T getAnnotation(Class<T> atype) {
         return (T) annotations.get(atype);
     }
-    
+
     @Nullable
     public UID getKeyPredicate() {
-        MapElements mapKey = getAnnotation(MapElements.class);        
+        MapElements mapKey = getAnnotation(MapElements.class);
         if (mapKey != null) {
-            Predicate predicate = mapKey.key(); 
+            Predicate predicate = mapKey.key();
             String parentNs = getParentNs(mapKey, getMember());
             return UID.create(parentNs, predicate.ns(), predicate.ln(), null);
         } else {
             return null;
         }
     }
-    
+
     public Class<?> getKeyType() {
         return keyType;
     }
-    
+
     protected abstract  M getMember();
-    
+
     public String getName() {
         return name;
     }
-    
+
     public Class<?> getType() {
         return type;
     }
-    
+
     protected abstract Class<?> getTypeInternal();
-    
+
     protected abstract Type getGenericType();
-    
+
     public abstract Object getValue(BeanMap instance);
-    
+
     @Nullable
     public UID getValuePredicate() {
-        MapElements mapKey = getAnnotation(MapElements.class);        
+        MapElements mapKey = getAnnotation(MapElements.class);
         if (mapKey != null) {
             Predicate predicate = mapKey.value();
             try {
@@ -322,13 +326,13 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             return null;
         }
     }
-    
+
     @Nullable
     public IDType getIDType() {
         Id annotation = getAnnotation(Id.class);
         return annotation != null ? annotation.value() : null;
     }
-    
+
     public boolean isAnnotatedProperty() {
         if (!annotations.isEmpty()) {
             for (Class<? extends Annotation> anno : MAPPING_ANNOTATIONS) {
@@ -339,36 +343,36 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         }
         return false;
     }
-    
+
     public boolean isCollection() {
         return collection;
     }
-    
+
     public boolean isIdReference() {
         return isAnnotationPresent(Id.class);
     }
-    
+
     public boolean isList() {
-        Container container = (Container) getAnnotation(Container.class);
+        Container container = getAnnotation(Container.class);
         if (container != null) {
             return ContainerType.LIST == container.value();
         }else {
             return List.class.isAssignableFrom(getType());
         }
     }
-    
+
     public boolean isLocalized() {
         return isAnnotationPresent(Localized.class);
     }
-    
+
     public boolean isInjection() {
         return isAnnotationPresent(InjectService.class);
     }
-        
+
     public boolean isMixin() {
         return isAnnotationPresent(Mixin.class);
     }
-    
+
     public boolean isMap() {
         return Map.class.isAssignableFrom(getType());
     }
@@ -376,27 +380,27 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     public boolean isDynamic() {
         return isAnnotationPresent(Properties.class);
     }
-    
+
 //    public boolean isPolymorphic() {
 //        return MappedClass.isPolymorphic(getTargetType());
 //    }
-    
+
     public boolean isConstructorParameter() {
         return getMember() instanceof Constructor<?>;
     }
-    
+
     public boolean isSet() {
         return Set.class.isAssignableFrom(getType());
     }
-    
+
     public boolean isSortedSet() {
         return SortedSet.class.isAssignableFrom(getType());
     }
-    
+
     public boolean isRequired() {
         return isAnnotationPresent(Required.class);
     }
-    
+
     public abstract boolean isVirtual();
 
     public abstract void setValue(BeanMap beanWrapper, @Nullable Object value);
@@ -405,12 +409,13 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         if (isMixin()) {
             Member member = getMember();
             if (getType().isAssignableFrom(member.getDeclaringClass())) {
-                throw new IllegalArgumentException("Illegal mixin reference to oneself: " + 
+                throw new IllegalArgumentException("Illegal mixin reference to oneself: " +
                         toString());
             }
         }
     }
-    
+
+    @Override
     public String toString() {
         return getMember().toString();
     }
@@ -453,6 +458,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return isList() || ContainerType.SEQ.equals(getContainerType());
     }
 
+    @Override
     public Object clone() {
         try {
             MappedProperty<?> clone = (MappedProperty<?>) super.clone();
@@ -472,11 +478,11 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     public boolean isIncludeMapped() {
         return includeMapped;
     }
-    
+
     public boolean isDynamicCollection() {
         return Collection.class.isAssignableFrom(componentType);
     }
-    
+
     @Nullable
     @SuppressWarnings("unchecked")
     public Class<? extends Collection> getDynamicCollectionType() {
@@ -487,11 +493,11 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             return null;
         }
     }
-    
+
     @Nullable
     public Class<?> getDynamicCollectionComponentType() {
         Type genericType = getGenericType();
-        
+
         if (genericType instanceof ParameterizedType) {
             ParameterizedType parameterizedComponentType = (ParameterizedType) ((ParameterizedType) genericType).getActualTypeArguments()[1];
             return (Class<?>) parameterizedComponentType.getActualTypeArguments()[0];
