@@ -53,8 +53,6 @@ public class RDBConnection implements RDFConnection{
 
     private static final Timestamp DEFAULT_TIMESTAMP = new Timestamp(0);
 
-    public static final Expression<Integer> one = NumberTemplate.create(Integer.class,"1");
-
     public static final QSymbol con = new QSymbol("context");
 
     public static final QSymbol obj = new QSymbol("object");
@@ -271,7 +269,7 @@ public class RDBConnection implements RDFConnection{
 
         // add dummy projection if none is specified
         if (exprs.isEmpty()){
-            exprs.add(one);
+            exprs.add(NumberTemplate.one);
         }
 
         Expression<STMT> stmt = new FactoryExpression<STMT>(){
