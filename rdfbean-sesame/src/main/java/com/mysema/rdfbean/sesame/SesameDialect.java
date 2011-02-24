@@ -92,6 +92,7 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
         if (bid == null) {
             bid = new BID(bnode.getID());
             bidCache.put(bnode, bid);
+            bnodeCache.put(bid, bnode);
         }
         return bid;
     }
@@ -102,6 +103,7 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
         if (bnode == null){
             bnode = vf.createBNode(bid.getId());
             bnodeCache.put(bid, bnode);
+            bidCache.put(bnode, bid);
         }
         return bnode;
     }
