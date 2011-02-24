@@ -9,19 +9,20 @@ import org.apache.commons.lang.ObjectUtils;
 import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
-import com.mysema.query.types.PredicateOperation;
 import com.mysema.query.types.ToStringVisitor;
 import com.mysema.query.types.Visitor;
+import com.mysema.query.types.expr.BooleanExpression;
+import com.mysema.query.types.expr.BooleanOperation;
 
 public class OptionalBlock implements ContainerBlock{
-    
+
     private static final long serialVersionUID = 7345721586959129539L;
-    
+
     private final List<Block> blocks;
-    
+
     @Nullable
     private final Predicate filters;
-    
+
     public OptionalBlock(List<Block> blocks,  Predicate... filters) {
         this.blocks = blocks;
         this.filters = ExpressionUtils.allOf(filters);
@@ -36,8 +37,8 @@ public class OptionalBlock implements ContainerBlock{
     @Override
     public <R, C> R accept(Visitor<R, C> v, C context) {
         if (v instanceof RDFVisitor){
-            return (R)((RDFVisitor)v).visit(this, context);    
-        }else if (v instanceof ToStringVisitor){    
+            return (R)((RDFVisitor)v).visit(this, context);
+        }else if (v instanceof ToStringVisitor){
             return (R)toString();
         }else{
             throw new IllegalArgumentException(v.toString());
@@ -48,7 +49,7 @@ public class OptionalBlock implements ContainerBlock{
     public Class<? extends Boolean> getType() {
         return Boolean.class;
     }
-    
+
     public List<Block> getBlocks() {
         return blocks;
     }
@@ -57,17 +58,17 @@ public class OptionalBlock implements ContainerBlock{
     public Predicate getFilters() {
         return filters;
     }
-    
+
     @Override
-    public Predicate exists(){
-        return new PredicateOperation(Ops.EXISTS, this);
+    public BooleanExpression exists(){
+        return BooleanOperation.create(Ops.EXISTS, this);
     }
-    
+
     @Override
     public int hashCode(){
         return blocks.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object o){
         if (o == this){
@@ -79,7 +80,7 @@ public class OptionalBlock implements ContainerBlock{
             return false;
         }
     }
-    
+
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();
@@ -93,5 +94,5 @@ public class OptionalBlock implements ContainerBlock{
         builder.append(" }");
         return builder.toString();
     }
-    
+
 }

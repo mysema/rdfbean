@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.model;
 
 import com.mysema.query.types.Predicate;
+import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @author tiwe
@@ -8,6 +9,6 @@ import com.mysema.query.types.Predicate;
  */
 public interface Block extends Predicate{
 
-    Predicate exists();
-    
+    BooleanExpression exists();
+
 }
