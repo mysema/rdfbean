@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.tapestry;
 
@@ -27,34 +27,33 @@ import com.mysema.rdfbean.object.SessionFactory;
 
 /**
  * BeanGridDataSource provides an implementation of the GridDataSource interface for RDFBean
- * 
+ *
  * @author tiwe
- * @version $Id$
  */
 public class BeanGridDataSource<T> implements GridDataSource {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(BeanGridDataSource.class);
 
     private final SessionFactory sessionFactory;
 
     private final Class<T> entityType;
-    
+
     private final PathBuilder<T> entityPath;
 
     private int startIndex;
 
     private List<T> preparedResults;
-    
+
     @Nullable
     private final Predicate conditions;
-    
+
     private final OrderSpecifier<?> defaultOrder;
-    
+
     private final boolean caseSensitive;
 
     /**
      * Create a new BeanGridDataSource instance with no filter conditions
-     * 
+     *
      * @param sessionFactory
      * @param entity root entity of the query
      * @param defaultOrder default order for queries, if no order is specified
@@ -63,10 +62,10 @@ public class BeanGridDataSource<T> implements GridDataSource {
     public BeanGridDataSource(SessionFactory sessionFactory, EntityPath<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive) {
         this(sessionFactory, entity, defaultOrder, caseSensitive, null);
     }
-    
+
     /**
      * Create a new BeanGridDataSource instance with filter conditions
-     * 
+     *
      * @param sessionFactory
      * @param entity root entity of the query
      * @param defaultOrder default order for queries, if no order is specified
@@ -82,7 +81,7 @@ public class BeanGridDataSource<T> implements GridDataSource {
         this.conditions = conditions;
         this.caseSensitive = caseSensitive;
     }
-    
+
     @Override
     public int getAvailableRows() {
         return sessionFactory.execute(new SessionCallback<Integer>(){
@@ -93,31 +92,31 @@ public class BeanGridDataSource<T> implements GridDataSource {
                     beanQuery.where(conditions);
                 }
                 return (int) beanQuery.count();
-            }            
+            }
         });
     }
 
     @Override
     public void prepare(final int start, final int end, final List<SortConstraint> sortConstraints) {
-        Assert.notNull(sortConstraints,"sortContraints");   
+        Assert.notNull(sortConstraints,"sortContraints");
         sessionFactory.execute(new SessionCallback<Void>(){
             @Override
             public Void doInSession(Session session) {
                 prepare(session, start, end, sortConstraints);
                 return null;
             }
-            
+
         });
     }
-    
+
     @SuppressWarnings("unchecked")
     private void prepare(Session session, int startIndex, int endIndex, List<SortConstraint> sortConstraints) {
         BeanQuery beanQuery = session.from(entityPath);
         beanQuery.offset(startIndex);
-        beanQuery.limit(endIndex - startIndex + 1);        
+        beanQuery.limit(endIndex - startIndex + 1);
         if (sortConstraints.isEmpty()){
             beanQuery.orderBy(defaultOrder);
-        }        
+        }
         for (SortConstraint constraint : sortConstraints) {
             String propertyName = constraint.getPropertyModel().getPropertyName();
             Class<? extends Comparable<?>> propertyType = constraint.getPropertyModel().getPropertyType();
@@ -127,9 +126,9 @@ public class BeanGridDataSource<T> implements GridDataSource {
             }else{
                 propertyPath = entityPath.getComparable(propertyName, propertyType);
             }
-            
+
             switch (constraint.getColumnSort()) {
-                case ASCENDING:  beanQuery.orderBy(propertyPath.asc()); break; 
+                case ASCENDING:  beanQuery.orderBy(propertyPath.asc()); break;
                 case DESCENDING: beanQuery.orderBy(propertyPath.desc()); break;
             }
         }
@@ -139,12 +138,12 @@ public class BeanGridDataSource<T> implements GridDataSource {
         this.startIndex = startIndex;
         preparedResults = beanQuery.list(entityPath);
     }
-    
+
     @Override
     public Object getRowValue(int index) {
-        index = index - startIndex; 
+        index = index - startIndex;
         if (index < preparedResults.size()){
-            return preparedResults.get(index);    
+            return preparedResults.get(index);
         }else{
             logger.error("Invalid index " + index + " (size " + preparedResults.size() + ")" );
             return null;

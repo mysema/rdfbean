@@ -13,7 +13,6 @@ import com.mysema.rdfbean.object.SimpleSessionContext;
 
 /**
  * @author tiwe
- *
  */
 public final class TransactionalMethodAdvice implements MethodAdvice {
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.tapestry.services;
 
@@ -22,32 +22,26 @@ import com.mysema.rdfbean.object.MappedPath;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 
-/**
- * SeedEntityImpl provides
- *
- * @author tiwe
- * @version $Id$
- */
 @EagerLoad
 public class SeedEntityImpl implements SeedEntity{
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SeedEntityImpl.class);
-    
+
     private final Map<Object,Object> persisted;
-    
+
     public SeedEntityImpl(
-            Configuration configuration, 
-            SessionFactory sessionFactory, 
+            Configuration configuration,
+            SessionFactory sessionFactory,
             List<Object> entities) throws IOException {
         this.persisted = new HashMap<Object,Object>(entities.size());
-        Session session = sessionFactory.openSession();        
-        RDFBeanTransaction tx = session.beginTransaction();        
+        Session session = sessionFactory.openSession();
+        RDFBeanTransaction tx = session.beginTransaction();
         try{
             for (Object entity : entities){
                 replaceReferences(configuration, entity);
                 Object original = session.getByExample(entity);
                 if (original == null){
-                    session.save(entity);    
+                    session.save(entity);
                 }else{
                     persisted.put(entity, original);
                 }
@@ -59,12 +53,12 @@ public class SeedEntityImpl implements SeedEntity{
         }finally{
             session.close();
         }
-        
+
     }
 
     /**
      * Replace the references of the given entity with persisted ones
-     * 
+     *
      * @param entity
      */
     private void replaceReferences(Configuration configuration, Object entity) {
@@ -76,8 +70,8 @@ public class SeedEntityImpl implements SeedEntity{
                 if (value != null && persisted.containsKey(value)){
                     value = persisted.get(value);
                     mappedPath.getMappedProperty().setValue(beanMap, value);
-                }    
-            }            
+                }
+            }
         }
     }
 
