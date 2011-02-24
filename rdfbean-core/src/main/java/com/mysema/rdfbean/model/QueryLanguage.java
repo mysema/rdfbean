@@ -23,12 +23,8 @@ public final class QueryLanguage<D,Q> {
     public static final QueryLanguage<QueryMetadata, GraphQuery> GRAPH = create("GRAPH", QueryMetadata.class, GraphQuery.class);
     
     public static final QueryLanguage<QueryMetadata, TupleQuery> TUPLE = create("TUPLE", QueryMetadata.class, TupleQuery.class);
-       
-    public static <Q> QueryLanguage<Void,Q> create(String name, Class<Q> queryType){
-        return new QueryLanguage<Void,Q>(name, Void.class, queryType);
-    }
     
-    public static <D,Q> QueryLanguage<D,Q> create(String name, Class<D> defType, Class<Q> queryType){
+    private static <D,Q> QueryLanguage<D,Q> create(String name, Class<D> defType, Class<Q> queryType){
         return new QueryLanguage<D,Q>(name, defType, queryType);
     }
     
