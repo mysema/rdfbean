@@ -317,7 +317,7 @@ public class JavaBeanExporter {
         Collection<RDFProperty> rdfProperties = Collections.emptySet();
         if (restriction.getOnProperty() != null){
             rdfProperties = Collections.singleton(restriction.getOnProperty());
-        }else if (!restriction.getOnProperties().isEmpty()){
+        }else if (restriction.getOnProperties() != null && !restriction.getOnProperties().isEmpty()){
             rdfProperties = restriction.getOnProperties();
         }
 
