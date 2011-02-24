@@ -3,15 +3,9 @@ package com.mysema.rdfbean.virtuoso;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.mysema.rdfbean.model.Blocks;
-import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.NODE;
-import com.mysema.rdfbean.model.QNODE;
-import com.mysema.rdfbean.model.RDF;
-import com.mysema.rdfbean.model.RDFQuery;
-import com.mysema.rdfbean.model.RDFQueryImpl;
-import com.mysema.rdfbean.model.RDFS;
-import com.mysema.rdfbean.model.UID;
+import com.mysema.commons.lang.CloseableIterator;
+import com.mysema.rdfbean.TEST;
+import com.mysema.rdfbean.model.*;
 
 public class GraphQueryTest extends AbstractConnectionTest{
     
@@ -24,6 +18,23 @@ public class GraphQueryTest extends AbstractConnectionTest{
     private RDFQuery query(){
         return new RDFQueryImpl(connection);
     }    
+    
+    @Test
+    public void Pattern_With_Parameters(){
+        CloseableIterator<STMT> stmts = query()
+            .where(Blocks.SPOC)
+            .set(QNODE.s, new UID(TEST.NS))
+            .limit(1)
+            .construct(Blocks.SPO);
+        try{
+            while (stmts.hasNext()){
+                System.err.println(stmts.next());
+            }    
+        }finally{
+            stmts.close();
+        }
+        
+    }
     
     @Test
     public void Patterns(){

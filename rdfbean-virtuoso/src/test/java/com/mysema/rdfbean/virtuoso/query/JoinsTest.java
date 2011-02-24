@@ -9,6 +9,7 @@ import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -22,6 +23,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
 @SessionConfig({User.class, Department.class, Company.class})
+@Ignore
 public class JoinsTest extends AbstractConnectionTest implements UserDepartmentCompanyDomain{
     
     private User u = Alias.alias(User.class);
