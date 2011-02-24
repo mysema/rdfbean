@@ -36,11 +36,18 @@ public class GraphResultIterator implements CloseableIterator<STMT> {
     @Nullable
     private Boolean next = null;
     
-    public GraphResultIterator(Statement stmt, ResultSet rs, String query, Converter converter) {
-        this.stmt = stmt;
-        this.rs = rs;
-        this.query = query;
-        this.converter = converter;
+    private final boolean hasContext;
+    
+    public GraphResultIterator(Statement stmt, ResultSet rs, String query, Converter converter) {        
+        try {
+            this.stmt = stmt;
+            this.rs = rs;
+            this.hasContext = rs.getMetaData().getColumnCount() > 3;
+            this.query = query;
+            this.converter = converter;
+        } catch (SQLException e) {
+            throw new QueryException(e);
+        }                
     }
 
     @Override
@@ -70,7 +77,13 @@ public class GraphResultIterator implements CloseableIterator<STMT> {
                 ID subject = (ID) converter.toNODE(rs.getObject(1));
                 UID predicate = (UID)converter.toNODE(rs.getObject(2));
                 NODE object = converter.toNODE(rs.getObject(3));
-                return new STMT(subject, predicate, object);
+                if (hasContext){
+                    UID context = (UID) converter.toNODE(rs.getObject(4));
+                    return new STMT(subject, predicate, object, context);                        
+                }else{
+                    return new STMT(subject, predicate, object);
+                }
+                
             } catch (SQLException e) {
                 close();
                 logger.warn("Caught exception for query " + query, e);
