@@ -14,6 +14,8 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.mutable.MutableInt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
@@ -41,6 +43,8 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
  */
 public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         BeanQuery, Closeable {
+
+    private static final Logger logger = LoggerFactory.getLogger(BeanQueryImpl.class);
 
     private final Session session;
 
@@ -197,10 +201,11 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     @SuppressWarnings("unchecked")
     @Override
     public <RT> List<RT> list(Expression<RT> projection){
-        if (!converterRegistry.supports(projection.getType()) 
-                && !(projection instanceof FactoryExpression<?>)){ 
+        if (!converterRegistry.supports(projection.getType())
+                && !(projection instanceof FactoryExpression<?>)){
             // bulk load of resources
             queryMixin.addToProjection(projection);
+            long start = System.currentTimeMillis();
             TupleQuery query = createTupleQuery(false);
             CloseableIterator<Map<String, NODE>> results = query.getTuples();
             List<ID> ids = new ArrayList<ID>();
@@ -216,7 +221,20 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
             }finally{
                 results.close();
             }
-            return (List)session.getAll(projection.getType(), ids.toArray(new ID[ids.size()]));
+
+            long duration = System.currentTimeMillis() - start;
+            if (logger.isWarnEnabled() && duration > 500){
+                logger.warn("list ids of " + projection + " took " + duration + "ms");
+            }
+
+            List<RT> rv = (List)session.getAll(projection.getType(), ids.toArray(new ID[ids.size()]));
+
+            duration = System.currentTimeMillis() - start;
+            if (logger.isWarnEnabled() && duration > 500){
+                logger.warn("list of " + projection + " took " + duration + "ms");
+            }
+            return rv;
+
         }else{
             return super.list(projection);
         }
@@ -267,7 +285,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 md.getModifiers().getOffset(),
                 total);
     }
-    
+
     @SuppressWarnings("unchecked")
     private <T> Expression<T> normalize(Expression<T> expr){
         if (expr instanceof FactoryExpression<?>){
@@ -276,5 +294,5 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
             return expr;
         }
     }
-    
+
 }
