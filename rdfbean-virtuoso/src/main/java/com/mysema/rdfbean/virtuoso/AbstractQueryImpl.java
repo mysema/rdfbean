@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,14 +98,14 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
     }
 
     static String normalize(String query, Map<String, NODE> bindings, List<NODE> nodes) {
-        String queryLower = query.toLowerCase(Locale.ENGLISH);
+//        String queryLower = query.toLowerCase(Locale.ENGLISH);
         Matcher matcher = VARIABLE.matcher(query);
         StringBuffer buffer = new StringBuffer();
         while (matcher.find()){
             String variable = matcher.group().substring(1);
             String replacement = matcher.group();
             boolean inFilter = inFilter(query, matcher);
-            if (bindings.containsKey(variable) && queryLower.substring(0, matcher.start()).contains("where")){
+            if (bindings.containsKey(variable)){
                 NODE node = bindings.get(variable);
                 nodes.add(node);
                 if (node.isResource()){
@@ -142,8 +141,11 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
                     return true;
                 }
             }
+            return false;
+        }else{
+            return true;    
         }
-        return false;
+        
     }
 
 }

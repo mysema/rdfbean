@@ -87,6 +87,11 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
                         tuples.put(variable, bindings.get(variable));
                     }                    
                 }
+//                for (Map.Entry<String, NODE> entry : bindings.entrySet()){
+//                    if (!tuples.containsKey(entry.getKey())){
+//                        tuples.
+//                    }
+//                }
                 return tuples;
             } catch (SQLException e) {
                 close();
