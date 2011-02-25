@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -23,13 +23,20 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * MappedClassFactory provides a factory for MappedClass creation
- * 
+ *
  * @author tiwe
  * @version $Id$
  */
 public class MappedClassFactory {
 
     private final Map<Class<?>, MappedClass> mappedClasses = new LinkedHashMap<Class<?>, MappedClass>();
+
+    @Nullable
+    private final String defaultNamespace;
+
+    public MappedClassFactory(@Nullable String defaultNamespace) {
+        this.defaultNamespace = defaultNamespace;
+    }
 
     private void assignConstructor(Class<?> clazz, MappedClass mappedClass) {
         Constructor<?>[] constructors = clazz.getDeclaredConstructors();
@@ -157,25 +164,30 @@ public class MappedClassFactory {
         }
         return mappedClass;
     }
-    
+
     @Nullable
-    private static UID getUID(Class<?> clazz) {
+    private UID getUID(Class<?> clazz) {
         ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
         if (cmap != null) {
-            if (StringUtils.isNotEmpty(cmap.ln())) {
-                return new UID(cmap.ns(), cmap.ln());
-            } else if (StringUtils.isNotEmpty(cmap.ns())) {
-                return new UID(cmap.ns(), clazz.getSimpleName());
-            } else {
-                // if ClassMapping is used, then either ns or ln should be given, eitherwise the ClassMapping is incomplete
-                throw new IllegalArgumentException("Both ns and ln are empty for " + clazz.getName());
+            String ns = cmap.ns();
+            if (StringUtils.isEmpty(ns)){
+                ns = defaultNamespace;
+            }
+            String ln = cmap.ln();
+            if (StringUtils.isEmpty(ln)){
+                ln = clazz.getSimpleName();
+            }
+            if (ns != null){
+                return new UID(ns, ln);
+            }else{
+                throw new IllegalArgumentException("Namespace needs to be declared in ClassMapping or configuration.");
             }
         } else {
             // NOTE : might be used for autowire etc, doesn't need ClassMapping for such cases
             return null;
         }
     }
-    
+
     private List<MappedClass> getMappedSuperClasses(Class<?> clazz) {
         Class<?> superClass = clazz.getSuperclass();
         Class<?>[] ifaces = clazz.getInterfaces();
@@ -194,11 +206,11 @@ public class MappedClassFactory {
         }
         return mappedSuperClasses;
     }
-    
+
     private static boolean isProcessedClass(Class<?> clazz) {
         Package pack = clazz.getPackage();
         return pack == null || !pack.getName().startsWith("java");
     }
-    
+
 
 }

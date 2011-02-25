@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -30,14 +30,14 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 /**
  * Default implementation of the Configuration interface
- * 
+ *
  * @author sasa
- * 
+ *
  */
 public final class DefaultConfiguration implements Configuration {
-    
+
     private static final Pattern jarUrlSeparator = Pattern.compile("!");
-    
+
     private static final Set<String> buildinNamespaces = new HashSet<String>();
 
     static {
@@ -49,24 +49,42 @@ public final class DefaultConfiguration implements Configuration {
     }
 
     private final Set<MappedClass> mappedClasses = new LinkedHashSet<MappedClass>();
-    
+
     private final Set<Class<?>> polymorphicClasses = new HashSet<Class<?>>();
 
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
-    
-    private final MappedClassFactory mappedClassFactory = new MappedClassFactory();
-    
+
+    private final MappedClassFactory mappedClassFactory;
+
     private final Set<String> restrictedResources = new HashSet<String>(buildinNamespaces);
-    
+
     private final Map<UID, List<MappedClass>> type2classes = new HashMap<UID, List<MappedClass>>();
-    
-    public DefaultConfiguration() {}
-        
+
+    public DefaultConfiguration(String defaultNamespace) {
+        this.mappedClassFactory = new MappedClassFactory(defaultNamespace);
+    }
+
+    public DefaultConfiguration() {
+        this((String)null);
+    }
+
     public DefaultConfiguration(Class<?>... classes) {
+        this((String)null);
         addClasses(classes);
     }
-    
+
     public DefaultConfiguration(Package... packages) {
+        this((String)null);
+        addPackages(packages);
+    }
+
+    public DefaultConfiguration(String defaultNamespace, Class<?>... classes) {
+        this(defaultNamespace);
+        addClasses(classes);
+    }
+
+    public DefaultConfiguration(String defaultNamespace, Package... packages) {
+        this(defaultNamespace);
         addPackages(packages);
     }
 
@@ -79,9 +97,9 @@ public final class DefaultConfiguration implements Configuration {
                     if (classList == null) {
                         classList = new ArrayList<MappedClass>();
                         type2classes.put(mappedClass.getUID(), classList);
-                    }                    
-                    classList.add(mappedClass);                    
-                }   
+                    }
+                    classList.add(mappedClass);
+                }
                 for (MappedClass superClass : mappedClass.getMappedSuperClasses()){
                     polymorphicClasses.add(superClass.getJavaClass());
                 }
@@ -107,12 +125,12 @@ public final class DefaultConfiguration implements Configuration {
     public boolean allowCreate(Class<?> clazz) {
         return true;
     }
-    
+
     public boolean allowRead(MappedPath path) {
         // TODO filter unmapped types?
         return true;
     }
-    
+
     @Override
     @Nullable
     public UID createURI(Object instance) {
@@ -138,7 +156,7 @@ public final class DefaultConfiguration implements Configuration {
     public Set<MappedClass> getMappedClasses() {
         return mappedClasses;
     }
-    
+
     public List<MappedClass> getMappedClasses(UID uid) {
         return type2classes.get(Assert.notNull(uid,"uid"));
     }
@@ -146,16 +164,16 @@ public final class DefaultConfiguration implements Configuration {
     public boolean isMapped(Class<?> clazz){
         return clazz.getAnnotation(ClassMapping.class) != null;
     }
-    
+
     public boolean isPolymorphic(Class<?> clazz){
         return polymorphicClasses.contains(clazz);
     }
-    
+
     @Override
     public boolean isRestricted(UID uid) {
         return restrictedResources.contains(uid.getId()) || restrictedResources.contains(uid.ns());
     }
-    
+
     public void scanPackages(Package... packages){
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         for (Package pkg : packages){
@@ -188,9 +206,9 @@ public final class DefaultConfiguration implements Configuration {
                         String className = entry.getName().substring(0, entry.getName().length()-6).replace('/', '.');
                         classes.add(Class.forName(className));
 
-                    }                    
+                    }
                 }
-                
+
             }else if (url.getProtocol().equals("file")){
                 Deque<File> files = new ArrayDeque<File>();
                 String packagePath;
@@ -210,14 +228,14 @@ public final class DefaultConfiguration implements Configuration {
                         }else if (child.isDirectory()){
                             files.add(child);
                         }
-                    }    
-                }                
-                
+                    }
+                }
+
             }else{
-                throw new IllegalArgumentException("Illegal url : " + url); 
+                throw new IllegalArgumentException("Illegal url : " + url);
             }
         }
         return classes;
     }
-    
+
 }

@@ -1,13 +1,13 @@
 package com.mysema.rdfbean.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 
 import org.junit.Test;
 
 public class MiniConnectionTest {
-
 
     @Test
     public void Update_with_nulls(){
@@ -16,7 +16,7 @@ public class MiniConnectionTest {
         conn.update(null, Collections.<STMT>emptySet());
         conn.update(null, null);
     }
-    
+
     @Test
     public void Remove(){
         MiniConnection conn = new MiniRepository().openConnection();
