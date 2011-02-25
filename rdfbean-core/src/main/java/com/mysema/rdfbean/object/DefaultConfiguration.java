@@ -60,7 +60,7 @@ public final class DefaultConfiguration implements Configuration {
 
     private final Map<UID, List<MappedClass>> type2classes = new HashMap<UID, List<MappedClass>>();
 
-    public DefaultConfiguration(String defaultNamespace) {
+    public DefaultConfiguration(@Nullable String defaultNamespace) {
         this.mappedClassFactory = new MappedClassFactory(defaultNamespace);
     }
 
@@ -78,12 +78,12 @@ public final class DefaultConfiguration implements Configuration {
         addPackages(packages);
     }
 
-    public DefaultConfiguration(String defaultNamespace, Class<?>... classes) {
+    public DefaultConfiguration(@Nullable String defaultNamespace, Class<?>... classes) {
         this(defaultNamespace);
         addClasses(classes);
     }
 
-    public DefaultConfiguration(String defaultNamespace, Package... packages) {
+    public DefaultConfiguration(@Nullable String defaultNamespace, Package... packages) {
         this(defaultNamespace);
         addPackages(packages);
     }

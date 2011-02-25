@@ -51,7 +51,7 @@ public class QLIT extends QNODE<LIT>{
     }
 
     public BooleanExpression lt(LIT val){
-        if (NUMERIC.contains(val)){
+        if (NUMERIC.contains(val.getDatatype())){
             return BooleanOperation.create(Ops.LT,  this, literal(val));
         }else{
             return BooleanOperation.create(Ops.BEFORE,  this, literal(val));
@@ -59,7 +59,7 @@ public class QLIT extends QNODE<LIT>{
     }
 
     public BooleanExpression gt(LIT val){
-        if (NUMERIC.contains(val)){
+        if (NUMERIC.contains(val.getDatatype())){
             return BooleanOperation.create(Ops.GT,  this, literal(val));
         }else{
             return BooleanOperation.create(Ops.AFTER,  this, literal(val));
@@ -67,7 +67,7 @@ public class QLIT extends QNODE<LIT>{
     }
 
     public BooleanExpression loe(LIT val){
-        if (NUMERIC.contains(val)){
+        if (NUMERIC.contains(val.getDatatype())){
             return BooleanOperation.create(Ops.LOE, this, literal(val));
         }else{
             return BooleanOperation.create(Ops.BOE, this, literal(val));
@@ -75,7 +75,7 @@ public class QLIT extends QNODE<LIT>{
     }
 
     public BooleanExpression goe(LIT val){
-        if (NUMERIC.contains(val)){
+        if (NUMERIC.contains(val.getDatatype())){
             return BooleanOperation.create(Ops.GOE, this, literal(val));
         }else{
             return BooleanOperation.create(Ops.AOE, this, literal(val));
