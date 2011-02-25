@@ -398,7 +398,6 @@ public class RDBConnection implements RDFConnection{
     private <C extends StoreClause<C>> C populate(C clause, QSymbol symbol, Long nodeId, NODE node){
         long datatypeId = defaultDatatypeId;
         int langId = defaultLocaleId;
-        long intVal = 0l;
         double floatVal = 0.0;
         Timestamp datetimeVal = DEFAULT_TIMESTAMP;
 
@@ -412,7 +411,7 @@ public class RDBConnection implements RDFConnection{
             if (literal.getLang() != null){
                 langId = getLangId(literal.getLang());
             }else if (Constants.integerTypes.contains(literal.getDatatype())){
-                intVal = Long.valueOf(literal.getValue());
+                floatVal = Double.valueOf(literal.getValue());
             }else if (Constants.decimalTypes.contains(literal.getDatatype())){
                 floatVal = Double.valueOf(literal.getValue());
             }else if (Constants.dateTypes.contains(literal.getDatatype())){
@@ -424,7 +423,6 @@ public class RDBConnection implements RDFConnection{
 
         clause.set(symbol.datatype, datatypeId);
         clause.set(symbol.lang, langId);
-        clause.set(symbol.intval, intVal);
         clause.set(symbol.floatval, floatVal);
         clause.set(symbol.datetimeval, datetimeVal);
         return clause;

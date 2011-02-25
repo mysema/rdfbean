@@ -274,7 +274,6 @@ public class RDBRepository implements Repository{
               .column("LEXICAL", String.class).size(1024).notNull()
               .column("DATATYPE", Long.class)
               .column("LANG", Integer.class)
-              .column("INTVAL", Long.class)
               .column("FLOATVAL", Double.class)
               .column("DATETIMEVAL", Timestamp.class)
               .primaryKey("PK_SYMBOL", "ID")

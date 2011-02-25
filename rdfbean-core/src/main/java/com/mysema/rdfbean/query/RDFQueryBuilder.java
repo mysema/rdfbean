@@ -138,9 +138,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                         projection.add(transform(e, filters));
                     }
                 }else{
-                    projection.add(transform(expr, filters));    
+                    projection.add(transform(expr, filters));
                 }
-                
+
             }
         }
 
@@ -150,7 +150,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         if (metadata.isDistinct()){
             query.distinct();
         }
-        
+
         for (Map.Entry<ParamExpression<?>, Object> entry : params.entrySet()){
             query.set((Param)entry.getKey(), entry.getValue());
         }
@@ -441,9 +441,14 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 }
 
             }else if (expr.getOperator() == Ops.BETWEEN){
+                Operator<Boolean> first = Ops.GOE, second = Ops.LOE;
+                if (!Number.class.isAssignableFrom(expr.getArg(0).getType())){
+                    first = Ops.AOE;
+                    second = Ops.BOE;
+                }
                 expr = (Operation<?>) ExpressionUtils.and(
-                        new PredicateOperation(Ops.GOE, expr.getArg(0), expr.getArg(1)),
-                        new PredicateOperation(Ops.LOE, expr.getArg(0), expr.getArg(2)));
+                        new PredicateOperation(first, expr.getArg(0), expr.getArg(1)),
+                        new PredicateOperation(second, expr.getArg(0), expr.getArg(2)));
 
             }else if (expr.getOperator() == Ops.ORDINAL){
                 Param<?> path = (Param<?>) transform(expr.getArg(0), filters);
@@ -593,16 +598,6 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                             pathNode = rdfPath;
                         }else if (i == predPath.size() -1){
                             String var = path.accept(ToStringVisitor.DEFAULT, TEMPLATES);
-                            if (queryOptions.isAddTypeSuffix() && configuration.getConverterRegistry().supports(path.getType())){
-                                UID type = configuration.getConverterRegistry().getDatatype(path.getType());
-                                if (Constants.decimalTypes.contains(type)){
-                                    var += "_dec";
-                                }else if (Constants.integerTypes.contains(type)){
-                                    var += "_int";
-                                }else if (Constants.dateTimeTypes.contains(type) || Constants.dateTypes.contains(type)){
-                                    var += "_tst";
-                                }
-                            }
                             pathNode = var(var);
                             varNames.disallow(var);
                         }else{

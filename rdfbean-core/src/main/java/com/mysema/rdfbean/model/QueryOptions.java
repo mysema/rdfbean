@@ -9,29 +9,28 @@ public enum QueryOptions {
     /**
      *
      */
-    ALL(true, true, true),
+    ALL(true, true),
 
     /**
      *
      */
-    COUNT_VIA_AGGREGATION(true, false, false),
-    
-    /**
-     * 
-     */
-    PRESERVE_STRING_OPS(false, true, false),
+    COUNT_VIA_AGGREGATION(true, false),
 
     /**
      *
      */
-    DEFAULT(false, false, false);
+    PRESERVE_STRING_OPS(false, true),
 
-    private final boolean countViaAggregation, preserveStringOps, addTypeSuffix;
+    /**
+     *
+     */
+    DEFAULT(false, false);
 
-    private QueryOptions(boolean countViaAggregation, boolean preserveStringOps, boolean addTypeSuffix) {
+    private final boolean countViaAggregation, preserveStringOps;
+
+    private QueryOptions(boolean countViaAggregation, boolean preserveStringOps) {
         this.countViaAggregation = countViaAggregation;
         this.preserveStringOps = preserveStringOps;
-        this.addTypeSuffix = addTypeSuffix;
     }
 
     public boolean isCountViaAggregation() {
@@ -40,10 +39,6 @@ public enum QueryOptions {
 
     public boolean isPreserveStringOps() {
         return preserveStringOps;
-    }
-
-    public boolean isAddTypeSuffix() {
-        return addTypeSuffix;
     }
 
 }

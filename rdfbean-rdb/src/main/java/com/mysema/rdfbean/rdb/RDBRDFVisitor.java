@@ -3,8 +3,10 @@ package com.mysema.rdfbean.rdb;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.annotation.Nullable;
@@ -28,7 +30,16 @@ import com.mysema.rdfbean.query.VarNameIterator;
  */
 public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
-//    private static final Logger logger = LoggerFactory.getLogger(RDBRDFVisitor.class);
+    @SuppressWarnings("unchecked")
+    private static final Set<Operator<?>> MATH = new HashSet<Operator<?>>(Arrays.asList(
+            Ops.LT, Ops.GT, Ops.LOE, Ops.GOE,
+            Ops.MathOps.ABS, Ops.ADD, Ops.SUB, Ops.MULT, Ops.MOD, Ops.DIV, Ops.AggOps.AVG_AGG, Ops.AggOps.SUM_AGG));
+
+    @SuppressWarnings("unchecked")
+    private static final Set<Operator<?>> DATE = new HashSet<Operator<?>>(Arrays.asList(
+            Ops.DateTimeOps.DAY_OF_MONTH, Ops.DateTimeOps.DAY_OF_WEEK, Ops.DateTimeOps.DAY_OF_YEAR, Ops.DateTimeOps.HOUR,
+            Ops.DateTimeOps.MILLISECOND, Ops.DateTimeOps.MINUTE, Ops.DateTimeOps.MONTH, Ops.DateTimeOps.SECOND, Ops.DateTimeOps.WEEK,
+            Ops.DateTimeOps.YEAR, Ops.DateTimeOps.YEAR_MONTH));
 
     private final RDBContext context;
 
@@ -36,7 +47,13 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     private Map<Expression<?>, Path<Long>> exprToMapped = new HashMap<Expression<?>, Path<Long>>();
 
+    private final Set<QSymbol> numericSymbols = new HashSet<QSymbol>();
+
+    private final Set<QSymbol> dateTimeSymbols = new HashSet<QSymbol>();
+
     private final Stack<Expression<UID>> graphs = new Stack<Expression<UID>>();
+
+    private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
 
     private final Transformer<Long, NODE> transformer;
 
@@ -149,7 +166,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                         pr.add(handle(expr, md));
                     }
                 }
-                return new GraphQueryImpl((SQLQuery)query, pattern, pr, transformer);
+                return new GraphQueryImpl((SQLQuery)query, context.getConverters(), pattern, pr, transformer);
 
             }else{
                 throw new UnsupportedOperationException();
@@ -207,14 +224,20 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         boolean asLit = asLiteral;
         asLiteral = needsSymbolResolving(expr);
 
-        if (expr.getOperator() == Ops.NUMCAST){
-            args.add(handle(expr.getArg(0), context));
-            UID datatype = (UID) ((Constant)expr.getArg(1)).getConstant();
-            args.add(new ConstantImpl<Class>(this.context.getConverters().getClass(datatype)));
-        }else{
-            for (Expression<?> arg : expr.getArgs()){
-                args.add(handle(arg, context));
+        try{
+            operators.push(expr.getOperator());
+
+            if (expr.getOperator() == Ops.NUMCAST){
+                args.add(handle(expr.getArg(0), context));
+                UID datatype = (UID) ((Constant)expr.getArg(1)).getConstant();
+                args.add(new ConstantImpl<Class>(this.context.getConverters().getClass(datatype)));
+            }else{
+                for (Expression<?> arg : expr.getArgs()){
+                    args.add(handle(arg, context));
+                }
             }
+        }finally{
+            operators.pop();
         }
 
         asLiteral = asLit;
@@ -263,19 +286,42 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 QSymbol symbol = new QSymbol(symbols.next());
                 query.leftJoin(symbol).on(symbol.id.eq(exprToMapped.get(expr)));
                 Expression<?> lexical = symbol.lexical;
-                if (exprToString.endsWith("_int")){
-                    lexical = symbol.intval;
-                }else if (exprToString.endsWith("_dec")){
+                if (inMathOperation()){
                     lexical = symbol.floatval;
-                }else if (exprToString.endsWith("_tst")){
+                    numericSymbols.add(symbol);
+                }else if (inDateOperation()){
+                    lexical = symbol.datetimeval;
+                    dateTimeSymbols.add(symbol);
+                }else if (numericSymbols.contains(symbol)){
+                    lexical = symbol.floatval;
+                }else if (dateTimeSymbols.contains(symbol)){
                     lexical = symbol.datetimeval;
                 }
+
                 exprToSymbol.put(expr, lexical);
                 return lexical;
             }
         }else{
             return exprToMapped.get(expr);
         }
+    }
+
+    private boolean inMathOperation(){
+        for (Operator<?> op : operators){
+            if (MATH.contains(op)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean inDateOperation(){
+        for (Operator<?> op : operators){
+            if (DATE.contains(op)){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

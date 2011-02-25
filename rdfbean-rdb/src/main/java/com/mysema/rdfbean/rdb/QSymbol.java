@@ -29,16 +29,14 @@ public class QSymbol extends RelationalPathBase<QSymbol> {
     public static final QSymbol symbol = new QSymbol("symbol");
 
     public final BooleanPath resource = createBoolean("RESOURCE");
-    
+
     public final NumberPath<Long> datatype = createNumber("DATATYPE", Long.class);
-    
+
     public final DateTimePath<java.sql.Timestamp> datetimeval = createDateTime("DATETIMEVAL", java.sql.Timestamp.class);
 
     public final NumberPath<Double> floatval = createNumber("FLOATVAL", Double.class);
 
     public final NumberPath<Long> id = createNumber("ID", Long.class);
-
-    public final NumberPath<Long> intval = createNumber("INTVAL", Long.class);
 
     public final NumberPath<Integer> lang = createNumber("LANG", Integer.class);
 
