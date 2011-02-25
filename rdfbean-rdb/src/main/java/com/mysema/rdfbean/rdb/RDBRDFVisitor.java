@@ -47,6 +47,8 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     private Map<Expression<?>, Path<Long>> exprToMapped = new HashMap<Expression<?>, Path<Long>>();
 
+    private final Set<Expression<?>> resources = new HashSet<Expression<?>>();
+
     private final Set<QSymbol> numericSymbols = new HashSet<QSymbol>();
 
     private final Set<QSymbol> dateTimeSymbols = new HashSet<QSymbol>();
@@ -151,7 +153,14 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 }else{
                     variables.add(expr.toString());
                 }
-                pr.add(handle(expr, md));
+                if (resources.contains(expr)){
+                    boolean asLit = asLiteral;
+                    asLiteral = true;
+                    pr.add(handle(expr, md));
+                    asLiteral = asLit;
+                }else{
+                    pr.add(handle(expr, md));
+                }
             }
             return new TupleQueryImpl((SQLQuery)query, context.getConverters(), variables, pr, transformer);
 
@@ -204,6 +213,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     @Override
     public Object visit(GraphBlock expr, QueryMetadata context) {
+        resources.add(expr.getContext());
         graphs.push(expr.getContext());
         visit((ContainerBlock)expr, context);
         graphs.pop();
@@ -328,6 +338,14 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     public Object visit(PatternBlock expr, QueryMetadata context) {
         QStatement stmt = new QStatement(stmts.next());
         BooleanBuilder filters = new BooleanBuilder();
+        resources.add(expr.getSubject());
+        resources.add(expr.getPredicate());
+        if (ID.class.isAssignableFrom(expr.getObject().getType())){
+            resources.add(expr.getObject());
+        }
+        if (expr.getContext() != null){
+            resources.add(expr.getContext());
+        }
         filters.and(visitPatternElement(context, stmt.subject, expr.getSubject()));
         filters.and(visitPatternElement(context, stmt.predicate, expr.getPredicate()));
         filters.and(visitPatternElement(context, stmt.object, expr.getObject()));

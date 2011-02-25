@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.mysema.rdfbean.rdb;
 
@@ -25,22 +25,22 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
  *
  */
 public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> implements FactoryExpression<Map<String, NODE>>{
-    
+
     private static final long serialVersionUID = -3344381241177858414L;
 
     private final ConverterRegistry converters;
-    
+
     private final List<String> variables;
-    
+
     private final List<Expression<?>> projection;
-    
+
     private final Transformer<Long, NODE> transformer;
-    
+
     @SuppressWarnings("unchecked")
     public TupleFactoryExpression(
             ConverterRegistry converters,
-            List<String> variables, 
-            List<Expression<?>> pr, 
+            List<String> variables,
+            List<Expression<?>> pr,
             Transformer<Long, NODE> transformer) {
         super((Class)Map.class);
         this.converters = converters;
@@ -48,7 +48,7 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
         this.projection = pr;
         this.transformer = transformer;
     }
-    
+
     @Override
     public List<Expression<?>> getArgs() {
         return projection;
@@ -59,14 +59,15 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
         Map<String, NODE> rv = new HashMap<String, NODE>(args.length);
         for (int i = 0; i < args.length; i++){
             if (args[i] != null){
-                if (projection.get(i) instanceof Operation<?> || projection.get(i) instanceof TemplateExpression<?>){
+                if (projection.get(i) instanceof Operation<?>
+                 || projection.get(i) instanceof TemplateExpression<?>){
                     String val = converters.toString(args[i]);
                     UID dtype = converters.getDatatype(args[i].getClass());
                     rv.put(variables.get(i), new LIT(val, dtype));
                 }else{
-                    rv.put(variables.get(i), transformer.transform((Long)args[i]));    
-                }    
-            }                        
+                    rv.put(variables.get(i), transformer.transform((Long)args[i]));
+                }
+            }
         }
         return rv;
     }
@@ -75,5 +76,5 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
     public <R, C> R accept(Visitor<R, C> v, C context) {
         return v.visit(this, context);
     }
-    
+
 }
