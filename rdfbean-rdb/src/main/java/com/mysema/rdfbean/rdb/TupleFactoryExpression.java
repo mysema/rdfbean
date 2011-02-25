@@ -15,6 +15,7 @@ import com.mysema.query.types.FactoryExpression;
 import com.mysema.query.types.Operation;
 import com.mysema.query.types.TemplateExpression;
 import com.mysema.query.types.Visitor;
+import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.UID;
@@ -64,6 +65,9 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
                     String val = converters.toString(args[i]);
                     UID dtype = converters.getDatatype(args[i].getClass());
                     rv.put(variables.get(i), new LIT(val, dtype));
+                }else if (args[i] instanceof String){    
+                    String val = (String)args[i];
+                    rv.put(variables.get(i), val.contains(":") ? new UID(val) : new BID(val));               
                 }else{
                     rv.put(variables.get(i), transformer.transform((Long)args[i]));
                 }

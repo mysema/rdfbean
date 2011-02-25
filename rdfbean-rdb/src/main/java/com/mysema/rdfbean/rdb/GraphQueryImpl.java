@@ -11,13 +11,10 @@ import com.mysema.rdfbean.model.GraphQuery;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.PatternBlock;
 import com.mysema.rdfbean.model.STMT;
-import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 public class GraphQueryImpl implements GraphQuery{
 
     private final SQLQuery query;
-
-    private final ConverterRegistry converters;
 
     private final PatternBlock pattern;
 
@@ -27,12 +24,10 @@ public class GraphQueryImpl implements GraphQuery{
 
     public GraphQueryImpl(
             SQLQuery query,
-            ConverterRegistry converters,
             PatternBlock pattern,
             List<Expression<?>> pr,
             Transformer<Long, NODE> transformer) {
         this.query = query;
-        this.converters = converters;
         this.pattern = pattern;
         this.projection = pr;
         this.transformer = transformer;

@@ -10,6 +10,7 @@ import com.mysema.query.types.Constant;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.FactoryExpression;
 import com.mysema.query.types.Visitor;
+import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.PatternBlock;
@@ -62,14 +63,23 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
     @Override
     public STMT newInstance(Object... args) {
         int counter = 0;
-        ID s = subject != null ? subject : (ID)transformer.transform((Long)args[counter++]);
-        UID p = predicate != null ? predicate : (UID)transformer.transform((Long)args[counter++]);
+        ID s = subject != null ? subject : getId(args[counter++]);
+        UID p = predicate != null ? predicate : (UID)getId(args[counter++]);
         NODE o = object != null ? object : transformer.transform((Long)args[counter++]);
         UID c = context;
         if (args.length > counter && c != null){
-            c = (UID)transformer.transform((Long)args[counter++]);
+            c = (UID)getId(args[counter++]);
         }
         return new STMT(s, p, o, c);
+    }
+
+    private ID getId(Object input) {
+        if (input instanceof Long){
+            return (ID)transformer.transform((Long)input);
+        }else{
+            String val = input.toString();
+            return val.contains(":") ? new UID(val) : new BID(val);
+        }
     }
 
     @Override

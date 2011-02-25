@@ -153,7 +153,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 }else{
                     variables.add(expr.toString());
                 }
-                if (resources.contains(expr)){
+                if (resources.contains(expr) || ID.class.isAssignableFrom(expr.getType())){
                     boolean asLit = asLiteral;
                     asLiteral = true;
                     pr.add(handle(expr, md));
@@ -172,10 +172,17 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 PatternBlock pattern = (PatternBlock)md.getProjection().get(0);
                 for (Expression<?> expr : Arrays.asList(pattern.getSubject(), pattern.getPredicate(), pattern.getObject(), pattern.getContext())){
                     if (expr != null && !(expr instanceof Constant)){
-                        pr.add(handle(expr, md));
+                        if (resources.contains(expr) || ID.class.isAssignableFrom(expr.getType())){
+                            boolean asLit = asLiteral;
+                            asLiteral = true;
+                            pr.add(handle(expr, md));
+                            asLiteral = asLit;
+                        }else{
+                            pr.add(handle(expr, md));
+                        }
                     }
                 }
-                return new GraphQueryImpl((SQLQuery)query, context.getConverters(), pattern, pr, transformer);
+                return new GraphQueryImpl((SQLQuery)query, pattern, pr, transformer);
 
             }else{
                 throw new UnsupportedOperationException();
