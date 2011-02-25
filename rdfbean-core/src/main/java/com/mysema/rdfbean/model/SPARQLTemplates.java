@@ -18,7 +18,7 @@ public class SPARQLTemplates extends Templates{
         add(Ops.ENDS_WITH,       "regex({0}, '{1s}$')");
         add(Ops.STRING_CONTAINS, "regex({0}, '.*{1s}.*')");
         
-        add(Ops.MATCHES_IC,       "regex(str({0}), '{1s}','i')");
+        add(Ops.MATCHES_IC,       "regex(str({0}), {1s},'i')");
         add(Ops.STARTS_WITH_IC,  "regex({0}, '^{1s}','i')");
         add(Ops.ENDS_WITH_IC,    "regex({0}, '{1s}$','i')");
         add(Ops.STRING_CONTAINS_IC,"regex({0}, '.*{1s}.*','i')");

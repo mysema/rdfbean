@@ -90,6 +90,13 @@ public class RDFQueryBuilderTest {
         query.where(user.getString("firstName").eq("Bob"));
         assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName }");
     }
+    
+    @Test
+    public void Matches() throws Exception{
+        query.from(user);
+        query.where(user.getString("firstName").matches("Bob.*"));
+        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName . FILTER(regex(str(?user_firstName), ?_c6)) }");
+    }
 
     @Test
     public void Starts_With() throws Exception{
