@@ -6,6 +6,8 @@ package com.mysema.rdfbean.model;
  */
 public enum QueryOptions {
 
+    // TODO : in -> or (Sesame, Core)
+    
     /**
      *
      */
