@@ -52,7 +52,7 @@ public final class SessionImpl implements Session {
     };
 
     private static final int DEFAULT_INITIAL_CAPACITY = 1024;
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SessionImpl.class);
 
     private Set<STMT> addedStatements;
@@ -657,7 +657,9 @@ public final class SessionImpl implements Session {
         }
 
         query.where(Blocks.SPOC);
-        if (!polymorphic && mappedClass.getDynamicProperties().isEmpty()){
+        if (!polymorphic
+                && mappedClass.getDynamicProperties().isEmpty()
+                && mappedClass.getMappedPredicates().size() < 5){
             query.where(QNODE.p.in(mappedClass.getMappedPredicates()));
         }
 
@@ -874,7 +876,7 @@ public final class SessionImpl implements Session {
             logger.debug("findStatements " + subject + " " + predicate + " " + object + " " + context);
         }
         // rdf type inference
-        if (RDF.type.equals(predicate) 
+        if (RDF.type.equals(predicate)
                 && subject == null && object != null
                 && connection.getInferenceOptions().subClassOf()){
             Collection<UID> types = ontology.getSubtypes(object.asURI());
@@ -1277,7 +1279,9 @@ public final class SessionImpl implements Session {
 
     private MultiMap<UID, STMT> getProperties(ID subject, MappedClass mappedClass, boolean polymorphic) {
         MultiMap<UID, STMT> properties = new MultiHashMap<UID, STMT>();
-        if (mappedClass.getDynamicProperties().isEmpty() && !polymorphic){
+        if (mappedClass.getDynamicProperties().isEmpty()
+                && !polymorphic
+                && mappedClass.getMappedPredicates().size() < 5){
             if (logger.isDebugEnabled()){
                 logger.debug("query for properties of " +  subject);
             }
@@ -1402,7 +1406,7 @@ public final class SessionImpl implements Session {
         if (directProps.isEmpty()){
             return;
         }
-        
+
         Map<ID, MultiMap<UID, STMT>> inverseProps = Collections.emptyMap();
         if (!polymorphic && !mappedClass.getInvMappedPredicates().isEmpty()){
             inverseProps = getInvProperties(mappedClass, directProps.keySet());
