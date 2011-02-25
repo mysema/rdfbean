@@ -48,7 +48,7 @@ public class GraphQueryImpl extends AbstractQueryImpl{
     @Override
     public CloseableIterator<STMT> getTriples() {
         try {
-            rs = executeQuery(query);            
+            rs = executeQuery(query, false);            
             List<STMT> stmts = IteratorAdapter.asList(new GraphResultIterator(stmt, rs, query, converter));
             Collections.sort(stmts, STMTComparator.DEFAULT);
             return new IteratorAdapter<STMT>(stmts.iterator());

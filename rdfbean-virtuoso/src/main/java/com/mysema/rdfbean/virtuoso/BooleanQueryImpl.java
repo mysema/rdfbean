@@ -29,7 +29,7 @@ public class BooleanQueryImpl extends AbstractQueryImpl {
     @Override
     public boolean getBoolean() {
         try {
-            rs = executeQuery(query);
+            rs = executeQuery(query, false);
             rs.next();
             return rs.getShort(1) > 0;
         } catch (SQLException e) {

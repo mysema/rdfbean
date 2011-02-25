@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +25,7 @@ import com.mysema.rdfbean.model.SPARQLQuery;
  */
 public abstract class AbstractQueryImpl implements SPARQLQuery{
 
-    private static final Pattern VARIABLE = Pattern.compile("\\?[a-zA-Z_]\\w*");
+    protected static final Pattern VARIABLE = Pattern.compile("\\?[a-zA-Z_]\\w*");
 
     private final Connection connection;
 
@@ -74,13 +75,12 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         }
     }
 
-    protected ResultSet executeQuery(String query) throws SQLException{
+    protected ResultSet executeQuery(String query, boolean createAliases) throws SQLException{
         if (bindings.isEmpty()){
             stmt = connection.prepareStatement(query);
         }else{
             List<NODE> nodes = new ArrayList<NODE>(bindings.size());
-            String normalized = normalize(query, bindings, nodes);
-//            System.err.println(normalized);
+            String normalized = normalize(query, bindings, nodes, createAliases);
             stmt = connection.prepareStatement(normalized);
             int offset = 1;
             for (NODE node : nodes){
@@ -97,8 +97,8 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         return rs;
     }
 
-    static String normalize(String query, Map<String, NODE> bindings, List<NODE> nodes) {
-//        String queryLower = query.toLowerCase(Locale.ENGLISH);
+    static String normalize(String query, Map<String, NODE> bindings, List<NODE> nodes, boolean createAliases) {
+        String queryLower = query.toLowerCase(Locale.ENGLISH);
         Matcher matcher = VARIABLE.matcher(query);
         StringBuffer buffer = new StringBuffer();
         while (matcher.find()){
@@ -112,6 +112,9 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
                     replacement = inFilter ? "iri(??)" : "`iri(??)`";
                 }else{
                     replacement = inFilter ? "bif:__rdf_long_from_batch_params(??,??,??)" : "`bif:__rdf_long_from_batch_params(??,??,??)`";
+                }
+                if (createAliases && !queryLower.substring(0, matcher.start()).contains("where")){
+                    replacement =  replacement + " as ?" + variable;
                 }
             }
             matcher.appendReplacement(buffer, replacement);

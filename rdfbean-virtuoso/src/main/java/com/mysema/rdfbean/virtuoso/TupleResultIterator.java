@@ -79,19 +79,16 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
             try {
                 next = null;
                 Map<String,NODE> tuples = new HashMap<String,NODE>();
-                for (String variable : variables){
-                    Object obj = rs.getObject(variable);
-                    if (obj != null) {
-                        tuples.put(variable, converter.toNODE(obj));    
-                    } else if (bindings.containsKey(variable)) {
+                for (String variable : variables){                    
+                    if (bindings.containsKey(variable)){
                         tuples.put(variable, bindings.get(variable));
+                    }else{
+                        Object obj = rs.getObject(variable);
+                        if (obj != null){
+                            tuples.put(variable, converter.toNODE(obj));    
+                        }                         
                     }                    
                 }
-//                for (Map.Entry<String, NODE> entry : bindings.entrySet()){
-//                    if (!tuples.containsKey(entry.getKey())){
-//                        tuples.
-//                    }
-//                }
                 return tuples;
             } catch (SQLException e) {
                 close();

@@ -82,7 +82,7 @@ public class TupleQueryImpl extends AbstractQueryImpl {
     
     private void produceResults() throws SQLException{
         try{
-            rs = executeQuery(query);
+            rs = executeQuery(query, true);
             ResultSetMetaData md = rs.getMetaData();
             variables = new ArrayList<String>(md.getColumnCount());
             for (int i = 0; i < md.getColumnCount(); i++){

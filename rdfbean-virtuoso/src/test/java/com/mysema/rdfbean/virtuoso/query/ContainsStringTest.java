@@ -48,8 +48,7 @@ public class ContainsStringTest extends AbstractConnectionTest implements Entity
         entity.latestRevision = rev;
         session.save(entity);
 
-        // 2
-        
+        // 2        
         Term term = new Term();
         term.text2 = "abc";
         session.save(term);
@@ -64,8 +63,7 @@ public class ContainsStringTest extends AbstractConnectionTest implements Entity
         entity2.latestRevision = rev2;
         session.save(entity2);
         
-        // query 1
-        
+        // query 1        
         EntityRevision var = Alias.alias(EntityRevision.class);
         BooleanBuilder builder = new BooleanBuilder();
         builder.or($(var.getText()).containsIgnoreCase("abc"));
@@ -73,8 +71,7 @@ public class ContainsStringTest extends AbstractConnectionTest implements Entity
         builder.and($(var).eq($(var.getRevisionOf().getLatestRevision())));        
         assertEquals(1, session.from($(var)).where(builder.getValue()).list($(var)).size());
         
-        // query 2
-        
+        // query 2        
         builder = new BooleanBuilder();
         builder.or($(var.getText()).containsIgnoreCase("def"));
         builder.or($(var.getRevisionOf().getTerm().getText2()).containsIgnoreCase("def"));
