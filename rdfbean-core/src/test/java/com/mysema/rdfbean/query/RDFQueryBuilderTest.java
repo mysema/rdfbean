@@ -57,7 +57,7 @@ public class RDFQueryBuilderTest {
         query.from(user);
         assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 }");
     }
-    
+
     @Test
     public void Distinct() throws Exception{
         query.from(user);
@@ -90,12 +90,12 @@ public class RDFQueryBuilderTest {
         query.where(user.getString("firstName").eq("Bob"));
         assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName }");
     }
-    
+
     @Test
     public void Matches() throws Exception{
         query.from(user);
         query.where(user.getString("firstName").matches("Bob.*"));
-        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName . FILTER(regex(str(?user_firstName), ?_c6)) }");
+        assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_firstName . FILTER(regex(?user_firstName, ?_c6)) }");
     }
 
     @Test
@@ -272,7 +272,7 @@ public class RDFQueryBuilderTest {
         query.where(user.isNull());
         assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 . FILTER(!bound(?user)) }");
     }
-    
+
     @Test
     public void Limit() throws Exception{
         query.from(user);
@@ -293,14 +293,14 @@ public class RDFQueryBuilderTest {
         query.orderBy(user.getString("firstName").asc());
         assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 . OPTIONAL {?user ?_c4 ?user_firstName } } ORDER BY ?user_firstName");
     }
-    
+
     @Test
     public void Order_By_Desc() throws Exception{
         query.from(user);
         query.orderBy(user.getString("firstName").desc());
         assertEquals("SELECT WHERE { ?user ?_c2 ?_c3 . OPTIONAL {?user ?_c4 ?user_firstName } } ORDER BY DESC(?user_firstName)");
     }
-    
+
     @Test
     public void Group_By_Having() throws Exception{
         query.from(user);
