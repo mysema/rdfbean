@@ -19,6 +19,8 @@ public final class SKOS {
 
     public static final UID altLabel = new UID(NS, "altLabel");
 
+    public static final UID broader = new UID(NS, "broader");
+
     public static final UID broadMatch = new UID(NS, "broadMatch");
 
     public static final UID broaderTransitive = new UID(NS, "broaderTransitive");
