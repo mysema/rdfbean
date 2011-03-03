@@ -31,6 +31,8 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
  */
 public class VirtuosoRepository implements Repository {
 
+    private static final String RDFBEAN_NIL = "rdfbean:nil";
+
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
 
     private final VirtuosoConnectionPoolDataSource pds = new VirtuosoConnectionPoolDataSource();
@@ -59,11 +61,11 @@ public class VirtuosoRepository implements Repository {
     private IdSequence idSequence;
 
     public VirtuosoRepository(String hostlist, String user, String password) {
-        this(hostlist, user, password, "rdfbean:nil");
+        this(hostlist, user, password, RDFBEAN_NIL);
     }
 
     public VirtuosoRepository(String host, int port, String user, String password) {
-        this(host, port, user, password, "rdfbean:nil");
+        this(host, port, user, password, RDFBEAN_NIL);
     }
 
     public VirtuosoRepository(String hostlist, String user, String password, String defGraph) {

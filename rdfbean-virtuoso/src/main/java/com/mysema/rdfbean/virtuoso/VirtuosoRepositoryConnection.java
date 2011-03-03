@@ -28,6 +28,7 @@ import com.mysema.query.QueryMetadata;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
+import com.mysema.rdfbean.owl.OWL;
 
 /**
  * @author tiwe
@@ -271,7 +272,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                   queryLanguage.equals(QueryLanguage.TUPLE)){
             SPARQLVisitor visitor = new SPARQLVisitor(VirtuosoSPARQLTemplates.DEFAULT, "");
             QueryMetadata md = (QueryMetadata)definition;
-            visitor.visit(md, queryLanguage);    
+            visitor.visit(md, queryLanguage);
             SPARQLQuery query = createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
             visitor.addBindings(query, md);
             return (Q)query;
@@ -390,11 +391,13 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
     }
 
-    private boolean isAllowedGraph(UID context){
+    boolean isAllowedGraph(UID context){
         return !context.getId().startsWith(INTERNAL_PREFIX)
-            && (context.equals(defaultGraph)
-            || allowedGraphs.isEmpty()
-            || allowedGraphs.contains(context));
+            && !context.getId().equals("http://localhost:8890/DAV")
+            && !context.getId().equals(RDF.NS)
+            && !context.getId().equals(RDFS.NS)
+            && !context.getId().equals(OWL.NS)
+            && (context.equals(defaultGraph) || allowedGraphs.isEmpty() || allowedGraphs.contains(context));
     }
 
     public boolean isReadOnly() {
