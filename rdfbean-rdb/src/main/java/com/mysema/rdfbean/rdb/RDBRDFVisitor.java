@@ -162,6 +162,9 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                     pr.add(handle(expr, md));
                 }
             }
+
+            // TODO : handle select wildcard
+
             return new TupleQueryImpl((SQLQuery)query, context.getConverters(), variables, pr, transformer);
 
         // construct

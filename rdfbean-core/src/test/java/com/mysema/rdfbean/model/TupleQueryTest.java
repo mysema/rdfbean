@@ -1,6 +1,8 @@
 package com.mysema.rdfbean.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +29,7 @@ public class TupleQueryTest {
     private RDFQuery query(){
         return new RDFQueryImpl(connection);
     }
-    
+
     @Before
     public void setUp(){
         connection.addStatements(
@@ -38,6 +40,22 @@ public class TupleQueryTest {
     @Test
     public void Pattern(){
         query().where(Blocks.pattern(subject, RDF.type, RDFS.Class)).select(subject);
+    }
+
+    @Test
+    public void SelectAll(){
+        CloseableIterator<Map<String,NODE>> iterator = query().where(Blocks.SPO).selectAll();
+        assertTrue(iterator.hasNext());
+        try{
+            while (iterator.hasNext()){
+                Map<String,NODE> row = iterator.next();
+                assertNotNull(row.get("s"));
+                assertNotNull(row.get("p"));
+                assertNotNull(row.get("o"));
+            }
+        }finally{
+            iterator.close();
+        }
     }
 
     @Test

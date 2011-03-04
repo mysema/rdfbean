@@ -36,8 +36,23 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     }
 
     @Override
+    public CloseableIterator<Map<String,NODE>> selectDistinct(Expression<?>... exprs){
+        return distinct().select(exprs);
+    }
+
+    @Override
     public CloseableIterator<Map<String,NODE>> select(Expression<?>... exprs){
         return createTupleQuery(exprs).getTuples();
+    }
+
+    @Override
+    public CloseableIterator<Map<String,NODE>> selectDistinctAll(){
+        return distinct().selectAll();
+    }
+
+    @Override
+    public CloseableIterator<Map<String,NODE>> selectAll(){
+        return createTupleQuery().getTuples();
     }
 
     public Map<String, NODE> selectSingle(Expression<?>... exprs){

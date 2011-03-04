@@ -256,14 +256,18 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             String key = getKey(expr);
             variables.add(key != null ? key : expr.toString());
         }
-        
+
         final Transformer<Bindings, Map<String,NODE>> bindingsToMap = new Transformer<Bindings, Map<String,NODE>>(){
             @Override
             public Map<String, NODE> transform(Bindings input) {
-                return input.toMap(variables);
+                if (variables.isEmpty()){
+                    return input.toMap();
+                }else{
+                    return input.toMap(variables);
+                }
             }
         };
-        
+
         return new TupleQuery(){
             @Override
             public CloseableIterator<Map<String, NODE>> getTuples() {

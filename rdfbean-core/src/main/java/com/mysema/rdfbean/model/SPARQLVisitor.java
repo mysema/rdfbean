@@ -77,13 +77,17 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             if (md.isDistinct()){
                 append("DISTINCT ");
             }
-            for (Expression<?> expr : md.getProjection()){
-                if (expr instanceof TemplateExpression<?> || expr instanceof com.mysema.query.types.Operation<?>){
-                    append("(").handle(expr).append(")");
-                }else{
-                    handle(expr);
+            if (!md.getProjection().isEmpty()){
+                for (Expression<?> expr : md.getProjection()){
+                    if (expr instanceof TemplateExpression<?> || expr instanceof com.mysema.query.types.Operation<?>){
+                        append("(").handle(expr).append(")");
+                    }else{
+                        handle(expr);
+                    }
+                    append(" ");
                 }
-                append(" ");
+            }else{
+                append("*");
             }
             append("\n");
 

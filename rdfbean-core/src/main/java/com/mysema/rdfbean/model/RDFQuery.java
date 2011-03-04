@@ -18,6 +18,12 @@ public interface RDFQuery extends Query<RDFQuery>{
 
     CloseableIterator<Map<String, NODE>> select(Expression<?>... exprs);
 
+    CloseableIterator<Map<String, NODE>> selectAll();
+
+    CloseableIterator<Map<String, NODE>> selectDistinct(Expression<?>... exprs);
+
+    CloseableIterator<Map<String, NODE>> selectDistinctAll();
+
     @Nullable
     Map<String, NODE> selectSingle(Expression<?>... exprs);
 
