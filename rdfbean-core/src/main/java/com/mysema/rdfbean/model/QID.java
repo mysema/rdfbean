@@ -6,18 +6,18 @@ package com.mysema.rdfbean.model;
  *
  */
 public class QID extends QNODE<ID>{
-    
+
     private static final long serialVersionUID = -2696989113637909131L;
-    
+
     public QID(String variable) {
         super(ID.class, variable);
     }
 
-    public Block a(Object type){
+    public PatternBlock a(Object type){
         return Blocks.pattern(this, RDF.type, type);
     }
 
-    public Block has(Object predicate, Object object){
+    public PatternBlock has(Object predicate, Object object){
         return Blocks.pattern(this, predicate, object);
     }
 

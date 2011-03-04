@@ -43,15 +43,15 @@ public class QNODE<T extends NODE> extends Param<T>{
     @Nullable
     @SuppressWarnings("unchecked")
     private volatile OrderSpecifier asc, desc;
-    
+
     public QNODE(Class<T> type, String variable) {
         super(type, variable);
     }
 
-    public Block is(Object predicate, Object subject){
+    public PatternBlock is(Object predicate, Object subject){
         return Blocks.pattern(subject, predicate, this);
     }
-    
+
     @SuppressWarnings("unchecked")
     public OrderSpecifier asc(){
         if (asc == null){
@@ -59,7 +59,7 @@ public class QNODE<T extends NODE> extends Param<T>{
         }
         return asc;
     }
-    
+
     @SuppressWarnings("unchecked")
     public OrderSpecifier desc(){
         if (desc == null){
@@ -124,5 +124,5 @@ public class QNODE<T extends NODE> extends Param<T>{
     public int hashCode(){
         return getName().hashCode();
     }
-    
+
 }

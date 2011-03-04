@@ -19,6 +19,13 @@ public class QIDTest {
     }
 
     @Test
+    public void Optional_via_has(){
+        assertEquals(
+                Blocks.optional(Blocks.pattern(subject, predicate, object)),
+                subject.has(predicate, object).asOptional());
+    }
+
+    @Test
     public void Pattern_via_a(){
         assertEquals(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
