@@ -2,6 +2,7 @@ package com.mysema.rdfbean.rdb;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,6 +43,8 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             Ops.DateTimeOps.YEAR, Ops.DateTimeOps.YEAR_MONTH));
 
     private final RDBContext context;
+
+    private final Set<Expression<?>> namedExpressions = new HashSet<Expression<?>>();
 
     private Map<Expression<?>, Expression<?>> exprToSymbol = new HashMap<Expression<?>, Expression<?>>();
 
@@ -147,7 +150,12 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         if (queryType.equals(QueryLanguage.TUPLE)){
             List<String> variables = new ArrayList<String>();
             List<Expression<?>> pr = new ArrayList<Expression<?>>();
-            for (Expression<?> expr : md.getProjection()){
+
+            Collection<? extends Expression<?>> projection = md.getProjection();
+            if (projection.isEmpty()){
+                projection = namedExpressions;
+            }
+            for (Expression<?> expr : projection){
                 if (expr instanceof ParamExpression){
                     variables.add(((ParamExpression)expr).getName());
                 }else{
@@ -162,8 +170,6 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                     pr.add(handle(expr, md));
                 }
             }
-
-            // TODO : handle select wildcard
 
             return new TupleQueryImpl((SQLQuery)query, context.getConverters(), variables, pr, transformer);
 
@@ -290,11 +296,13 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     @Override
     public Expression<?> visit(ParamExpression<?> expr, QueryMetadata context) {
+        namedExpressions.add(expr);
         return visitPathOrParam(expr, expr.getName(), context);
     }
 
     @Override
     public Expression<?> visit(Path<?> expr, QueryMetadata context) {
+        namedExpressions.add(expr);
         return visitPathOrParam(expr, expr.toString(), context);
     }
 
@@ -356,6 +364,18 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         if (expr.getContext() != null){
             resources.add(expr.getContext());
         }
+        if (isNamed(expr.getSubject())){
+            namedExpressions.add(expr.getSubject());
+        }
+        if (isNamed(expr.getPredicate())){
+            namedExpressions.add(expr.getPredicate());
+        }
+        if (isNamed(expr.getObject())){
+            namedExpressions.add(expr.getObject());
+        }
+        if (isNamed(expr.getContext())){
+            namedExpressions.add(expr.getContext());
+        }
         filters.and(visitPatternElement(context, stmt.subject, expr.getSubject()));
         filters.and(visitPatternElement(context, stmt.predicate, expr.getPredicate()));
         filters.and(visitPatternElement(context, stmt.object, expr.getObject()));
@@ -376,6 +396,10 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         }
         firstSource = false;
         return null;
+    }
+
+    private boolean isNamed(Expression<?> expr){
+        return expr instanceof Path<?> || expr instanceof ParamExpression<?>;
     }
 
     @SuppressWarnings("unchecked")

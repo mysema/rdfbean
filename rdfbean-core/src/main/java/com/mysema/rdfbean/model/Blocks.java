@@ -28,15 +28,15 @@ public final class Blocks {
         }
     }
 
-    public static final Block S_TYPE = pattern(QNODE.s, RDF.type, QNODE.type, QNODE.typeContext);
+    public static final PatternBlock S_TYPE = pattern(QNODE.s, RDF.type, QNODE.type, QNODE.typeContext);
 
-    public static final Block S_FIRST = pattern(QNODE.s, RDF.first, QNODE.first);
+    public static final PatternBlock S_FIRST = pattern(QNODE.s, RDF.first, QNODE.first);
 
-    public static final Block S_REST = pattern(QNODE.s, RDF.rest, QNODE.rest);
+    public static final PatternBlock S_REST = pattern(QNODE.s, RDF.rest, QNODE.rest);
 
-    public static final Block SPO = pattern(QNODE.s, QNODE.p, QNODE.o);
+    public static final PatternBlock SPO = pattern(QNODE.s, QNODE.p, QNODE.o);
 
-    public static final Block SPOC = pattern(QNODE.s, QNODE.p, QNODE.o, QNODE.c);
+    public static final PatternBlock SPOC = pattern(QNODE.s, QNODE.p, QNODE.o, QNODE.c);
 
     public static PatternBlock pattern(Object subject, Object predicate, Object object, @Nullable Object context) {
         return new PatternBlock(
@@ -64,15 +64,15 @@ public final class Blocks {
     public static OptionalBlock optional(Block... blocks){
         return new OptionalBlock(Arrays.asList(blocks));
     }
-    
+
     public static OptionalBlock optional(List<Block> blocks, Predicate... predicates){
         return new OptionalBlock(blocks, predicates);
-    }    
-    
+    }
+
     public static OptionalBlock optionalFilter(Block block, Predicate... predicates){
         return new OptionalBlock(Collections.singletonList(block), predicates);
     }
-    
+
     public static UnionBlock union(Block... blocks){
         return new UnionBlock(Arrays.asList(blocks));
     }

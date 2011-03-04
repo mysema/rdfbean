@@ -43,9 +43,7 @@ public class TupleQueryTest extends AbstractConnectionTest{
     }
 
     @Test
-    @Ignore
     public void SelectAll(){
-        // FIXME
         CloseableIterator<Map<String,NODE>> iterator = query().where(Blocks.SPO).selectAll();
         assertTrue(iterator.hasNext());
         try{

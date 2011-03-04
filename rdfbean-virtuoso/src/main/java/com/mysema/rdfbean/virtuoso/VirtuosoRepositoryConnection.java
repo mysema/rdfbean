@@ -56,13 +56,9 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     private static final String SPARQL_CREATE_GRAPH = "sparql create silent graph iri(??)";
 
-//    private static final String SPARQL_SELECT_GRAPHS = "sparql select distinct ?g where { graph ?g { ?s ?p ?o } }";
-
     private static final String SPARQL_SELECT_KNOWN_GRAPHS = "DB.DBA.SPARQL_SELECT_KNOWN_GRAPHS()";
 
     private static final String SPARQL_DROP_GRAPH = "sparql drop silent graph iri(??)";
-
-//    private static final String SPARQL_CLEAR_GRAPH = "sparql clear graph iri(??)";
 
     private static final String SPARQL_DELETE = "sparql define output:format '_JAVA_' " +
     		"delete from graph iri(??) {`iri(??)` `iri(??)` " +
@@ -283,6 +279,9 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     }
 
     private SPARQLQuery createSPARQLQuery(String query, SPARQLQuery.ResultType resultType) {
+        if (logger.isInfoEnabled()){
+            logger.info(query);
+        }
         if (resultType == SPARQLQuery.ResultType.BOOLEAN){
             return new BooleanQueryImpl(connection, prefetchSize, JAVA_OUTPUT + query);
         }else if (resultType == SPARQLQuery.ResultType.TUPLES){
