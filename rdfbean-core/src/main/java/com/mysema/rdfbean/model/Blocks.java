@@ -38,7 +38,7 @@ public final class Blocks {
 
     public static final Block SPOC = pattern(QNODE.s, QNODE.p, QNODE.o, QNODE.c);
 
-    public static Block pattern(Object subject, Object predicate, Object object, @Nullable Object context) {
+    public static PatternBlock pattern(Object subject, Object predicate, Object object, @Nullable Object context) {
         return new PatternBlock(
                 convert(ID.class, subject),
                 convert(UID.class, predicate),
@@ -46,42 +46,42 @@ public final class Blocks {
                 context != null ? convert(UID.class, context) : null);
     }
 
-    public static Block pattern(Object subject, Object predicate, Object object) {
+    public static PatternBlock pattern(Object subject, Object predicate, Object object) {
         return new PatternBlock(
                 convert(ID.class, subject),
                 convert(UID.class, predicate),
                 convert(NODE.class, object));
     }
 
-    public static Block group(Block... blocks){
+    public static GroupBlock group(Block... blocks){
         return new GroupBlock(Arrays.asList(blocks));
     }
 
-    public static Block filter(Block block, Predicate... filters){
+    public static GroupBlock filter(Block block, Predicate... filters){
         return new GroupBlock(Collections.singletonList(block), filters);
     }
 
-    public static Block optional(Block... blocks){
+    public static OptionalBlock optional(Block... blocks){
         return new OptionalBlock(Arrays.asList(blocks));
     }
     
-    public static Block optional(List<Block> blocks, Predicate... predicates){
+    public static OptionalBlock optional(List<Block> blocks, Predicate... predicates){
         return new OptionalBlock(blocks, predicates);
     }    
     
-    public static Block optionalFilter(Block block, Predicate... predicates){
+    public static OptionalBlock optionalFilter(Block block, Predicate... predicates){
         return new OptionalBlock(Collections.singletonList(block), predicates);
     }
     
-    public static Block union(Block... blocks){
+    public static UnionBlock union(Block... blocks){
         return new UnionBlock(Arrays.asList(blocks));
     }
 
-    public static Block graph(Expression<UID> context, Block... blocks){
+    public static GraphBlock graph(Expression<UID> context, Block... blocks){
         return new GraphBlock(context, Arrays.asList(blocks));
     }
 
-    public static Block graphFilter(Expression<UID> context, Block block, Predicate... filters){
+    public static GraphBlock graphFilter(Expression<UID> context, Block block, Predicate... filters){
         return new GraphBlock(context, Collections.singletonList(block), filters);
     }
 

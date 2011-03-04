@@ -39,6 +39,10 @@ public class PatternBlock implements Block{
     public PatternBlock(Expression<ID> subject, Expression<UID> predicate, Expression<NODE> object) {
         this(subject, predicate, object, null);
     }
+    
+    public OptionalBlock asOptional() {
+        return Blocks.optional(this);
+    }
 
     public Expression<ID> getSubject() {
         return subject;
