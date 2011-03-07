@@ -104,16 +104,18 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         while (matcher.find()){
             String variable = matcher.group().substring(1);
             String replacement = matcher.group();
-            boolean inFilter = inFilter(query, matcher);
+            boolean unquoted = isUnquoted(queryLower, matcher);
             if (bindings.containsKey(variable)){
                 NODE node = bindings.get(variable);
                 nodes.add(node);
                 if (node.isResource()){
-                    replacement = inFilter ? "iri(??)" : "`iri(??)`";
+                    replacement = unquoted ? "iri(??)" : "`iri(??)`";
                 }else{
-                    replacement = inFilter ? "bif:__rdf_long_from_batch_params(??,??,??)" : "`bif:__rdf_long_from_batch_params(??,??,??)`";
+                    replacement = unquoted ? "bif:__rdf_long_from_batch_params(??,??,??)" : "`bif:__rdf_long_from_batch_params(??,??,??)`";
                 }
-                if (createAliases && !queryLower.substring(0, matcher.start()).contains("where")){
+                if (createAliases
+                        && !queryLower.substring(0, matcher.start()).contains("where")
+                        && !queryLower.substring(0, matcher.start()).contains("from")){
                     replacement =  replacement + " as ?" + variable;
                 }
             }
@@ -123,7 +125,7 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         return buffer.toString();
     }
 
-    private static boolean inFilter(String query, Matcher matcher) {
+    private static boolean isUnquoted(String query, Matcher matcher) {
         int i;
         for (i = matcher.start()-1; i >= 0; i-- ){
             char c = query.charAt(i);
@@ -146,9 +148,9 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
             }
             return false;
         }else{
-            return true;    
+            return true;
         }
-        
+
     }
 
 }
