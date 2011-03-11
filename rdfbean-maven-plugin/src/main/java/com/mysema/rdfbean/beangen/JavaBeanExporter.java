@@ -136,7 +136,7 @@ public class JavaBeanExporter {
         String simpleName = getClassName(id);
         Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
         uidToType.put(id, type);
-        EntityType entityType = new EntityType("Q", "", type);
+        EntityType entityType = new EntityType(type);
         entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
 
         Map<RDFProperty, Property> properties = new HashMap<RDFProperty, Property>();
@@ -194,7 +194,7 @@ public class JavaBeanExporter {
         String simpleName = getClassName(id);
         Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
         uidToType.put(id, type);
-        EntityType entityType = new EntityType("Q", "", type);
+        EntityType entityType = new EntityType(type);
         entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
         return entityType;
     }

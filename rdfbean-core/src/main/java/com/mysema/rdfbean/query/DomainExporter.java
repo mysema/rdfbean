@@ -27,15 +27,7 @@ import com.mysema.codegen.model.TypeCategory;
 import com.mysema.codegen.model.Types;
 import com.mysema.query.annotations.QueryInit;
 import com.mysema.query.annotations.QueryType;
-import com.mysema.query.codegen.EntitySerializer;
-import com.mysema.query.codegen.EntityType;
-import com.mysema.query.codegen.Property;
-import com.mysema.query.codegen.Serializer;
-import com.mysema.query.codegen.SerializerConfig;
-import com.mysema.query.codegen.SimpleSerializerConfig;
-import com.mysema.query.codegen.Supertype;
-import com.mysema.query.codegen.TypeFactory;
-import com.mysema.query.codegen.TypeMappings;
+import com.mysema.query.codegen.*;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
@@ -49,8 +41,6 @@ public class DomainExporter {
 
     private static final Logger logger = LoggerFactory.getLogger(DomainExporter.class);
 
-    private final String namePrefix, nameSuffix;
-
     private String sourceSuffix = ".java";
 
     private final File targetFolder;
@@ -61,21 +51,15 @@ public class DomainExporter {
 
     private final Map<String,EntityType> entityTypes = new HashMap<String,EntityType>();
 
-//    private final Map<String,EntityType> embeddableTypes = new HashMap<String,EntityType>();
-
-//    private final Map<String,EntityType> superTypes = new HashMap<String,EntityType>();
-
     private final Set<EntityType> serialized = new HashSet<EntityType>();
 
     private final Configuration configuration;
 
-    private final TypeMappings typeMappings = new TypeMappings();
+    private final QueryTypeFactory queryTypeFactory;
 
-//    private final Serializer embeddableSerializer = new EmbeddableSerializer(typeMappings, Collections.<String>emptySet());
+    private final TypeMappings typeMappings;
 
-    private Serializer entitySerializer = new EntitySerializer(typeMappings, Collections.<String>emptySet());
-
-//    private final Serializer supertypeSerializer = new SupertypeSerializer(typeMappings, Collections.<String>emptySet());
+    private final Serializer entitySerializer;
 
     private final TypeFactory typeFactory = new TypeFactory();
 
@@ -98,14 +82,18 @@ public class DomainExporter {
     }
 
     public DomainExporter(String namePrefix, String nameSuffix, File targetFolder, SerializerConfig serializerConfig, Configuration configuration){
-        this.namePrefix = namePrefix;
-        this.nameSuffix = nameSuffix;
         this.targetFolder = targetFolder;
         this.serializerConfig = serializerConfig;
         this.configuration = configuration;
+        CodegenModule module = new CodegenModule();
+        module.bind(CodegenModule.PREFIX, namePrefix);
+        module.bind(CodegenModule.SUFFIX, nameSuffix);
+        module.bind(CodegenModule.KEYWORDS, Collections.<String>emptySet());
+        this.queryTypeFactory = module.get(QueryTypeFactory.class);
+        this.typeMappings = module.get(TypeMappings.class);
+        this.entitySerializer = module.get(EntitySerializer.class);
         typeFactory.setUnknownAsEntity(true);
     }
-
 
     public void execute() throws IOException {
         // collect types
@@ -117,8 +105,6 @@ public class DomainExporter {
         }
 
         // serialize them
-//        serialize(superTypes, supertypeSerializer);
-//        serialize(embeddableTypes, embeddableSerializer);
         serialize(entityTypes, entitySerializer);
     }
 
@@ -189,19 +175,12 @@ public class DomainExporter {
         return createEntityType(cl, entityTypes);
     }
 
-//    private EntityType createEmbeddableType(Class<?> cl) {
-//        return createEntityType(cl, embeddableTypes);
-//    }
-//
-//    private EntityType createSuperType(Class<?> cl) {
-//        return createEntityType(cl, superTypes);
-//    }
-
     private EntityType createEntityType(Class<?> cl,  Map<String,EntityType> types) {
         if (types.containsKey(cl.getName())){
             return types.get(cl.getName());
         }else{
-            EntityType type = new EntityType(namePrefix, nameSuffix, new ClassType(TypeCategory.ENTITY, cl));
+            EntityType type = new EntityType(new ClassType(TypeCategory.ENTITY, cl));
+            typeMappings.register(type, queryTypeFactory.create(type));
             if (cl.getSuperclass() != null && !cl.getSuperclass().equals(Object.class)){
                 type.addSupertype(new Supertype(new ClassType(cl.getSuperclass())));
             }
@@ -245,14 +224,14 @@ public class DomainExporter {
     }
 
 
-    /**
-     * Override the Serializer for entity types
-     *
-     * @param entitySerializer
-     */
-    public void setEntitySerializer(Serializer entitySerializer) {
-        this.entitySerializer = entitySerializer;
-    }
+//    /**
+//     * Override the Serializer for entity types
+//     *
+//     * @param entitySerializer
+//     */
+//    public void setEntitySerializer(Serializer entitySerializer) {
+//        this.entitySerializer = entitySerializer;
+//    }
 
     /**
      * Override the source file suffix (default: .java)

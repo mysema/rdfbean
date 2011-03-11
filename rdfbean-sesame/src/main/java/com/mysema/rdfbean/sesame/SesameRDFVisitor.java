@@ -384,6 +384,8 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             }
         }else if (MATH_OPS.containsKey(op)){
             return new MathExpr(toValue(expr.getArg(0), md), toValue(expr.getArg(1), md), MATH_OPS.get(op));
+        }else if (op == Ops.NEGATE){
+            return new MathExpr(toValue(expr.getArg(0), md), toValue(new ConstantImpl<LIT>(new LIT("-1", XSD.intType)), md), MathOp.MULTIPLY);
         }else if (op == Ops.MATCHES){
             return new Regex(new Str(toValue(expr.getArg(0), md)), new Str(toValue(expr.getArg(1), md)), null);
         }else if (op == Ops.MATCHES_IC){
