@@ -26,6 +26,7 @@ public class ConstructorVisitor extends EmptyVisitor {
     
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions){
+        close();
         inConstructor = name.equals("<init>");
         if (inConstructor){
             counter = 0;
@@ -36,23 +37,21 @@ public class ConstructorVisitor extends EmptyVisitor {
 
     @Override
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index){
-        if (inConstructor && counter == index){
+        if (inConstructor && index >= counter){
             if (!name.equals("this")){
                 parameters.add(name);    
             }            
-            counter++;
+            counter = index+1;
         }                
         super.visitLocalVariable(name, desc, signature, start, end, index);
     }
 
-    @Override
-    public void visitEnd(){
+    public void close(){
         if (inConstructor && !parameters.isEmpty()){
             constructors.add(parameters);
             parameters = null;
         }
         inConstructor = false;
-        super.visitEnd();
     }
 
     public List<List<String>> getConstructors() {

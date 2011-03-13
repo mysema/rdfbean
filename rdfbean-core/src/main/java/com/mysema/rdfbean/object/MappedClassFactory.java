@@ -57,6 +57,7 @@ public class MappedClassFactory {
                 InputStream is = clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/')+".class");
                 ClassReader cr = new ClassReader(is);
                 cr.accept(visitor, 0);    
+                visitor.close();
             }            
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -225,8 +226,8 @@ public class MappedClassFactory {
     @Nullable
     private MappedPath getPathMapping(MappedClass mappedClass, Constructor<?> constructor, int parameterIndex, String property) {
         boolean reference = mappedClass.hasProperty(property);
-        ConstructorParameter constructorParameter = new ConstructorParameter(constructor, parameterIndex, mappedClass, reference ? property : null);
-        if (constructorParameter.isPropertyReference()) {
+        ConstructorParameter constructorParameter = new ConstructorParameter(constructor, parameterIndex, mappedClass, property, reference);
+        if (mappedClass.hasProperty(property)) {
             return mappedClass.getMappedPath(property);
         } else {
             List<MappedPredicate> path = getPredicatePath(mappedClass.getClassNs(), constructorParameter);

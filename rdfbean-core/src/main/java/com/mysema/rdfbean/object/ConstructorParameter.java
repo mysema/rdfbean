@@ -8,8 +8,6 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
-import javax.annotation.Nullable;
-
 import net.jcip.annotations.Immutable;
 
 import org.apache.commons.collections15.BeanMap;
@@ -25,14 +23,16 @@ public final class ConstructorParameter extends MappedProperty<Constructor<?>> {
 
     private final int parameterIndex;
 
-    @Nullable
     private final String property;
     
-    public ConstructorParameter(Constructor<?> constructor, int parameterIndex, MappedClass declaringClass, @Nullable String property) {
-        super(null, constructor.getParameterAnnotations()[parameterIndex], declaringClass);
+    private final boolean reference;
+    
+    public ConstructorParameter(Constructor<?> constructor, int parameterIndex, MappedClass declaringClass, String property, boolean reference) {
+        super(property, constructor.getParameterAnnotations()[parameterIndex], declaringClass);
         this.constructor = constructor;
         this.parameterIndex = parameterIndex;
         this.property = property;
+        this.reference = reference;
     }
 
     @Override
@@ -60,7 +60,7 @@ public final class ConstructorParameter extends MappedProperty<Constructor<?>> {
     }
 
     public boolean isPropertyReference() {
-        return property != null;
+        return reference;
     }
 
     @Override
@@ -70,7 +70,7 @@ public final class ConstructorParameter extends MappedProperty<Constructor<?>> {
 
     @Override
     public boolean isVirtual() {
-        return property == null;
+        return !reference;
     }
 
 }
