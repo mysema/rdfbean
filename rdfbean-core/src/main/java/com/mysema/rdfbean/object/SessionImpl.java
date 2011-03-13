@@ -537,8 +537,11 @@ public final class SessionImpl implements Session {
         Object convertedValue;
         MappedProperty mappedProperty = propertyPath.getMappedProperty();
         try {
+            if (targetClass.isAssignableFrom(value.getClass())){
+                convertedValue = value;
+            }    
             // "Wildcard" type
-            if (MappedPath.isWildcard(targetClass) && value.isResource()) {
+            else if (MappedPath.isWildcard(targetClass) && value.isResource()) {
                 convertedValue = convertMappedObject((ID) value, Object.class, true, mappedProperty.isInjection());
             }
             // Enumerations
@@ -833,12 +836,14 @@ public final class SessionImpl implements Session {
 
     private MappedClass resolveMappedClass(MappedClass mappedClass, PropertiesMap properties) {
         for (STMT stmt : properties.getDirect().get(RDF.type)){
-            List<MappedClass> mappedClasses = configuration.getMappedClasses(stmt.getObject().asURI());
-            for (MappedClass mc : mappedClasses){
-                if (!mc.equals(mappedClass) && mappedClass.getJavaClass().isAssignableFrom(mc.getJavaClass())){
-                    return mc;
-                }
-            }
+            if (stmt.getObject().isURI()){
+                List<MappedClass> mappedClasses = configuration.getMappedClasses(stmt.getObject().asURI());
+                for (MappedClass mc : mappedClasses){
+                    if (!mc.equals(mappedClass) && mappedClass.getJavaClass().isAssignableFrom(mc.getJavaClass())){
+                        return mc;
+                    }
+                }    
+            }            
         }
         return mappedClass;
     }
