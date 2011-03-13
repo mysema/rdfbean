@@ -8,11 +8,11 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
+import javax.annotation.Nullable;
+
 import net.jcip.annotations.Immutable;
 
 import org.apache.commons.collections15.BeanMap;
-
-import com.mysema.rdfbean.annotations.InjectProperty;
 
 /**
  * @author sasa
@@ -25,10 +25,14 @@ public final class ConstructorParameter extends MappedProperty<Constructor<?>> {
 
     private final int parameterIndex;
 
-    public ConstructorParameter(Constructor<?> constructor, int parameterIndex, MappedClass declaringClass) {
+    @Nullable
+    private final String property;
+    
+    public ConstructorParameter(Constructor<?> constructor, int parameterIndex, MappedClass declaringClass, @Nullable String property) {
         super(null, constructor.getParameterAnnotations()[parameterIndex], declaringClass);
         this.constructor = constructor;
         this.parameterIndex = parameterIndex;
+        this.property = property;
     }
 
     @Override
@@ -37,7 +41,7 @@ public final class ConstructorParameter extends MappedProperty<Constructor<?>> {
     }
 
     public String getReferencedProperty() {
-        return getAnnotation(InjectProperty.class).value();
+        return property;
     }
 
     @Override
@@ -56,7 +60,7 @@ public final class ConstructorParameter extends MappedProperty<Constructor<?>> {
     }
 
     public boolean isPropertyReference() {
-        return isAnnotationPresent(InjectProperty.class);
+        return property != null;
     }
 
     @Override
@@ -66,7 +70,7 @@ public final class ConstructorParameter extends MappedProperty<Constructor<?>> {
 
     @Override
     public boolean isVirtual() {
-        return getAnnotation(InjectProperty.class) == null;
+        return property == null;
     }
 
 }

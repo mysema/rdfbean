@@ -136,7 +136,7 @@ public class RDFQueryBuilderTest {
     @Test
     public void In_Entities() throws Exception{
         query.from(user);
-        query.where(user.in(new User(new BID()), new User(new BID()), new User(new BID())));
+        query.where(user.in(createUser(), createUser(), createUser()));
         assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . FILTER(?user = ?_c4 || ?user = ?_c5 || ?user = ?_c6) }");
     }
 
@@ -248,7 +248,7 @@ public class RDFQueryBuilderTest {
     @Test
     public void Contains_Value() throws Exception{
         query.from(user);
-        query.where(user.getMap("buddiesMapped", String.class, User.class).containsValue(new User(new BID())));
+        query.where(user.getMap("buddiesMapped", String.class, User.class).containsValue(createUser()));
         assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_buddiesMapped . FILTER(?user_buddiesMapped = ?_c6) }");
     }
 
@@ -262,7 +262,7 @@ public class RDFQueryBuilderTest {
     @Test
     public void Contains_Value_Not() throws Exception{
         query.from(user);
-        query.where(user.getMap("buddiesMapped", String.class, User.class).containsValue(new User(new BID())).not());
+        query.where(user.getMap("buddiesMapped", String.class, User.class).containsValue(createUser()).not());
         assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_buddiesMapped . FILTER(!(?user_buddiesMapped = ?_c6)) }");
     }
 
@@ -326,4 +326,9 @@ public class RDFQueryBuilderTest {
 //        System.out.println();
     }
 
+    private User createUser(){
+        User user = new User();
+        user.id = new BID();
+        return user;
+    }
 }

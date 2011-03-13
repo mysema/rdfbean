@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -56,10 +54,10 @@ public class UpdateTest {
 
         public Employee() {}
         
-        public Employee(String name, int age, Company company) {
-            this.name = name;
-            this.age = age;
-            this.company = company;
+        public Employee(String n, int a, Company c) {
+            this.name = n;
+            this.age = a;
+            this.company = c;
         }
 
         public String getName() {
@@ -92,11 +90,9 @@ public class UpdateTest {
         
         @Predicate
         @Localized
-        @Nullable
         String description;
         
         @Predicate
-        @Nullable
         String name;
 
         public Company() {}

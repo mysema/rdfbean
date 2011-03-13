@@ -45,6 +45,7 @@
     <module>../rdfbean-tapestry</module>
     <module>../rdfbean-sparql</module>
 		
+	<module>../rdfbean-scala</module>	
     <module>../rdfbean-maven-plugin</module>    
     
     <!-- demo -->         

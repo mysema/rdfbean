@@ -5,104 +5,17 @@
  */
 package com.mysema.rdfbean.object;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.Nullable;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Path;
-import com.mysema.rdfbean.annotations.Predicate;
 
 /**
  * @author sasa
  *
  */
 public final class MappedPath {
-
-    @Nullable
-    static MappedPath getMappedPath(MappedProperty<?> property, @Nullable List<MappedPredicate> path) {
-        property.resolve(null);
-        if (path != null) {
-            return new MappedPath(property, path, false);
-        } else {
-            if (property.isAnnotatedProperty()) {
-                return new MappedPath(property, Collections.<MappedPredicate>emptyList(), false);
-            } else {
-                return null;
-            }
-        }
-    }
-
-    static MappedPath getPathMapping(String classNs, Field field, MappedClass declaringClass) {
-        FieldProperty property = new FieldProperty(field, declaringClass);
-        List<MappedPredicate> path = getPredicatePath(classNs, property);
-        return getMappedPath(property, path);
-    }
-
-    @Nullable
-    static MappedPath getPathMapping(MappedClass mappedClass, Constructor<?> constructor, int parameterIndex) {
-        ConstructorParameter constructorParameter = new ConstructorParameter(constructor, parameterIndex, mappedClass);
-        if (constructorParameter.isPropertyReference()) {
-            return mappedClass.getMappedPath(constructorParameter.getReferencedProperty());
-        } else {
-            List<MappedPredicate> path = getPredicatePath(mappedClass.getClassNs(), constructorParameter);
-            return getMappedPath(constructorParameter, path);
-        }
-    }
-
-    @Nullable
-    static MappedPath getPathMapping(String classNs, Method method, MappedClass declaringClass) {
-        MethodProperty property = MethodProperty.getMethodPropertyOrNull(method, declaringClass);
-        if (property != null) {
-            List<MappedPredicate> path = getPredicatePath(classNs, property);
-            return getMappedPath(property, path);
-        } else {
-            return null;
-        }
-    }
-
-    @Nullable
-    private static List<MappedPredicate> getPredicatePath(String classNs,
-            MappedProperty<?> property) {
-        String parentNs = classNs;
-        Path path = property.getAnnotation(Path.class);
-        Predicate[] predicates;
-        if (path != null) {
-            if (StringUtils.isNotEmpty(path.ns())) {
-                parentNs = path.ns();
-            }
-            predicates = path.value();
-        } else {
-            Predicate predicate = property.getAnnotation(Predicate.class);
-            if (predicate != null) {
-                predicates = new Predicate[] { predicate };
-            } else {
-                predicates = null;
-            }
-        }
-        if (predicates != null) {
-            List<MappedPredicate> predicatePath =
-                new ArrayList<MappedPredicate>(predicates.length);
-            boolean first = true;
-            for (Predicate predicate : predicates) {
-                predicatePath.add(
-                        new MappedPredicate(parentNs, predicate,
-                                first ? property.getName() : null));
-                first = false;
-            }
-            return predicatePath;
-        } else {
-            return null;
-        }
-    }
 
     private final boolean ignoreInvalid;
 

@@ -13,7 +13,6 @@ import org.junit.Test;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.InjectProperty;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
@@ -32,7 +31,7 @@ public class ConstructorParameters3Test {
         @Predicate
         final Parent parent;
 
-        public Child(@InjectProperty("parent") Parent parent) {
+        public Child(Parent parent) {
             this.parent = parent;
         }
     }

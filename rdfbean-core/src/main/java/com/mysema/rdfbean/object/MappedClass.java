@@ -171,6 +171,10 @@ public final class MappedClass {
     public Class<?> getJavaClass() {
         return clazz;
     }
+    
+    public boolean hasProperty(String name){
+        return properties.containsKey(name);
+    }
 
     public MappedPath getMappedPath(String name) {
         MappedPath path = properties.get(name);

@@ -3,7 +3,6 @@ package com.mysema.rdf.demo.domain;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdf.demo.DEMO;
 import com.mysema.rdfbean.annotations.ClassMapping;
-import com.mysema.rdfbean.annotations.InjectProperty;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.annotations.Required;
 
@@ -28,8 +27,7 @@ public class Person extends Party {
     // return demoService.sayHello();
     // }
 
-    public Person(@InjectProperty("firstName") String firstName,
-	    @InjectProperty("lastName") String lastName) {
+    public Person(String firstName, String lastName) {
 	this.firstName = Assert.hasText(firstName, "firstName");
 	this.lastName = Assert.hasText(lastName, "lastName");
     }

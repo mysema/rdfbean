@@ -15,7 +15,6 @@ import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
-import com.mysema.rdfbean.annotations.InjectProperty;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
@@ -46,9 +45,7 @@ public class VirtualPropertyTest {
         String lastName;
 
         public Person(
-                @InjectProperty("firstName")
                 String firstName, 
-                @InjectProperty("lastName")
                 String lastName) {
             this.firstName = firstName;
             this.lastName = lastName;
