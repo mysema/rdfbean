@@ -17,7 +17,7 @@ import com.mysema.converters.DateTimeConverter;
  */
 public final class QueryFunctions {
     
-    private static DateTimeConverter dateTime = new DateTimeConverter();
+    private static final DateTimeConverter dateTime = new DateTimeConverter();
         
     public static int dayOfMonth(String str){
         return dateTime.fromString(str).getDayOfMonth();

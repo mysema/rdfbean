@@ -158,7 +158,11 @@ public final class DefaultConfiguration implements Configuration {
     }
 
     public List<MappedClass> getMappedClasses(UID uid) {
-        return type2classes.get(Assert.notNull(uid,"uid"));
+        if (type2classes.containsKey(uid)){
+            return type2classes.get(Assert.notNull(uid,"uid"));    
+        }else{
+            return Collections.emptyList();
+        }        
     }
 
     public boolean isMapped(Class<?> clazz){

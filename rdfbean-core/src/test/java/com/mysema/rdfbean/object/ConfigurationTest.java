@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
 
 import org.junit.Test;
@@ -82,6 +83,12 @@ public class ConfigurationTest {
     public void Default_Namespace_Missing(){
         Configuration configuration = new DefaultConfiguration(Entity.class);
         configuration.getMappedClass(Entity.class);
+    }
+    
+    @Test
+    public void GetMappedClasses_For_Unknown(){
+        Configuration configuration = new DefaultConfiguration();
+        assertEquals(Collections.emptyList(), configuration.getMappedClasses(new UID(TEST.NS)));
     }
 
 }

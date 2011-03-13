@@ -20,6 +20,10 @@ import com.mysema.rdfbean.model.IDType;
 @ClassMapping(ns=TEST.NS)
 public class User{
     
+    enum Gender {
+        MALE, FEMALE
+    }
+    
     @Id(IDType.RESOURCE)
     ID id;
             
@@ -46,6 +50,9 @@ public class User{
     @Predicate(ln="buddy")
     @MapElements(key=@Predicate(ln="firstName"))
     Map<String, User> buddiesMapped;
+    
+    @Predicate
+    Gender gender;
     
     public User(){}
     
@@ -93,6 +100,13 @@ public class User{
     public void setName(String name) {
         this.name = name;
     }
-    
-    
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+        
 }

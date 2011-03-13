@@ -464,7 +464,7 @@ public final class SessionImpl implements Session {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
+    @Nullable 
     private <T> T convertMappedObject(ID subject, Class<T> requiredClass, boolean polymorphic, boolean injection) {
         UID context = getContext(requiredClass, subject, null);
         Object instance = getCached(subject, requiredClass);
@@ -824,10 +824,23 @@ public final class SessionImpl implements Session {
             T instance = getCached(entry.getKey(), clazz);
             if (idToInstance.containsKey(entry.getKey())){
                 PropertiesMap properties = new PropertiesMap(entry.getValue(), inverseProps.get(entry.getKey()));
-                bind(mappedClass, entry.getKey(), instance, properties);
+                MappedClass mc = resolveMappedClass(mappedClass, properties);
+                bind(mc, entry.getKey(), instance, properties);
             }
             instances.add(instance);
         }
+    }
+
+    private MappedClass resolveMappedClass(MappedClass mappedClass, PropertiesMap properties) {
+        for (STMT stmt : properties.getDirect().get(RDF.type)){
+            List<MappedClass> mappedClasses = configuration.getMappedClasses(stmt.getObject().asURI());
+            for (MappedClass mc : mappedClasses){
+                if (!mc.equals(mappedClass) && mappedClass.getJavaClass().isAssignableFrom(mc.getJavaClass())){
+                    return mc;
+                }
+            }
+        }
+        return mappedClass;
     }
 
     private List<ID> findMappedTypes(ID subject, UID context, MultiMap<UID, STMT> properties) {
@@ -1422,7 +1435,8 @@ public final class SessionImpl implements Session {
             T instance = getCached(entry.getKey(), clazz);
             if (idToInstance.containsKey(entry.getKey())){
                 PropertiesMap properties = new PropertiesMap(entry.getValue(), inverseProps.get(entry.getKey()));
-                bind(mappedClass, entry.getKey(), instance, properties);
+                MappedClass mc = resolveMappedClass(mappedClass, properties);
+                bind(mc, entry.getKey(), instance, properties);
             }
         }
     }
@@ -1432,13 +1446,15 @@ public final class SessionImpl implements Session {
         for (MappedPath mappedPath : mappedClass.getProperties()){
             if (mappedPath.isReference() && !mappedPath.getPredicatePath().isEmpty()){
                 MappedProperty<?> property = mappedPath.getMappedProperty();
-                Class<?> type = property.getType();
-                if (property.isCollection() || property.isMap()){
-                    type = property.getComponentType();
-                }
-                if (!type.isEnum() && !mappedPath.isInverse(0)){
-                    directToType.put(mappedPath.get(0).getUID(), type);
-                }
+                if (!property.isList()){
+                    Class<?> type = property.getType();
+                    if (property.isCollection() || property.isMap()){
+                        type = property.getComponentType();
+                    }
+                    if (!type.isEnum() && !mappedPath.isInverse(0)){
+                        directToType.put(mappedPath.get(0).getUID(), type);
+                    }    
+                }                
             }
         }
 

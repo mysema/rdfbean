@@ -76,7 +76,13 @@ public class RDFProperty extends RDFSResource {
         return basicPropertyFeatures.contains(RDFPropertyFeature.FunctionalProperty);
     }
 
-    public void addRange(RDFSClass<?> range) {
+    public RDFProperty addRange(RDFSClass<?> range) {
         this.range.add(range);
+        return this;
+    }
+    
+    public RDFProperty addDomain(RDFSClass<?> domain){
+        this.domain.add(domain);
+        return this;
     }
 }

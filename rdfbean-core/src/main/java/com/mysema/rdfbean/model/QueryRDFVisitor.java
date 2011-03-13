@@ -35,13 +35,6 @@ import com.mysema.util.PairIterator;
  */
 public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
-//    private static final Transformer<Bindings, Map<String,NODE>> bindingsToMap = new Transformer<Bindings, Map<String,NODE>>(){
-//        @Override
-//        public Map<String, NODE> transform(Bindings input) {
-//            return input.toMap();
-//        }
-//    };
-
     private static final Map<String, Pattern> patterns = new HashMap<String, Pattern>();
 
     private static final Map<String, Pattern> caseInsensitivePatterns = new HashMap<String, Pattern>();

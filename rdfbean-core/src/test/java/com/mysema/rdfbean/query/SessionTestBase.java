@@ -23,14 +23,13 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.object.Session;
-import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.testutil.SessionRule;
 
 public abstract class SessionTestBase implements SimpleDomain{
     
     protected static MiniRepository repository;
     
-    private static SessionFactory sessionFactory;
+//    private static SessionFactory sessionFactory;
     
     @Rule
     public SessionRule sessionRule = new SessionRule(repository, false);
@@ -60,10 +59,10 @@ public abstract class SessionTestBase implements SimpleDomain{
     @AfterClass
     public static void afterClass(){
         try{
-            if (sessionFactory != null) sessionFactory.close();
+//            if (sessionFactory != null) sessionFactory.close();
             if (repository != null) repository.close();    
         }finally{
-            sessionFactory = null;
+//            sessionFactory = null;
             repository = null;
         }        
     }

@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.owl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
@@ -38,7 +39,7 @@ public class Restriction extends OWLClass {
      * OWL 2
      */
     @Predicate
-    private List<RDFProperty> onProperties;
+    private List<RDFProperty> onProperties = new ArrayList<RDFProperty>();
 
     @Predicate
     private RDFProperty onProperty;
