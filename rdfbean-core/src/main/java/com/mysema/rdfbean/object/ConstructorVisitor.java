@@ -1,10 +1,12 @@
 /**
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
@@ -15,15 +17,16 @@ import org.objectweb.asm.commons.EmptyVisitor;
  *
  */
 public class ConstructorVisitor extends EmptyVisitor {
-    
+
     private boolean inConstructor = false;
-    
+
     private final List<List<String>> constructors = new ArrayList<List<String>>();
-    
-    private List<String> parameters; 
+
+    @Nullable
+    private List<String> parameters;
 
     private int counter = 0;
-    
+
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions){
         close();
@@ -39,10 +42,10 @@ public class ConstructorVisitor extends EmptyVisitor {
     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index){
         if (inConstructor && index >= counter){
             if (!name.equals("this")){
-                parameters.add(name);    
-            }            
+                parameters.add(name);
+            }
             counter = index+1;
-        }                
+        }
         super.visitLocalVariable(name, desc, signature, start, end, index);
     }
 
@@ -58,6 +61,6 @@ public class ConstructorVisitor extends EmptyVisitor {
         return constructors;
     }
 
-    
-    
+
+
 }
