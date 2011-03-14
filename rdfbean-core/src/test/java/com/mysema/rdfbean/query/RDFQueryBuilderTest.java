@@ -107,7 +107,7 @@ public class RDFQueryBuilderTest {
 //        query.orderBy(user.getSimple("gender", User.Gender.class))
         // TODO : use PathBuilder.getEnum
     }
-    
+
     @Test
     public void Ends_With() throws Exception{
         query.from(user);
@@ -212,7 +212,7 @@ public class RDFQueryBuilderTest {
         query.where(user.getString("name").eq("XXX"));
         assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_name }");
     }
-    
+
     @Test
     public void Localized_String_ne_Const() throws Exception{
         query.from(user);
@@ -329,7 +329,7 @@ public class RDFQueryBuilderTest {
         query.where(user.eq(user2));
         assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . ?user2 ?_c2 ?_c3 . FILTER(?user = ?user2) }");
     }
-    
+
 
     private void assertEquals(String query) throws Exception{
         RDFQueryImpl rdfQuery = builder.build(false);
@@ -338,9 +338,18 @@ public class RDFQueryBuilderTest {
         method.invoke(rdfQuery);
 
         QueryMetadata metadata = rdfQuery.getMetadata();
+
+        // tuple query
         SPARQLVisitor visitor = new SPARQLVisitor();
         visitor.visit(metadata, QueryLanguage.TUPLE);
         Assert.assertEquals(query, visitor.toString().replaceAll("\\s+", " ").trim());
+
+        // boolean query
+        if (!query.contains("DISTINCT")){
+            visitor = new SPARQLVisitor();
+            visitor.visit(metadata, QueryLanguage.BOOLEAN);
+            Assert.assertEquals(query.replaceAll("SELECT . WHERE", "ASK"), visitor.toString().replaceAll("\\s+", " ").trim());
+        }
 
 //        for (Map.Entry<Object, String> entry : visitor.getConstantToLabel().entrySet()){
 //            System.err.println(entry.getValue() + " = " + entry.getKey());
