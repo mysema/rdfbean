@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.DefaultQueryMetadata;
@@ -13,6 +14,7 @@ import com.mysema.query.QueryMetadata;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.PathImpl;
 import com.mysema.query.types.path.PathBuilder;
+import com.mysema.query.types.template.BooleanTemplate;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.MiniRepository;
@@ -317,6 +319,14 @@ public class RDFQueryBuilderTest {
         assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . FILTER(exists {{ ?user2 ?_c2 ?_c3 . ?user ?_c5 ?user_firstName . ?user2 ?_c5 ?user_firstName } }) }");
     }
 
+    @Test
+    @Ignore // FIXME
+    public void Template_Expression() throws Exception {
+        query.from(user);
+        query.where(BooleanTemplate.create("!bound({0})", user));
+        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 .  }");
+    }
+    
     @Test
     public void Two_Froms_are_Preserved() throws Exception {
         query.from(user, user2);
