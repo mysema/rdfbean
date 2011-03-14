@@ -7,6 +7,8 @@ package com.mysema.rdfbean.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Map;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -27,38 +29,45 @@ import com.mysema.rdfbean.sesame.MemoryRepository;
  *
  * @author tiwe
  * @version $Id$
- * 
+ *
  * @goal beangen
  * @phase generate-sources
  */
 public class JavaBeanGenMojo extends AbstractMojo{
 
-    /** 
-     * @parameter  
+    /**
+     * @parameter
      */
     private File schemaFile;
-    
+
     /**
      * @parameter
      */
     private File targetFolder;
-    
-    /** 
-     * @parameter 
+
+    /**
+     * @parameter
      */
     private boolean useTurtle;
-    
-    // TODO : ns to package mappings
-    
+
+    /**
+     * @parameter
+     */
+    private Map<String, String> nsToPackage;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         MemoryRepository repository = new MemoryRepository();
         Format format = useTurtle ? Format.TURTLE : Format.RDFXML;
-        repository.setSources(new RDFSource(schemaFile.getPath(), format, ""));
-        
+        try {
+            repository.setSources(new RDFSource(schemaFile.getAbsoluteFile().toURI().toURL().toString(), format, "http://www.mysema.com"));
+        } catch (MalformedURLException e1) {
+            throw new MojoExecutionException(e1.getMessage(), e1);
+        }
+
         DefaultConfiguration configuration = new DefaultConfiguration();
         configuration.addPackages(RDFSClass.class.getPackage(), OWLClass.class.getPackage());
-        
+
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
@@ -66,6 +75,9 @@ public class JavaBeanGenMojo extends AbstractMojo{
         Session session = sessionFactory.openSession();
         try{
             JavaBeanExporter exporter = new JavaBeanExporter(true);
+            for (Map.Entry<String, String> entry : nsToPackage.entrySet()){
+                exporter.addPackage(entry.getKey(), entry.getValue());
+            }
             exporter.export(session, targetFolder);
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage(), e);
