@@ -2,6 +2,12 @@ package com.mysema.rdfbean.scala
 
 import annotation.target.field
 
+/**
+ * Annotations contains alias declarations for the RDFBean annotations for field annotation
+ * 
+ * @author tiwe
+ *
+ */
 object Annotations {
     
   type ClassMapping = com.mysema.rdfbean.annotations.ClassMapping
