@@ -7,6 +7,7 @@ import org.junit.{ Ignore, Test, Before, After };
 import org.junit.Assert._;
 
 import RDFQueryTest._
+import Conversions._
 
 class RDFQueryTest {
     
@@ -30,7 +31,7 @@ class RDFQueryTest {
   
   def Label_is {
     query 
-      .where ( label eq new LIT("XXX"), label is (RDFS.label, user) )
+      .where ( label eq "XXX", label is (RDFS.label, user) )
       .select ( user );      
   }
   
