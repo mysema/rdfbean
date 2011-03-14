@@ -101,46 +101,48 @@ public class SchemaGen {
         MappedClass mappedClass = configuration.getMappedClass(clazz);
         OWLClass owlClass = null;
         UID cuid = mappedClass.getUID();
-        if (cuid != null) {
-            if (!(exportNamespaces.isEmpty() || exportNamespaces.contains(cuid.ns()))) {
-                owlClass = new ReferenceClass(cuid);
+        if (cuid == null){
+            return null;
+        }
+
+        if (!(exportNamespaces.isEmpty() || exportNamespaces.contains(cuid.ns()))) {
+            owlClass = new ReferenceClass(cuid);
+        } else {
+            owlClass = (OWLClass) resources.get(cuid);
+
+            if (owlClass == null) {
+                owlClass = new OWLClass(cuid);
+                resources.put(cuid, owlClass);
+                // label
+                owlClass.setLabel(Locale.ROOT, cuid.getLocalName());
             } else {
-                owlClass = (OWLClass) resources.get(cuid);
+                return owlClass;
+            }
 
-                if (owlClass == null) {
-                    owlClass = new OWLClass(cuid);
-                    resources.put(cuid, owlClass);
-                    // label
-                    owlClass.setLabel(Locale.ROOT, cuid.getLocalName());
-                } else {
-                    return owlClass;
+            // super class
+            if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class)){
+                addParent(clazz.getSuperclass(), owlClass, session, resources);
+            }
+
+            // interfaces
+            for (Class<?> iface : clazz.getInterfaces()) {
+                addParent(iface, owlClass, session, resources);
+            }
+
+            // enum instances
+            if (mappedClass.isEnum()) {
+                List<RDFSResource> oneOf = new ArrayList<RDFSResource>();
+                for (Object constant: clazz.getEnumConstants()) {
+                    Enum enumValue = (Enum)constant;
+                    oneOf.add(new AnyThing(new UID(cuid.ns(), enumValue.name()), owlClass, enumValue.ordinal()));
                 }
+                owlClass.setOneOf(oneOf);
+            }
 
-                // super class
-                if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class)){
-                    addParent(clazz.getSuperclass(), owlClass, session, resources);
-                }
-
-                // interfaces
-                for (Class<?> iface : clazz.getInterfaces()) {
-                    addParent(iface, owlClass, session, resources);
-                }
-
-                // enum instances
-                if (mappedClass.isEnum()) {
-                    List<RDFSResource> oneOf = new ArrayList<RDFSResource>();
-                    for (Object constant: clazz.getEnumConstants()) {
-                        Enum enumValue = (Enum)constant;
-                        oneOf.add(new AnyThing(new UID(cuid.ns(), enumValue.name()), owlClass, enumValue.ordinal()));
-                    }
-                    owlClass.setOneOf(oneOf);
-                }
-
-                // properties
-                for (MappedPath mappedPath : mappedClass.getProperties()) {
-                    if (!mappedPath.isInherited() && mappedPath.isSimpleProperty()) {
-                        processProperty(session, resources, owlClass, cuid, mappedPath);
-                    }
+            // properties
+            for (MappedPath mappedPath : mappedClass.getProperties()) {
+                if (!mappedPath.isInherited() && mappedPath.isSimpleProperty()) {
+                    processProperty(session, resources, owlClass, cuid, mappedPath);
                 }
             }
         }
