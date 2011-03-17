@@ -3,7 +3,7 @@ package com.mysema.rdfbean.scala;
 import java.util.Collection
 import javax.annotation.Nullable
 import com.mysema.query.types.{ ConstantImpl, Ops, Order, OrderSpecifier, ParamExpression, Visitor }
-import com.mysema.query.types.expr.{ BooleanExpression, Param }
+import com.mysema.query.scala._
 import com.mysema.rdfbean.model.NODE
 import com.mysema.query.scala.{ Operations, SimpleExpression }
 import com.mysema.rdfbean.model.{ Blocks, NODE, ID, LIT, UID, RDF }
@@ -33,7 +33,9 @@ class QNODE[T <: NODE](val t: Class[T], val name: String) extends ParamExpressio
   
   // TODO : asc, desc
 
-//    public BooleanExpression in(T... values){
+  override def in(values: T*): BooleanExpression = {
+    values.tail.foldLeft (this === values.head) { (l, r) => l or (this === r) } 
+  }
 
 //    public BooleanExpression in(Collection<? extends T> values){
 
