@@ -295,4 +295,22 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         }
     }
 
+    @Override
+    public Object[] uniqueResult(Expression<?>[] args) {
+        queryMixin.setUnique(true);
+        if (queryMixin.getMetadata().getModifiers().getLimit() == null){
+            limit(2l);
+        }
+        return uniqueResult(iterate(args));
+    }
+
+    @Override
+    public <RT> RT uniqueResult(Expression<RT> expr) {
+        queryMixin.setUnique(true);
+        if (queryMixin.getMetadata().getModifiers().getLimit() == null){
+            limit(2l);
+        }
+        return uniqueResult(iterate(expr));
+    }
+
 }
