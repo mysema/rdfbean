@@ -26,4 +26,8 @@ object Conversions {
   
   implicit def toLIT(b: Byte) = new LIT(String.valueOf(b), XSD.byteType);
   
+  // TODO : function to RDFConnectionCallback
+  
+  // TODO : function to SessionCallback
+  
 }
