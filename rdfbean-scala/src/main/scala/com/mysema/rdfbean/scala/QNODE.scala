@@ -8,6 +8,8 @@ import com.mysema.rdfbean.model.NODE
 import com.mysema.query.scala.{ Operations, SimpleExpression }
 import com.mysema.rdfbean.model.{ Blocks, NODE, ID, LIT, UID, RDF }
 
+import scala.collection.JavaConversions._
+
 /**
  * @author tiwe
  *
@@ -36,8 +38,10 @@ class QNODE[T <: NODE](val t: Class[T], val name: String) extends ParamExpressio
   override def in(values: T*): BooleanExpression = {
     values.tail.foldLeft (this === values.head) { (l, r) => l or (this === r) } 
   }
-
-//    public BooleanExpression in(Collection<? extends T> values){
+  
+  override def in(values: Collection[T]): BooleanExpression = {
+    values.tail.foldLeft (this === values.head) { (l, r) => l or (this === r) } 
+  }
 
   override def equals(o: Any): Boolean = {
     if (o == this){

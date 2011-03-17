@@ -23,16 +23,16 @@ class RDFQueryTest {
   }
   
   @Test
-  @Ignore // FIXME
   def User_in_Resources {    
     query 
       .where ( user in (res1, res2), user has (pred, obj) )
       .select ( user, pred, obj );
   }
   
+  @Test
   def Label_is {
     query 
-      .where ( label eq "XXX", label is (RDFS.label, user) )
+      .where ( label is (RDFS.label, user), label === "XXX" )
       .select ( user );      
   }
   
