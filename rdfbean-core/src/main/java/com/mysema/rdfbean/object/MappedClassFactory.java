@@ -50,15 +50,15 @@ public class MappedClassFactory {
         if (constructors.length == 0) {
             return;
         }
-        
-        ConstructorVisitor visitor = new ConstructorVisitor();        
+
+        ConstructorVisitor visitor = new ConstructorVisitor();
         try {
             if (clazz.getClassLoader() != null){
                 InputStream is = clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/')+".class");
                 ClassReader cr = new ClassReader(is);
-                cr.accept(visitor, 0);    
+                cr.accept(visitor, 0);
                 visitor.close();
-            }            
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -66,7 +66,7 @@ public class MappedClassFactory {
         for (List<String> c : visitor.getConstructors()){
             paramsMap.put(c.size(), c);
         }
-        
+
         MappedConstructor defaultConstructor = null;
         MappedConstructor mappedConstructor = null;
         nextConstructor: for (Constructor<?> constructor : constructors) {
@@ -135,7 +135,7 @@ public class MappedClassFactory {
     private void collectFieldPaths(Class<?> clazz, MappedClass mappedClass) {
         if (!clazz.isInterface()) {
             MappedPath path;
-            String classNs = MappedClass.getClassNs(clazz);
+            String classNs = mappedClass.getClassNs();
             for (Field field : clazz.getDeclaredFields()) {
                 path = getPathMapping(classNs, field, mappedClass);
                 if (path != null) {
@@ -146,10 +146,9 @@ public class MappedClassFactory {
     }
 
     private void collectMethodPaths(Class<?> clazz, MappedClass mappedClass) {
-        MappedPath path;
-        String classNs = MappedClass.getClassNs(clazz);
+        String classNs = mappedClass.getClassNs();
         for (Method method : clazz.getDeclaredMethods()) {
-            path = getPathMapping(classNs, method, mappedClass);
+            MappedPath path = getPathMapping(classNs, method, mappedClass);
             if (path != null) {
                 mappedClass.addMappedPath(path);
             }

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -28,22 +28,22 @@ import com.mysema.rdfbean.model.XSD;
 
 /**
  * @author mala
- * 
+ *
  */
 public class DynamicPropertiesTest implements PropertiesDomain{
-    
+
     private static final String CREATOR_COMMENT = "Created under stress";
 
     private static final String DESCRIPTION1 = "Some description 1";
-    
+
     private static final String DESCRIPTION2 = "Some description 2";
-    
+
     private static final LocalDate CREATED = new LocalDate();
-    
+
     private static final LocalDate DEADLINE = CREATED.plusDays(1);
-    
+
     private DefaultConfiguration configuration;
-    
+
     private MiniRepository repository;
 
     private Session session;
@@ -53,22 +53,22 @@ public class DynamicPropertiesTest implements PropertiesDomain{
     @Before
     public void setUp() {
         repository = new MiniRepository();
-        
-        configuration = new DefaultConfiguration(Project.class, Person.class);
-        
+
+        configuration = new DefaultConfiguration(TEST.NS, Project.class, Person.class);
+
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setRepository(repository);
         sessionFactory.setConfiguration(configuration);
         sessionFactory.initialize();
-        
-        repository.add(                
-                new STMT(_project, RDF.type,  new UID(TEST.NS, "Project")), 
+
+        repository.add(
+                new STMT(_project, RDF.type,  new UID(TEST.NS, "Project")),
                 new STMT(_project,  _name, new LIT("TestProject")),
-                new STMT(_project, _created, new LIT(CREATED.toString(), XSD.date)),                
+                new STMT(_project, _created, new LIT(CREATED.toString(), XSD.date)),
                 new STMT(_person, RDF.type, new UID(TEST.NS, "Person")),
                 new STMT(_person,  _name, new LIT("Foo Bar"))
-        );             
-        
+        );
+
         session = sessionFactory.openSession();
     }
 
@@ -76,24 +76,24 @@ public class DynamicPropertiesTest implements PropertiesDomain{
     public void tearDown() throws IOException{
         session.close();
     }
-    
+
     @Test
     public void Read() throws IOException {
-        
+
         // Checking preconditions
-        
+
         Project project = session.get(Project.class, _project);
         assertEquals("TestProject", project.name);
-        
+
         assertEquals(0, project.infos.size());
-        
+
         assertEquals(1, project.dates.size());
         assertTrue(project.dates.containsKey(_created));
         assertEquals(0, project.participants.size());
         session.close();
-        
+
         // Adding dynamic data
-        
+
         repository.add(
                new STMT(_project, _owner, _person),
                new STMT(_project, _deadline, new LIT(DEADLINE.toString(), XSD.date)),
@@ -103,16 +103,16 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         );
 
         // Checking dynamic data
-        
+
         session = sessionFactory.openSession();
         project = session.get(Project.class, _project);
         Person person = session.get(Person.class, _person);
         assertEquals("Foo Bar", person.name);
 
         assertEquals(2, project.infos.size());
-        
+
         assertEquals(2, project.dates.size());
-        
+
         assertTrue(project.infos.containsKey(_description));
         assertTrue(project.infos.containsKey(_creatorComment));
         assertTrue(project.dates.containsKey(_created));
@@ -120,7 +120,7 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         assertTrue(project.participants.containsKey(_owner));
 
         assertFalse(project.infos.containsKey(_name));
-        
+
         assertEquals(person, project.participants.get(_owner));
         assertTrue(project.infos.get(_description).contains(DESCRIPTION1));
         assertTrue(project.infos.get(_description).contains(DESCRIPTION2));
@@ -128,7 +128,7 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         assertEquals(CREATED, project.dates.get(_created));
         assertEquals(DEADLINE, project.dates.get(_deadline));
     }
-    
+
     @Test
     public void Write(){
         Project project = new Project();
@@ -137,10 +137,10 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         project.dates.put(_deadline, DEADLINE);
         session.save(project);
         session.clear();
-        
+
         Project project2 = session.getById(project.id, Project.class);
         assertEquals(project.dates, project2.dates);
     }
 
-    
+
 }

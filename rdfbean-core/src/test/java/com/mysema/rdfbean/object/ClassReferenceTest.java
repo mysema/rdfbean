@@ -18,7 +18,7 @@ import com.mysema.rdfbean.model.UID;
 @Ignore
 public class ClassReferenceTest {
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public final static class ClassReference {
         @Default(ns=TEST.NS, ln="ClassReference")
         Class<Object> type;

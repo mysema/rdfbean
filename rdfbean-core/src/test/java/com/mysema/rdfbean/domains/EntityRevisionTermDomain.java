@@ -5,57 +5,56 @@
  */
 package com.mysema.rdfbean.domains;
 
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
+
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PathInits;
 import com.mysema.query.types.path.SimplePath;
 import com.mysema.query.types.path.StringPath;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-import static com.mysema.query.types.PathMetadataFactory.*;
-
 public interface EntityRevisionTermDomain {
-    
 
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class EntityRevision{
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
 
         @Predicate
         public String text;
-        
+
         @Predicate
         public Entity revisionOf;
 
         public Entity getRevisionOf() {
             return revisionOf;
         }
-        
+
         public String getText(){
             return text;
         }
 
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Entity{
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public EntityRevision latestRevision;
-                
+
         @Predicate
         public Term term;
-        
+
         public Term getTerm() {
             return term;
         }
@@ -63,24 +62,24 @@ public interface EntityRevisionTermDomain {
         public EntityRevision getLatestRevision() {
             return latestRevision;
         }
-        
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Term{
 
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public String text2;
-     
+
         public String getText2(){
             return text2;
         }
-   
+
     }
-    
+
     public class QEntity extends EntityPathBase<EntityRevisionTermDomain.Entity> {
 
         private static final long serialVersionUID = -1998702918;
@@ -114,7 +113,7 @@ public interface EntityRevisionTermDomain {
         }
 
     }
-    
+
     public class QEntityRevision extends EntityPathBase<EntityRevisionTermDomain.EntityRevision> {
 
         private static final long serialVersionUID = -397412171;
@@ -171,6 +170,6 @@ public interface EntityRevisionTermDomain {
         }
 
     }
-    
-    
+
+
 }

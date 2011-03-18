@@ -5,43 +5,42 @@
  */
 package com.mysema.rdfbean.domains;
 
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
+
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.SimplePath;
 import com.mysema.query.types.path.StringPath;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-import static com.mysema.query.types.PathMetadataFactory.*;
-
 public interface UserDomain {
-    
 
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class User{
-       
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public  String firstName;
-        
+
         public User(){}
-        
+
         public User(String firstName){
-            this.firstName = firstName;            
+            this.firstName = firstName;
         }
-        
+
         public String getFirstName(){
             return firstName;
         }
-                
+
     }
-    
+
     public class QUser extends EntityPathBase<UserDomain.User> {
 
         private static final long serialVersionUID = 790171466;
@@ -65,6 +64,6 @@ public interface UserDomain {
         }
 
     }
-    
+
 
 }

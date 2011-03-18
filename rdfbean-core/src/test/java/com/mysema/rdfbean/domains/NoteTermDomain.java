@@ -5,63 +5,62 @@
  */
 package com.mysema.rdfbean.domains;
 
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
+
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PathInits;
 import com.mysema.query.types.path.SimplePath;
 import com.mysema.query.types.path.StringPath;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-import static com.mysema.query.types.PathMetadataFactory.*;
-
 public interface NoteTermDomain {
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Note {
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
-        @Predicate
-        public String basicForm;        
 
         @Predicate
-        public String lemma;        
-        
+        public String basicForm;
+
+        @Predicate
+        public String lemma;
+
         @Predicate
         public Term term;
-        
+
         public String getBasicForm() {
             return basicForm;
         }
-        
+
         public String getLemma() {
             return lemma;
         }
-        
+
         public Term getTerm() {
             return term;
         }
-        
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Term{
 
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public String meaning;
 
         public String getMeaning() {
             return meaning;
-        }                   
+        }
     }
 
     public class QNote extends EntityPathBase<NoteTermDomain.Note> {
@@ -98,7 +97,7 @@ public interface NoteTermDomain {
         }
 
     }
-    
+
     public class QTerm extends EntityPathBase<NoteTermDomain.Term> {
 
         private static final long serialVersionUID = 1879181003;

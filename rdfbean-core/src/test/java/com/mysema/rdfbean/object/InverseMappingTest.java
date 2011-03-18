@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
@@ -20,41 +19,41 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
 public class InverseMappingTest {
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Company {
-        
+
         @Id(IDType.RESOURCE)
         ID id;
-        
+
         @Predicate(ln="company", inv=true)
         Set<Department> departments;
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Department {
-        
+
         @Id(IDType.RESOURCE)
         ID id;
-        
+
         @Predicate
         Company company;
-        
+
         @Predicate(ln="department", inv=true)
         Set<Employee> employees;
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Employee {
-        
+
         @Id(IDType.RESOURCE)
         ID id;
-        
+
         @Predicate
         Department department;
-        
+
     }
-    
+
     @Test
     public void test(){
         Session session = SessionUtil.openSession(Company.class, Department.class, Employee.class);
@@ -63,17 +62,17 @@ public class InverseMappingTest {
         Employee employee = new Employee();
         employee.department = department;
         department.company = company;
-        
+
         session.save(company);
         session.save(department);
         session.save(employee);
         session.flush();
         session.clear();
-        
+
         department = session.get(Department.class, department.id);
         assertFalse(department.employees.isEmpty());
         assertTrue(department.employees.iterator().next() instanceof Employee);
-                
+
         company = session.get(Company.class, company.id);
         assertFalse(company.departments.isEmpty());
         assertTrue(company.departments.iterator().next() instanceof Department);

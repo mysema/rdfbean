@@ -16,16 +16,16 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.RDF;
 
 
-@ClassMapping(ns=TEST.NS)
+@ClassMapping
 public class MappedPathTest {
-    
+
     public String getProperty(){
 	return null;
     }
 
     @Test
     public void ToString() throws SecurityException, NoSuchMethodException {
-        Configuration configuration = new DefaultConfiguration(MappedPathTest.class);        
+        Configuration configuration = new DefaultConfiguration(TEST.NS, MappedPathTest.class);
 	MappedClass mappedClass = configuration.getMappedClass(MappedPathTest.class);
 	MethodProperty property = new MethodProperty(MappedPathTest.class.getMethod("getProperty"), mappedClass);
 	MappedPredicate predicate = new MappedPredicate(TEST.NS,new DummyPredicate(RDF.type), null);

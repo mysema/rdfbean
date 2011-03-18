@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.types.EntityPath;
+import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.EntityDomain;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.Repository;
@@ -20,23 +21,23 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 public class BeanListSourceTest implements EntityDomain{
 
     private SessionFactoryImpl sessionFactory;
-    
+
     @Before
     public void setUp(){
-        Configuration configuration = new DefaultConfiguration(Entity.class);
+        Configuration configuration = new DefaultConfiguration(TEST.NS, Entity.class);
         Repository repository = new MiniRepository();
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
-        
+
         Session session = sessionFactory.openSession();
         for (int i = 0; i < 10; i++){
             session.save(new Entity());
-        }        
+        }
         session.close();
     }
-    
+
     @Test
     public void Create(){
         QEntity entity = QEntity.entity;

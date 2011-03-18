@@ -15,50 +15,50 @@ import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PathInits;
 import com.mysema.query.types.path.SetPath;
 import com.mysema.query.types.path.StringPath;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.IDType;
 
 public interface UserProfileDomain {
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public abstract class Identifiable {
-        
+
         private static final long serialVersionUID = 4580448045434144592L;
-        
+
         @Id(IDType.LOCAL)
         public String id;
-        
+
         public String getId() {
             return id;
         }
 
+        @Override
         public String toString() {
             return id;
         }
 
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public class User extends Identifiable {
-        
+
         @Predicate
         public String firstName, lastName, email;
-        
+
         @Predicate
         public String username;
-        
+
         @Predicate
         public String password;
 
         @Predicate
         public Profile profile;
-        
+
         @Predicate
-        private Set<User> buddies = new HashSet<User>();
-        
+        private final Set<User> buddies = new HashSet<User>();
+
         public String getFirstName() {
             return firstName;
         }
@@ -86,19 +86,19 @@ public interface UserProfileDomain {
         public Set<User> getBuddies() {
             return buddies;
         }
-        
+
         public boolean isActive(){
             return true;
         }
-        
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public enum Profile {
         User,
-        Admin        
+        Admin
     }
-    
+
     public class QIdentifiable extends EntityPathBase<UserProfileDomain.Identifiable> {
 
         private static final long serialVersionUID = -1841937934;
@@ -120,7 +120,7 @@ public interface UserProfileDomain {
         }
 
     }
-    
+
     public class QProfile extends EntityPathBase<UserProfileDomain.Profile> {
 
         private static final long serialVersionUID = 1043504269;
@@ -140,7 +140,7 @@ public interface UserProfileDomain {
         }
 
     }
-    
+
     public class QUser extends EntityPathBase<UserProfileDomain.User> {
 
         private static final long serialVersionUID = -1810734233;

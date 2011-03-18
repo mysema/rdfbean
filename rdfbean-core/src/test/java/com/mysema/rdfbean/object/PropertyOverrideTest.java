@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -17,12 +17,12 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.UID;
 
 public class PropertyOverrideTest {
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class WithinClass {
         @Predicate(ns=TEST.NS)
         private WithinClass reference;
-        
+
         @InjectService
         public WithinClass getReference() {
             return reference;
@@ -31,7 +31,7 @@ public class PropertyOverrideTest {
 
     @Test
     public void VverrideWithinClass() {
-        Configuration configuration = new DefaultConfiguration(WithinClass.class);
+        Configuration configuration = new DefaultConfiguration(TEST.NS, WithinClass.class);
         MappedClass mappedClass = configuration.getMappedClass(WithinClass.class);
         MappedPath path = mappedClass.getMappedPath("reference");
         assertEquals(new UID(TEST.NS, "reference"), path.get(0).getUID());
@@ -42,9 +42,9 @@ public class PropertyOverrideTest {
     public void overrideSuperClassProperties() {
         // TODO
     }
-    
+
     public void illegalOverride() {
         // TODO
     }
-    
+
 }

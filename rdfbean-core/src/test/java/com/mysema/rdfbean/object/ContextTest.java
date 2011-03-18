@@ -19,24 +19,24 @@ import com.mysema.rdfbean.model.UID;
 
 public class ContextTest {
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static class Entity {
-        
+
         @Id
         String id;
-        
+
         @Predicate
         String property1;
-        
+
         @Predicate(context=TEST.NS)
         String property2;
-        
+
     }
-    
+
     private MiniRepository repository;
-    
+
     private Session session;
-    
+
     @Before
     public void setUp(){
         repository = new MiniRepository();
@@ -48,23 +48,23 @@ public class ContextTest {
         session.flush();
         session.clear();
     }
-    
+
     @Test
     public void findInstances(){
         Entity entity = session.findInstances(Entity.class).get(0);
         assertEquals("X", entity.property1);
         assertEquals("Y", entity.property2);
     }
-    
-    @Test    
-    public void findStatements(){        
+
+    @Test
+    public void findStatements(){
         List<STMT> property1 = IteratorAdapter.asList(repository.findStatements(null, new UID(TEST.NS, "property1"), null, null, false));
         assertEquals(1, property1.size());
         assertNull(property1.get(0).getContext());
-        
+
         List<STMT> property2 = IteratorAdapter.asList(repository.findStatements(null, new UID(TEST.NS, "property2"), null, null, false));
         assertEquals(1, property2.size());
         assertEquals(new UID(TEST.NS), property2.get(0).getContext());
     }
-    
+
 }

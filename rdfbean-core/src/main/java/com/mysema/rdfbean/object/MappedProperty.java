@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.collections15.BeanMap;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.annotations.*;
@@ -48,13 +47,13 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             Required.class
         ));
 
-    private static String getParentNs(MapElements mapElements, Member member) {
-        String ns = mapElements.ns();
-        if (!StringUtils.isNotEmpty(ns)) {
-            ns = MappedClass.getClassNs(member.getDeclaringClass());
-        }
-        return ns;
-    }
+//    private static String getParentNs(MapElements mapElements, Member member) {
+//        String ns = mapElements.ns();
+//        if (!StringUtils.isNotEmpty(ns)) {
+//            ns = MappedClass.getClassNs(member.getDeclaringClass());
+//        }
+//        return ns;
+//    }
 
     @Nullable
     private final String name;
@@ -284,8 +283,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         MapElements mapKey = getAnnotation(MapElements.class);
         if (mapKey != null) {
             Predicate predicate = mapKey.key();
-            String parentNs = getParentNs(mapKey, getMember());
-            return UID.create(parentNs, predicate.ns(), predicate.ln(), null);
+//            String parentNs = getParentNs(mapKey, getMember());
+            return UID.create(declaringClass.getClassNs(), predicate.ns(), predicate.ln(), null);
         } else {
             return null;
         }
@@ -317,8 +316,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         if (mapKey != null) {
             Predicate predicate = mapKey.value();
             try {
-                String parentNs = getParentNs(mapKey, getMember());
-                return UID.create(parentNs, predicate.ns(), predicate.ln(), null);
+//                String parentNs = getParentNs(mapKey, getMember());
+                return UID.create(declaringClass.getClassNs(), predicate.ns(), predicate.ln(), null);
             } catch (IllegalArgumentException e) {
                 return null;
             }

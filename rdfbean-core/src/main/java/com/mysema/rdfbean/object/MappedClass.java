@@ -15,7 +15,6 @@ import java.util.*;
 import javax.annotation.Nullable;
 
 import com.mysema.commons.lang.Assert;
-import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
 
@@ -62,15 +61,6 @@ public final class MappedClass {
         this.context = context;
         this.mappedSuperClasses = mappedSuperClasses;
         mappedPredicates.add(RDF.type);
-    }
-
-    public static String getClassNs(Class<?> clazz) {
-        ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
-        if (cmap != null) {
-            return cmap.ns();
-        } else {
-            return "";
-        }
     }
 
     void addDynamicProperty(MappedProperty<?> property) {
@@ -171,7 +161,7 @@ public final class MappedClass {
     public Class<?> getJavaClass() {
         return clazz;
     }
-    
+
     public boolean hasProperty(String name){
         return properties.containsKey(name);
     }

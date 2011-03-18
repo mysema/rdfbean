@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.PropertiesDomain.InvalidProject1;
 import com.mysema.rdfbean.domains.PropertiesDomain.InvalidProject2;
 import com.mysema.rdfbean.domains.PropertiesDomain.InvalidProject3;
@@ -19,14 +20,14 @@ import com.mysema.rdfbean.domains.PropertiesDomain.Project;
 import com.mysema.rdfbean.model.UID;
 
 public class PropertiesConfigurationTest {
-    
+
     private Configuration configuration;
-    
+
     @Before
     public void setUp(){
-        configuration = new DefaultConfiguration(Project.class, Person.class);
+        configuration = new DefaultConfiguration(TEST.NS, Project.class, Person.class);
     }
-    
+
     @Test
     public void MappedClass() throws SecurityException,
             NoSuchFieldException {

@@ -25,13 +25,13 @@ import com.mysema.rdfbean.model.UID;
  */
 public class IdReferenceTest {
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public final static class IDResource {
         @Id(IDType.RESOURCE)
         ID id;
     }
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public final static class LIDResource {
         @Id(IDType.LOCAL)
         LID id;

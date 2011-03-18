@@ -5,57 +5,56 @@
  */
 package com.mysema.rdfbean.domains;
 
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
+
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.PathInits;
 import com.mysema.query.types.path.SimplePath;
 import com.mysema.query.types.path.StringPath;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-import static com.mysema.query.types.PathMetadataFactory.*;
-
 public interface NoteRevisionTermDomain {
 
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static class NoteRevision {
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public String lemma;
-        
+
         @Predicate
         public Note note;
-        
+
         public String getLemma() {
             return lemma;
         }
-        
+
         public Note getNote() {
             return note;
-        }        
-        
+        }
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Note {
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public Term term;
-        
+
         @Predicate
         public NoteRevision latestRevision;
-        
+
         public Term getTerm() {
             return term;
         }
@@ -63,30 +62,30 @@ public interface NoteRevisionTermDomain {
         public NoteRevision getLatestRevision() {
             return latestRevision;
         }
-        
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Term{
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public String basicForm;
-        
+
         @Predicate
         public String meaning;
-        
+
         public String getBasicForm(){
             return basicForm;
         }
-        
+
         public String getMeaning() {
             return meaning;
-        }                   
+        }
     }
-    
+
     public class QNote extends EntityPathBase<NoteRevisionTermDomain.Note> {
 
         private static final long serialVersionUID = 1496561659;
@@ -120,7 +119,7 @@ public interface NoteRevisionTermDomain {
         }
 
     }
-    
+
     public class QNoteRevision extends EntityPathBase<NoteRevisionTermDomain.NoteRevision> {
 
         private static final long serialVersionUID = -1259034378;
@@ -153,7 +152,7 @@ public interface NoteRevisionTermDomain {
         }
 
     }
-    
+
     public class QTerm extends EntityPathBase<NoteRevisionTermDomain.Term> {
 
         private static final long serialVersionUID = 1496730741;
@@ -179,5 +178,5 @@ public interface NoteRevisionTermDomain {
         }
 
     }
-    
+
 }

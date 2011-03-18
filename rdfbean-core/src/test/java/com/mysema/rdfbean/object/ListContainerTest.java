@@ -7,14 +7,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 
 public class ListContainerTest {
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static class Example {
 
         @Id
@@ -25,7 +24,7 @@ public class ListContainerTest {
 
     }
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static class ChildContainer {
 
         @Id
@@ -36,7 +35,7 @@ public class ListContainerTest {
 
     }
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static class Child {
 
         @Id

@@ -11,7 +11,6 @@ import static junit.framework.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Mixin;
@@ -19,7 +18,7 @@ import com.mysema.rdfbean.model.LID;
 
 public class MixinTest {
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static final class AType {
         @Mixin
         BType asBType;
@@ -27,7 +26,7 @@ public class MixinTest {
         LID id;
     }
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static final class BType {
         @Mixin
         AType asAType;

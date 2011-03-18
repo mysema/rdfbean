@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
@@ -20,15 +19,15 @@ import com.mysema.rdfbean.model.IDType;
 
 /**
  * @author sasa
- * 
+ *
  */
 public class ConstructorParameters2Test {
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static final class Child {
         @Id(IDType.RESOURCE)
         final ID id;
-        
+
         @Predicate
         final Parent parent;
 
@@ -38,7 +37,7 @@ public class ConstructorParameters2Test {
         }
     }
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static final class Parent {
         @Id(IDType.RESOURCE)
         ID id;
@@ -52,7 +51,7 @@ public class ConstructorParameters2Test {
         session.saveAll(parent, child);
         session.flush();
         session.clear();
-        
+
         Child child2 = session.get(Child.class, child.id);
         assertNotNull(child2);
         assertEquals(child.id, child2.id);

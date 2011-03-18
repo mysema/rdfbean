@@ -5,33 +5,32 @@
  */
 package com.mysema.rdfbean.domains;
 
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
+
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.StringPath;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 
-import static com.mysema.query.types.PathMetadataFactory.*;
-
 public interface InferenceDomain {
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static class Entity1{
         @Id
         public String id;
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Entity2 extends Entity1{
-        
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Entity3 extends Entity2{
-        
+
     }
-    
+
     public class QEntity1 extends EntityPathBase<InferenceDomain.Entity1> {
 
         private static final long serialVersionUID = -1404735526;
@@ -53,7 +52,7 @@ public interface InferenceDomain {
         }
 
     }
-    
+
     public class QEntity2 extends EntityPathBase<InferenceDomain.Entity2> {
 
         private static final long serialVersionUID = -1404735525;
@@ -78,7 +77,7 @@ public interface InferenceDomain {
         }
 
     }
-    
+
     public class QEntity3 extends EntityPathBase<InferenceDomain.Entity3> {
 
         private static final long serialVersionUID = -1404735524;
@@ -103,5 +102,5 @@ public interface InferenceDomain {
         }
 
     }
-    
+
 }

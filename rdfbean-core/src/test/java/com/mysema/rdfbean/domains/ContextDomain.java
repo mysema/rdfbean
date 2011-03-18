@@ -1,6 +1,5 @@
 package com.mysema.rdfbean.domains;
 
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.Id;
@@ -14,7 +13,7 @@ public interface ContextDomain {
 
     String NS3 = "http://www.example.com/ns3#";
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     @Context(NS1)
     public static class Entity1 {
 
@@ -37,7 +36,7 @@ public interface ContextDomain {
 
     }
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static class Entity2 {
 
         @Id
@@ -59,7 +58,7 @@ public interface ContextDomain {
 
     }
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public static class Entity3 {
 
         @Id

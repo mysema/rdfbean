@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -24,23 +24,23 @@ import com.mysema.rdfbean.model.UID;
 
 public class AutowireTest {
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public final static class DomainType<T> {
-        
+
         @Predicate(ns=RDF.NS, ln="type")
         Class<T> parametrizedClass;
-        
+
         @Id(IDType.URI)
         String uri = TEST.NS + "domainType";
     }
-    
+
     public static class Command {
-        
+
         @Default(ns=TEST.NS, ln="domainType")
         DomainType<DomainType<?>> domainType;
-    
+
     }
-    
+
     @Test
     public void ClassReference() {
         MiniRepository repository = new MiniRepository();
@@ -56,5 +56,5 @@ public class AutowireTest {
         assertNotNull(command.domainType.parametrizedClass);
         assertTrue(DomainType.class.isAssignableFrom(command.domainType.parametrizedClass));
     }
-    
+
 }

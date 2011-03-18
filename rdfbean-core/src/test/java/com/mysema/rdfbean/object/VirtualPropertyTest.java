@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -23,21 +23,21 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
 public class VirtualPropertyTest {
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static interface Party {
-                
+
         @Predicate
         String getDisplayName();
 
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Person implements Party {
 
         @Id(IDType.RESOURCE)
         ID id;
-        
+
         @Predicate
         String firstName;
 
@@ -45,7 +45,7 @@ public class VirtualPropertyTest {
         String lastName;
 
         public Person(
-                String firstName, 
+                String firstName,
                 String lastName) {
             this.firstName = firstName;
             this.lastName = lastName;
@@ -55,14 +55,14 @@ public class VirtualPropertyTest {
         public String getDisplayName() {
             return firstName + " " + lastName;
         }
-        
+
     }
-    
+
     @Test
     public void VirtualProperties() {
         MiniRepository repository = new MiniRepository();
         Session session = SessionUtil.openSession(repository, Party.class, Person.class);
-        
+
         // Persistence
         session.save(new Person("John", "Doe"));
         List<STMT> statements = IteratorAdapter.asList(repository
@@ -70,7 +70,7 @@ public class VirtualPropertyTest {
         assertEquals(1, statements.size());
         STMT stmt = statements.get(0);
         assertEquals("John Doe", stmt.getObject().getValue());
-        
+
         // Retrieval
         session = SessionUtil.openSession(repository, Party.class, Person.class);
         Person person = session.findInstances(Person.class).get(0);

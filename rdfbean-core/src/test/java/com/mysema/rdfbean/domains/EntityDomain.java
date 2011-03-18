@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.domains;
 
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
+
 import org.joda.time.DateTime;
 
 import com.mysema.query.types.PathMetadata;
@@ -13,45 +15,42 @@ import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.SimplePath;
 import com.mysema.query.types.path.StringPath;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-import static com.mysema.query.types.PathMetadataFactory.*;
-
 public interface EntityDomain {
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Entity {
-       
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public long revision;
-        
+
         @Predicate
         public DateTime created;
-        
+
         @Predicate
         public String text;
-        
+
         @Predicate
         public String property;
-        
+
         @Predicate
         public String text1;
-        
+
         @Predicate
         public String text2;
-        
+
         public String getProperty(){
             return property;
         }
-        
+
         public String getText1() {
             return text1;
         }
@@ -59,9 +58,9 @@ public interface EntityDomain {
         public String getText2() {
             return text2;
         }
-        
+
         public Entity(){}
-        
+
         public Entity(long rev, String t, DateTime c){
             revision = rev;
             text = t;
@@ -90,10 +89,10 @@ public interface EntityDomain {
 
         public void setCreated(DateTime created) {
             this.created = created;
-        }       
-                                
+        }
+
     }
-    
+
     public class QEntity extends EntityPathBase<EntityDomain.Entity> {
 
         private static final long serialVersionUID = 582395858;
@@ -107,9 +106,9 @@ public interface EntityDomain {
         public final NumberPath<Long> revision = createNumber("revision", Long.class);
 
         public final StringPath text = createString("text");
-        
+
         public final StringPath property = createString("property");
-        
+
         public final StringPath text1 = createString("text1");
 
         public final StringPath text2 = createString("text2");

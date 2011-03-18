@@ -7,43 +7,42 @@ package com.mysema.rdfbean.domains;
 
 import java.util.Date;
 
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 
 public interface LiteralsDomain {
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Literals {
-        
+
         @Id
         public String id;
-        
+
         @Predicate
         public int intValue;
-        
+
         @Predicate
         public long longValue;
-        
+
         @Predicate
         public double doubleValue;
-        
+
         @Predicate
         public float floatValue;
-        
+
         @Predicate
         public byte byteValue;
-        
+
         @Predicate
         public short shortValue;
-        
+
         @Predicate
         public Date dateValue;
-        
+
         @Predicate
         public String stringValue;
-        
+
         @Predicate
         public boolean booleanValue;
 
@@ -62,7 +61,7 @@ public interface LiteralsDomain {
         public double getDoubleValue() {
             return doubleValue;
         }
-        
+
         public float getFloatValue() {
             return floatValue;
         }
@@ -86,7 +85,7 @@ public interface LiteralsDomain {
         public boolean isBooleanValue() {
             return booleanValue;
         }
-                
+
     }
-    
+
 }

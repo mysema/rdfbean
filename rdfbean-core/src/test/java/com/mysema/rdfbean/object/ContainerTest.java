@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -16,7 +16,6 @@ import java.util.List;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Container;
 import com.mysema.rdfbean.annotations.ContainerType;
@@ -28,21 +27,21 @@ import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.STMT;
 
-@ClassMapping(ns=TEST.NS)
+@ClassMapping
 public class ContainerTest {
 
     @Id(IDType.RESOURCE)
     ID id;
-    
+
     @Predicate
     @Container(ContainerType.SEQ)
     List<String> names = new ArrayList<String>();
-    
+
     @Test
     public void Container() {
         MiniRepository repository = new MiniRepository();
         Session session = SessionUtil.openSession(repository, ContainerTest.class);
-        
+
         names.add("Eka");
         names.add(null);
         names.add("Toka");
@@ -64,6 +63,6 @@ public class ContainerTest {
         assertNull(test.names.get(1));
         assertEquals("Toka", test.names.get(2));
     }
-    
-    
+
+
 }

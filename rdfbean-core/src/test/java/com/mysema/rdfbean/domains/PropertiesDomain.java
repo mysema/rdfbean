@@ -15,7 +15,7 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.UID;
 
 public interface PropertiesDomain {
-    
+
     UID _project = new UID(TEST.NS, "1");
     UID _person = new UID(TEST.NS, "2");
     UID _owner = new UID(TEST.NS, "owner");
@@ -24,28 +24,28 @@ public interface PropertiesDomain {
     UID _description = new UID(TEST.NS, "description");
     UID _creatorComment = new UID(TEST.NS, "creatorComment");
     UID _deadline = new UID(TEST.NS, "deadline");
-    
-    @ClassMapping(ns = TEST.NS)
+
+    @ClassMapping
     public static class Person {
-        
+
         @Id
         public String id;
-        
+
         @Predicate
         public String name;
     }
-    
-    @ClassMapping(ns = TEST.NS)
+
+    @ClassMapping
     public static class Iteration {
-        
+
         @Id
         String id;
-        
+
         @Predicate
         String name;
     }
-    
-    @ClassMapping(ns = TEST.NS)
+
+    @ClassMapping
     public static class Project {
 
         @Id
@@ -56,19 +56,19 @@ public interface PropertiesDomain {
 
         @Predicate
         public LocalDate created;
-        
+
         @Properties(includeMapped=true)
         public Map<UID, LocalDate> dates;
-        
+
         @Properties
         public Map<UID, Person> participants;
-        
+
         @Properties
         public Map<UID, Iteration> iterations;
 
         @Properties
         public Map<UID, Set<String>> infos;
-        
+
         public Project() {
         }
 
@@ -77,7 +77,7 @@ public interface PropertiesDomain {
         }
     }
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static class InvalidProject1 {
 
         @Properties
@@ -87,13 +87,13 @@ public interface PropertiesDomain {
         public Map<UID, NODE> invalid;
     }
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static class InvalidProject2 {
         @Properties
         public List<UID> nodes;
     }
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static class InvalidProject3 {
         @Properties
         public Map<String, String> nodes;

@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.query.types.path.PathBuilder;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
@@ -22,7 +21,7 @@ import com.mysema.rdfbean.model.IDType;
 
 public class SessionInvLoadTest {
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static class Note {
         @Id(IDType.RESOURCE)
         ID id;
@@ -37,7 +36,7 @@ public class SessionInvLoadTest {
         Term term;
     }
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static class Term {
         @Id(IDType.RESOURCE)
         ID id;
@@ -46,7 +45,7 @@ public class SessionInvLoadTest {
         String meaning;
     }
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static class Comment {
         @Id(IDType.RESOURCE)
         ID id;

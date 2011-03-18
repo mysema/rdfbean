@@ -5,13 +5,13 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.*;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.query.DomainExporter;
 
 public class DomainExporterTest {
 
-    private final DefaultConfiguration configuration = new DefaultConfiguration();
+    private final DefaultConfiguration configuration = new DefaultConfiguration(TEST.NS);
 
     @Test
     public void CompanyDepartmentEmployeeDomain() throws IOException{

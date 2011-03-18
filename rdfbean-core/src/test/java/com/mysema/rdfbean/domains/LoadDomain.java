@@ -12,51 +12,50 @@ import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.PathInits;
 import com.mysema.query.types.path.StringPath;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 
 public interface LoadDomain {
-    
-    @ClassMapping(ns=TEST.NS)
-    public class Document {        
+
+    @ClassMapping
+    public class Document {
         @Id
         public String id;
-        
+
         @Predicate
-        public String text;                   
-    }        
-    
-    @ClassMapping(ns=TEST.NS)
+        public String text;
+    }
+
+    @ClassMapping
     public class Entity {
         @Id
         public String id;
-        
+
         @Predicate
         public Document document;
 
         @Predicate
         public String text;
-                                
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public class Revision {
         @Id
         public String id;
-        
+
         @Predicate
         public long created;
-        
+
         @Predicate
         public Entity revisionOf;
-                
+
         @Predicate
         public long svnRevision;
-                                        
+
     }
-    
+
     public class QDocument extends EntityPathBase<Document> {
 
         private static final long serialVersionUID = 1255113926;
@@ -80,7 +79,7 @@ public interface LoadDomain {
         }
 
     }
-    
+
     public class QEntity extends EntityPathBase<Entity> {
 
         private static final long serialVersionUID = -672168370;
@@ -113,7 +112,7 @@ public interface LoadDomain {
         }
 
     }
-    
+
     public class QRevision extends EntityPathBase<Revision> {
 
         private static final long serialVersionUID = 132606854;
@@ -148,6 +147,6 @@ public interface LoadDomain {
         }
 
     }
-    
+
 
 }

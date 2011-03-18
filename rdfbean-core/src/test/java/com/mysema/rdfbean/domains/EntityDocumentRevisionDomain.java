@@ -5,35 +5,34 @@
  */
 package com.mysema.rdfbean.domains;
 
+import static com.mysema.query.types.PathMetadataFactory.forVariable;
+
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.path.PathInits;
 import com.mysema.query.types.path.SimplePath;
 import com.mysema.query.types.path.StringPath;
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-import static com.mysema.query.types.PathMetadataFactory.*;
-
 public interface EntityDocumentRevisionDomain {
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Revision {
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public long svnRevision;
-        
+
         @Predicate
         public long created;
-                
+
         @Predicate
         public Entity revisionOf;
 
@@ -48,19 +47,19 @@ public interface EntityDocumentRevisionDomain {
         public Entity getRevisionOf() {
             return revisionOf;
         }
-                                        
-    }
-    
 
-    @ClassMapping(ns=TEST.NS)
+    }
+
+
+    @ClassMapping
     public static class Entity {
-        
+
         @Id
         public String id;
 
         @Predicate
         public Document document;
-        
+
         public String getId() {
             return id;
         }
@@ -68,21 +67,21 @@ public interface EntityDocumentRevisionDomain {
         public Document getDocument() {
             return document;
         }
-                                
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public static class Document {
-        
+
         @Id
         public String id;
 
         public String getId() {
             return id;
         }
-                                
+
     }
-    
+
     public class QDocument extends EntityPathBase<EntityDocumentRevisionDomain.Document> {
 
         private static final long serialVersionUID = 539301614;
@@ -104,7 +103,7 @@ public interface EntityDocumentRevisionDomain {
         }
 
     }
-    
+
     public class QEntity extends EntityPathBase<EntityDocumentRevisionDomain.Entity> {
 
         private static final long serialVersionUID = -1236041098;
@@ -170,5 +169,5 @@ public interface EntityDocumentRevisionDomain {
         }
 
     }
-    
+
 }

@@ -24,7 +24,7 @@ import com.mysema.rdfbean.model.UID;
 @Ignore
 public class ConstructorParametersTest {
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static final class ChildType {
         @Predicate
         @Default(ns = TEST.NS)
@@ -35,7 +35,7 @@ public class ConstructorParametersTest {
         }
     }
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static final class ParentType {
         public ParentType(
                 @InjectService @Default(ns = TEST.NS, ln = "parentService") ParentServiceType service) {
@@ -43,7 +43,7 @@ public class ConstructorParametersTest {
         }
     }
 
-    @ClassMapping(ns = TEST.NS)
+    @ClassMapping
     public static final class ParentServiceType {
 
     }

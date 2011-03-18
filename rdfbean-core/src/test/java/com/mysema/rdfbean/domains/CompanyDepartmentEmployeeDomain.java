@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
@@ -19,18 +18,18 @@ import com.mysema.rdfbean.model.IDType;
 
 public interface CompanyDepartmentEmployeeDomain {
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping
     public class Company {
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate(ln="company", inv=true)
         public List<Department> departments = new ArrayList<Department>();
 
         @Predicate(ln="company", inv=true)
         public Department department;
-        
+
         public ID getId() {
             return id;
         }
@@ -42,18 +41,18 @@ public interface CompanyDepartmentEmployeeDomain {
         public Department getDepartment() {
             return department;
         }
-        
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public class Department {
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public Company company;
-        
+
         @Predicate(ln="department", inv=true)
         public Set<Employee> employees = new HashSet<Employee>();
 
@@ -68,16 +67,16 @@ public interface CompanyDepartmentEmployeeDomain {
         public Set<Employee> getEmployees() {
             return employees;
         }
-        
-        
+
+
     }
-    
-    @ClassMapping(ns=TEST.NS)
+
+    @ClassMapping
     public class Employee {
-        
+
         @Id(IDType.RESOURCE)
         public ID id;
-        
+
         @Predicate
         public Department department;
 
@@ -88,9 +87,9 @@ public interface CompanyDepartmentEmployeeDomain {
         public Department getDepartment() {
             return department;
         }
-        
-        
-        
+
+
+
     }
-    
+
 }
