@@ -28,16 +28,16 @@ class TraitsTest {
     session.clear();
     
     doc = session.getById(doc.id, classOf[Document])
-    assertEquals("John", doc.path)
-    assertEquals("Smith", doc.label)
-    assertEquals("Smith", doc.comment)
+    assertEquals("/abc/def.xml", doc.path)
+    assertEquals("Hello", doc.label)
+    assertEquals("World", doc.comment)
   }
      
 }
 
 @ClassMapping
 class Document extends Identifiable with Labeled with Commented {
-    @Predicate var path: String = _
+  @Predicate var path: String = _
 }
 
 @ClassMapping
