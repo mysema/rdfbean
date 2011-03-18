@@ -20,13 +20,13 @@ class BeanPersistenceTest {
     session.clear()
     
     person = session.getById(person.id, classOf[Person])
-    assertEquals("John", person.firstName);
-    assertEquals("Smith", person.lastName);
+    assertEquals("John", person.firstName)
+    assertEquals("Smith", person.lastName)
   }  
     
 }
 
-@ClassMapping(ns=TEST.NS)
+@ClassMapping
 class Person {
   @Id var id: String = _;
   

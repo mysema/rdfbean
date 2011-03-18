@@ -19,13 +19,13 @@ class CaseClassPersistenceTest {
     session.clear();
     
     person = session.getById(person.id, classOf[PersonCase])
-    assertEquals("John", person.firstName);
-    assertEquals("Smith", person.lastName);
+    assertEquals("John", person.firstName)
+    assertEquals("Smith", person.lastName)
   }
      
 }
 
-@ClassMapping(ns=TEST.NS)
+@ClassMapping
 case class PersonCase(
   @Id id: String,
   

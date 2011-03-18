@@ -14,18 +14,18 @@ class ImmutablePersistenceTest {
   @Test 
   def Class_Save {
     val session = SessionUtil.openSession(classOf[PersonImmutable])
-    var person = new PersonImmutable(null, "John", "Smith");
+    var person = new PersonImmutable(null, "John", "Smith")
     session.save(person)
     session.clear()
     
     person = session.getById(person.id, classOf[PersonImmutable])
-    assertEquals("John", person.firstName);
-    assertEquals("Smith", person.lastName);
+    assertEquals("John", person.firstName)
+    assertEquals("Smith", person.lastName)
   }  
     
 }
 
-@ClassMapping(ns=TEST.NS)
+@ClassMapping
 class PersonImmutable (
   @Id val id: String,  
   
