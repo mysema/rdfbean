@@ -30,7 +30,7 @@ class TraitsTest {
   }
     
   @Test
-  def Save_with_Traits {        
+  def GetById {        
     doc = session.getById(doc.id, classOf[Document])
     assertEquals("/abc/def.xml", doc.path)
     assertEquals("Hello", doc.label)
