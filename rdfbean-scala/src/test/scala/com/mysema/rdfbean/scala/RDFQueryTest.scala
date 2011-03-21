@@ -32,7 +32,7 @@ class RDFQueryTest {
   @Test
   def Label_is {
     query 
-      .where ( label is (RDFS.label, user), label === "XXX" )
+      .where ( label is (user, RDFS.label), label === "XXX" )
       .select ( user )      
   }
   
