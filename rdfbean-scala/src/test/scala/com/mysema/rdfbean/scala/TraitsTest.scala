@@ -11,26 +11,39 @@ import org.junit.{ Ignore, Test, Before, After };
 import org.junit.Assert._;
 
 class TraitsTest {
-     
-  @Test
-  def Traits_Save {
-    val session = SessionUtil.openSession(
-            classOf[Document],
-            classOf[Identifiable],
-            classOf[Labeled],
-            classOf[Commented])
-    var doc = new Document()
+    
+  var session: Session = _
+  
+  var doc: Document = _
+  
+  @Before
+  def setUp {
+    session = SessionUtil.openSession(
+            classOf[Document],classOf[Identifiable],classOf[Labeled],classOf[Commented])        
+    doc = new Document()
     doc.path = "/abc/def.xml"
     doc.label = "Hello"
     doc.comment = "World"
     
     session.save(doc);    
     session.clear();
+        
+  }
     
+  @Test
+  def Save_with_Traits {        
     doc = session.getById(doc.id, classOf[Document])
     assertEquals("/abc/def.xml", doc.path)
     assertEquals("Hello", doc.label)
     assertEquals("World", doc.comment)
+  }
+  
+  @Test
+  def Find_Instances_with_Trait_types {
+    assertEquals(1, session.findInstances(classOf[Document]).size)
+    assertEquals(1, session.findInstances(classOf[Identifiable]).size)
+    assertEquals(1, session.findInstances(classOf[Labeled]).size)
+    assertEquals(1, session.findInstances(classOf[Commented]).size)
   }
      
 }
