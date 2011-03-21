@@ -12,7 +12,7 @@ import org.junit.Assert._;
 class ImmutablePersistenceTest {
 
   @Test 
-  def Class_Save {
+  def Save {
     val session = SessionUtil.openSession(classOf[PersonImmutable])
     var person = new PersonImmutable(null, "John", "Smith")
     session.save(person)

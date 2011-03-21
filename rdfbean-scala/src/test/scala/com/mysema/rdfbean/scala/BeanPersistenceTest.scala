@@ -11,7 +11,7 @@ import org.junit.Assert._;
 class BeanPersistenceTest {
 
   @Test
-  def Class_Save {
+  def Save {
     val session = SessionUtil.openSession(classOf[Person])
     var person = new Person()
     person.firstName = "John"

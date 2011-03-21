@@ -12,7 +12,7 @@ import org.junit.Assert._;
 class CaseClassPersistenceTest {
      
   @Test
-  def CaseClass_Save {
+  def Save {
     val session = SessionUtil.openSession(classOf[PersonCase])
     var person = new PersonCase(null, "John", "Smith")
     session.save(person);    
