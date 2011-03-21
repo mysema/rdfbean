@@ -2,8 +2,7 @@ package com.mysema.rdfbean.scala
 
 import com.mysema.rdfbean.TEST
 import com.mysema.rdfbean.model.{ RDFS }
-import com.mysema.rdfbean.`object`.Session
-import com.mysema.rdfbean.`object`.SessionUtil
+import com.mysema.rdfbean.`object`.{ Session, SessionUtil }
 
 import Annotations._
 
@@ -45,7 +44,7 @@ class TraitsTest {
     assertEquals(1, session.findInstances(classOf[Labeled]).size)
     assertEquals(1, session.findInstances(classOf[Commented]).size)
   }
-     
+   
 }
 
 @ClassMapping
