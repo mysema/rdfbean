@@ -464,7 +464,7 @@ public final class SessionImpl implements Session {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable 
+    @Nullable
     private <T> T convertMappedObject(ID subject, Class<T> requiredClass, boolean polymorphic, boolean injection) {
         UID context = getContext(requiredClass, subject, null);
         Object instance = getCached(subject, requiredClass);
@@ -539,7 +539,7 @@ public final class SessionImpl implements Session {
         try {
             if (targetClass.isAssignableFrom(value.getClass())){
                 convertedValue = value;
-            }    
+            }
             // "Wildcard" type
             else if (MappedPath.isWildcard(targetClass) && value.isResource()) {
                 convertedValue = convertMappedObject((ID) value, Object.class, true, mappedProperty.isInjection());
@@ -842,8 +842,8 @@ public final class SessionImpl implements Session {
                     if (!mc.equals(mappedClass) && mappedClass.getJavaClass().isAssignableFrom(mc.getJavaClass())){
                         return mc;
                     }
-                }    
-            }            
+                }
+            }
         }
         return mappedClass;
     }
@@ -1458,8 +1458,8 @@ public final class SessionImpl implements Session {
                     }
                     if (!type.isEnum() && !mappedPath.isInverse(0)){
                         directToType.put(mappedPath.get(0).getUID(), type);
-                    }    
-                }                
+                    }
+                }
             }
         }
 
@@ -1643,6 +1643,9 @@ public final class SessionImpl implements Session {
             recordAddStatement(subject, RDF.type, uri, context);
         }
         BeanMap beanMap = toBeanMap(instance);
+
+        MultiMap<UID, STMT> statements = getProperties(subject, mappedClass, true);
+
         for (MappedPath path : mappedClass.getProperties()) {
             MappedProperty<?> property = path.getMappedProperty();
             if (path.isSimpleProperty()) {
@@ -1653,20 +1656,22 @@ public final class SessionImpl implements Session {
                 }
 
                 if (update) {
-                    for (STMT statement : findStatements(subject, predicate, null, context, false)) {
-                        if (property.isLocalized() && String.class.equals(property.getType())) {
-                            LIT lit = (LIT) statement.getObject();
-                            if (ObjectUtils.equals(getCurrentLocale(), lit.getLang())) {
+                    if (statements.containsKey(predicate)) {
+                        for (STMT statement : statements.get(predicate)) {
+                            if (property.isLocalized() && String.class.equals(property.getType())) {
+                                LIT lit = (LIT) statement.getObject();
+                                if (ObjectUtils.equals(getCurrentLocale(), lit.getLang())) {
+                                    recordRemoveStatement(statement);
+                                }
+                            } else {
                                 recordRemoveStatement(statement);
-                            }
-                        } else {
-                            recordRemoveStatement(statement);
-                            NODE object = statement.getObject();
-                            if (object.isResource()) {
-                                if (property.isList()) {
-                                    removeList((ID) object, context);
-                                } else if (property.isContainer()) {
-                                    removeContainer((ID) object, context);
+                                NODE object = statement.getObject();
+                                if (object.isResource()) {
+                                    if (property.isList()) {
+                                        removeList((ID) object, context);
+                                    } else if (property.isContainer()) {
+                                        removeContainer((ID) object, context);
+                                    }
                                 }
                             }
                         }
