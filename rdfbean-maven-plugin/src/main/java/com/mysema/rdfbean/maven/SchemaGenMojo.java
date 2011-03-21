@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.maven;
 
@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -30,74 +31,74 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.jboss.util.file.ArchiveBrowser;
-import org.openrdf.OpenRDFException;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.object.DefaultConfiguration;
-import com.mysema.rdfbean.sesame.SesameSchemaGen;
+import com.mysema.rdfbean.schema.SchemaGen;
 
 /**
  * SchemaGenMojo provides a Maven plugin for Sesame based schema generation
  *
  * @author tiwe
  * @version $Id$
- * 
+ *
  * @goal schemagen
  * @phase process-classes
  * @requiresDependencyResolution compile
  */
 public class SchemaGenMojo extends AbstractMojo{
-        
+
     private static final Comparator<Class<?>> fileComparator = new Comparator<Class<?>>(){
         public int compare(Class<?> o1, Class<?> o2) {
             return o1.getName().compareTo(o2.getName());
-        }                
+        }
     };
-    
-    /** 
-     * @parameter 
+
+    /**
+     * @parameter
      */
     private String classes;
-    
-    /** 
-     * @parameter 
+
+    /**
+     * @parameter
      */
     private File classListFile;
-    
-    /** 
-     * @parameter required=true 
+
+    /**
+     * @parameter required=true
      */
     private String namespace;
-    
-    /** 
-     * @parameter 
+
+    /**
+     * @parameter
      */
     private String ontology;
-    
-    /** 
-     * @parameter required=true 
+
+    /**
+     * @parameter required=true
      */
     private String prefix;
-    
-    /** 
-     * @parameter expression="${project}" readonly=true required=true 
+
+    /**
+     * @parameter expression="${project}" readonly=true required=true
      */
     private MavenProject project;
-    
-    /** 
-     * @parameter  
+
+    /**
+     * @parameter
      */
     private File schemaFile;
-        
-    /** 
-     * @parameter 
+
+    /**
+     * @parameter
      */
     private boolean useTurtle;
 
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            URLClassLoader classLoader = getProjectClassLoader();            
-            final Pattern pattern = Pattern.compile(".*"+toRegex(classes)+"\\.class"); 
+            URLClassLoader classLoader = getProjectClassLoader();
+            final Pattern pattern = Pattern.compile(".*"+toRegex(classes)+"\\.class");
             ArchiveBrowser.Filter filter = new ArchiveBrowser.Filter() {
                 public boolean accept(String name) {
                     return pattern.matcher(name).matches();
@@ -107,7 +108,7 @@ public class SchemaGenMojo extends AbstractMojo{
             Collections.sort(entityClasses, fileComparator);
             DefaultConfiguration configuration = new DefaultConfiguration();
             configuration.addClasses(entityClasses.toArray(new Class[entityClasses.size()]));
-            
+
             if (ontology == null){
                 if (namespace.endsWith("#") || namespace.endsWith("/")){
                     ontology = namespace.substring(0, namespace.length()-1);
@@ -115,25 +116,26 @@ public class SchemaGenMojo extends AbstractMojo{
                     ontology = namespace;
                 }
             }
-            
+
             if (schemaFile != null){
                 if (!schemaFile.getParentFile().exists()){
                     if (!schemaFile.getParentFile().mkdirs()){
                         getLog().info("Creation of " + schemaFile.getParentFile().getPath() + " failed");
                     }
                 }
-                SesameSchemaGen schemaGen = new SesameSchemaGen()
+                OutputStream out = new FileOutputStream(schemaFile);
+                SchemaGen schemaGen = new SchemaGen()
                     .setNamespace(prefix, namespace)
                     .setOntology(ontology)
-                    .setOutputStream(new FileOutputStream(schemaFile))
-                    .addExportNamespace(namespace);
+                    .addExportNamespace(namespace)
+                    .setConfiguration(configuration);
                 if (useTurtle){
-                    schemaGen.generateTurtle(configuration);
+                    schemaGen.export(Format.TURTLE, out);
                 }else{
-                    schemaGen.generateRDFXML(configuration);
-                }        
-            }            
-            
+                    schemaGen.export(Format.RDFXML, out);
+                }
+            }
+
             if (classListFile != null){
                 StringBuilder builder = new StringBuilder();
                 for (Class<?> clazz : entityClasses){
@@ -144,21 +146,19 @@ public class SchemaGenMojo extends AbstractMojo{
                 }
                 FileUtils.writeStringToFile(classListFile, builder.toString(), "UTF-8");
             }
-            
+
         } catch (IOException e) {
-            throw new MojoExecutionException(e.getMessage(), e);
-        } catch (OpenRDFException e) {
             throw new MojoExecutionException(e.getMessage(), e);
         } catch (DependencyResolutionRequiredException e) {
             throw new MojoExecutionException(e.getMessage(), e);
         } catch (ClassNotFoundException e) {
             throw new MojoExecutionException(e.getMessage(), e);
-        }               
+        }
     }
 
-    private List<Class<?>> getEntityClasses(URLClassLoader classLoader, ArchiveBrowser.Filter filter) throws IOException, 
+    private List<Class<?>> getEntityClasses(URLClassLoader classLoader, ArchiveBrowser.Filter filter) throws IOException,
         ClassNotFoundException {
-        List<Class<?>> entityClasses = new ArrayList<Class<?>>();        
+        List<Class<?>> entityClasses = new ArrayList<Class<?>>();
         for (URL url : classLoader.getURLs()){
             Iterator<?> classContents = ArchiveBrowser.getBrowser(url, filter);
             while (classContents.hasNext()){
@@ -172,18 +172,18 @@ public class SchemaGenMojo extends AbstractMojo{
                         in.close();
                     }
                 }
-                AnnotationsAttribute annotations = (AnnotationsAttribute) 
+                AnnotationsAttribute annotations = (AnnotationsAttribute)
                     classFile.getAttribute(AnnotationsAttribute.visibleTag);
                 if (annotations != null && annotations.getAnnotation(ClassMapping.class.getName()) != null){
                     Class<?> clazz = Class.forName(classFile.getName(), true, classLoader);
                     entityClasses.add(clazz);
                 }
-                
+
             }
         }
         return entityClasses;
     }
-    
+
     @SuppressWarnings("unchecked")
     protected URLClassLoader getProjectClassLoader() throws DependencyResolutionRequiredException, MalformedURLException {
         List<String> classpathElements = project.getCompileClasspathElements();
@@ -194,7 +194,7 @@ public class SchemaGenMojo extends AbstractMojo{
                 urls.add(file.toURI().toURL());
             }
         }
-        return new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());       
+        return new URLClassLoader(urls.toArray(new URL[urls.size()]), getClass().getClassLoader());
     }
 
     private String toRegex(String classes) {
@@ -205,6 +205,6 @@ public class SchemaGenMojo extends AbstractMojo{
         }
     }
 
-    
+
 
 }

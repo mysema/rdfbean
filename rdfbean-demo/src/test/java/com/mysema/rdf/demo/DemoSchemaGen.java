@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2009 Mysema Ltd
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdf.demo;
 
@@ -15,12 +15,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.object.Configuration;
-import com.mysema.rdfbean.sesame.SesameSchemaGen;
+import com.mysema.rdfbean.schema.SchemaGen;
 
 /**
  * BMSchemaGen provides
- * 
+ *
  * @author tiwe
  * @version $Id$
  */
@@ -35,7 +36,7 @@ public class DemoSchemaGen {
 	schemaGen.generateBMSchema();
     }
 
-    private Configuration configuration;
+    private final Configuration configuration;
 
     public DemoSchemaGen(Configuration configuration) {
 	this.configuration = Assert.notNull(configuration, "configuration");
@@ -43,10 +44,12 @@ public class DemoSchemaGen {
 
     public void generateBMSchema() throws RDFHandlerException,
 	    RDFParseException, IOException, StoreException {
-	new SesameSchemaGen().setNamespace("demo", DEMO.NS).setOntology(
-	        DEMO.CONTEXT).setOutputStream(
-	        new FileOutputStream("src/main/resources/demo.owl"))
-	        .addExportNamespace(DEMO.NS).generateRDFXML(configuration);
+	new SchemaGen()
+	    .setNamespace("demo", DEMO.NS)
+	    .setOntology(DEMO.CONTEXT)
+	    .addExportNamespace(DEMO.NS)
+	    .setConfiguration(configuration)
+	    .export(Format.RDFXML, new FileOutputStream("src/main/resources/demo.owl"));
     }
 
 }

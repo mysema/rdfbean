@@ -95,7 +95,7 @@ public class SchemaGenTest {
 	schemaGen.addExportNamespace(TEST.NS);
 	schemaGen.setConfiguration(configuration);
 	schemaGen.setRepository(repository);
-	schemaGen.exportConfiguration();
+	schemaGen.export();
 	
 	CloseableIterator<STMT> stmts = repository.findStatements(null, CORE.enumOrdinal, null, null, false);
 	try{

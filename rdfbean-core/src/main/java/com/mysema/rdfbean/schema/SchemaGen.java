@@ -5,9 +5,12 @@
  */
 package com.mysema.rdfbean.schema;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -15,9 +18,13 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import com.mysema.rdfbean.Namespaces;
+import com.mysema.rdfbean.model.Format;
+import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
@@ -50,7 +57,9 @@ public class SchemaGen {
 
     private Configuration configuration;
 
-    private Repository repository;
+    private Repository repository = new MiniRepository();
+
+    private final Map<String, String> ns2prefix = new LinkedHashMap<String, String>(Namespaces.DEFAULT);
 
     private final ConverterRegistry converterRegistry = new ConverterRegistryImpl();
 
@@ -62,7 +71,7 @@ public class SchemaGen {
 
     private String[] ontologyImports;
 
-    public void exportConfiguration() {
+    public void export() {
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(new DefaultConfiguration(RDFSClass.class.getPackage(), OWLClass.class.getPackage()));
         sessionFactory.setRepository(repository);
@@ -93,6 +102,19 @@ public class SchemaGen {
 
         // save resources
         session.saveAll(resources.values().toArray());
+    }
+
+    public void export(Format format, OutputStream os) {
+        try{
+            export();
+            repository.export(format, ns2prefix, null, os);
+        }finally{
+            try {
+                os.close();
+            } catch (IOException e) {
+                throw new RepositoryException(e);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -303,12 +325,19 @@ public class SchemaGen {
         return this;
     }
 
-    public String getOntology() {
-        return ontology;
+    public SchemaGen setNamespace(String prefix, String namespace) {
+        this.ns2prefix.put(namespace, prefix);
+        return this;
     }
 
-    public void setRepository(Repository repository) {
+    public SchemaGen setNamespaces(Map<String, String> namespaces) {
+        this.ns2prefix.putAll(namespaces);
+        return this;
+    }
+
+    public SchemaGen setRepository(Repository repository) {
         this.repository = repository;
+        return this;
     }
 
 }
