@@ -44,6 +44,22 @@ class TraitsTest {
     assertEquals(1, session.findInstances(classOf[Labeled]).size)
     assertEquals(1, session.findInstances(classOf[Commented]).size)
   }
+  
+  @Test
+  @Ignore
+  def Save {
+    var doc2 = new Identifiable with Labeled with Commented
+    doc2.label = "Hello"
+    doc2.comment = "World"
+     
+    session.save(doc2)
+    session.clear()
+     
+    val labeled = session.getById(doc2.id, classOf[Labeled])
+    val commented = session.getById(doc2.id, classOf[Commented])
+    assertEquals("Hello", labeled.label)
+    assertEquals("World", commented.comment)
+  }
    
 }
 
