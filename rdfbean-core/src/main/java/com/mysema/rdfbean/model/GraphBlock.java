@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang.ObjectUtils;
 
+import com.mysema.commons.lang.Assert;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Ops;
@@ -27,7 +28,7 @@ public class GraphBlock implements ContainerBlock{
     private final Expression<UID> context;
 
     public GraphBlock(Expression<UID> context, List<Block> blocks, Predicate... filters) {
-        this.blocks = blocks;
+        this.blocks = Assert.notEmpty(blocks,"blocks");
         this.context = context;
         this.filters = ExpressionUtils.allOf(filters);
     }

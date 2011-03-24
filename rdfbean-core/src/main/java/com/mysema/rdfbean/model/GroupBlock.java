@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang.ObjectUtils;
 
+import com.mysema.commons.lang.Assert;
 import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
@@ -28,7 +29,7 @@ public class GroupBlock implements ContainerBlock{
     private final Predicate filters;
 
     public GroupBlock(List<Block> blocks, Predicate... filters) {
-        this.blocks = blocks;
+        this.blocks = Assert.notEmpty(blocks,"blocks");
         this.filters = ExpressionUtils.allOf(filters);
 
     }

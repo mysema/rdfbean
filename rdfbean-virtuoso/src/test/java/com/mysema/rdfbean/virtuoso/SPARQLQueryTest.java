@@ -93,7 +93,7 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
 
     @Test
     public void Select_with_Bindings(){
-        SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, SELECT_LIMIT_10);
+        SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "SELECT * WHERE {?s ?p ?o} LIMIT 10");
         query.setBinding("p", RDF.type);
         CloseableIterator<Map<String,NODE>> rows = query.getTuples();
         assertTrue(rows.hasNext());
