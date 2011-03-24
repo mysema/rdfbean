@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryMetadata;
+import com.mysema.query.types.ParamExpression;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
@@ -270,11 +271,26 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             QueryMetadata md = (QueryMetadata)definition;
             visitor.visit(md, queryLanguage);
             SPARQLQuery query = createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
+            if (logger.isInfoEnabled()){
+                logBindings(visitor.getConstantToLabel(), md);
+            }
             visitor.addBindings(query, md);
             return (Q)query;
 
         }else{
             throw new IllegalArgumentException("Unsupported query language " + queryLanguage);
+        }
+    }
+
+    private void logBindings(Map<Object, String> constantToLabel, QueryMetadata md) {
+        for (Map.Entry<Object,String> entry : constantToLabel.entrySet()){
+            if (entry.getKey() instanceof ParamExpression<?>){
+                if (md.getParams().containsKey(entry.getKey())){
+                    logger.info(entry.getValue() + " = " + md.getParams().get(entry.getKey()));
+                }
+            }else {
+                logger.info(entry.getValue() + " = " + entry.getKey());
+            }
         }
     }
 
