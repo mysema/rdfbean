@@ -1,6 +1,8 @@
 package com.mysema.rdfbean.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
@@ -51,6 +54,23 @@ public final class Blocks {
                 convert(ID.class, subject),
                 convert(UID.class, predicate),
                 convert(NODE.class, object));
+    }
+
+    public static GroupBlock group(Collection<Predicate> predicates){
+        List<Block> blocks = new ArrayList<Block>();
+        BooleanBuilder filters = new BooleanBuilder();
+        for (Predicate predicate : predicates){
+            if (predicate instanceof Block){
+                blocks.add((Block)predicate);
+            }else{
+                filters.and(predicate);
+            }
+        }
+        if (filters.getValue() == null){
+            return new GroupBlock(blocks);
+        }else{
+            return new GroupBlock(blocks, filters.getValue());
+        }
     }
 
     public static GroupBlock group(Block... blocks){
