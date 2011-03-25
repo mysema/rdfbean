@@ -20,7 +20,7 @@ public class QNODE<T extends NODE> extends Param<T>{
 
     public static final QID s = new QID("s");
 
-    public static final QID p = new QID("p");
+    public static final QUID p = new QUID("p");
 
     public static final QNODE<NODE> o = new QNODE<NODE>(NODE.class,"o");
 
