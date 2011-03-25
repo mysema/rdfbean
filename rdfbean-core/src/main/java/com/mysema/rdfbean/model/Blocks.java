@@ -59,17 +59,21 @@ public final class Blocks {
     public static GroupBlock group(Collection<Predicate> predicates){
         List<Block> blocks = new ArrayList<Block>();
         BooleanBuilder filters = new BooleanBuilder();
+        handle(predicates, blocks, filters);
+        if (filters.getValue() == null){
+            return new GroupBlock(blocks);
+        }else{
+            return new GroupBlock(blocks, filters.getValue());
+        }
+    }
+
+    private static void handle(Collection<Predicate> predicates, List<Block> blocks, BooleanBuilder filters){
         for (Predicate predicate : predicates){
             if (predicate instanceof Block){
                 blocks.add((Block)predicate);
             }else{
                 filters.and(predicate);
             }
-        }
-        if (filters.getValue() == null){
-            return new GroupBlock(blocks);
-        }else{
-            return new GroupBlock(blocks, filters.getValue());
         }
     }
 
@@ -97,12 +101,27 @@ public final class Blocks {
         return new UnionBlock(Arrays.asList(blocks));
     }
 
+    public static GraphBlock graph(UID context, Collection<Predicate> predicates){
+        return graph(convert(UID.class, context), predicates);
+    }
+
     public static GraphBlock graph(UID context, Block... blocks){
         return graph(convert(UID.class, context), blocks);
     }
 
     public static GraphBlock graphFilter(UID context, Block block, Predicate... filters){
         return graphFilter(convert(UID.class, context), block, filters);
+    }
+
+    public static GraphBlock graph(Expression<UID> context, Collection<Predicate> predicates){
+        List<Block> blocks = new ArrayList<Block>();
+        BooleanBuilder filters = new BooleanBuilder();
+        handle(predicates, blocks, filters);
+        if (filters.getValue() == null){
+            return new GraphBlock(convert(UID.class, context), blocks);
+        }else{
+            return new GraphBlock(convert(UID.class, context), blocks, filters.getValue());
+        }
     }
 
     public static GraphBlock graph(Expression<UID> context, Block... blocks){
