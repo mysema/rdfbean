@@ -77,6 +77,14 @@ public final class Blocks {
         return new UnionBlock(Arrays.asList(blocks));
     }
 
+    public static GraphBlock graph(UID context, Block... blocks){
+        return graph(convert(UID.class, context), blocks);
+    }
+
+    public static GraphBlock graphFilter(UID context, Block block, Predicate... filters){
+        return graphFilter(convert(UID.class, context), block, filters);
+    }
+
     public static GraphBlock graph(Expression<UID> context, Block... blocks){
         return new GraphBlock(context, Arrays.asList(blocks));
     }
