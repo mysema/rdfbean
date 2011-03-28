@@ -228,7 +228,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     @Nullable
     public Void visit(OptionalBlock expr, @Nullable Void context) {
         lastPattern = null;
-        append("OPTIONAL {");
+        append("OPTIONAL { ");
         visitBlocks(expr.getBlocks());
         visitFilter(expr.getFilters());
         append("} ");
