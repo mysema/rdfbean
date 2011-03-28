@@ -38,46 +38,46 @@ import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.testutil.SessionRule;
 
 public abstract class AbstractRDBTest {
-    
+
     protected static JdbcConnectionPool dataSource;
-    
+
     protected static SQLTemplates templates = new H2Templates();
-    
+
     protected static RDBRepository repository;
-    
+
     @Rule
     public SessionRule sessionRule = new SessionRule(repository);
-    
+
     public Session session;
-    
+
     @BeforeClass
     public static void setUpClass() throws IOException{
         if (dataSource == null){
-            dataSource = JdbcConnectionPool.create("jdbc:h2:nioMapped:target/h2", "sa", "");   
+            dataSource = JdbcConnectionPool.create("jdbc:h2:nioMapped:target/h2", "sa", "");
             dataSource.setMaxConnections(30);
         }
-        Configuration configuration = new DefaultConfiguration(Entity1.class, Entity2.class, Entity3.class, SimpleType.class, SimpleType2.class);
+        Configuration configuration = new DefaultConfiguration(TEST.NS, Entity1.class, Entity2.class, Entity3.class, SimpleType.class, SimpleType2.class);
         repository = new RDBRepository(configuration, dataSource, templates, new MemoryIdSequence());
         repository.initialize();
-        
+
         // enums
         Set<STMT> added = new HashSet<STMT>();
         for (NoteType nt : NoteType.values()){
             added.add(new STMT(
-                    new UID(TEST.NS, nt.name()), 
-                    CORE.enumOrdinal, 
+                    new UID(TEST.NS, nt.name()),
+                    CORE.enumOrdinal,
                     new LIT(String.valueOf(nt.ordinal()), XSD.integerType)));
         }
         RDFConnection connection = repository.openConnection();
         connection.update(Collections.<STMT>emptySet(), added);
         connection.close();
     }
-    
+
     @AfterClass
     public static void tearDownClass() throws IOException, SQLException{
         if (repository != null){
-            repository.close();    
-        }        
+            repository.close();
+        }
     }
 
 }
