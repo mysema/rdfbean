@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.commons.lang.CloseableIterator;
@@ -142,6 +144,18 @@ public class TupleQueryTest {
 
         List<Map<String, NODE>> list = IteratorAdapter.asList(iterator);
         assertEquals(2, list.size());
+    }
+
+    @Test
+    @Ignore // FIXME
+    public void From(){
+        UID test = new UID(TEST.NS);
+        UID test2 = new UID(TEST.NS, "Res1");
+        connection.update(null, Arrays.asList(new STMT(new BID(), RDFS.label, new LIT("C"), test)));
+
+        assertTrue(query().from(test).where(Blocks.pattern(subject, predicate, object)).ask());
+        assertTrue(query().from(test, test2).where(Blocks.pattern(subject, predicate, object)).ask());
+        assertFalse(query().from(test2).where(Blocks.pattern(subject, predicate, object)).ask());
     }
 
 }

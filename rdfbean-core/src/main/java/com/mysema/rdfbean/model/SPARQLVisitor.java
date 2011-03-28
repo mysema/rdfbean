@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import javax.annotation.Nullable;
 
+import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.support.SerializerBase;
@@ -104,6 +105,12 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             }
         }
         lastPattern = null;
+
+        // from
+        for (JoinExpression je : md.getJoins()){
+            UID uid = (UID)((Constant<?>)je.getTarget()).getConstant();
+            append("FROM <").append(uid.getId()).append(">\n");
+        }
 
         // where
         if (md.getWhere() != null){

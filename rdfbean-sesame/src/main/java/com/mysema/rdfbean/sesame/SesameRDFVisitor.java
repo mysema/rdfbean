@@ -16,6 +16,8 @@ import org.openrdf.query.algebra.Order;
 import org.openrdf.query.algebra.Compare.CompareOp;
 import org.openrdf.query.algebra.MathExpr.MathOp;
 
+import com.mysema.query.BooleanBuilder;
+import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.types.*;
@@ -138,9 +140,28 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     @SuppressWarnings("unchecked")
     @Override
     public TupleExpr visit(QueryMetadata md, QueryLanguage<?, ?> queryType) {
-
+        List<Constant<UID>> fromUIDs = new ArrayList<Constant<UID>>();
+        for (JoinExpression join : md.getJoins()){
+            fromUIDs.add((Constant<UID>)join.getTarget());
+        }
         // where
-        TupleExpr tuple = toTuple(md.getWhere(), md);
+        TupleExpr tuple;
+        if (fromUIDs.isEmpty()) {
+            tuple = toTuple(md.getWhere(), md);
+        } else if (fromUIDs.size() == 1) {
+            graphs.push(visit(fromUIDs.get(0), md));
+            tuple = toTuple(md.getWhere(), md);
+            graphs.pop();
+        } else {
+            QUID g = new QUID("__g");
+            graphs.push(visit(g, md));
+            BooleanBuilder b = new BooleanBuilder();
+            for (Constant<UID> co : fromUIDs){
+                b.or(g.eq(co));
+            }
+            tuple = filter(toTuple(md.getWhere(), md), b.getValue(), md);
+            graphs.pop();
+        }
 
         if (queryType == QueryLanguage.BOOLEAN){
             return tuple;
@@ -435,7 +456,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     }
 
     @Override
-    public Object visit(ParamExpression<?> expr, QueryMetadata md) {
+    public Var visit(ParamExpression<?> expr, QueryMetadata md) {
         Var var = paramToVar.get(expr);
         if (var == null){
             var = new Var(expr.getName());

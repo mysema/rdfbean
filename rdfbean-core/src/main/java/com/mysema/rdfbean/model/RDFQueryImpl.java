@@ -9,6 +9,7 @@ import com.mysema.query.BooleanBuilder;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.support.QueryBase;
 import com.mysema.query.support.QueryMixin;
+import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Predicate;
 
@@ -28,6 +29,14 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
         super(new QueryMixin<RDFQueryImpl>());
         queryMixin.setSelf(this);
         this.connection = connection;
+    }
+
+    @Override
+    public RDFQuery from(UID... graphs){
+        for (UID uid : graphs){
+            queryMixin.from(new ConstantImpl<UID>(UID.class, uid));
+        }
+        return this;
     }
 
     @Override

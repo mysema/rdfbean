@@ -14,6 +14,8 @@ import com.mysema.query.types.Expression;
  */
 public interface RDFQuery extends Query<RDFQuery>{
 
+    RDFQuery from(UID... graphs);
+
     boolean ask();
 
     CloseableIterator<Map<String, NODE>> select(Expression<?>... exprs);

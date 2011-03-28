@@ -21,6 +21,8 @@ import org.apache.commons.lang.ObjectUtils;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.commons.lang.Pair;
+import com.mysema.query.BooleanBuilder;
+import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.*;
 import com.mysema.util.FilterIterable;
@@ -543,8 +545,24 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             initialBindings.put(entry.getKey().getName(), (NODE) entry.getValue());
         }
 
+        com.mysema.query.types.Predicate where = md.getWhere();
+        List<Constant<UID>> uids = new ArrayList<Constant<UID>>();
+        for (JoinExpression je : md.getJoins()) {
+            uids.add((Constant<UID>) je.getTarget());
+        }
+        if (uids.size() == 1) {
+            where = Blocks.graph(uids.get(0), (Block)where);
+        } else  if (uids.size() > 1) {
+            QUID g = new QUID("__g");
+            BooleanBuilder b = new BooleanBuilder();
+            for (Constant<UID> uid : uids) {
+                b.or(g.eq(uid));
+            }
+            where = Blocks.graphFilter(g, (Block)where, b.getValue());
+        }
+
         Bindings whereBindings = new Bindings(initialBindings);
-        Iterable<Bindings> iterable = (Iterable<Bindings>) ((Pair)md.getWhere().accept(this, whereBindings)).getFirst();
+        Iterable<Bindings> iterable = (Iterable<Bindings>) ((Pair)where.accept(this, whereBindings)).getFirst();
 
         // TODO : sort
 

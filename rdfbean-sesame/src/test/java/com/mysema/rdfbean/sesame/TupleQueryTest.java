@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.sesame;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -110,4 +111,17 @@ public class TupleQueryTest extends AbstractConnectionTest{
                 Blocks.optional(Blocks.pattern(subject, predicate, object)))
                 .select(subject, predicate, object);
     }
+
+    @Test
+    public void From(){
+        UID test = new UID(TEST.NS);
+        UID test2 = new UID(TEST.NS, "Res1");
+        connection.update(null, Arrays.asList(new STMT(new BID(), RDFS.label, new LIT("C"), test)));
+
+        assertTrue(query().from(test).where(Blocks.pattern(subject, predicate, object)).ask());
+        assertTrue(query().from(test, test2).where(Blocks.pattern(subject, predicate, object)).ask());
+        assertFalse(query().from(test2).where(Blocks.pattern(subject, predicate, object)).ask());
+    }
+
+
 }
