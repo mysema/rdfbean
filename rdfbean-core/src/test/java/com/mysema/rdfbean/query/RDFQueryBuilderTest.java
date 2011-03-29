@@ -104,10 +104,10 @@ public class RDFQueryBuilderTest {
     }
 
     @Test
-    public void Enum_Ordinal(){
+    public void Enum_Ordinal() throws Exception{
         query.from(user);
-//        query.orderBy(user.getSimple("gender", User.Gender.class))
-        // TODO : use PathBuilder.getEnum
+        query.where(user.getEnum("gender", User.Gender.class).ordinal().eq(1));
+        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_gender . ?user_gender ?_c6 ?user_gender_ordinal . FILTER(?user_gender_ordinal = ?_c8) }");
     }
 
     @Test
@@ -226,14 +226,14 @@ public class RDFQueryBuilderTest {
     public void Map_is_Empty() throws Exception{
         query.from(user);
         query.where(user.getMap("buddiesMapped", String.class, User.class).isEmpty());
-        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL {?user ?_c4 ?user_buddiesMapped } FILTER(!bound(?user_buddiesMapped)) }");
+        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL { ?user ?_c4 ?user_buddiesMapped } FILTER(!bound(?user_buddiesMapped)) }");
     }
 
     @Test
     public void Map_is_not_Empty() throws Exception{
         query.from(user);
         query.where(user.getMap("buddiesMapped", String.class, User.class).isNotEmpty());
-        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL {?user ?_c4 ?user_buddiesMapped } FILTER(!(!bound(?user_buddiesMapped))) }");
+        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL { ?user ?_c4 ?user_buddiesMapped } FILTER(!(!bound(?user_buddiesMapped))) }");
     }
 
     @Test
@@ -254,21 +254,21 @@ public class RDFQueryBuilderTest {
     public void Or() throws Exception{
         query.from(user);
         query.where(user.getString("firstName").eq("X").or(user.getString("firstName").eq("Y")));
-        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL {?user ?_c4 ?user_firstName } FILTER(?user_firstName = ?_c6 || ?user_firstName = ?_c7) }");
+        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL { ?user ?_c4 ?user_firstName } FILTER(?user_firstName = ?_c6 || ?user_firstName = ?_c7) }");
     }
 
     @Test
     public void Order_By() throws Exception{
         query.from(user);
         query.orderBy(user.getString("firstName").asc());
-        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL {?user ?_c4 ?user_firstName } } ORDER BY ?user_firstName");
+        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL { ?user ?_c4 ?user_firstName } } ORDER BY ?user_firstName");
     }
 
     @Test
     public void Order_By_Desc() throws Exception{
         query.from(user);
         query.orderBy(user.getString("firstName").desc());
-        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL {?user ?_c4 ?user_firstName } } ORDER BY DESC(?user_firstName)");
+        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 . OPTIONAL { ?user ?_c4 ?user_firstName } } ORDER BY DESC(?user_firstName)");
     }
 
     @Test
@@ -326,7 +326,7 @@ public class RDFQueryBuilderTest {
         query.where(BooleanTemplate.create("!bound({0})", user));
         assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 .  }");
     }
-    
+
     @Test
     public void Two_Froms_are_Preserved() throws Exception {
         query.from(user, user2);

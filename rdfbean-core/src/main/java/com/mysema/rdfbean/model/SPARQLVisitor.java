@@ -33,6 +33,10 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
 
+    private boolean inlinePredicates = false;
+
+    private boolean predicate = false;
+
     @Nullable
     private QueryMetadata metadata;
 
@@ -259,15 +263,22 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     @Override
     public Void visit(Constant<?> expr, Void context) {
-        if (expr.getConstant() instanceof QueryMetadata){
+        if (expr.getConstant() instanceof QueryMetadata) {
             QueryMetadata md = (QueryMetadata)expr.getConstant();
             handle(md.getWhere());
-        }else if (expr.getConstant() instanceof Block){
+
+        }else if (expr.getConstant() instanceof Block) {
             handle((Expression<?>)expr.getConstant());
+
+        }else if (predicate && inlinePredicates) {
+            NODE node = (NODE)expr.getConstant();
+            append("<" + node.getValue() + ">");
+
         }else if (!getConstantToLabel().containsKey(expr.getConstant())) {
             String constLabel = "_c" + (getConstantToLabel().size() + 1);
             getConstantToLabel().put(expr.getConstant(), constLabel);
             append("?" + constLabel);
+
         } else {
             append("?" + getConstantToLabel().get(expr.getConstant()));
         }
@@ -281,11 +292,15 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
                 append(".\n  ");
             }
             handle(expr.getSubject()).append(" ");
+            predicate = true;
             handle(expr.getPredicate()).append(" ");
+            predicate = false;
 
         }else if (!lastPattern.getPredicate().equals(expr.getPredicate())){
             append("; ");
+            predicate = true;
             handle(expr.getPredicate()).append(" ");
+            predicate = false;
 
         }else{
             append(", ");
@@ -331,6 +346,10 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
                 query.setBinding(entry.getValue(), (NODE)entry.getKey());
             }
         }
+    }
+
+    public void setInlinePredicates(boolean b) {
+        inlinePredicates = b;
     }
 
 }
