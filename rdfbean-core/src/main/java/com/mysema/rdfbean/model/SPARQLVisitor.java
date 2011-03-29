@@ -33,9 +33,9 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
 
-    private boolean inlinePredicates = false;
+    private boolean inlineResources = false;
 
-    private boolean predicate = false;
+    private boolean resource = false;
 
     @Nullable
     private QueryMetadata metadata;
@@ -270,9 +270,13 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         }else if (expr.getConstant() instanceof Block) {
             handle((Expression<?>)expr.getConstant());
 
-        }else if (predicate && inlinePredicates) {
-            NODE node = (NODE)expr.getConstant();
-            append("<" + node.getValue() + ">");
+        }else if (resource && inlineResources && ID.class.isInstance(expr.getConstant())) {
+            ID node = (ID)expr.getConstant();
+            if (node.isURI()){
+                append("<" + node.getValue() + ">");
+            }else{
+                append("<_:" + node.getValue() + ">");
+            }
 
         }else if (!getConstantToLabel().containsKey(expr.getConstant())) {
             String constLabel = "_c" + (getConstantToLabel().size() + 1);
@@ -287,20 +291,17 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     @Nullable
     public Void visit(PatternBlock expr, @Nullable Void context) {
+        resource = true;
         if (lastPattern == null || !lastPattern.getSubject().equals(expr.getSubject())){
             if (lastPattern != null){
                 append(".\n  ");
             }
             handle(expr.getSubject()).append(" ");
-            predicate = true;
             handle(expr.getPredicate()).append(" ");
-            predicate = false;
 
         }else if (!lastPattern.getPredicate().equals(expr.getPredicate())){
             append("; ");
-            predicate = true;
             handle(expr.getPredicate()).append(" ");
-            predicate = false;
 
         }else{
             append(", ");
@@ -308,6 +309,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
         handle(expr.getObject()).append(" ");
         lastPattern = expr;
+        resource = false;
         return null;
     }
 
@@ -348,8 +350,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         }
     }
 
-    public void setInlinePredicates(boolean b) {
-        inlinePredicates = b;
+    public void setInlineResources(boolean b) {
+        inlineResources = b;
     }
 
 }

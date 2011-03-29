@@ -268,7 +268,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                   queryLanguage.equals(QueryLanguage.GRAPH) ||
                   queryLanguage.equals(QueryLanguage.TUPLE)){
             SPARQLVisitor visitor = new SPARQLVisitor(VirtuosoSPARQLTemplates.DEFAULT, "");
-            visitor.setInlinePredicates(true); // TODO : remove this when full prepared statement usage is faster with Virtuoso
+            visitor.setInlineResources(true); // TODO : remove this when full prepared statement usage is faster with Virtuoso
             QueryMetadata md = (QueryMetadata)definition;
             visitor.visit(md, queryLanguage);
             SPARQLQuery query = createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
