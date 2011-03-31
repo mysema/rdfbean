@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.scala
 
-import com.mysema.rdfbean.model.{ NODE, UID, BID, LIT, XSD };
+import com.mysema.rdfbean.model.{ NODE, UID, BID, LIT, XSD, RDFConnection, RDFConnectionCallback }
+import com.mysema.rdfbean.`object`.{ Session, SessionCallback }
 
 /**
  * Implicit conversion from/and to NODEs
@@ -26,8 +27,16 @@ object Conversions {
   
   implicit def toLIT(b: Byte) = new LIT(String.valueOf(b), XSD.byteType);
   
-  // TODO : function to RDFConnectionCallback
+  implicit def toRDFConnectionCallback[T](f: RDFConnection => T) = {
+    new RDFConnectionCallback[T] {
+      def doInConnection(c: RDFConnection) = f(c)
+    }
+  }
   
-  // TODO : function to SessionCallback
+  implicit def toSessionCallback[T](f: Session => T) = {
+    new SessionCallback[T] {
+      def doInSession(s: Session) = f(s)
+    }
+  }
   
 }
