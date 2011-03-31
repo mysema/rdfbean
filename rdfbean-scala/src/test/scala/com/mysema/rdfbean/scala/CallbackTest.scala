@@ -29,7 +29,7 @@ class CallbackTest {
     
     sessionFactory.execute( (s: Session) => {
      s.clear()
-    });
+    })
   }
   
   @Test
@@ -42,7 +42,7 @@ class CallbackTest {
         val p = new Person()
         s.save(p)
         p
-    });
+    })
     
     assertNotNull(p)
   }
@@ -53,7 +53,7 @@ class CallbackTest {
     
     repository.execute( (c: RDFConnection) => {
       c.update(null, null)    
-    });
+    })
   }
     
 }
