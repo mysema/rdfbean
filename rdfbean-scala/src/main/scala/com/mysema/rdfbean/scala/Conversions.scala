@@ -4,7 +4,7 @@ import com.mysema.rdfbean.model.{ NODE, UID, BID, LIT, XSD, RDFConnection, RDFCo
 import com.mysema.rdfbean.`object`.{ Session, SessionCallback }
 
 /**
- * Implicit conversion from/and to NODEs
+ * Implicit conversions for RDFBean
  * 
  * @author tiwe
  *

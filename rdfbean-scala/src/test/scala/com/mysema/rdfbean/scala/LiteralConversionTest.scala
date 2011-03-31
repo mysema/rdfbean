@@ -18,6 +18,8 @@ class LiteralConversionTest {
     
     connection.findStatements(null, null, "XXX", null, false)
     connection.findStatements(null, null, 1,     null, false)
+    connection.close()
+    repository.close()
   }
     
 }
