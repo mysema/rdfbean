@@ -2,7 +2,6 @@ package com.mysema.rdfbean.model;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import javax.annotation.Nullable;
 
@@ -113,8 +112,8 @@ public class QNODE<T extends NODE> extends Param<T>{
         return notIn(Arrays.asList(values));
     }
 
-//    @Override
-    public BooleanExpression notIn(List<? extends T> values){
+    @Override
+    public BooleanExpression notIn(Collection<? extends T> values){
         if (values.isEmpty()){
             throw new IllegalArgumentException("empty collection is not allowed");
         }
