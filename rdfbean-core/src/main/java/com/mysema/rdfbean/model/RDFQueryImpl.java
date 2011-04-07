@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.BooleanBuilder;
+import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.support.QueryBase;
 import com.mysema.query.support.QueryMixin;
@@ -26,7 +27,7 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     private BooleanBuilder filters = new BooleanBuilder();
 
     public RDFQueryImpl(RDFConnection connection) {
-        super(new QueryMixin<RDFQueryImpl>());
+        super(new QueryMixin<RDFQueryImpl>(new DefaultQueryMetadata(false)));
         queryMixin.setSelf(this);
         this.connection = connection;
     }

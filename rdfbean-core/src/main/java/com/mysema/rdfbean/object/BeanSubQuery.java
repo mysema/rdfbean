@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
- * 
+ *
  */
 package com.mysema.rdfbean.object;
 
@@ -20,17 +20,17 @@ import com.mysema.query.types.Predicate;
  * @version $Id$
  */
 public class BeanSubQuery extends DetachableAdapter {
-    
+
     private final QueryMixin<BeanSubQuery> queryMixin;
-    
+
     public BeanSubQuery() {
-        queryMixin = new QueryMixin<BeanSubQuery>(this, new DefaultQueryMetadata());
+        queryMixin = new QueryMixin<BeanSubQuery>(this, new DefaultQueryMetadata(false));
         setDetachable(new DetachableMixin(queryMixin));
     }
-    
+
     /**
      * Defines the sources of the subquery
-     * 
+     *
      * @param o
      * @return
      */
@@ -40,7 +40,7 @@ public class BeanSubQuery extends DetachableAdapter {
 
     /**
      * Defines the order of the subquery
-     * 
+     *
      * @param o
      * @return
      */
@@ -50,13 +50,13 @@ public class BeanSubQuery extends DetachableAdapter {
 
     /**
      * Defines the filter conditions of the subquery
-     * 
+     *
      * @param o multiple mandatory filters
      * @return
      */
     public BeanSubQuery where(Predicate... o){
         return queryMixin.where(o);
     }
-    
+
 
 }

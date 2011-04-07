@@ -677,7 +677,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
         // select
         if (!md.getProjection().isEmpty()){
-            QueryMetadata rv = new DefaultQueryMetadata();
+            QueryMetadata rv = new DefaultQueryMetadata(false);
             for (Expression<?> e : md.getProjection()){
                 rv.addProjection(transform(e, f));
             }
