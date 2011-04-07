@@ -25,7 +25,7 @@ class QNODE[T <: NODE](val t: Class[T], val name: String) extends ParamExpressio
   
   def isAnon() = false
   
-  def getNotSetMessage() = "A parameter of type " + getType().getName() + " was not set"
+  def getNotSetMessage() = "A parameter of type " + getType.getName + " was not set"
     
   def is(predicate: AnyRef, subject: AnyRef) =  Blocks.pattern(subject, predicate, this)
 
@@ -81,7 +81,7 @@ object QNODE {
 
 }
 
-class QResource[N <: ID](c: Class[N], name: String) extends QNODE[N](c, name) {
+class QResource[T <: ID](c: Class[T], name: String) extends QNODE[T](c, name) {
     
   def a(t: AnyRef) = Blocks.pattern(this, RDF.`type`, t)
 
