@@ -6,7 +6,7 @@ import com.mysema.query.types.{ ConstantImpl, Ops, Order, OrderSpecifier, ParamE
 import com.mysema.query.scala._
 import com.mysema.rdfbean.model.NODE
 import com.mysema.query.scala.{ Operations, SimpleExpression }
-import com.mysema.rdfbean.model.{ Blocks, NODE, ID, LIT, UID, RDF }
+import com.mysema.rdfbean.model.{ Blocks, NODE, ID, LIT, BID, UID, RDF }
 
 import scala.collection.JavaConversions._
 
@@ -43,6 +43,10 @@ class QNODE[T <: NODE](val t: Class[T], val name: String) extends ParamExpressio
     values.tail.foldLeft (this === values.head) { (l, r) => l or (this === r) } 
   }
 
+  override def notIn(values: T*): BooleanExpression = !in(values)
+  
+  override def notIn(values: Collection[T]): BooleanExpression = !in(values)
+  
   override def equals(o: Any): Boolean = {
     if (o == this){
       true
@@ -77,13 +81,18 @@ object QNODE {
 
 }
 
-class QID(name: String) extends QNODE[ID](classOf[ID], name) {
-
+class QResource[N <: ID](c: Class[N], name: String) extends QNODE[N](c, name) {
+    
   def a(t: AnyRef) = Blocks.pattern(this, RDF.`type`, t)
 
   def has(p: AnyRef, o: AnyRef) = Blocks.pattern(this, p, o)
-  
 }
+
+class QID(name: String) extends QResource[ID](classOf[ID], name) { }
+
+class QUID(name: String) extends QResource[UID](classOf[UID], name) { }
+
+class QBID(name: String) extends QResource[BID](classOf[BID], name) { }
 
 class QLIT(name: String) extends QNODE[LIT](classOf[LIT], name) {
 
