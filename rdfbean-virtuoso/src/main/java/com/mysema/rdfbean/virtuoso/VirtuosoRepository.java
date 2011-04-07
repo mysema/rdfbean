@@ -58,6 +58,9 @@ public class VirtuosoRepository implements Repository {
     private boolean initialized = false;
 
     @Nullable
+    private Integer initialPoolSize, minPoolSize, maxPoolSize;
+
+    @Nullable
     private IdSequence idSequence;
 
     public VirtuosoRepository(String hostlist, String user, String password) {
@@ -80,11 +83,33 @@ public class VirtuosoRepository implements Repository {
         pds.setUser(user);
         pds.setPassword(password);
         pds.setCharset(charset);
+
+        try {
+            if (initialPoolSize != null){
+                pds.setInitialPoolSize(initialPoolSize);
+            }
+            if (minPoolSize != null){
+                pds.setMinPoolSize(minPoolSize);
+            }
+            if (maxPoolSize != null){
+                pds.setMaxPoolSize(maxPoolSize);
+            }
+
+            pds.fill();
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
+
     }
 
     @Override
     public void close() {
         initialized = false;
+        try {
+            pds.close();
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
     }
 
     @Override
@@ -137,8 +162,7 @@ public class VirtuosoRepository implements Repository {
 
     public VirtuosoRepositoryConnection openConnection() {
         try {
-            javax.sql.PooledConnection pconn = pds.getPooledConnection();
-            java.sql.Connection connection = pconn.getConnection();
+            java.sql.Connection connection = pds.getConnection();
             return new VirtuosoRepositoryConnection(idSequence, converter, prefetchSize, defGraph, allowedGraphs, connection);
         } catch (SQLException e) {
             logger.error("Connection to " + host + " FAILED.");
@@ -226,6 +250,18 @@ public class VirtuosoRepository implements Repository {
 
     public void setAllowedGraphs(Collection<UID> allowedGraphs) {
         this.allowedGraphs = Assert.notNull(allowedGraphs,"allowedGraphs");
+    }
+
+    public void setInitialPoolSize(int initialPoolSize) {
+        this.initialPoolSize = initialPoolSize;
+    }
+
+    public void setMinPoolSize(int minPoolSize) {
+        this.minPoolSize = minPoolSize;
+    }
+
+    public void setMaxPoolSize(int maxPoolSize) {
+        this.maxPoolSize = maxPoolSize;
     }
 
 
