@@ -22,10 +22,14 @@ public class SortableQueryMetadata extends DefaultQueryMetadata{
 
     private static final Pattern SPLIT = Pattern.compile("_");
     
-    private List<JoinExpression> joins = new ArrayList<JoinExpression>();
+    private final List<JoinExpression> joins = new ArrayList<JoinExpression>();
     
     @Nullable
     private JoinExpression last;
+    
+    public SortableQueryMetadata(){
+        super(false);
+    }
     
     @Override
     public void addJoin(JoinExpression join){
