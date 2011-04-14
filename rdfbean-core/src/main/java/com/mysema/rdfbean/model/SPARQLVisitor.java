@@ -270,13 +270,9 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         }else if (expr.getConstant() instanceof Block) {
             handle((Expression<?>)expr.getConstant());
 
-        }else if (inlineResources && ID.class.isInstance(expr.getConstant())) {
-            ID node = (ID)expr.getConstant();
-            if (node.isURI()){
-                append("<" + node.getValue() + ">");
-            }else{
-                append("<nodeID://" + node.getValue() + ">");
-            }
+        }else if (inlineResources && UID.class.isInstance(expr.getConstant())) {
+            UID node = (UID)expr.getConstant();
+            append("<" + node.getValue() + ">");
 
         }else if (!getConstantToLabel().containsKey(expr.getConstant())) {
             String constLabel = "_c" + (getConstantToLabel().size() + 1);
