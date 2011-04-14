@@ -50,7 +50,7 @@ public class MiniConnection implements RDFConnection {
     public BID createBNode() {
         return new BID();
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
@@ -119,4 +119,5 @@ public class MiniConnection implements RDFConnection {
     public InferenceOptions getInferenceOptions() {
         return InferenceOptions.DEFAULT;
     }
+    
 }

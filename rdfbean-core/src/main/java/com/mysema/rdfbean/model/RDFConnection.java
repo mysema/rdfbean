@@ -47,7 +47,7 @@ public interface RDFConnection extends Closeable{
      * @return
      */
     BID createBNode();
-
+    
     /**
      * Prepare a Query of the given query language with the given definition
      *

@@ -682,8 +682,11 @@ public final class SessionImpl implements Session {
     private ID createResource(@Nullable UID type, BeanMap instance) {
         ID id = configuration.createURI(instance.getBean());
         if (id == null) {
-            // TODO : make ID generation configurable
-            id = connection.createBNode();
+            if (type != null) {
+                id = new UID("resource:" + type.getLocalName() + "#r" + UUID.randomUUID());
+            }else{
+                id = new UID("resource:rdfbean#r" + UUID.randomUUID());
+            }
         }
         return id;
     }

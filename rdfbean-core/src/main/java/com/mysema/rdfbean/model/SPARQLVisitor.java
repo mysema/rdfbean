@@ -35,7 +35,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     private boolean inlineResources = false;
 
-    private boolean resource = false;
+//    private boolean resource = false;
 
     @Nullable
     private QueryMetadata metadata;
@@ -270,12 +270,12 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         }else if (expr.getConstant() instanceof Block) {
             handle((Expression<?>)expr.getConstant());
 
-        }else if (resource && inlineResources && ID.class.isInstance(expr.getConstant())) {
+        }else if (inlineResources && ID.class.isInstance(expr.getConstant())) {
             ID node = (ID)expr.getConstant();
             if (node.isURI()){
                 append("<" + node.getValue() + ">");
             }else{
-                append("<_:" + node.getValue() + ">");
+                append("<nodeID://" + node.getValue() + ">");
             }
 
         }else if (!getConstantToLabel().containsKey(expr.getConstant())) {
@@ -291,7 +291,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     @Nullable
     public Void visit(PatternBlock expr, @Nullable Void context) {
-        resource = true;
+//        resource = true;
         if (lastPattern == null || !lastPattern.getSubject().equals(expr.getSubject())){
             if (lastPattern != null){
                 append(".\n  ");
@@ -309,7 +309,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
         handle(expr.getObject()).append(" ");
         lastPattern = expr;
-        resource = false;
+//        resource = false;
         return null;
     }
 

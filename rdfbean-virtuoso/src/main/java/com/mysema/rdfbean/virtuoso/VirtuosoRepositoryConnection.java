@@ -255,7 +255,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     public BID createBNode() {
         return new BID();
     }
-
+    
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {

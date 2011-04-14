@@ -30,6 +30,7 @@ public final class BID extends ID {
         super(Assert.hasText(bnodeId,"bnodeId"));
     }
     
+    @Override
     public String toString() {
         return "_:" + id;
     }

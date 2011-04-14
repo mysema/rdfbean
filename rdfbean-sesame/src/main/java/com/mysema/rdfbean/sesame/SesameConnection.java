@@ -153,7 +153,7 @@ public class SesameConnection implements RDFConnection {
     @Override
     public BID createBNode() {
         return dialect.getBID(dialect.createBNode());
-    }
+    }  
 
     @SuppressWarnings("unchecked")
     @Override
