@@ -682,9 +682,10 @@ public final class SessionImpl implements Session {
     private ID createResource(@Nullable UID type, BeanMap instance) {
         ID id = configuration.createURI(instance.getBean());
         if (id == null) {
-            String base = type != null ? type.getLocalName() : "Resource"; 
-            String local = UUID.randomUUID().toString().replace("-", "");
-            return new UID("resource://" + base + "/" + local);
+//            String base = type != null ? type.getLocalName() : "Resource"; 
+//            String local = UUID.randomUUID().toString().replace("-", "");
+//            id = new UID("resource://" + base + "/" + local);
+            id = connection.createBNode();
         }
         return id;
     }
