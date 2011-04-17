@@ -9,7 +9,18 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -36,7 +47,7 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
  */
 public class DefaultConfiguration implements Configuration {
 
-    private static final Pattern jarUrlSeparator = Pattern.compile("!");
+    private static final Pattern JAR_URL_SEPARATOR = Pattern.compile("!");
 
     private static final Set<String> buildinNamespaces = new HashSet<String>();
 
@@ -194,14 +205,14 @@ public class DefaultConfiguration implements Configuration {
             }
         }
     }
-
+    
     Set<Class<?>> scanPackage(ClassLoader classLoader, Package pkg) throws IOException, ClassNotFoundException {
         Enumeration<URL> urls = classLoader.getResources(pkg.getName().replace('.', '/'));
         Set<Class<?>> classes = new HashSet<Class<?>>();
         while (urls.hasMoreElements()){
             URL url = urls.nextElement();
             if (url.getProtocol().equals("jar")){
-                String[] fileAndPath = jarUrlSeparator.split(url.getFile().substring(5));
+                String[] fileAndPath = JAR_URL_SEPARATOR.split(url.getFile().substring(5));
                 JarFile jarFile = new JarFile(fileAndPath[0]);
                 Enumeration<JarEntry> entries = jarFile.entries();
                 while (entries.hasMoreElements()){
@@ -217,8 +228,9 @@ public class DefaultConfiguration implements Configuration {
                 Deque<File> files = new ArrayDeque<File>();
                 String packagePath;
                 try {
-                    packagePath = url.toURI().getPath();
-                    files.add(new File(packagePath));
+                    File packageAsFile = new File(url.toURI());
+                    packagePath = packageAsFile.getPath();
+                    files.add(packageAsFile);
                 } catch (URISyntaxException e) {
                     throw new IOException(e);
                 }
@@ -226,7 +238,7 @@ public class DefaultConfiguration implements Configuration {
                     File file = files.pop();
                     for (File child : file.listFiles()){
                         if (child.getName().endsWith(".class")){
-                            String fileName = child.getPath().substring(packagePath.length()+1).replace('/', '.');
+                            String fileName = child.getPath().substring(packagePath.length()+1).replace(File.separatorChar, '.');
                             String className = pkg.getName() + "." + fileName.substring(0, fileName.length()-6);
                             classes.add(Class.forName(className));
                         }else if (child.isDirectory()){
@@ -241,5 +253,6 @@ public class DefaultConfiguration implements Configuration {
         }
         return classes;
     }
+
 
 }
