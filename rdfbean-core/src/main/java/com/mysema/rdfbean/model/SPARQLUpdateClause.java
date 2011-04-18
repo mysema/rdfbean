@@ -104,7 +104,7 @@ public class SPARQLUpdateClause implements SPARQLUpdate {
             List<STMT> rv = new ArrayList<STMT>(stmts.size() * sources.size());
             for (STMT stmt : stmts) {
                 for (UID uid : sources) {
-                    rv.add(new STMT(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), uid));
+                    rv.add(new STMT(stmt, uid));
                 }
             }
             return rv;

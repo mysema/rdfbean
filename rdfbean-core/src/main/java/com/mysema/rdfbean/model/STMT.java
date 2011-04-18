@@ -39,6 +39,10 @@ public final class STMT {
     public STMT(ID subject, UID predicate, NODE object, @Nullable UID context) {
         this(subject, predicate, object, context, true);
     }
+    
+    public STMT(STMT stmt, UID context) {
+        this(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), context);
+    }
 
     public STMT(ID subject, UID predicate, NODE object, @Nullable UID context, boolean asserted) {
         this.subject = Assert.notNull(subject,"subject");

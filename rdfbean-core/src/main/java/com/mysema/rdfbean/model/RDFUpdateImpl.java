@@ -2,8 +2,9 @@ package com.mysema.rdfbean.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+
+import com.mysema.commons.lang.CloseableIterator;
 
 /**
  * @author tiwe
@@ -29,26 +30,39 @@ public class RDFUpdateImpl implements RDFUpdate {
   
     @Override
     public void execute() {
-        UpdateClause.Type type = null;
-        if (delete.isEmpty()) {
-            type = UpdateClause.Type.INSERT;
-        } else if (insert.isEmpty()) {
-            type = UpdateClause.Type.DELETE;
-        } else {
-            type = UpdateClause.Type.MODIFY;
-        }
-        UpdateClause updateClause = new UpdateClause(Collections.<String, String>emptyMap(), type);
-        if (!delete.isEmpty()){
-            updateClause.setDelete(delete.toString()); // TODO
-        }
-        if (!insert.isEmpty()){
-            updateClause.setInsert(insert.toString()); // TODO   
-        }
-        updateClause.addFrom(from);
-        updateClause.addInto(into);
-        updateClause.setTemplate(where.toString()); // TODO
+        UID[] _from = from.toArray(new UID[from.size()]);
+        Block[] _where = where.toArray(new Block[where.size()]);
+        List<STMT> added = new ArrayList<STMT>();
+        List<STMT> removed = new ArrayList<STMT>();
         
-        // TODO : execute
+        if (!insert.isEmpty()){            
+            CloseableIterator<STMT> stmts = new RDFQueryImpl(connection)
+                .from(_from).where(_where)
+                .construct(insert.toArray(new Block[insert.size()]));            
+            convertStatements(stmts, added);            
+        }
+        
+        if (!delete.isEmpty()){
+            CloseableIterator<STMT> stmts = new RDFQueryImpl(connection)
+                .from(_from).where(_where)
+                .construct(delete.toArray(new Block[insert.size()]));            
+            convertStatements(stmts, removed);
+        }
+        
+        connection.update(removed, added);
+    }
+
+    private void convertStatements(CloseableIterator<STMT> stmts, List<STMT> target) {
+        try{
+            while (stmts.hasNext()){
+                STMT stmt = stmts.next();
+                for (UID uid : into){
+                    target.add(new STMT(stmt, uid));
+                }
+            }
+        }finally{
+            stmts.close();
+        }
     }
     
     @Override
@@ -58,8 +72,8 @@ public class RDFUpdateImpl implements RDFUpdate {
     }
 
     @Override
-    public RDFUpdate from(UID uid) {
-        this.from.add(uid);
+    public RDFUpdate from(UID... uids) {
+        this.from.addAll(Arrays.asList(uids));
         return this;
     }
 
@@ -70,8 +84,8 @@ public class RDFUpdateImpl implements RDFUpdate {
     }
 
     @Override
-    public RDFUpdate into(UID uid) {
-        this.into.add(uid);
+    public RDFUpdate into(UID... uids) {
+        this.into.addAll(Arrays.asList(uids));
         return this;
     }
 
