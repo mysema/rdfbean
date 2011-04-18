@@ -15,12 +15,12 @@ import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.DC;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
-import com.mysema.rdfbean.model.RDFUpdate;
+import com.mysema.rdfbean.model.SPARQLUpdate;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.UpdateLanguage;
 
-public class RDFUpdateTest extends AbstractConnectionTest{
+public class SPARQLUpdateTest extends AbstractConnectionTest{
 
     private static final String PREFIXES = "PREFIX rdf: <"+RDF.NS+">\nPREFIX rdfs: <"+RDFS.NS+">\n";
     
@@ -41,7 +41,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
         StringBuilder builder = new StringBuilder();
         builder.append("PREFIX dc: <http://purl.org/dc/elements/1.1/>\n");
         builder.append("INSERT INTO <http://example.com> { <http://example/egbook3> dc:title  \"This is an example title\" }");
-        RDFUpdate insert = parse(builder.toString());
+        SPARQLUpdate insert = parse(builder.toString());
         insert.execute();
         
         assertTrue(connection.exists(new UID("http://example/egbook3"), DC.title, null, null, false));
@@ -50,7 +50,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     @Test
     @Ignore // FIXME
     public void Clear() throws IOException{
-        RDFUpdate clear = parse("CLEAR");
+        SPARQLUpdate clear = parse("CLEAR");
         clear.execute();
         
         assertFalse(connection.exists(null, null, null, null, false));
@@ -62,7 +62,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
                 new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex1),
                 new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex2)));
         
-        RDFUpdate clear = parse("CLEAR GRAPH <http://ex1.com>");
+        SPARQLUpdate clear = parse("CLEAR GRAPH <http://ex1.com>");
         clear.execute();
         
         assertFalse(connection.exists(null, null, null, ex1, false));
@@ -73,7 +73,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     @Test
     @Ignore
     public void Create() throws IOException{
-        RDFUpdate create = parse("CREATE GRAPH <http://example.com>");
+        SPARQLUpdate create = parse("CREATE GRAPH <http://example.com>");
         create.execute();
         
         // no effect
@@ -81,7 +81,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Create_Silent() throws IOException {
-        RDFUpdate create = parse("CREATE SILENT GRAPH <http://example.com>");
+        SPARQLUpdate create = parse("CREATE SILENT GRAPH <http://example.com>");
         create.execute();
         
         // no effect
@@ -89,7 +89,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Delete_Data() throws IOException{
-        RDFUpdate delete = parse("DELETE DATA { rdfs:Resource rdf:type rdfs:Class }");
+        SPARQLUpdate delete = parse("DELETE DATA { rdfs:Resource rdf:type rdfs:Class }");
         delete.execute();
         
         assertFalse(connection.exists(RDFS.Resource, RDF.type, RDFS.Class, null, false));
@@ -99,7 +99,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     public void Delete_Data_From() throws IOException {
         connection.update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex1)));
         
-        RDFUpdate delete = parse("DELETE DATA FROM <http://ex1.com> { rdfs:Resource rdf:type rdfs:Class }");
+        SPARQLUpdate delete = parse("DELETE DATA FROM <http://ex1.com> { rdfs:Resource rdf:type rdfs:Class }");
         delete.execute();
         
         assertFalse(connection.exists(RDFS.Resource, RDF.type, RDFS.Class, ex1, false));
@@ -108,7 +108,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Delete_Where_No_Match() throws IOException{
-        RDFUpdate delete = parse("DELETE { ?s rdf:type <http://example.com> } WHERE { ?s ?p ?o }");
+        SPARQLUpdate delete = parse("DELETE { ?s rdf:type <http://example.com> } WHERE { ?s ?p ?o }");
         delete.execute();
         
         assertTrue(connection.exists(null, null, null, null, false));                
@@ -125,7 +125,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     public void Delete_From_Where() throws IOException{
         connection.update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex1)));
         
-        RDFUpdate delete = parse("DELETE FROM <http://ex1.com> { ?s rdf:type rdfs:Class } WHERE { ?s ?p ?o }");
+        SPARQLUpdate delete = parse("DELETE FROM <http://ex1.com> { ?s rdf:type rdfs:Class } WHERE { ?s ?p ?o }");
         delete.execute();
         
         assertFalse(connection.exists(null, null, null, ex1, false));
@@ -136,7 +136,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     public void Drop() throws IOException{
         connection.update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, example)));
         
-        RDFUpdate create = parse("DROP GRAPH <http://example.com>");
+        SPARQLUpdate create = parse("DROP GRAPH <http://example.com>");
         create.execute();
         
         assertFalse(connection.exists(null, null, null, example, false));
@@ -147,7 +147,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     public void Drop_Silent() throws IOException {
         connection.update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, example)));
         
-        RDFUpdate create = parse("DROP SILENT GRAPH <http://example.com>");
+        SPARQLUpdate create = parse("DROP SILENT GRAPH <http://example.com>");
         create.execute();
         
         assertFalse(connection.exists(null, null, null, example, false));
@@ -156,7 +156,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Insert_Data() throws IOException {
-        RDFUpdate insert = parse("INSERT DATA { rdf:type rdf:type rdf:Property }");
+        SPARQLUpdate insert = parse("INSERT DATA { rdf:type rdf:type rdf:Property }");
         insert.execute();
         
         assertTrue(connection.exists(RDF.type, RDF.type, RDF.Property, null, false));
@@ -164,7 +164,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Insert_Data_Into() throws IOException{
-        RDFUpdate insert = parse("INSERT DATA INTO <http://ex1.com> { rdf:type rdf:type rdf:Property }");
+        SPARQLUpdate insert = parse("INSERT DATA INTO <http://ex1.com> { rdf:type rdf:type rdf:Property }");
         insert.execute();
         
         assertTrue(connection.exists(RDF.type, RDF.type, RDF.Property, ex1, false));
@@ -173,7 +173,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Insert() throws IOException{
-        RDFUpdate insert = parse("INSERT { rdf:type rdf:type rdf:Property }");
+        SPARQLUpdate insert = parse("INSERT { rdf:type rdf:type rdf:Property }");
         insert.execute();
         
         assertTrue(connection.exists(RDF.type, RDF.type, RDF.Property, null, false));
@@ -182,7 +182,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Insert_Where() throws IOException{
-        RDFUpdate insert = parse("INSERT { ?s rdf:type <http://ex2.com> } WHERE { ?s ?p ?o }");
+        SPARQLUpdate insert = parse("INSERT { ?s rdf:type <http://ex2.com> } WHERE { ?s ?p ?o }");
         insert.execute();
         
         assertTrue(connection.exists(RDFS.Resource, RDF.type, ex2, null, false));
@@ -190,7 +190,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Insert_Into_Where() throws IOException{
-        RDFUpdate insert = parse("INSERT INTO <http://ex1.com> { ?s rdf:type <http://ex2.com> } WHERE { ?s ?p ?o }");
+        SPARQLUpdate insert = parse("INSERT INTO <http://ex1.com> { ?s rdf:type <http://ex2.com> } WHERE { ?s ?p ?o }");
         insert.execute();
         
         assertTrue(connection.exists(RDFS.Resource, RDF.type, ex2, ex1, false));
@@ -198,7 +198,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
         
     @Test
     public void Load_From() throws IOException {
-        RDFUpdate load = parse("LOAD <http://example.com>");
+        SPARQLUpdate load = parse("LOAD <http://example.com>");
         load.execute();
         
         // TODO : assertions
@@ -206,7 +206,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Load_From_Into() throws IOException{
-        RDFUpdate load = parse("LOAD <http://example.com> INTO <http://example2.com>");
+        SPARQLUpdate load = parse("LOAD <http://example.com> INTO <http://example2.com>");
         load.execute();
         
         // TODO : assertions
@@ -214,7 +214,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
         
     @Test
     public void Modify() throws IOException{
-        RDFUpdate modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT { ?s ?p2 ?o2 }");
+        SPARQLUpdate modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT { ?s ?p2 ?o2 }");
         modify.execute();
         
         // TODO : assertions
@@ -222,7 +222,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Modify_Empty_Delete() throws IOException{
-        RDFUpdate modify = parse("MODIFY DELETE {} INSERT { ?s ?p2 ?o2 }");
+        SPARQLUpdate modify = parse("MODIFY DELETE {} INSERT { ?s ?p2 ?o2 }");
         modify.execute();
         
         // TODO : assertions
@@ -230,7 +230,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Modify_Empty_Insert() throws IOException{
-        RDFUpdate modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT {}");
+        SPARQLUpdate modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT {}");
         modify.execute();
         
         // TODO : assertions
@@ -238,7 +238,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Modify_URI() throws IOException{
-        RDFUpdate modify = parse("MODIFY <http://ex1.com> DELETE { ?s ?p ?o } INSERT { ?s ?p2 ?o2 }");
+        SPARQLUpdate modify = parse("MODIFY <http://ex1.com> DELETE { ?s ?p ?o } INSERT { ?s ?p2 ?o2 }");
         modify.execute();
         
         // TODO : assertions
@@ -246,13 +246,13 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     
     @Test
     public void Modify_Where() throws IOException{
-        RDFUpdate modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT { ?s2 ?p2 ?o2 } WHERE { ?s3 ?p3 ?o3 }");
+        SPARQLUpdate modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT { ?s2 ?p2 ?o2 } WHERE { ?s3 ?p3 ?o3 }");
         modify.execute();
         
         // TODO : assertions
     }
     
-    private RDFUpdate parse(String string) throws IOException {
+    private SPARQLUpdate parse(String string) throws IOException {
 //        return new RDFUpdateImpl(connection, PREFIXES + string);
         return connection.createUpdate(UpdateLanguage.SPARQL_UPDATE, PREFIXES + string);
     }

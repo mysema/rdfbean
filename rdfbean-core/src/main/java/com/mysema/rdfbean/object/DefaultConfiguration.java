@@ -7,20 +7,10 @@ package com.mysema.rdfbean.object;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -211,17 +201,21 @@ public class DefaultConfiguration implements Configuration {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         while (urls.hasMoreElements()){
             URL url = urls.nextElement();
-            if (url.getProtocol().equals("jar")){
-                String[] fileAndPath = JAR_URL_SEPARATOR.split(url.getFile().substring(5));
-                JarFile jarFile = new JarFile(fileAndPath[0]);
-                Enumeration<JarEntry> entries = jarFile.entries();
-                while (entries.hasMoreElements()){
-                    JarEntry entry = entries.nextElement();
-                    if (entry.getName().endsWith(".class") && entry.getName().startsWith(fileAndPath[1].substring(1))){
-                        String className = entry.getName().substring(0, entry.getName().length()-6).replace('/', '.');
-                        classes.add(Class.forName(className));
-
+            if (url.getProtocol().equals("jar")){                
+                try {
+                    String[] fileAndPath = JAR_URL_SEPARATOR.split(url.getFile());
+                    JarFile jarFile = new JarFile(new File(new URI(fileAndPath[0])));
+                    Enumeration<JarEntry> entries = jarFile.entries();
+                    while (entries.hasMoreElements()){
+                        JarEntry entry = entries.nextElement();
+                        if (entry.getName().endsWith(".class") && entry.getName().startsWith(fileAndPath[1].substring(1))){
+                            String className = entry.getName().substring(0, entry.getName().length()-6).replace('/', '.');
+                            classes.add(Class.forName(className));
+    
+                        }
                     }
+                } catch (URISyntaxException e) {
+                    throw new IOException(e);
                 }
 
             }else if (url.getProtocol().equals("file")){

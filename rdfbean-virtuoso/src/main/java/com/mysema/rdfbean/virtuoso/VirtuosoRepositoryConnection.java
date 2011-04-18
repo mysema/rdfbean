@@ -260,14 +260,13 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     @Override
     public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, final D definition) {
         if (updateLanguage == UpdateLanguage.SPARQL_UPDATE){
-            return (Q) new RDFUpdate(){
+            return (Q) new SPARQLUpdate(){
                 @Override
-                public long execute() {
+                public void execute() {
                     executeSPARQLUpdate(
                             DEFAULT_OUTPUT + 
                             "DEFINE input:default-graph-uri <"+defaultGraph.getId()+">\n" + 
                             definition.toString());
-                    return 0l;
                 }
                 
             };

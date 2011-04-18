@@ -1,111 +1,84 @@
 package com.mysema.rdfbean.model;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import com.mysema.commons.lang.IteratorAdapter;
 
 /**
  * @author tiwe
  *
  */
 public class RDFUpdateImpl implements RDFUpdate {
-    
+
     private final RDFConnection connection;
     
-    private final UpdateClause clause;
+    private final List<PatternBlock> delete = new ArrayList<PatternBlock>();
     
-    public RDFUpdateImpl(RDFConnection connection, String clause) {        
-        try {
-            this.connection = connection;
-            this.clause = new SPARQLUpdateParser().parse(clause);
-        } catch (IOException e) {
-            throw new RepositoryException(e);
+    private final List<PatternBlock> insert = new ArrayList<PatternBlock>();
+    
+    private final List<UID> from = new ArrayList<UID>();
+    
+    private final List<UID> into = new ArrayList<UID>();
+    
+    private final List<Block> where = new ArrayList<Block>();
+    
+    public RDFUpdateImpl(RDFConnection connection) {
+        this.connection = connection;
+    }
+  
+    @Override
+    public void execute() {
+        UpdateClause.Type type = null;
+        if (delete.isEmpty()) {
+            type = UpdateClause.Type.INSERT;
+        } else if (insert.isEmpty()) {
+            type = UpdateClause.Type.DELETE;
+        } else {
+            type = UpdateClause.Type.MODIFY;
         }
+        UpdateClause updateClause = new UpdateClause(Collections.<String, String>emptyMap(), type);
+        if (!delete.isEmpty()){
+            updateClause.setDelete(delete.toString()); // TODO
+        }
+        if (!insert.isEmpty()){
+            updateClause.setInsert(insert.toString()); // TODO   
+        }
+        updateClause.addFrom(from);
+        updateClause.addInto(into);
+        updateClause.setTemplate(where.toString()); // TODO
+        
+        // TODO : execute
     }
     
     @Override
-    public long execute(){
-        switch(clause.getType()){
-        case CLEAR: 
-        case DROP:
-            connection.remove(null, null, null, clause.getSource());
-            return 0l;
-        case CREATE: 
-        case LOAD:  
-            // TODO
-            return 0l;
-        case DELETE: return executeDelete();
-        case INSERT: return executeInsert();
-        case MODIFY: return executeModify();
-        default: throw new IllegalStateException("Unknown clause " + clause.getType());
-        }
+    public RDFUpdate delete(PatternBlock... patterns) {
+        this.delete.addAll(Arrays.asList(patterns));
+        return this;
     }
 
-    private long executeModify() {
-        List<STMT> added = null, removed = null;
-        if (clause.getInsert() != null) {
-            added = getTriples(clause.getInsert(), clause.getPattern());
-        }
-        if (clause.getDelete() != null) {
-            removed = getTriples(clause.getDelete(), clause.getPattern());
-        } 
-        connection.update(removed, added);
-        return 0l;
+    @Override
+    public RDFUpdate from(UID uid) {
+        this.from.add(uid);
+        return this;
     }
 
-    private long executeInsert() {
-        List<STMT> stmts = getTriples(clause.getTemplate(), clause.getPattern());
-        connection.update(null, stmts);
-        return 0l;
+    @Override
+    public RDFUpdate insert(PatternBlock... patterns) {
+        this.insert.addAll(Arrays.asList(patterns));
+        return this;
     }
 
-    private long executeDelete() {
-        List<STMT> stmts = getTriples(clause.getTemplate(), clause.getPattern());
-        connection.update(stmts, null);
-        return 0l;
+    @Override
+    public RDFUpdate into(UID uid) {
+        this.into.add(uid);
+        return this;
     }
-    
-    private List<STMT> getTriples(String template, @Nullable String pattern){
-//        if (pattern == null ) {
-//            // TODO : parse as Turtle
-//        }
-        
-        StringBuilder qry = new StringBuilder();
-        for (Map.Entry<String, String> prefix : clause.getPrefixes().entrySet()){
-            qry.append("PREFIX " + prefix.getKey() + ": <" + prefix.getValue() + ">\n");
-        }
-        qry.append("CONSTRUCT { " + template +" }\n");
-        if (pattern != null){
-            for (UID uid : clause.getFrom()){
-                qry.append("FROM <" + uid.getId() + ">\n");
-            }
-            qry.append("WHERE { " + pattern + " }\n");
-        }else{
-            qry.append("WHERE { ?sss ?ppp ?ooo } LIMIT 1"); // XXX : improve this
-        }
-//        System.err.println(qry);
-        
-        SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, qry.toString());
-        List<STMT> stmts = IteratorAdapter.asList(query.getTriples());
-        
-        if (clause.getInto().isEmpty() && clause.getFrom().isEmpty()) {
-            return stmts;
-        } else {
-            List<UID> sources = clause.getInto().isEmpty() ? clause.getFrom() : clause.getInto();
-            List<STMT> rv = new ArrayList<STMT>(stmts.size() * sources.size());
-            for (STMT stmt : stmts) {
-                for (UID uid : sources) {
-                    rv.add(new STMT(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), uid));
-                }
-            }
-            return rv;
-        }
-        
+
+    @Override
+    public RDFUpdate where(Block... blocks) {
+        this.where.addAll(Arrays.asList(blocks));
+        return this;
     }
-    
+
 }

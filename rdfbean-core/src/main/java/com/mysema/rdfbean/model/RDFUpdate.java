@@ -5,10 +5,17 @@ package com.mysema.rdfbean.model;
  *
  */
 public interface RDFUpdate {
+    
+    RDFUpdate delete(PatternBlock... patterns);
+  
+    RDFUpdate from(UID uid);
+    
+    RDFUpdate insert(PatternBlock... patterns);
+    
+    RDFUpdate into(UID uid);
+    
+    RDFUpdate where(Block... blocks);
 
-    /**
-     * @return
-     */
-    long execute();
-
+    void execute();
+    
 }

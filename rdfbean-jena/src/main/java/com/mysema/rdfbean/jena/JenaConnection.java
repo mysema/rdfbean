@@ -64,7 +64,7 @@ public class JenaConnection implements RDFConnection {
     @Override
     public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, D definition) {
         if (updateLanguage == UpdateLanguage.SPARQL_UPDATE){
-            return (Q)new RDFUpdateImpl(this, definition.toString());
+            return (Q)new SPARQLUpdateClause(this, definition.toString());
         }else{
             throw new UnsupportedOperationException(updateLanguage.toString());    
         }         
