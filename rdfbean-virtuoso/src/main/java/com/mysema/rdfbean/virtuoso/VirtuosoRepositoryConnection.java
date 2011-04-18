@@ -263,19 +263,27 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             return (Q) new RDFUpdate(){
                 @Override
                 public long execute() {
-                    try {
-                        Statement stmt = connection.createStatement();
-                        stmt.execute(DEFAULT_OUTPUT + definition);
-                        return 0l;
-                    } catch (SQLException e) {
-                        throw new RepositoryException(e);
-                    }
+                    executeSPARQLUpdate(definition.toString());
+                    return 0l;
                 }
                 
             };
         }else{
             throw new UnsupportedOperationException(updateLanguage.toString());    
         }         
+    }
+    
+    private void executeSPARQLUpdate(String sparqlUpdate){
+        try {
+            Statement stmt = connection.createStatement();
+            try {
+                stmt.execute(DEFAULT_OUTPUT + sparqlUpdate);
+            }finally{
+                stmt.close();
+            }                        
+        } catch (SQLException e) {
+            throw new RepositoryException(e);
+        }
     }
     
     @SuppressWarnings("unchecked")

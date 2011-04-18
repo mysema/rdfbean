@@ -19,7 +19,6 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.UpdateLanguage;
 
-@Ignore
 public class RDFUpdateTest extends AbstractConnectionTest{
 
     private static final String PREFIXES = "PREFIX rdf: <"+RDF.NS+">\nPREFIX rdfs: <"+RDFS.NS+">\n";
@@ -83,6 +82,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Delete_Data() throws IOException{
         RDFUpdate delete = parse("DELETE DATA FROM <http://semantics.mysema.com/test#> { rdfs:Resource rdf:type rdfs:Class }");
         delete.execute();
@@ -102,6 +102,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Delete_Data_From_From() throws IOException {
         connection.update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex1)));
         connection.update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex2)));
@@ -115,6 +116,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Delete_Where_No_Match() throws IOException{
         RDFUpdate delete = parse("DELETE { ?s rdf:type <http://example.com> } WHERE { ?s ?p ?o }");
         delete.execute();
@@ -123,6 +125,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Delete_Where_Matches() throws IOException{
         parse("DELETE { ?s rdf:type rdfs:Class } WHERE { ?s ?p ?o }").execute();
         
@@ -130,6 +133,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Delete_From_Where() throws IOException{
         connection.update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex1)));
         
@@ -141,6 +145,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Delete_From_From_Where() throws IOException{
         connection.update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex1)));
         connection.update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex2)));
@@ -176,6 +181,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Insert_Data() throws IOException {
         RDFUpdate insert = parse("INSERT DATA { rdf:type rdf:type rdf:Property }");
         insert.execute();
@@ -192,6 +198,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }    
     
     @Test
+    @Ignore
     public void Insert_Data_Into_Into() throws IOException{
         RDFUpdate insert = parse("INSERT DATA INTO <http://ex1.com> INTO <http://ex2.com> { rdf:type rdf:type rdf:Property }");
         insert.execute();
@@ -201,6 +208,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }    
     
     @Test
+    @Ignore
     public void Insert() throws IOException{
         RDFUpdate insert = parse("INSERT { rdf:type rdf:type rdf:Property }");
         insert.execute();
@@ -210,6 +218,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Insert_Where() throws IOException{
         RDFUpdate insert = parse("INSERT { ?s rdf:type <http://ex2.com> } WHERE { ?s ?p ?o }");
         insert.execute();
@@ -218,6 +227,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Insert_Into_Where() throws IOException{
         RDFUpdate insert = parse("INSERT INTO <http://ex1.com> { ?s rdf:type <http://ex2.com> } WHERE { ?s ?p ?o }");
         insert.execute();
@@ -226,6 +236,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     @Test
+    @Ignore
     public void Insert_Into_Into_Where() throws IOException{
         RDFUpdate insert = parse("INSERT INTO <http://ex1.com> INTO <http://ex2.com> { ?s rdf:type <http://example.com> } WHERE { ?s ?p ?o }");
         insert.execute();
@@ -251,6 +262,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
         
     @Test
+    @Ignore
     public void Modify() throws IOException{
         RDFUpdate modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT { ?s ?p2 ?o2 }");
         modify.execute();
@@ -259,6 +271,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }    
     
     @Test
+    @Ignore
     public void Modify_Empty_Delete() throws IOException{
         RDFUpdate modify = parse("MODIFY DELETE {} INSERT { ?s ?p2 ?o2 }");
         modify.execute();
@@ -267,6 +280,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }    
     
     @Test
+    @Ignore
     public void Modify_Empty_Insert() throws IOException{
         RDFUpdate modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT {}");
         modify.execute();
@@ -283,6 +297,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }  
     
     @Test
+    @Ignore
     public void Modify_URI_URI() throws IOException{
         RDFUpdate modify = parse("MODIFY <http://ex1.com> <http://ex2.com> DELETE { ?s ?p ?o } INSERT { ?s ?p2 ?o2 }");
         modify.execute();
@@ -291,6 +306,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }  
 
     @Test
+    @Ignore
     public void Modify_Where() throws IOException{
         RDFUpdate modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT { ?s2 ?p2 ?o2 } WHERE { ?s3 ?p3 ?o3 }");
         modify.execute();
