@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +36,7 @@ public class RDFUpdateImpl implements RDFUpdate {
             connection.remove(null, null, null, clause.getSource());
             return 0l;
         case CREATE: 
-            return 0l;
-        case LOAD: 
+        case LOAD:  
             // TODO
             return 0l;
         case DELETE: return executeDelete();
@@ -75,17 +75,15 @@ public class RDFUpdateImpl implements RDFUpdate {
 //            // TODO : parse as Turtle
 //        }
         
-        // TODO : use Turtle serialization if pattern is null ?!?
-        List<UID> from = clause.getFrom();
         StringBuilder qry = new StringBuilder();
         for (Map.Entry<String, String> prefix : clause.getPrefixes().entrySet()){
             qry.append("PREFIX " + prefix.getKey() + ": <" + prefix.getValue() + ">\n");
         }
         qry.append("CONSTRUCT { " + template +" }\n");
-        for (UID uid : from){
-            qry.append("FROM <" + uid.getId() + ">\n");
-        }
         if (pattern != null){
+            for (UID uid : clause.getFrom()){
+                qry.append("FROM <" + uid.getId() + ">\n");
+            }
             qry.append("WHERE { " + pattern + " }\n");
         }else{
             qry.append("WHERE { ?sss ?ppp ?ooo } LIMIT 1"); // XXX : improve this
@@ -93,7 +91,21 @@ public class RDFUpdateImpl implements RDFUpdate {
 //        System.err.println(qry);
         
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, qry.toString());
-        return IteratorAdapter.asList(query.getTriples());
+        List<STMT> stmts = IteratorAdapter.asList(query.getTriples());
+        
+        if (clause.getInto().isEmpty() && clause.getFrom().isEmpty()) {
+            return stmts;
+        } else {
+            List<UID> sources = clause.getInto().isEmpty() ? clause.getFrom() : clause.getInto();
+            List<STMT> rv = new ArrayList<STMT>(stmts.size() * sources.size());
+            for (STMT stmt : stmts) {
+                for (UID uid : sources) {
+                    rv.add(new STMT(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), uid));
+                }
+            }
+            return rv;
+        }
+        
     }
     
 }

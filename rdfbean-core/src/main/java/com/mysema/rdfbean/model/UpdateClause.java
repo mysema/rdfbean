@@ -22,6 +22,7 @@ public class UpdateClause {
     
     private final Type type;
     
+    @Nullable
     private final UID source, target;
     
     private final List<UID> from = new ArrayList<UID>();
@@ -46,7 +47,7 @@ public class UpdateClause {
         this.silent = silent;
     }
     
-    public UpdateClause(Map<String, String> prefixes, Type type, UID source, UID target){
+    public UpdateClause(Map<String, String> prefixes, Type type, @Nullable UID source, @Nullable UID target){
         this.prefixes = Collections.unmodifiableMap(prefixes);
         this.type = type;
         this.source = source;
