@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang.StringUtils;
 
 
@@ -28,6 +30,7 @@ public class UpdateClause {
     
     private boolean silent;
     
+    @Nullable
     private String pattern, template, delete, insert;
     
     public UpdateClause(Map<String, String> prefixes, Type type) {

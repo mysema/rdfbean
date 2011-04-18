@@ -1,5 +1,10 @@
 package com.mysema.rdfbean.model;
 
+/**
+ * @author tiwe
+ *
+ * @param <T>
+ */
 public class QResource<T extends ID> extends QNODE<T> {
 
     private static final long serialVersionUID = -5812253741051256616L;

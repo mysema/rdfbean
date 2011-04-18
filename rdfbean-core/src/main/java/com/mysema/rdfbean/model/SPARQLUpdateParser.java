@@ -148,7 +148,7 @@ public class SPARQLUpdateParser {
             UID into = uri();
             return new UpdateClause(prefixes, UpdateClause.Type.LOAD, remoteURI, into);
         }else{
-            return new UpdateClause(prefixes, UpdateClause.Type.LOAD, remoteURI, null);    
+            return new UpdateClause(prefixes, UpdateClause.Type.LOAD, remoteURI);    
         }        
     }
     

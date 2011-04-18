@@ -15,6 +15,7 @@ import com.mysema.rdfbean.model.DC;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.RDFUpdate;
+import com.mysema.rdfbean.model.RDFUpdateImpl;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
@@ -219,7 +220,7 @@ public class RDFUpdateTest extends AbstractConnectionTest{
     }
     
     private RDFUpdate parse(String string) throws IOException {
-        return new RDFUpdate(connection, string);
+        return new RDFUpdateImpl(connection, string);
     }
     
 }

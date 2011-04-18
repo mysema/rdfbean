@@ -58,7 +58,7 @@ public interface RDFConnection extends Closeable{
      * @return
      */
     <D,Q> Q createQuery(QueryLanguage<D,Q> queryLanguage, @Nullable D definition);
-
+    
     /**
      * Find out if statements matching the given pattern exist
      *
