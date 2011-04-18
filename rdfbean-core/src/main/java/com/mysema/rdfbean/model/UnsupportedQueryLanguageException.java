@@ -16,6 +16,6 @@ package com.mysema.rdfbean.model;
 public class UnsupportedQueryLanguageException extends RuntimeException{
 
     public UnsupportedQueryLanguageException(QueryLanguage<?,?> queryLanguage){
-        super("Unsupported query language " + queryLanguage.getName());
+        super("Unsupported query language " + queryLanguage.toString());
     }
 }

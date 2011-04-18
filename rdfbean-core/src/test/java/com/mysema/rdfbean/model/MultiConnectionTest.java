@@ -23,25 +23,7 @@ public class MultiConnectionTest {
 
     @Test
     public void test() throws IOException{
-        MultiConnection connection = new MultiConnection(
-            repository.openConnection(),
-            repository.openConnection()
-        ){
-            @Override
-            public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public QueryOptions getQueryOptions() {
-                return QueryOptions.DEFAULT;
-            }
-
-            @Override
-            public InferenceOptions getInferenceOptions() {
-                return InferenceOptions.DEFAULT;
-            }
-        };
+        MultiConnection connection = new MultiConnection(repository.openConnection(),repository.openConnection());
 
         // find
         CloseableIterator<STMT> stmts = connection.findStatements(null, null, null, null, false);

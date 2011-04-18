@@ -196,6 +196,11 @@ public class RDBConnection implements RDFConnection{
         return new BID(UUID.randomUUID().toString());
     }
 
+    @Override
+    public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, D definition) {
+        throw new UnsupportedOperationException(updateLanguage.toString());
+    }
+    
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {

@@ -49,6 +49,11 @@ public class MiniConnection implements RDFConnection {
     @Override
     public BID createBNode() {
         return new BID();
+    }    
+
+    @Override
+    public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, D definition) {
+        throw new UnsupportedOperationException(updateLanguage.toString()); 
     }
     
     @SuppressWarnings("unchecked")
@@ -119,5 +124,6 @@ public class MiniConnection implements RDFConnection {
     public InferenceOptions getInferenceOptions() {
         return InferenceOptions.DEFAULT;
     }
+
     
 }

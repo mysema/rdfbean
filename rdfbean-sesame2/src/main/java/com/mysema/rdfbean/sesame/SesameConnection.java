@@ -165,6 +165,16 @@ public class SesameConnection implements RDFConnection {
     public BID createBNode() {
         return dialect.getBID(dialect.createBNode());
     }    
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, D definition) {
+        if (updateLanguage == UpdateLanguage.SPARQL_UPDATE){
+            return (Q)new RDFUpdateImpl(this, definition.toString());
+        }else{
+            throw new UnsupportedOperationException(updateLanguage.toString());    
+        }         
+    }
 
     @SuppressWarnings("unchecked")
     @Override

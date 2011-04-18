@@ -19,7 +19,7 @@ import com.mysema.commons.lang.CloseableIterator;
  * @author tiwe
  * @version $Id$
  */
-public abstract class MultiConnection implements RDFConnection{
+public class MultiConnection implements RDFConnection{
     
     private final RDFConnection[] connections;
     
@@ -44,13 +44,6 @@ public abstract class MultiConnection implements RDFConnection{
         return localTxn;
     }
 
-    @Override
-    public void clear() {
-        for (RDFConnection connection : connections){
-            connection.clear();
-        }        
-    }
-    
     public void cleanUpAfterCommit(){
         localTxn = null;
         readonlyTnx = false;
@@ -61,16 +54,65 @@ public abstract class MultiConnection implements RDFConnection{
         readonlyTnx = false;
         close();
     }
+    
+    @Override
+    public void clear() {
+        for (RDFConnection connection : connections){
+            connection.clear();
+        }        
+    }
+
+    @Override
+    public void close() {
+        for (RDFConnection connection : connections){
+            connection.close();
+        }        
+    }
+
+    @Override
+    public BID createBNode() {
+        return connections[0].createBNode();
+    }
+
+    @Override
+    public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
+        return connections[0].createQuery(queryLanguage, definition);
+    }
+
+    @Override
+    public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, D definition) {
+        return connections[0].createUpdate(updateLanguage, definition); 
+    }
+    
+    @Override
+    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
+        return connections[0].exists(subject, predicate, object, context, includeInferred);
+    }
 
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, boolean includeInferred) {
         return connections[0].findStatements(subject, predicate, object, context, includeInferred);
     }
+    
+    @Override
+    public InferenceOptions getInferenceOptions() {
+        return connections[0].getInferenceOptions();
+    }
+    
+    @Override
+    public long getNextLocalId(){
+        return connections[0].getNextLocalId();
+    }
+    
+    @Override
+    public QueryOptions getQueryOptions() {
+        return connections[0].getQueryOptions();
+    }
 
     @Override
-    public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
-        return connections[0].exists(subject, predicate, object, context, includeInferred);
+    public void remove(ID subject, UID predicate, NODE object, UID context) {
+        connections[0].remove(subject, predicate, object, context);
     }
 
     @Override
@@ -80,28 +122,6 @@ public abstract class MultiConnection implements RDFConnection{
                 connection.update(removedStatements, addedStatements);
             }    
         }                
-    }
-
-    @Override
-    public void close() {
-        for (RDFConnection connection : connections){
-            connection.close();
-        }        
-    }
-    
-    @Override
-    public long getNextLocalId(){
-        return connections[0].getNextLocalId();
-    }
-
-    @Override
-    public BID createBNode() {
-        return connections[0].createBNode();
-    }
-    
-    @Override
-    public void remove(ID subject, UID predicate, NODE object, UID context) {
-        connections[0].remove(subject, predicate, object, context);
     }
 
 }

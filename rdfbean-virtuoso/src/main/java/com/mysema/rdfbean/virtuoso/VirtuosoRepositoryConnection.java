@@ -258,6 +258,28 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     
     @SuppressWarnings("unchecked")
     @Override
+    public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, final D definition) {
+        if (updateLanguage == UpdateLanguage.SPARQL_UPDATE){
+            return (Q) new RDFUpdate(){
+                @Override
+                public long execute() {
+                    try {
+                        Statement stmt = connection.createStatement();
+                        stmt.execute(DEFAULT_OUTPUT + definition);
+                        return 0l;
+                    } catch (SQLException e) {
+                        throw new RepositoryException(e);
+                    }
+                }
+                
+            };
+        }else{
+            throw new UnsupportedOperationException(updateLanguage.toString());    
+        }         
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage.equals(QueryLanguage.SPARQL)){
             String query = definition.toString();

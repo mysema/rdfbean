@@ -49,6 +49,15 @@ public interface RDFConnection extends Closeable{
     BID createBNode();
     
     /**
+     * @param <D>
+     * @param <Q>
+     * @param updateLanguage
+     * @param definition
+     * @return
+     */
+    <D,Q> Q createUpdate(UpdateLanguage<D,Q> updateLanguage, @Nullable D definition);
+    
+    /**
      * Prepare a Query of the given query language with the given definition
      *
      * @param <D>

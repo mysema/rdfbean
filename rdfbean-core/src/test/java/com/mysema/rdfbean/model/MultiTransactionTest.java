@@ -16,27 +16,7 @@ public class MultiTransactionTest {
     @Before
     public void setUp(){
 	MiniRepository repository = new MiniRepository();
-        MultiConnection connection = new MultiConnection(
-                repository.openConnection(),
-                repository.openConnection()
-            ){
-                @Override
-                public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public QueryOptions getQueryOptions() {
-                    return QueryOptions.DEFAULT;
-                }
-                
-                @Override
-                public InferenceOptions getInferenceOptions() {
-                    return InferenceOptions.DEFAULT;
-                }
-
-        };
-
+        MultiConnection connection = new MultiConnection(repository.openConnection(), repository.openConnection());
         RDFBeanTransaction innerTx = EasyMock.createNiceMock(RDFBeanTransaction.class);
         tx = new MultiTransaction(connection, new RDFBeanTransaction[]{innerTx});
     }

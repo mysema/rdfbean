@@ -34,9 +34,15 @@ public abstract class AbstractConnectionTest {
 
     protected static VirtuosoRepository repository;
     
-    protected static UID context = new UID(TEST.NS, "named1");
+    protected static final UID context = new UID(TEST.NS, "named1");
     
-    protected static UID context2 = new UID(TEST.NS, "named2");
+    protected static final UID context2 = new UID(TEST.NS, "named2");
+    
+    protected static final UID example = new UID("http://example.com");
+    
+    protected static final UID ex1 = new UID("http://ex1.com");
+    
+    protected static final UID ex2 = new UID("http://ex2.com");
     
     protected VirtuosoRepositoryConnection connection;
     
@@ -50,7 +56,7 @@ public abstract class AbstractConnectionTest {
     @BeforeClass
     public static void setUpClass(){
         repository = new VirtuosoRepository("localhost:1111", "dba", "dba", TEST.NS);
-        repository.setAllowedGraphs(Arrays.asList(context, context2));
+        repository.setAllowedGraphs(Arrays.asList(context, context2, example, ex1, ex2));
         repository.initialize();
         
         // enums
