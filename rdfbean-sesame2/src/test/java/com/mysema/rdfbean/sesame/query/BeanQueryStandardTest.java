@@ -7,7 +7,9 @@ package com.mysema.rdfbean.sesame.query;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Test;
 
@@ -47,10 +49,27 @@ public class BeanQueryStandardTest extends SessionTestBase {
 
     @Test
     public void test() throws InterruptedException{
-        SimpleType st = session.from(v1).limit(1).uniqueResult(v1);
+        SimpleType2 st2 = new SimpleType2();
+        st2.directProperty = "target_idspace";
+        session.save(st2);
+        
+        SimpleType st = new SimpleType();
+        st.dateProperty = new Date();
+        st.directProperty = "XXX";
+        st.numericProperty = 2;
+        st.localizedProperty = "YYY";
+        st.localizedAsMap = Collections.singletonMap(Locale.ENGLISH, "X");
+        st.listProperty = Collections.singletonList(st2);
+        st.setProperty = Collections.singleton(st2);
+        session.save(st); 
+        session.clear();
+        
+        st = session.getById(st.id, SimpleType.class);        
+//        SimpleType st = session.from(v1).limit(1).uniqueResult(v1);
         SimpleType2 inMap = st.getMapProperty().values().iterator().next();
         SimpleType2 inList = st.getListProperty().iterator().next();
         SimpleType2 inSet = st.getSetProperty().iterator().next();
+        
         other = new SimpleType2();
         session.save(other);
 
