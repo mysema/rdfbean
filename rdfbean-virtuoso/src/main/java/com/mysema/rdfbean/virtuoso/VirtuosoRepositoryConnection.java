@@ -263,7 +263,10 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             return (Q) new RDFUpdate(){
                 @Override
                 public long execute() {
-                    executeSPARQLUpdate(definition.toString());
+                    executeSPARQLUpdate(
+                            DEFAULT_OUTPUT + 
+                            "DEFINE input:default-graph-uri <"+defaultGraph.getId()+">\n" + 
+                            definition.toString());
                     return 0l;
                 }
                 
@@ -277,7 +280,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         try {
             Statement stmt = connection.createStatement();
             try {
-                stmt.execute(DEFAULT_OUTPUT + sparqlUpdate);
+                stmt.execute(sparqlUpdate);
             }finally{
                 stmt.close();
             }                        
