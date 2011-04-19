@@ -40,7 +40,7 @@ public class RDFUpdateImpl implements RDFUpdate {
                 .from(_from).where(_where)
                 .construct(insert.toArray(new Block[insert.size()]));            
             added = convertStatements(stmts, into);     
-            System.err.println("added " + added);
+//            System.err.println("added " + added);
         }
         
         if (!delete.isEmpty()){
@@ -48,7 +48,7 @@ public class RDFUpdateImpl implements RDFUpdate {
                 .from(_from).where(_where)
                 .construct(delete.toArray(new Block[delete.size()]));            
             removed = convertStatements(stmts, from);
-            System.err.println("removed " + removed);
+//            System.err.println("removed " + removed);
         }
         
         connection.update(removed, added);

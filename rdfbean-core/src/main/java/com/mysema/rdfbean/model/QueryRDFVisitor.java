@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,6 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections15.IteratorUtils;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.functors.AndPredicate;
@@ -44,6 +46,9 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private static final NODEComparator nodeComparator = new NODEComparator();
 
     private final RDFConnection connection;
+    
+    @Nullable
+    private Expression<UID> context;
 
     public QueryRDFVisitor(RDFConnection connection) {
         this.connection = connection;
@@ -62,11 +67,11 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 (Predicate)expr.getArg(1).accept(this, bindings));
     }
 
-    private Transformer<STMT, Bindings> createBindingsTransformer(PatternBlock expr, final Bindings bindings){
+    private Transformer<STMT, Bindings> createBindingsTransformer(PatternBlock expr, @Nullable Expression<UID> context, final Bindings bindings){
         final String s = getKey(expr.getSubject());
         final String p = getKey(expr.getPredicate());
         final String o = getKey(expr.getObject());
-        final String c = getKey(expr.getContext());
+        final String c = getKey(expr.getContext() != null ? expr.getContext() : context);
 
         return new Transformer<STMT, Bindings>(){
             @Override
@@ -179,17 +184,33 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     private GraphQuery createGraphQuery(QueryMetadata md, final Iterable<Bindings> iterable) {
-        if (md.getProjection().size() == 1 && md.getProjection().get(0) instanceof PatternBlock){
-            final Transformer<Bindings, STMT> transformer = createStatementTransformer((PatternBlock)md.getProjection().get(0));
-            return new GraphQuery(){
-                @Override
-                public CloseableIterator<STMT> getTriples() {
-                    return new IteratorAdapter<STMT>(new TransformIterator<Bindings, STMT>(iterable.iterator(), transformer));
+        List<PatternBlock> patternBlocks = new ArrayList<PatternBlock>();
+        for (Expression<?> e : md.getProjection()){
+            if (e instanceof PatternBlock){
+                patternBlocks.add((PatternBlock)e);
+            }else if (e instanceof ContainerBlock){
+                for (Block b : ((ContainerBlock)e).getBlocks()){
+                    patternBlocks.add((PatternBlock)b);
                 }
-            };
-        }else{
-            throw new IllegalArgumentException(md.getProjection().toString());
+            }
         }
+        
+        final List<Transformer<Bindings, STMT>> transformers = new ArrayList<Transformer<Bindings, STMT>>(patternBlocks.size());
+        for (PatternBlock pb : patternBlocks){
+            transformers.add(createStatementTransformer(pb));
+        }
+        
+        return new GraphQuery(){
+            @SuppressWarnings("unchecked")
+            @Override
+            public CloseableIterator<STMT> getTriples() {
+                List<Iterator<STMT>> iterators = new ArrayList<Iterator<STMT>>(transformers.size());
+                for (Transformer<Bindings, STMT> transformer : transformers){
+                    iterators.add(new TransformIterator<Bindings, STMT>(iterable.iterator(), transformer));
+                }
+                return new IteratorAdapter<STMT>(IteratorUtils.chainedIterator((Collection)iterators));
+            }
+        };
     }
 
     private Predicate<Bindings> createNePredicate(final Operation<?> expr) {
@@ -336,7 +357,12 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     @Override
     public Pair<Iterable<Bindings>, Bindings> visit(GraphBlock expr, Bindings bindings) {
-        throw new UnsupportedOperationException();
+        try{
+            context = expr.getContext();
+            return visit((ContainerBlock)expr, bindings);    
+        }finally{
+            context = null;
+        }        
     }
 
     @Override
@@ -512,7 +538,8 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     @Override
     public Pair<Iterable<Bindings>,Bindings> visit(final PatternBlock expr, final Bindings bindings) {
-        final Transformer<STMT, Bindings> transformer = createBindingsTransformer(expr, bindings);
+        final Transformer<STMT, Bindings> transformer = createBindingsTransformer(expr, context, bindings);
+        final Expression<UID> _context = context;
         Iterable<Bindings> iterable = new Iterable<Bindings>(){
             @Override
             public Iterator<Bindings> iterator() {
@@ -523,6 +550,8 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 UID c = null;
                 if (expr.getContext() != null){
                     c = (UID) expr.getContext().accept(QueryRDFVisitor.this, parent);
+                }else if (_context != null){
+                    c = (UID)_context.accept(QueryRDFVisitor.this, parent);
                 }
                 bindings.clear();
                 return new TransformIterator<STMT, Bindings>(connection.findStatements(s, p, o, c, false), transformer);
@@ -553,7 +582,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         if (uids.size() == 1) {
             where = Blocks.graph(uids.get(0), (Block)where);
         } else  if (uids.size() > 1) {
-            QUID g = new QUID("__g");
+            QUID g = new QUID("__g"); // TODO : use constant
             BooleanBuilder b = new BooleanBuilder();
             for (Constant<UID> uid : uids) {
                 b.or(g.eq(uid));

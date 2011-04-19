@@ -1,5 +1,6 @@
 package com.mysema.rdfbean.model;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -10,15 +11,7 @@ import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.support.SerializerBase;
-import com.mysema.query.types.Constant;
-import com.mysema.query.types.Expression;
-import com.mysema.query.types.Operator;
-import com.mysema.query.types.Ops;
-import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.ParamExpression;
-import com.mysema.query.types.Predicate;
-import com.mysema.query.types.SubQueryExpression;
-import com.mysema.query.types.TemplateExpression;
+import com.mysema.query.types.*;
 
 /**
  * @author tiwe
@@ -34,6 +27,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
 
     private boolean inlineResources = false;
+    
+    private boolean likeAsMatches = false;
 
 //    private boolean resource = false;
 
@@ -309,8 +304,14 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
+        if (operator == Ops.LIKE && likeAsMatches && args.get(1) instanceof Constant){
+            operator = Ops.MATCHES;
+            String value = args.get(1).toString().replace("%", ".*").replace("_", ".");
+            args = Arrays.asList(args.get(0), new ConstantImpl<LIT>(LIT.class, new LIT(value)));
+        }
         operators.push(operator);
         try{
             if (operator == Ops.NUMCAST){
@@ -350,4 +351,9 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         inlineResources = b;
     }
 
+    public void setLikeAsMatches(boolean likeAsMatches) {
+        this.likeAsMatches = likeAsMatches;
+    }
+
+    
 }

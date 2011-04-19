@@ -36,7 +36,7 @@ public abstract class SessionTestBase implements SimpleDomain{
     
     public Session session;
     
-    private List<Session> openSessions = new ArrayList<Session>();
+    private final List<Session> openSessions = new ArrayList<Session>();
         
     @BeforeClass
     public static void beforeClass() throws IOException{

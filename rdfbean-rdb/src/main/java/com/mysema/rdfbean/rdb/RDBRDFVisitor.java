@@ -179,6 +179,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             if (md.getProjection().size() == 1 && md.getProjection().get(0) instanceof PatternBlock){
                 List<Expression<?>> pr = new ArrayList<Expression<?>>();
                 PatternBlock pattern = (PatternBlock)md.getProjection().get(0);
+                
                 for (Expression<?> expr : Arrays.asList(pattern.getSubject(), pattern.getPredicate(), pattern.getObject(), pattern.getContext())){
                     if (expr != null && !(expr instanceof Constant)){
                         if (resources.contains(expr) || ID.class.isAssignableFrom(expr.getType())){

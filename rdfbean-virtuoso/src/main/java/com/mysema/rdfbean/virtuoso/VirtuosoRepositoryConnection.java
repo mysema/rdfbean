@@ -279,7 +279,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         try {
             Statement stmt = connection.createStatement();
             try {
-                stmt.execute(sparqlUpdate);
+                stmt.execute(sparqlUpdate); //NOSONAR
             }finally{
                 stmt.close();
             }                        

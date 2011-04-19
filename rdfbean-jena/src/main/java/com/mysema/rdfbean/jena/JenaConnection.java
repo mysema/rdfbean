@@ -80,6 +80,7 @@ public class JenaConnection implements RDFConnection {
                   queryLanguage.equals(QueryLanguage.GRAPH) || 
                   queryLanguage.equals(QueryLanguage.TUPLE)){
             SPARQLVisitor visitor = new SPARQLVisitor();
+            visitor.setLikeAsMatches(true);
             QueryMetadata md = (QueryMetadata)definition;
             visitor.visit((QueryMetadata)definition, queryLanguage);
             SPARQLQuery query = createSPARQLQuery(visitor.toString());

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,9 +17,10 @@ import org.junit.Test;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.types.Predicate;
+import com.mysema.rdfbean.AbstractConnectionTest;
 import com.mysema.rdfbean.TEST;
 
-public class TupleQueryTest {
+public class TupleQueryTest extends AbstractConnectionTest {
 
     private static final QNODE<ID> subject = new QNODE<ID>(ID.class, "s");
 
@@ -26,17 +28,25 @@ public class TupleQueryTest {
 
     private static final QNODE<NODE> object = new QNODE<NODE>(NODE.class, "o");
 
-    private final MiniConnection connection = new MiniConnection(new MiniRepository());
-
     private RDFQuery query(){
-        return new RDFQueryImpl(connection);
+        return new RDFQueryImpl(connection());
     }
 
+    @Override
     @Before
-    public void setUp(){
-        connection.addStatements(
-                new STMT(new BID(), RDFS.label, new LIT("C")),
-                new STMT(new BID(), RDF.type, RDFS.Resource));
+    public void before(){
+        super.before();
+        connection().update(null,
+                Arrays.asList(
+                    new STMT(new BID(), RDFS.label, new LIT("C")),
+                    new STMT(new BID(), RDF.type, RDFS.Resource)));
+    }
+    
+    @Override
+    @After
+    public void after(){
+        connection().remove(null, null, null, null);
+        super.after();
     }
 
     @Test
@@ -125,13 +135,14 @@ public class TupleQueryTest {
         UID User = new UID(TEST.NS, "User");
 
         ID id = new BID(), id2 = new BID(), id3 = new BID();
-        connection.addStatements(
+        connection().update(null,
+                Arrays.asList(
                 new STMT(id, RDF.type, User),
                 new STMT(id2, RDF.type, User),
                 new STMT(id3, RDF.type, User),
                 new STMT(id, RDFS.label, new LIT("x")),
                 new STMT(id2, RDFS.label, new LIT("x")),
-                new STMT(id3, RDFS.label, new LIT("y")));
+                new STMT(id3, RDFS.label, new LIT("y"))));
 
         CloseableIterator<Map<String, NODE>> iterator =
             query().where(
@@ -147,11 +158,11 @@ public class TupleQueryTest {
     }
 
     @Test
-    @Ignore // FIXME
+    @Ignore
     public void From(){
         UID test = new UID(TEST.NS);
         UID test2 = new UID(TEST.NS, "Res1");
-        connection.update(null, Arrays.asList(new STMT(new BID(), RDFS.label, new LIT("C"), test)));
+        connection().update(null, Arrays.asList(new STMT(new BID(), RDFS.label, new LIT("C"), test)));
 
         assertTrue(query().from(test).where(Blocks.pattern(subject, predicate, object)).ask());
         assertTrue(query().from(test, test2).where(Blocks.pattern(subject, predicate, object)).ask());

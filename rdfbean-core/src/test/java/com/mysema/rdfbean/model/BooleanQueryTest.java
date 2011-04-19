@@ -2,18 +2,18 @@ package com.mysema.rdfbean.model;
 
 import org.junit.Test;
 
-public class BooleanQueryTest {
+import com.mysema.rdfbean.AbstractConnectionTest;
+
+public class BooleanQueryTest extends AbstractConnectionTest {
     
     private static final QNODE<ID> subject = new QNODE<ID>(ID.class, "s");
     
     private static final QNODE<UID> predicate = new QNODE<UID>(UID.class, "p");
     
     private static final QNODE<NODE> object = new QNODE<NODE>(NODE.class, "o");
-    
-    private final MiniConnection connection = new MiniConnection(new MiniRepository());
 
     private RDFQuery query(){
-        return new RDFQueryImpl(connection);
+        return new RDFQueryImpl(connection());
     } 
     
     @Test

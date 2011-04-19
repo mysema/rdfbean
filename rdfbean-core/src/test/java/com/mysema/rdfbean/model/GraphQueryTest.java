@@ -1,9 +1,10 @@
 package com.mysema.rdfbean.model;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
-public class GraphQueryTest {
+import com.mysema.rdfbean.AbstractConnectionTest;
+
+public class GraphQueryTest extends AbstractConnectionTest {
 
     private static final QNODE<ID> subject = new QNODE<ID>(ID.class, "s");
 
@@ -11,10 +12,8 @@ public class GraphQueryTest {
 
     private static final QNODE<NODE> object = new QNODE<NODE>(NODE.class, "o");
 
-    private final MiniConnection connection = new MiniConnection(new MiniRepository());
-
     private RDFQuery query(){
-        return new RDFQueryImpl(connection);
+        return new RDFQueryImpl(connection());
     }
 
     @Test
@@ -35,7 +34,6 @@ public class GraphQueryTest {
     }
 
     @Test
-    @Ignore
     public void Two_Patterns(){
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
@@ -46,7 +44,6 @@ public class GraphQueryTest {
     }
 
     @Test
-    @Ignore
     public void Group(){
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),

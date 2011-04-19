@@ -42,7 +42,6 @@ public class MultiConnectionTest {
 
         // close
         connection.close();
-
     }
-
+    
 }

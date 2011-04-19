@@ -12,7 +12,7 @@ public class SPARQLTemplates extends Templates{
         add(PathType.VARIABLE,   "?{0s}");
         add(Ops.IS_NOT_NULL,     "bound({0})");
         add(Ops.IS_NULL,         "!bound({0})");
-
+        
         add(Ops.MATCHES,         "regex({0}, {1})");
         add(Ops.STARTS_WITH,     "regex({0}, '^{1s}')");
         add(Ops.ENDS_WITH,       "regex({0}, '{1s}$')");
@@ -22,7 +22,10 @@ public class SPARQLTemplates extends Templates{
         add(Ops.STARTS_WITH_IC,  "regex({0}, '^{1s}','i')");
         add(Ops.ENDS_WITH_IC,    "regex({0}, '{1s}$','i')");
         add(Ops.STRING_CONTAINS_IC,"regex({0}, '.*{1s}.*','i')");
-
+        add(Ops.EQ_IGNORE_CASE,  "regex({0}, {1},'i')");
+        
+        add(Ops.STRING_IS_EMPTY, "regex({0},'')");
+        
         add(Ops.EXISTS,          "exists {{0}}"); // ?!?
     }
 

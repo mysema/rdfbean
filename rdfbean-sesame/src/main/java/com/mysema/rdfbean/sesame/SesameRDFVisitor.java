@@ -206,7 +206,11 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                         ProjectionElemList p = new ProjectionElemList();
                         ValueExpr subject = toValue(pa.getSubject(), md);
                         if (subject instanceof Var){
-                            p.addElement(new ProjectionElem(((Var)subject).getName(),"subject"));
+                            Var v = (Var)subject;
+                            p.addElement(new ProjectionElem(v.getName(),"subject"));
+                            if (v.getValue() != null){
+                                extensions.add(new ExtensionElem(subject, v.getName()));
+                            }
                         }else{
                             String extLabel = extNames.next();
                             projection.addElement(new ProjectionElem(extLabel, "subject"));
@@ -214,7 +218,11 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                         }
                         ValueExpr predicate = toValue(pa.getPredicate(), md);
                         if (predicate instanceof Var){
-                            p.addElement(new ProjectionElem(((Var)predicate).getName(),"predicate"));
+                            Var v = (Var)predicate;
+                            p.addElement(new ProjectionElem(v.getName(),"predicate"));
+                            if (v.getValue() != null){
+                                extensions.add(new ExtensionElem(predicate, v.getName()));
+                            }
                         }else{
                             String extLabel = extNames.next();
                             projection.addElement(new ProjectionElem(extLabel, "predicate"));
@@ -222,7 +230,11 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                         }
                         ValueExpr object = toValue(pa.getObject(), md);
                         if (object instanceof Var){
-                            p.addElement(new ProjectionElem(((Var)object).getName(),"object"));
+                            Var v = (Var)object;
+                            p.addElement(new ProjectionElem(v.getName(),"object"));
+                            if (v.getValue() != null){
+                                extensions.add(new ExtensionElem(object, v.getName()));
+                            }
                         }else{
                             String extLabel = extNames.next();
                             projection.addElement(new ProjectionElem(extLabel, "object"));

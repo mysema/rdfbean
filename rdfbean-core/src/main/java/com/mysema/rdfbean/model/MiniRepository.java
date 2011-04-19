@@ -133,18 +133,7 @@ public final class MiniRepository implements Repository{
     }
     
     public boolean exists(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context) {
-        if (subject != null){
-            return subjects.containsKey(subject);
-        }else if (objects != null && object != null && object.isResource()){
-            return objects.containsKey(object.asResource());
-        }else{
-            for (PredicateCache stmtCache : subjects.values()) {
-                if (stmtCache.iterator(predicate).hasNext()){
-                    return true;
-                }
-            }
-            return false;
-        }
+        return findStatements(subject, predicate, object, context, false).hasNext();
     }
     
     public MiniDialect getDialect() {
