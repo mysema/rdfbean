@@ -1,12 +1,10 @@
 package com.mysema.rdfbean.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import com.mysema.query.types.Predicate;
-import com.mysema.rdfbean.model.QNODE;
-import com.mysema.rdfbean.model.RDF;
 
 public class QNODETest {
     
@@ -29,6 +27,13 @@ public class QNODETest {
     @Test
     public void Desc_Order(){
         assertEquals("{o} DESC", QNODE.o.desc().toString());
+    }
+ 
+    @Test
+    public void NotIn(){
+        assertEquals(
+            "{s} != http://www.w3.org/1999/02/22-rdf-syntax-ns#type && {s} != http://www.w3.org/1999/02/22-rdf-syntax-ns#text", 
+            QNODE.s.notIn(RDF.type, RDF.text).toString());
     }
     
 }

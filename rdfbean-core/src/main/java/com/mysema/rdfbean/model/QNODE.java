@@ -122,7 +122,7 @@ public class QNODE<T extends NODE> extends Param<T>{
         for (T value : values){
             ors[i++] = ne(value);
         }
-        return BooleanExpression.anyOf(ors);
+        return BooleanExpression.allOf(ors);
     }
 
     @Override
