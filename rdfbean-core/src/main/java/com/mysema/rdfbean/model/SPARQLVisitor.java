@@ -309,7 +309,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
         if (operator == Ops.LIKE && likeAsMatches && args.get(1) instanceof Constant){
             operator = Ops.MATCHES;
-            String value = args.get(1).toString().replace("%", ".*").replace("_", ".");
+            String value = ((Constant<LIT>)args.get(1)).getConstant().getValue().replace("%", ".*").replace("_", ".");
             args = Arrays.asList(args.get(0), new ConstantImpl<LIT>(LIT.class, new LIT(value)));
         }
         operators.push(operator);
