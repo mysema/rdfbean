@@ -32,37 +32,45 @@ public class RDFUpdateImpl implements RDFUpdate {
     public void execute() {
         UID[] _from = from.toArray(new UID[from.size()]);
         Block[] _where = where.toArray(new Block[where.size()]);
-        List<STMT> added = new ArrayList<STMT>();
-        List<STMT> removed = new ArrayList<STMT>();
+        List<STMT> added = null;
+        List<STMT> removed = null;
         
         if (!insert.isEmpty()){            
             CloseableIterator<STMT> stmts = new RDFQueryImpl(connection)
                 .from(_from).where(_where)
                 .construct(insert.toArray(new Block[insert.size()]));            
-            convertStatements(stmts, added);            
+            added = convertStatements(stmts, into);     
+            System.err.println("added " + added);
         }
         
         if (!delete.isEmpty()){
             CloseableIterator<STMT> stmts = new RDFQueryImpl(connection)
                 .from(_from).where(_where)
-                .construct(delete.toArray(new Block[insert.size()]));            
-            convertStatements(stmts, removed);
+                .construct(delete.toArray(new Block[delete.size()]));            
+            removed = convertStatements(stmts, from);
+            System.err.println("removed " + removed);
         }
         
         connection.update(removed, added);
     }
 
-    private void convertStatements(CloseableIterator<STMT> stmts, List<STMT> target) {
+    private List<STMT> convertStatements(CloseableIterator<STMT> stmts, List<UID> contexts) {
+        List<STMT> rv = new ArrayList<STMT>();
         try{
             while (stmts.hasNext()){
                 STMT stmt = stmts.next();
-                for (UID uid : into){
-                    target.add(new STMT(stmt, uid));
-                }
+                if (!contexts.isEmpty()){
+                    for (UID uid : contexts){
+                        rv.add(new STMT(stmt, uid));
+                    }
+                }else{
+                    rv.add(stmt);
+                }                
             }
         }finally{
             stmts.close();
         }
+        return rv;
     }
     
     @Override
