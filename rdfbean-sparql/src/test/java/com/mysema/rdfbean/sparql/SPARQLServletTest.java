@@ -118,6 +118,7 @@ public class SPARQLServletTest {
         assertTrue(response.getContentAsString().contains("literal"));
         assertEquals(SPARQLServlet.SPARQL_RESULTS_XML, response.getContentType());
     }
+    
 
     @Test
     public void Select_with_MaxQueryTime() throws ServletException, IOException{

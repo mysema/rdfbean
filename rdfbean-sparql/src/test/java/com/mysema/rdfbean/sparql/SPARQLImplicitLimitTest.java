@@ -61,7 +61,8 @@ public class SPARQLImplicitLimitTest {
     
     @Test
     public void Explicit_High_Limit_Overriden() throws ServletException, IOException{
-        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } ORDER BY ?s ?p ?o LIMIT 30");
+        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } ORDER BY ?s ?p ?o");
+        request.setParameter("limit", "30");
         request.addHeader("Accept", Format.NTRIPLES.getMimetype());
         servlet.service(request, response);
         String content = response.getContentAsString();
@@ -70,7 +71,8 @@ public class SPARQLImplicitLimitTest {
 
     @Test
     public void Explicit_Low_Limit() throws ServletException, IOException{
-        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } ORDER BY ?s ?p ?o LIMIT 5");
+        request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } ORDER BY ?s ?p ?o");
+        request.setParameter("limit", "5");
         request.addHeader("Accept", Format.NTRIPLES.getMimetype());
         servlet.service(request, response);
         String content = response.getContentAsString();

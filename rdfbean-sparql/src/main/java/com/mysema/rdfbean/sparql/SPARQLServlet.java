@@ -2,8 +2,6 @@ package com.mysema.rdfbean.sparql;
 
 import java.io.IOException;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 import javax.servlet.ServletConfig;
@@ -40,8 +38,6 @@ public class SPARQLServlet extends HttpServlet{
 
     public static final String SPARQL_RESULTS_XML = "application/sparql-results+xml";
 
-    private static final Pattern LIMIT_PATTERN = Pattern.compile("\\s+limit\\s+(\\d+)", Pattern.CASE_INSENSITIVE);
-
     private static final ResultProducer xmlProducer = new XMLResultProducer();
 
     private static final ResultProducer jsonProducer = new JSONResultProducer();
@@ -50,20 +46,20 @@ public class SPARQLServlet extends HttpServlet{
     private Repository repository;
 
     @Nullable
-    private Integer limit;
+    private Integer maxLimit;
 
     @Nullable
     private Integer maxQueryTime;
 
     public SPARQLServlet(Repository repository, Integer limit, Integer maxQueryTime) {
         this.repository = repository;
-        this.limit = limit;
+        this.maxLimit = limit;
         this.maxQueryTime = maxQueryTime;
     }
 
     public SPARQLServlet(Repository repository, Integer limit) {
         this.repository = repository;
-        this.limit = limit;
+        this.maxLimit = limit;
     }
 
     public SPARQLServlet(Repository repository) {
@@ -94,24 +90,26 @@ public class SPARQLServlet extends HttpServlet{
             return;
         }
 
-        // handle implicit limit
-        if (limit != null){
-            String normalized = queryString.toLowerCase(Locale.ENGLISH).replaceAll("\\s+", " ");
-            if (!normalized.startsWith("ask") && !normalized.contains(" ask ")){
-                Matcher m = LIMIT_PATTERN.matcher(queryString);
-                if (m.find()){
-                    String l = m.group(1);
-                    if (Integer.valueOf(l) < limit){
-                        queryString = m.replaceAll(" LIMIT " + l + " ");
-                    }else{
-                        queryString = m.replaceAll(" LIMIT " + limit + " ");
-                    }
-                }else{
-                    queryString += " LIMIT " + limit;
+        String normalized = queryString.toLowerCase(Locale.ENGLISH).replaceAll("\\s+", " ");
+        if (!normalized.startsWith("ask") && !normalized.contains(" ask ")){
+            String limit = request.getParameter("limit");
+            String offset = request.getParameter("offset");
+            if (maxLimit != null) {
+                if (limit != null) {
+                    limit = String.valueOf(Math.min(Integer.valueOf(limit), maxLimit));
+                } else {
+                    limit = maxLimit.toString();
                 }
             }
+            
+            if (limit != null) {
+                queryString += "\nLIMIT " + limit;
+            }
+            if (offset != null) {
+                queryString += "\nOFFSET " + offset;
+            }   
         }
-
+        
         try{
             handleRequest(request, response, queryString);
         }catch(Exception e){
@@ -125,7 +123,7 @@ public class SPARQLServlet extends HttpServlet{
 
         }
     }
-
+    
     private void handleRequest(HttpServletRequest request,
             HttpServletResponse response, String queryString)
             throws IOException {
