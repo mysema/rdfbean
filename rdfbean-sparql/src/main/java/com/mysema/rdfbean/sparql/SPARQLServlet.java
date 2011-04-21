@@ -34,14 +34,14 @@ public class SPARQLServlet extends HttpServlet{
 
     private static final long serialVersionUID = 5726683938555535282L;
 
-    public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
-
-    public static final String SPARQL_RESULTS_XML = "application/sparql-results+xml";
-
     private static final ResultProducer xmlProducer = new XMLResultProducer();
 
     private static final ResultProducer jsonProducer = new JSONResultProducer();
 
+    public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
+
+    public static final String SPARQL_RESULTS_XML = "application/sparql-results+xml";
+    
     @Nullable
     private Repository repository;
 
@@ -115,7 +115,7 @@ public class SPARQLServlet extends HttpServlet{
         }catch(Exception e){
             if (e.getMessage() != null){
                 logger.error(e.getMessage(), e);
-                response.sendError(400, e.getMessage().replace("<", "&lt;").replace(">","&gt;"));
+                response.sendError(400, e.getMessage() + "\n\n" + queryString);
             }else{
                 logger.error("Caught Exception", e);
                 response.sendError(400);
