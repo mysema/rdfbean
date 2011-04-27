@@ -115,7 +115,7 @@ public class SPARQLServlet extends HttpServlet{
         }catch(Exception e){
             if (e.getMessage() != null){
                 logger.error(e.getMessage(), e);
-                response.sendError(400, e.getMessage() + "\n\n" + queryString);
+                response.sendError(400, e.getMessage() + "\n\n" + request.getParameter("query")); // NOSONAR
             }else{
                 logger.error("Caught Exception", e);
                 response.sendError(400);
