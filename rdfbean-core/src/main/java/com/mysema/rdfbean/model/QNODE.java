@@ -1,13 +1,9 @@
 package com.mysema.rdfbean.model;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import javax.annotation.Nullable;
 
 import com.mysema.query.types.Order;
 import com.mysema.query.types.OrderSpecifier;
-import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.expr.Param;
 
 /**
@@ -83,47 +79,47 @@ public class QNODE<T extends NODE> extends Param<T>{
         return lit;
     }
 
-    @Override
-    public BooleanExpression in(T... values){
-        if (values.length == 0){
-            throw new IllegalArgumentException("empty array is not allowed");
-        }
-        return in(Arrays.asList(values));
-    }
-
-    @Override
-    public BooleanExpression in(Collection<? extends T> values){
-        if (values.isEmpty()){
-            throw new IllegalArgumentException("empty collection is not allowed");
-        }
-        BooleanExpression[] ors = new BooleanExpression[values.size()];
-        int i = 0;
-        for (T value : values){
-            ors[i++] = eq(value);
-        }
-        return BooleanExpression.anyOf(ors);
-    }
-
-    @Override
-    public BooleanExpression notIn(T... values){
-        if (values.length == 0){
-            throw new IllegalArgumentException("empty array is not allowed");
-        }
-        return notIn(Arrays.asList(values));
-    }
-
-    @Override
-    public BooleanExpression notIn(Collection<? extends T> values){
-        if (values.isEmpty()){
-            throw new IllegalArgumentException("empty collection is not allowed");
-        }
-        BooleanExpression[] ors = new BooleanExpression[values.size()];
-        int i = 0;
-        for (T value : values){
-            ors[i++] = ne(value);
-        }
-        return BooleanExpression.allOf(ors);
-    }
+//    @Override
+//    public BooleanExpression in(T... values){
+//        if (values.length == 0){
+//            throw new IllegalArgumentException("empty array is not allowed");
+//        }
+//        return in(Arrays.asList(values));
+//    }
+//
+//    @Override
+//    public BooleanExpression in(Collection<? extends T> values){
+//        if (values.isEmpty()){
+//            throw new IllegalArgumentException("empty collection is not allowed");
+//        }
+//        BooleanExpression[] ors = new BooleanExpression[values.size()];
+//        int i = 0;
+//        for (T value : values){
+//            ors[i++] = eq(value);
+//        }
+//        return BooleanExpression.anyOf(ors);
+//    }
+//
+//    @Override
+//    public BooleanExpression notIn(T... values){
+//        if (values.length == 0){
+//            throw new IllegalArgumentException("empty array is not allowed");
+//        }
+//        return notIn(Arrays.asList(values));
+//    }
+//
+//    @Override
+//    public BooleanExpression notIn(Collection<? extends T> values){
+//        if (values.isEmpty()){
+//            throw new IllegalArgumentException("empty collection is not allowed");
+//        }
+//        BooleanExpression[] ors = new BooleanExpression[values.size()];
+//        int i = 0;
+//        for (T value : values){
+//            ors[i++] = ne(value);
+//        }
+//        return BooleanExpression.allOf(ors);
+//    }
 
     @Override
     public boolean equals(Object o) {

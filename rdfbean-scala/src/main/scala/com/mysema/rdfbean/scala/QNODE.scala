@@ -35,18 +35,6 @@ class QNODE[T <: NODE](val t: Class[T], val name: String) extends ParamExpressio
   
   // TODO : asc, desc
 
-  override def in(values: T*): BooleanExpression = {
-    values.tail.foldLeft (this === values.head) { (l, r) => l or (this === r) } 
-  }
-  
-  override def in(values: Collection[T]): BooleanExpression = {
-    values.tail.foldLeft (this === values.head) { (l, r) => l or (this === r) } 
-  }
-
-  override def notIn(values: T*): BooleanExpression = !in(values)
-  
-  override def notIn(values: Collection[T]): BooleanExpression = !in(values)
-  
   override def equals(o: Any): Boolean = {
     if (o == this){
       true

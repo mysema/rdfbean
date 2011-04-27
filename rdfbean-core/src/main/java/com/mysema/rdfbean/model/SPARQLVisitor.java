@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.model;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -256,6 +257,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         lastPattern = null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Void visit(Constant<?> expr, Void context) {
         if (expr.getConstant() instanceof QueryMetadata) {
@@ -269,11 +271,23 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             UID node = (UID)expr.getConstant();
             append("<" + node.getValue() + ">");
 
+        } else if (Collection.class.isAssignableFrom(expr.getType())) {    
+            boolean first = true;
+            append("(");
+            for (Object o : ((Constant<Collection>)expr).getConstant()){
+                if (!first){
+                    append(", ");
+                }
+                visit(new ConstantImpl<Object>(o), context);
+                first = false;
+            }
+            append(")");
+            
         }else if (!getConstantToLabel().containsKey(expr.getConstant())) {
             String constLabel = "_c" + (getConstantToLabel().size() + 1);
             getConstantToLabel().put(expr.getConstant(), constLabel);
             append("?" + constLabel);
-
+            
         } else {
             append("?" + getConstantToLabel().get(expr.getConstant()));
         }
@@ -336,7 +350,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     }
 
     public void addBindings(SPARQLQuery query, QueryMetadata md) {
-        for (Map.Entry<Object,String> entry :getConstantToLabel().entrySet()){
+        for (Map.Entry<Object,String> entry : getConstantToLabel().entrySet()){
             if (entry.getKey() instanceof ParamExpression<?>){
                 if (md.getParams().containsKey(entry.getKey())){
                     query.setBinding(entry.getValue(), (NODE)md.getParams().get(entry.getKey()));

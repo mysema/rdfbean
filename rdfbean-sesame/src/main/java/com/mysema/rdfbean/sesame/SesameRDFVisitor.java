@@ -1,6 +1,7 @@
 package com.mysema.rdfbean.sesame;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -400,6 +401,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ValueExpr visit(Operation<?> expr, QueryMetadata md) {
         Operator<?> op = expr.getOperator();
@@ -407,6 +409,13 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             return new And(toValue(expr.getArg(0), md), toValue(expr.getArg(1), md));
         }else if (op == Ops.OR){
             return new Or(toValue(expr.getArg(0), md), toValue(expr.getArg(1), md));
+        }else if (op == Ops.IN){
+            // expand IN to OR/EQ
+            BooleanBuilder builder = new BooleanBuilder();
+            for (Object o : ((Constant<Collection>)expr.getArg(1)).getConstant()) {
+                builder.or(ExpressionUtils.eqConst((Expression)expr.getArg(0), o));
+            }
+            return (ValueExpr) builder.getValue().accept(this, md);
         }else if (op == Ops.NOT){
             return new Not(toValue(expr.getArg(0), md));
         }else if (COMPARE_OPS.containsKey(op)){

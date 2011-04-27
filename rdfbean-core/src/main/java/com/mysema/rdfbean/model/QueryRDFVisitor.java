@@ -382,7 +382,15 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
         }else if (op == Ops.AND){
             return createAndPredicate(expr, bindings);
-
+            
+        }else if (op == Ops.IN){
+            // expand IN to OR/EQ
+            BooleanBuilder builder = new BooleanBuilder();
+            for (Object o : ((Constant<Collection>)expr.getArg(1)).getConstant()) {
+                builder.or(ExpressionUtils.eqConst((Expression)expr.getArg(0), o));
+            }
+            return builder.getValue().accept(this, bindings);
+            
         }else if (op == Ops.OR){
             return createOrPredicate(expr, bindings);
 
