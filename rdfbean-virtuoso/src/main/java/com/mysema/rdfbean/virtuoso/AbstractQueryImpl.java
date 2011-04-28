@@ -77,11 +77,11 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
 
     protected ResultSet executeQuery(String query, boolean createAliases) throws SQLException{
         if (bindings.isEmpty()){
-            stmt = connection.prepareStatement(query);
+            stmt = connection.prepareStatement(query); //NOSONAR
         }else{
             List<NODE> nodes = new ArrayList<NODE>(bindings.size());
             String normalized = normalize(query, bindings, nodes, createAliases);
-            stmt = connection.prepareStatement(normalized);
+            stmt = connection.prepareStatement(normalized); //NOSONAR
             int offset = 1;
             for (NODE node : nodes){
                 if (node.isResource()){

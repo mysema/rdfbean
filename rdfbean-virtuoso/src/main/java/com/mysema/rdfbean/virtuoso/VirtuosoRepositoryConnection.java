@@ -404,7 +404,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = connection.prepareStatement(query.toString());
+            ps = connection.prepareStatement(query.toString()); //NOSONAR
             bindNodes(ps, nodes);
             ps.setFetchSize(prefetchSize);
             rs = ps.executeQuery();
@@ -613,7 +613,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 String delete = String.format("sparql delete from %1$s { %2$s %3$s %4$s } " +
                         "where { graph `%1$s` { %2$s %3$s %4$s } }", c, s, p, o);
 
-                ps = connection.prepareStatement(delete);
+                ps = connection.prepareStatement(delete); //NOSONAR
                 bindNodes(ps, nodes);
                 ps.execute();
             }

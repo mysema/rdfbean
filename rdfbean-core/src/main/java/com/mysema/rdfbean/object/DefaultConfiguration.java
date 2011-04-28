@@ -89,7 +89,7 @@ public class DefaultConfiguration implements Configuration {
         addPackages(packages);
     }
 
-    public void addClasses(Class<?>... classes) {
+    public final void addClasses(Class<?>... classes) {
         for (Class<?> clazz : classes) {
             if (clazz.getAnnotation(ClassMapping.class) != null){
                 MappedClass mappedClass = mappedClassFactory.getMappedClass(clazz);
@@ -111,7 +111,7 @@ public class DefaultConfiguration implements Configuration {
         }
     }
 
-    public void addPackages(Package... packages) {
+    public final void addPackages(Package... packages) {
         for (Package pack : packages) {
             MappedClasses classes = pack.getAnnotation(MappedClasses.class);
             if (classes != null) {

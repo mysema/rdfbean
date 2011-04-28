@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysema.commons.lang.IteratorAdapter;
 
 /**
@@ -14,6 +17,8 @@ import com.mysema.commons.lang.IteratorAdapter;
  *
  */
 public class SPARQLUpdateClause implements SPARQLUpdate {
+    
+    private static final Logger logger = LoggerFactory.getLogger(SPARQLUpdateClause.class);
     
     private final RDFConnection connection;
     
@@ -92,7 +97,7 @@ public class SPARQLUpdateClause implements SPARQLUpdate {
         }else{
             qry.append("WHERE { ?sss ?ppp ?ooo } LIMIT 1"); // XXX : improve this
         }
-        System.err.println(qry);
+        logger.info(qry.toString());
         
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, qry.toString());
         List<STMT> stmts = IteratorAdapter.asList(query.getTriples());

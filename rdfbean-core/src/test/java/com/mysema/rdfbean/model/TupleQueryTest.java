@@ -76,6 +76,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
 
         List<Predicate> filters = Arrays.<Predicate>asList(
                 subject.eq(new UID(TEST.NS)),
+                subject.in(RDF.type, RDF.first),
                 predicate.eq(RDFS.label),
                 subject.ne(new UID(TEST.NS)),
                 object.isNull(),
