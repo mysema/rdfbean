@@ -5,15 +5,16 @@
  */
 package com.mysema.rdfbean.object;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 
@@ -28,6 +29,7 @@ import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
+import com.mysema.util.ClassPathUtils;
 
 /**
  * Default implementation of the Configuration interface
@@ -36,8 +38,6 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
  *
  */
 public class DefaultConfiguration implements Configuration {
-
-    private static final Pattern JAR_URL_SEPARATOR = Pattern.compile("!");
 
     private static final Set<String> buildinNamespaces = new HashSet<String>();
 
@@ -183,70 +183,15 @@ public class DefaultConfiguration implements Configuration {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         for (Package pkg : packages){
             try {
-                for (Class<?> cl : scanPackage(classLoader, pkg)){
+                for (Class<?> cl : ClassPathUtils.scanPackage(classLoader, pkg)){
                     if (cl.getAnnotation(ClassMapping.class) != null){
                         addClasses(cl);
                     }
                 }
             } catch (IOException e) {
                 throw new ConfigurationException(e);
-            } catch (ClassNotFoundException e) {
-                throw new ConfigurationException(e);
             }
         }
     }
     
-    Set<Class<?>> scanPackage(ClassLoader classLoader, Package pkg) throws IOException, ClassNotFoundException {
-        Enumeration<URL> urls = classLoader.getResources(pkg.getName().replace('.', '/'));
-        Set<Class<?>> classes = new HashSet<Class<?>>();
-        while (urls.hasMoreElements()){
-            URL url = urls.nextElement();
-            if (url.getProtocol().equals("jar")){                
-                try {
-                    String[] fileAndPath = JAR_URL_SEPARATOR.split(url.getFile());
-                    JarFile jarFile = new JarFile(new File(new URI(fileAndPath[0])));
-                    Enumeration<JarEntry> entries = jarFile.entries();
-                    while (entries.hasMoreElements()){
-                        JarEntry entry = entries.nextElement();
-                        if (entry.getName().endsWith(".class") && entry.getName().startsWith(fileAndPath[1].substring(1))){
-                            String className = entry.getName().substring(0, entry.getName().length()-6).replace('/', '.');
-                            classes.add(Class.forName(className));
-    
-                        }
-                    }
-                } catch (URISyntaxException e) {
-                    throw new IOException(e);
-                }
-
-            }else if (url.getProtocol().equals("file")){
-                Deque<File> files = new ArrayDeque<File>();
-                String packagePath;
-                try {
-                    File packageAsFile = new File(url.toURI());
-                    packagePath = packageAsFile.getPath();
-                    files.add(packageAsFile);
-                } catch (URISyntaxException e) {
-                    throw new IOException(e);
-                }
-                while (!files.isEmpty()){
-                    File file = files.pop();
-                    for (File child : file.listFiles()){
-                        if (child.getName().endsWith(".class")){
-                            String fileName = child.getPath().substring(packagePath.length()+1).replace(File.separatorChar, '.');
-                            String className = pkg.getName() + "." + fileName.substring(0, fileName.length()-6);
-                            classes.add(Class.forName(className));
-                        }else if (child.isDirectory()){
-                            files.add(child);
-                        }
-                    }
-                }
-
-            }else{
-                throw new IllegalArgumentException("Illegal url : " + url);
-            }
-        }
-        return classes;
-    }
-
-
 }

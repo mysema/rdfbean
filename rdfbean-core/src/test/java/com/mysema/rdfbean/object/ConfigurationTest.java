@@ -6,19 +6,12 @@
 package com.mysema.rdfbean.object;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Set;
 
 import org.junit.Test;
 
-import com.mysema.query.Projectable;
-import com.mysema.query.Query;
-import com.mysema.query.types.Expression;
-import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.UID;
@@ -53,25 +46,25 @@ public class ConfigurationTest {
         assertEquals(conf1.getMappedClasses(), conf2.getMappedClasses());
     }
 
-    @Test
-    public void ScanPackages_from_File() throws IOException, ClassNotFoundException{
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        DefaultConfiguration conf = new DefaultConfiguration();
-        Set<Class<?>> classes = conf.scanPackage(classLoader, CORE.class.getPackage());
-        assertFalse(classes.isEmpty());
-        assertTrue(classes.contains(OWL.class));
-    }
-
-    @Test
-    public void ScanPackages_from_Jar() throws IOException, ClassNotFoundException{
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        DefaultConfiguration conf = new DefaultConfiguration();
-        Set<Class<?>> classes = conf.scanPackage(classLoader, Query.class.getPackage());
-        assertTrue(classes.contains(Projectable.class));
-        assertTrue(classes.contains(Expression.class));
-        assertFalse(classes.isEmpty());
-    }
-
+//    @Test
+//    public void ScanPackages_from_File() throws IOException, ClassNotFoundException{
+//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//        DefaultConfiguration conf = new DefaultConfiguration();
+//        Set<Class<?>> classes = conf.scanPackage(classLoader, CORE.class.getPackage());
+//        assertFalse(classes.isEmpty());
+//        assertTrue(classes.contains(OWL.class));
+//    }
+//
+//    @Test
+//    public void ScanPackages_from_Jar() throws IOException, ClassNotFoundException{
+//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+//        DefaultConfiguration conf = new DefaultConfiguration();
+//        Set<Class<?>> classes = conf.scanPackage(classLoader, Query.class.getPackage());
+//        assertTrue(classes.contains(Projectable.class));
+//        assertTrue(classes.contains(Expression.class));
+//        assertFalse(classes.isEmpty());
+//    }
+//
     @Test
     public void Default_Namespace_Available(){
         Configuration configuration = new DefaultConfiguration(TEST.NS, Entity.class);
