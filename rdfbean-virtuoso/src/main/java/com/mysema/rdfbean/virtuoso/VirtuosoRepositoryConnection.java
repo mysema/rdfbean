@@ -45,7 +45,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         resultTypes.put(QueryLanguage.TUPLE, SPARQLQuery.ResultType.TUPLES);
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepositoryConnection.class);
 
     private static final int BATCH_SIZE = 5000;
 

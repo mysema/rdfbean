@@ -20,7 +20,7 @@ import com.mysema.rdfbean.model.STMT;
  */
 public class BooleanQueryImpl extends AbstractQueryImpl {
     
-    private static final Logger logger = LoggerFactory.getLogger(GraphQueryImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(BooleanQueryImpl.class);
     
     public BooleanQueryImpl(Connection connection, int prefetch, String query) {
         super(connection, prefetch, query);
