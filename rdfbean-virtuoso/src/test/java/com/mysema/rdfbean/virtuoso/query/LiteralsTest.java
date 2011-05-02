@@ -7,6 +7,8 @@ package com.mysema.rdfbean.virtuoso.query;
 
 import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
@@ -20,10 +22,11 @@ import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
 @SessionConfig(Literals.class)
 public class LiteralsTest extends AbstractConnectionTest implements LiteralsDomain{
-     
+    
     @Test
     public void test(){
        Literals literals = new Literals();
+       literals.booleanValue = true;
        literals.byteValue = (byte)1;
        literals.dateValue = new Date();
        literals.doubleValue = 2.0;
@@ -35,6 +38,7 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
        session.save(literals);
         
        Literals l = Alias.alias(Literals.class);
+       assertEquals(Boolean.valueOf(literals.isBooleanValue()), session.from($(l)).uniqueResult($(l.isBooleanValue())));
        assertEquals(Byte.valueOf(literals.getByteValue()), session.from($(l)).uniqueResult($(l.getByteValue())));
        assertEquals(literals.getDateValue(), session.from($(l)).uniqueResult($(l.getDateValue())));
        assertEquals(Double.valueOf(literals.getDoubleValue()), session.from($(l)).uniqueResult($(l.getDoubleValue())));
@@ -44,6 +48,29 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
        assertEquals(Short.valueOf(literals.getShortValue()), session.from($(l)).uniqueResult($(l.getShortValue())));
        assertEquals(literals.getStringValue(), session.from($(l)).uniqueResult($(l.getStringValue())));
        
+    }
+    
+    @Test
+    public void Boolean(){
+        Literals literals = new Literals();
+        literals.booleanValue = true;
+        session.save(literals);
+        session.flush();
+        session.clear();
+        
+        // load
+        literals = session.get(Literals.class, literals.getId());
+        assertTrue(literals.isBooleanValue());
+        
+        // change
+        literals.booleanValue = false;
+        session.save(literals);
+        session.flush();
+        session.clear();
+        
+        // reload
+        literals = session.get(Literals.class, literals.getId());
+        assertFalse(literals.isBooleanValue());
     }
 
 }
