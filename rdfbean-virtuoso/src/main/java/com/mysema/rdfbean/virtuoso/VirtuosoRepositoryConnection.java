@@ -551,6 +551,10 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 bindURI(ps, 3, predicate);
                 bindValue(ps, 4, object);
                 ps.execute();
+                
+            }else if (subject == null && predicate == null && object == null && context == null && allowedGraphs.isEmpty()) {
+                ps = connection.prepareStatement("RDF_GLOBAL_RESET();");
+                ps.execute();                
 
             // no context
             } else if (context == null){
