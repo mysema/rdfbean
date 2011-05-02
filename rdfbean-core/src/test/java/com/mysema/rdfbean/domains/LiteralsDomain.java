@@ -10,14 +10,16 @@ import java.util.Date;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IDType;
 
 public interface LiteralsDomain {
 
     @ClassMapping
     public static class Literals {
 
-        @Id
-        public String id;
+        @Id(IDType.RESOURCE)
+        public ID id;
 
         @Predicate
         public int intValue;
@@ -46,7 +48,7 @@ public interface LiteralsDomain {
         @Predicate
         public boolean booleanValue;
 
-        public String getId() {
+        public ID getId() {
             return id;
         }
 
