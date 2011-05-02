@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +36,9 @@ public class VirtuosoRepository implements Repository {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
 
-    private final VirtuosoConnectionPoolDataSource pds = new VirtuosoConnectionPoolDataSource();
+    private final VirtuosoConnectionPoolDataSource ds = new VirtuosoConnectionPoolDataSource();
+    
+//    private final VirtuosoDataSource ds = new VirtuosoDataSource();
 
     private final String host;
 
@@ -78,35 +81,18 @@ public class VirtuosoRepository implements Repository {
     public VirtuosoRepository(String host, int port, String user, String password, String defGraph) {
         this.defGraph = new UID(defGraph);
         this.host = host;
-        pds.setServerName(host);
-        pds.setPortNumber(port);
-        pds.setUser(user);
-        pds.setPassword(password);
-        pds.setCharset(charset);
-
-        try {
-            if (initialPoolSize != null){
-                pds.setInitialPoolSize(initialPoolSize);
-            }
-            if (minPoolSize != null){
-                pds.setMinPoolSize(minPoolSize);
-            }
-            if (maxPoolSize != null){
-                pds.setMaxPoolSize(maxPoolSize);
-            }
-
-            pds.fill();
-        } catch (SQLException e) {
-            throw new RepositoryException(e);
-        }
-
+        ds.setServerName(host);
+        ds.setPortNumber(port);
+        ds.setUser(user);
+        ds.setPassword(password);
+        ds.setCharset(charset);
     }
 
     @Override
     public void close() {
         initialized = false;
         try {
-            pds.close();
+            ds.close();
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }
@@ -162,7 +148,7 @@ public class VirtuosoRepository implements Repository {
 
     public VirtuosoRepositoryConnection openConnection() {
         try {
-            java.sql.Connection connection = pds.getConnection();
+            java.sql.Connection connection = ds.getConnection();
             return new VirtuosoRepositoryConnection(idSequence, converter, prefetchSize, defGraph, allowedGraphs, connection);
         } catch (SQLException e) {
             logger.error("Connection to " + host + " FAILED.");
@@ -184,6 +170,23 @@ public class VirtuosoRepository implements Repository {
                 idSequence = new FileIdSequence(new File(dataDir, "lastLocalId"));
             }else{
                 idSequence = new MemoryIdSequence();
+            }
+            
+            try {
+                ds.setLogWriter(new PrintWriter(System.err));
+                
+                if (initialPoolSize != null){
+                    ds.setInitialPoolSize(initialPoolSize);
+                }
+                if (minPoolSize != null){
+                    ds.setMinPoolSize(minPoolSize);
+                }
+                if (maxPoolSize != null){
+                    ds.setMaxPoolSize(maxPoolSize);
+                }
+
+            } catch (SQLException e) {
+                throw new RepositoryException(e);
             }
 
             VirtuosoRepositoryConnection connection = openConnection();
