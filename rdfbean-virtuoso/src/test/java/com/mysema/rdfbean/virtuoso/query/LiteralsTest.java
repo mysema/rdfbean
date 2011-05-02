@@ -23,6 +23,8 @@ import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 @SessionConfig(Literals.class)
 public class LiteralsTest extends AbstractConnectionTest implements LiteralsDomain{
     
+    private final Literals l = Alias.alias(Literals.class);
+    
     @Test
     public void test(){
        Literals literals = new Literals();
@@ -37,7 +39,7 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
        literals.stringValue = "7";        
        session.save(literals);
         
-       Literals l = Alias.alias(Literals.class);
+       
        assertEquals(Boolean.valueOf(literals.isBooleanValue()), session.from($(l)).uniqueResult($(l.isBooleanValue())));
        assertEquals(Byte.valueOf(literals.getByteValue()), session.from($(l)).uniqueResult($(l.getByteValue())));
        assertEquals(literals.getDateValue(), session.from($(l)).uniqueResult($(l.getDateValue())));
@@ -61,6 +63,10 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
         // load
         literals = session.get(Literals.class, literals.getId());
         assertTrue(literals.isBooleanValue());
+        session.clear();
+        
+        assertEquals(1l, session.from($(l)).where($(l.isBooleanValue()).eq(true)).count());
+        assertEquals(0l, session.from($(l)).where($(l.isBooleanValue()).eq(false)).count());
         
         // change
         literals.booleanValue = false;
@@ -71,6 +77,10 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
         // reload
         literals = session.get(Literals.class, literals.getId());
         assertFalse(literals.isBooleanValue());
+        session.clear();
+        
+        assertEquals(0l, session.from($(l)).where($(l.isBooleanValue()).eq(true)).count());
+        assertEquals(1l, session.from($(l)).where($(l.isBooleanValue()).eq(false)).count());
     }
 
 }
