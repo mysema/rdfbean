@@ -942,7 +942,9 @@ public final class SessionImpl implements Session {
     }
 
     public void flush() {
-        connection.update(removedStatements, addedStatements);
+        if (!removedStatements.isEmpty() || !addedStatements.isEmpty()){
+            connection.update(removedStatements, addedStatements);    
+        }        
         removedStatements = new LinkedHashSet<STMT>();
         addedStatements = new LinkedHashSet<STMT>();
     }
