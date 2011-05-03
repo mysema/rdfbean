@@ -6,7 +6,7 @@
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
     <version>1.5.2</version>
-    <relativePath>../querydsl-root/pom.xml</relativePath> 
+    <relativePath>../rdfbean-root/pom.xml</relativePath> 
   </parent>
 
   <groupId>com.mysema.rdf</groupId>
