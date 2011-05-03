@@ -7,6 +7,7 @@ import org.junit.Test;
 public class QIDTest {
 
     QID subject = new QID("subject");
+    QID context = new QID("context");
     QNODE<UID> predicate = new QNODE<UID>(UID.class, "predicate");
     QNODE<NODE> object = new QNODE<NODE>(NODE.class, "object");
 
@@ -16,6 +17,13 @@ public class QIDTest {
         assertEquals(
                 Blocks.pattern(subject, predicate, object),
                 subject.has(predicate, object));
+    }
+    
+    @Test
+    public void Pattern_via_has_with_Context(){
+        assertEquals(
+                Blocks.pattern(subject, predicate, object, context),
+                subject.has(predicate, object, context));
     }
 
     @Test
@@ -30,6 +38,13 @@ public class QIDTest {
         assertEquals(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 subject.a(RDFS.Class));
+    }
+    
+    @Test
+    public void Pattern_via_a_with_Context(){
+        assertEquals(
+                Blocks.pattern(subject, RDF.type, RDFS.Class, context),
+                subject.a(RDFS.Class, context));
     }
 
     @Test

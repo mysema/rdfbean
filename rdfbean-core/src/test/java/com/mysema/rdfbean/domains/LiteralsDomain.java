@@ -7,6 +7,8 @@ package com.mysema.rdfbean.domains;
 
 import java.util.Date;
 
+import org.joda.time.LocalDate;
+
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
@@ -47,6 +49,9 @@ public interface LiteralsDomain {
 
         @Predicate
         public boolean booleanValue;
+        
+        @Predicate
+        public LocalDate localDate;
 
         public ID getId() {
             return id;

@@ -17,9 +17,16 @@ public class QResource<T extends ID> extends QNODE<T> {
         return Blocks.pattern(this, RDF.type, type);
     }
 
+    public PatternBlock a(Object type, Object context){
+        return Blocks.pattern(this, RDF.type, type, context);
+    }
+    
     public PatternBlock has(Object predicate, Object object){
         return Blocks.pattern(this, predicate, object);
     }
 
+    public PatternBlock has(Object predicate, Object object, Object context){
+        return Blocks.pattern(this, predicate, object, context);
+    }
 
 }
