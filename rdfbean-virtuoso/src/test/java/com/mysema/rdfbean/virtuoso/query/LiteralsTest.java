@@ -12,6 +12,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -82,5 +84,106 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
         assertEquals(0l, session.from($(l)).where($(l.isBooleanValue()).eq(true)).count());
         assertEquals(1l, session.from($(l)).where($(l.isBooleanValue()).eq(false)).count());
     }
+    
+    @Test
+    public void LocalDate_2000_01_01(){
+        testDatePersistence(new LocalDate(2000, 01, 01));        
+    }
+    
+    @Test
+    public void LocalDate_1934_10_10(){
+        testDatePersistence(new LocalDate(1934, 10, 10));        
+    }
+    
+    @Test
+    public void LocalDate_1900_02_02(){
+        testDatePersistence(new LocalDate(1900, 02, 02));        
+    }
 
+    @Test
+    public void LocalDate_1900_01_03(){
+        testDatePersistence(new LocalDate(1900, 01, 03));        
+    }
+    
+    @Test
+    public void LocalDate_1900_01_02(){
+        testDatePersistence(new LocalDate(1900, 01, 02));        
+    }
+    
+    @Test
+    public void LocalDate_1900_01_01(){
+        testDatePersistence(new LocalDate(1900, 01, 01));        
+    }
+        
+    @Test
+    public void LocalDate_1834_10_10(){
+        testDatePersistence(new LocalDate(1834, 10, 10));
+    }
+    
+    @Test
+    public void LocalDate_1734_10_10(){
+        testDatePersistence(new LocalDate(1734, 10, 10));
+    }
+    
+    @Test
+    public void DateTime_2000_01_01(){
+        testDateTimePersistence(new DateTime(2000, 1, 1, 0, 0, 0, 0));
+    }
+    
+    @Test
+    public void DateTime_1900_01_01(){
+        testDateTimePersistence(new DateTime(1900, 1, 1, 0, 0, 0, 0));
+    }
+    
+    @Test
+    public void DateTime_1800_01_01(){
+        testDateTimePersistence(new DateTime(1800, 1, 1, 0, 0, 0, 0));
+    }
+    
+    private void testDatePersistence(LocalDate date){
+        Literals literals = new Literals();
+        literals.localDate = date;
+        session.save(literals);
+        session.flush();
+        session.clear();
+        
+        // load
+        literals = session.get(Literals.class, literals.getId());
+        assertEquals(date, literals.localDate);
+        session.clear();
+        
+        // change
+        literals.localDate = date.minusDays(1);
+        session.save(literals);
+        session.flush();
+        session.clear();
+        
+        // reload
+        literals = session.get(Literals.class, literals.getId());
+        assertEquals(date.minusDays(1), literals.localDate);     
+    }
+    
+    private void testDateTimePersistence(DateTime date){
+        Literals literals = new Literals();
+        literals.dateTime = date;
+        session.save(literals);
+        session.flush();
+        session.clear();
+        
+        // load
+        literals = session.get(Literals.class, literals.getId());
+        assertEquals(date, literals.dateTime);
+        session.clear();
+        
+        // change
+        literals.dateTime = date.minusDays(1);
+        session.save(literals);
+        session.flush();
+        session.clear();
+        
+        // reload
+        literals = session.get(Literals.class, literals.getId());
+        assertEquals(date.minusDays(1), literals.dateTime);     
+    }
+    
 }

@@ -36,7 +36,7 @@ import com.mysema.rdfbean.owl.OWL;
  *
  */
 public class VirtuosoRepositoryConnection implements RDFConnection {
-
+    
     private static final Map<QueryLanguage<?,?>, SPARQLQuery.ResultType> resultTypes = new HashMap<QueryLanguage<?,?>, SPARQLQuery.ResultType>();
 
     static{

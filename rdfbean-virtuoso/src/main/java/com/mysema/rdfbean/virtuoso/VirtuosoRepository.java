@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import virtuoso.jdbc4.VirtuosoConnectionPoolDataSource;
+import virtuoso.jdbc4.VirtuosoDataSource;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
@@ -36,9 +36,9 @@ public class VirtuosoRepository implements Repository {
 
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
 
-    private final VirtuosoConnectionPoolDataSource ds = new VirtuosoConnectionPoolDataSource();
+//    private final VirtuosoConnectionPoolDataSource ds = new VirtuosoConnectionPoolDataSource();
     
-//    private final VirtuosoDataSource ds = new VirtuosoDataSource();
+    private final VirtuosoDataSource ds = new VirtuosoDataSource();
 
     private final String host;
 
@@ -91,11 +91,11 @@ public class VirtuosoRepository implements Repository {
     @Override
     public void close() {
         initialized = false;
-        try {
-            ds.close();
-        } catch (SQLException e) {
-            throw new RepositoryException(e);
-        }
+//        try {
+//            ds.close();
+//        } catch (SQLException e) {
+//            throw new RepositoryException(e);
+//        }
     }
 
     @Override
@@ -175,15 +175,15 @@ public class VirtuosoRepository implements Repository {
             try {
                 ds.setLogWriter(new PrintWriter(System.err));
                 
-                if (initialPoolSize != null){
-                    ds.setInitialPoolSize(initialPoolSize);
-                }
-                if (minPoolSize != null){
-                    ds.setMinPoolSize(minPoolSize);
-                }
-                if (maxPoolSize != null){
-                    ds.setMaxPoolSize(maxPoolSize);
-                }
+//                if (initialPoolSize != null){
+//                    ds.setInitialPoolSize(initialPoolSize);
+//                }
+//                if (minPoolSize != null){
+//                    ds.setMinPoolSize(minPoolSize);
+//                }
+//                if (maxPoolSize != null){
+//                    ds.setMaxPoolSize(maxPoolSize);
+//                }
 
             } catch (SQLException e) {
                 throw new RepositoryException(e);

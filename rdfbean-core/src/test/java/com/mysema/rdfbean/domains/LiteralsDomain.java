@@ -7,6 +7,7 @@ package com.mysema.rdfbean.domains;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.mysema.rdfbean.annotations.ClassMapping;
@@ -53,6 +54,9 @@ public interface LiteralsDomain {
         @Predicate
         public LocalDate localDate;
 
+        @Predicate
+        public DateTime dateTime;
+        
         public ID getId() {
             return id;
         }
@@ -93,6 +97,16 @@ public interface LiteralsDomain {
             return booleanValue;
         }
 
+        public DateTime getDateTime() {
+            return dateTime;
+        }
+
+        public void setDateTime(DateTime dateTime) {
+            this.dateTime = dateTime;
+        }
+
+        
+        
     }
 
 }
