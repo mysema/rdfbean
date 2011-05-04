@@ -95,7 +95,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             ps.setNull(col + 2, java.sql.Types.VARCHAR);
 
         } else if (n.isLiteral()) {
-            LIT lit = n.asLiteral();
+            LIT lit = n.asLiteral();      
             if (lit.getLang() != null) {
                 ps.setInt(col, 5);
                 ps.setString(col + 1, lit.getValue());
@@ -553,7 +553,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 ps.execute();
                 
             }else if (subject == null && predicate == null && object == null && context == null && allowedGraphs.isEmpty()) {
-                ps = connection.prepareStatement("RDF_GLOBAL_RESET();");
+                ps = connection.prepareStatement("RDF_GLOBAL_RESET()");
                 ps.execute();                
 
             // no context

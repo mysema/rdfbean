@@ -27,8 +27,7 @@
 	  <groupId>com.openlinksw</groupId>
 	  <artifactId>virtjdbc4</artifactId>
 	  <version>1.0</version>
-	</dependency>		
-	           
+	</dependency>		           
 	<!-- test deps -->
 	
 	<dependency>

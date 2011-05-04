@@ -76,7 +76,7 @@ public class GraphResultIterator implements CloseableIterator<STMT> {
                 next = null;
                 ID subject = (ID) converter.toNODE(rs.getObject(1));
                 UID predicate = (UID)converter.toNODE(rs.getObject(2));
-                NODE object = converter.toNODE(rs.getObject(3));
+                NODE object = converter.toNODE(rs.getObject(3));                
                 if (hasContext){
                     UID context = (UID) converter.toNODE(rs.getObject(4));
                     return new STMT(subject, predicate, object, context);                        

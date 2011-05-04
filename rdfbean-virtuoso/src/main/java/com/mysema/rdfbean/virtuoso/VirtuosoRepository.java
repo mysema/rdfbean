@@ -31,7 +31,7 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
  *
  */
 public class VirtuosoRepository implements Repository {
-
+    
     private static final String RDFBEAN_NIL = "rdfbean:nil";
 
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
