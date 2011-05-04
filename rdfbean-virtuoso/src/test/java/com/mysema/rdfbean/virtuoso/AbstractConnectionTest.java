@@ -67,6 +67,7 @@ public abstract class AbstractConnectionTest {
                     CORE.enumOrdinal, 
                     new LIT(String.valueOf(nt.ordinal()), XSD.integerType)));
         }
+        
         RDFConnection conn = repository.openConnection();
         try{
             conn.update(Collections.<STMT>emptySet(), added);    

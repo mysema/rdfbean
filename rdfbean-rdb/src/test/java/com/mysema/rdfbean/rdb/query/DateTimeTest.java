@@ -42,7 +42,7 @@ public class DateTimeTest extends AbstractRDBTest implements DateTimeDomain{
         Literals other = session.get(Literals.class, literals.id);
         assertEquals(literals.date,      other.date);
         assertEquals(literals.date2,     other.date2);
-        assertEquals(literals.dateTime,  other.dateTime);
+        assertEquals(literals.dateTime.getMillis(),  other.dateTime.getMillis());
         assertEquals(literals.localDate, other.localDate);
         assertEquals(literals.localTime, other.localTime);
         assertEquals(literals.time,      other.time);
@@ -52,7 +52,7 @@ public class DateTimeTest extends AbstractRDBTest implements DateTimeDomain{
         Literals l = Alias.alias(Literals.class);
         assertEquals(literals.date,      session.from($(l)).where($(l.getDate()).eq(literals.date)).uniqueResult($(l.getDate())));
 //        assertEquals(literals.date2,     session.from($(l)).where($(l.getDate2()).eq(literals.date2)).uniqueResult($(l.getDate2())));
-        assertEquals(literals.dateTime,  session.from($(l)).where($(l.getDateTime()).eq(literals.dateTime)).uniqueResult($(l.getDateTime())));
+        assertEquals(literals.dateTime.getMillis(),  session.from($(l)).where($(l.getDateTime()).eq(literals.dateTime)).uniqueResult($(l.getDateTime())).getMillis());
         assertEquals(literals.localDate, session.from($(l)).where($(l.getLocalDate()).eq(literals.localDate)).uniqueResult($(l.getLocalDate())));
 //        assertEquals(literals.localTime, session.from($(l)).where($(l.getLocalTime()).eq(literals.localTime)).uniqueResult($(l.getLocalTime())));
 //        assertEquals(literals.time,      session.from($(l)).where($(l.getTime()).eq(literals.time)).uniqueResult($(l.getTime())));

@@ -211,13 +211,27 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     @Override
     public Constant<?> visit(Constant<?> constant, QueryMetadata context) {
-        if (NODE.class.isAssignableFrom(constant.getConstant().getClass())){
+        if (NODE.class.isAssignableFrom(constant.getType())){
             NODE node = (NODE)constant.getConstant();
             if (asLiteral){
                 return ConstantImpl.create(node.getValue());
             }else{
                 return ConstantImpl.create(getId(node));
             }
+            
+        }else if (Collection.class.isAssignableFrom(constant.getType())) {    
+            Collection<?> collection = (Collection<?>)constant.getConstant();
+            List<Object> rv = new ArrayList<Object>(collection.size());
+            for (Object o : collection){
+                NODE node = (NODE)o;
+                if (asLiteral) {
+                    rv.add(node.getValue());
+                }else{
+                    rv.add(getId(node));
+                }
+            }
+            return new ConstantImpl<List>(List.class, rv);
+            
         }else{
             throw new IllegalArgumentException(constant.toString());
         }

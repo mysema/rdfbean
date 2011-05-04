@@ -29,11 +29,11 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 @SessionConfig(Entity.class)
 public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
     
-    private List<DateTime> dateTimes = new ArrayList<DateTime>();
+    private final List<DateTime> dateTimes = new ArrayList<DateTime>();
 
-    private Entity var1 = Alias.alias(Entity.class, "var1");
+    private final Entity var1 = Alias.alias(Entity.class, "var1");
     
-    private Entity var2 = Alias.alias(Entity.class, "var2");
+    private final Entity var2 = Alias.alias(Entity.class, "var2");
     
     @Before
     public void setUp() {
@@ -68,7 +68,7 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
                .notExists())
             .uniqueResult($(var1));
         assertNotNull(result);
-        assertEquals(dateTimes.get(dateTimes.size()-1), result.getCreated());
+        assertEquals(dateTimes.get(dateTimes.size()-1).getMillis(), result.getCreated().getMillis());
     }
     
     @Test

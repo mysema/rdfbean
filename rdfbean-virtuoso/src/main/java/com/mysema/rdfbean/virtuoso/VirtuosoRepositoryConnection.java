@@ -53,8 +53,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     private static final String INTERNAL_PREFIX = "http://www.openlinksw.com/";
 
-    private static final String JAVA_OUTPUT = "sparql define output:format '_JAVA_'\n ";
-
     private static final String SPARQL_CREATE_GRAPH = "sparql create silent graph iri(??)";
 
     private static final String SPARQL_SELECT_KNOWN_GRAPHS = "DB.DBA.SPARQL_SELECT_KNOWN_GRAPHS()";
@@ -332,11 +330,11 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             logger.info(query);
         }
         if (resultType == SPARQLQuery.ResultType.BOOLEAN){
-            return new BooleanQueryImpl(connection, prefetchSize, JAVA_OUTPUT + query);
+            return new BooleanQueryImpl(connection, prefetchSize, DEFAULT_OUTPUT + query);
         }else if (resultType == SPARQLQuery.ResultType.TUPLES){
             return new TupleQueryImpl(connection, converter, prefetchSize, DEFAULT_OUTPUT + query);
         }else if (resultType == SPARQLQuery.ResultType.TRIPLES){
-            return new GraphQueryImpl(connection, converter, prefetchSize, JAVA_OUTPUT + query);
+            return new GraphQueryImpl(connection, converter, prefetchSize, DEFAULT_OUTPUT + query);
         }else{
             throw new IllegalArgumentException("No result type for " + query);
         }

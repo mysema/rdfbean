@@ -29,12 +29,13 @@ import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 @SessionConfig(Entity.class)
 public class BeanSubQueryTest extends AbstractConnectionTest implements EntityDomain{
     
-    private List<DateTime> dateTimes = new ArrayList<DateTime>();
+    private final List<DateTime> dateTimes = new ArrayList<DateTime>();
 
-    private Entity var1 = Alias.alias(Entity.class, "var1");
+    private final Entity var1 = Alias.alias(Entity.class, "var1");
     
-    private Entity var2 = Alias.alias(Entity.class, "var2");
+    private final Entity var2 = Alias.alias(Entity.class, "var2");
     
+    @Override
     @Before
     public void setUp(){
         DateTime dateTime = new DateTime();   
@@ -68,7 +69,7 @@ public class BeanSubQueryTest extends AbstractConnectionTest implements EntityDo
                .notExists())
             .uniqueResult($(var1));
         assertNotNull(result);
-        assertEquals(dateTimes.get(dateTimes.size()-1), result.getCreated());
+        assertEquals(dateTimes.get(dateTimes.size()-1).getMillis(), result.getCreated().getMillis());
     }
     
     private BeanSubQuery sub(EntityPath<?> entity){

@@ -68,7 +68,7 @@ public class BeanSubQueryTest extends SessionTestBase implements EntityDomain{
                .notExists())
             .uniqueResult($(var1));
         assertNotNull(result);
-        assertEquals(dateTimes.get(dateTimes.size()-1), result.getCreated());
+        assertEquals(dateTimes.get(dateTimes.size()-1).getMillis(), result.getCreated().getMillis());
     }
 
     @Test

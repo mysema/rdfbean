@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
@@ -39,8 +40,7 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
        literals.longValue = 5l;
        literals.shortValue = (short)6;
        literals.stringValue = "7";        
-       session.save(literals);
-        
+       session.save(literals);        
        
        assertEquals(Boolean.valueOf(literals.isBooleanValue()), session.from($(l)).uniqueResult($(l.isBooleanValue())));
        assertEquals(Byte.valueOf(literals.getByteValue()), session.from($(l)).uniqueResult($(l.getByteValue())));
@@ -131,6 +131,21 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
     }
     
     @Test
+    public void DateTime_2000_01_01_UTC(){
+        testDateTimePersistence(new DateTime(2000, 1, 1, 0, 0, 0, 0).withZoneRetainFields(DateTimeZone.UTC));
+    }
+    
+    @Test
+    public void DateTime_2000_01_01_Plus_1(){
+        testDateTimePersistence(new DateTime(2000, 1, 1, 0, 0, 0, 0).withZoneRetainFields(DateTimeZone.forOffsetHours(1)));
+    }
+    
+    @Test
+    public void DateTime_2000_01_01_Plus_2(){
+        testDateTimePersistence(new DateTime(2000, 1, 1, 0, 0, 0, 0).withZoneRetainFields(DateTimeZone.forOffsetHours(2)));
+    }
+    
+    @Test
     public void DateTime_1900_01_01(){
         testDateTimePersistence(new DateTime(1900, 1, 1, 0, 0, 0, 0));
     }
@@ -138,6 +153,23 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
     @Test
     public void DateTime_1800_01_01(){
         testDateTimePersistence(new DateTime(1800, 1, 1, 0, 0, 0, 0));
+    }
+    
+    @Test
+    public void DateTime_1834_10_10(){
+        testDateTimePersistence(new LocalDate(1834, 10, 10).toDateTimeAtStartOfDay());
+    }
+    
+    @Test
+    public void DateTime_1872_12_31(){
+        // 1872-12-31T00:00:00.000+01:39:52
+        testDateTimePersistence(new LocalDate(1872, 12, 31).toDateTimeAtStartOfDay());
+    }
+    
+    @Test
+    public void DateTime_1872_12_31_UTC(){
+        // 1872-12-31T00:00:00.000Z
+        testDateTimePersistence(new LocalDate(1872, 12, 31).toDateTimeAtStartOfDay().withZoneRetainFields(DateTimeZone.UTC));
     }
     
     private void testDatePersistence(LocalDate date){
@@ -169,10 +201,12 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
         session.save(literals);
         session.flush();
         session.clear();
+        System.err.println(date);
         
         // load
         literals = session.get(Literals.class, literals.getId());
-        assertEquals(date, literals.dateTime);
+        assertEquals(date.toString(),  literals.dateTime.toString());
+        assertEquals(date.getMillis(), literals.dateTime.getMillis());
         session.clear();
         
         // change
@@ -183,7 +217,8 @@ public class LiteralsTest extends AbstractConnectionTest implements LiteralsDoma
         
         // reload
         literals = session.get(Literals.class, literals.getId());
-        assertEquals(date.minusDays(1), literals.dateTime);     
+        assertEquals(date.minusDays(1).toString(),  literals.dateTime.toString());
+        assertEquals(date.minusDays(1).getMillis(), literals.dateTime.getMillis()); 
     }
     
 }
