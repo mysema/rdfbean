@@ -27,10 +27,12 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
 
+    private boolean inlineAll = false;
+    
     private boolean inlineResources = false;
     
     private boolean likeAsMatches = false;
-
+    
 //    private boolean resource = false;
 
     @Nullable
@@ -72,6 +74,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         metadata = md;
         QueryModifiers mod = md.getModifiers();
         append(prefix);
+        
         // select
         if (queryType == QueryLanguage.TUPLE){
             append("SELECT ");
@@ -267,6 +270,16 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         }else if (expr.getConstant() instanceof Block) {
             handle((Expression<?>)expr.getConstant());
 
+        }else if (inlineAll && NODE.class.isInstance(expr.getConstant())){
+            NODE node = (NODE)expr.getConstant();
+            if (node.isBNode()){
+                append("_:" + node.getValue());
+            }else if (node.isURI()){
+                append("<"+ node.getValue() + ">");
+            }else{
+                append(node.toString());
+            }
+            
         }else if (inlineResources && UID.class.isInstance(expr.getConstant())) {
             UID node = (UID)expr.getConstant();
             append("<" + node.getValue() + ">");
@@ -369,5 +382,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         this.likeAsMatches = likeAsMatches;
     }
 
+    public void setInlineAll(boolean inlineAll) {
+        this.inlineAll = inlineAll;
+    }
     
 }

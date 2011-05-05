@@ -104,11 +104,13 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     }
 
     protected void aggregateFilters(){
-        if (filters.getValue() == null){
-            super.where(new GroupBlock(blocks));
-        }else{
-            super.where(new GroupBlock(blocks, filters.getValue()));
-        }
+        if (!blocks.isEmpty()){
+            if (filters.getValue() == null){
+                super.where(new GroupBlock(blocks));
+            }else{
+                super.where(new GroupBlock(blocks, filters.getValue()));
+            }    
+        }        
         blocks = new ArrayList<Block>();
         filters = new BooleanBuilder();
     }
@@ -131,8 +133,16 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
 
     @Override
     public String toString(){
+        QueryMetadata metadata = queryMixin.getMetadata().clone();
+        if (filters.getValue() == null){
+            metadata.addWhere(new GroupBlock(blocks));
+        }else{
+            metadata.addWhere(new GroupBlock(blocks, filters.getValue()));
+        }   
+        
         SPARQLVisitor visitor = new SPARQLVisitor();
-        visitor.visit(queryMixin.getMetadata(), QueryLanguage.TUPLE);
+        visitor.setInlineAll(true);
+        visitor.visit(metadata, QueryLanguage.TUPLE);
         return visitor.toString();
     }
 }
