@@ -134,11 +134,14 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     @Override
     public String toString(){
         QueryMetadata metadata = queryMixin.getMetadata().clone();
-        if (filters.getValue() == null){
-            metadata.addWhere(new GroupBlock(blocks));
-        }else{
-            metadata.addWhere(new GroupBlock(blocks, filters.getValue()));
-        }   
+        
+        if (!blocks.isEmpty()){
+            if (filters.getValue() == null){
+                metadata.addWhere(new GroupBlock(blocks));
+            }else{
+                metadata.addWhere(new GroupBlock(blocks, filters.getValue()));
+            }   
+        } 
         
         SPARQLVisitor visitor = new SPARQLVisitor();
         visitor.setInlineAll(true);
