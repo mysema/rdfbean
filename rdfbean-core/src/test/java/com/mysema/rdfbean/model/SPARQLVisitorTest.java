@@ -42,10 +42,16 @@ public class SPARQLVisitorTest {
         QueryMetadata metadata = query.getMetadata();
         metadata.addProjection(QNODE.s);
         visitor.visit(metadata, QueryLanguage.TUPLE);
-        assertEquals(stripWS(PREFIX + "SELECT ?s WHERE { ?s ?p ?o }"), stripWS(visitor.toString()));
+        assertEquals(PREFIX + "SELECT ?s WHERE { ?s ?p ?o } ", stripWS(visitor.toString()));
+    }
+    
+    @Test
+    public void StringValue_StartsWith(){        
+        visitor.handle(QNODE.o.stringValue().startsWith("B"));
+        assertEquals("regex(str(?o), '^B')", visitor.toString());
     }
     
     public static String stripWS(String str) {
-        return str.replaceAll("\\s", "");
+        return str.replaceAll("\\s+", " ");
     }
 }

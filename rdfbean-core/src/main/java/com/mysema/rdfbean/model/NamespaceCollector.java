@@ -27,6 +27,7 @@ public class NamespaceCollector implements RDFVisitor<Void, Void>{
         return visit(md);
     }
     
+    @Nullable
     private Void visit(QueryMetadata md){
         // select
         handle(md.getProjection());
@@ -134,8 +135,7 @@ public class NamespaceCollector implements RDFVisitor<Void, Void>{
             e.accept(this, null);
         }
     }
-    
-    
+        
     private void handle(List<? extends Expression<?>> exprs){
         for (Expression<?> expr : exprs) {
             expr.accept(this, null);

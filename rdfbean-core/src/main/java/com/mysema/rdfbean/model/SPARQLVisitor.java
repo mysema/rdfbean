@@ -16,6 +16,7 @@ import com.mysema.query.QueryModifiers;
 import com.mysema.query.QueryFlag.Position;
 import com.mysema.query.support.SerializerBase;
 import com.mysema.query.types.*;
+import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 /**
  * @author tiwe
@@ -40,7 +41,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     @Nullable
     private QueryMetadata metadata;
-
+    
     public SPARQLVisitor() {
         this(SPARQLTemplates.DEFAULT, "");
     }
@@ -270,6 +271,16 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     @SuppressWarnings("unchecked")
     @Override
     public Void visit(Constant<?> expr, Void context) {
+        
+        // convert literal values to LIT objects
+        if (expr.getType().equals(String.class)) {
+            expr = new ConstantImpl<LIT>(LIT.class, new LIT(expr.getConstant().toString()));
+        }else if (ConverterRegistryImpl.DEFAULT.supports(expr.getType())) {
+            UID datatype = ConverterRegistryImpl.DEFAULT.getDatatype(expr.getType());
+            String value = ConverterRegistryImpl.DEFAULT.toString(expr.getConstant());
+            expr = new ConstantImpl<LIT>(LIT.class, new LIT(value, datatype));
+        }        
+        
         if (expr.getConstant() instanceof QueryMetadata) {
             QueryMetadata md = (QueryMetadata)expr.getConstant();
             handle(md.getWhere());

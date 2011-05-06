@@ -81,6 +81,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
                 subject.ne(new UID(TEST.NS)),
                 object.isNull(),
                 object.isNotNull(),
+                object.stringValue().startsWith("X"),
                 object.lit().like("X%"),
                 object.lit().matches(".*"),
                 object.lit().lt("D"),

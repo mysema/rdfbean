@@ -19,6 +19,8 @@ import com.mysema.rdfbean.model.XSD;
  */
 public class ConverterRegistryImpl implements ConverterRegistry{
 
+    public static final ConverterRegistry DEFAULT = new ConverterRegistryImpl();
+    
     private final Map<Class<?>,Converter<?>> classToConverter = new HashMap<Class<?>,Converter<?>>();
 
     private final Map<Class<?>,UID> classToType = new HashMap<Class<?>,UID>();

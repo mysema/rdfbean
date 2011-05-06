@@ -27,6 +27,7 @@ import com.mysema.query.BooleanBuilder;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.*;
+import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 import com.mysema.util.FilterIterable;
 import com.mysema.util.IterableChain;
 import com.mysema.util.LimitingIterable;
@@ -310,7 +311,16 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     @Override
     public NODE visit(Constant<?> expr, Bindings bindings) {
-        return (NODE) expr.getConstant();
+        if (expr.getType().equals(String.class)){
+            return new LIT(expr.getConstant().toString());
+        }else if (NODE.class.isAssignableFrom(expr.getType())){
+            return (NODE) expr.getConstant();    
+        }else{
+            UID datatype = ConverterRegistryImpl.DEFAULT.getDatatype(expr.getType());
+            String value = ConverterRegistryImpl.DEFAULT.toString(expr.getConstant());
+            return new LIT(value, datatype);
+        }
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -455,6 +465,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
             return new LIT(String.valueOf(lhs.getValue().charAt(Integer.parseInt(rhs.getValue()))));
 
+        }else if (op == Ops.STRING_CAST) {   
+            NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
+            return (lhs.isResource()) ? new LIT(lhs.getValue()) : lhs;
+            
         }else{
             throw new IllegalArgumentException(expr.toString());
         }

@@ -24,6 +24,7 @@ import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.template.BooleanTemplate;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.query.VarNameIterator;
+import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 /**
  * @author tiwe
@@ -209,6 +210,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Constant<?> visit(Constant<?> constant, QueryMetadata context) {
         if (NODE.class.isAssignableFrom(constant.getType())){
@@ -231,6 +233,22 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 }
             }
             return new ConstantImpl<List>(List.class, rv);
+            
+        }else if (String.class.equals(constant.getType())) {
+            if (asLiteral) {
+                return ConstantImpl.create(constant.getConstant().toString());
+            }else{
+                return ConstantImpl.create(getId(new LIT(constant.getConstant().toString())));
+            }
+            
+        }else if (ConverterRegistryImpl.DEFAULT.supports(constant.getType())){            
+            String value = ConverterRegistryImpl.DEFAULT.toString(constant.getConstant());
+            if (asLiteral) {
+                return ConstantImpl.create(value);
+            } else {
+                UID datatype = ConverterRegistryImpl.DEFAULT.getDatatype(constant.getType());
+                return ConstantImpl.create(getId(new LIT(value, datatype)));
+            }
             
         }else{
             throw new IllegalArgumentException(constant.toString());

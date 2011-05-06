@@ -24,6 +24,7 @@ import com.mysema.query.QueryModifiers;
 import com.mysema.query.types.*;
 import com.mysema.rdfbean.model.*;
 import com.mysema.rdfbean.query.VarNameIterator;
+import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 /**
  * @author tiwe
@@ -384,7 +385,15 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     public Var visit(Constant<?> expr, QueryMetadata md) {
         Var var = constantToVar.get(expr);
         if (var == null){
-            var = new Var(varNames.next(), dialect.getNode((NODE)expr.getConstant()));
+            if (NODE.class.isAssignableFrom(expr.getType())){
+                var = new Var(varNames.next(), dialect.getNode((NODE)expr.getConstant()));
+            }else if (expr.getType().equals(String.class)){    
+                var = new Var(varNames.next(), dialect.getNode(new LIT(expr.getConstant().toString())));
+            }else{
+                UID datatype = ConverterRegistryImpl.DEFAULT.getDatatype(expr.getType());
+                String value = ConverterRegistryImpl.DEFAULT.toString(expr.getConstant());
+                var = new Var(varNames.next(), dialect.getNode(new LIT(value, datatype)));
+            }
             var.setAnonymous(true);
             constantToVar.put(expr, var);
         }
