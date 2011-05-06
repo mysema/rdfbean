@@ -2,9 +2,12 @@ package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
+import com.mysema.query.types.Ops;
 import com.mysema.query.types.Order;
 import com.mysema.query.types.OrderSpecifier;
 import com.mysema.query.types.expr.Param;
+import com.mysema.query.types.expr.StringExpression;
+import com.mysema.query.types.expr.StringOperation;
 
 /**
  * @author tiwe
@@ -36,6 +39,9 @@ public class QNODE<T extends NODE> extends Param<T>{
 
     @Nullable
     private volatile QID id;
+    
+    @Nullable
+    private volatile StringExpression stringCast;
 
     @Nullable
     @SuppressWarnings("unchecked")
@@ -94,6 +100,19 @@ public class QNODE<T extends NODE> extends Param<T>{
     @Override
     public int hashCode(){
         return getName().hashCode();
+    }
+    
+    /**
+     * Get a cast to String expression
+     *
+     * @see     java.lang.Object#toString()
+     * @return
+     */
+    public StringExpression stringValue() {
+        if (stringCast == null){
+            stringCast = StringOperation.create(Ops.STRING_CAST, this);
+        }
+        return stringCast;
     }
 
 }

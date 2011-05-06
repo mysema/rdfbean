@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.mysema.query.QueryMetadata;
+import com.mysema.query.QueryFlag.Position;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.PredicateOperation;
@@ -30,4 +32,20 @@ public class SPARQLVisitorTest {
         assertTrue(visitor.getConstantToLabel().containsKey(new LIT("x.")));
     }
 
+    @Test
+    public void Start_Flag() {
+        final String PREFIX = "DEFINE input:inference \"ruleset\" ";
+        RDFQueryImpl query = new RDFQueryImpl(null);
+        query.addFlag(Position.START, PREFIX);
+        query.where(Blocks.SPO);
+        query.aggregateFilters();
+        QueryMetadata metadata = query.getMetadata();
+        metadata.addProjection(QNODE.s);
+        visitor.visit(metadata, QueryLanguage.TUPLE);
+        assertEquals(stripWS(PREFIX + "SELECT ?s WHERE { ?s ?p ?o }"), stripWS(visitor.toString()));
+    }
+    
+    public static String stripWS(String str) {
+        return str.replaceAll("\\s", "");
+    }
 }

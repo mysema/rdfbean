@@ -4,13 +4,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.annotation.Nullable;
 
 import com.mysema.query.JoinExpression;
+import com.mysema.query.QueryFlag;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
+import com.mysema.query.QueryFlag.Position;
 import com.mysema.query.support.SerializerBase;
 import com.mysema.query.types.*;
 
@@ -74,7 +77,11 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         metadata = md;
         QueryModifiers mod = md.getModifiers();
         append(prefix);
-        
+        Set<QueryFlag> flags = metadata.getFlags();
+
+        // start
+        serialize(Position.START, flags);
+
         // select
         if (queryType == QueryLanguage.TUPLE){
             append("SELECT ");

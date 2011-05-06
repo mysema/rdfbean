@@ -7,6 +7,8 @@ import java.util.Map;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.DefaultQueryMetadata;
+import com.mysema.query.QueryFlag;
+import com.mysema.query.QueryFlag.Position;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.support.QueryBase;
 import com.mysema.query.support.QueryMixin;
@@ -30,6 +32,11 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
         super(new QueryMixin<RDFQueryImpl>(new DefaultQueryMetadata(false)));
         queryMixin.setSelf(this);
         this.connection = connection;
+    }
+
+    @Override
+    public RDFQuery addFlag(Position position, String flag) {
+        return queryMixin.addFlag(new QueryFlag(position, flag));
     }
 
     @Override
@@ -148,4 +155,5 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
         visitor.visit(metadata, QueryLanguage.TUPLE);
         return visitor.toString();
     }
+
 }
