@@ -15,6 +15,7 @@ import java.util.*;
 import javax.annotation.Nullable;
 
 import com.mysema.commons.lang.Assert;
+import com.mysema.rdfbean.annotations.Mixin;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.UID;
 
@@ -38,9 +39,11 @@ public final class MappedClass {
 
     private final Set<MappedProperty<?>> dynamicProperties = new LinkedHashSet<MappedProperty<?>>();
 
+    private final Set<MappedProperty<?>> mixinProperties = new LinkedHashSet<MappedProperty<?>>();
+    
     @Nullable
     private MappedProperty<?> idProperty;
-
+    
     private final Set<UID> mappedPredicates = new HashSet<UID>();
 
     private final Set<UID> invMappedPredicates = new HashSet<UID>();
@@ -71,11 +74,13 @@ public final class MappedClass {
     @SuppressWarnings("unchecked")
     void addMappedPath(MappedPath path) {
         if (path.getPredicatePath().size() > 0) {
-            if (!path.get(0).inv()){
+            if (!path.get(0).inv()) {
                 mappedPredicates.add(path.get(0).getUID());
-            }else{
+            } else {
                 invMappedPredicates.add(path.get(0).getUID());
             }
+        } else if (path.getMappedProperty().isAnnotationPresent(Mixin.class)){
+            mixinProperties.add(path.getMappedProperty());
         }
 
         MappedProperty property = path.getMappedProperty();
@@ -153,6 +158,10 @@ public final class MappedClass {
         return dynamicProperties;
     }
 
+    public Collection<MappedProperty<?>> getMixinProperties() {
+        return mixinProperties;
+    }
+    
     @Nullable
     public MappedProperty<?> getIdProperty() {
         return idProperty;
@@ -178,7 +187,7 @@ public final class MappedClass {
     public List<MappedClass> getMappedSuperClasses() {
         return mappedSuperClasses;
     }
-
+    
     public Collection<MappedPath> getProperties() {
         return properties.values();
     }

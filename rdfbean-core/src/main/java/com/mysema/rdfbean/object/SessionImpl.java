@@ -124,7 +124,7 @@ public final class SessionImpl implements Session {
 
     private ID assignId(MappedClass mappedClass, BeanMap instance) {
         ID subject = createResource(mappedClass.getUID(), instance);
-        setId(mappedClass, subject, instance);
+        setId(mappedClass, subject, instance);        
         return subject;
     }
 
@@ -1633,6 +1633,17 @@ public final class SessionImpl implements Session {
                 }
             }
             idProperty.setValue(instance, id);
+        }
+        
+        for (MappedProperty<?> mixinProperty : mappedClass.getMixinProperties()) {
+            Object mixinValue = mixinProperty.getValue(instance);
+            if (mixinValue != null) {
+                MappedClass mixinClass = configuration.getMappedClass(mixinProperty.getTargetType());
+                if (mixinClass == null) {
+                    throw new IllegalStateException("Got no mapped class for " + mixinProperty.getTargetType().getName());
+                }
+                setId(mixinClass, subject, new BeanMap(mixinValue));
+            }
         }
     }
 
