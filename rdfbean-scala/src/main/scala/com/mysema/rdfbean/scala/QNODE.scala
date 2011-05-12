@@ -2,7 +2,7 @@ package com.mysema.rdfbean.scala;
 
 import java.util.Collection
 import javax.annotation.Nullable
-import com.mysema.query.types.{ ConstantImpl, Ops, Order, OrderSpecifier, ParamExpression, Visitor }
+import com.mysema.query.types.{ Expression, ConstantImpl, Ops, Order, OrderSpecifier, ParamExpression, Visitor }
 import com.mysema.query.scala._
 import com.mysema.rdfbean.model.NODE
 import com.mysema.query.scala.{ Operations, SimpleExpression }
@@ -27,21 +27,20 @@ class QNODE[T <: NODE](val t: Class[T], val name: String) extends ParamExpressio
   
   def getNotSetMessage() = "A parameter of type " + getType.getName + " was not set"
     
-  def is(predicate: AnyRef, subject: AnyRef) =  Blocks.pattern(subject, predicate, this)
-
+  def is(p: AnyRef, s: AnyRef) =  Blocks.pattern(s, p, this)
+  
   lazy val id = new QID(getName)
   
   lazy val lit = new QLIT(getName)
   
-  // TODO : asc, desc
-
+  lazy val asc = new OrderSpecifier[String](Order.ASC, this.asInstanceOf[Expression[String]])
+  
+  lazy val desc = new OrderSpecifier[String](Order.DESC, this.asInstanceOf[Expression[String]])
+  
   override def equals(o: Any): Boolean = {
-    if (o == this){
-      true
-    }else if (o.isInstanceOf[QNODE[_]]){
-      o.asInstanceOf[QNODE[_]].getName eq getName
-    }else{
-      false
+    o match {
+      case n: QNODE[_] => n.getName == name
+      case _ => false
     }
   }
 
@@ -72,8 +71,14 @@ object QNODE {
 class QResource[T <: ID](c: Class[T], name: String) extends QNODE[T](c, name) {
     
   def a(t: AnyRef) = Blocks.pattern(this, RDF.`type`, t)
+  
+  def a(t: AnyRef, c: AnyRef) = Blocks.pattern(this, RDF.`type`, t, c)
 
   def has(p: AnyRef, o: AnyRef) = Blocks.pattern(this, p, o)
+  
+  def has(p: AnyRef, o: AnyRef, c: AnyRef) = Blocks.pattern(this, p, o, c) 
+  
+  
 }
 
 class QID(name: String) extends QResource[ID](classOf[ID], name) { }
