@@ -124,7 +124,7 @@ public class SPARQLServlet extends HttpServlet{
         }
     }
     
-    private void handleRequest(HttpServletRequest request,
+    protected void handleRequest(HttpServletRequest request,
             HttpServletResponse response, String queryString)
             throws IOException {
         RDFConnection connection = repository.openConnection();
