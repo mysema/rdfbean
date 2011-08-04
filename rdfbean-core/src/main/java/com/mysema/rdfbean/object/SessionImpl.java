@@ -1639,9 +1639,9 @@ public final class SessionImpl implements Session {
             Object mixinValue = mixinProperty.getValue(instance);
             if (mixinValue != null) {
                 MappedClass mixinClass = configuration.getMappedClass(mixinProperty.getTargetType());
-                if (mixinClass == null) {
-                    throw new IllegalStateException("Got no mapped class for " + mixinProperty.getTargetType().getName());
-                }
+//                if (mixinClass == null) {
+//                    throw new IllegalStateException("Got no mapped class for " + mixinProperty.getTargetType().getName());
+//                }
                 setId(mixinClass, subject, new BeanMap(mixinValue));
             }
         }
