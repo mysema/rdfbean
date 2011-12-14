@@ -10,7 +10,6 @@ import static com.mysema.query.types.PathMetadataFactory.forVariable;
 import com.mysema.query.sql.ForeignKey;
 import com.mysema.query.sql.PrimaryKey;
 import com.mysema.query.sql.RelationalPathBase;
-import com.mysema.query.sql.Table;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.BeanPath;
 import com.mysema.query.types.path.NumberPath;
@@ -19,7 +18,6 @@ import com.mysema.query.types.path.StringPath;
 /**
  * QLanguage is a Querydsl query type for QLanguage
  */
-@Table("LANGUAGE")
 public class QLanguage extends RelationalPathBase<QLanguage>{
 
     private static final long serialVersionUID = -1756160653;
@@ -35,15 +33,15 @@ public class QLanguage extends RelationalPathBase<QLanguage>{
     public final ForeignKey<QSymbol> _langKey = createForeignKey(id, "LANG");
 
     public QLanguage(String variable) {
-        super(QLanguage.class, forVariable(variable));
+        super(QLanguage.class, forVariable(variable), null, "LANGUAGE");
     }
 
     public QLanguage(BeanPath<? extends QLanguage> entity) {
-        super(entity.getType(),entity.getMetadata());
+        super(entity.getType(),entity.getMetadata(), null, "LANGUAGE");
     }
 
     public QLanguage(PathMetadata<?> metadata) {
-        super(QLanguage.class, metadata);
+        super(QLanguage.class, metadata, null, "LANGUAGE");
     }
 
 }

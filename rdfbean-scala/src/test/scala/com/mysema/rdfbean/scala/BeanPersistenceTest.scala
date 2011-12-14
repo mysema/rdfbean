@@ -3,7 +3,6 @@ package com.mysema.rdfbean.scala
 import com.mysema.rdfbean.TEST
 import com.mysema.rdfbean.`object`.Session
 import com.mysema.rdfbean.`object`.SessionUtil
-import Annotations._
 
 import org.junit.{ Ignore, Test, Before, After };
 import org.junit.Assert._;

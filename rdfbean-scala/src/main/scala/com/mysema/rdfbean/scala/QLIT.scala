@@ -8,7 +8,7 @@ import com.mysema.rdfbean.model.NODE
 import com.mysema.query.scala.{ Operations, SimpleExpression }
 import com.mysema.rdfbean.model.{ Blocks, NODE, ID, LIT, BID, UID, RDF }
 
-import scala.collection.JavaConversions._
+//import scala.collection.JavaConversions._
 
 class QLIT(name: String) extends QNODE[LIT](classOf[LIT], name) {
 

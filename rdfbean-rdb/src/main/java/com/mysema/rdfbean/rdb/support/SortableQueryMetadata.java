@@ -32,7 +32,18 @@ public class SortableQueryMetadata extends DefaultQueryMetadata{
     }
     
     @Override
-    public void addJoin(JoinExpression join){
+    public void addJoin(JoinExpression... joins){
+        for (JoinExpression join : joins) {
+        	addSingleJoin(join);
+        }
+    }
+    
+    @Override
+    public void addJoin(JoinType joinType, Expression<?> expr) {
+    	addSingleJoin(new JoinExpression(joinType, expr));
+    }
+    
+    private void addSingleJoin(JoinExpression join){
         if (join.getType() == JoinType.DEFAULT){
             joins.add(join);
         }else{
@@ -50,11 +61,6 @@ public class SortableQueryMetadata extends DefaultQueryMetadata{
             }
         }
         last = join;
-    }
-    
-    @Override
-    public void addJoin(JoinType joinType, Expression<?> expr) {
-        addJoin(new JoinExpression(joinType, expr));
     }
 
     @Override

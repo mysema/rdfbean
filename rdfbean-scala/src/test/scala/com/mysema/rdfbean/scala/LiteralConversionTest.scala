@@ -7,8 +7,6 @@ import Conversions._
 import org.junit.{ Ignore, Test, Before, After };
 import org.junit.Assert._;
 
-import Annotations._
-
 class LiteralConversionTest {
     
   @Test  

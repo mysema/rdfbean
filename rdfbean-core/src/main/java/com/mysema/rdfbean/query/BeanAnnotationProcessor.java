@@ -5,32 +5,24 @@
  */
 package com.mysema.rdfbean.query;
 
-import java.util.Set;
-
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
 
+import com.mysema.query.apt.AbstractQuerydslProcessor;
 import com.mysema.query.apt.Configuration;
-import com.mysema.query.apt.Processor;
 
 /**
  * @author tiwe
  */
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-public class BeanAnnotationProcessor extends AbstractProcessor{
+public class BeanAnnotationProcessor extends AbstractQuerydslProcessor{
     
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, "Running " + getClass().getSimpleName());        
-        Configuration configuration = new BeanConfiguration(roundEnv, processingEnv.getOptions());        
-        new Processor(processingEnv, roundEnv, configuration).process();
-        return true;
-    }       
+    protected Configuration createConfiguration(RoundEnvironment roundEnv) {
+    	return new BeanConfiguration(roundEnv, processingEnv.getOptions());   
+    }
     
 }

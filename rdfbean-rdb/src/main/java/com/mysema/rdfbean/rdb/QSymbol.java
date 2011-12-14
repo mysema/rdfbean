@@ -10,7 +10,6 @@ import static com.mysema.query.types.PathMetadataFactory.forVariable;
 import com.mysema.query.sql.ForeignKey;
 import com.mysema.query.sql.PrimaryKey;
 import com.mysema.query.sql.RelationalPathBase;
-import com.mysema.query.sql.Table;
 import com.mysema.query.types.PathMetadata;
 import com.mysema.query.types.path.BeanPath;
 import com.mysema.query.types.path.BooleanPath;
@@ -21,7 +20,6 @@ import com.mysema.query.types.path.StringPath;
 /**
  * QSymbol is a Querydsl query type for QSymbol
  */
-@Table("SYMBOL")
 public class QSymbol extends RelationalPathBase<QSymbol> {
 
     private static final long serialVersionUID = 1776011891;
@@ -55,15 +53,15 @@ public class QSymbol extends RelationalPathBase<QSymbol> {
     public final ForeignKey<QStatement> _modelKeyFk = createForeignKey(id, "MODEL");
 
     public QSymbol(String variable) {
-        super(QSymbol.class, forVariable(variable));
+        super(QSymbol.class, forVariable(variable), null, "SYMBOL");
     }
 
     public QSymbol(BeanPath<? extends QSymbol> entity) {
-        super(entity.getType(),entity.getMetadata());
+        super(entity.getType(),entity.getMetadata(), null, "SYMBOL");
     }
 
     public QSymbol(PathMetadata<?> metadata) {
-        super(QSymbol.class, metadata);
+        super(QSymbol.class, metadata, null, "SYMBOL");
     }
 
 }

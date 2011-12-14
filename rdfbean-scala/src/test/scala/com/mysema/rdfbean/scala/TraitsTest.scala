@@ -4,8 +4,6 @@ import com.mysema.rdfbean.TEST
 import com.mysema.rdfbean.model.{ RDFS }
 import com.mysema.rdfbean.`object`.{ Session, SessionUtil }
 
-import Annotations._
-
 import org.junit.{ Ignore, Test, Before, After };
 import org.junit.Assert._;
 

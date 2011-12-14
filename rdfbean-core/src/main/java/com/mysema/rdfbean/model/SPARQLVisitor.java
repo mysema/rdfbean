@@ -351,7 +351,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void visitOperation(Class<?> type, Operator<?> operator, List<Expression<?>> args) {
+    protected void visitOperation(Class<?> type, Operator<?> operator, List<? extends Expression<?>> args) {
         if (operator == Ops.LIKE && likeAsMatches && args.get(1) instanceof Constant){
             operator = Ops.MATCHES;
             String value = ((Constant<LIT>)args.get(1)).getConstant().getValue().replace("%", ".*").replace("_", ".");
