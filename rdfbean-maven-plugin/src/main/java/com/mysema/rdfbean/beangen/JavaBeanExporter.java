@@ -234,6 +234,7 @@ public class JavaBeanExporter {
 
         // serialize
         BeanSerializer beanSerializer = new BeanSerializer();
+        beanSerializer.setPrintSupertype(true);
         for (EntityType entityType : entityTypes){
             File folder = new File(targetFolder, entityType.getPackageName().replace('.', '/'));
             folder.mkdirs();

@@ -16,7 +16,7 @@
   
   <properties>
     <failIfNoTests>false</failIfNoTests>
-    <querydsl.version>2.3.0</querydsl.version>
+    <querydsl.version>2.3.2.BUILD-SNAPSHOT</querydsl.version>
     <spring.version>2.5.5</spring.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>

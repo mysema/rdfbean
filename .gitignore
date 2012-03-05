@@ -1,0 +1,9 @@
+.DS_Store
+target
+test-output
+.classpath
+.project
+.settings
+/.metadata
+.cache
+derby.log
