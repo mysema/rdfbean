@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -53,7 +54,7 @@ public class JavaBeanGenMojo extends AbstractMojo{
     /**
      * @parameter
      */
-    private Map<String, String> nsToPackage;
+    private Properties nsToPackage;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -75,8 +76,8 @@ public class JavaBeanGenMojo extends AbstractMojo{
         Session session = sessionFactory.openSession();
         try{
             JavaBeanExporter exporter = new JavaBeanExporter(true);
-            for (Map.Entry<String, String> entry : nsToPackage.entrySet()){
-                exporter.addPackage(entry.getKey(), entry.getValue());
+            for (Map.Entry<Object, Object> entry : nsToPackage.entrySet()){
+                exporter.addPackage(entry.getKey().toString(), entry.getValue().toString());
             }
             exporter.export(session, targetFolder);
         } catch (IOException e) {
