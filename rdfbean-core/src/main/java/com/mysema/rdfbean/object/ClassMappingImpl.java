@@ -2,6 +2,8 @@ package com.mysema.rdfbean.object;
 
 import java.lang.annotation.Annotation;
 
+import javax.annotation.Nullable;
+
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.UID;
 
@@ -14,14 +16,16 @@ public class ClassMappingImpl implements ClassMapping{
     
     private final String ln, ns;
     
-    public ClassMappingImpl(UID id) {
-        ns = id.getNamespace();
-        ln = id.getLocalName();
+    private final Class<?> parent;
+    
+    public ClassMappingImpl(UID id, Class<?> parent) {
+        this(id.getNamespace(), id.getLocalName(), parent);
     }
     
-    public ClassMappingImpl(String ns, String ln) {
+    public ClassMappingImpl(String ns, String ln, Class<?> parent) {
         this.ns = ns;
         this.ln = ln;
+        this.parent = parent;
     }
     
 
@@ -38,6 +42,11 @@ public class ClassMappingImpl implements ClassMapping{
     @Override
     public Class<? extends Annotation> annotationType() {
         return ClassMapping.class;
+    }
+
+    @Override
+    public Class<?> parent() {
+	return parent;
     }
 
 }

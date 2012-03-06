@@ -33,6 +33,12 @@ public class ConfigurationOntology extends AbstractOntology{
                 directSupertypes.put(mappedClass.getUID(), superClass.getUID());
                 directSubtypes.put(superClass.getUID(), mappedClass.getUID());
             }
+//            ClassMapping classMapping = mappedClass.getJavaClass().getAnnotation(ClassMapping.class);
+//            if (!classMapping.parent().equals("")) {
+//        	UID parent = new UID(classMapping.parent());
+//        	directSupertypes.put(mappedClass.getUID(), parent);
+//        	directSubtypes.put(parent, mappedClass.getUID());
+//            }
         }        
         initializeTypeHierarchy(types, directSubtypes, directSupertypes);        
     }

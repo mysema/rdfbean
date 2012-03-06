@@ -15,7 +15,7 @@ import com.mysema.rdfbean.owl.OWL;
  * @author sasa
  * 
  */
-@ClassMapping(ns = OWL.NS)
+@ClassMapping(ns = OWL.NS, parent = RDFProperty.class)
 public enum RDFPropertyFeature {
     AnnotationProperty, 
     FunctionalProperty;

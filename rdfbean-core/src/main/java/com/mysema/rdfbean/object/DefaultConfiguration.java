@@ -92,14 +92,17 @@ public class DefaultConfiguration implements Configuration {
     public final void addClasses(Class<?>... classes) {
         for (Class<?> clazz : classes) {
             if (clazz.getAnnotation(ClassMapping.class) != null){
-                MappedClass mappedClass = mappedClassFactory.getMappedClass(clazz);
+                MappedClass mappedClass = mappedClassFactory.getMappedClass(clazz);                
                 if (mappedClass.getUID() != null) {
-                    List<MappedClass> classList = type2classes.get(mappedClass.getUID());
-                    if (classList == null) {
-                        classList = new ArrayList<MappedClass>();
-                        type2classes.put(mappedClass.getUID(), classList);
+                    ClassMapping classMapping = clazz.getAnnotation(ClassMapping.class);
+                    if (clazz.isEnum() && !classMapping.parent().equals(Object.class)) {
+                        MappedClass parentClass = mappedClassFactory.getMappedClass(classMapping.parent());
+                        for (Object constant : clazz.getEnumConstants()) {
+                            UID instance = new UID(mappedClass.getClassNs(), ((Enum)constant).name());
+                            addClass(instance, parentClass);
+                        }
                     }
-                    classList.add(mappedClass);
+                    addClass(mappedClass.getUID(), mappedClass);
                 }
                 for (MappedClass superClass : mappedClass.getMappedSuperClasses()){
                     polymorphicClasses.add(superClass.getJavaClass());
@@ -111,6 +114,15 @@ public class DefaultConfiguration implements Configuration {
         }
     }
 
+    private void addClass(UID uid, MappedClass mappedClass) {
+        List<MappedClass> classList = type2classes.get(uid);
+        if (classList == null) {
+            classList = new ArrayList<MappedClass>();
+            type2classes.put(uid, classList);
+        }
+        classList.add(mappedClass);
+    }
+    
     public final void addPackages(Package... packages) {
         for (Package pack : packages) {
             MappedClasses classes = pack.getAnnotation(MappedClasses.class);

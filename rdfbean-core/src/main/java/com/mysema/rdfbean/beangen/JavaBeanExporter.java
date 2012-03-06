@@ -137,7 +137,7 @@ public class JavaBeanExporter {
         Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
         uidToType.put(id, type);
         EntityType entityType = new EntityType(type);
-        entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
+        entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),"",Object.class));
 
         Map<RDFProperty, Property> properties = new HashMap<RDFProperty, Property>();
 
@@ -195,7 +195,7 @@ public class JavaBeanExporter {
         Type type = new SimpleType(TypeCategory.ENTITY, pkgName+"."+simpleName, pkgName, id.getLocalName(), false, false);
         uidToType.put(id, type);
         EntityType entityType = new EntityType(type);
-        entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),""));
+        entityType.addAnnotation(new ClassMappingImpl(id.getNamespace(),"",Object.class));
         return entityType;
     }
 
@@ -234,6 +234,7 @@ public class JavaBeanExporter {
 
         // serialize
         BeanSerializer beanSerializer = new BeanSerializer();
+        beanSerializer.setPrintSupertype(true);
         for (EntityType entityType : entityTypes){
             File folder = new File(targetFolder, entityType.getPackageName().replace('.', '/'));
             folder.mkdirs();
@@ -317,7 +318,7 @@ public class JavaBeanExporter {
         Collection<RDFProperty> rdfProperties = Collections.emptySet();
         if (restriction.getOnProperty() != null){
             rdfProperties = Collections.singleton(restriction.getOnProperty());
-        }else if (!restriction.getOnProperties().isEmpty()){
+        }else if (restriction.getOnProperties() != null && !restriction.getOnProperties().isEmpty()){
             rdfProperties = restriction.getOnProperties();
         }
 

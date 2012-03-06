@@ -57,5 +57,10 @@ public @interface ClassMapping {
      * @return Namespace of the resource or empty, if the default ns of the configuration is used
      */
     String ns() default "";
+    
+    /**
+     * @return
+     */
+    Class<?> parent() default Object.class;
 
 }

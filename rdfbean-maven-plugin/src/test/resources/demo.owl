@@ -129,9 +129,9 @@
 <owl:Restriction rdf:nodeID="node-oqhnqux14">
 	<owl:allValuesFrom rdf:resource="#Company"/>
 </owl:Restriction>
-<owl:ObjectProperty rdf:about="#company">
+<owl:FunctionalProperty rdf:about="#company">
 	<rdfs:label>company</rdfs:label>
-</owl:ObjectProperty>
+</owl:FunctionalProperty>
 <rdf:Description rdf:nodeID="node-oqhnqux14">
 	<owl:onProperty rdf:resource="#company"/>
 </rdf:Description>

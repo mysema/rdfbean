@@ -10,7 +10,7 @@
 @MappedClasses({
     DataRange.class, 
     DataRange.WhiteSpaceOption.class,
-    DatatypeProperty.class, 
+    DatatypeProperty.class,
     ObjectProperty.class, 
     ObjectPropertyFeature.class, 
     Ontology.class,
