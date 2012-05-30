@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +28,17 @@ import com.mysema.codegen.model.TypeCategory;
 import com.mysema.codegen.model.Types;
 import com.mysema.query.annotations.QueryInit;
 import com.mysema.query.annotations.QueryType;
-import com.mysema.query.codegen.*;
+import com.mysema.query.codegen.CodegenModule;
+import com.mysema.query.codegen.EntitySerializer;
+import com.mysema.query.codegen.EntityType;
+import com.mysema.query.codegen.Property;
+import com.mysema.query.codegen.QueryTypeFactory;
+import com.mysema.query.codegen.Serializer;
+import com.mysema.query.codegen.SerializerConfig;
+import com.mysema.query.codegen.SimpleSerializerConfig;
+import com.mysema.query.codegen.Supertype;
+import com.mysema.query.codegen.TypeFactory;
+import com.mysema.query.codegen.TypeMappings;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedClass;
 import com.mysema.rdfbean.object.MappedPath;
@@ -165,9 +176,9 @@ public class DomainExporter {
             inits = ((QueryInit)annotations.get(QueryInit.class)).value();
         }
         if (annotations.containsKey(QueryType.class)){
-            propertyType = propertyType.as(((QueryType)annotations.get(QueryType.class)).value().getCategory());
+            propertyType = propertyType.as(TypeCategory.valueOf(((QueryType)annotations.get(QueryType.class)).value().name()));
         }
-        Property property = new Property(entityType, propertyName, propertyType, inits);
+        Property property = new Property(entityType, propertyName, propertyType, Arrays.asList(inits));
         return property;
     }
 

@@ -11,11 +11,11 @@ import java.sql.SQLException;
 
 import org.h2.jdbcx.JdbcDataSource;
 
-import com.mysema.query.sql.DefaultNamingStrategy;
 import com.mysema.query.sql.H2Templates;
-import com.mysema.query.sql.MetaDataExporter;
-import com.mysema.query.sql.NamingStrategy;
 import com.mysema.query.sql.SQLTemplates;
+import com.mysema.query.sql.codegen.DefaultNamingStrategy;
+import com.mysema.query.sql.codegen.MetaDataExporter;
+import com.mysema.query.sql.codegen.NamingStrategy;
 import com.mysema.rdfbean.model.MemoryIdSequence;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.object.Configuration;

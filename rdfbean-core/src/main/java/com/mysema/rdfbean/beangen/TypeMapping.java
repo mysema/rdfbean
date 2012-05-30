@@ -8,6 +8,7 @@ package com.mysema.rdfbean.beangen;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.primitives.Primitives;
 import com.mysema.codegen.model.ClassType;
 import com.mysema.codegen.model.SimpleType;
 import com.mysema.codegen.model.Type;
@@ -64,9 +65,9 @@ public class TypeMapping {
     }
     
     private void register(UID uid, Type type) {
-        if (usePrimitives && type.getPrimitiveName() != null){
-            String name = type.getPrimitiveName();
-            type = new SimpleType(type.getCategory(),"java.lang."+name, "java.lang", name, true, true);
+        if (usePrimitives && Primitives.isWrapperType(type.getJavaClass())){
+            String name = Primitives.unwrap(type.getJavaClass()).getName();
+            type = new SimpleType(type.getCategory(), "java.lang."+name, "java.lang", name, true, true);
         }
         datatypeToType.put(uid, type);
     }

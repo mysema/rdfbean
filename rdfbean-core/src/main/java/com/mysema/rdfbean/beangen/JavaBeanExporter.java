@@ -203,7 +203,7 @@ public class JavaBeanExporter {
         UID propertyId = rdfProperty.getId().asURI();
         Type propertyType = getPropertyType(rdfProperty, range);
         String propertyName = getPropertyName(propertyId);
-        Property property = new Property(entityType, propertyName, propertyType, new String[0]);
+        Property property = new Property(entityType, propertyName, propertyType);
         if (propertyId.getNamespace().equals(entityId.getNamespace())){
             if (propertyName.equals(propertyId.getLocalName())){
                 property.addAnnotation(new PredicateImpl("","","",false));

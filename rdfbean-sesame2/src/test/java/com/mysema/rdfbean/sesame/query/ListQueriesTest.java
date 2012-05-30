@@ -53,11 +53,11 @@ public class ListQueriesTest extends SessionTestBase{
         // TODO
     }
 
-    @Test(expected=UnsupportedOperationException.class)
-    @Ignore
-    public void listPropertyEq(){
-        where(var.listProperty.eq(Collections.<SimpleType2>emptyList())).list(var);
-    }
+//    @Test(expected=UnsupportedOperationException.class)
+//    @Ignore
+//    public void listPropertyEq(){
+//        where(var.listProperty.eq(Collections.<SimpleType2>emptyList())).list(var);
+//    }
 
     @Test
     @Ignore

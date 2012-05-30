@@ -194,12 +194,12 @@ public class RDFQueryBuilderTest {
         assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_buddyList . ?user_buddyList ?_c6 ?_var_a . ?_var_a ?_c8 ?_var_b . ?_var_b ?_c10 ?user_buddyList_1_name }");
     }
 
-    @Test
-    public void ListEmpty() throws Exception{
-        query.from(user);
-        query.where(user.getList("buddyList", User.class).eq(Collections.<User>emptyList()));
-        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_buddyList }");
-    }
+//    @Test
+//    public void ListEmpty() throws Exception{
+//        query.from(user);
+//        query.where(user.getList("buddyList", User.class).eq(Collections.<User>emptyList()));
+//        assertEquals("SELECT * WHERE { ?user ?_c2 ?_c3 ; ?_c4 ?user_buddyList }");
+//    }
 
     @Test
     public void Localized_Map() throws Exception{

@@ -8,9 +8,9 @@ package com.mysema.rdfbean.rdb;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -36,16 +36,30 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.RDFHandlerBase;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
-import com.mysema.query.sql.ddl.CreateTableClause;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.Namespaces;
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.Format;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IdSequence;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.Nodes;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RDFConnectionCallback;
+import com.mysema.rdfbean.model.Repository;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.model.io.RDFSource;
 import com.mysema.rdfbean.model.io.RDFWriter;
 import com.mysema.rdfbean.model.io.WriterUtils;
@@ -260,43 +274,20 @@ public class RDBRepository implements Repository{
             SQLQuery query = new SQLQueryImpl(conn, templates).from(QLanguage.language);
             query.count();
         } catch (Exception e) {
-            // language
-            new CreateTableClause(conn,templates,"LANGUAGE")
-              .column("ID", Integer.class).notNull()
-              .column("TEXT", String.class).size(256).notNull()
-              .primaryKey("PK_LANGUAGE", "ID")
-              .execute();
-
-            // symbol
-            new CreateTableClause(conn,templates,"SYMBOL")
-              .column("ID", Long.class).notNull()
-              .column("RESOURCE", Boolean.class).notNull()
-              .column("LEXICAL", String.class).size(1024).notNull()
-              .column("DATATYPE", Long.class)
-              .column("LANG", Integer.class)
-              .column("FLOATVAL", Double.class)
-              .column("DATETIMEVAL", Timestamp.class)
-              .primaryKey("PK_SYMBOL", "ID")
-              .foreignKey("FK_LANG", "LANG").references("LANGUAGE", "ID")
-              .index("STATEMENT_LEX", "LEXICAL")
-              .execute();
-
-            // statement
-             new CreateTableClause(conn,templates,"STATEMENT")
-              .column("MODEL", Long.class).notNull()
-              .column("SUBJECT",Long.class).notNull()
-              .column("PREDICATE", Long.class).notNull()
-              .column("OBJECT", Long.class).notNull()
-              .primaryKey("PK_STATEMENT", "MODEL","SUBJECT","PREDICATE","OBJECT")
-              .foreignKey("FK_MODEL", "MODEL").references("SYMBOL", "ID")
-              .foreignKey("FK_SUBJECT", "SUBJECT").references("SYMBOL", "ID")
-              .foreignKey("FK_PREDICATE", "PREDICATE").references("SYMBOL", "ID")
-              .foreignKey("FK_OBJECT", "OBJECT").references("SYMBOL", "ID")
-              .index("STATEMENT_SPOM", "SUBJECT","PREDICATE","OBJECT","MODEL")
-              .index("STATEMENT_OPSM", "OBJECT","PREDICATE","SUBJECT","MODEL")
-              .execute();
-
-        }finally{
+            java.sql.Statement stmt = conn.createStatement();
+            try {
+                URL res = Thread.currentThread().getContextClassLoader().getResource("h2.sql");
+                String sql = Resources.toString(res, Charsets.ISO_8859_1);
+                for (String clause : sql.split(";")) {
+                    if (!clause.trim().isEmpty()) {
+                        stmt.execute(clause.trim());
+                    }
+                }   
+            } finally {
+                stmt.close();
+            }
+            
+        } finally {
             conn.close();
         }
 

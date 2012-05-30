@@ -96,11 +96,6 @@ public class QNODE<T extends NODE> extends Param<T>{
             return false;
         }
     }
-
-    @Override
-    public int hashCode(){
-        return getName().hashCode();
-    }
     
     /**
      * Get a cast to String expression
