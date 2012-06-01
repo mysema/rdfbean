@@ -67,7 +67,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     private Class<?> keyType;
 
     private boolean collection;
-
+    
     private MappedClass declaringClass;
 
     private TypeVariable<?>[] typeVariables = new TypeVariable<?>[4];
@@ -114,12 +114,14 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         }
 
         this.collection = Collection.class.isAssignableFrom(type);
-
+        
         ComponentType ctypeAnno = getAnnotation(ComponentType.class);
         if (ctypeAnno != null) {
             this.componentType = ctypeAnno.value();
         } else if (collection || isClassReference()) {
             this.componentType = getUpper(this.componentType, getGenericClass(genericType, 0, owner, 1));
+        } else if (type.isArray()) {    
+            this.componentType = type.getComponentType();
         } else if (isMap()) {
             MapElements mapKey = getAnnotation(MapElements.class);
             if (mapKey != null && !Void.class.equals(mapKey.keyType())) {
@@ -355,9 +357,13 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         Container container = getAnnotation(Container.class);
         if (container != null) {
             return ContainerType.LIST == container.value();
-        }else {
+        } else {
             return List.class.isAssignableFrom(getType());
         }
+    }
+    
+    public boolean isArray() {
+        return type.isArray();
     }
 
     public boolean isLocalized() {

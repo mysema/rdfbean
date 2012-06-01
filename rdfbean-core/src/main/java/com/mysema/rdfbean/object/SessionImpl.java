@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.object;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -325,6 +326,35 @@ public final class SessionImpl implements Session {
 
         }
         return collection;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Object convertArray(MappedPath propertyPath, Collection<? extends NODE> values, UID context)
+            throws InstantiationException, IllegalAccessException {
+        MappedProperty<?> mappedProperty = propertyPath.getMappedProperty();
+        Class<?> targetType = mappedProperty.getComponentType();
+        int size = values.size();
+        if (size == 1) {
+            NODE node = values.iterator().next();
+            if (node instanceof ID) {
+                if (mappedProperty.isContainer()) {
+                    values = convertContainer((ID) node, context, mappedProperty.isIndexed());
+                } else {
+                    values = convertList((ID) node, context);
+                }
+            } // TODO else log error?
+        } // TODO else log error?
+        
+        Object array = Array.newInstance(targetType, values.size());
+        int i = 0;
+        for (NODE value : values) {
+            if (value != null) {
+                Array.set(array, i++, convertValue(value, targetType, propertyPath));
+            } else {
+                Array.set(array, i++, null);
+            }
+        }
+        return array;
     }
 
     private Collection<NODE> convertContainer(ID node, UID context, boolean indexed) {
@@ -1362,7 +1392,11 @@ public final class SessionImpl implements Session {
         // Collection
         if (mappedProperty.isCollection()) {
             convertedValue = convertCollection(propertyPath, values, context);
-        }
+        } 
+        // Array
+        else if (mappedProperty.isArray()) {
+            convertedValue = convertArray(propertyPath, values, context);
+        }        
         // Localized
         else if (mappedProperty.isLocalized()) {
             if (mappedProperty.isMap()) {
@@ -1695,16 +1729,31 @@ public final class SessionImpl implements Session {
 
                 Object object = property.getValue(beanMap);
                 if (object != null) {
+                    if (object.getClass().isArray()) {
+                        if (object.getClass().getComponentType().isPrimitive()) {
+                            int size = Array.getLength(object);
+                            List<Object> list = new ArrayList<Object>(size);
+                            for (int i = 0; i < size; i++) {
+                                list.add(Array.get(object, i));
+                            }
+                            object = list;
+                        } else {
+                            object = Arrays.asList((Object[])object);    
+                        }                        
+                    }
+                    
                     if (property.isList()) {
                         ID first = toRDFList((List<?>) object, context);
                         if (first != null) {
                             recordAddStatement(subject, predicate, first, context);
                         }
+                                                
                     } else if (property.isContainer()) {
                         ID container = toRDFContainer((Collection<?>) object, context, property.getContainerType());
                         if (container != null) {
                             recordAddStatement(subject, predicate, container, context);
                         }
+                        
                     } else if (property.isCollection()) {
                         for (Object o : (Collection<?>) object) {
                             NODE value = toRDFValue(o, context);
@@ -1712,6 +1761,13 @@ public final class SessionImpl implements Session {
                                 recordAddStatement(subject, predicate, value, context);
                             }
                         }
+                        
+                    } else if (property.isArray()) {    
+                        ID first = toRDFList((List<?>) object, context);
+                        if (first != null) {
+                            recordAddStatement(subject, predicate, first, context);
+                        }
+                        
                     } else if (property.isLocalized()) {
                         if (property.isMap()) {
                             for (Map.Entry<Locale, String> entry : ((Map<Locale, String>) object).entrySet()) {
