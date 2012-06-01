@@ -57,4 +57,13 @@
     </profile>
   </profiles>
   
+  <repositories>
+    <repository>
+      <id>mysema-source</id>
+      <url>http://source.mysema.com/maven2/releases</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+    
+  
 </project>
