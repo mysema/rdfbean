@@ -2,9 +2,9 @@ package com.mysema.rdfbean.model.io;
 
 import java.io.Writer;
 
-import com.mysema.rdfbean.model.Format;
-
 import junit.framework.Assert;
+
+import com.mysema.rdfbean.model.Format;
 
 
 public class TurtleWriterTest extends AbstractWriterTest{

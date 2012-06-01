@@ -7,7 +7,7 @@ package com.mysema.rdfbean.model;
 
 import java.beans.PropertyEditorSupport;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Strings;
 
 /**
  * @author sasa
@@ -27,7 +27,7 @@ public class LIDEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) {
-        if (StringUtils.isEmpty(text)) {
+        if (Strings.isNullOrEmpty(text)) {
             setValue(null);
         } else {
             setValue(new LID(text));

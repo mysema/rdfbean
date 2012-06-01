@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.model;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * ID represents a general RDF resource

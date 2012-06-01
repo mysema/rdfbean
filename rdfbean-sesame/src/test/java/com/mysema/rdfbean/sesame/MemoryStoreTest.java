@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +20,7 @@ import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
+import com.mysema.util.FileUtils;
 
 public class MemoryStoreTest implements ItemDomain{
     
@@ -33,7 +33,8 @@ public class MemoryStoreTest implements ItemDomain{
 	Configuration configuration = new DefaultConfiguration(Item.class);
         MemoryRepository repository = new MemoryRepository();
         if (new File(DATA_DIR).exists()){
-            FileUtils.cleanDirectory(new File(DATA_DIR));    
+            FileUtils.delete(new File(DATA_DIR));
+            new File(DATA_DIR).mkdir();
         }        
         repository.setSesameInference(false);
         repository.setDataDirName(DATA_DIR);

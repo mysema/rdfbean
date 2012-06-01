@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,6 +24,7 @@ import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.STMT;
+import com.mysema.util.FileUtils;
 
 public class BlankNodeTest {
     
@@ -43,7 +43,7 @@ public class BlankNodeTest {
     @Test
     public void WithNativeRepository() throws Exception{
         File dataDir = new File("target/test-repo1");
-        FileUtils.deleteDirectory(dataDir);
+        FileUtils.delete(dataDir);
         NativeRepository repository = new NativeRepository();
         repository.setDataDir(dataDir);
         test(repository);
@@ -53,7 +53,7 @@ public class BlankNodeTest {
     @Ignore
     public void WithMemoryRepository() throws Exception{
         File dataDir = new File("target/test-repo2");
-        FileUtils.deleteDirectory(dataDir);
+        FileUtils.delete(dataDir);
         MemoryRepository repository = new MemoryRepository();
         repository.setDataDir(dataDir);
         test(repository);

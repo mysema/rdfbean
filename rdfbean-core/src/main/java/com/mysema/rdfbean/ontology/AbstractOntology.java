@@ -10,10 +10,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.Stack;
 
-import org.apache.commons.collections15.MultiMap;
-
+import com.google.common.collect.Multimap;
 import com.mysema.rdfbean.model.UID;
-import com.mysema.util.MultiMapFactory;
+import com.mysema.util.MultimapFactory;
 
 /**
  * AbstractOntology provides a generic implementation of the Ontology interface 
@@ -23,17 +22,17 @@ import com.mysema.util.MultiMapFactory;
  */
 public abstract class AbstractOntology implements Ontology{
 
-    private final MultiMap<UID, UID> subtypes = MultiMapFactory.<UID, UID>createWithSet();
+    private final Multimap<UID, UID> subtypes = MultimapFactory.<UID, UID>createWithSet();
     
-    private final MultiMap<UID, UID> supertypes = MultiMapFactory.<UID, UID>createWithSet();
+    private final Multimap<UID, UID> supertypes = MultimapFactory.<UID, UID>createWithSet();
     
-    private final MultiMap<UID, UID> subproperties = MultiMapFactory.<UID, UID>createWithSet();
+    private final Multimap<UID, UID> subproperties = MultimapFactory.<UID, UID>createWithSet();
     
-    private final MultiMap<UID, UID> superproperties = MultiMapFactory.<UID, UID>createWithSet();   
+    private final Multimap<UID, UID> superproperties = MultimapFactory.<UID, UID>createWithSet();   
 
     protected void initializeTypeHierarchy(Set<UID> types, 
-            MultiMap<UID, UID> directSubtypes, 
-            MultiMap<UID, UID> directSupertypes){
+            Multimap<UID, UID> directSubtypes, 
+            Multimap<UID, UID> directSupertypes){
         for (UID type : types){
             subtypes.put(type, type);            
             if (directSubtypes.containsKey(type)){
@@ -47,8 +46,8 @@ public abstract class AbstractOntology implements Ontology{
     
 
     protected void initializePropertyHierarchy(Set<UID> properties, 
-            MultiMap<UID,UID> directSubproperties, 
-            MultiMap<UID, UID> directSuperproperties){
+            Multimap<UID,UID> directSubproperties, 
+            Multimap<UID, UID> directSuperproperties){
         for (UID property : properties){
             subproperties.put(property, property);            
             if (directSubproperties.containsKey(property)){
@@ -60,7 +59,7 @@ public abstract class AbstractOntology implements Ontology{
         }
     }
     
-    private void flatten(UID id, MultiMap<UID,UID> direct, MultiMap<UID,UID> expanded){
+    private void flatten(UID id, Multimap<UID,UID> direct, Multimap<UID,UID> expanded){
         Stack<UID> t = new Stack<UID>();
         t.addAll(direct.get(id));
         while (!t.isEmpty()){

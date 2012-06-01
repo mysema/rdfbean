@@ -11,25 +11,31 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.IteratorUtils;
-import org.apache.commons.collections15.Predicate;
-import org.apache.commons.collections15.Transformer;
-import org.apache.commons.collections15.functors.AndPredicate;
-import org.apache.commons.collections15.functors.AnyPredicate;
-import org.apache.commons.collections15.functors.NotPredicate;
-import org.apache.commons.collections15.iterators.TransformIterator;
 import org.apache.commons.lang.ObjectUtils;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.commons.lang.Pair;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryMetadata;
-import com.mysema.query.types.*;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.ExpressionUtils;
+import com.mysema.query.types.FactoryExpression;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.ParamExpression;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.SubQueryExpression;
+import com.mysema.query.types.TemplateExpression;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
-import com.mysema.util.FilterIterable;
-import com.mysema.util.IterableChain;
 import com.mysema.util.LimitingIterable;
 import com.mysema.util.PairIterator;
 
@@ -63,20 +69,20 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     @SuppressWarnings("unchecked")
     private Predicate<Bindings> createAndPredicate(final Operation<?> expr, Bindings bindings) {
-        return new AndPredicate<Bindings>(
+        return Predicates.and(
                 (Predicate)expr.getArg(0).accept(this, bindings),
                 (Predicate)expr.getArg(1).accept(this, bindings));
     }
 
-    private Transformer<STMT, Bindings> createBindingsTransformer(PatternBlock expr, @Nullable Expression<UID> context, final Bindings bindings){
+    private Function<STMT, Bindings> createBindingsFunction(PatternBlock expr, @Nullable Expression<UID> context, final Bindings bindings){
         final String s = getKey(expr.getSubject());
         final String p = getKey(expr.getPredicate());
         final String o = getKey(expr.getObject());
         final String c = getKey(expr.getContext() != null ? expr.getContext() : context);
 
-        return new Transformer<STMT, Bindings>(){
+        return new Function<STMT, Bindings>(){
             @Override
-            public Bindings transform(STMT input) {
+            public Bindings apply(STMT input) {
                 bindings.clear();
                 bind(bindings, s, input.getSubject());
                 bind(bindings, p, input.getPredicate());
@@ -101,7 +107,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         final String key = getKey(expr.getArg(0));
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {
+            public boolean apply(Bindings bindings) {
                 boolean rv =  bindings.get(key) != null;
                 return op == Ops.IS_NOT_NULL ? rv : !rv;
             }
@@ -111,7 +117,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private Predicate<Bindings> createComparePredicate(final Operation<?> expr, final Operator<?> op) {
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {
+            public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE)expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE)expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 int rv = nodeComparator.compare(lhs, rhs);
@@ -129,7 +135,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private Predicate<Bindings> createEqPredicate(final Operation<?> expr) {
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {
+            public boolean apply(Bindings bindings) {
                 return ObjectUtils.equals(
                         expr.getArg(0).accept(QueryRDFVisitor.this, bindings),
                         expr.getArg(1).accept(QueryRDFVisitor.this, bindings));
@@ -137,11 +143,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         };
     }
 
-    private Predicate<Bindings> createLikePredicate(final Operation<?> expr){
-
+    private Predicate<Bindings> createLikePredicate(final Operation<?> expr) {
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {
+            public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 if (lhs != null && rhs != null){
@@ -165,7 +170,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private Predicate<Bindings> createMatchesPredicate(final Operation<?> expr, final Operator<?> op) {
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {
+            public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 if (lhs != null && rhs != null){
@@ -196,9 +201,9 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             }
         }
         
-        final List<Transformer<Bindings, STMT>> transformers = new ArrayList<Transformer<Bindings, STMT>>(patternBlocks.size());
+        final List<Function<Bindings, STMT>> transformers = new ArrayList<Function<Bindings, STMT>>(patternBlocks.size());
         for (PatternBlock pb : patternBlocks){
-            transformers.add(createStatementTransformer(pb));
+            transformers.add(createStatementFunction(pb));
         }
         
         return new GraphQuery(){
@@ -206,10 +211,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             @Override
             public CloseableIterator<STMT> getTriples() {
                 List<Iterator<STMT>> iterators = new ArrayList<Iterator<STMT>>(transformers.size());
-                for (Transformer<Bindings, STMT> transformer : transformers){
-                    iterators.add(new TransformIterator<Bindings, STMT>(iterable.iterator(), transformer));
+                for (Function<Bindings, STMT> transformer : transformers){
+                    iterators.add(Iterators.transform(iterable.iterator(), transformer));
                 }
-                return new IteratorAdapter<STMT>(IteratorUtils.chainedIterator((Collection)iterators));
+                return new IteratorAdapter<STMT>(Iterators.concat(iterators.toArray(new Iterator[iterators.size()])));
             }
         };
     }
@@ -217,7 +222,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private Predicate<Bindings> createNePredicate(final Operation<?> expr) {
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {
+            public boolean apply(Bindings bindings) {
                 return !ObjectUtils.equals(
                         expr.getArg(0).accept(QueryRDFVisitor.this, bindings),
                         expr.getArg(1).accept(QueryRDFVisitor.this, bindings));
@@ -227,15 +232,15 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     @SuppressWarnings("unchecked")
     private Predicate<Bindings> createOrPredicate(final Operation<?> expr, Bindings bindings) {
-        return new AnyPredicate<Bindings>( new Predicate[]{
+        return Predicates.or(
                 (Predicate)expr.getArg(0).accept(this, bindings),
-                (Predicate)expr.getArg(1).accept(this, bindings)});
+                (Predicate)expr.getArg(1).accept(this, bindings));
     }
 
-    private Transformer<Bindings, STMT> createQuadTransformer(final PatternBlock expr) {
-        return new Transformer<Bindings, STMT>(){
+    private Function<Bindings, STMT> createQuadFunction(final PatternBlock expr) {
+        return new Function<Bindings, STMT>(){
             @Override
-            public STMT transform(Bindings input) {
+            public STMT apply(Bindings input) {
                 return new STMT(
                         (ID)expr.getSubject().accept(QueryRDFVisitor.this, input),
                         (UID)expr.getPredicate().accept(QueryRDFVisitor.this, input),
@@ -246,18 +251,18 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         };
     }
 
-    private Transformer<Bindings, STMT> createStatementTransformer(final PatternBlock expr){
+    private Function<Bindings, STMT> createStatementFunction(final PatternBlock expr){
         if (expr.getContext() != null){
-            return createQuadTransformer(expr);
+            return createQuadFunction(expr);
         }else{
-            return createTripleTransformer(expr);
+            return createTripleFunction(expr);
         }
     }
 
-    private Transformer<Bindings, STMT> createTripleTransformer(final PatternBlock expr) {
-        return new Transformer<Bindings, STMT>(){
+    private Function<Bindings, STMT> createTripleFunction(final PatternBlock expr) {
+        return new Function<Bindings, STMT>(){
             @Override
-            public STMT transform(Bindings input) {
+            public STMT apply(Bindings input) {
                 return new STMT(
                         (ID)expr.getSubject().accept(QueryRDFVisitor.this, input),
                         (UID)expr.getPredicate().accept(QueryRDFVisitor.this, input),
@@ -274,9 +279,9 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             variables.add(key != null ? key : expr.toString());
         }
 
-        final Transformer<Bindings, Map<String,NODE>> bindingsToMap = new Transformer<Bindings, Map<String,NODE>>(){
+        final Function<Bindings, Map<String,NODE>> bindingsToMap = new Function<Bindings, Map<String,NODE>>(){
             @Override
-            public Map<String, NODE> transform(Bindings input) {
+            public Map<String, NODE> apply(Bindings input) {
                 if (variables.isEmpty()){
                     return input.toMap();
                 }else{
@@ -288,7 +293,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         return new TupleQuery(){
             @Override
             public CloseableIterator<Map<String, NODE>> getTuples() {
-                Iterator<Map<String,NODE>> it = new TransformIterator<Bindings, Map<String,NODE>>(iterable.iterator(), bindingsToMap);
+                Iterator<Map<String,NODE>> it = Iterators.transform(iterable.iterator(), bindingsToMap);
                 return new IteratorAdapter<Map<String, NODE>>(it);
             }
             @Override
@@ -354,7 +359,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         // filter
         if (expr.getFilters() != null){
             Predicate<Bindings> predicate = (Predicate) expr.getFilters().accept(this, previous);
-            iterable = new FilterIterable<Bindings>(iterable, predicate);
+            iterable = Iterables.filter(iterable, predicate);
         }
 
         return Pair.of(iterable, bindings);
@@ -405,7 +410,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             return createOrPredicate(expr, bindings);
 
         }else if (op == Ops.NOT){
-            return new NotPredicate<Bindings>( (Predicate) expr.getArg(0).accept(this, bindings));
+            return Predicates.not((Predicate) expr.getArg(0).accept(this, bindings));
 
         }else if (op == Ops.IS_NULL || op == Ops.IS_NOT_NULL){
             return createBoundPredicate(expr, op);
@@ -477,7 +482,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private Predicate<Bindings> createStringMatchPredicate(final Operation<?> expr, final Operator<?> op) {
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {
+            public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 if (lhs == null || rhs == null){
@@ -504,7 +509,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private Predicate<Bindings> createEqIgnoreCasePredicate(final Operation<?> expr) {
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {
+            public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 if (lhs != null && rhs != null){
@@ -520,7 +525,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private Predicate<Bindings> createStringIsEmptyPredicate(final Operation<?> expr) {
         return new Predicate<Bindings>(){
             @Override
-            public boolean evaluate(Bindings bindings) {
+            public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 return lhs != null ? lhs.getValue().isEmpty() : false;
             }
@@ -560,7 +565,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     @Override
     public Pair<Iterable<Bindings>,Bindings> visit(final PatternBlock expr, final Bindings bindings) {
-        final Transformer<STMT, Bindings> transformer = createBindingsTransformer(expr, context, bindings);
+        final Function<STMT, Bindings> transformer = createBindingsFunction(expr, context, bindings);
         final Expression<UID> _context = context;
         Iterable<Bindings> iterable = new Iterable<Bindings>(){
             @Override
@@ -576,7 +581,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                     c = (UID)_context.accept(QueryRDFVisitor.this, parent);
                 }
                 bindings.clear();
-                return new TransformIterator<STMT, Bindings>(connection.findStatements(s, p, o, c, false), transformer);
+                return Iterators.transform(connection.findStatements(s, p, o, c, false), transformer);
             }
 
             @Override
@@ -655,7 +660,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             Pair<Iterable<Bindings>, Bindings> iterableAndBindings = (Pair)block.accept(this, bindings);
             iterables.add(iterableAndBindings.getFirst());
         }
-        return Pair.of(new IterableChain<Bindings>(iterables), bindings);
+        return Pair.<Iterable<Bindings>, Bindings>of(Iterables.<Bindings>concat(iterables.toArray(new Iterable[iterables.size()])), bindings);
     }
 
 }

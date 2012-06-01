@@ -4,8 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.ObjectUtils;
-
+import com.google.common.base.Objects;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.ExpressionUtils;
@@ -85,7 +84,7 @@ public class GraphBlock implements ContainerBlock{
             return true;
         }else if (o instanceof GraphBlock){
             GraphBlock gb = (GraphBlock)o;
-            return context.equals(gb.context) && ObjectUtils.equals(filters, gb.filters) && blocks.equals(gb.blocks);
+            return context.equals(gb.context) && Objects.equal(filters, gb.filters) && blocks.equals(gb.blocks);
         }else{
             return false;
         }

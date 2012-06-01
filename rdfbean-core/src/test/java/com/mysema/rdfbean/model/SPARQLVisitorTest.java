@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryFlag.Position;
+import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.PredicateOperation;

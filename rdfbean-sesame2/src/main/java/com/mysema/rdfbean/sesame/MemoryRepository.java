@@ -9,11 +9,11 @@ import java.io.File;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.memory.MemoryStore;
 
+import com.google.common.base.Strings;
 import com.mysema.rdfbean.model.FileIdSequence;
 import com.mysema.rdfbean.model.IdSequence;
 import com.mysema.rdfbean.model.MemoryIdSequence;
@@ -87,7 +87,7 @@ public class MemoryRepository extends SesameRepository {
     }
     
     public final void setDataDirName(String dataDirName) {
-        if (StringUtils.isNotEmpty(dataDirName)) {
+        if (!Strings.isNullOrEmpty(dataDirName)) {
             this.dataDir = new File(dataDirName);
         }
     }

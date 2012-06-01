@@ -3,10 +3,5 @@
  * All rights reserved.
  * 
  */
-@DefaultAnnotation( { Nonnull.class })
+
 package com.mysema.rdfbean.virtuoso;
-
-import javax.annotation.Nonnull;
-
-import edu.umd.cs.findbugs.annotations.DefaultAnnotation;
-

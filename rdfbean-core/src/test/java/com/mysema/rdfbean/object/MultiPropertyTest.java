@@ -3,7 +3,6 @@ package com.mysema.rdfbean.object;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +66,7 @@ public class MultiPropertyTest {
         assertEquals(2, stmts.size());
         stmts = IteratorAdapter.asList(repository.findStatements(null, NAME3, null, null, false));
         assertEquals(2, stmts.size());
-                
+        
         MultiPropertyTest test2 = session.get(MultiPropertyTest.class, test.id);
         assertEquals(test.names, test2.names);
         // ordering is not preseved

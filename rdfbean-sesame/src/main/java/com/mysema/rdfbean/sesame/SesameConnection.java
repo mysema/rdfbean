@@ -6,12 +6,9 @@
 package com.mysema.rdfbean.sesame;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.Transformer;
-import org.apache.commons.collections15.iterators.TransformIterator;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -32,11 +29,28 @@ import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.result.ModelResult;
 import org.openrdf.store.StoreException;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryException;
 import com.mysema.query.QueryMetadata;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.Dialect;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.InferenceOptions;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.QueryOptions;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.SPARQLUpdateClause;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
+import com.mysema.rdfbean.model.UpdateLanguage;
 
 /**
  * SaesameConnection is the RDFConnection implementation for RepositoryConnection usage
@@ -61,9 +75,9 @@ public class SesameConnection implements RDFConnection {
 
     private boolean readonlyTnx = false;
 
-    private final Transformer<STMT,Statement> stmtTransformer = new Transformer<STMT,Statement>(){
+    private final Function<STMT,Statement> stmtTransformer = new Function<STMT,Statement>(){
         @Override
-        public Statement transform(STMT stmt) {
+        public Statement apply(STMT stmt) {
             return convert(stmt);
         }
     };
@@ -118,13 +132,7 @@ public class SesameConnection implements RDFConnection {
     }
 
     private Iterable<Statement> convert(final Collection<STMT> stmts) {
-        return new Iterable<Statement>(){
-            @Override
-            public Iterator<Statement> iterator() {
-                return new TransformIterator<STMT,Statement>(stmts.iterator(), stmtTransformer);
-            }
-
-        };
+        return Iterables.transform(stmts, stmtTransformer);
     }
 
     @Nullable

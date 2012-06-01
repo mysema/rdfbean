@@ -13,7 +13,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.BeanMap;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -25,6 +24,7 @@ import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.path.PathBuilder;
 import com.mysema.query.types.path.PathBuilderFactory;
 import com.mysema.rdfbean.model.BID;
+import com.mysema.util.BeanMap;
 
 /**
  * ExampleQuery provides support query by example queries

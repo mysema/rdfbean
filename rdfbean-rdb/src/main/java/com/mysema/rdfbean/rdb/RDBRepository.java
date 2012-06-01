@@ -19,12 +19,9 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import javax.sql.DataSource;
 
-import net.jcip.annotations.Immutable;
-
-import org.apache.commons.collections15.BidiMap;
-import org.apache.commons.collections15.bidimap.DualHashBidiMap;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.ValueFactoryImpl;
@@ -37,6 +34,8 @@ import org.openrdf.rio.Rio;
 import org.openrdf.rio.helpers.RDFHandlerBase;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.io.Resources;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
@@ -72,8 +71,6 @@ import com.mysema.rdfbean.rdb.support.SesameDialect;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-
 /**
  * RDBRepository is a Repository implementation for the RDB module
  *
@@ -101,9 +98,9 @@ public class RDBRepository implements Repository{
 
     private final IdFactory idFactory = new MD5IdFactory();
 
-    private final BidiMap<NODE,Long> nodeCache = new DualHashBidiMap<NODE,Long>();
+    private final BiMap<NODE,Long> nodeCache = HashBiMap.create();
 
-    private final BidiMap<Locale,Integer> langCache = new DualHashBidiMap<Locale,Integer>();
+    private final BiMap<Locale,Integer> langCache = HashBiMap.create();
 
     private final Configuration configuration;
 

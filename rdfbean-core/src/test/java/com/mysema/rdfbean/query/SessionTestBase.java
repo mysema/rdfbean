@@ -14,8 +14,8 @@ import org.junit.Rule;
 
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.domains.SimpleDomain;
 import com.mysema.rdfbean.domains.NoteTypeDomain.NoteType;
+import com.mysema.rdfbean.domains.SimpleDomain;
 import com.mysema.rdfbean.model.LIT;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDFConnection;

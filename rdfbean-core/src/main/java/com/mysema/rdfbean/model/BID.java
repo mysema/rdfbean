@@ -7,7 +7,7 @@ package com.mysema.rdfbean.model;
 
 import java.util.UUID;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import com.mysema.commons.lang.Assert;
 

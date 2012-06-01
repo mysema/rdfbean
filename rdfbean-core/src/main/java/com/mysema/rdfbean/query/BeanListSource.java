@@ -8,8 +8,7 @@ package com.mysema.rdfbean.query;
 import java.util.List;
 
 import javax.annotation.Nullable;
-
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.EntityPath;

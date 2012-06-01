@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -32,6 +31,8 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.jboss.util.file.ArchiveBrowser;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.object.DefaultConfiguration;
@@ -144,7 +145,8 @@ public class SchemaGenMojo extends AbstractMojo{
                     }
                     builder.append(clazz.getName());
                 }
-                FileUtils.writeStringToFile(classListFile, builder.toString(), "UTF-8");
+//                FileUtils.writeStringToFile(classListFile, builder.toString(), "UTF-8");
+                Files.write(builder.toString(), classListFile, Charsets.UTF_8);
             }
 
         } catch (IOException e) {

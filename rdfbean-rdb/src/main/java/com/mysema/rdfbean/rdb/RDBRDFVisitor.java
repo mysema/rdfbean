@@ -12,17 +12,43 @@ import java.util.Stack;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.Transformer;
-
+import com.google.common.base.Function;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.sql.SQLCommonQuery;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.sql.SQLSubQuery;
-import com.mysema.query.types.*;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.ConstantImpl;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.FactoryExpression;
+import com.mysema.query.types.Operation;
+import com.mysema.query.types.OperationImpl;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.ParamExpression;
+import com.mysema.query.types.Path;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.PredicateOperation;
+import com.mysema.query.types.SubQueryExpression;
+import com.mysema.query.types.TemplateExpression;
+import com.mysema.query.types.TemplateExpressionImpl;
 import com.mysema.query.types.path.NumberPath;
 import com.mysema.query.types.template.BooleanTemplate;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.Block;
+import com.mysema.rdfbean.model.ContainerBlock;
+import com.mysema.rdfbean.model.GraphBlock;
+import com.mysema.rdfbean.model.GroupBlock;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.OptionalBlock;
+import com.mysema.rdfbean.model.PatternBlock;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.RDFVisitor;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.UnionBlock;
 import com.mysema.rdfbean.query.VarNameIterator;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
@@ -61,7 +87,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     private final Stack<Operator<?>> operators = new Stack<Operator<?>>();
 
-    private final Transformer<Long, NODE> transformer;
+    private final Function<Long, NODE> transformer;
 
     private final VarNameIterator stmts = new VarNameIterator("stmts");
 
@@ -75,7 +101,7 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     private boolean asLiteral = false;
 
-    public RDBRDFVisitor(RDBContext context, Transformer<Long, NODE> transformer) {
+    public RDBRDFVisitor(RDBContext context, Function<Long, NODE> transformer) {
         this.context = context;
         this.transformer = transformer;
     }

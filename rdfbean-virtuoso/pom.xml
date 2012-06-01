@@ -14,8 +14,8 @@
   </parent>  
   
   <properties>
-  	<sesame.version>3.0-alpha1</sesame.version>
-  </properties>	  
+    <sesame.version>3.0-alpha1</sesame.version>
+  </properties>    
   
   <dependencies>
     <dependency>
@@ -23,14 +23,14 @@
       <artifactId>rdfbean-core</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-	<dependency>
-	  <groupId>com.openlinksw</groupId>
-	  <artifactId>virtjdbc4</artifactId>
-	  <version>1.0</version>
-	</dependency>		           
-	<!-- test deps -->
-	
-	<dependency>
+  <dependency>
+    <groupId>com.openlinksw</groupId>
+    <artifactId>virtjdbc4</artifactId>
+    <version>1.0</version>
+  </dependency>               
+  <!-- test deps -->
+  
+  <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-core</artifactId>
       <version>${project.parent.version}</version>
@@ -44,17 +44,17 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>       
-		   
+       
   </dependencies>
   
   <profiles>
-  	<profile>
-  		<id>no-virtuoso</id>
-  		<properties>
-  			<failIfNoTests>false</failIfNoTests>
-  			<test/>
-  		</properties>
-  	</profile>
+    <profile>
+      <id>no-virtuoso</id>
+      <properties>
+        <failIfNoTests>false</failIfNoTests>
+        <test/>
+      </properties>
+    </profile>
   </profiles>
   
 </project>

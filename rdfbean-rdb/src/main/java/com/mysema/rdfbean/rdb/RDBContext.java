@@ -15,10 +15,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.BidiMap;
-import org.apache.commons.collections15.Transformer;
-import org.apache.commons.collections15.bidimap.DualHashBidiMap;
-
+import com.google.common.base.Function;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.mysema.query.sql.Configuration;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
@@ -54,21 +53,21 @@ public final class RDBContext implements Closeable{
     
     private final IdSequence idSequence;
     
-    private final BidiMap<Locale,Integer> langCache;
+    private final BiMap<Locale,Integer> langCache;
     
     private final Map<Object,Long> idCache = new HashMap<Object,Long>(1000);
     
-    private final BidiMap<NODE,Long> nodeCache;
+    private final BiMap<NODE,Long> nodeCache;
     
-    private final BidiMap<NODE,Long> localNodeCache = new DualHashBidiMap<NODE,Long>();
+    private final BiMap<NODE,Long> localNodeCache = HashBiMap.create();
         
     private final Configuration configuration;
     
     public RDBContext(
             ConverterRegistry converterRegistry,
             IdFactory idFactory, 
-            BidiMap<NODE,Long> nodeCache,  
-            BidiMap<Locale,Integer> langCache,
+            BiMap<NODE,Long> nodeCache,  
+            BiMap<Locale,Integer> langCache,
             IdSequence idSequence,
             Connection connection, 
             SQLTemplates templates) {
@@ -149,7 +148,7 @@ public final class RDBContext implements Closeable{
 
     @Nullable
     public Locale getLang(int id) {
-        return langCache.getKey(id);
+        return langCache.inverse().get(id);
     }
 
     public Integer getLangId(Locale locale) {
@@ -166,12 +165,12 @@ public final class RDBContext implements Closeable{
     }
 
     @Nullable
-    public NODE getNode(long id, Transformer<Long,NODE> t) {
-        NODE node = nodeCache.getKey(id);
+    public NODE getNode(long id, Function<Long,NODE> t) {
+        NODE node = nodeCache.inverse().get(id);
         if (node == null){
-            node = localNodeCache.getKey(id);
+            node = localNodeCache.inverse().get(id);
             if (node == null){
-                node = t.transform(id);
+                node = t.apply(id);
                 localNodeCache.put(node, id);
             }
         }        

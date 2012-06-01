@@ -12,8 +12,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.iterators.SingletonIterator;
-
 
 /**
  * @author tiwe
@@ -49,7 +47,8 @@ public final class STMTCache {
             if (single == null) {
                 return Collections.<STMT>emptyList().iterator();
             } else {
-                return new SingletonIterator<STMT>(single);
+//                return new SingletonIterator<STMT>(single);
+                return Collections.singleton(single).iterator();
             }
         } else {
             return multi.iterator();

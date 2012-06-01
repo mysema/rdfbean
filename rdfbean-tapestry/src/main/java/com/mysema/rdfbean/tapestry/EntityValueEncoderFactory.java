@@ -3,7 +3,6 @@
  */
 package com.mysema.rdfbean.tapestry;
 
-import org.apache.commons.collections15.BeanMap;
 import org.apache.tapestry5.ValueEncoder;
 import org.apache.tapestry5.services.ValueEncoderFactory;
 
@@ -11,6 +10,7 @@ import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.MappedProperty;
 import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
+import com.mysema.util.BeanMap;
 
 /**
  * @author tiwe

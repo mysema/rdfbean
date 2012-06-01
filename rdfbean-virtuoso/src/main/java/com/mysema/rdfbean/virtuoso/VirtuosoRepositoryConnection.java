@@ -18,15 +18,35 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.ByteStreams;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.types.ParamExpression;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.Format;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.IdSequence;
+import com.mysema.rdfbean.model.InferenceOptions;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.QueryOptions;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.RDFS;
+import com.mysema.rdfbean.model.RepositoryException;
+import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.SPARQLUpdate;
+import com.mysema.rdfbean.model.SPARQLVisitor;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.UpdateLanguage;
 import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
 import com.mysema.rdfbean.object.SQLConnectionCallback;
@@ -463,13 +483,16 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
         PreparedStatement stmt = null;
         try{
+            byte[] bytes = ByteStreams.toByteArray(is);
             if (format == Format.N3 || format == Format.TURTLE || format == Format.NTRIPLES){ // UTF-8
-                String content = IOUtils.toString(is, format == Format.NTRIPLES ? "US-ASCII" : "UTF-8");
+//                String content = IOUtils.toString(is, format == Format.NTRIPLES ? "US-ASCII" : "UTF-8");
+                String content = new String(bytes, format == Format.NTRIPLES ? Charsets.US_ASCII : Charsets.UTF_8);
                 stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
                 stmt.setString(1, content);
                 stmt.setString(2, context != null ? context.getId() : defaultGraph.getId());
             }else if (format == Format.RDFXML){
-                String content = IOUtils.toString(is, "UTF-8"); // TODO : proper XML load
+//                String content = IOUtils.toString(is, "UTF-8"); // TODO : proper XML load
+                String content = new String(bytes, Charsets.UTF_8); // TODO : propert XML load
                 stmt = connection.prepareStatement("DB.DBA.RDF_LOAD_RDFXML(?,'',?,0)");
                 stmt.setString(1, content);
                 stmt.setString(2, context != null ? context.getId() : defaultGraph.getId());

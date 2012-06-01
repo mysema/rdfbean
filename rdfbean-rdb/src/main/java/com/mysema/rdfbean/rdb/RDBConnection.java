@@ -21,9 +21,8 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.BidiMap;
-import org.apache.commons.collections15.Transformer;
-
+import com.google.common.base.Function;
+import com.google.common.collect.BiMap;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
@@ -37,7 +36,18 @@ import com.mysema.query.types.Expression;
 import com.mysema.query.types.FactoryExpression;
 import com.mysema.query.types.Visitor;
 import com.mysema.query.types.template.NumberTemplate;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.InferenceOptions;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.QueryLanguage;
+import com.mysema.rdfbean.model.QueryOptions;
+import com.mysema.rdfbean.model.RDFBeanTransaction;
+import com.mysema.rdfbean.model.RDFConnection;
+import com.mysema.rdfbean.model.STMT;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.UpdateLanguage;
 
 /**
  * RDBConnection is the RDFConnection implementation for the RDB module
@@ -67,9 +77,9 @@ public class RDBConnection implements RDFConnection{
 
     private final int defaultLocaleId;
 
-    private final Transformer<Long,NODE> nodeTransformer = new Transformer<Long,NODE>(){
+    private final Function<Long,NODE> nodeTransformer = new Function<Long,NODE>(){
         @Override
-        public NODE transform(Long id) {
+        public NODE apply(Long id) {
             SQLQuery query = context.createQuery();
             query.from(symbol);
             query.where(symbol.id.eq(id));
@@ -82,9 +92,9 @@ public class RDBConnection implements RDFConnection{
         }
     };
 
-    private final Transformer<Long,NODE> cachingNodeTransformer = new Transformer<Long,NODE>(){
+    private final Function<Long,NODE> cachingNodeTransformer = new Function<Long,NODE>(){
         @Override
-        public NODE transform(Long input) {
+        public NODE apply(Long input) {
             return context.getNode(input, nodeTransformer);
         }
     };
@@ -118,7 +128,7 @@ public class RDBConnection implements RDFConnection{
         locales.clear();
     }
 
-    public void addLocales(Set<Locale> l, @Nullable BidiMap<Locale,Integer> cache){
+    public void addLocales(Set<Locale> l, @Nullable BiMap<Locale,Integer> cache){
         List<Integer> ids = new ArrayList<Integer>(ADD_BATCH);
         List<Locale> locales = new ArrayList<Locale>(ADD_BATCH);
         for (Locale locale : l){
@@ -157,7 +167,7 @@ public class RDBConnection implements RDFConnection{
         nodes.clear();
     }
 
-    public void addNodes(Set<NODE> n, @Nullable BidiMap<NODE,Long> cache) {
+    public void addNodes(Set<NODE> n, @Nullable BiMap<NODE,Long> cache) {
         List<Long> ids = new ArrayList<Long>(ADD_BATCH);
         List<NODE> nodes = new ArrayList<NODE>(ADD_BATCH);
         for (NODE node : n){

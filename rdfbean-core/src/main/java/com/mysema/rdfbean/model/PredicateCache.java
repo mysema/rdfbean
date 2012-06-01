@@ -14,7 +14,8 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.iterators.IteratorChain;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 
 
 /**
@@ -48,18 +49,19 @@ public final class PredicateCache {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public Iterator<STMT> iterator(@Nullable UID predicate) {
         if (predicate == null) {
-            IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
+            List<Iterator<STMT>> iterators = Lists.newArrayList();
             if (predicates != null) {
                 for (STMTCache stmts : predicates.values()) {
-                    iterChain.addIterator(stmts.iterator());
+                    iterators.add(stmts.iterator());
                 }
             }
             if (containerProperties != null) {
-                iterChain.addIterator(containerProperties.iterator());
+                iterators.add(containerProperties.iterator());
             }
-            return iterChain;
+            return Iterators.concat(iterators.toArray(new Iterator[iterators.size()]));
         } else if (RDF.isContainerMembershipProperty(predicate)) {
             if (containerProperties != null) {
                 return containerProperties.iterator();

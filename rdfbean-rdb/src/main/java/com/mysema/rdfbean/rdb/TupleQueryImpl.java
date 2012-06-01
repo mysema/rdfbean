@@ -3,8 +3,7 @@ package com.mysema.rdfbean.rdb;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections15.Transformer;
-
+import com.google.common.base.Function;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.types.Expression;
@@ -22,24 +21,24 @@ public class TupleQueryImpl implements TupleQuery{
     
     private final List<Expression<?>> projection;
     
-    private final Transformer<Long, NODE> transformer;
+    private final Function<Long, NODE> function;
     
     public TupleQueryImpl(
             SQLQuery query, 
             ConverterRegistry converters,
             List<String> variables, 
             List<Expression<?>> pr, 
-            Transformer<Long, NODE> transformer) {
+            Function<Long, NODE> function) {
         this.query = query;
         this.converters = converters;
         this.variables = variables;
         this.projection = pr;
-        this.transformer = transformer;
+        this.function = function;
     }
 
     @Override
     public CloseableIterator<Map<String, NODE>> getTuples() {
-        return query.iterate(new TupleFactoryExpression(converters, variables, projection, transformer));
+        return query.iterate(new TupleFactoryExpression(converters, variables, projection, function));
     }
 
     @Override

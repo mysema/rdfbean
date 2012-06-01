@@ -5,7 +5,7 @@
  */
 package com.mysema.rdfbean.spring;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import org.springframework.beans.factory.BeanFactory;
 

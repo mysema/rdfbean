@@ -8,9 +8,9 @@ package com.mysema.rdfbean.object;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
-import org.apache.commons.collections15.BeanMap;
+import com.mysema.util.BeanMap;
 
 /**
  * @author sasa

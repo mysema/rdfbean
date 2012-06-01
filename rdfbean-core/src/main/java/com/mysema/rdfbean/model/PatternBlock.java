@@ -2,8 +2,7 @@ package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.ObjectUtils;
-
+import com.google.common.base.Objects;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.Predicate;
@@ -102,7 +101,7 @@ public class PatternBlock implements Block{
             return p.subject.equals(subject)
                 && p.predicate.equals(predicate)
                 && p.object.equals(object)
-                && ObjectUtils.equals(p.context, context);
+                && Objects.equal(p.context, context);
         }else{
             return false;
         }

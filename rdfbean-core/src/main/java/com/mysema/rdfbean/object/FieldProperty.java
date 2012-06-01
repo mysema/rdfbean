@@ -9,9 +9,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
-import org.apache.commons.collections15.BeanMap;
+import com.mysema.util.BeanMap;
 
 /**
  * @author sasa

@@ -9,11 +9,11 @@ import java.io.File;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
 import org.openrdf.repository.Repository;
 import org.openrdf.repository.sail.SailRepository;
 import org.openrdf.sail.nativerdf.NativeStore;
 
+import com.google.common.base.Strings;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.FileIdSequence;
 import com.mysema.rdfbean.model.IdSequence;
@@ -69,7 +69,7 @@ public class NativeRepository extends SesameRepository {
     }
 
     public void setDataDirName(String dataDirName) {
-        if (StringUtils.isNotEmpty(dataDirName)) {
+        if (!Strings.isNullOrEmpty(dataDirName)) {
             this.dataDir = new File(dataDirName);
         }
     }

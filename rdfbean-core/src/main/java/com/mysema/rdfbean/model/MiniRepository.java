@@ -12,12 +12,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.iterators.IteratorChain;
-
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.Namespaces;
@@ -31,7 +32,7 @@ import com.mysema.rdfbean.model.io.WriterUtils;
  * @author sasa
  *
  */
-public final class MiniRepository implements Repository{
+public final class MiniRepository implements Repository {
     
     private final MiniDialect dialect = new MiniDialect();
     
@@ -116,6 +117,7 @@ public final class MiniRepository implements Repository{
         export(format, Namespaces.DEFAULT, context, out);
     }
     
+    @SuppressWarnings("unchecked")
     public CloseableIterator<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context, boolean includeInferred) {
         Iterator<STMT> iterator = null;
         if (subject != null) {
@@ -123,11 +125,11 @@ public final class MiniRepository implements Repository{
         } else if (objects != null && object != null && object.isResource()) {
             iterator = getIndexed(object.asResource(), predicate, objects);
         } else {
-            IteratorChain<STMT> iterChain = new IteratorChain<STMT>();
+            List<Iterator<STMT>> iterators = Lists.newArrayList();
             for (PredicateCache stmtCache : subjects.values()) {
-                iterChain.addIterator(stmtCache.iterator(predicate));
+                iterators.add(stmtCache.iterator(predicate));
             }
-            iterator = iterChain;
+            iterator = Iterators.concat(iterators.toArray(new Iterator[iterators.size()]));
         }
         return new ResultIterator(iterator, subject, predicate, object, context, includeInferred);
     }

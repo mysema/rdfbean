@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.map.LRUMap;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
@@ -20,6 +19,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 
+import com.google.common.collect.MapMaker;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.AbstractDialect;
@@ -48,11 +48,11 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
 
     private final Map<URI, UID> uidCache = new HashMap<URI, UID>(CACHE_SIZE);
 
-    private final Map<BID, BNode> bnodeCache = new LRUMap<BID, BNode>(CACHE_SIZE);
+    private final Map<BID, BNode> bnodeCache = new MapMaker().initialCapacity(CACHE_SIZE).softValues().makeMap();
 
-    private final Map<LIT, Literal> literalCache = new LRUMap<LIT, Literal>(CACHE_SIZE);
+    private final Map<LIT, Literal> literalCache = new MapMaker().initialCapacity(CACHE_SIZE).softValues().makeMap();
 
-    private final Map<UID, URI> uriCache = new LRUMap<UID, URI>(CACHE_SIZE);
+    private final Map<UID, URI> uriCache = new MapMaker().initialCapacity(CACHE_SIZE).softValues().makeMap();
 
     private final ValueFactory vf;
 

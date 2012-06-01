@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections15.Transformer;
-
+import com.google.common.base.Function;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.ExpressionBase;
 import com.mysema.query.types.FactoryExpression;
@@ -35,19 +34,19 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
 
     private final List<Expression<?>> projection;
 
-    private final Transformer<Long, NODE> transformer;
+    private final Function<Long, NODE> function;
 
     @SuppressWarnings("unchecked")
     public TupleFactoryExpression(
             ConverterRegistry converters,
             List<String> variables,
             List<Expression<?>> pr,
-            Transformer<Long, NODE> transformer) {
+            Function<Long, NODE> function) {
         super((Class)Map.class);
         this.converters = converters;
         this.variables = variables;
         this.projection = pr;
-        this.transformer = transformer;
+        this.function = function;
     }
 
     @Override
@@ -69,7 +68,7 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
                     String val = (String)args[i];
                     rv.put(variables.get(i), val.contains(":") ? new UID(val) : new BID(val));               
                 }else{
-                    rv.put(variables.get(i), transformer.transform((Long)args[i]));
+                    rv.put(variables.get(i), function.apply((Long)args[i]));
                 }
             }
         }

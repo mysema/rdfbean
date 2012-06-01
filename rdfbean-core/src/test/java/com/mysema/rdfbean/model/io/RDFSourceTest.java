@@ -12,9 +12,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.ByteStreams;
 import com.mysema.rdfbean.model.Format;
 
 public class RDFSourceTest {
@@ -30,7 +31,7 @@ public class RDFSourceTest {
     public void OpenStream_with_Input() throws IOException{
         InputStream input = new ByteArrayInputStream("abc".getBytes("UTF-8"));
         RDFSource source = new RDFSource(input, Format.TURTLE, "test:context");
-        assertEquals("abc", IOUtils.toString(source.openStream(), "UTF-8"));
+        assertEquals("abc", new String(ByteStreams.toByteArray(source.openStream()), Charsets.UTF_8));
     }
 
 }

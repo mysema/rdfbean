@@ -6,8 +6,7 @@
 package com.mysema.rdfbean.model;
 
 import javax.annotation.Nullable;
-
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import com.mysema.commons.lang.Assert;
 

@@ -10,15 +10,14 @@ import javax.tools.JavaCompiler;
 
 import junit.framework.Assert;
 
-import org.apache.commons.io.FileUtils;
-
 import com.mysema.codegen.SimpleCompiler;
+import com.mysema.util.FileUtils;
 
 public abstract class AbstractProcessorTest {
 
     protected void process(Class<? extends AbstractProcessor> processorClass, List<String> classes, String target) throws IOException{
         File out = new File("target/" + target);
-        FileUtils.deleteDirectory(out);
+        FileUtils.delete(out);
         if (!out.mkdirs()){
             Assert.fail("Creation of " + out.getPath() + " failed");
         }

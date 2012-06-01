@@ -4,8 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.ObjectUtils;
-
+import com.google.common.base.Objects;
 import com.mysema.commons.lang.Assert;
 import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Ops;
@@ -81,7 +80,7 @@ public class GroupBlock implements ContainerBlock{
             return true;
         }else if (o instanceof GroupBlock){
             GroupBlock gb = (GroupBlock)o;
-            return ObjectUtils.equals(filters, gb.filters) && blocks.equals(gb.blocks);
+            return Objects.equal(filters, gb.filters) && blocks.equals(gb.blocks);
         }else{
             return false;
         }

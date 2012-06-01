@@ -2,8 +2,7 @@ package com.mysema.rdfbean.rdb;
 
 import java.util.List;
 
-import org.apache.commons.collections15.Transformer;
-
+import com.google.common.base.Function;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.sql.SQLQuery;
 import com.mysema.query.types.Expression;
@@ -20,22 +19,22 @@ public class GraphQueryImpl implements GraphQuery{
 
     private final List<Expression<?>> projection;
 
-    private final Transformer<Long, NODE> transformer;
+    private final Function<Long, NODE> function;
 
     public GraphQueryImpl(
             SQLQuery query,
             PatternBlock pattern,
             List<Expression<?>> pr,
-            Transformer<Long, NODE> transformer) {
+            Function<Long, NODE> function) {
         this.query = query;
         this.pattern = pattern;
         this.projection = pr;
-        this.transformer = transformer;
+        this.function = function;
     }
 
     @Override
     public CloseableIterator<STMT> getTriples() {
-        return query.iterate(new STMTFactoryExpression(pattern, projection, transformer));
+        return query.iterate(new STMTFactoryExpression(pattern, projection, function));
     }
 
 }

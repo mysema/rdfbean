@@ -10,10 +10,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
-import net.jcip.annotations.Immutable;
-
-import org.apache.commons.collections15.BeanMap;
+import com.mysema.util.BeanMap;
 
 /**
  * @author sasa

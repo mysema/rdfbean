@@ -9,8 +9,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import javax.annotation.Nullable;
-
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import com.mysema.commons.lang.Assert;
 

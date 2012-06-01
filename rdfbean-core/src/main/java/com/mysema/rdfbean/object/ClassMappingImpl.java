@@ -2,8 +2,6 @@ package com.mysema.rdfbean.object;
 
 import java.lang.annotation.Annotation;
 
-import javax.annotation.Nullable;
-
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.UID;
 

@@ -10,8 +10,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import javax.annotation.Nullable;
-
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.Format;

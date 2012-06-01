@@ -8,11 +8,10 @@ package com.mysema.rdfbean.object;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.collections15.MultiMap;
-
+import com.google.common.collect.Multimap;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.ontology.AbstractOntology;
-import com.mysema.util.MultiMapFactory;
+import com.mysema.util.MultimapFactory;
 
 /**
  * ConfigurationOntology provides a Configuration based implementation of the Ontology interface
@@ -24,8 +23,8 @@ public class ConfigurationOntology extends AbstractOntology{
 
     public ConfigurationOntology(Configuration configuration){
         Set<UID> types = new HashSet<UID>();
-        MultiMap<UID,UID> directSubtypes = MultiMapFactory.<UID,UID>createWithSet();        
-        MultiMap<UID,UID> directSupertypes = MultiMapFactory.<UID,UID>createWithSet();
+        Multimap<UID,UID> directSubtypes = MultimapFactory.<UID,UID>createWithSet();        
+        Multimap<UID,UID> directSupertypes = MultimapFactory.<UID,UID>createWithSet();
         
         for (MappedClass mappedClass : configuration.getMappedClasses()){
             types.add(mappedClass.getUID());

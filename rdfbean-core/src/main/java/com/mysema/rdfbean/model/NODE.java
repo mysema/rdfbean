@@ -7,7 +7,7 @@ package com.mysema.rdfbean.model;
 
 import java.io.Serializable;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * NODE represents a general RDF node

@@ -23,9 +23,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.mysema.codegen.JavaWriter;
+import com.mysema.codegen.StringUtils;
 import com.mysema.codegen.model.SimpleType;
 import com.mysema.codegen.model.Type;
 import com.mysema.codegen.model.TypeCategory;

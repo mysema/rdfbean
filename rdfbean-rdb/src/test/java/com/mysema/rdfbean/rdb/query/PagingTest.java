@@ -10,10 +10,10 @@ import static org.junit.Assert.assertEquals;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.IteratorUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.QueryModifiers;
 import com.mysema.query.SearchResults;
 import com.mysema.query.alias.Alias;
@@ -62,7 +62,7 @@ public class PagingTest extends AbstractRDBTest implements EntityDomain{
         System.out.println();        
         
         // via iterator
-        assertEquals(size, IteratorUtils.toList(createQuery(modifiers).iterate($(entity))).size());
+        assertEquals(size, IteratorAdapter.asList(createQuery(modifiers).iterate($(entity))).size());
         System.out.println();
     }
     

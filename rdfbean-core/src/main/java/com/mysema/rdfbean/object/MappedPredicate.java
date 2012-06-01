@@ -6,8 +6,7 @@
 package com.mysema.rdfbean.object;
 
 import javax.annotation.Nullable;
-
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.UID;

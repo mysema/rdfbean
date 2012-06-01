@@ -6,7 +6,28 @@ import java.io.IOException;
 import org.junit.Test;
 
 import com.mysema.rdfbean.TEST;
-import com.mysema.rdfbean.domains.*;
+import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain;
+import com.mysema.rdfbean.domains.ContextDomain;
+import com.mysema.rdfbean.domains.DateTimeDomain;
+import com.mysema.rdfbean.domains.EntityDocumentRevisionDomain;
+import com.mysema.rdfbean.domains.EntityDomain;
+import com.mysema.rdfbean.domains.EntityRevisionTermDomain;
+import com.mysema.rdfbean.domains.IdentityDomain;
+import com.mysema.rdfbean.domains.InferenceDomain;
+import com.mysema.rdfbean.domains.ItemDomain;
+import com.mysema.rdfbean.domains.ListDomain;
+import com.mysema.rdfbean.domains.LiteralsDomain;
+import com.mysema.rdfbean.domains.LoadDomain;
+import com.mysema.rdfbean.domains.NoteRevisionTermDomain;
+import com.mysema.rdfbean.domains.NoteTermDomain;
+import com.mysema.rdfbean.domains.NoteTypeDomain;
+import com.mysema.rdfbean.domains.PropertiesDomain;
+import com.mysema.rdfbean.domains.ResourceDomain;
+import com.mysema.rdfbean.domains.SimpleDomain;
+import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain;
+import com.mysema.rdfbean.domains.UserDomain;
+import com.mysema.rdfbean.domains.UserProfileDomain;
+import com.mysema.rdfbean.domains.UserProjectionDomain;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 
 public class DomainExporterTest {

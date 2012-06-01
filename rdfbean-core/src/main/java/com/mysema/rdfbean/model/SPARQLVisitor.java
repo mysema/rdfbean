@@ -11,11 +11,20 @@ import javax.annotation.Nullable;
 
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryFlag;
+import com.mysema.query.QueryFlag.Position;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.QueryFlag.Position;
 import com.mysema.query.support.SerializerBase;
-import com.mysema.query.types.*;
+import com.mysema.query.types.Constant;
+import com.mysema.query.types.ConstantImpl;
+import com.mysema.query.types.Expression;
+import com.mysema.query.types.Operator;
+import com.mysema.query.types.Ops;
+import com.mysema.query.types.OrderSpecifier;
+import com.mysema.query.types.ParamExpression;
+import com.mysema.query.types.Predicate;
+import com.mysema.query.types.SubQueryExpression;
+import com.mysema.query.types.TemplateExpression;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 /**

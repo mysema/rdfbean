@@ -4,8 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections15.Transformer;
-
+import com.google.common.base.Function;
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.FactoryExpression;
@@ -23,7 +22,7 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
 
     private final List<Expression<?>> args;
 
-    private final Transformer<Long, NODE> transformer;
+    private final Function<Long, NODE> function;
 
     @Nullable
     private final ID subject;
@@ -37,9 +36,9 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
     @Nullable
     private final UID context;
 
-    public STMTFactoryExpression(PatternBlock pattern, List<Expression<?>> args, Transformer<Long, NODE> transformer) {
+    public STMTFactoryExpression(PatternBlock pattern, List<Expression<?>> args, Function<Long, NODE> function) {
         this.args = args;
-        this.transformer = transformer;
+        this.function = function;
         this.subject = (ID) getConstant(pattern.getSubject());
         this.predicate = (UID) getConstant(pattern.getPredicate());
         this.object = getConstant(pattern.getObject());
@@ -65,7 +64,7 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
         int counter = 0;
         ID s = subject != null ? subject : getId(args[counter++]);
         UID p = predicate != null ? predicate : (UID)getId(args[counter++]);
-        NODE o = object != null ? object : transformer.transform((Long)args[counter++]);
+        NODE o = object != null ? object : function.apply((Long)args[counter++]);
         UID c = context;
         if (args.length > counter && c != null){
             c = (UID)getId(args[counter++]);
@@ -75,7 +74,7 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
 
     private ID getId(Object input) {
         if (input instanceof Long){
-            return (ID)transformer.transform((Long)input);
+            return (ID)function.apply((Long)input);
         }else{
             String val = input.toString();
             return val.contains(":") ? new UID(val) : new BID(val);

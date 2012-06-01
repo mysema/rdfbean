@@ -8,7 +8,7 @@ package com.mysema.rdfbean.guice;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import net.jcip.annotations.ThreadSafe;
+import javax.annotation.concurrent.ThreadSafe;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

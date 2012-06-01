@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -31,6 +30,7 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 import com.mysema.rdfbean.sesame.NativeRepository;
 import com.mysema.rdfbean.sesame.SessionTestBase;
+import com.mysema.util.FileUtils;
 
 public class LoadTest extends SessionTestBase implements LoadDomain{    
     
@@ -45,7 +45,7 @@ public class LoadTest extends SessionTestBase implements LoadDomain{
     
     @After
     public void tearDown() throws IOException{
-        FileUtils.deleteDirectory(new File("target/native"));
+        FileUtils.delete(new File("target/native"));
     }
     
     @Test
@@ -84,8 +84,8 @@ public class LoadTest extends SessionTestBase implements LoadDomain{
             }finally{
         	localSession.close();
         	sessionFactory.close();
-        	FileUtils.deleteDirectory(new File("target/mem"));
-        	FileUtils.deleteDirectory(new File("target/native"));
+        	FileUtils.delete(new File("target/mem"));
+        	FileUtils.delete(new File("target/native"));
             }            
         }        
         writer.write("\n");
