@@ -450,7 +450,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 
     public boolean isContainer() {
         Container container = this.getAnnotation(Container.class);
-        return container != null && container.value() != ContainerType.LIST;
+        return container != null && container.value() != ContainerType.LIST
+                && container.value() != ContainerType.NONE;
     }
 
     @Nullable

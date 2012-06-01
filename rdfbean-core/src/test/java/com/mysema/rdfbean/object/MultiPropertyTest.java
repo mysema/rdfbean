@@ -1,7 +1,8 @@
 package com.mysema.rdfbean.object;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +12,8 @@ import org.junit.Test;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
+import com.mysema.rdfbean.annotations.Container;
+import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
@@ -24,11 +27,23 @@ public class MultiPropertyTest {
 
     private static final UID NAME = new UID(TEST.NS, "name");
     
+    private static final UID NAME2 = new UID(TEST.NS, "name2");
+    
+    private static final UID NAME3 = new UID(TEST.NS, "name3");
+    
     @Id(IDType.RESOURCE)
     ID id;
 
     @Predicate(ln = "name")
     Set<String> names = new HashSet<String>();
+    
+    @Predicate(ln = "name2")
+    @Container(ContainerType.NONE)
+    List<String> namesList = new ArrayList<String>();
+    
+    @Predicate(ln = "name3")
+    @Container(ContainerType.NONE)
+    String[] namesArray;
 
     @Test
     public void MultiProperties() {
@@ -37,10 +52,17 @@ public class MultiPropertyTest {
         
         MultiPropertyTest test = new MultiPropertyTest();
         test.names.add("Tom");
-        test.names.add("Jane");
+        test.names.add("Jane");        
+        test.namesList.add("Tom");
+        test.namesList.add("Jane");        
+        test.namesArray = new String[]{"Tom", "Jane"};        
         session.save(test);
         
         List<STMT> stmts = IteratorAdapter.asList(repository.findStatements(null, NAME, null, null, false));
+        assertEquals(2, stmts.size());
+        stmts = IteratorAdapter.asList(repository.findStatements(null, NAME2, null, null, false));
+        assertEquals(2, stmts.size());
+        stmts = IteratorAdapter.asList(repository.findStatements(null, NAME3, null, null, false));
         assertEquals(2, stmts.size());
     }
     

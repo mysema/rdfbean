@@ -16,6 +16,10 @@ public enum ContainerType {
     /**
      * 
      */
+    NONE(null),
+    /**
+     * 
+     */
     LIST(RDF.List), 
     /**
      * 
