@@ -368,10 +368,10 @@ public final class SessionImpl implements Session {
         if (size == 1) {
             NODE node = values.iterator().next();
             if (node instanceof ID) {
-                if (mappedProperty.isContainer()) {
-                    values = convertContainer((ID) node, context, mappedProperty.isIndexed());
-                } else {
+                if (mappedProperty.isList()) {
                     values = convertList((ID) node, context);
+                } else if (mappedProperty.isContainer()) {
+                    values = convertContainer((ID) node, context, mappedProperty.isIndexed());                    
                 }
             } // TODO else log error?
         } // TODO else log error?
@@ -1760,7 +1760,7 @@ public final class SessionImpl implements Session {
 
                 Object object = property.getValue(beanMap);
                 if (object != null) {
-                    if (object.getClass().isArray()) {
+                    if (property.isArray()) {
                         if (object.getClass().getComponentType().isPrimitive()) {
                             int size = Array.getLength(object);
                             List<Object> list = new ArrayList<Object>(size);
@@ -1793,20 +1793,12 @@ public final class SessionImpl implements Session {
                             }
                         }
                         
-                    } else if (property.isArray()) {    
-                        if (property.isAnnotationPresent(Container.class) &&
-                           property.getAnnotation(Container.class).value() == ContainerType.NONE) {
-                            for (Object o : (Collection<?>) object) {
-                                NODE value = toRDFValue(o, context);
-                                if (value != null) {
-                                    recordAddStatement(subject, predicate, value, context);
-                                }
+                    } else if (property.isArray()) { // array, but not List or Container   
+                        for (Object o : (Collection<?>) object) {
+                            NODE value = toRDFValue(o, context);
+                            if (value != null) {
+                                recordAddStatement(subject, predicate, value, context);
                             }
-                        } else {
-                            ID first = toRDFList((List<?>) object, context);
-                            if (first != null) {
-                                recordAddStatement(subject, predicate, first, context);
-                            }                            
                         }                        
                         
                     } else if (property.isLocalized()) {

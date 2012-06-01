@@ -354,11 +354,12 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
 
     public boolean isList() {
+        // refers to List RDF mapping, not the java.util.List type
         Container container = getAnnotation(Container.class);
         if (container != null) {
             return ContainerType.LIST == container.value();
         } else {
-            return List.class.isAssignableFrom(getType());
+            return List.class.isAssignableFrom(getType()) || type.isArray();
         }
     }
     
@@ -450,7 +451,8 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 
     public boolean isContainer() {
         Container container = this.getAnnotation(Container.class);
-        return container != null && container.value() != ContainerType.LIST
+        return container != null 
+                && container.value() != ContainerType.LIST
                 && container.value() != ContainerType.NONE;
     }
 

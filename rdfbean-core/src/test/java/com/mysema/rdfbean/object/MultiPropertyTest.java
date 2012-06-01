@@ -3,12 +3,14 @@ package com.mysema.rdfbean.object;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 
+import com.google.common.collect.Sets;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.annotations.ClassMapping;
@@ -57,6 +59,7 @@ public class MultiPropertyTest {
         test.namesList.add("Jane");        
         test.namesArray = new String[]{"Tom", "Jane"};        
         session.save(test);
+        session.clear();
         
         List<STMT> stmts = IteratorAdapter.asList(repository.findStatements(null, NAME, null, null, false));
         assertEquals(2, stmts.size());
@@ -64,6 +67,13 @@ public class MultiPropertyTest {
         assertEquals(2, stmts.size());
         stmts = IteratorAdapter.asList(repository.findStatements(null, NAME3, null, null, false));
         assertEquals(2, stmts.size());
+                
+        MultiPropertyTest test2 = session.get(MultiPropertyTest.class, test.id);
+        assertEquals(test.names, test2.names);
+        // ordering is not preseved
+        assertEquals(Sets.newHashSet(test.namesList), Sets.newHashSet(test2.namesList));
+        // ordering is not preseved
+        assertEquals(Sets.newHashSet(test.namesArray), Sets.newHashSet(test2.namesArray));
     }
     
 }

@@ -20,7 +20,7 @@ import com.mysema.rdfbean.model.RDF;
 public class MappedPathTest {
 
     public String getProperty(){
-	return null;
+        return null;
     }
 
     @Test
