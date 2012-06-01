@@ -22,10 +22,12 @@
     </dependency>
  
     <dependency>
+    <!-- Mysema Source component -->
       <groupId>com.mysema.commons</groupId>
       <artifactId>mysema-commons-l10n</artifactId>
       <version>0.1.6</version>
     </dependency>
+    
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
@@ -39,6 +41,7 @@
     </dependency>
 
     <dependency>
+    <!-- Mysema Source component -->
       <groupId>com.mysema.converters</groupId>
       <artifactId>converters</artifactId>
       <version>0.1.6</version>
