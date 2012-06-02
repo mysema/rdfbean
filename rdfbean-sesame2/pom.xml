@@ -9,12 +9,12 @@
   <parent>
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.0-SNAPSHOT</version>
     <relativePath>../rdfbean-root/pom.xml</relativePath>
   </parent>  
 
   <properties>
-    <sesame.version>2.3.2</sesame.version>
+    <sesame.version>2.6.6</sesame.version>
   </properties>
     
   <dependencies>
@@ -76,12 +76,14 @@
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>   
+    <!-- 
     <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
       <version>3.2.1</version>
       <scope>test</scope>
     </dependency>
+     -->
     <dependency>
       <groupId>commons-beanutils</groupId>
       <artifactId>commons-beanutils</artifactId>

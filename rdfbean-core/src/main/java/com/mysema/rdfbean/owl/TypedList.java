@@ -9,8 +9,7 @@ import java.util.Locale;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
-
+import com.google.common.base.Strings;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.RDF;
@@ -54,7 +53,7 @@ public class TypedList extends OWLClass {
             UID uid = (UID) id;
             String prefix = uid.ns().substring(uid.ns().lastIndexOf('/') + 1,
                     uid.ns().length() - 1);
-            if (StringUtils.isEmpty(ns)) {
+            if (Strings.isNullOrEmpty(ns)) {
                 ns = uid.ns();
             }
             return new UID(ns, prefix + "-" + uid.ln() + "-TypedList");

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Strings;
 
 
 /**
@@ -99,7 +99,7 @@ public class UpdateClause {
     }
 
     public void setPattern(String pattern) {
-        this.pattern = StringUtils.trimToNull(pattern);        
+        this.pattern = Strings.emptyToNull(pattern);        
     }
 
     public String getTemplate(){
@@ -107,7 +107,7 @@ public class UpdateClause {
     }
     
     public void setTemplate(String template) {
-        this.template = StringUtils.trimToNull(template);
+        this.template = Strings.emptyToNull(template);
     }
 
     public String getDelete() {
@@ -115,7 +115,7 @@ public class UpdateClause {
     }
 
     public void setDelete(String delete) {
-        this.delete = StringUtils.trimToNull(delete);
+        this.delete = Strings.emptyToNull(delete);
     }
 
     public String getInsert() {
@@ -123,7 +123,7 @@ public class UpdateClause {
     }
 
     public void setInsert(String insert) {
-        this.insert = StringUtils.trimToNull(insert);
+        this.insert = Strings.emptyToNull(insert);
     }
 
     public Map<String, String> getPrefixes() {

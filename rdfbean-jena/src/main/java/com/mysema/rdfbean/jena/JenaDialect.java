@@ -3,15 +3,23 @@ package com.mysema.rdfbean.jena;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
+import com.google.common.base.Strings;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.AnonId;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.mysema.commons.l10n.support.LocaleUtil;
-import com.mysema.rdfbean.model.*;
+import com.mysema.rdfbean.model.AbstractDialect;
+import com.mysema.rdfbean.model.BID;
+import com.mysema.rdfbean.model.ID;
+import com.mysema.rdfbean.model.LIT;
+import com.mysema.rdfbean.model.NODE;
+import com.mysema.rdfbean.model.NodeType;
+import com.mysema.rdfbean.model.Nodes;
+import com.mysema.rdfbean.model.RDF;
+import com.mysema.rdfbean.model.UID;
+import com.mysema.rdfbean.model.XSD;
 
 /**
  * @author tiwe
@@ -63,7 +71,7 @@ public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, Q
 
     @Override
     public LIT getLIT(Node literal) {
-        if (!StringUtils.isEmpty(literal.getLiteralLanguage())){
+        if (!Strings.isNullOrEmpty(literal.getLiteralLanguage())){
             return new LIT(literal.getLiteralLexicalForm(), literal.getLiteralLanguage());
         }else{
             String datatype = literal.getLiteralDatatypeURI();

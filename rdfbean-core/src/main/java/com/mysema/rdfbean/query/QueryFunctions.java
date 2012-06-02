@@ -7,9 +7,9 @@ package com.mysema.rdfbean.query;
 
 import java.util.Calendar;
 
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 
+import com.google.common.base.Strings;
 import com.mysema.converters.DateTimeConverter;
 
 /**
@@ -66,7 +66,7 @@ public final class QueryFunctions {
     }
     
     public static String space(int amount){
-        return StringUtils.leftPad("", amount);
+        return Strings.repeat(" ", amount);
     }
     
     public static double sqrt(String str){

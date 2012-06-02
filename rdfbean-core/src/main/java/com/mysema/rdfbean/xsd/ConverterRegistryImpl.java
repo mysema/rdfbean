@@ -8,8 +8,7 @@ package com.mysema.rdfbean.xsd;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.ClassUtils;
-
+import com.google.common.primitives.Primitives;
 import com.mysema.converters.BigDecimalConverter;
 import com.mysema.converters.BigIntegerConverter;
 import com.mysema.converters.BlobConverter;
@@ -108,9 +107,9 @@ public class ConverterRegistryImpl implements ConverterRegistry{
 
     private <T> void register(UID type, Converter<T> converter) {
         register(type, converter.getJavaType());
-        classToConverter.put(converter.getJavaType(), converter);
-        Class<?> primitiveType = ClassUtils.wrapperToPrimitive(converter.getJavaType());
-        if (primitiveType != null){
+        classToConverter.put(converter.getJavaType(), converter);        
+        Class<?> primitiveType = Primitives.unwrap(converter.getJavaType());
+        if (!primitiveType.equals(converter.getJavaType())){
             register(type, primitiveType);
             classToConverter.put(primitiveType, converter);
         }

@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.mutable.MutableInt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,7 +125,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     @SuppressWarnings("unchecked")
     @Nullable
     private <RT> RT getAsProjectionValue(Expression<RT> expr,
-            Map<String, NODE> nodes, List<String> variables, MutableInt offset) {
+            Map<String, NODE> nodes, List<String> variables, AtomicInteger offset) {
         if (expr instanceof FactoryExpression<?>) {
             FactoryExpression<?> factoryExpr = (FactoryExpression<?>) expr;
             Object[] args = new Object[factoryExpr.getArgs().size()];
@@ -133,7 +133,8 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 NODE node = nodes.get(variables.get(offset.intValue() + i));
                 args[i] = getAsProjectionValue(node, factoryExpr.getArgs().get(i).getType());
             }
-            offset.add(args.length);
+            offset.addAndGet(args.length);
+//            offset.add(args.length);
             try {
                 return (RT) factoryExpr.newInstance(args);
             } catch (Exception e) {
@@ -141,7 +142,8 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
             }
         } else {
             NODE node = nodes.get(variables.get(offset.intValue()));
-            offset.add(1);
+            offset.addAndGet(1);
+//            offset.add(1);
             if (node != null) {
                 return getAsProjectionValue(node, expr.getType());
             } else {
@@ -184,7 +186,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
             public Object[] next() {
                 Map<String, NODE> row = results.next();
                 Object[] rv = new Object[args.length];
-                MutableInt offset = new MutableInt();
+                AtomicInteger offset = new AtomicInteger();
                 for (int i = 0; i < rv.length; i++) {
                     rv[i] = getAsProjectionValue(args[i], row, query.getVariables(), offset);
                 }
@@ -261,7 +263,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
             public RT next() {
                 Map<String, NODE> row = results.next();
                 return getAsProjectionValue(projection, row, query
-                        .getVariables(), new MutableInt());
+                        .getVariables(), new AtomicInteger());
             }
 
             @Override

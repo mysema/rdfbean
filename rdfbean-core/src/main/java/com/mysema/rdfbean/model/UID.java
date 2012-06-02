@@ -5,9 +5,6 @@
  */
 package com.mysema.rdfbean.model;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -31,7 +28,7 @@ public final class UID extends ID {
     
     public static UID create(@Nullable String parentNs, String ns, String ln, @Nullable String elementName) {
         if (isBlank(ns)) {
-            if (isNotBlank(parentNs)) {
+            if (!isBlank(parentNs)) {
                 ns = parentNs;
             } else {
                 ns = "";
@@ -145,6 +142,10 @@ public final class UID extends ID {
     @Override
     public UID asURI(){
         return this;
+    }
+    
+    private static boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
     }
 
 }

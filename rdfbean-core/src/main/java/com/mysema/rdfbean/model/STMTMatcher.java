@@ -8,7 +8,7 @@ package com.mysema.rdfbean.model;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import org.apache.commons.lang.ObjectUtils;
+import com.google.common.base.Objects;
 
 
 /**
@@ -82,16 +82,16 @@ public final class STMTMatcher {
             STMTMatcher other = (STMTMatcher) obj;
             
             // s
-            if (!ObjectUtils.equals(subject, other.subject)){
+            if (!Objects.equal(subject, other.subject)){
         	return false;
             // p
-            }else if (!ObjectUtils.equals(predicate, other.predicate)){
+            }else if (!Objects.equal(predicate, other.predicate)){
         	return false;
             // o
-            }else if (!ObjectUtils.equals(object, other.object)){
+            }else if (!Objects.equal(object, other.object)){
         	return false;
             // c
-            }else if (!ObjectUtils.equals(context, other.context)){
+            }else if (!Objects.equal(context, other.context)){
         	return false;
             }                
             

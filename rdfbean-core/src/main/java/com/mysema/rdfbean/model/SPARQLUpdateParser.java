@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.CharSet;
-
 
 /**
  * @author tiwe
@@ -213,7 +211,7 @@ public class SPARQLUpdateParser {
     
     private String block() throws IOException{
         expect(BLOCK_START);
-        String rv = collectWhileNotIn(BLOCK_END);
+        String rv = collectWhileNotIn(BLOCK_END).trim();
         expect(BLOCK_END);
         return rv;
     }

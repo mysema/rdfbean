@@ -17,6 +17,7 @@ import org.openrdf.query.parser.ParsedBooleanQuery;
 import org.openrdf.query.parser.ParsedGraphQuery;
 import org.openrdf.query.parser.ParsedQuery;
 import org.openrdf.query.parser.ParsedTupleQuery;
+import org.openrdf.query.parser.ParsedUpdate;
 import org.openrdf.query.parser.QueryParser;
 import org.openrdf.query.parser.QueryParserFactory;
 import org.openrdf.query.parser.QueryParserRegistry;
@@ -36,11 +37,14 @@ public final class DirectQuery {
 
     private static final QueryParser DIRECTQUERY_PARSER = new QueryParser(){
         @Override
-        /**
-         * Returns the thread bound query, ignores the parameters of the method invocation
-         */
         public ParsedQuery parseQuery(String queryStr, String baseURI) {
             return QUERY_HOLDER.get();
+        }
+
+        @Override
+        public ParsedUpdate parseUpdate(String arg0, String arg1)
+                throws MalformedQueryException {
+            throw new UnsupportedOperationException();
         }
     };
 

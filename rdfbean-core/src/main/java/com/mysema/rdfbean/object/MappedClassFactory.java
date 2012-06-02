@@ -19,9 +19,9 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.StringUtils;
 import org.objectweb.asm.ClassReader;
 
+import com.google.common.base.Strings;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.Path;
@@ -258,7 +258,7 @@ public class MappedClassFactory {
         Path path = property.getAnnotation(Path.class);
         Predicate[] predicates;
         if (path != null) {
-            if (StringUtils.isNotEmpty(path.ns())) {
+            if (!Strings.isNullOrEmpty(path.ns())) {
                 parentNs = path.ns();
             }
             predicates = path.value();
@@ -291,11 +291,11 @@ public class MappedClassFactory {
         ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
         if (cmap != null) {
             String ns = cmap.ns();
-            if (StringUtils.isEmpty(ns)){
+            if (Strings.isNullOrEmpty(ns)){
                 ns = defaultNamespace;
             }
             String ln = cmap.ln();
-            if (StringUtils.isEmpty(ln)){
+            if (Strings.isNullOrEmpty(ln)){
                 ln = clazz.getSimpleName();
             }
             if (ns != null){

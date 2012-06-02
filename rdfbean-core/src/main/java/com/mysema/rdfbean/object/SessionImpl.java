@@ -25,10 +25,10 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.mysema.commons.l10n.support.LocaleUtil;
@@ -1732,7 +1732,7 @@ public final class SessionImpl implements Session {
                         for (STMT statement : statements.get(predicate)) {
                             if (property.isLocalized() && String.class.equals(property.getType())) {
                                 LIT lit = (LIT) statement.getObject();
-                                if (ObjectUtils.equals(getCurrentLocale(), lit.getLang())) {
+                                if (Objects.equal(getCurrentLocale(), lit.getLang())) {
                                     recordRemoveStatement(statement);
                                 }
                             } else {

@@ -11,9 +11,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang.ObjectUtils;
-
 import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
@@ -136,7 +135,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         return new Predicate<Bindings>(){
             @Override
             public boolean apply(Bindings bindings) {
-                return ObjectUtils.equals(
+                return Objects.equal(
                         expr.getArg(0).accept(QueryRDFVisitor.this, bindings),
                         expr.getArg(1).accept(QueryRDFVisitor.this, bindings));
             }
@@ -223,7 +222,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         return new Predicate<Bindings>(){
             @Override
             public boolean apply(Bindings bindings) {
-                return !ObjectUtils.equals(
+                return !Objects.equal(
                         expr.getArg(0).accept(QueryRDFVisitor.this, bindings),
                         expr.getArg(1).accept(QueryRDFVisitor.this, bindings));
             }
