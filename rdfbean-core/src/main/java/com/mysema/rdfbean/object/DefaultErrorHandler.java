@@ -44,5 +44,10 @@ public class DefaultErrorHandler implements ErrorHandler {
                 "Cannot assign multiple values into singleton property "
                         + propertyPath + ": " + values);
     }
+
+    public void namespaceMismatch(String expected, String given) {
+        throw new IllegalArgumentException("Expected namespace '" + expected + "', but got "
+                + given + "'");
+    }
     
 }

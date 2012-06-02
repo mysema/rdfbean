@@ -84,7 +84,7 @@ public final class SessionImpl implements Session {
 
     private final RDFConnection connection;
 
-    private final DefaultErrorHandler errorHandler = new DefaultErrorHandler();
+    private final ErrorHandler errorHandler = new DefaultErrorHandler();
 
     private FlushMode flushMode = FlushMode.ALWAYS;
 
@@ -1223,7 +1223,12 @@ public final class SessionImpl implements Session {
                     if (id instanceof UID) {
                         rid = (UID) id;
                     } else if (idProperty.getIDType() == IDType.URI) {
-                        rid = new UID(id.toString());
+                        if (idProperty.getIDNamespace().isEmpty()) {
+                            rid = new UID(id.toString());    
+                        } else {
+                            rid = new UID(idProperty.getIDNamespace(), id.toString());
+                        }
+                        
                     } else {
                         rid = (ID) id;
                     }
@@ -1682,7 +1687,17 @@ public final class SessionImpl implements Session {
             }
             if (identifier != null) {
                 if (String.class.isAssignableFrom(type)) {
-                    id = identifier.getId();
+                    String ns = idProperty.getIDNamespace();
+                    if (ns.isEmpty()) {
+                        id = identifier.getId();                            
+                    } else {
+                        UID uid = (UID)identifier;
+                        if (uid.ns().equals(ns)) {
+                            id = uid.ln();
+                        } else {
+                            errorHandler.namespaceMismatch(ns, uid.ns());
+                        }
+                    }                    
                 } else if (Identifier.class.isAssignableFrom(type)) {
                     id = identifier;
                 } else {

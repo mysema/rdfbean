@@ -27,4 +27,6 @@ public interface ErrorHandler {
 
     void cardinalityError(MappedPath propertyPath, Set<? extends NODE> values);
 
+    void namespaceMismatch(String expected, String given);
+
 }

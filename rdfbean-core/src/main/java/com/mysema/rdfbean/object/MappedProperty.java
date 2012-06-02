@@ -355,6 +355,12 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return annotation != null ? annotation.value() : null;
     }
 
+    @Nullable
+    public String getIDNamespace() {
+        Id annotation = getAnnotation(Id.class);
+        return annotation != null ? annotation.ns() : null;
+    }
+    
     public boolean isAnnotatedProperty() {
         if (!annotations.isEmpty()) {
             for (Class<? extends Annotation> anno : MAPPING_ANNOTATIONS) {
