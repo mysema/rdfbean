@@ -12,19 +12,19 @@ public class DummyResource<T> implements Resource<T> {
 
     @Override
     public Collection<Property<T>> getProperties() {
-	return properties.values();
+        return properties.values();
     }
 
     @Override
     public Property<T> getProperty(UID uid) {
-	return properties.get(uid);
+        return properties.get(uid);
     }
 
     public void setProperties(Map<UID, Property<T>> properties) {
-	this.properties = properties;
+        this.properties = properties;
     }
 
     public Map<UID, Property<T>> getPropertiesMap() {
-	return properties;
+        return properties;
     }
 }

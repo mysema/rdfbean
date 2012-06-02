@@ -21,35 +21,36 @@ import com.mysema.rdfbean.schema.SchemaGen;
 
 /**
  * BMSchemaGen provides
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
 public class DemoSchemaGen {
 
     public static void main(String[] args) throws StoreException,
-	    RDFHandlerException, RDFParseException, IOException {
-	ApplicationContext appContext = new ClassPathXmlApplicationContext(
-	        "classpath:/persistence.xml");
-	DemoSchemaGen schemaGen = new DemoSchemaGen((Configuration) appContext
-	        .getBean("configuration"));
-	schemaGen.generateBMSchema();
+            RDFHandlerException, RDFParseException, IOException {
+        ApplicationContext appContext = new ClassPathXmlApplicationContext(
+                "classpath:/persistence.xml");
+        DemoSchemaGen schemaGen = new DemoSchemaGen(
+                (Configuration) appContext.getBean("configuration"));
+        schemaGen.generateBMSchema();
     }
 
     private final Configuration configuration;
 
     public DemoSchemaGen(Configuration configuration) {
-	this.configuration = Assert.notNull(configuration, "configuration");
+        this.configuration = Assert.notNull(configuration, "configuration");
     }
 
     public void generateBMSchema() throws RDFHandlerException,
-	    RDFParseException, IOException, StoreException {
-	new SchemaGen()
-	    .setNamespace("demo", DEMO.NS)
-	    .setOntology(DEMO.CONTEXT)
-	    .addExportNamespace(DEMO.NS)
-	    .setConfiguration(configuration)
-	    .export(Format.RDFXML, new FileOutputStream("src/main/resources/demo.owl"));
+            RDFParseException, IOException, StoreException {
+        new SchemaGen()
+                .setNamespace("demo", DEMO.NS)
+                .setOntology(DEMO.CONTEXT)
+                .addExportNamespace(DEMO.NS)
+                .setConfiguration(configuration)
+                .export(Format.RDFXML,
+                        new FileOutputStream("src/main/resources/demo.owl"));
     }
 
 }

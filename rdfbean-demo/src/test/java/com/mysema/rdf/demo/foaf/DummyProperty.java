@@ -16,7 +16,7 @@ public class DummyProperty<T> implements Property<T> {
     private UID uid;
 
     public DummyProperty(UID uid) {
-	this.uid = uid;
+        this.uid = uid;
     }
 
     @Override
@@ -31,47 +31,47 @@ public class DummyProperty<T> implements Property<T> {
 
     @Override
     public LIT getLiteral() {
-	return literals.iterator().next();
+        return literals.iterator().next();
     }
 
     @Override
     public LIT getLiteral(Locale locale) {
-	return literals.iterator().next();
+        return literals.iterator().next();
     }
 
     @Override
     public Collection<LIT> getLiterals() {
-	return literals;
+        return literals;
     }
 
     @Override
     public T getReference() {
-	return references.iterator().next();
+        return references.iterator().next();
     }
 
     @Override
     public Collection<T> getReferences() {
-	return references;
+        return references;
     }
 
     @Override
     public UID getId() {
-	return uid;
+        return uid;
     }
 
     @Override
     public Value<T> getValue() {
-	return null;
+        return null;
     }
 
     @Override
     public int getValueCount() {
-	return 0;
+        return 0;
     }
 
     @Override
     public Collection<Value<T>> getValues() {
-	return null;
+        return null;
     }
 
     @Override
@@ -96,11 +96,11 @@ public class DummyProperty<T> implements Property<T> {
 
     @Override
     public void setLiterals(Collection<LIT> values) {
-	literals = values;
+        literals = values;
     }
 
     public Collection<LIT> getLiteralsSet() {
-	return literals;
+        return literals;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class DummyProperty<T> implements Property<T> {
     }
 
     public Collection<T> getReferencesSet() {
-	return references;
+        return references;
     }
 
 }

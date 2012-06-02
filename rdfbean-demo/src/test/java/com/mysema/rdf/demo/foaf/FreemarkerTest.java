@@ -20,34 +20,34 @@ public class FreemarkerTest {
     @Test
     public void testFreemarkerAccess() throws Exception {
 
-	configuration = new Configuration();
-	configuration.setDirectoryForTemplateLoading(new File(
-	        "src/test/resources/"));
+        configuration = new Configuration();
+        configuration.setDirectoryForTemplateLoading(new File(
+                "src/test/resources/"));
 
-	Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<String, Object>();
 
-	UID homepageUID = new UID("foaf", "homepage");
-	UID workpageUID = new UID("foaf", "workpage");
+        UID homepageUID = new UID("foaf", "homepage");
+        UID workpageUID = new UID("foaf", "workpage");
 
-	UID documentUID = new UID("foaf", "mypage");
+        UID documentUID = new UID("foaf", "mypage");
 
-	DummyResource resource = new DummyResource();
+        DummyResource resource = new DummyResource();
 
-	DummyProperty prop = new DummyProperty<UID>(homepageUID);
-	prop.getLiteralsSet().add(new LIT("http://www.koti.com"));
-	resource.getPropertiesMap().put(homepageUID, prop);
-	prop.getReferencesSet().add(documentUID);
+        DummyProperty prop = new DummyProperty<UID>(homepageUID);
+        prop.getLiteralsSet().add(new LIT("http://www.koti.com"));
+        resource.getPropertiesMap().put(homepageUID, prop);
+        prop.getReferencesSet().add(documentUID);
 
-	prop = new DummyProperty<UID>(workpageUID);
-	prop.getLiteralsSet().add(new LIT("http://www.mysema.com"));
-	prop.getLiteralsSet().add(new LIT("http://www.mysema1.com"));
-	resource.getPropertiesMap().put(workpageUID, prop);
+        prop = new DummyProperty<UID>(workpageUID);
+        prop.getLiteralsSet().add(new LIT("http://www.mysema.com"));
+        prop.getLiteralsSet().add(new LIT("http://www.mysema1.com"));
+        resource.getPropertiesMap().put(workpageUID, prop);
 
-	model.put("resource", resource);
-	model.put("uid", homepageUID);
+        model.put("resource", resource);
+        model.put("uid", homepageUID);
 
-	Writer writer = new PrintWriter(System.out);
-	configuration.getTemplate("freemarker_test.ftl").process(model, writer);
-	// writer.close();
+        Writer writer = new PrintWriter(System.out);
+        configuration.getTemplate("freemarker_test.ftl").process(model, writer);
+        // writer.close();
     }
 }
