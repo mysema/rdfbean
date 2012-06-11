@@ -91,6 +91,27 @@ public class DeleteTest {
         newSession();
         assertNull(session.getById(dtest.id, DeleteTest.class));
     }
+    
+    @Test
+    public void SimpleDeleteResource() {
+        DeleteTest dtest = new DeleteTest();
+        dtest.name = "dtest";
+
+        session.save(dtest);
+        newSession();
+
+        DeleteTest tmp = dtest;
+        dtest = session.getById(dtest.id, DeleteTest.class);
+        assertNotSame(tmp, dtest);
+        assertEquals("dtest", dtest.name);
+
+        session.delete(DeleteTest.class, session.getId(dtest));
+
+        assertNull(session.getById(dtest.id, DeleteTest.class));
+
+        newSession();
+        assertNull(session.getById(dtest.id, DeleteTest.class));
+    }
 
     @Test
     public void RemoveReferences() {

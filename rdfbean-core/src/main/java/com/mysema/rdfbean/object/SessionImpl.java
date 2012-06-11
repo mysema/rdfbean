@@ -750,11 +750,31 @@ public final class SessionImpl implements Session {
             flush();
         }
     }
+    
+    @Override
+    public void delete(Class<?> clazz, ID subject) {
+        UID context = getContext(clazz, subject, null);     
+        deleteResource(subject, context);
+        if (flushMode == FlushMode.ALWAYS) {
+            flush();
+        }
+    }
 
     @Override
     public void deleteAll(Object... objects) {
         for (Object object : objects) {
             deleteInternal(assertMapped(object));
+        }
+        if (flushMode == FlushMode.ALWAYS) {
+            flush();
+        }
+    }
+    
+    @Override
+    public void deleteAll(Class<?> clazz, ID... subjects) {
+        for (ID subject : subjects) {            
+            UID context = getContext(clazz, subject, null);
+            deleteResource(subject, context);
         }
         if (flushMode == FlushMode.ALWAYS) {
             flush();
@@ -766,30 +786,35 @@ public final class SessionImpl implements Session {
         ID subject = resourceCache.get(instance);
         Class<?> clazz = getClass(instance);
         MappedClass mappedClass = configuration.getMappedClass(clazz);
-        UID context = getContext(instance, subject, null);
+        
         if (subject == null) {
             subject = getId(mappedClass, beanMap);
         }
         if (subject != null) {
-            // Delete own properties
-            for (STMT statement : findStatements(subject, null, null, context, false)) {
-                recordRemoveStatement(statement);
-                NODE object = statement.getObject();
-                if (object.isResource() && !statement.getPredicate().equals(RDF.type)) {
-                    removeList((ID) object, context);
-                    removeContainer((ID) object, context);
-                }
+            UID context = getContext(clazz, subject, null);     
+            deleteResource(subject, context);
+        }
+    }
+
+    private void deleteResource(ID subject, @Nullable UID context) {               
+        // Delete own properties
+        for (STMT statement : findStatements(subject, null, null, context, false)) {
+            recordRemoveStatement(statement);
+            NODE object = statement.getObject();
+            if (object.isResource() && !statement.getPredicate().equals(RDF.type)) {
+                removeList((ID) object, context);
+                removeContainer((ID) object, context);
             }
-            // Delete references
-            for (STMT statement : findStatements(null, null, subject, context, false)) {
-                recordRemoveStatement(statement);
-            }
-            // Remove from primary cache
-            Collection<Object> instances = instanceCache.removeAll(subject);
-            if (instances != null) {
-                for (Object obj : instances) {
-                    resourceCache.remove(obj);
-                }
+        }
+        // Delete references
+        for (STMT statement : findStatements(null, null, subject, context, false)) {
+            recordRemoveStatement(statement);
+        }
+        // Remove from primary cache
+        Collection<Object> instances = instanceCache.removeAll(subject);
+        if (instances != null) {
+            for (Object obj : instances) {
+                resourceCache.remove(obj);
             }
         }
     }
