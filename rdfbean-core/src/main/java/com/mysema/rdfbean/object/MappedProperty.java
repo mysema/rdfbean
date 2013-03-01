@@ -68,14 +68,6 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             Required.class
         ));
 
-//    private static String getParentNs(MapElements mapElements, Member member) {
-//        String ns = mapElements.ns();
-//        if (!StringUtils.isNotEmpty(ns)) {
-//            ns = MappedClass.getClassNs(member.getDeclaringClass());
-//        }
-//        return ns;
-//    }
-
     @Nullable
     private final String name;
 
