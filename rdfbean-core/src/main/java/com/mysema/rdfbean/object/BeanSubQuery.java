@@ -24,7 +24,7 @@ public class BeanSubQuery extends DetachableAdapter {
     private final QueryMixin<BeanSubQuery> queryMixin;
 
     public BeanSubQuery() {
-        queryMixin = new QueryMixin<BeanSubQuery>(this, new DefaultQueryMetadata(false));
+        queryMixin = new QueryMixin<BeanSubQuery>(this, new DefaultQueryMetadata().noValidate());
         setDetachable(new DetachableMixin(queryMixin));
     }
 

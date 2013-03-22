@@ -19,7 +19,7 @@ public class SPARQLVisitorTest {
     @Test
     public void Like_as_Matches(){     
         visitor.setLikeAsMatches(true);
-        visitor.handle(new PredicateOperation(Ops.LIKE, QNODE.o, new ConstantImpl(LIT.class, new LIT("x%"))));
+        visitor.handle(PredicateOperation.create(Ops.LIKE, QNODE.o, new ConstantImpl(LIT.class, new LIT("x%"))));
         assertEquals("regex(?o, ?_c2)", visitor.toString());
         assertTrue(visitor.getConstantToLabel().containsKey(new LIT("x.*")));
     }
@@ -27,7 +27,7 @@ public class SPARQLVisitorTest {
     @Test
     public void Like_as_Matches_2(){
         visitor.setLikeAsMatches(true);
-        visitor.handle(new PredicateOperation(Ops.LIKE, QNODE.o, new ConstantImpl(LIT.class, new LIT("x_"))));
+        visitor.handle(PredicateOperation.create(Ops.LIKE, QNODE.o, new ConstantImpl(LIT.class, new LIT("x_"))));
         assertEquals("regex(?o, ?_c2)", visitor.toString());
         assertTrue(visitor.getConstantToLabel().containsKey(new LIT("x.")));
     }

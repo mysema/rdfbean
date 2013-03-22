@@ -60,7 +60,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         this.prefix = prefix;
     }
 
-    @Override
+    //@Override
     protected void appendAsString(Expression<?> expr) {
         Object constant;
         if (expr instanceof Constant<?>){
@@ -279,26 +279,25 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     @SuppressWarnings("unchecked")
     @Override
-    public Void visit(Constant<?> expr, Void context) {
-        
+    public void visitConstant(Object constant) {
         // convert literal values to LIT objects
-        if (expr.getType().equals(String.class)) {
-            expr = new ConstantImpl<LIT>(LIT.class, new LIT(expr.getConstant().toString()));
-        }else if (ConverterRegistryImpl.DEFAULT.supports(expr.getType())) {
-            UID datatype = ConverterRegistryImpl.DEFAULT.getDatatype(expr.getType());
-            String value = ConverterRegistryImpl.DEFAULT.toString(expr.getConstant());
-            expr = new ConstantImpl<LIT>(LIT.class, new LIT(value, datatype));
+        if (constant instanceof String) {
+            constant = new LIT(constant.toString());
+        }else if (ConverterRegistryImpl.DEFAULT.supports(constant.getClass())) {
+            UID datatype = ConverterRegistryImpl.DEFAULT.getDatatype(constant.getClass());
+            String value = ConverterRegistryImpl.DEFAULT.toString(constant);
+            constant = new ConstantImpl<LIT>(LIT.class, new LIT(value, datatype));
         }        
         
-        if (expr.getConstant() instanceof QueryMetadata) {
-            QueryMetadata md = (QueryMetadata)expr.getConstant();
+        if (constant instanceof QueryMetadata) {
+            QueryMetadata md = (QueryMetadata)constant;
             handle(md.getWhere());
 
-        }else if (expr.getConstant() instanceof Block) {
-            handle((Expression<?>)expr.getConstant());
+        }else if (constant instanceof Block) {
+            handle((Expression<?>)constant);
 
-        }else if (inlineAll && NODE.class.isInstance(expr.getConstant())){
-            NODE node = (NODE)expr.getConstant();
+        }else if (inlineAll && NODE.class.isInstance(constant)){
+            NODE node = (NODE)constant;
             if (node.isBNode()){
                 append("_:" + node.getValue());
             }else if (node.isURI()){
@@ -307,31 +306,30 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
                 append(node.toString());
             }
             
-        }else if (inlineResources && UID.class.isInstance(expr.getConstant())) {
-            UID node = (UID)expr.getConstant();
+        }else if (inlineResources && UID.class.isInstance(constant)) {
+            UID node = (UID)constant;
             append("<" + node.getValue() + ">");
 
-        } else if (Collection.class.isAssignableFrom(expr.getType())) {    
+        } else if (Collection.class.isAssignableFrom(constant.getClass())) {    
             boolean first = true;
             append("(");
-            for (Object o : ((Constant<Collection>)expr).getConstant()){
+            for (Object o : (Collection)constant){
                 if (!first){
                     append(", ");
                 }
-                visit(new ConstantImpl<Object>(o), context);
+                visit(new ConstantImpl<Object>(o), null);
                 first = false;
             }
             append(")");
             
-        }else if (!getConstantToLabel().containsKey(expr.getConstant())) {
+        }else if (!getConstantToLabel().containsKey(constant)) {
             String constLabel = "_c" + (getConstantToLabel().size() + 1);
-            getConstantToLabel().put(expr.getConstant(), constLabel);
+            getConstantToLabel().put(constant, constLabel);
             append("?" + constLabel);
             
         } else {
-            append("?" + getConstantToLabel().get(expr.getConstant()));
+            append("?" + getConstantToLabel().get(constant));
         }
-        return null;
     }
 
     @Nullable

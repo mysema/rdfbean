@@ -21,7 +21,6 @@ import com.google.common.collect.HashBiMap;
 import com.mysema.query.sql.Configuration;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.query.sql.dml.SQLDeleteClause;
 import com.mysema.query.sql.dml.SQLInsertClause;
@@ -121,7 +120,7 @@ public final class RDBContext implements Closeable{
     }
 
     public SQLQuery createQuery(){
-        return new SQLQueryImpl(connection, configuration, new SortableQueryMetadata());
+        return new SQLQuery(connection, configuration, new SortableQueryMetadata());
     }
 
     public Long getId(Object constant) {        

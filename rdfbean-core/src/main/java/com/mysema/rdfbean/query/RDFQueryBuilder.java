@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
@@ -223,7 +224,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             md = md.getParent().getMetadata();
         }
         MappedClass mc = configuration.getMappedClass(md.getParent().getType());
-        return mc.getMappedPath(md.getExpression().toString());
+        return mc.getMappedPath(md.getElement().toString());
     }
 
     protected UID getTypeForDomainClass(Class<?> clazz){
@@ -275,7 +276,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         operatorStack.contains(Ops.CASE_WHEN) ||
         (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
     }
-
+    
     @Nullable
     private Expression<?> transform(Expression<?> expr, Filters filters) {
         return (Expression<?>) expr.accept(this, filters);
@@ -300,7 +301,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         if (path.getMetadata().getPathType() == PathType.PROPERTY
             && constant.getType().equals(String.class)
             && mappedPath.getPredicatePath().isEmpty()){
-            operation = new PredicateOperation((Operator)operation.getOperator(),
+            operation = PredicateOperation.create((Operator)operation.getOperator(),
                     path,
                     new ConstantImpl<ID>(session.getId(new LID(constant.toString()))));
 
@@ -309,10 +310,10 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             Locale locale;
             if (path.getMetadata().getPathType() == PathType.PROPERTY){
                 locale = session.getCurrentLocale();
-            }else{
-                locale = (Locale)((Constant<?>)path.getMetadata().getExpression()).getConstant();
+            } else {
+                locale = (Locale)path.getMetadata().getElement();
             }
-            operation = new PredicateOperation((Operator)operation.getOperator(),
+            operation = PredicateOperation.create((Operator)operation.getOperator(),
                     path,
                     new ConstantImpl<LIT>(new LIT(constant.toString(), locale)));
         }
@@ -322,7 +323,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     private Param<NODE> var(String var){
         return new QNODE<NODE>(NODE.class, var);
     }
-
+    
     public Expression<?> visit(Constant<?> constant, Filters filters){
         Object javaValue = constant.getConstant();
         ConverterRegistry converter = configuration.getConverterRegistry();
@@ -389,36 +390,33 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
             if (!queryOptions.isPreserveStringOps()){
                 if (expr.getOperator() == Ops.STARTS_WITH && rightConstant){
-                    expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
+                    expr = PredicateOperation.create(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
 
                 }else if (expr.getOperator() == Ops.STARTS_WITH_IC && rightConstant){
-                        expr = new PredicateOperation(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
+                        expr = PredicateOperation.create(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
 
                 }else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant){
-                    expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
+                    expr = PredicateOperation.create(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
 
                 }else if (expr.getOperator() == Ops.ENDS_WITH_IC && rightConstant){
-                    expr = new PredicateOperation(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
+                    expr = PredicateOperation.create(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
 
                 }else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant){
-                    expr = new PredicateOperation(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
+                    expr = PredicateOperation.create(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
 
                 }else if (expr.getOperator() == Ops.STRING_CONTAINS_IC && rightConstant){
-                    expr = new PredicateOperation(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
+                    expr = PredicateOperation.create(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
 
                 }
             }
 
-            if (expr.getOperator() == Ops.EQ_OBJECT
-              || expr.getOperator() == Ops.NE_OBJECT
-              || expr.getOperator() == Ops.EQ_PRIMITIVE
-              || expr.getOperator() == Ops.NE_PRIMITIVE){
+            if (expr.getOperator() == Ops.EQ || expr.getOperator() == Ops.NE) {
                 if (leftPath && rightConstant
                         && ((Path)expr.getArg(0)).getMetadata().getPathType() != PathType.VARIABLE){
                     expr = transformPathEqNeConstant(expr);
                 }
 
-                if ((expr.getOperator() == Ops.EQ_OBJECT || expr.getOperator() == Ops.EQ_PRIMITIVE)
+                if (expr.getOperator() == Ops.EQ
                         && expr.getArg(0) instanceof Path
                         && !inOptionalPath() && !inNegation()){
 
@@ -482,13 +480,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
             }else if (expr.getOperator() == Ops.BETWEEN){
                 Operator<Boolean> first = Ops.GOE, second = Ops.LOE;
-                if (!Number.class.isAssignableFrom(expr.getArg(0).getType())){
-                    first = Ops.AOE;
-                    second = Ops.BOE;
-                }
                 expr = (Operation<?>) ExpressionUtils.and(
-                        new PredicateOperation(first, expr.getArg(0), expr.getArg(1)),
-                        new PredicateOperation(second, expr.getArg(0), expr.getArg(2)));
+                        PredicateOperation.create(first, expr.getArg(0), expr.getArg(1)),
+                        PredicateOperation.create(second, expr.getArg(0), expr.getArg(2)));
 
             }else if (expr.getOperator() == Ops.ORDINAL){
                 Param<?> path = (Param<?>) transform(expr.getArg(0), filters);
@@ -543,11 +537,12 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 }
 
             }else if (expr.getOperator() == Ops.MAP_IS_EMPTY){
-                return new PredicateOperation(Ops.IS_NULL, transform(expr.getArg(0), filters));
+                return PredicateOperation.create(Ops.IS_NULL, transform(expr.getArg(0), filters));
 
             }else if (expr.getOperator() == Ops.COALESCE){
                 List<Expression<?>> elements = new ArrayList<Expression<?>>();
-                expr = new OperationImpl(expr.getType(), Ops.COALESCE, transformList(expr.getArg(0), elements));
+                expr = new OperationImpl(expr.getType(), Ops.COALESCE, 
+                        ImmutableList.copyOf(transformList(expr.getArg(0), elements)));
             }
 
             if (operatorStack.peek() != expr.getOperator()){
@@ -575,9 +570,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
 
         if (expr.getType().equals(Boolean.class)){
-            return new PredicateOperation((Operator)expr.getOperator(), args);
+            return new PredicateOperation((Operator)expr.getOperator(), ImmutableList.copyOf(args));
         }else{
-            return new OperationImpl(expr.getType(),expr.getOperator(), args);
+            return new OperationImpl(expr.getType(),expr.getOperator(), ImmutableList.copyOf(args));
         }
 
     }
@@ -664,7 +659,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
             }else if (pathType.equals(PathType.ARRAYVALUE)
                     || pathType.equals(PathType.LISTVALUE_CONSTANT)){
-                int index = ((Constant<Integer>)md.getExpression()).getConstant().intValue();
+                int index = ((Integer)md.getElement()).intValue();
                 for (int i = 0; i < index; i++){
                     pathNode = var(varNames.next());
                     filters.add(Blocks.pattern(parent, RDF.rest, pathNode, context));
@@ -678,7 +673,9 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 MappedPath mappedPath = getMappedPath(md.getParent());
                 MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
                 if (!mappedProperty.isLocalized()){
-                    Expression<?> expr = transform(path.getMetadata().getExpression(), filters);
+                    Object element = path.getMetadata().getElement();
+                    Expression<?> expr = transform(element instanceof Expression ? 
+                            (Expression)element : new ConstantImpl(element), filters);
                     filters.add(Blocks.pattern(parent, mappedProperty.getKeyPredicate(), expr, context));
 
                     if (mappedProperty.getValuePredicate() != null){
@@ -717,7 +714,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
         // select
         if (!md.getProjection().isEmpty()){
-            QueryMetadata rv = new DefaultQueryMetadata(false);
+            QueryMetadata rv = new DefaultQueryMetadata().noValidate();
             for (Expression<?> e : md.getProjection()){
                 rv.addProjection(transform(e, f));
             }
@@ -730,17 +727,20 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     @SuppressWarnings("unchecked")
     public Expression<?> visit(TemplateExpression<?> template, Filters filters){
-        List<Expression<?>> args = new ArrayList<Expression<?>>(template.getArgs().size());
-        for (Expression<?> arg : args){
-            Expression<?> transformed = transform(arg, filters);
-            if (transformed != null){
-                args.add(transformed);
+        ImmutableList.Builder<Object> builder = ImmutableList.builder();
+        for (Object arg : template.getArgs()){
+            if (arg instanceof Expression) {
+                arg = transform((Expression)arg, filters);                    
             }
+            if (arg != null){
+                builder.add(arg);
+            }
+            
         }
         if (template.getType().equals(Boolean.class)){
-            return new BooleanTemplate(template.getTemplate(), args);
+            return new BooleanTemplate(template.getTemplate(), builder.build());
         }else{
-            return new TemplateExpressionImpl(template.getType(), template.getTemplate(), args);
+            return new TemplateExpressionImpl(template.getType(), template.getTemplate(), builder.build());
         }
     }
 

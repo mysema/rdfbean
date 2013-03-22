@@ -29,7 +29,7 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     private BooleanBuilder filters = new BooleanBuilder();
 
     public RDFQueryImpl(RDFConnection connection) {
-        super(new QueryMixin<RDFQueryImpl>(new DefaultQueryMetadata(false)));
+        super(new QueryMixin<RDFQueryImpl>(new DefaultQueryMetadata().noValidate()));
         queryMixin.setSelf(this);
         this.connection = connection;
     }
@@ -99,14 +99,14 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     @Override
     public TupleQuery createTupleQuery(Expression<?>... exprs){
         aggregateFilters();
-        queryMixin.addToProjection(exprs);
+        queryMixin.addProjection(exprs);
         return connection.createQuery(QueryLanguage.TUPLE, queryMixin.getMetadata());
     }
 
     @Override
     public GraphQuery createGraphQuery(Block... exprs){
         aggregateFilters();
-        queryMixin.addToProjection(exprs);
+        queryMixin.addProjection(exprs);
         return connection.createQuery(QueryLanguage.GRAPH, queryMixin.getMetadata());
     }
 
@@ -123,13 +123,19 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     }
 
     @Override
+    public RDFQueryImpl where(Predicate o) {
+        if (o instanceof Block){
+            blocks.add((Block)o);
+        }else{
+            filters.and(o);
+        }
+        return this;
+    }
+    
+    @Override
     public RDFQueryImpl where(Predicate... o) {
         for (Predicate predicate : o){
-            if (predicate instanceof Block){
-                blocks.add((Block)predicate);
-            }else{
-                filters.and(predicate);
-            }
+            where(predicate);
         }
         return this;
     }

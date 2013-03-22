@@ -121,11 +121,11 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 NODE rhs = (NODE)expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 int rv = nodeComparator.compare(lhs, rhs);
                 if (rv < 0){
-                    return op == Ops.LT || op == Ops.LOE || op == Ops.BEFORE || op == Ops.BOE;
+                    return op == Ops.LT || op == Ops.LOE;
                 }else if (rv == 0){
-                    return op == Ops.LOE || op == Ops.GOE || op == Ops.BOE || op == Ops.AOE;
+                    return op == Ops.LOE || op == Ops.GOE;
                 }else{
-                    return op == Ops.GT || op == Ops.GOE || op == Ops.AFTER || op == Ops.AOE;
+                    return op == Ops.GT || op == Ops.GOE;
                 }
             }
         };
@@ -388,10 +388,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     @Override
     public Object visit(final Operation<?> expr, Bindings bindings) {
         final Operator<?> op = expr.getOperator();
-        if (op == Ops.EQ_OBJECT || op == Ops.EQ_PRIMITIVE){
+        if (op == Ops.EQ){
             return createEqPredicate(expr);
 
-        }else if (op == Ops.NE_OBJECT || op == Ops.NE_PRIMITIVE){
+        }else if (op == Ops.NE){
             return createNePredicate(expr);
 
         }else if (op == Ops.AND){
@@ -414,8 +414,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         }else if (op == Ops.IS_NULL || op == Ops.IS_NOT_NULL){
             return createBoundPredicate(expr, op);
 
-        }else if (op == Ops.LT || op == Ops.GT || op == Ops.LOE || op == Ops.GOE
-               || op == Ops.BEFORE || op == Ops.AFTER || op == Ops.BOE || op == Ops.AOE){
+        }else if (op == Ops.LT || op == Ops.GT || op == Ops.LOE || op == Ops.GOE){
             return createComparePredicate(expr, op);
 
         }else if (op == Ops.MATCHES || op == Ops.MATCHES_IC){
@@ -559,7 +558,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     @Override
     public NODE visit(Path<?> expr, Bindings bindings) {
-        return bindings.get(expr.getMetadata().getExpression().toString());
+        return bindings.get(expr.getMetadata().getElement().toString());
     }
 
     @Override

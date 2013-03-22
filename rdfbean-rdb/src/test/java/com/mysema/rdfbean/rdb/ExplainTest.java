@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import com.mysema.query.sql.H2Templates;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.Predicate;
@@ -96,7 +95,7 @@ public class ExplainTest {
     }
 
     private SQLQuery query(){
-        return new SQLQueryImpl(connection,templates);
+        return new SQLQuery(connection,templates);
     }
     
     

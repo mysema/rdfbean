@@ -45,6 +45,8 @@ public class GroupBlock implements ContainerBlock{
             return (R)((RDFVisitor)v).visit(this, context);
         }else if (v instanceof ToStringVisitor){
             return (R)toString();
+        } else if (v.getClass().getName().equals("com.mysema.query.types.ExtractorVisitor")) {    
+            return (R)this;
         }else{
             throw new IllegalArgumentException(v.toString());
         }

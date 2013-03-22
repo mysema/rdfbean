@@ -1,8 +1,5 @@
 package com.mysema.rdfbean.model;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Ops;
@@ -15,10 +12,6 @@ import com.mysema.query.types.expr.BooleanOperation;
  *
  */
 public class QLIT extends QNODE<LIT>{
-
-    private static final List<UID> NUMERIC = Arrays.asList(
-            XSD.decimalType, XSD.doubleType, XSD.floatType,
-            XSD.integerType, XSD.longType, XSD.intType, XSD.shortType, XSD.byteType);
 
     private static final long serialVersionUID = 5748245169418342031L;
 
@@ -35,51 +28,35 @@ public class QLIT extends QNODE<LIT>{
     }
 
     public BooleanExpression lt(String val){
-        return BooleanOperation.create(Ops.BEFORE, this, literal(val));
+        return BooleanOperation.create(Ops.LT, this, literal(val));
     }
 
     public BooleanExpression gt(String val){
-        return BooleanOperation.create(Ops.AFTER, this, literal(val));
+        return BooleanOperation.create(Ops.GT, this, literal(val));
     }
 
     public BooleanExpression loe(String val){
-        return BooleanOperation.create(Ops.BOE, this, literal(val));
+        return BooleanOperation.create(Ops.LOE, this, literal(val));
     }
 
     public BooleanExpression goe(String val){
-        return BooleanOperation.create(Ops.AOE, this, literal(val));
+        return BooleanOperation.create(Ops.GOE, this, literal(val));
     }
 
     public BooleanExpression lt(LIT val){
-        if (NUMERIC.contains(val.getDatatype())){
-            return BooleanOperation.create(Ops.LT,  this, literal(val));
-        }else{
-            return BooleanOperation.create(Ops.BEFORE,  this, literal(val));
-        }
+        return BooleanOperation.create(Ops.LT,  this, literal(val));
     }
 
     public BooleanExpression gt(LIT val){
-        if (NUMERIC.contains(val.getDatatype())){
-            return BooleanOperation.create(Ops.GT,  this, literal(val));
-        }else{
-            return BooleanOperation.create(Ops.AFTER,  this, literal(val));
-        }
+        return BooleanOperation.create(Ops.GT,  this, literal(val));
     }
 
     public BooleanExpression loe(LIT val){
-        if (NUMERIC.contains(val.getDatatype())){
-            return BooleanOperation.create(Ops.LOE, this, literal(val));
-        }else{
-            return BooleanOperation.create(Ops.BOE, this, literal(val));
-        }
+        return BooleanOperation.create(Ops.LOE, this, literal(val));
     }
 
     public BooleanExpression goe(LIT val){
-        if (NUMERIC.contains(val.getDatatype())){
-            return BooleanOperation.create(Ops.GOE, this, literal(val));
-        }else{
-            return BooleanOperation.create(Ops.AOE, this, literal(val));
-        }
+        return BooleanOperation.create(Ops.GOE, this, literal(val));
     }
 
     public BooleanExpression like(String val) {

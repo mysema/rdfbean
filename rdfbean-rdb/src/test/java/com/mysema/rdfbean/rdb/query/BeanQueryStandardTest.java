@@ -5,10 +5,7 @@
  */
 package com.mysema.rdfbean.rdb.query;
 
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,7 +16,7 @@ import com.mysema.query.Projectable;
 import com.mysema.query.QueryExecution;
 import com.mysema.query.Target;
 import com.mysema.query.types.Expression;
-import com.mysema.query.types.expr.BooleanExpression;
+import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.domains.SimpleDomain;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
@@ -38,12 +35,12 @@ public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDoma
 
     private final QueryExecution standardTest = new QueryExecution(Module.SQL, Target.H2){
         @Override
-        protected Pair<Projectable, List<Expression<?>>> createQuery() {
-            return Pair.of((Projectable)session.from(v1, v2), Collections.<Expression<?>>emptyList());
+        protected Pair<Projectable, Expression<?>[]> createQuery() {
+            return Pair.of((Projectable)session.from(v1, v2), new Expression<?>[0]);
         }
         @Override
-        protected Pair<Projectable, List<Expression<?>>> createQuery(BooleanExpression filter) {
-            return Pair.of((Projectable)session.from(v1, v2).where(filter), Arrays.<Expression<?>>asList(v1, v2));
+        protected Pair<Projectable, Expression<?>[]> createQuery(Predicate filter) {
+            return Pair.of((Projectable)session.from(v1, v2).where(filter), new Expression<?>[]{v1, v2});
         }
     };
 

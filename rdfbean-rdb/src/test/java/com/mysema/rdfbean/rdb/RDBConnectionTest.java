@@ -22,9 +22,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.mysema.converters.UtilDateConverter;
+import com.mysema.query.Tuple;
 import com.mysema.query.sql.RelationalPath;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
@@ -161,8 +161,8 @@ public class RDBConnectionTest extends AbstractRDBTest{
        query.innerJoin(stmt.subjectFk, sub);
        query.innerJoin(stmt.predicateFk, pre);
        query.innerJoin(stmt.objectFk, obj);
-       for (Object[] row : query.list(sub.lexical, pre.lexical, obj.lexical)){
-           System.out.println(Arrays.asList(row));
+       for (Tuple row : query.list(sub.lexical, pre.lexical, obj.lexical)){
+           System.out.println(Arrays.asList(row.toArray()));
        }
 
        QSymbol symbol = QSymbol.symbol;
@@ -224,7 +224,7 @@ public class RDBConnectionTest extends AbstractRDBTest{
     }
 
     private SQLQuery from(RelationalPath<?> entity){
-        return new SQLQueryImpl(jdbcConn, templates).from(entity);
+        return new SQLQuery(jdbcConn, templates).from(entity);
     }
 
 }

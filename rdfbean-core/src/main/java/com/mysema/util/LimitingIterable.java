@@ -3,7 +3,6 @@ package com.mysema.util;
 import java.util.Iterator;
 
 import com.mysema.query.QueryModifiers;
-import com.mysema.query.util.LimitingIterator;
 
 public class LimitingIterable<T> implements Iterable<T> {
 

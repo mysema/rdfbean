@@ -45,18 +45,12 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     static{
         SesameFunctions.init();
 
-        COMPARE_OPS.put(Ops.EQ_OBJECT, CompareOp.EQ);
-        COMPARE_OPS.put(Ops.EQ_PRIMITIVE, CompareOp.EQ);
-        COMPARE_OPS.put(Ops.NE_OBJECT,  CompareOp.NE);
-        COMPARE_OPS.put(Ops.NE_PRIMITIVE, CompareOp.NE);
+        COMPARE_OPS.put(Ops.EQ, CompareOp.EQ);
+        COMPARE_OPS.put(Ops.NE,  CompareOp.NE);
         COMPARE_OPS.put(Ops.LT, CompareOp.LT);
-        COMPARE_OPS.put(Ops.BEFORE, CompareOp.LT);
         COMPARE_OPS.put(Ops.LOE, CompareOp.LE);
-        COMPARE_OPS.put(Ops.BOE, CompareOp.LE);
         COMPARE_OPS.put(Ops.GT, CompareOp.GT);
-        COMPARE_OPS.put(Ops.AFTER, CompareOp.GT);
         COMPARE_OPS.put(Ops.GOE, CompareOp.GE);
-        COMPARE_OPS.put(Ops.AOE, CompareOp.GE);
 
         MATH_OPS.put(Ops.ADD, MathOp.PLUS);
         MATH_OPS.put(Ops.SUB, MathOp.MINUS);
@@ -82,7 +76,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         FUNCTION_OPS.put(Ops.INDEX_OF,        "functions:indexOf");
         FUNCTION_OPS.put(Ops.INDEX_OF_2ARGS,  "functions:indexOf2");
         FUNCTION_OPS.put(Ops.LIKE,            "functions:like");
-        FUNCTION_OPS.put(Ops.StringOps.SPACE, "functions:space");
+        //FUNCTION_OPS.put(Ops.StringOps.SPACE, "functions:space");
 
         // math
         FUNCTION_OPS.put(Ops.MathOps.CEIL,    "functions:ceil");
@@ -461,8 +455,8 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             return new Bound(toVar(expr.getArg(0), md));
         }else if (op == Ops.EXISTS){
             return new Exists(toTuple(expr.getArg(0), md));
-        }else if (op == Ops.DELEGATE){
-            return toValue(expr.getArg(0), md);
+//        }else if (op == Ops.DELEGATE){
+//            return toValue(expr.getArg(0), md);
         }else if (op == Ops.STRING_CAST){
                 return new Str(toValue(expr.getArg(0), md));
         }else if (op == Ops.NUMCAST){

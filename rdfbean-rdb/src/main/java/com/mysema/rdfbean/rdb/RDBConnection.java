@@ -27,6 +27,7 @@ import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.QueryMetadata;
+import com.mysema.query.Tuple;
 import com.mysema.query.dml.DeleteClause;
 import com.mysema.query.dml.StoreClause;
 import com.mysema.query.sql.SQLQuery;
@@ -83,9 +84,16 @@ public class RDBConnection implements RDFConnection{
             SQLQuery query = context.createQuery();
             query.from(symbol);
             query.where(symbol.id.eq(id));
-            Object[] result = query.uniqueResult(symbol.resource, symbol.lexical, symbol.datatype, symbol.lang);
+            Tuple result = query.uniqueResult(symbol.resource, 
+                    symbol.lexical, 
+                    symbol.datatype, 
+                    symbol.lang);
             if (result != null){
-                return getNode((Boolean)result[0], (String)result[1], (Long)result[2], (Integer)result[3]);
+                return getNode(
+                        result.get(symbol.resource),
+                        result.get(symbol.lexical),
+                        result.get(symbol.datatype),
+                        result.get(symbol.lang));
             }else{
                 throw new IllegalArgumentException("Found no node for id " + id);
             }
@@ -284,7 +292,7 @@ public class RDBConnection implements RDFConnection{
 
         // add dummy projection if none is specified
         if (exprs.isEmpty()){
-            exprs.add(NumberTemplate.one);
+            exprs.add(NumberTemplate.ONE);
         }
 
         Expression<STMT> stmt = new FactoryExpression<STMT>(){

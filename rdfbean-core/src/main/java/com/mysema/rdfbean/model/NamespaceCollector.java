@@ -114,7 +114,9 @@ public class NamespaceCollector implements RDFVisitor<Void, Void>{
 
     @Override
     public Void visit(Path<?> expr, Void context) {
-        handle(expr.getMetadata().getExpression());
+        if (expr.getMetadata().getElement() instanceof Expression) {
+            handle((Expression)expr.getMetadata().getElement());    
+        }        
         handle(expr.getMetadata().getParent());
         return null;
     }
@@ -136,9 +138,11 @@ public class NamespaceCollector implements RDFVisitor<Void, Void>{
         }
     }
         
-    private void handle(List<? extends Expression<?>> exprs){
-        for (Expression<?> expr : exprs) {
-            expr.accept(this, null);
+    private void handle(List<?> args){
+        for (Object arg : args) {
+            if (arg instanceof Expression) {
+                ((Expression)arg).accept(this, null);    
+            }            
         }
     }
     

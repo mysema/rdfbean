@@ -13,6 +13,7 @@ import java.util.Stack;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.sql.SQLCommonQuery;
@@ -327,9 +328,9 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
         asLiteral = asLit;
         if (expr.getType().equals(Boolean.class)){
-            return new PredicateOperation((Operator)expr.getOperator(), args);
+            return new PredicateOperation((Operator)expr.getOperator(), ImmutableList.copyOf(args));
         }else{
-            return new OperationImpl(expr.getType(), expr.getOperator(), args);
+            return new OperationImpl(expr.getType(), expr.getOperator(), ImmutableList.copyOf(args));
         }
     }
 
@@ -546,14 +547,19 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
     @Override
     public Object visit(TemplateExpression<?> expr, QueryMetadata context) {
-        List<Expression<?>> args = new ArrayList<Expression<?>>(expr.getArgs());
-        for (Expression<?> arg : expr.getArgs()){
-            args.add(handle(arg, context));
+        ImmutableList.Builder<Object> builder = ImmutableList.builder();
+        for (Object arg : expr.getArgs()){
+            if (arg instanceof Expression) {
+                builder.add(handle((Expression)arg, context));    
+            } else {
+                builder.add(arg);
+            }
+            
         }
         if (expr.getType().equals(Boolean.class)){
-            return new BooleanTemplate(expr.getTemplate(), args);
+            return new BooleanTemplate(expr.getTemplate(), builder.build());
         }else{
-            return new TemplateExpressionImpl<Object>(expr.getType(), expr.getTemplate(), args);
+            return new TemplateExpressionImpl<Object>(expr.getType(), expr.getTemplate(), builder.build());
         }
     }
 

@@ -40,7 +40,6 @@ import com.google.common.io.Resources;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.sql.SQLQuery;
-import com.mysema.query.sql.SQLQueryImpl;
 import com.mysema.query.sql.SQLTemplates;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.Namespaces;
@@ -268,7 +267,7 @@ public class RDBRepository implements Repository{
     private void initSchema() throws IOException, SQLException {
         Connection conn = dataSource.getConnection();
         try{
-            SQLQuery query = new SQLQueryImpl(conn, templates).from(QLanguage.language);
+            SQLQuery query = new SQLQuery(conn, templates).from(QLanguage.language);
             query.count();
         } catch (Exception e) {
             java.sql.Statement stmt = conn.createStatement();

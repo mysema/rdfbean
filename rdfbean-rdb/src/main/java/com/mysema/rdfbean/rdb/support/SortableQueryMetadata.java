@@ -10,6 +10,7 @@ import com.mysema.query.DefaultQueryMetadata;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.JoinType;
 import com.mysema.query.types.Expression;
+import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Predicate;
 
 /**
@@ -28,14 +29,7 @@ public class SortableQueryMetadata extends DefaultQueryMetadata{
     private JoinExpression last;
     
     public SortableQueryMetadata(){
-        super(false);
-    }
-    
-    @Override
-    public void addJoin(JoinExpression... joins){
-        for (JoinExpression join : joins) {
-        	addSingleJoin(join);
-        }
+        this.noValidate();
     }
     
     @Override
@@ -66,7 +60,11 @@ public class SortableQueryMetadata extends DefaultQueryMetadata{
     @Override
     public void addJoinCondition(Predicate o) {
         if (last != null){
-            last.addCondition(o);
+            //last.addCondition(o);
+            last = new JoinExpression(last.getType(), 
+                    last.getTarget(),
+                    ExpressionUtils.allOf(last.getCondition(), o),
+                    last.getFlags());
         }
     }
     

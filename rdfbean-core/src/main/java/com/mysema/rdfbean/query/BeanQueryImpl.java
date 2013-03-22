@@ -22,12 +22,14 @@ import com.mysema.commons.lang.IteratorAdapter;
 import com.mysema.query.QueryException;
 import com.mysema.query.QueryMetadata;
 import com.mysema.query.SearchResults;
+import com.mysema.query.Tuple;
 import com.mysema.query.support.ProjectableQuery;
 import com.mysema.query.support.QueryMixin;
 import com.mysema.query.types.EntityPath;
 import com.mysema.query.types.Expression;
 import com.mysema.query.types.FactoryExpression;
 import com.mysema.query.types.FactoryExpressionUtils;
+import com.mysema.query.types.QTuple;
 import com.mysema.rdfbean.model.BooleanQuery;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.NODE;
@@ -167,11 +169,12 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     }
 
     @Override
-    public CloseableIterator<Object[]> iterate(final Expression<?>[] args) {
-        queryMixin.addToProjection(args);
+    public CloseableIterator<Tuple> iterate(final Expression<?>... args) {
+        queryMixin.addProjection(args);
+        final QTuple qTuple = new QTuple(args);
         final TupleQuery query = createTupleQuery(false);
         final CloseableIterator<Map<String, NODE>> results = query.getTuples();
-        return new CloseableIterator<Object[]>() {
+        return new CloseableIterator<Tuple>() {
             @Override
             public void close() {
                 results.close();
@@ -183,14 +186,14 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
             }
 
             @Override
-            public Object[] next() {
+            public Tuple next() {
                 Map<String, NODE> row = results.next();
                 Object[] rv = new Object[args.length];
                 AtomicInteger offset = new AtomicInteger();
                 for (int i = 0; i < rv.length; i++) {
                     rv[i] = getAsProjectionValue(args[i], row, query.getVariables(), offset);
                 }
-                return rv;
+                return qTuple.newInstance(rv);
             }
 
             @Override
@@ -206,7 +209,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         if (!converterRegistry.supports(projection.getType())
                 && !(projection instanceof FactoryExpression<?>)){
             // bulk load of resources
-            queryMixin.addToProjection(projection);
+            queryMixin.addProjection(projection);
             long start = System.currentTimeMillis();
             TupleQuery query = createTupleQuery(false);
             CloseableIterator<Map<String, NODE>> results = query.getTuples();
@@ -245,7 +248,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     @Override
     public <RT> CloseableIterator<RT> iterate(Expression<RT> p) {
         final Expression<RT> projection = normalize(p);
-        queryMixin.addToProjection(projection);
+        queryMixin.addProjection(projection);
         final TupleQuery query = createTupleQuery(false);
         final CloseableIterator<Map<String, NODE>> results = query.getTuples();
         return new CloseableIterator<RT>() {
@@ -276,7 +279,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     @Override
     public <RT> SearchResults<RT> listResults(Expression<RT> p) {
         Expression<RT> projection = normalize(p);
-        queryMixin.addToProjection(projection);
+        queryMixin.addProjection(projection);
         long total = count();
 
         QueryMetadata md = queryMixin.getMetadata();
@@ -286,6 +289,11 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 md.getModifiers().getLimit(),
                 md.getModifiers().getOffset(),
                 total);
+    }
+    
+    @Override
+    public SearchResults<Tuple> listResults(Expression<?>... args) {
+        return listResults(new QTuple(args));
     }
 
     @SuppressWarnings("unchecked")
@@ -298,7 +306,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     }
 
     @Override
-    public Object[] uniqueResult(Expression<?>[] args) {
+    public Tuple uniqueResult(Expression<?>... args) {
         queryMixin.setUnique(true);
         if (queryMixin.getMetadata().getModifiers().getLimit() == null){
             limit(2l);
@@ -314,5 +322,6 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         }
         return uniqueResult(iterate(expr));
     }
+
 
 }

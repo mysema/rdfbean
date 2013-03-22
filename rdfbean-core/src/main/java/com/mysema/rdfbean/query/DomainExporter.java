@@ -163,7 +163,7 @@ public class DomainExporter {
             if (configuration.isMapped(clazz) && !clazz.isEnum()){
                 type = createEntityType(clazz);
             }else{
-                type = typeFactory.create(clazz);
+                type = typeFactory.get(clazz);
             }
             classToType.put(clazz, type);
         }
