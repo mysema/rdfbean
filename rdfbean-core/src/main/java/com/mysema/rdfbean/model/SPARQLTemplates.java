@@ -28,5 +28,5 @@ public class SPARQLTemplates extends Templates{
         
         add(Ops.EXISTS,          "exists {{0}}"); // ?!?
     }
-
+    
 }

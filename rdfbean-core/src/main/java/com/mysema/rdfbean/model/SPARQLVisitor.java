@@ -9,6 +9,7 @@ import java.util.Stack;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableSet;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryFlag;
 import com.mysema.query.QueryFlag.Position;
@@ -33,6 +34,11 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
  */
 public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFVisitor<Void,Void>{
 
+    private static final Set<Operator<?>> REGEX_OPS = ImmutableSet.<Operator<?>>of(
+            Ops.MATCHES, Ops.MATCHES_IC, Ops.STARTS_WITH, Ops.STARTS_WITH_IC,
+            Ops.ENDS_WITH, Ops.ENDS_WITH_IC, Ops.STRING_CONTAINS, Ops.STRING_CONTAINS_IC,
+            Ops.STRING_IS_EMPTY);
+    
     @Nullable
     private PatternBlock lastPattern;
 
@@ -45,8 +51,6 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     private boolean inlineResources = false;
     
     private boolean likeAsMatches = false;
-    
-//    private boolean resource = false;
 
     @Nullable
     private QueryMetadata metadata;
@@ -363,6 +367,10 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
             operator = Ops.MATCHES;
             String value = ((Constant<LIT>)args.get(1)).getConstant().getValue().replace("%", ".*").replace("_", ".");
             args = Arrays.asList(args.get(0), new ConstantImpl<LIT>(LIT.class, new LIT(value)));
+        } else if (REGEX_OPS.contains(operator) && args.get(1) instanceof Constant
+                && ((Constant)args.get(1)).getConstant() instanceof LIT) {
+            args = Arrays.<Expression<?>>asList(args.get(0), 
+                    new ConstantImpl(((Constant<LIT>)args.get(1)).getConstant().getValue()));
         }
         operators.push(operator);
         try{
