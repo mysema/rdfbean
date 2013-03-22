@@ -25,12 +25,12 @@
         <dependency>
             <groupId>com.mysema.rdf</groupId>
             <artifactId>rdfbean-sesame</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.mysema.rdf</groupId>
             <artifactId>rdfbean-spring</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Logging -->
@@ -102,7 +102,7 @@
 	    <plugin>
 	        <groupId>com.mysema.rdf</groupId>
 	        <artifactId>rdfbean-maven-plugin</artifactId>
-	        <version>${project.parent.version}</version>
+	        <version>${project.version}</version>
 	        <executions>
 	            <execution>
 	                <goals>

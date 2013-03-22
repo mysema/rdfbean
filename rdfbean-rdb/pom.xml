@@ -21,7 +21,7 @@
     <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-core</artifactId>
-      <version>${project.parent.version}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <!-- Mysema Source component -->
