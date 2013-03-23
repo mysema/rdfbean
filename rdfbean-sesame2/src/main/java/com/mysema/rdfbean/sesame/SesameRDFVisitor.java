@@ -76,7 +76,10 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         FUNCTION_OPS.put(Ops.INDEX_OF,        "functions:indexOf");
         FUNCTION_OPS.put(Ops.INDEX_OF_2ARGS,  "functions:indexOf2");
         FUNCTION_OPS.put(Ops.LIKE,            "functions:like");
+        FUNCTION_OPS.put(Ops.LIKE_ESCAPE,     "functions:like");
         //FUNCTION_OPS.put(Ops.StringOps.SPACE, "functions:space");
+        FUNCTION_OPS.put(Ops.StringOps.LOCATE,"functions:locate");
+        FUNCTION_OPS.put(Ops.StringOps.LOCATE2,"functions:locate2");
 
         // math
         FUNCTION_OPS.put(Ops.MathOps.CEIL,    "functions:ceil");
@@ -100,6 +103,7 @@ public class SesameRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
 
         // other
         FUNCTION_OPS.put(Ops.COALESCE, "functions:coalesce");
+        FUNCTION_OPS.put(Ops.NULLIF, "functions:nullif");
 
 
     }

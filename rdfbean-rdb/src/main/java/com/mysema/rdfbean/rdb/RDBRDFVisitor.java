@@ -301,8 +301,6 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         return visit((ContainerBlock)expr, context);
     }
 
-
-
     @SuppressWarnings("unchecked")
     @Override
     public Object visit(Operation<?> expr, QueryMetadata context) {

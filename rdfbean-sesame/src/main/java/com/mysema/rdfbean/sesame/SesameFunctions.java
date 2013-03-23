@@ -248,12 +248,39 @@ public final class SesameFunctions {
             public Value evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
                 String first = args[0].stringValue();
                 String second = args[1].stringValue();
+                return valueFactory.createLiteral(second.indexOf(first) + 1);
+            }
+            @Override
+            public String getURI() {
+                return "functions:locate";
+            }            
+        });
+        
+        register(new Function(){
+            @Override
+            public Value evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
+                String first = args[0].stringValue();
+                String second = args[1].stringValue();
                 int third = Integer.valueOf(args[2].stringValue());
                 return valueFactory.createLiteral(first.indexOf(second, third));
             }
             @Override
             public String getURI() {
                 return "functions:indexOf2";
+            }            
+        });
+        
+        register(new Function(){
+            @Override
+            public Value evaluate(ValueFactory valueFactory, Value... args) throws ValueExprEvaluationException {
+                String first = args[0].stringValue();
+                String second = args[1].stringValue();
+                int third = Integer.valueOf(args[2].stringValue()) - 1;
+                return valueFactory.createLiteral(second.indexOf(first, third) + 1);
+            }
+            @Override
+            public String getURI() {
+                return "functions:locate2";
             }            
         });
         
@@ -496,6 +523,21 @@ public final class SesameFunctions {
             @Override
             public String getURI() {
                 return "functions:coalesce";
+            }
+        });
+        
+        register(new Function(){
+            @Override
+            public Value evaluate(ValueFactory vf, Value... args) throws ValueExprEvaluationException {
+                if (args[0].equals(args[1])) {
+                    return null;
+                } else {
+                    return args[0];
+                }
+            }
+            @Override
+            public String getURI() {
+                return "functions:nullif";
             }
         });
 

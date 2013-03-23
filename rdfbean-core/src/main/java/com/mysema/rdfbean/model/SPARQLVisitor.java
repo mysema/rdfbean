@@ -61,6 +61,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
 
     public SPARQLVisitor(SPARQLTemplates templates, String prefix) {
         super(templates);
+        setNormalize(false);
         this.prefix = prefix;
     }
 
