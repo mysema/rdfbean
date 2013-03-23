@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-  	<spring.version>2.5.5</spring.version>
+    <spring.version>2.5.5</spring.version>
     <jetty.version>6.1.0-SNAPSHOT</jetty.version>
     <sesame.version>3.0-alpha1</sesame.version>
   </properties>
@@ -30,25 +30,25 @@
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
       <scope>provided</scope>
-    </dependency>	
-	<dependency>
+    </dependency>  
+    <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-asl</artifactId>
       <version>0.9.5</version>
-	</dependency>
+    </dependency>
 
-	<dependency>
-	  <groupId>com.mysema.commons</groupId>
-	  <artifactId>mysema-commons-fluxml</artifactId>
-	  <version>0.2.7</version>
-	</dependency>	
-	
-	<!-- test -->
+    <dependency>
+      <groupId>com.mysema.commons</groupId>
+      <artifactId>mysema-commons-fluxml</artifactId>
+      <version>0.2.7</version>
+    </dependency>  
+  
+    <!-- test -->
     <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-sesame</artifactId>
       <version>${project.version}</version>
-	  <scope>test</scope>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -57,12 +57,15 @@
       <version>1.6.1</version>
       <scope>test</scope>
     </dependency>  
-	<dependency>
-	  <groupId>com.mysema.commons</groupId>
-	  <artifactId>mysema-commons-jetty</artifactId>
-	  <version>${jetty.version}</version>
-	  <scope>test</scope>
-	</dependency>	
+    <!-- 
+    <dependency>
+      <groupId>com.mysema.commons</groupId>
+      <artifactId>mysema-commons-jetty</artifactId>
+      <version>${jetty.version}</version>
+      <scope>test</scope>
+    </dependency>
+     -->
+    
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
@@ -74,8 +77,8 @@
       <artifactId>spring-test</artifactId>
       <version>${spring.version}</version>
       <scope>test</scope>
-    </dependency>	
-	
+    </dependency>  
+  
   </dependencies>
   
   <repositories>
