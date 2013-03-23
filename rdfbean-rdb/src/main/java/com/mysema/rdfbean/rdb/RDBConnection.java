@@ -438,8 +438,10 @@ public class RDBConnection implements RDFConnection {
                 floatVal = Double.valueOf(literal.getValue());
             } else if (Constants.dateTypes.contains(literal.getDatatype())) {
                 datetimeVal = new Timestamp(context.convert(literal.getValue(), java.sql.Date.class).getTime());
+                floatVal = datetimeVal.getTime();
             } else if (Constants.dateTimeTypes.contains(literal.getDatatype())) {
                 datetimeVal = context.convert(literal.getValue(), Timestamp.class);
+                floatVal = datetimeVal.getTime();
             }
         }
 

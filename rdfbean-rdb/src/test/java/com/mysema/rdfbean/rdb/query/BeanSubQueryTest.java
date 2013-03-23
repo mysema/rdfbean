@@ -46,7 +46,7 @@ public class BeanSubQueryTest extends AbstractRDBTest implements EntityDomain {
         }
         session.clear();
     }
-
+    
     @Test
     public void CompareLong() throws IOException {
         Entity result = session.from($(var1))
