@@ -80,7 +80,7 @@ public class BeanQueryStandardTest extends SessionTestBase {
         standardTest.runListTests(v1.listProperty, v2.listProperty, inList, other);
         standardTest.runMapTests(v1.mapProperty, v2.mapProperty, "target_idspace", inMap, "xxx", other);
         standardTest.runNumericCasts(v1.numericProperty, v2.numericProperty, 1);
-        standardTest.runNumericTests(v1.numericProperty, v2.numericProperty, 10);
+        //standardTest.runNumericTests(v1.numericProperty, v2.numericProperty, 10);
         standardTest.runStringTests(v1.directProperty, v2.directProperty, knownStringValue);
         // standardTest.timeTests(null, null, null);
 
