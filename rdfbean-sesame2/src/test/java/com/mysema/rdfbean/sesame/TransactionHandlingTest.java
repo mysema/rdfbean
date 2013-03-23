@@ -25,36 +25,36 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.rdfbean.owl.OWL;
 import com.mysema.rdfbean.owl.Restriction;
 
-public class TransactionHandlingTest extends SessionTestBase{
-    
+public class TransactionHandlingTest extends SessionTestBase {
+
     private static final Locale FI = new Locale("fi");
-    
+
     private EntityPathBase<Restriction> restriction = new EntityPathBase<Restriction>(
-            Restriction.class, 
+            Restriction.class,
             PathMetadataFactory.forVariable("var"));
-    
+
     private SessionFactoryImpl sessionFactory;
-    
+
     private Session session;
-    
+
     @Before
-    public void setUp() throws RDFParseException, IOException{
+    public void setUp() throws RDFParseException, IOException {
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(new DefaultConfiguration(OWL.class.getPackage()));
         sessionFactory.setRepository(repository);
         sessionFactory.setLocales(Collections.singleton(FI));
         sessionFactory.initialize();
     }
-    
+
     @After
-    public void tearDown() throws IOException{
-        if (session != null){
+    public void tearDown() throws IOException {
+        if (session != null) {
             session.close();
         }
     }
-    
+
     @Test
-    public void Commit() throws ClassNotFoundException, IOException{
+    public void Commit() throws ClassNotFoundException, IOException {
         session = sessionFactory.openSession();
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
@@ -62,13 +62,13 @@ public class TransactionHandlingTest extends SessionTestBase{
         session.save(new Restriction());
         tx.commit();
         session.close();
-        
+
         session = sessionFactory.openSession();
         assertEquals(count + 2, session.from(restriction).list(restriction).size());
     }
-        
+
     @Test
-    public void Rollback() throws ClassNotFoundException, IOException{
+    public void Rollback() throws ClassNotFoundException, IOException {
         session = sessionFactory.openSession();
         int count = session.from(restriction).list(restriction).size();
         RDFBeanTransaction tx = session.beginTransaction();
@@ -76,9 +76,9 @@ public class TransactionHandlingTest extends SessionTestBase{
         session.save(new Restriction());
         tx.rollback();
         session.close();
-        
+
         session = sessionFactory.openSession();
-        assertEquals(count, session.from(restriction).list(restriction).size());       
+        assertEquals(count, session.from(restriction).list(restriction).size());
     }
 
 }

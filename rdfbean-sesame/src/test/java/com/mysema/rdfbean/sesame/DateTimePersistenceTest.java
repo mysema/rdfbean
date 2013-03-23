@@ -31,14 +31,14 @@ public class DateTimePersistenceTest {
     private MemoryRepository repository;
 
     @After
-    public void tearDown(){
-        if (repository != null){
+    public void tearDown() {
+        if (repository != null) {
             repository.close();
         }
     }
 
     @Test
-    public void Round_Trip(){
+    public void Round_Trip() {
         repository = new MemoryRepository();
         repository.initialize();
 
@@ -55,7 +55,7 @@ public class DateTimePersistenceTest {
                 new STMT(sub, pre(5), new LIT(converters.toString(new java.util.Date(0)), XSD.dateTime)),
                 new STMT(sub, pre(6), new LIT(converters.toString(new Time(0)), XSD.time)),
                 new STMT(sub, pre(7), new LIT(converters.toString(new Timestamp(0)), XSD.dateTime))
-        ));
+                ));
         long count = repository.execute(new CountOperation());
         assertEquals(7, count);
 
@@ -69,11 +69,11 @@ public class DateTimePersistenceTest {
         repository.load(Format.TURTLE, in, new UID(TEST.NS), true);
 
         count = repository.execute(new CountOperation());
-        assertEquals(7*2, count);
+        assertEquals(7 * 2, count);
     }
 
-    private UID pre(int i){
-        return new UID(TEST.NS, "test"+i);
+    private UID pre(int i) {
+        return new UID(TEST.NS, "test" + i);
     }
 
 }

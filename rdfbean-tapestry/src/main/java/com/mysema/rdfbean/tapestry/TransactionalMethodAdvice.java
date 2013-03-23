@@ -29,43 +29,43 @@ public final class TransactionalMethodAdvice implements MethodAdvice {
     public void advise(Invocation invocation) {
         boolean inSession = false;
         boolean inTx = false;
-        if (this.sessionContext.getCurrentSession() != null){
+        if (this.sessionContext.getCurrentSession() != null) {
             inSession = true;
             Session session = sessionContext.getCurrentSession();
             inTx = session.getTransaction() != null && session.getTransaction().isActive();
         }
 
-        if (!inTx){
+        if (!inTx) {
             Session session = sessionContext.getOrCreateSession();
             FlushMode savedFlushMode = session.getFlushMode();
 
             try {
                 RDFBeanTransaction txn = transactionalAdvisor.doBegin(session);
-                try{
+                try {
                     invocation.proceed();
-                }catch(RuntimeException e){
+                } catch (RuntimeException e) {
                     transactionalAdvisor.doRollback(txn);
                     throw e;
                 }
                 // checked exception
-                if (invocation.isFail()){
+                if (invocation.isFail()) {
                     transactionalAdvisor.doRollback(txn);
                     invocation.rethrow();
                 }
-                if (!txn.isRollbackOnly()){
+                if (!txn.isRollbackOnly()) {
                     transactionalAdvisor.doCommit(session, txn);
-                }else{
+                } else {
                     transactionalAdvisor.doRollback(txn);
                 }
 
             } finally {
                 session.setFlushMode(savedFlushMode);
                 sessionContext.releaseSession();
-                if (!inSession){
+                if (!inSession) {
                     session.close();
                 }
             }
-        }else{
+        } else {
             invocation.proceed();
         }
 

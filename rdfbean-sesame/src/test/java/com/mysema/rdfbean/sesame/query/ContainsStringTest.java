@@ -20,11 +20,11 @@ import com.mysema.rdfbean.domains.EntityRevisionTermDomain.Term;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({Entity.class, EntityRevision.class, Term.class})
-public class ContainsStringTest extends SessionTestBase implements EntityRevisionTermDomain{
+@SessionConfig({ Entity.class, EntityRevision.class, Term.class })
+public class ContainsStringTest extends SessionTestBase implements EntityRevisionTermDomain {
 
     @Test
-    public void test(){
+    public void test() {
         EntityRevision revision = new EntityRevision();
         revision.text = "a bcd e";
         session.save(revision);
@@ -36,7 +36,7 @@ public class ContainsStringTest extends SessionTestBase implements EntityRevisio
     }
 
     @Test
-    public void test2(){
+    public void test2() {
         // 1
         Entity entity = new Entity();
         session.save(entity);

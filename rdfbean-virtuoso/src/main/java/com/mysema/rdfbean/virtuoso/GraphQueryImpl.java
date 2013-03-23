@@ -22,14 +22,14 @@ import com.mysema.rdfbean.model.io.WriterUtils;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class GraphQueryImpl extends AbstractQueryImpl{
-    
+public class GraphQueryImpl extends AbstractQueryImpl {
+
     private static final Logger logger = LoggerFactory.getLogger(GraphQueryImpl.class);
-    
+
     private final Converter converter;
-    
+
     public GraphQueryImpl(Connection connection, Converter converter, int prefetch, String query) {
         super(connection, prefetch, query);
         this.converter = converter;
@@ -48,7 +48,7 @@ public class GraphQueryImpl extends AbstractQueryImpl{
     @Override
     public CloseableIterator<STMT> getTriples() {
         try {
-            rs = executeQuery(query, false);            
+            rs = executeQuery(query, false);
             List<STMT> stmts = IteratorAdapter.asList(new GraphResultIterator(stmt, rs, query, converter));
             Collections.sort(stmts, STMTComparator.DEFAULT);
             return new IteratorAdapter<STMT>(stmts.iterator());
@@ -56,7 +56,7 @@ public class GraphQueryImpl extends AbstractQueryImpl{
             logger.error(query);
             close();
             throw new RepositoryException(e);
-        }        
+        }
     }
 
     @Override
@@ -70,17 +70,17 @@ public class GraphQueryImpl extends AbstractQueryImpl{
     }
 
     @Override
-    public void streamTriples(Writer writer, String contentType) {         
+    public void streamTriples(Writer writer, String contentType) {
         Format format = Format.getFormat(contentType, Format.RDFXML);
         RDFWriter rdfWriter = WriterUtils.createWriter(format, writer);
         CloseableIterator<STMT> stmts = getTriples();
-        try{
+        try {
             rdfWriter.begin();
-            while (stmts.hasNext()){
+            while (stmts.hasNext()) {
                 rdfWriter.handle(stmts.next());
-            }    
+            }
             rdfWriter.end();
-        }finally{
+        } finally {
             stmts.close();
         }
     }

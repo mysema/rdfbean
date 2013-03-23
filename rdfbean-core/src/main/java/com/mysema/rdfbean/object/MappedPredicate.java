@@ -13,7 +13,7 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author sasa
- *
+ * 
  */
 @Immutable
 public final class MappedPredicate {
@@ -42,9 +42,9 @@ public final class MappedPredicate {
         this.inv = predicate.inv();
         this.ignoreInvalid = predicate.ignoreInvalid();
         this.includeInferred = predicate.includeInferred();
-        if (predicate.context().isEmpty()){
+        if (predicate.context().isEmpty()) {
             this.context = null;
-        }else{
+        } else {
             this.context = new UID(predicate.context());
         }
     }

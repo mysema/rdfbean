@@ -19,9 +19,9 @@ import com.mysema.rdfbean.model.NODE;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>{
+public class TupleResultIterator implements CloseableIterator<Map<String, NODE>> {
 
     private static final Logger logger = LoggerFactory.getLogger(TupleResultIterator.class);
 
@@ -55,7 +55,7 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
         this.variables = variables;
         this.bindings = bindings;
         this.wildcard = query.toLowerCase().startsWith("sparql\n select *")
-            || query.toLowerCase().startsWith("sparql\n select distinct *");
+                || query.toLowerCase().startsWith("sparql\n select distinct *");
     }
 
     @Override
@@ -65,7 +65,7 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
 
     @Override
     public boolean hasNext() {
-        if (next == null){
+        if (next == null) {
             try {
                 next = rs.next();
             } catch (SQLException e) {
@@ -79,19 +79,19 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
 
     @Override
     public Map<String, NODE> next() {
-        if (hasNext()){
+        if (hasNext()) {
             try {
                 next = null;
-                Map<String,NODE> tuples = new HashMap<String,NODE>();
-                if (wildcard){
+                Map<String, NODE> tuples = new HashMap<String, NODE>();
+                if (wildcard) {
                     tuples.putAll(bindings);
                 }
-                for (String variable : variables){
-                    if (bindings.containsKey(variable)){
+                for (String variable : variables) {
+                    if (bindings.containsKey(variable)) {
                         tuples.put(variable, bindings.get(variable));
-                    }else{
+                    } else {
                         Object obj = rs.getObject(variable);
-                        if (obj != null){
+                        if (obj != null) {
                             tuples.put(variable, converter.toNODE(obj));
                         }
                     }
@@ -102,7 +102,7 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
                 logger.warn("Caught exception for query " + query, e);
                 throw new QueryException(e);
             }
-        }else{
+        } else {
             throw new NoSuchElementException();
         }
     }

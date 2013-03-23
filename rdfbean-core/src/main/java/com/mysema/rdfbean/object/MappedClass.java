@@ -30,7 +30,7 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author sasa
- *
+ * 
  */
 public final class MappedClass {
 
@@ -49,10 +49,10 @@ public final class MappedClass {
     private final Set<MappedProperty<?>> dynamicProperties = new LinkedHashSet<MappedProperty<?>>();
 
     private final Set<MappedProperty<?>> mixinProperties = new LinkedHashSet<MappedProperty<?>>();
-    
+
     @Nullable
     private MappedProperty<?> idProperty;
-    
+
     private final Set<UID> mappedPredicates = new HashSet<UID>();
 
     private final Set<UID> invMappedPredicates = new HashSet<UID>();
@@ -68,7 +68,7 @@ public final class MappedClass {
     private final UID context;
 
     MappedClass(Class<?> clazz, @Nullable UID uid, @Nullable UID context, List<MappedClass> mappedSuperClasses) {
-        this.clazz = Assert.notNull(clazz,"clazz");
+        this.clazz = Assert.notNull(clazz, "clazz");
         this.uid = uid;
         this.context = context;
         this.mappedSuperClasses = mappedSuperClasses;
@@ -88,7 +88,7 @@ public final class MappedClass {
             } else {
                 invMappedPredicates.add(path.get(0).getUID());
             }
-        } else if (path.getMappedProperty().isAnnotationPresent(Mixin.class)){
+        } else if (path.getMappedProperty().isAnnotationPresent(Mixin.class)) {
             mixinProperties.add(path.getMappedProperty());
         }
 
@@ -111,7 +111,8 @@ public final class MappedClass {
                     throw new IllegalArgumentException("Cannot merge field properties: " +
                             path + " into " + existingPath);
                 } else {
-                    // Field property overrides method and constructor properties
+                    // Field property overrides method and constructor
+                    // properties
                     properties.put(path.getName(), path);
                     path.merge(existingPath);
                 }
@@ -170,7 +171,7 @@ public final class MappedClass {
     public Collection<MappedProperty<?>> getMixinProperties() {
         return mixinProperties;
     }
-    
+
     @Nullable
     public MappedProperty<?> getIdProperty() {
         return idProperty;
@@ -180,7 +181,7 @@ public final class MappedClass {
         return clazz;
     }
 
-    public boolean hasProperty(String name){
+    public boolean hasProperty(String name) {
         return properties.containsKey(name);
     }
 
@@ -196,7 +197,7 @@ public final class MappedClass {
     public List<MappedClass> getMappedSuperClasses() {
         return mappedSuperClasses;
     }
-    
+
     public Collection<MappedPath> getProperties() {
         return properties.values();
     }
@@ -220,11 +221,11 @@ public final class MappedClass {
         return clazz.isEnum();
     }
 
-    public Collection<UID> getMappedPredicates(){
+    public Collection<UID> getMappedPredicates() {
         return mappedPredicates;
     }
 
-    public Collection<UID> getInvMappedPredicates(){
+    public Collection<UID> getInvMappedPredicates() {
         return invMappedPredicates;
     }
 
@@ -255,7 +256,7 @@ public final class MappedClass {
             throw new SessionException("Super class declaration for " + declaringClass + " not found from " + this);
         }
 
-        Type type = (j == 0 ? clazz.getGenericSuperclass() : clazz.getGenericInterfaces()[j-1]);
+        Type type = (j == 0 ? clazz.getGenericSuperclass() : clazz.getGenericInterfaces()[j - 1]);
         if (type instanceof ParameterizedType) {
             return ((ParameterizedType) type).getActualTypeArguments()[i];
         } else {

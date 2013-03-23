@@ -18,15 +18,17 @@ import com.mysema.rdfbean.tapestry.TransactionalAdvisor;
 import com.mysema.rdfbean.tapestry.TransactionalAdvisorImpl;
 
 /**
- * RDFBeanModule defines an abstract module for Tapestry IoC with a basic RDFBean configuration
- *
+ * RDFBeanModule defines an abstract module for Tapestry IoC with a basic
+ * RDFBean configuration
+ * 
  * @author tiwe
  */
 public final class RDFBeanModule {
 
-    private RDFBeanModule(){}
+    private RDFBeanModule() {
+    }
 
-    public static void bind(ServiceBinder binder){
+    public static void bind(ServiceBinder binder) {
         binder.bind(TransactionalAdvisor.class, TransactionalAdvisorImpl.class);
         binder.bind(SeedEntity.class, SeedEntityImpl.class);
     }
@@ -34,7 +36,7 @@ public final class RDFBeanModule {
     public static SessionFactory buildSessionFactory(
             Configuration configuration,
             Repository repository,
-            Map<String,ObjectRepository> objectRepositories){
+            Map<String, ObjectRepository> objectRepositories) {
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setObjectRepositories(objectRepositories);
         sessionFactory.setConfiguration(configuration);
@@ -42,6 +44,5 @@ public final class RDFBeanModule {
         sessionFactory.initialize();
         return sessionFactory;
     }
-
 
 }

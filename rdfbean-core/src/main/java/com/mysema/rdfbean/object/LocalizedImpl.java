@@ -11,7 +11,7 @@ import com.mysema.rdfbean.annotations.Localized;
 
 /**
  * @author tiwe
- *
+ * 
  */
 @SuppressWarnings("all")
 public class LocalizedImpl implements Localized {

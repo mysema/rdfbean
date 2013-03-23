@@ -24,7 +24,7 @@ public class PropertiesConfigurationTest {
     private Configuration configuration;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         configuration = new DefaultConfiguration(TEST.NS, Project.class, Person.class);
     }
 

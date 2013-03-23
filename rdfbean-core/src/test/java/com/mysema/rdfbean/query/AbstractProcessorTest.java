@@ -15,16 +15,16 @@ import com.mysema.util.FileUtils;
 
 public abstract class AbstractProcessorTest {
 
-    protected void process(Class<? extends AbstractProcessor> processorClass, List<String> classes, String target) throws IOException{
+    protected void process(Class<? extends AbstractProcessor> processorClass, List<String> classes, String target) throws IOException {
         File out = new File("target/" + target);
         FileUtils.delete(out);
-        if (!out.mkdirs()){
+        if (!out.mkdirs()) {
             Assert.fail("Creation of " + out.getPath() + " failed");
         }
         compile(processorClass, classes, target);
-    } 
-    
-    protected void compile(Class<? extends AbstractProcessor> processorClass, List<String> classes, String target) throws IOException{
+    }
+
+    protected void compile(Class<? extends AbstractProcessor> processorClass, List<String> classes, String target) throws IOException {
         JavaCompiler compiler = new SimpleCompiler();
         System.out.println(compiler.getClass().getName());
         List<String> options = new ArrayList<String>(classes.size() + 3);
@@ -38,13 +38,12 @@ public abstract class AbstractProcessorTest {
         options.addAll(classes);
         int compilationResult = compiler.run(null, System.out, System.err, options.toArray(new String[options.size()]));
 
-        if(compilationResult == 0){
+        if (compilationResult == 0) {
             System.out.println("Compilation is successful");
-        }else{
+        } else {
             Assert.fail("Compilation Failed");
         }
-        
+
     }
-    
 
 }

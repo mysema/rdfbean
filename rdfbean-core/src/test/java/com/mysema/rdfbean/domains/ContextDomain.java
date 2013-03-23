@@ -42,7 +42,7 @@ public interface ContextDomain {
         @Id
         String id;
 
-        @Predicate(context=NS2)
+        @Predicate(context = NS2)
         public String property;
 
         @Predicate
@@ -64,7 +64,7 @@ public interface ContextDomain {
         @Id
         String id;
 
-        @Predicate(context=NS3)
+        @Predicate(context = NS3)
         public String property;
 
         @Predicate

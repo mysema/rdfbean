@@ -21,9 +21,9 @@ import com.mysema.rdfbean.model.SPARQLQuery;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public abstract class AbstractQueryImpl implements SPARQLQuery{
+public abstract class AbstractQueryImpl implements SPARQLQuery {
 
     protected static final Pattern VARIABLE = Pattern.compile("\\?[a-zA-Z_]\\w*");
 
@@ -37,7 +37,7 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
 
     protected final String query;
 
-    protected final Map<String, NODE> bindings = new HashMap<String,NODE>();
+    protected final Map<String, NODE> bindings = new HashMap<String, NODE>();
 
     public AbstractQueryImpl(Connection connection, int prefetch, String query) {
         this.connection = connection;
@@ -55,38 +55,38 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         // do nothing
     }
 
-    protected void close(){
+    protected void close() {
         close(stmt, rs);
     }
 
-    public static void close(@Nullable Statement stmt, @Nullable ResultSet rs){
-        try{
+    public static void close(@Nullable Statement stmt, @Nullable ResultSet rs) {
+        try {
             try {
-                if (rs != null){
+                if (rs != null) {
                     rs.close();
                 }
             } finally {
-                if (stmt != null){
+                if (stmt != null) {
                     stmt.close();
                 }
             }
-        }catch(SQLException e){
+        } catch (SQLException e) {
             throw new QueryException(e);
         }
     }
 
-    protected ResultSet executeQuery(String query, boolean createAliases) throws SQLException{
-        if (bindings.isEmpty()){
-            stmt = connection.prepareStatement(query); //NOSONAR
-        }else{
+    protected ResultSet executeQuery(String query, boolean createAliases) throws SQLException {
+        if (bindings.isEmpty()) {
+            stmt = connection.prepareStatement(query); // NOSONAR
+        } else {
             List<NODE> nodes = new ArrayList<NODE>(bindings.size());
             String normalized = normalize(query, bindings, nodes, createAliases);
-            stmt = connection.prepareStatement(normalized); //NOSONAR
+            stmt = connection.prepareStatement(normalized); // NOSONAR
             int offset = 1;
-            for (NODE node : nodes){
-                if (node.isResource()){
+            for (NODE node : nodes) {
+                if (node.isResource()) {
                     VirtuosoRepositoryConnection.bindResource(stmt, offset++, node.asResource());
-                }else{
+                } else {
                     VirtuosoRepositoryConnection.bindValue(stmt, offset, node.asLiteral());
                     offset += 3;
                 }
@@ -101,22 +101,22 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
         String queryLower = query.toLowerCase(Locale.ENGLISH);
         Matcher matcher = VARIABLE.matcher(query);
         StringBuffer buffer = new StringBuffer();
-        while (matcher.find()){
+        while (matcher.find()) {
             String variable = matcher.group().substring(1);
             String replacement = matcher.group();
             boolean unquoted = isUnquoted(queryLower, matcher);
-            if (bindings.containsKey(variable)){
+            if (bindings.containsKey(variable)) {
                 NODE node = bindings.get(variable);
                 nodes.add(node);
-                if (node.isResource()){
+                if (node.isResource()) {
                     replacement = unquoted ? "iri(??)" : "`iri(??)`";
-                }else{
+                } else {
                     replacement = unquoted ? "bif:__rdf_long_from_batch_params(??,??,??)" : "`bif:__rdf_long_from_batch_params(??,??,??)`";
                 }
                 if (createAliases
                         && !queryLower.substring(0, matcher.start()).contains("where")
-                        && !queryLower.substring(0, matcher.start()).contains("from")){
-                    replacement =  replacement + " as ?" + variable;
+                        && !queryLower.substring(0, matcher.start()).contains("from")) {
+                    replacement = replacement + " as ?" + variable;
                 }
             }
             matcher.appendReplacement(buffer, replacement);
@@ -127,27 +127,27 @@ public abstract class AbstractQueryImpl implements SPARQLQuery{
 
     private static boolean isUnquoted(String query, Matcher matcher) {
         int i;
-        for (i = matcher.start()-1; i >= 0; i-- ){
+        for (i = matcher.start() - 1; i >= 0; i--) {
             char c = query.charAt(i);
-            if (c == '}' || c == '{'){
+            if (c == '}' || c == '{') {
                 return false;
             }
-            if (c == '('){
+            if (c == '(') {
                 break;
             }
         }
-        if (i > 0){
-            for (i = matcher.end(); i < query.length(); i++ ){
+        if (i > 0) {
+            for (i = matcher.end(); i < query.length(); i++) {
                 char c = query.charAt(i);
-                if (c == '}' || c == '{'){
+                if (c == '}' || c == '{') {
                     return false;
                 }
-                if (c == ')' || c == '('){
+                if (c == ')' || c == '(') {
                     return true;
                 }
             }
             return false;
-        }else{
+        } else {
             return true;
         }
 

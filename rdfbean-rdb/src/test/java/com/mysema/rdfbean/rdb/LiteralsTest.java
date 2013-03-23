@@ -21,30 +21,30 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
-public class LiteralsTest extends AbstractRDBTest{
-    
+public class LiteralsTest extends AbstractRDBTest {
+
     private Set<STMT> added = new HashSet<STMT>();
-    
+
     @Before
-    public void setUp() throws IOException{
+    public void setUp() throws IOException {
         RDFConnection connection = repository.openConnection();
-        try{
+        try {
             UID uri = new UID(TEST.NS, "test");
             added.add(new STMT(uri, RDFS.label, new LIT("1"), RDF.type));
             added.add(new STMT(uri, RDFS.label, new LIT("2", Locale.ENGLISH), RDF.type));
             added.add(new STMT(uri, RDFS.label, new LIT("3", XSD.stringType), RDF.type));
             added.add(new STMT(uri, RDFS.label, new LIT("4", XSD.intType), RDF.type));
-            connection.update(Collections.<STMT>emptySet(), added);            
-        }finally{
+            connection.update(Collections.<STMT> emptySet(), added);
+        } finally {
             connection.close();
         }
     }
-    
+
     @Test
-    public void test(){
+    public void test() {
         RDFConnection connection = repository.openConnection();
         Set<STMT> stmts = new HashSet<STMT>(IteratorAdapter.asList(connection.findStatements(null, null, null, RDF.type, false)));
         assertEquals(added, stmts);
     }
-    
+
 }

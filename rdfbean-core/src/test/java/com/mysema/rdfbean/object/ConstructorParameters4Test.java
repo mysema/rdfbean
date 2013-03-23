@@ -25,7 +25,7 @@ public class ConstructorParameters4Test {
         @Predicate
         final String lastName;
 
-        public Entity(ID id, @Predicate(ln="firstName") String fn, @Predicate(ln="lastName") String ln) {
+        public Entity(ID id, @Predicate(ln = "firstName") String fn, @Predicate(ln = "lastName") String ln) {
             this.id = id;
             this.firstName = fn;
             this.lastName = ln;

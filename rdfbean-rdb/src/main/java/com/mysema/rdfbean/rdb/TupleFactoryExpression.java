@@ -22,9 +22,9 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> implements FactoryExpression<Map<String, NODE>>{
+public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> implements FactoryExpression<Map<String, NODE>> {
 
     private static final long serialVersionUID = -3344381241177858414L;
 
@@ -42,7 +42,7 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
             List<String> variables,
             List<Expression<?>> pr,
             Function<Long, NODE> function) {
-        super((Class)Map.class);
+        super((Class) Map.class);
         this.converters = converters;
         this.variables = variables;
         this.projection = pr;
@@ -57,18 +57,18 @@ public class TupleFactoryExpression extends ExpressionBase<Map<String, NODE>> im
     @Override
     public Map<String, NODE> newInstance(Object... args) {
         Map<String, NODE> rv = new HashMap<String, NODE>(args.length);
-        for (int i = 0; i < args.length; i++){
-            if (args[i] != null){
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] != null) {
                 if (projection.get(i) instanceof Operation<?>
-                 || projection.get(i) instanceof TemplateExpression<?>){
+                        || projection.get(i) instanceof TemplateExpression<?>) {
                     String val = converters.toString(args[i]);
                     UID dtype = converters.getDatatype(args[i].getClass());
                     rv.put(variables.get(i), new LIT(val, dtype));
-                }else if (args[i] instanceof String){    
-                    String val = (String)args[i];
-                    rv.put(variables.get(i), val.contains(":") ? new UID(val) : new BID(val));               
-                }else{
-                    rv.put(variables.get(i), function.apply((Long)args[i]));
+                } else if (args[i] instanceof String) {
+                    String val = (String) args[i];
+                    rv.put(variables.get(i), val.contains(":") ? new UID(val) : new BID(val));
+                } else {
+                    rv.put(variables.get(i), function.apply((Long) args[i]));
                 }
             }
         }

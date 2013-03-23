@@ -11,10 +11,10 @@ import com.google.inject.BindingAnnotation;
 
 /**
  * @author tiwe
- *
+ * 
  */
 @Documented
-@Target( { PARAMETER })
+@Target({ PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @BindingAnnotation
 public @interface Config {

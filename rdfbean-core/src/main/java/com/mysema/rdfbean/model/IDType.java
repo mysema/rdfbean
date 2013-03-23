@@ -5,12 +5,11 @@
  */
 package com.mysema.rdfbean.model;
 
-
 /**
  * Binding type for Id
  * 
  * @author sasa
- *
+ * 
  */
 public enum IDType {
     /**

@@ -13,50 +13,50 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.mysema.rdfbean.object.SessionFactory;
 
-public class ServiceAImpl implements ServiceA{
+public class ServiceAImpl implements ServiceA {
 
     @Inject
     private SessionFactory sessionFactory;
 
-    public void nonTxMethod(){
+    public void nonTxMethod() {
         assertTrue(sessionFactory.getCurrentSession() == null);
     }
 
-    @Transactional(propagation=Propagation.SUPPORTS)
-    public void nonTxMethod2(){
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void nonTxMethod2() {
         // not intercepted
         assertTrue(sessionFactory.getCurrentSession() == null);
     }
 
     @Transactional
-    public void txMethod(){
+    public void txMethod() {
         assertTrue(sessionFactory.getCurrentSession() != null);
         assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
     }
 
-    @Transactional(propagation=Propagation.NEVER)
-    public void txMethod2(){
+    @Transactional(propagation = Propagation.NEVER)
+    public void txMethod2() {
         assertTrue(sessionFactory.getCurrentSession() == null);
     }
 
-    @Transactional(propagation=Propagation.NOT_SUPPORTED)
-    public void txMethod3(){
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void txMethod3() {
         assertTrue(sessionFactory.getCurrentSession() == null);
     }
 
-    @Transactional(readOnly=true)
-    public void txReadonly(){
+    @Transactional(readOnly = true)
+    public void txReadonly() {
         assertTrue(sessionFactory.getCurrentSession() != null);
         assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
     }
 
     @Transactional
-    public void txMethodWithException_commit() throws Exception{
+    public void txMethodWithException_commit() throws Exception {
         throw new Exception();
     }
 
-    @Transactional(rollbackFor=Exception.class)
-    public void txMethodWithException_rollback() throws Exception{
+    @Transactional(rollbackFor = Exception.class)
+    public void txMethodWithException_rollback() throws Exception {
         throw new Exception();
     }
 }

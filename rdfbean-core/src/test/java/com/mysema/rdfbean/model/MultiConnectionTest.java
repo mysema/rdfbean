@@ -22,8 +22,8 @@ public class MultiConnectionTest {
     private final MiniRepository repository = new MiniRepository();
 
     @Test
-    public void test() throws IOException{
-        MultiConnection connection = new MultiConnection(repository.openConnection(),repository.openConnection());
+    public void test() throws IOException {
+        MultiConnection connection = new MultiConnection(repository.openConnection(), repository.openConnection());
 
         // find
         CloseableIterator<STMT> stmts = connection.findStatements(null, null, null, null, false);
@@ -32,8 +32,8 @@ public class MultiConnectionTest {
 
         // update
         connection.update(
-                Collections.<STMT>emptySet(),
-                Collections.<STMT>singleton(dialect.createStatement(RDFS.label, RDF.type, RDF.Property)));
+                Collections.<STMT> emptySet(),
+                Collections.<STMT> singleton(dialect.createStatement(RDFS.label, RDF.type, RDF.Property)));
 
         // find again
         stmts = connection.findStatements(RDFS.label, RDF.type, null, null, false);
@@ -43,5 +43,5 @@ public class MultiConnectionTest {
         // close
         connection.close();
     }
-    
+
 }

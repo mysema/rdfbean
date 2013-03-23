@@ -14,10 +14,10 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class TupleQueryImpl extends AbstractQueryImpl {
-    
+
     public TupleQueryImpl(Query query, Dataset dataset, JenaDialect dialect) {
         super(query, dataset, dialect);
     }

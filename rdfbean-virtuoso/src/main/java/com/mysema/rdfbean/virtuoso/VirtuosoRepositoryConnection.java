@@ -54,13 +54,13 @@ import com.mysema.rdfbean.owl.OWL;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class VirtuosoRepositoryConnection implements RDFConnection {
-    
-    private static final Map<QueryLanguage<?,?>, SPARQLQuery.ResultType> resultTypes = new HashMap<QueryLanguage<?,?>, SPARQLQuery.ResultType>();
 
-    static{
+    private static final Map<QueryLanguage<?, ?>, SPARQLQuery.ResultType> resultTypes = new HashMap<QueryLanguage<?, ?>, SPARQLQuery.ResultType>();
+
+    static {
         resultTypes.put(QueryLanguage.BOOLEAN, SPARQLQuery.ResultType.BOOLEAN);
         resultTypes.put(QueryLanguage.GRAPH, SPARQLQuery.ResultType.TRIPLES);
         resultTypes.put(QueryLanguage.TUPLE, SPARQLQuery.ResultType.TUPLES);
@@ -73,7 +73,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     private static final String DEFAULT_OUTPUT = "sparql\n ";
 
     private static final String JAVA_OUTPUT = "sparql define output:format '_JAVA_'\n ";
-    
+
     private static final String INTERNAL_PREFIX = "http://www.openlinksw.com/";
 
     private static final String SPARQL_CREATE_GRAPH = "sparql create silent graph iri(??)";
@@ -83,19 +83,19 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     private static final String SPARQL_DROP_GRAPH = "sparql drop silent graph iri(??)";
 
     private static final String SPARQL_DELETE = "sparql define output:format '_JAVA_' " +
-    		"delete from graph iri(??) {`iri(??)` `iri(??)` " +
-    		"`bif:__rdf_long_from_batch_params(??,??,??)`}";
+            "delete from graph iri(??) {`iri(??)` `iri(??)` " +
+            "`bif:__rdf_long_from_batch_params(??,??,??)`}";
 
     public static void bindBlankNode(PreparedStatement ps, int col, BID n) throws SQLException {
         ps.setString(col, "_:" + n.getValue());
     }
 
     public static void bindResource(PreparedStatement ps, int col, ID n) throws SQLException {
-        if (n.isURI()){
+        if (n.isURI()) {
             bindURI(ps, col, n.asURI());
-        }else if (n.isBNode()){
+        } else if (n.isBNode()) {
             bindBlankNode(ps, col, n.asBNode());
-        }else{
+        } else {
             throw new IllegalArgumentException(n.toString());
         }
     }
@@ -116,7 +116,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             ps.setNull(col + 2, java.sql.Types.VARCHAR);
 
         } else if (n.isLiteral()) {
-            LIT lit = n.asLiteral();      
+            LIT lit = n.asLiteral();
             if (lit.getLang() != null) {
                 ps.setInt(col, 5);
                 ps.setString(col + 1, lit.getValue());
@@ -168,7 +168,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             assertAllowedGraph(stmt.getContext());
             UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
             TurtleStringWriter writer = writers.get(context);
-            if (writer == null){
+            if (writer == null) {
                 writer = new TurtleStringWriter(true);
                 writers.put(context, writer);
                 writer.begin();
@@ -178,27 +178,27 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
         // create graphs
         PreparedStatement stmt = connection.prepareStatement(SPARQL_CREATE_GRAPH);
-        try{
-            for (UID graph : writers.keySet()){
+        try {
+            for (UID graph : writers.keySet()) {
                 stmt.setString(1, graph.getId());
                 stmt.execute();
                 stmt.clearParameters();
             }
-        }finally{
+        } finally {
             stmt.close();
         }
 
         // load data
         stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
-        try{
-            for (Map.Entry<UID, TurtleStringWriter> entry : writers.entrySet()){
+        try {
+            for (Map.Entry<UID, TurtleStringWriter> entry : writers.entrySet()) {
                 entry.getValue().end();
                 stmt.setString(1, entry.getValue().toString());
                 stmt.setString(2, entry.getKey().getId());
                 stmt.execute();
                 stmt.clearParameters();
             }
-        }finally{
+        } finally {
             stmt.close();
         }
 
@@ -214,7 +214,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             assertAllowedGraph(stmt.getContext());
             UID context = stmt.getContext() != null ? stmt.getContext() : defaultGraph;
             SPARQLUpdateWriter writer = writers.get(context);
-            if (writer == null){
+            if (writer == null) {
                 writer = new SPARQLUpdateWriter(context, true);
                 writers.put(context, writer);
                 writer.begin();
@@ -224,19 +224,19 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
         // load data
         Statement stmt = connection.createStatement();
-        try{
-            for (Map.Entry<UID, SPARQLUpdateWriter> entry : writers.entrySet()){
+        try {
+            for (Map.Entry<UID, SPARQLUpdateWriter> entry : writers.entrySet()) {
                 entry.getValue().end();
                 stmt.execute("sparql " + entry.getValue().toString()); // NOSONAR
             }
-        }finally{
+        } finally {
             stmt.close();
         }
 
     }
 
     private void assertAllowedGraph(@Nullable UID context) {
-        if (context != null && !isAllowedGraph(context)){
+        if (context != null && !isAllowedGraph(context)) {
             throw new IllegalStateException("Context not allowed for update " + context.getId());
         }
     }
@@ -246,12 +246,12 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         return new VirtuosoTransaction(connection, readOnly, txTimeout, isolationLevel);
     }
 
-    private void bindNodes(PreparedStatement ps, List<NODE> nodes) throws SQLException{
+    private void bindNodes(PreparedStatement ps, List<NODE> nodes) throws SQLException {
         int offset = 1;
-        for (NODE node : nodes){
-            if (node.isResource()){
+        for (NODE node : nodes) {
+            if (node.isResource()) {
                 bindResource(ps, offset++, node.asResource());
-            }else{
+            } else {
                 bindValue(ps, offset, node);
                 offset += 3;
             }
@@ -276,89 +276,90 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     public BID createBNode() {
         return new BID();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, final D definition) {
-        if (updateLanguage == UpdateLanguage.SPARQL_UPDATE){
-            return (Q) new SPARQLUpdate(){
+        if (updateLanguage == UpdateLanguage.SPARQL_UPDATE) {
+            return (Q) new SPARQLUpdate() {
                 @Override
                 public void execute() {
-                    executeSPARQLUpdate(
-                            DEFAULT_OUTPUT + 
-                            "DEFINE input:default-graph-uri <"+defaultGraph.getId()+">\n" + 
+                    executeSPARQLUpdate(DEFAULT_OUTPUT +
+                            "DEFINE input:default-graph-uri <" + defaultGraph.getId() + ">\n" +
                             definition.toString());
                 }
-                
+
             };
-        }else{
-            throw new UnsupportedOperationException(updateLanguage.toString());    
-        }         
+        } else {
+            throw new UnsupportedOperationException(updateLanguage.toString());
+        }
     }
-    
-    private void executeSPARQLUpdate(String sparqlUpdate){
+
+    private void executeSPARQLUpdate(String sparqlUpdate) {
         try {
             Statement stmt = connection.createStatement();
             try {
-                stmt.execute(sparqlUpdate); //NOSONAR
-            }finally{
+                stmt.execute(sparqlUpdate); // NOSONAR
+            } finally {
                 stmt.close();
-            }                        
+            }
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
-        if (queryLanguage.equals(QueryLanguage.SPARQL)){
+        if (queryLanguage.equals(QueryLanguage.SPARQL)) {
             String query = definition.toString();
             SPARQLQuery.ResultType resultType = getResultType(query);
-            return (Q)createSPARQLQuery(query, resultType);
+            return (Q) createSPARQLQuery(query, resultType);
 
-        }else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
-                  queryLanguage.equals(QueryLanguage.GRAPH) ||
-                  queryLanguage.equals(QueryLanguage.TUPLE)){
+        } else if (queryLanguage.equals(QueryLanguage.BOOLEAN) ||
+                queryLanguage.equals(QueryLanguage.GRAPH) ||
+                queryLanguage.equals(QueryLanguage.TUPLE)) {
             SPARQLVisitor visitor = new SPARQLVisitor(VirtuosoSPARQLTemplates.DEFAULT, "");
-            visitor.setInlineResources(true); // TODO : remove this when full prepared statement usage is faster with Virtuoso
-            QueryMetadata md = (QueryMetadata)definition;
+            visitor.setInlineResources(true); // TODO : remove this when full
+                                              // prepared statement usage is
+                                              // faster with Virtuoso
+            QueryMetadata md = (QueryMetadata) definition;
             visitor.visit(md, queryLanguage);
             SPARQLQuery query = createSPARQLQuery(visitor.toString(), resultTypes.get(queryLanguage));
-            if (logger.isInfoEnabled()){
+            if (logger.isInfoEnabled()) {
                 logBindings(visitor.getConstantToLabel(), md);
             }
             visitor.addBindings(query, md);
-            return (Q)query;
+            return (Q) query;
 
-        }else{
+        } else {
             throw new IllegalArgumentException("Unsupported query language " + queryLanguage);
         }
     }
 
     private void logBindings(Map<Object, String> constantToLabel, QueryMetadata md) {
-        for (Map.Entry<Object,String> entry : constantToLabel.entrySet()){
-            if (entry.getKey() instanceof ParamExpression<?>){
-                if (md.getParams().containsKey(entry.getKey())){
+        for (Map.Entry<Object, String> entry : constantToLabel.entrySet()) {
+            if (entry.getKey() instanceof ParamExpression<?>) {
+                if (md.getParams().containsKey(entry.getKey())) {
                     logger.info(entry.getValue() + " = " + md.getParams().get(entry.getKey()));
                 }
-            }else {
+            } else {
                 logger.info(entry.getValue() + " = " + entry.getKey());
             }
         }
     }
 
     private SPARQLQuery createSPARQLQuery(String query, SPARQLQuery.ResultType resultType) {
-        if (logger.isInfoEnabled()){
+        if (logger.isInfoEnabled()) {
             logger.info(query);
         }
-        if (resultType == SPARQLQuery.ResultType.BOOLEAN){
+        if (resultType == SPARQLQuery.ResultType.BOOLEAN) {
             return new BooleanQueryImpl(connection, prefetchSize, JAVA_OUTPUT + query);
-        }else if (resultType == SPARQLQuery.ResultType.TUPLES){
+        } else if (resultType == SPARQLQuery.ResultType.TUPLES) {
             return new TupleQueryImpl(connection, converter, prefetchSize, DEFAULT_OUTPUT + query);
-        }else if (resultType == SPARQLQuery.ResultType.TRIPLES){
+        } else if (resultType == SPARQLQuery.ResultType.TRIPLES) {
             return new GraphQueryImpl(connection, converter, prefetchSize, JAVA_OUTPUT + query);
-        }else{
+        } else {
             throw new IllegalArgumentException("No result type for " + query);
         }
     }
@@ -366,9 +367,9 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     @Override
     public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
         STMTIterator stmts = findStatements(subject, predicate, object, context, includeInferred, true);
-        try{
+        try {
             return stmts.hasNext();
-        }finally{
+        } finally {
             stmts.close();
         }
     }
@@ -391,52 +392,52 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         List<NODE> nodes = new ArrayList<NODE>(8);
         String s = "?s", p = "?p", o = "?o";
 
-//        if (context != null){
-//            nodes.add(context);
-//        }
-        if (subject != null){
+        // if (context != null){
+        // nodes.add(context);
+        // }
+        if (subject != null) {
             nodes.add(subject);
             s = "`iri(??)`";
         }
-        if (predicate != null){
+        if (predicate != null) {
             nodes.add(predicate);
             p = "`iri(??)`";
         }
-        if (object != null){
+        if (object != null) {
             nodes.add(object);
-            if (object.isResource()){
+            if (object.isResource()) {
                 o = "`iri(??)`";
-            }else{
+            } else {
                 o = "`bif:__rdf_long_from_batch_params(??,??,??)`";
             }
         }
 
         // query construction
         StringBuffer query = new StringBuffer("sparql select * ");
-        if (context != null){
+        if (context != null) {
             query.append("from named <" + context.getId() + "> ");
-//            query.append("from named iri(??) ");
+            // query.append("from named iri(??) ");
         }
         query.append("where { graph ?g { " + s + " " + p + " " + o + " } }");
-        if (hasOnly){
+        if (hasOnly) {
             query.append(" limit 1");
         }
 
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = connection.prepareStatement(query.toString()); //NOSONAR
+            ps = connection.prepareStatement(query.toString()); // NOSONAR
             bindNodes(ps, nodes);
             ps.setFetchSize(prefetchSize);
             rs = ps.executeQuery();
             return new STMTIterator(converter, ps, rs, subject, predicate, object, defaultGraph);
         } catch (SQLException e) {
-            AbstractQueryImpl.close(ps, rs); //NOSONAR
+            AbstractQueryImpl.close(ps, rs); // NOSONAR
             throw new RepositoryException("Query execution failed : " + query.toString(), e);
         }
     }
 
-    public Connection getConnection(){
+    public Connection getConnection() {
         return connection;
     }
 
@@ -445,28 +446,28 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         return idSequence.getNextId();
     }
 
-    private SPARQLQuery.ResultType getResultType(String definition){
+    private SPARQLQuery.ResultType getResultType(String definition) {
         String normalized = definition.toLowerCase(Locale.ENGLISH).replaceAll("\\s+", " ");
-        if (normalized.startsWith("select ") || normalized.contains(" select")){
+        if (normalized.startsWith("select ") || normalized.contains(" select")) {
             return SPARQLQuery.ResultType.TUPLES;
-        }else if (normalized.startsWith("ask ") || normalized.contains(" ask ")){
+        } else if (normalized.startsWith("ask ") || normalized.contains(" ask ")) {
             return SPARQLQuery.ResultType.BOOLEAN;
-        }else if (normalized.startsWith("construct ") || normalized.contains(" construct ")){
+        } else if (normalized.startsWith("construct ") || normalized.contains(" construct ")) {
             return SPARQLQuery.ResultType.TRIPLES;
-        }else if (normalized.startsWith("describe ") || normalized.contains(" describe ")){
+        } else if (normalized.startsWith("describe ") || normalized.contains(" describe ")) {
             return SPARQLQuery.ResultType.TRIPLES;
-        }else{
+        } else {
             throw new IllegalArgumentException("Illegal query " + definition);
         }
     }
 
-    boolean isAllowedGraph(UID context){
+    boolean isAllowedGraph(UID context) {
         return !context.getId().startsWith(INTERNAL_PREFIX)
-            && !context.getId().equals("http://localhost:8890/DAV")
-            && !context.getId().equals(RDF.NS)
-            && !context.getId().equals(RDFS.NS)
-            && !context.getId().equals(OWL.NS)
-            && (context.equals(defaultGraph) || allowedGraphs.isEmpty() || allowedGraphs.contains(context));
+                && !context.getId().equals("http://localhost:8890/DAV")
+                && !context.getId().equals(RDF.NS)
+                && !context.getId().equals(RDFS.NS)
+                && !context.getId().equals(OWL.NS)
+                && (context.equals(defaultGraph) || allowedGraphs.isEmpty() || allowedGraphs.contains(context));
     }
 
     public boolean isReadOnly() {
@@ -477,33 +478,37 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
     }
 
-    public void load(Format format, InputStream is, @Nullable UID context, boolean replace) throws SQLException, IOException{
-        if (context != null && replace){
+    public void load(Format format, InputStream is, @Nullable UID context, boolean replace) throws SQLException, IOException {
+        if (context != null && replace) {
             remove(null, null, null, context);
         }
         PreparedStatement stmt = null;
-        try{
+        try {
             byte[] bytes = ByteStreams.toByteArray(is);
-            if (format == Format.N3 || format == Format.TURTLE || format == Format.NTRIPLES){ // UTF-8
-//                String content = IOUtils.toString(is, format == Format.NTRIPLES ? "US-ASCII" : "UTF-8");
+            if (format == Format.N3 || format == Format.TURTLE || format == Format.NTRIPLES) { // UTF-8
+            // String content = IOUtils.toString(is, format == Format.NTRIPLES ?
+            // "US-ASCII" : "UTF-8");
                 String content = new String(bytes, format == Format.NTRIPLES ? Charsets.US_ASCII : Charsets.UTF_8);
                 stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
                 stmt.setString(1, content);
                 stmt.setString(2, context != null ? context.getId() : defaultGraph.getId());
-            }else if (format == Format.RDFXML){
-//                String content = IOUtils.toString(is, "UTF-8"); // TODO : proper XML load
-                String content = new String(bytes, Charsets.UTF_8); // TODO : propert XML load
+            } else if (format == Format.RDFXML) {
+                // String content = IOUtils.toString(is, "UTF-8"); // TODO :
+                // proper XML load
+                String content = new String(bytes, Charsets.UTF_8); // TODO :
+                                                                    // propert
+                                                                    // XML load
                 stmt = connection.prepareStatement("DB.DBA.RDF_LOAD_RDFXML(?,'',?,0)");
                 stmt.setString(1, content);
                 stmt.setString(2, context != null ? context.getId() : defaultGraph.getId());
-            }else{
+            } else {
                 throw new IllegalArgumentException("Unsupported forma " + format);
             }
             stmt.execute();
-        }finally{
-             if (stmt != null){
-                 stmt.close();
-             }
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
         }
 
     }
@@ -536,13 +541,12 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 ps.executeBatch();
                 ps.clearBatch();
             }
-        }finally{
-            if (ps != null){
+        } finally {
+            if (ps != null) {
                 ps.close();
             }
         }
     }
-
 
     @Override
     public void remove(ID subject, UID predicate, NODE object, UID context) {
@@ -554,7 +558,7 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
     }
 
     private void removeMatch(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object,
-            @Nullable UID context) throws SQLException  {
+            @Nullable UID context) throws SQLException {
         assertAllowedGraph(context);
         PreparedStatement ps = null;
         try {
@@ -563,11 +567,11 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 ps = connection.prepareStatement(SPARQL_DROP_GRAPH);
                 ps.setString(1, context.getId());
                 ps.execute();
-                if (logger.isInfoEnabled()){
+                if (logger.isInfoEnabled()) {
                     logger.info("Dropped " + context.getId());
                 }
 
-            // all given
+                // all given
             } else if (subject != null && predicate != null && object != null && context != null) {
                 ps = connection.prepareStatement(VirtuosoRepositoryConnection.SPARQL_DELETE);
                 ps.setString(1, context.getId());
@@ -575,13 +579,13 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 bindURI(ps, 3, predicate);
                 bindValue(ps, 4, object);
                 ps.execute();
-                
-            }else if (subject == null && predicate == null && object == null && context == null && allowedGraphs.isEmpty()) {
-                ps = connection.prepareStatement("RDF_GLOBAL_RESET()");
-                ps.execute();                
 
-            // no context
-            } else if (context == null){
+            } else if (subject == null && predicate == null && object == null && context == null && allowedGraphs.isEmpty()) {
+                ps = connection.prepareStatement("RDF_GLOBAL_RESET()");
+                ps.execute();
+
+                // no context
+            } else if (context == null) {
                 Set<UID> graphs = new HashSet<UID>();
                 graphs.add(defaultGraph);
 
@@ -589,20 +593,20 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 ps = connection.prepareStatement(SPARQL_SELECT_KNOWN_GRAPHS);
                 ps.setFetchSize(25);
                 ResultSet rs = null;
-                try{
+                try {
                     rs = ps.executeQuery();
-                    while (rs.next()){
+                    while (rs.next()) {
                         UID graph = new UID(rs.getString(1));
-                        if (isAllowedGraph(graph)){
+                        if (isAllowedGraph(graph)) {
                             graphs.add(graph);
                         }
                     }
-                }finally{
+                } finally {
                     AbstractQueryImpl.close(ps, rs);
                     ps = null;
                 }
 
-                for (UID graph : graphs){
+                for (UID graph : graphs) {
                     removeMatch(subject, predicate, object, graph);
                 }
 
@@ -610,43 +614,43 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
                 String s = "?s", p = "?p", o = "?o", c = "iri(??)";
                 List<NODE> nodes = new ArrayList<NODE>(8);
                 nodes.add(context);
-                if (subject != null){
+                if (subject != null) {
                     nodes.add(subject);
                     s = "`iri(??)`";
                 }
-                if (predicate != null){
+                if (predicate != null) {
                     nodes.add(predicate);
                     p = "`iri(??)`";
                 }
-                if (object != null){
+                if (object != null) {
                     nodes.add(object);
-                    if (object.isResource()){
+                    if (object.isResource()) {
                         o = "`iri(??)`";
-                    }else{
+                    } else {
                         o = "`bif:__rdf_long_from_batch_params(??,??,??)`";
                     }
                 }
 
                 nodes.add(context);
-                if (subject != null){
+                if (subject != null) {
                     nodes.add(subject);
                 }
-                if (predicate != null){
+                if (predicate != null) {
                     nodes.add(predicate);
                 }
-                if (object != null){
+                if (object != null) {
                     nodes.add(object);
                 }
 
                 String delete = String.format("sparql delete from %1$s { %2$s %3$s %4$s } " +
                         "where { graph `%1$s` { %2$s %3$s %4$s } }", c, s, p, o);
 
-                ps = connection.prepareStatement(delete); //NOSONAR
+                ps = connection.prepareStatement(delete); // NOSONAR
                 bindNodes(ps, nodes);
                 ps.execute();
             }
-        }finally{
-            if (ps != null){
+        } finally {
+            if (ps != null) {
                 ps.close();
             }
         }
@@ -654,14 +658,14 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
 
     @Override
     public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
-        if (removedStatements != null && !removedStatements.isEmpty()){
+        if (removedStatements != null && !removedStatements.isEmpty()) {
             try {
                 remove(removedStatements);
             } catch (SQLException e) {
                 throw new RepositoryException(e);
             }
         }
-        if (addedStatements != null && !addedStatements.isEmpty()){
+        if (addedStatements != null && !addedStatements.isEmpty()) {
             try {
                 addBulk(addedStatements);
             } catch (SQLException e) {
@@ -671,12 +675,12 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             }
         }
     }
-    
+
     public <T> T doInConnection(SQLConnectionCallback<T> callback) {
         return callback.doInConnection(connection);
     }
 
-    protected void verifyNotReadOnly(){
+    protected void verifyNotReadOnly() {
         if (isReadOnly()) {
             throw new RepositoryException("Connection is in read-only mode");
         }

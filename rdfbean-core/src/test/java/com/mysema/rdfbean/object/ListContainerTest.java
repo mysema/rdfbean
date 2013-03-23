@@ -44,19 +44,19 @@ public class ListContainerTest {
     }
 
     @Test
-    public void Load_String_List(){
+    public void Load_String_List() {
         Session session = SessionUtil.openSession(Example.class);
         Example example = new Example();
-        example.list = Arrays.asList("1","2","3","4");
+        example.list = Arrays.asList("1", "2", "3", "4");
         session.save(example);
         session.clear();
 
         example = session.findInstances(Example.class).get(0);
-        assertEquals(Arrays.asList("1","2","3","4"), example.list);
+        assertEquals(Arrays.asList("1", "2", "3", "4"), example.list);
     }
 
     @Test
-    public void Load_Entity_List(){
+    public void Load_Entity_List() {
         Session session = SessionUtil.openSession(ChildContainer.class, Child.class);
         ChildContainer example = new ChildContainer();
         example.children = Arrays.asList(new Child(), new Child(), new Child());

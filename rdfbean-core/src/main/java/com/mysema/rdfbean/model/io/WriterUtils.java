@@ -11,15 +11,15 @@ import com.mysema.rdfbean.model.Format;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public final class WriterUtils {
 
-    public static RDFWriter createWriter(Format format, OutputStream out){
+    public static RDFWriter createWriter(Format format, OutputStream out) {
         return createWriter(format, out, Namespaces.DEFAULT);
     }
-    
-    public static RDFWriter createWriter(Format format, OutputStream out, Map<String,String> prefixes){        
+
+    public static RDFWriter createWriter(Format format, OutputStream out, Map<String, String> prefixes) {
         try {
             String encoding = format == Format.NTRIPLES ? "US-ASCII" : "UTF-8";
             return createWriter(format, new OutputStreamWriter(out, encoding), prefixes);
@@ -27,23 +27,24 @@ public final class WriterUtils {
             throw new IllegalStateException(e);
         }
     }
-    
-    public static RDFWriter createWriter(Format format, Writer writer){
-        return createWriter(format, writer, Namespaces.DEFAULT);
-    }    
 
-    public static RDFWriter createWriter(Format format, Writer writer, Map<String,String> prefixes){
-        if (format == Format.N3 || format == Format.TURTLE){
+    public static RDFWriter createWriter(Format format, Writer writer) {
+        return createWriter(format, writer, Namespaces.DEFAULT);
+    }
+
+    public static RDFWriter createWriter(Format format, Writer writer, Map<String, String> prefixes) {
+        if (format == Format.N3 || format == Format.TURTLE) {
             return new TurtleWriter(writer, prefixes);
-        }else if (format == Format.NTRIPLES){
+        } else if (format == Format.NTRIPLES) {
             return new NTriplesWriter(writer);
-        }else if (format == Format.RDFXML){
+        } else if (format == Format.RDFXML) {
             return new RDFXMLWriter(writer, prefixes);
-        }else{
+        } else {
             throw new IllegalArgumentException("Unsupported format " + format);
         }
     }
-    
-    private WriterUtils(){}
-    
+
+    private WriterUtils() {
+    }
+
 }

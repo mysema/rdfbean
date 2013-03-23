@@ -12,7 +12,7 @@ import com.mysema.rdfbean.owl.OWL;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public final class Nodes {
 
@@ -20,7 +20,7 @@ public final class Nodes {
 
     public static final Set<UID> all;
 
-    static{
+    static {
         Set<UID> uids = new HashSet<UID>();
         try {
             for (Class<?> cl : Arrays.<Class<?>> asList(DC.class, DCTERMS.class, FOAF.class, GEO.class,
@@ -48,10 +48,11 @@ public final class Nodes {
         namespaces.put(ns.iterator().next().ns(), Collections.unmodifiableSet(ns));
     }
 
-    public static Set<UID> get(String ns){
+    public static Set<UID> get(String ns) {
         return namespaces.get(ns);
     }
 
-    private Nodes(){}
+    private Nodes() {
+    }
 
 }

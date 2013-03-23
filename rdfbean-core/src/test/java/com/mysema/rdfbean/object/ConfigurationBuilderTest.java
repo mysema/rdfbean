@@ -27,17 +27,17 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.UID;
 
 public class ConfigurationBuilderTest {
-    
+
     public static class Person {
-        
+
         Labeled labeled;
-        
+
         String id;
-        
+
         String firstName, lastName;
-        
+
         Person superior;
-        
+
         Department department;
 
         public String getFirstName() {
@@ -47,88 +47,88 @@ public class ConfigurationBuilderTest {
         public String getLastName() {
             return lastName;
         }
-        
+
     }
-    
+
     public static class Department {
-        
+
         String id;
-        
+
         String name;
-        
+
         Company company;
     }
-    
+
     public static class Company {
-        
+
         String id;
-        
+
         String name;
-        
+
         Set<Department> departments;
     }
-    
+
     public static class Labeled {
-        
+
         String label;
-        
+
         String comment;
     }
-    
+
     @Test
-    public void UID_availability(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void UID_availability() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(Person.class);
         builder.addClass(Department.class);
         builder.addClass(Company.class);
         builder.addClass(Labeled.class);
         Configuration configuration = builder.build();
-        for (MappedClass mc : configuration.getMappedClasses()){
+        for (MappedClass mc : configuration.getMappedClasses()) {
             assertNotNull(mc.getUID());
         }
     }
-    
+
     @Test
-    public void Path(){
+    public void Path() {
         // TODO
     }
-    
+
     @Test
-    public void Mixin(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void Mixin() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(TEST.NS, Person.class)
-            .addMixin("labeled");
-        Configuration configuration = builder.build();    
-        
+                .addMixin("labeled");
+        Configuration configuration = builder.build();
+
         // labeled
         MappedClass person = configuration.getMappedClass(Person.class);
         MappedPath person_labeled = person.getMappedPath("labeled");
         assertTrue(person_labeled.getMappedProperty().isMixin());
     }
-    
+
     @Test
-    public void Without_namespace(){
+    public void Without_namespace() {
         ConfigurationBuilder builder = new ConfigurationBuilder();
-        for (Class<?> cl : Arrays.<Class<?>>asList(Person.class, Department.class, Company.class, Labeled.class)){
-            builder.addClass(cl).addProperties();    
-        }        
+        for (Class<?> cl : Arrays.<Class<?>> asList(Person.class, Department.class, Company.class, Labeled.class)) {
+            builder.addClass(cl).addProperties();
+        }
         Configuration configuration = builder.build();
-        
+
         MappedClass person = configuration.getMappedClass(Person.class);
         String ns = "java:com.mysema.rdfbean.object.ConfigurationBuilderTest.Person#";
-        assertEquals(new UID(ns,"Person"), person.getUID());
-        assertEquals(new UID(ns,"labeled"), person.getMappedPath("labeled").getPredicatePath().get(0).getUID());
+        assertEquals(new UID(ns, "Person"), person.getUID());
+        assertEquals(new UID(ns, "labeled"), person.getMappedPath("labeled").getPredicatePath().get(0).getUID());
     }
-    
+
     @Test
-    public void Container(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void Container() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(TEST.NS, Company.class)
-            .addId("id")
-            .addProperty("departments", new UID(TEST.NS,"company"), ContainerType.SEQ)
-            .addProperties();
+                .addId("id")
+                .addProperty("departments", new UID(TEST.NS, "company"), ContainerType.SEQ)
+                .addProperties();
         Configuration configuration = builder.build();
-        
+
         // company
         MappedClass company = configuration.getMappedClass(Company.class);
         MappedPath company_departments = company.getMappedPath("departments");
@@ -136,50 +136,50 @@ public class ConfigurationBuilderTest {
         assertEquals("company", company_departments.getPredicatePath().get(0).getUID().ln());
         assertEquals(ContainerType.SEQ, company_departments.getMappedProperty().getContainerType());
     }
-    
+
     @Test
-    public void Localized(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void Localized() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(TEST.NS, Labeled.class)
-            .addLocalized("label", RDFS.label)
-            .addProperty("comment", RDFS.comment);
-        Configuration configuration = builder.build();    
-        
+                .addLocalized("label", RDFS.label)
+                .addProperty("comment", RDFS.comment);
+        Configuration configuration = builder.build();
+
         // labeled
         MappedClass labeled = configuration.getMappedClass(Labeled.class);
         MappedPath labeled_label = labeled.getMappedPath("label");
         assertTrue(labeled_label.getMappedProperty().isLocalized());
-        assertEquals(RDFS.label,labeled_label.getPredicatePath().get(0).getUID());
+        assertEquals(RDFS.label, labeled_label.getPredicatePath().get(0).getUID());
         MappedPath labeled_comment = labeled.getMappedPath("comment");
         assertFalse(labeled_comment.getMappedProperty().isLocalized());
-        assertEquals(RDFS.comment,labeled_comment.getPredicatePath().get(0).getUID());
+        assertEquals(RDFS.comment, labeled_comment.getPredicatePath().get(0).getUID());
     }
-    
+
     @Test
-    public void Namespaces(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void Namespaces() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(TEST.NS, Labeled.class)
-            .addProperty("label", RDFS.label)
-            .addProperty("comment", RDFS.comment);
-        Configuration configuration = builder.build();    
-        
+                .addProperty("label", RDFS.label)
+                .addProperty("comment", RDFS.comment);
+        Configuration configuration = builder.build();
+
         // labeled
         MappedClass labeled = configuration.getMappedClass(Labeled.class);
         MappedPath labeled_label = labeled.getMappedPath("label");
-        assertEquals(RDFS.label,labeled_label.getPredicatePath().get(0).getUID());
+        assertEquals(RDFS.label, labeled_label.getPredicatePath().get(0).getUID());
         MappedPath labeled_comment = labeled.getMappedPath("comment");
-        assertEquals(RDFS.comment,labeled_comment.getPredicatePath().get(0).getUID());
+        assertEquals(RDFS.comment, labeled_comment.getPredicatePath().get(0).getUID());
     }
-    
+
     @Test
-    public void Inverse(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void Inverse() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(TEST.NS, Company.class)
-            .addId("id")
-            .addProperty("departments", new UID(TEST.NS,"company"),true)
-            .addProperties();
+                .addId("id")
+                .addProperty("departments", new UID(TEST.NS, "company"), true)
+                .addProperties();
         Configuration configuration = builder.build();
-        
+
         // company
         MappedClass company = configuration.getMappedClass(Company.class);
         MappedPath company_departments = company.getMappedPath("departments");
@@ -187,18 +187,18 @@ public class ConfigurationBuilderTest {
         assertEquals("company", company_departments.getPredicatePath().get(0).getUID().ln());
         assertTrue(company_departments.getPredicatePath().get(0).inv());
     }
-    
+
     @Test
-    public void AddProperty(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void AddProperty() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(TEST.NS, Person.class)
-            .addId("id")
-            .addProperty("firstName")
-            .addProperty("lastName", new UID(TEST.NS, "surName"))
-            .addProperty("superior")
-            .addProperty("department");
-        Configuration configuration = builder.build();    
-        
+                .addId("id")
+                .addProperty("firstName")
+                .addProperty("lastName", new UID(TEST.NS, "surName"))
+                .addProperty("superior")
+                .addProperty("department");
+        Configuration configuration = builder.build();
+
         // person
         MappedClass person = configuration.getMappedClass(Person.class);
         MappedPath person_id = person.getMappedPath("id");
@@ -213,15 +213,15 @@ public class ConfigurationBuilderTest {
         MappedPath person_department = person.getMappedPath("department");
         assertEquals("department", person_department.getPredicatePath().get(0).getUID().ln());
     }
-    
+
     @Test
-    public void AddProperties(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void AddProperties() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(TEST.NS, Person.class).addId("id").addProperties();
         builder.addClass(new UID(TEST.NS, "Dept"), Department.class).addId("id").addProperties();
         builder.addClass(TEST.NS, Company.class).addId("id").addProperties();
         Configuration configuration = builder.build();
-        
+
         // person
         MappedClass person = configuration.getMappedClass(Person.class);
         MappedPath person_id = person.getMappedPath("id");
@@ -234,7 +234,7 @@ public class ConfigurationBuilderTest {
         assertEquals("superior", person_superior.getPredicatePath().get(0).getUID().ln());
         MappedPath person_department = person.getMappedPath("department");
         assertEquals("department", person_department.getPredicatePath().get(0).getUID().ln());
-        
+
         // department
         MappedClass department = configuration.getMappedClass(Department.class);
         MappedPath department_id = department.getMappedPath("id");
@@ -243,7 +243,7 @@ public class ConfigurationBuilderTest {
         assertEquals("name", department_name.getPredicatePath().get(0).getUID().ln());
         MappedPath department_company = department.getMappedPath("company");
         assertEquals("company", department_company.getPredicatePath().get(0).getUID().ln());
-        
+
         // company
         MappedClass company = configuration.getMappedClass(Company.class);
         MappedPath company_id = company.getMappedPath("id");
@@ -253,38 +253,38 @@ public class ConfigurationBuilderTest {
     }
 
     @Test
-    public void Query() throws IOException{
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void Query() throws IOException {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(TEST.NS, Person.class).addId("id").addProperties();
         builder.addClass(new UID(TEST.NS, "Dept"), Department.class).addId("id").addProperties();
         builder.addClass(TEST.NS, Company.class).addId("id").addProperties();
         Configuration configuration = builder.build();
-        
-        Session session = SessionUtil.openSession(new MiniRepository(), Collections.<Locale>emptySet(), configuration);
+
+        Session session = SessionUtil.openSession(new MiniRepository(), Collections.<Locale> emptySet(), configuration);
         Person person = new Person();
         person.firstName = "Bob";
         person.lastName = "Smith";
         session.save(person);
         session.clear();
-        
+
         // getById
         Person other = session.getById(person.id, Person.class);
         assertNotNull(other.id);
         assertEquals(person.firstName, other.firstName);
         assertEquals(person.lastName, other.lastName);
-        
+
         // query
         PathBuilder<Person> personPath = new PathBuilderFactory().create(Person.class);
         assertEquals(other, session.from(personPath).where(personPath.getString("firstName").eq("Bob")).uniqueResult(personPath));
         assertEquals(other, session.from(personPath).where(personPath.getString("lastName").eq("Smith")).uniqueResult(personPath));
-        
+
         // list
         assertEquals(1, session.from(personPath).list(personPath).size());
-        
+
         // findInstances
         assertEquals(1, session.findInstances(Person.class).size());
-        session.close();        
-        
+        session.close();
+
     }
-    
+
 }

@@ -26,7 +26,7 @@ public class InverseMappingTest {
         @Id(IDType.RESOURCE)
         ID id;
 
-        @Predicate(ln="company", inv=true)
+        @Predicate(ln = "company", inv = true)
         Set<Department> departments;
     }
 
@@ -39,7 +39,7 @@ public class InverseMappingTest {
         @Predicate
         Company company;
 
-        @Predicate(ln="department", inv=true)
+        @Predicate(ln = "department", inv = true)
         Set<Employee> employees;
     }
 
@@ -55,7 +55,7 @@ public class InverseMappingTest {
     }
 
     @Test
-    public void test(){
+    public void test() {
         Session session = SessionUtil.openSession(Company.class, Department.class, Employee.class);
         Company company = new Company();
         Department department = new Department();

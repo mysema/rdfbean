@@ -49,24 +49,24 @@ import com.mysema.util.BeanMap;
 
 /**
  * @author sasa
- *
+ * 
  */
 public abstract class MappedProperty<M extends Member & AnnotatedElement> implements Cloneable {
 
     @SuppressWarnings("unchecked")
     public static final List<Class<? extends Annotation>> MAPPING_ANNOTATIONS =
-        Collections.unmodifiableList(Arrays.<Class<? extends Annotation>>asList(
-            ComponentType.class,
-            Container.class,
-            Default.class,
-            Defaults.class,
-            Id.class,
-            InjectService.class,
-            Localized.class,
-            MapElements.class,
-            Mixin.class,
-            Required.class
-        ));
+            Collections.unmodifiableList(Arrays.<Class<? extends Annotation>> asList(
+                    ComponentType.class,
+                    Container.class,
+                    Default.class,
+                    Defaults.class,
+                    Id.class,
+                    InjectService.class,
+                    Localized.class,
+                    MapElements.class,
+                    Mixin.class,
+                    Required.class
+                    ));
 
     @Nullable
     private final String name;
@@ -80,13 +80,13 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     private Class<?> keyType;
 
     private boolean collection;
-    
+
     private MappedClass declaringClass;
 
     private TypeVariable<?>[] typeVariables = new TypeVariable<?>[4];
 
     private Map<Class<? extends Annotation>, Annotation> annotations =
-        new HashMap<Class<? extends Annotation>, Annotation>();
+            new HashMap<Class<? extends Annotation>, Annotation>();
 
     private boolean includeMapped;
 
@@ -94,7 +94,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     MappedProperty(@Nullable String name, Annotation[] annotations, MappedClass declaringClass) {
         this.name = name;
         this.declaringClass = declaringClass;
-        for (Annotation annotation : Assert.notNull(annotations,"annotations")) {
+        for (Annotation annotation : Assert.notNull(annotations, "annotations")) {
             Class<? extends Annotation> aclass = (Class<? extends Annotation>) annotation.getClass().getInterfaces()[0];
             this.annotations.put(aclass, annotation);
         }
@@ -116,7 +116,6 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     }
 
     @SuppressWarnings("unchecked")
-
     void resolve(@Nullable MappedClass owner) {
         if (this.type == null) {
             this.type = getTypeInternal();
@@ -127,13 +126,13 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         }
 
         this.collection = Collection.class.isAssignableFrom(type);
-        
+
         ComponentType ctypeAnno = getAnnotation(ComponentType.class);
         if (ctypeAnno != null) {
             this.componentType = ctypeAnno.value();
         } else if (collection || isClassReference()) {
             this.componentType = getUpper(this.componentType, getGenericClass(genericType, 0, owner, 1));
-        } else if (type.isArray()) {    
+        } else if (type.isArray()) {
             this.componentType = type.getComponentType();
         } else if (isMap()) {
             MapElements mapKey = getAnnotation(MapElements.class);
@@ -177,7 +176,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             } else if (Collection.class.equals(collectionType)) {
                 return HashSet.class;
             } else {
-                throw new IllegalArgumentException("Unsupported Collection interface type: "+collectionType);
+                throw new IllegalArgumentException("Unsupported Collection interface type: " + collectionType);
             }
         }
         else if (Collection.class.isAssignableFrom(collectionType)) {
@@ -278,7 +277,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         } else if (wildcardType.getUpperBounds()[0] instanceof Class) {
             return (Class) wildcardType.getUpperBounds()[0];
         } else {
-            //System.err.println("Unable to find out actual type of " + gtype);
+            // System.err.println("Unable to find out actual type of " + gtype);
             return Object.class;
         }
     }
@@ -298,7 +297,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         MapElements mapKey = getAnnotation(MapElements.class);
         if (mapKey != null) {
             Predicate predicate = mapKey.key();
-//            String parentNs = getParentNs(mapKey, getMember());
+            // String parentNs = getParentNs(mapKey, getMember());
             return UID.create(declaringClass.getClassNs(), predicate.ns(), predicate.ln(), null);
         } else {
             return null;
@@ -309,7 +308,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return keyType;
     }
 
-    protected abstract  M getMember();
+    protected abstract M getMember();
 
     public String getName() {
         return name;
@@ -331,7 +330,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         if (mapKey != null) {
             Predicate predicate = mapKey.value();
             try {
-//                String parentNs = getParentNs(mapKey, getMember());
+                // String parentNs = getParentNs(mapKey, getMember());
                 return UID.create(declaringClass.getClassNs(), predicate.ns(), predicate.ln(), null);
             } catch (IllegalArgumentException e) {
                 return null;
@@ -352,7 +351,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         Id annotation = getAnnotation(Id.class);
         return annotation != null ? annotation.ns() : null;
     }
-    
+
     public boolean isAnnotatedProperty() {
         if (!annotations.isEmpty()) {
             for (Class<? extends Annotation> anno : MAPPING_ANNOTATIONS) {
@@ -381,7 +380,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
             return List.class.isAssignableFrom(getType()) || type.isArray();
         }
     }
-    
+
     public boolean isArray() {
         return type.isArray();
     }
@@ -406,9 +405,9 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         return isAnnotationPresent(Properties.class);
     }
 
-//    public boolean isPolymorphic() {
-//        return MappedClass.isPolymorphic(getTargetType());
-//    }
+    // public boolean isPolymorphic() {
+    // return MappedClass.isPolymorphic(getTargetType());
+    // }
 
     public boolean isConstructorParameter() {
         return getMember() instanceof Constructor<?>;
@@ -470,7 +469,7 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 
     public boolean isContainer() {
         Container container = this.getAnnotation(Container.class);
-        return container != null 
+        return container != null
                 && container.value() != ContainerType.LIST
                 && container.value() != ContainerType.NONE;
     }

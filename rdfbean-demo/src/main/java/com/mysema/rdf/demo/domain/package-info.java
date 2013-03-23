@@ -4,7 +4,7 @@
  * 
  */
 @Context(DEMO.DATA_CONTEXT)
-@MappedClasses( { Party.class, Person.class, Company.class })
+@MappedClasses({ Party.class, Person.class, Company.class })
 package com.mysema.rdf.demo.domain;
 
 import com.mysema.rdf.demo.DEMO;

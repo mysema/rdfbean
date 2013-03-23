@@ -18,14 +18,14 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class STMTIterator implements CloseableIterator<STMT>{
+public class STMTIterator implements CloseableIterator<STMT> {
 
     private final Converter converter;
 
     private final Statement stmt;
-    
+
     private final ResultSet rs;
 
     @Nullable
@@ -42,16 +42,17 @@ public class STMTIterator implements CloseableIterator<STMT>{
     @Nullable
     private Boolean next;
 
-    private int graphColumn = -1, subjectColumn = -1, predicateColumn = -1, objectColumn = -1;
+    private int graphColumn = -1, subjectColumn = -1, predicateColumn = -1,
+            objectColumn = -1;
 
     public STMTIterator(
-            Converter converter, 
-            Statement stmt, 
-            ResultSet rs, 
-            @Nullable ID subject, 
-            @Nullable UID predicate, 
-            @Nullable NODE object, 
-            UID defaultGraph){
+            Converter converter,
+            Statement stmt,
+            ResultSet rs,
+            @Nullable ID subject,
+            @Nullable UID predicate,
+            @Nullable NODE object,
+            UID defaultGraph) {
         this.converter = converter;
         this.stmt = stmt;
         this.rs = rs;
@@ -63,13 +64,13 @@ public class STMTIterator implements CloseableIterator<STMT>{
             ResultSetMetaData rsmd = rs.getMetaData();
             for (int i = 1; i <= rsmd.getColumnCount(); i++) {
                 String label = rsmd.getColumnName(i);
-                if (label.equalsIgnoreCase("g")){
+                if (label.equalsIgnoreCase("g")) {
                     graphColumn = i;
-                }else if (label.equalsIgnoreCase("s")){
+                } else if (label.equalsIgnoreCase("s")) {
                     subjectColumn = i;
-                }else if (label.equalsIgnoreCase("p")){
+                } else if (label.equalsIgnoreCase("p")) {
                     predicateColumn = i;
-                }else if (label.equalsIgnoreCase("o")){
+                } else if (label.equalsIgnoreCase("o")) {
                     objectColumn = i;
                 }
             }
@@ -78,7 +79,6 @@ public class STMTIterator implements CloseableIterator<STMT>{
         }
     }
 
-
     @Override
     public void close() {
         AbstractQueryImpl.close(stmt, rs);
@@ -86,7 +86,7 @@ public class STMTIterator implements CloseableIterator<STMT>{
 
     @Override
     public boolean hasNext() {
-        if (next == null){
+        if (next == null) {
             try {
                 next = rs.next();
             } catch (SQLException e) {
@@ -99,14 +99,14 @@ public class STMTIterator implements CloseableIterator<STMT>{
 
     @Override
     public STMT next() {
-        if (hasNext()){
+        if (hasNext()) {
             next = null;
             try {
                 return extractRow();
             } catch (SQLException e) {
                 throw new RepositoryException(e);
             }
-        }else{
+        } else {
             throw new NoSuchElementException();
         }
     }
@@ -127,38 +127,37 @@ public class STMTIterator implements CloseableIterator<STMT>{
             if (graphColumn != -1) {
                 val = rs.getObject(graphColumn);
                 g = (UID) converter.toNODE(val);
-                if (defaultGraph.equals(g)){
+                if (defaultGraph.equals(g)) {
                     g = null;
                 }
             }
         } catch (ClassCastException ccex) {
-            throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting UID: "+ val, ccex);
+            throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting UID: " + val, ccex);
         }
 
-        if (s == null){
+        if (s == null) {
             try {
                 val = rs.getObject(subjectColumn);
                 s = (ID) converter.toNODE(val);
             } catch (ClassCastException ccex) {
                 throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting ID: " + val, ccex);
             }
-        }            
+        }
 
-        if (p == null){
+        if (p == null) {
             try {
                 val = rs.getObject(predicateColumn);
                 p = (UID) converter.toNODE(val);
             } catch (ClassCastException ccex) {
-                throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting UID: "+ val, ccex);
-            }   
-        }         
+                throw new IllegalArgumentException("Unexpected resource type encountered. Was expecting UID: " + val, ccex);
+            }
+        }
 
-        if (o == null){
+        if (o == null) {
             o = converter.toNODE(rs.getObject(objectColumn));
-        }            
+        }
 
         return new STMT(s, p, o, g);
     }
-
 
 }

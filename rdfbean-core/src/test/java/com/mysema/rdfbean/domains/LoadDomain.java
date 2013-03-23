@@ -71,7 +71,7 @@ public interface LoadDomain {
         }
 
         public QDocument(EntityPathBase<? extends Document> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QDocument(PathMetadata<?> metadata) {
@@ -147,6 +147,5 @@ public interface LoadDomain {
         }
 
     }
-
 
 }

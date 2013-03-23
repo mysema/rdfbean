@@ -33,9 +33,9 @@ import com.mysema.util.ClassPathUtils;
 
 /**
  * Default implementation of the Configuration interface
- *
+ * 
  * @author sasa
- *
+ * 
  */
 public class DefaultConfiguration implements Configuration {
 
@@ -66,16 +66,16 @@ public class DefaultConfiguration implements Configuration {
     }
 
     public DefaultConfiguration() {
-        this((String)null);
+        this((String) null);
     }
 
     public DefaultConfiguration(Class<?>... classes) {
-        this((String)null);
+        this((String) null);
         addClasses(classes);
     }
 
     public DefaultConfiguration(Package... packages) {
-        this((String)null);
+        this((String) null);
         addPackages(packages);
     }
 
@@ -91,24 +91,24 @@ public class DefaultConfiguration implements Configuration {
 
     public final void addClasses(Class<?>... classes) {
         for (Class<?> clazz : classes) {
-            if (clazz.getAnnotation(ClassMapping.class) != null){
-                MappedClass mappedClass = mappedClassFactory.getMappedClass(clazz);                
+            if (clazz.getAnnotation(ClassMapping.class) != null) {
+                MappedClass mappedClass = mappedClassFactory.getMappedClass(clazz);
                 if (mappedClass.getUID() != null) {
                     ClassMapping classMapping = clazz.getAnnotation(ClassMapping.class);
                     if (clazz.isEnum() && !classMapping.parent().equals(Object.class)) {
                         MappedClass parentClass = mappedClassFactory.getMappedClass(classMapping.parent());
                         for (Object constant : clazz.getEnumConstants()) {
-                            UID instance = new UID(mappedClass.getClassNs(), ((Enum)constant).name());
+                            UID instance = new UID(mappedClass.getClassNs(), ((Enum) constant).name());
                             addClass(instance, parentClass);
                         }
                     }
                     addClass(mappedClass.getUID(), mappedClass);
                 }
-                for (MappedClass superClass : mappedClass.getMappedSuperClasses()){
+                for (MappedClass superClass : mappedClass.getMappedSuperClasses()) {
                     polymorphicClasses.add(superClass.getJavaClass());
                 }
                 mappedClasses.add(mappedClass);
-            }else{
+            } else {
                 throw new IllegalArgumentException("No @ClassMapping annotation for " + clazz.getName());
             }
         }
@@ -122,13 +122,13 @@ public class DefaultConfiguration implements Configuration {
         }
         classList.add(mappedClass);
     }
-    
+
     public final void addPackages(Package... packages) {
         for (Package pack : packages) {
             MappedClasses classes = pack.getAnnotation(MappedClasses.class);
             if (classes != null) {
                 addClasses(classes.value());
-            }else{
+            } else {
                 throw new IllegalArgumentException("No @MappedClasses annotation for " + pack.getName());
             }
         }
@@ -171,18 +171,18 @@ public class DefaultConfiguration implements Configuration {
     }
 
     public List<MappedClass> getMappedClasses(UID uid) {
-        if (type2classes.containsKey(uid)){
-            return type2classes.get(Assert.notNull(uid,"uid"));
-        }else{
+        if (type2classes.containsKey(uid)) {
+            return type2classes.get(Assert.notNull(uid, "uid"));
+        } else {
             return Collections.emptyList();
         }
     }
 
-    public boolean isMapped(Class<?> clazz){
+    public boolean isMapped(Class<?> clazz) {
         return clazz.getAnnotation(ClassMapping.class) != null;
     }
 
-    public boolean isPolymorphic(Class<?> clazz){
+    public boolean isPolymorphic(Class<?> clazz) {
         return polymorphicClasses.contains(clazz);
     }
 
@@ -191,12 +191,12 @@ public class DefaultConfiguration implements Configuration {
         return restrictedResources.contains(uid.getId()) || restrictedResources.contains(uid.ns());
     }
 
-    public void scanPackages(Package... packages){
+    public void scanPackages(Package... packages) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        for (Package pkg : packages){
+        for (Package pkg : packages) {
             try {
-                for (Class<?> cl : ClassPathUtils.scanPackage(classLoader, pkg)){
-                    if (cl.getAnnotation(ClassMapping.class) != null){
+                for (Class<?> cl : ClassPathUtils.scanPackage(classLoader, pkg)) {
+                    if (cl.getAnnotation(ClassMapping.class) != null) {
                         addClasses(cl);
                     }
                 }
@@ -205,5 +205,5 @@ public class DefaultConfiguration implements Configuration {
             }
         }
     }
-    
+
 }

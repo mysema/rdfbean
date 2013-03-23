@@ -31,7 +31,7 @@ import com.mysema.rdfbean.object.SessionUtil;
 
 /**
  * @author sasa
- *
+ * 
  */
 public class ServiceInjectionTest {
 
@@ -41,35 +41,37 @@ public class ServiceInjectionTest {
 
     public static class HelloWorldService implements ServiceInterface {
         public String doYourThing(RichBean rbean) {
-            return "Hello " + rbean.getLabel()+"!";
+            return "Hello " + rbean.getLabel() + "!";
         }
     }
 
     public static class HelloUnderWorldService implements ServiceInterface {
         public String doYourThing(RichBean rbean) {
-            return "Welcome to the Underworld, " + rbean.getLabel()+"!";
+            return "Welcome to the Underworld, " + rbean.getLabel() + "!";
         }
     }
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping(ns = TEST.NS)
     public static class RichBean {
-        @Predicate(ns=RDFS.NS)
+        @Predicate(ns = RDFS.NS)
         private String label;
 
-        @Predicate // Optional for Default mapped property - allows overriding default
-        @Default(ns=SRV.NS, ln="helloWorld")
+        @Predicate
+        // Optional for Default mapped property - allows overriding default
+        @Default(ns = SRV.NS, ln = "helloWorld")
         @InjectService
         private ServiceInterface service;
 
         public String executeService() {
             return service.doYourThing(this);
         }
+
         public String getLabel() {
             return this.label;
         }
     }
 
-    @ClassMapping(ns=TEST.NS)
+    @ClassMapping(ns = TEST.NS)
     public final static class MixinInjection {
         @Mixin
         @InjectService
@@ -89,7 +91,7 @@ public class ServiceInjectionTest {
         MiniRepository repository = new MiniRepository(
                 new STMT(subject, RDF.type, new UID(TEST.NS, "RichBean")),
                 new STMT(subject, RDFS.label, new LIT("RichBean"))
-        );
+                );
 
         Session session = SessionUtil.openSession(repository, RichBean.class);
         session.addParent(SRV.NS, new SpringObjectRepository(applicationContext));

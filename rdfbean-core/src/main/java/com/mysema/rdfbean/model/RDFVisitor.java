@@ -7,9 +7,9 @@ import com.mysema.query.types.Visitor;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public interface RDFVisitor<R,C> extends Visitor<R,C>{
+public interface RDFVisitor<R, C> extends Visitor<R, C> {
 
     R visit(QueryMetadata md, QueryLanguage<?, ?> queryType);
 

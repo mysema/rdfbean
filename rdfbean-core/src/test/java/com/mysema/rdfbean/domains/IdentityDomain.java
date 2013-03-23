@@ -13,7 +13,7 @@ import com.mysema.rdfbean.model.IDType;
 public interface IdentityDomain {
 
     @ClassMapping
-    public static class Entity1{
+    public static class Entity1 {
 
         @Id(IDType.RESOURCE)
         public ID id;
@@ -23,15 +23,14 @@ public interface IdentityDomain {
         }
 
         @Override
-        public String toString(){
+        public String toString() {
             return id.toString();
         }
-
 
     }
 
     @ClassMapping
-    public class Entity2{
+    public class Entity2 {
 
         @Id(IDType.LOCAL)
         public String id;
@@ -41,7 +40,7 @@ public interface IdentityDomain {
         }
 
         @Override
-        public String toString(){
+        public String toString() {
             return id.toString();
         }
     }

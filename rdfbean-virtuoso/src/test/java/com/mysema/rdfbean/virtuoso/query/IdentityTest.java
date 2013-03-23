@@ -19,16 +19,16 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.testutil.SessionConfig;
 import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
-@SessionConfig({Entity1.class, Entity2.class})
-public class IdentityTest extends AbstractConnectionTest implements IdentityDomain{
-    
+@SessionConfig({ Entity1.class, Entity2.class })
+public class IdentityTest extends AbstractConnectionTest implements IdentityDomain {
+
     @Test
-    public void test(){
+    public void test() {
         Entity1 entity1 = new Entity1();
         Entity2 entity2 = new Entity2();
         session.save(entity1);
         session.save(entity2);
-        
+
         Entity1 e1 = Alias.alias(Entity1.class);
         Entity2 e2 = Alias.alias(Entity2.class);
         SimplePath<ID> idPath = new SimplePath<ID>(ID.class, $(e1), "id");

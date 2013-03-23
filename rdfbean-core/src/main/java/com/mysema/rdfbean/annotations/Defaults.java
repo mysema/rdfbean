@@ -16,16 +16,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows defining default values for Collection properties. See {@link Default}.
+ * Allows defining default values for Collection properties. See {@link Default}
+ * .
  * 
  * @author sasa
  */
 @Documented
-@Target( { METHOD, FIELD, PARAMETER })
+@Target({ METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Defaults {
-    
+
     /**
      * @return
      */

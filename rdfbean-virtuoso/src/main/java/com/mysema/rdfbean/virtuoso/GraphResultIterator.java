@@ -19,26 +19,26 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class GraphResultIterator implements CloseableIterator<STMT> {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(GraphResultIterator.class);
 
     private final Statement stmt;
-    
+
     private final ResultSet rs;
-    
+
     private final String query;
-    
+
     private final Converter converter;
-    
+
     @Nullable
     private Boolean next = null;
-    
+
     private final boolean hasContext;
-    
-    public GraphResultIterator(Statement stmt, ResultSet rs, String query, Converter converter) {        
+
+    public GraphResultIterator(Statement stmt, ResultSet rs, String query, Converter converter) {
         try {
             this.stmt = stmt;
             this.rs = rs;
@@ -47,7 +47,7 @@ public class GraphResultIterator implements CloseableIterator<STMT> {
             this.converter = converter;
         } catch (SQLException e) {
             throw new QueryException(e);
-        }                
+        }
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GraphResultIterator implements CloseableIterator<STMT> {
 
     @Override
     public boolean hasNext() {
-        if (next == null){
+        if (next == null) {
             try {
                 next = rs.next();
             } catch (SQLException e) {
@@ -71,25 +71,25 @@ public class GraphResultIterator implements CloseableIterator<STMT> {
 
     @Override
     public STMT next() {
-        if (hasNext()){
+        if (hasNext()) {
             try {
                 next = null;
                 ID subject = (ID) converter.toNODE(rs.getObject(1));
-                UID predicate = (UID)converter.toNODE(rs.getObject(2));
-                NODE object = converter.toNODE(rs.getObject(3));                
-                if (hasContext){
+                UID predicate = (UID) converter.toNODE(rs.getObject(2));
+                NODE object = converter.toNODE(rs.getObject(3));
+                if (hasContext) {
                     UID context = (UID) converter.toNODE(rs.getObject(4));
-                    return new STMT(subject, predicate, object, context);                        
-                }else{
+                    return new STMT(subject, predicate, object, context);
+                } else {
                     return new STMT(subject, predicate, object);
                 }
-                
+
             } catch (SQLException e) {
                 close();
                 logger.warn("Caught exception for query " + query, e);
                 throw new QueryException(e);
             }
-        }else{
+        } else {
             throw new NoSuchElementException();
         }
     }

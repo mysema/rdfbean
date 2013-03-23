@@ -14,7 +14,7 @@ import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class TupleResultIterator implements CloseableIterator<Map<String, NODE>> {
 
@@ -24,7 +24,7 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
 
     private final SesameDialect dialect;
 
-    public TupleResultIterator(TupleQueryResult tupleResult,  Map<String, NODE> bindings, SesameDialect dialect) {
+    public TupleResultIterator(TupleQueryResult tupleResult, Map<String, NODE> bindings, SesameDialect dialect) {
         this.tupleResult = tupleResult;
         this.bindings = bindings;
         this.dialect = dialect;
@@ -52,12 +52,12 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
     public Map<String, NODE> next() {
         try {
             BindingSet bindingSet = tupleResult.next();
-            Map<String,NODE> row = new HashMap<String,NODE>();
-            for (String name : tupleResult.getBindingNames()){
+            Map<String, NODE> row = new HashMap<String, NODE>();
+            for (String name : tupleResult.getBindingNames()) {
                 Value value = bindingSet.getValue(name);
-                if (value != null){
+                if (value != null) {
                     row.put(name, dialect.getNODE(value));
-                }else if (bindings.containsKey(name)){
+                } else if (bindings.containsKey(name)) {
                     row.put(name, bindings.get(name));
                 }
             }

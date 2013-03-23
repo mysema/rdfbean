@@ -16,30 +16,30 @@ import com.mysema.rdfbean.model.MiniRepository;
 
 /**
  * SimpleSessionContextTest provides
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
 public class SimpleSessionContextTest {
-    
+
     private SessionFactoryImpl sessionFactory;
-    
+
     private SimpleSessionContext sessionContext;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(new DefaultConfiguration());
         sessionFactory.setRepository(new MiniRepository());
         sessionFactory.initialize();
         sessionContext = new SimpleSessionContext(sessionFactory);
     }
-    
+
     @After
-    public void tearDown(){
+    public void tearDown() {
         sessionFactory.close();
     }
-    
+
     @Test
     public void GetCurrentSession() {
         assertNull(sessionContext.getCurrentSession());

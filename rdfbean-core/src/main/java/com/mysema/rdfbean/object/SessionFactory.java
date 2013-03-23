@@ -39,14 +39,14 @@ public interface SessionFactory {
      * Close the SessionFactory
      */
     void close();
-    
+
     /**
      * Set the SessionContext
      * 
      * @param sessionContext
      */
     void setSessionContext(SessionContext sessionContext);
-    
+
     /**
      * Execute the given SessionCallback in the scope of the current session or
      * a newly allocated, if no current is available
@@ -56,5 +56,5 @@ public interface SessionFactory {
      * @return
      */
     <T> T execute(SessionCallback<T> cb);
-    
+
 }

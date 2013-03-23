@@ -11,23 +11,23 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.TupleQuery;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
-public class TupleQueryImpl implements TupleQuery{
-    
+public class TupleQueryImpl implements TupleQuery {
+
     private final SQLQuery query;
-    
+
     private final ConverterRegistry converters;
-    
+
     private final List<String> variables;
-    
+
     private final List<Expression<?>> projection;
-    
+
     private final Function<Long, NODE> function;
-    
+
     public TupleQueryImpl(
-            SQLQuery query, 
+            SQLQuery query,
             ConverterRegistry converters,
-            List<String> variables, 
-            List<Expression<?>> pr, 
+            List<String> variables,
+            List<Expression<?>> pr,
             Function<Long, NODE> function) {
         this.query = query;
         this.converters = converters;

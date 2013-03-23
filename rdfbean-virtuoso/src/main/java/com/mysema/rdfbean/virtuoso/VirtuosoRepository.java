@@ -28,16 +28,17 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class VirtuosoRepository implements Repository {
-    
+
     private static final String RDFBEAN_NIL = "rdfbean:nil";
 
     private static final Logger logger = LoggerFactory.getLogger(VirtuosoRepository.class);
 
-//    private final VirtuosoConnectionPoolDataSource ds = new VirtuosoConnectionPoolDataSource();
-    
+    // private final VirtuosoConnectionPoolDataSource ds = new
+    // VirtuosoConnectionPoolDataSource();
+
     private final VirtuosoDataSource ds = new VirtuosoDataSource();
 
     private final String host;
@@ -91,31 +92,31 @@ public class VirtuosoRepository implements Repository {
     @Override
     public void close() {
         initialized = false;
-//        try {
-//            ds.close();
-//        } catch (SQLException e) {
-//            throw new RepositoryException(e);
-//        }
+        // try {
+        // ds.close();
+        // } catch (SQLException e) {
+        // throw new RepositoryException(e);
+        // }
     }
 
     @Override
     public <RT> RT execute(RDFConnectionCallback<RT> operation) {
         RDFConnection connection = openConnection();
-        try{
-            try{
+        try {
+            try {
                 RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
-                try{
+                try {
                     RT retVal = operation.doInConnection(connection);
                     tx.commit();
                     return retVal;
-                }catch(IOException io){
+                } catch (IOException io) {
                     tx.rollback();
                     throw io;
                 }
-            }finally{
+            } finally {
                 connection.close();
             }
-        }catch(IOException io){
+        } catch (IOException io) {
             throw new RepositoryException(io);
         }
     }
@@ -124,19 +125,19 @@ public class VirtuosoRepository implements Repository {
     public void export(Format format, Map<String, String> ns2prefix, UID context, OutputStream out) {
         RDFWriter writer = WriterUtils.createWriter(format, out, ns2prefix);
         RDFConnection conn = openConnection();
-        try{
+        try {
             CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, context, false);
-            try{
+            try {
                 writer.begin();
-                while (stmts.hasNext()){
+                while (stmts.hasNext()) {
                     writer.handle(stmts.next());
                 }
                 writer.end();
-            }finally{
+            } finally {
                 stmts.close();
             }
 
-        }finally{
+        } finally {
             conn.close();
         }
     }
@@ -166,24 +167,24 @@ public class VirtuosoRepository implements Repository {
 
     public void initialize() {
         if (!initialized) {
-            if (dataDir != null){
+            if (dataDir != null) {
                 idSequence = new FileIdSequence(new File(dataDir, "lastLocalId"));
-            }else{
+            } else {
                 idSequence = new MemoryIdSequence();
             }
-            
+
             try {
                 ds.setLogWriter(new PrintWriter(System.err));
-                
-//                if (initialPoolSize != null){
-//                    ds.setInitialPoolSize(initialPoolSize);
-//                }
-//                if (minPoolSize != null){
-//                    ds.setMinPoolSize(minPoolSize);
-//                }
-//                if (maxPoolSize != null){
-//                    ds.setMaxPoolSize(maxPoolSize);
-//                }
+
+                // if (initialPoolSize != null){
+                // ds.setInitialPoolSize(initialPoolSize);
+                // }
+                // if (minPoolSize != null){
+                // ds.setMinPoolSize(minPoolSize);
+                // }
+                // if (maxPoolSize != null){
+                // ds.setMaxPoolSize(maxPoolSize);
+                // }
 
             } catch (SQLException e) {
                 throw new RepositoryException(e);
@@ -194,20 +195,20 @@ public class VirtuosoRepository implements Repository {
             try {
                 if (sources != null) {
                     for (RDFSource source : sources) {
-                        if (source.getResource() != null){
+                        if (source.getResource() != null) {
                             logger.info("loading " + source.getResource());
                         }
                         UID context = new UID(source.getContext());
                         InputStream is = source.openStream();
-                        try{
+                        try {
                             connection.load(source.getFormat(), is, context, false);
-                        }finally{
+                        } finally {
                             is.close();
                         }
                     }
                 }
                 tx.commit();
-            } catch(Exception e){
+            } catch (Exception e) {
                 tx.rollback();
                 throw new RepositoryException(e);
             } finally {
@@ -220,17 +221,17 @@ public class VirtuosoRepository implements Repository {
     @Override
     public void load(Format format, InputStream is, UID context, boolean replace) {
         VirtuosoRepositoryConnection connection = openConnection();
-        try{
-            try{
+        try {
+            try {
                 connection.load(format, is, context, replace);
-            }finally{
+            } finally {
                 is.close();
             }
         } catch (SQLException e) {
             throw new RepositoryException(e);
         } catch (IOException e) {
             throw new RepositoryException(e);
-        }finally{
+        } finally {
             connection.close();
         }
     }
@@ -240,7 +241,7 @@ public class VirtuosoRepository implements Repository {
     }
 
     public void setDataDir(File dataDir) {
-        this.dataDir = Assert.notNull(dataDir,"dataDir");
+        this.dataDir = Assert.notNull(dataDir, "dataDir");
     }
 
     public void setFetchSize(int sz) {
@@ -252,7 +253,7 @@ public class VirtuosoRepository implements Repository {
     }
 
     public void setAllowedGraphs(Collection<UID> allowedGraphs) {
-        this.allowedGraphs = Assert.notNull(allowedGraphs,"allowedGraphs");
+        this.allowedGraphs = Assert.notNull(allowedGraphs, "allowedGraphs");
     }
 
     public void setInitialPoolSize(int initialPoolSize) {
@@ -266,6 +267,5 @@ public class VirtuosoRepository implements Repository {
     public void setMaxPoolSize(int maxPoolSize) {
         this.maxPoolSize = maxPoolSize;
     }
-
 
 }

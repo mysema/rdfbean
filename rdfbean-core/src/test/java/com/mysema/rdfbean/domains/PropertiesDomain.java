@@ -57,7 +57,7 @@ public interface PropertiesDomain {
         @Predicate
         public LocalDate created;
 
-        @Properties(includeMapped=true)
+        @Properties(includeMapped = true)
         public Map<UID, LocalDate> dates;
 
         @Properties
@@ -98,6 +98,5 @@ public interface PropertiesDomain {
         @Properties
         public Map<String, String> nodes;
     }
-
 
 }

@@ -5,19 +5,18 @@
  */
 package com.mysema.rdfbean.object;
 
-
 /**
  * SimpleSessionContext provides thread bound Session access
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
-public class SimpleSessionContext implements SessionContext{
+public class SimpleSessionContext implements SessionContext {
 
     private final ThreadLocal<Session> sessionHolder = new ThreadLocal<Session>();
-    
+
     private final SessionFactory sessionFactory;
-    
+
     public SimpleSessionContext(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
@@ -26,19 +25,19 @@ public class SimpleSessionContext implements SessionContext{
     public Session getCurrentSession() {
         return sessionHolder.get();
     }
-    
-    public Session getOrCreateSession(){
-        if (sessionHolder.get() == null){
+
+    public Session getOrCreateSession() {
+        if (sessionHolder.get() == null) {
             Session session = sessionFactory.openSession();
             sessionHolder.set(session);
             return session;
-        }else{
+        } else {
             return sessionHolder.get();
         }
     }
-    
-    public void releaseSession(){
+
+    public void releaseSession() {
         sessionHolder.remove();
     }
-    
+
 }

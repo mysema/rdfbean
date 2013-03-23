@@ -87,7 +87,7 @@ public interface UserProfileDomain {
             return buddies;
         }
 
-        public boolean isActive(){
+        public boolean isActive() {
             return true;
         }
 
@@ -112,7 +112,7 @@ public interface UserProfileDomain {
         }
 
         public QIdentifiable(EntityPathBase<? extends UserProfileDomain.Identifiable> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QIdentifiable(PathMetadata<?> metadata) {
@@ -132,7 +132,7 @@ public interface UserProfileDomain {
         }
 
         public QProfile(EntityPathBase<? extends UserProfileDomain.Profile> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QProfile(PathMetadata<?> metadata) {
@@ -151,13 +151,13 @@ public interface UserProfileDomain {
 
         public final QIdentifiable _super = new QIdentifiable(this);
 
-        public final SetPath<UserProfileDomain.User, QUser> buddies = this.<User, QUser>createSet("buddies", UserProfileDomain.User.class, QUser.class, PathInits.DEFAULT);
+        public final SetPath<UserProfileDomain.User, QUser> buddies = this.<User, QUser> createSet("buddies", UserProfileDomain.User.class, QUser.class, PathInits.DEFAULT);
 
         public final StringPath email = createString("email");
 
         public final StringPath firstName = createString("firstName");
 
-        //inherited
+        // inherited
         public final StringPath id = _super.id;
 
         public final StringPath lastName = createString("lastName");

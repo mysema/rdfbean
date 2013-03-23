@@ -31,48 +31,49 @@ import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 
 public interface SimpleDomain {
-    
-    @ClassMapping(ns =TEST.NS, ln="TestType1")
-    public class SimpleType{        
-        @Id 
-        public String id;        
-        
-        @Predicate(ln="directProperty1")  
+
+    @ClassMapping(ns = TEST.NS, ln = "TestType1")
+    public class SimpleType {
+        @Id
+        public String id;
+
+        @Predicate(ln = "directProperty1")
         public String directProperty;
-        
+
         @Predicate
         @Localized
         public String localizedProperty;
-        
-        @Predicate(ln="localizedProperty")
+
+        @Predicate(ln = "localizedProperty")
         @Localized
-        public Map<Locale,String> localizedAsMap;
-        
-        @Predicate 
+        public Map<Locale, String> localizedAsMap;
+
+        @Predicate
         public String notExistantProperty;
-        
+
         @Predicate
         public int numericProperty;
-        
-        @Predicate(ln="listProperty")
+
+        @Predicate(ln = "listProperty")
         public List<SimpleType2> listProperty;
-        
-        @Predicate(ln="setProperty") 
-        public Set<SimpleType2> setProperty;        
-        
-        @Predicate(ln="setProperty")
-        @MapElements(key=@Predicate(ln="directProperty2"))
-        public Map<String,SimpleType2> mapProperty;
-        
-        @Predicate 
+
+        @Predicate(ln = "setProperty")
+        public Set<SimpleType2> setProperty;
+
+        @Predicate(ln = "setProperty")
+        @MapElements(key = @Predicate(ln = "directProperty2"))
+        public Map<String, SimpleType2> mapProperty;
+
+        @Predicate
         public Date dateProperty;
 
-        public SimpleType() {}
-        
+        public SimpleType() {
+        }
+
         public SimpleType(String property) {
             this.directProperty = property;
         }
-        
+
         public String getId() {
             return id;
         }
@@ -148,22 +149,21 @@ public interface SimpleDomain {
         public void setDateProperty(Date dateProperty) {
             this.dateProperty = dateProperty;
         }
-        
-        
-    }
-    
-    @ClassMapping(ns = TEST.NS, ln="TestType2")
-    public class SimpleType2{
 
-        @Id 
-        public String id;        
-            
-        @Path({@Predicate(ln="testType"), @Predicate(ln="directProperty")}) 
-        public String pathProperty;                       
-        
-        @Predicate(ln="directProperty2") 
+    }
+
+    @ClassMapping(ns = TEST.NS, ln = "TestType2")
+    public class SimpleType2 {
+
+        @Id
+        public String id;
+
+        @Path({ @Predicate(ln = "testType"), @Predicate(ln = "directProperty") })
+        public String pathProperty;
+
+        @Predicate(ln = "directProperty2")
         public String directProperty;
-        
+
         public String getId() {
             return id;
         }
@@ -174,7 +174,7 @@ public interface SimpleDomain {
 
         public String getDirectProperty() {
             return directProperty;
-        }            
+        }
 
         public void setPathProperty(String pathProperty) {
             this.pathProperty = pathProperty;
@@ -184,9 +184,8 @@ public interface SimpleDomain {
             this.directProperty = directProperty;
         }
 
-        
     }
-    
+
     public class QSimpleType extends EntityPathBase<SimpleDomain.SimpleType> {
 
         private static final long serialVersionUID = -243400857;
@@ -199,26 +198,26 @@ public interface SimpleDomain {
 
         public final StringPath id = createString("id");
 
-        public final ListPath<SimpleDomain.SimpleType2, QSimpleType2> listProperty = this.<SimpleType2, QSimpleType2>createList("listProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class, PathInits.DEFAULT);
+        public final ListPath<SimpleDomain.SimpleType2, QSimpleType2> listProperty = this.<SimpleType2, QSimpleType2> createList("listProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class, PathInits.DEFAULT);
 
-        public final MapPath<java.util.Locale, String, StringPath> localizedAsMap = this.<java.util.Locale, String, StringPath>createMap("localizedAsMap", java.util.Locale.class, String.class, StringPath.class);
+        public final MapPath<java.util.Locale, String, StringPath> localizedAsMap = this.<java.util.Locale, String, StringPath> createMap("localizedAsMap", java.util.Locale.class, String.class, StringPath.class);
 
         public final StringPath localizedProperty = createString("localizedProperty");
 
-        public final MapPath<String, SimpleDomain.SimpleType2, QSimpleType2> mapProperty = this.<String, SimpleDomain.SimpleType2, QSimpleType2>createMap("mapProperty", String.class, SimpleDomain.SimpleType2.class, QSimpleType2.class);
+        public final MapPath<String, SimpleDomain.SimpleType2, QSimpleType2> mapProperty = this.<String, SimpleDomain.SimpleType2, QSimpleType2> createMap("mapProperty", String.class, SimpleDomain.SimpleType2.class, QSimpleType2.class);
 
         public final StringPath notExistantProperty = createString("notExistantProperty");
 
         public final NumberPath<Integer> numericProperty = createNumber("numericProperty", Integer.class);
 
-        public final SetPath<SimpleDomain.SimpleType2, QSimpleType2> setProperty = this.<SimpleType2, QSimpleType2>createSet("setProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class, PathInits.DEFAULT);
+        public final SetPath<SimpleDomain.SimpleType2, QSimpleType2> setProperty = this.<SimpleType2, QSimpleType2> createSet("setProperty", SimpleDomain.SimpleType2.class, QSimpleType2.class, PathInits.DEFAULT);
 
         public QSimpleType(String variable) {
             super(SimpleDomain.SimpleType.class, forVariable(variable));
         }
 
         public QSimpleType(EntityPathBase<? extends SimpleDomain.SimpleType> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QSimpleType(PathMetadata<?> metadata) {
@@ -226,7 +225,7 @@ public interface SimpleDomain {
         }
 
     }
-    
+
     public class QSimpleType2 extends EntityPathBase<SimpleDomain.SimpleType2> {
 
         private static final long serialVersionUID = 1044508075;
@@ -244,7 +243,7 @@ public interface SimpleDomain {
         }
 
         public QSimpleType2(EntityPathBase<? extends SimpleDomain.SimpleType2> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QSimpleType2(PathMetadata<?> metadata) {

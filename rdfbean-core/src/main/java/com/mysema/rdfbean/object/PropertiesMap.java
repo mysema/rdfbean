@@ -15,8 +15,8 @@ public class PropertiesMap {
     @Nullable
     private final Multimap<UID, STMT> inverse;
 
-    public PropertiesMap(){
-        this(MultimapFactory.<UID, STMT>create(), MultimapFactory.<UID, STMT>create());
+    public PropertiesMap() {
+        this(MultimapFactory.<UID, STMT> create(), MultimapFactory.<UID, STMT> create());
     }
 
     public PropertiesMap(@Nullable Multimap<UID, STMT> direct, @Nullable Multimap<UID, STMT> inverse) {

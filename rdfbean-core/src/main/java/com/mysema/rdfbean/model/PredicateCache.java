@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
-
 /**
  * @author tiwe
  */
@@ -25,10 +24,10 @@ public final class PredicateCache {
 
     @Nullable
     private List<STMT> containerProperties;
-    
+
     @Nullable
     private Map<UID, STMTCache> predicates;
-    
+
     public void add(STMT stmt) {
         if (RDF.isContainerMembershipProperty(stmt.getPredicate())) {
             if (containerProperties == null) {
@@ -48,7 +47,7 @@ public final class PredicateCache {
             }
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public Iterator<STMT> iterator(@Nullable UID predicate) {
         if (predicate == null) {
@@ -65,16 +64,16 @@ public final class PredicateCache {
         } else if (RDF.isContainerMembershipProperty(predicate)) {
             if (containerProperties != null) {
                 return containerProperties.iterator();
-            } 
+            }
         } else {
-            STMTCache stmts  = predicates.get(predicate);
+            STMTCache stmts = predicates.get(predicate);
             if (stmts != null) {
                 return stmts.iterator();
             }
         }
-        return Collections.<STMT>emptyList().iterator();
+        return Collections.<STMT> emptyList().iterator();
     }
-    
+
     public boolean remove(STMT stmt) {
         if (RDF.isContainerMembershipProperty(stmt.getPredicate())) {
             if (containerProperties != null) {
@@ -90,12 +89,12 @@ public final class PredicateCache {
         }
         return false;
     }
-    
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (predicates != null) {
             sb.append(predicates.toString());
-        } 
+        }
         if (containerProperties != null) {
             sb.append(containerProperties.toString());
         }

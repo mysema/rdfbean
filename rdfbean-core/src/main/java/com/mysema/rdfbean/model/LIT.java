@@ -17,23 +17,23 @@ import com.mysema.commons.lang.Assert;
  * LIT represents typed and localized literals
  * 
  * @author sasa
- *
+ * 
  */
 @Immutable
 public final class LIT extends NODE {
-    
+
     private static final long serialVersionUID = 4279040868676951911L;
 
-    private final String value; 
-    
+    private final String value;
+
     @Nullable
     private final Locale lang;
-    
-    private final UID datatype; 
+
+    private final UID datatype;
 
     public LIT(String value, UID datatype) {
-        this.value = Assert.notNull(value,"value");
-        this.datatype = Assert.notNull(datatype,"datatype");
+        this.value = Assert.notNull(value, "value");
+        this.datatype = Assert.notNull(datatype, "datatype");
         this.lang = null;
     }
 
@@ -42,8 +42,8 @@ public final class LIT extends NODE {
     }
 
     public LIT(String value, Locale lang) {
-        this.value = Assert.notNull(value,"value");
-        this.lang = Assert.notNull(lang,"lang");
+        this.value = Assert.notNull(value, "value");
+        this.lang = Assert.notNull(lang, "lang");
         this.datatype = RDF.text;
     }
 
@@ -63,20 +63,20 @@ public final class LIT extends NODE {
     public UID getDatatype() {
         return datatype;
     }
-    
+
     @Override
     public NodeType getNodeType() {
         return NodeType.LITERAL;
     }
-    
+
     public boolean isText() {
         return lang != null;
     }
-    
+
     public boolean isString() {
         return datatype.equals(XSD.stringType);
     }
-    
+
     public String toString() {
         if (isText()) {
             return "\"" + value + "\"@" + LocaleUtil.toLang(lang);
@@ -123,11 +123,11 @@ public final class LIT extends NODE {
         }
 
         LIT other = (LIT) obj;
-        
+
         if (!value.equals(other.value)) {
             return false;
         }
-        
+
         if (lang == null) {
             if (other.lang != null) {
                 return false;
@@ -142,10 +142,10 @@ public final class LIT extends NODE {
 
         return true;
     }
-    
+
     @Override
-    public LIT asLiteral(){
+    public LIT asLiteral() {
         return this;
     }
-    
+
 }

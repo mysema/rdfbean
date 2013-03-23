@@ -11,47 +11,47 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.UID;
 
 @SuppressWarnings("all")
-public class DummyPredicate implements Predicate{
+public class DummyPredicate implements Predicate {
 
     private final UID uid;
-    
+
     public DummyPredicate(UID uid) {
-	this.uid = uid;
+        this.uid = uid;
     }
-    
+
     @Override
     public String context() {
-	return "";
+        return "";
     }
 
     @Override
     public boolean ignoreInvalid() {
-	return false;
+        return false;
     }
 
     @Override
     public boolean includeInferred() {
-	return false;
+        return false;
     }
 
     @Override
     public boolean inv() {
-	return false;
+        return false;
     }
 
     @Override
     public String ln() {
-	return uid.ln();
+        return uid.ln();
     }
 
     @Override
     public String ns() {
-	return uid.ns();
+        return uid.ns();
     }
 
     @Override
     public Class<? extends Annotation> annotationType() {
-	return Predicate.class;
+        return Predicate.class;
     }
 
 }

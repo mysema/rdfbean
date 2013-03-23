@@ -80,8 +80,8 @@ public class RDFProperty extends RDFSResource {
         this.range.add(range);
         return this;
     }
-    
-    public RDFProperty addDomain(RDFSClass<?> domain){
+
+    public RDFProperty addDomain(RDFSClass<?> domain) {
         this.domain.add(domain);
         return this;
     }

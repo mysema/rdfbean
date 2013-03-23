@@ -114,7 +114,7 @@ public class Restriction extends OWLClass {
     public boolean isDefined() {
         return onProperty != null
                 && (allValuesFrom != null || cardinality != null
-                || hasValue != null || maxCardinality != null
-                || minCardinality != null || someValuesFrom != null);
+                        || hasValue != null || maxCardinality != null
+                        || minCardinality != null || someValuesFrom != null);
     }
 }

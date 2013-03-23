@@ -7,12 +7,11 @@ package com.mysema.rdfbean.model;
 
 import com.mysema.commons.lang.Assert;
 
-
 /**
  * Local id
  * 
  * @author sasa
- *
+ * 
  */
 public final class LID implements Identifier {
 
@@ -21,7 +20,7 @@ public final class LID implements Identifier {
     private final String id;
 
     public LID(String id) {
-        this.id = Assert.hasText(id,"id");
+        this.id = Assert.hasText(id, "id");
     }
 
     public LID(long id) {
@@ -31,7 +30,7 @@ public final class LID implements Identifier {
     public String toString() {
         return "@" + id;
     }
-    
+
     public String getId() {
         return id;
     }

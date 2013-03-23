@@ -5,9 +5,8 @@
  */
 package com.mysema.rdfbean.model;
 
-
 /**
- * MiniDialect is the Dialect implementation for the MiniRepository 
+ * MiniDialect is the Dialect implementation for the MiniRepository
  * 
  * @author sasa
  * 
@@ -23,7 +22,7 @@ public final class MiniDialect extends AbstractDialect<NODE, ID, BID, UID, LIT, 
     public STMT createStatement(ID subject, UID predicate, NODE object) {
         return new STMT(subject, predicate, object, null, true);
     }
-    
+
     @Override
     public STMT createStatement(ID subject, UID predicate, NODE object, UID context) {
         return new STMT(subject, predicate, object, context, true);
@@ -93,10 +92,10 @@ public final class MiniDialect extends AbstractDialect<NODE, ID, BID, UID, LIT, 
     public NODE getNODE(NODE node) {
         return node;
     }
-   
+
     @Override
     public ID getResource(ID id) {
-        return id;        
+        return id;
     }
-   
+
 }

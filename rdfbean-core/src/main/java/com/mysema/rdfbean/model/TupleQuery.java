@@ -7,20 +7,20 @@ import com.mysema.commons.lang.CloseableIterator;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public interface TupleQuery {
 
     /**
      * Get the result of this query as tuples
-     *
+     * 
      * @return
      */
-    CloseableIterator<Map<String,NODE>> getTuples();
-    
+    CloseableIterator<Map<String, NODE>> getTuples();
+
     /**
      * Get the list of variables of the query
-     *
+     * 
      * @return
      */
     List<String> getVariables();

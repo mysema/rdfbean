@@ -5,3 +5,4 @@
  */
 
 package com.mysema.rdfbean.sparql;
+

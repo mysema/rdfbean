@@ -13,13 +13,13 @@ import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain.Department;
 import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain.Employee;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({Company.class, Department.class, Employee.class})
-public class CollectionTest extends SessionTestBase implements CompanyDepartmentEmployeeDomain{
+@SessionConfig({ Company.class, Department.class, Employee.class })
+public class CollectionTest extends SessionTestBase implements CompanyDepartmentEmployeeDomain {
 
     private Employee emp1, emp2, emp3, emp4;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         Department dep1 = new Department();
         session.saveAll(dep1, new Department());
 
@@ -32,14 +32,13 @@ public class CollectionTest extends SessionTestBase implements CompanyDepartment
     }
 
     @Test
-    public void Contains(){
+    public void Contains() {
         Department dep = Alias.alias(Department.class);
         assertEquals(1l, session.from($(dep)).where($(dep.getEmployees()).contains(emp1)).count());
     }
 
-
     @Test
-    public void In(){
+    public void In() {
         Employee emp = Alias.alias(Employee.class);
         assertEquals(3l, session.from($(emp)).where($(emp).in(emp1, emp2, emp3)).count());
     }

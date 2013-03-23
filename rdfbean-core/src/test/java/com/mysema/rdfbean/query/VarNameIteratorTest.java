@@ -14,7 +14,7 @@ public class VarNameIteratorTest {
     @Test
     public void Next() {
         Iterator<String> it = new VarNameIterator();
-        for (int i = 0; i < 100; i++){
+        for (int i = 0; i < 100; i++) {
             System.out.println(it.next());
         }
     }

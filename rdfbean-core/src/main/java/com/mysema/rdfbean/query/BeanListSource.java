@@ -24,51 +24,51 @@ import com.mysema.rdfbean.object.SessionFactory;
  * @author tiwe
  */
 @Immutable
-public class BeanListSource<T>{
-    
+public class BeanListSource<T> {
+
     @Nullable
     private final Predicate condition;
-    
+
     private final OrderSpecifier<?>[] order;
-    
+
     private final Path<T> projection;
-    
+
     private final SessionFactory sessionFactory;
-    
+
     private final long size;
-    
+
     private final EntityPath<?>[] sources;
-    
-    public BeanListSource(SessionFactory sessionFactory,  
-            EntityPath<?>[] sourceArray, 
+
+    public BeanListSource(SessionFactory sessionFactory,
+            EntityPath<?>[] sourceArray,
             QueryMetadata metadata,
-            Path<T> projection){
+            Path<T> projection) {
         this.sessionFactory = sessionFactory;
         this.sources = sourceArray.clone();
         this.condition = metadata.getWhere();
         this.projection = projection;
-        this.order = metadata.getOrderBy().toArray(new OrderSpecifier[metadata.getOrderBy().size()]);    
-        this.size = sessionFactory.execute(new SessionCallback<Long>(){
+        this.order = metadata.getOrderBy().toArray(new OrderSpecifier[metadata.getOrderBy().size()]);
+        this.size = sessionFactory.execute(new SessionCallback<Long>() {
             @Override
             public Long doInSession(Session session) {
                 BeanQuery countQry = session.from(sources);
-                if (condition != null){
+                if (condition != null) {
                     countQry.where(condition);
                 }
                 return countQry.count();
-            }            
-        });   
+            }
+        });
     }
-    
+
     public T getResult(int index) {
-        return getResults(index, index+1).get(0);
+        return getResults(index, index + 1).get(0);
     }
-    
-    public List<T> getResults(final int from, final int to){
-        return sessionFactory.execute(new SessionCallback<List<T>>(){
-            public List<T> doInSession(Session session){
+
+    public List<T> getResults(final int from, final int to) {
+        return sessionFactory.execute(new SessionCallback<List<T>>() {
+            public List<T> doInSession(Session session) {
                 BeanQuery qry = session.from(sources).offset(from).limit(to - from).orderBy(order);
-                if (condition != null){
+                if (condition != null) {
                     qry.where(condition);
                 }
                 return qry.list(projection);
@@ -76,12 +76,12 @@ public class BeanListSource<T>{
         });
     }
 
-    public final boolean isEmpty(){
+    public final boolean isEmpty() {
         return size == 0l;
     }
 
-    public final long size(){
-        return size;   
+    public final long size() {
+        return size;
     }
 
 }

@@ -6,12 +6,13 @@
 package com.mysema.rdfbean.object;
 
 /**
- * EmptySessionContext is an empty implementation of the SessionContext interface
- *
+ * EmptySessionContext is an empty implementation of the SessionContext
+ * interface
+ * 
  * @author tiwe
  * @version $Id$
  */
-public final class EmptySessionContext implements SessionContext{
+public final class EmptySessionContext implements SessionContext {
 
     @Override
     public Session getCurrentSession() {

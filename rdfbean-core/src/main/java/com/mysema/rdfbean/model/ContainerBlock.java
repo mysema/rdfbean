@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
 
 import com.mysema.query.types.Predicate;
 
-public interface ContainerBlock extends Block{
-    
+public interface ContainerBlock extends Block {
+
     List<Block> getBlocks();
 
     @Nullable

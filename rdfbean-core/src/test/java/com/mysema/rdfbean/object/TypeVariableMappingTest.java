@@ -18,14 +18,10 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.annotations.Required;
 
-
 public class TypeVariableMappingTest {
 
     @ClassMapping
-    public static class Parent<
-            T extends Parent<?, ?, ?>,
-            P,
-            E extends Parent<?, ?, ?>> {
+    public static class Parent<T extends Parent<?, ?, ?>, P, E extends Parent<?, ?, ?>> {
         @Predicate
         T parent;
         @Predicate

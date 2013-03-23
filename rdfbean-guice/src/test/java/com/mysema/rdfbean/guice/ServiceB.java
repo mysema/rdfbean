@@ -12,8 +12,8 @@ public interface ServiceB {
     @Transactional
     void txMethod();
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     void txReadonly();
-    
+
     void nonTxMethod();
 }

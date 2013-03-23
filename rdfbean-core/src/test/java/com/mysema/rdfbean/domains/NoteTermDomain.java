@@ -50,7 +50,7 @@ public interface NoteTermDomain {
     }
 
     @ClassMapping
-    public static class Term{
+    public static class Term {
 
         @Id(IDType.RESOURCE)
         public ID id;
@@ -113,7 +113,7 @@ public interface NoteTermDomain {
         }
 
         public QTerm(EntityPathBase<? extends NoteTermDomain.Term> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QTerm(PathMetadata<?> metadata) {

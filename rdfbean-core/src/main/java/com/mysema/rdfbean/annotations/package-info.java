@@ -8,3 +8,4 @@
  * Annotations for domain types 
  */
 package com.mysema.rdfbean.annotations;
+

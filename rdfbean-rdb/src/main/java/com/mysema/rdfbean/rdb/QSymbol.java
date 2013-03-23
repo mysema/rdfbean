@@ -57,7 +57,7 @@ public class QSymbol extends RelationalPathBase<QSymbol> {
     }
 
     public QSymbol(BeanPath<? extends QSymbol> entity) {
-        super(entity.getType(),entity.getMetadata(), null, "SYMBOL");
+        super(entity.getType(), entity.getMetadata(), null, "SYMBOL");
     }
 
     public QSymbol(PathMetadata<?> metadata) {
@@ -65,4 +65,3 @@ public class QSymbol extends RelationalPathBase<QSymbol> {
     }
 
 }
-

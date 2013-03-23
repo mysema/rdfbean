@@ -15,13 +15,13 @@ import com.mysema.rdfbean.domains.ListDomain.LinkElement;
 import com.mysema.rdfbean.domains.ListDomain.TextElement;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({Element.class, Elements.class, Identifiable.class, LinkElement.class, TextElement.class})
+@SessionConfig({ Element.class, Elements.class, Identifiable.class, LinkElement.class, TextElement.class })
 public class ListHandlingTest extends SessionTestBase {
 
     @Test
-    public void test(){
+    public void test() {
         Elements elements = new Elements();
-        elements.elements = Arrays.<Element>asList(new LinkElement(), new TextElement());
+        elements.elements = Arrays.<Element> asList(new LinkElement(), new TextElement());
         session.save(elements);
         session.clear();
 

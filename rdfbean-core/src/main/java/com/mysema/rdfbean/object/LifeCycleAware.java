@@ -7,7 +7,7 @@ package com.mysema.rdfbean.object;
 
 /**
  * @author sasa
- *
+ * 
  */
 public interface LifeCycleAware {
 
@@ -15,7 +15,7 @@ public interface LifeCycleAware {
      * 
      */
     void beforeBinding();
-    
+
     /**
      * 
      */

@@ -11,8 +11,9 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.query.QueryModifiers;
 
 /**
- * LimitingIterator is and Iterator adapter which takes limit and offset into account
- *
+ * LimitingIterator is and Iterator adapter which takes limit and offset into
+ * account
+ * 
  * @author tiwe
  */
 public class LimitingIterator<E> implements Iterator<E> {
@@ -40,7 +41,7 @@ public class LimitingIterator<E> implements Iterator<E> {
     private final Iterator<E> original;
 
     LimitingIterator(Iterator<E> iterator, long limit) {
-        this.original = Assert.notNull(iterator,"iterator");
+        this.original = Assert.notNull(iterator, "iterator");
         this.limit = limit;
     }
 

@@ -27,15 +27,15 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 
 /**
  * RDFBeanModule provides an abstract base class for RDFBean based Guice modules
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
-public abstract class RDFBeanModule extends AbstractModule{
+public abstract class RDFBeanModule extends AbstractModule {
 
     private static final Logger logger = LoggerFactory.getLogger(RDFBeanModule.class);
 
-    public List<String> getConfiguration(){
+    public List<String> getConfiguration() {
         return Collections.singletonList("/persistence.properties");
     }
 
@@ -45,14 +45,14 @@ public abstract class RDFBeanModule extends AbstractModule{
         // inject properties
         try {
             Properties properties = new Properties();
-            for (String res : getConfiguration()){
+            for (String res : getConfiguration()) {
                 properties.load(RDFBeanModule.class.getResourceAsStream(res));
             }
             bind(Properties.class).annotatedWith(Config.class).toInstance(properties);
-            for (Map.Entry entry : properties.entrySet()){
+            for (Map.Entry entry : properties.entrySet()) {
                 bind(String.class)
-                    .annotatedWith(Names.named(entry.getKey().toString()))
-                    .toInstance(entry.getValue().toString());
+                        .annotatedWith(Names.named(entry.getKey().toString()))
+                        .toInstance(entry.getValue().toString());
             }
         } catch (IOException e) {
             String error = "Caught " + e.getClass().getName();
@@ -73,7 +73,7 @@ public abstract class RDFBeanModule extends AbstractModule{
 
     @Provides
     @Singleton
-    public Configuration createConfiguration(){
+    public Configuration createConfiguration() {
         DefaultConfiguration configuration = new DefaultConfiguration();
         configuration.addClasses(getAnnotatedClasses());
         configuration.addPackages(getAnnotatedPackages());
@@ -90,7 +90,7 @@ public abstract class RDFBeanModule extends AbstractModule{
 
     @Provides
     @Singleton
-    public SessionFactory createSessionFactory(Configuration configuration, Repository repository){
+    public SessionFactory createSessionFactory(Configuration configuration, Repository repository) {
         // TODO : locale handling
         final SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(configuration);

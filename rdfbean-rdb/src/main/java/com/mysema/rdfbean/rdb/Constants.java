@@ -15,23 +15,23 @@ import com.mysema.rdfbean.model.XSD;
 
 /**
  * @author tiwe
- *
+ * 
  */
 final class Constants {
-    
+
     public static final Set<UID> decimalTypes = asSet(XSD.decimalType, XSD.doubleType, XSD.floatType);
-    
+
     public static final Set<UID> integerTypes = asSet(XSD.integerType, XSD.longType, XSD.intType, XSD.shortType, XSD.byteType);
-    
+
     public static final Set<UID> dateTypes = Collections.singleton(XSD.date);
-    
+
     public static final Set<UID> dateTimeTypes = Collections.singleton(XSD.dateTime);
 
-    private Constants(){}
-    
-    private static <T> Set<T> asSet(T... args){
+    private Constants() {
+    }
+
+    private static <T> Set<T> asSet(T... args) {
         return new HashSet<T>(Arrays.asList(args));
     }
 
-    
 }

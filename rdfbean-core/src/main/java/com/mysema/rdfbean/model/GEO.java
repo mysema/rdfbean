@@ -1,14 +1,12 @@
 package com.mysema.rdfbean.model;
 
-
-
 public final class GEO {
 
     public static final String NS = "http://www.w3.org/2003/01/geo/";
 
     public static final UID Point = new UID(NS, "Point");
 
-    public static final UID SpatialThing  = new UID(NS, "SpatialThing ");
+    public static final UID SpatialThing = new UID(NS, "SpatialThing ");
 
     public static final UID where = new UID(NS, "where");
 
@@ -26,6 +24,7 @@ public final class GEO {
 
     public static final UID polygon = new UID(NS, "polygon");
 
-    private GEO(){}
+    private GEO() {
+    }
 
 }

@@ -14,25 +14,25 @@ import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * RDBTransaction is an RDFBeanTransaction implementation for the RDB module
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
-public class RDBTransaction implements RDFBeanTransaction{
+public class RDBTransaction implements RDFBeanTransaction {
 
     private final Connection connection;
-    
+
     private boolean rollbackOnly;
-    
+
     public RDBTransaction(Connection connection) {
-        this.connection = Assert.notNull(connection,"connection");
+        this.connection = Assert.notNull(connection, "connection");
     }
 
     @Override
     public void commit() {
-        if (rollbackOnly){
+        if (rollbackOnly) {
             throw new RepositoryException("Transaction is rollBackOnly");
-        }        
+        }
         try {
             connection.commit();
         } catch (SQLException e) {
@@ -56,7 +56,7 @@ public class RDBTransaction implements RDFBeanTransaction{
 
     @Override
     public void prepare() {
-        // TODO        
+        // TODO
     }
 
     @Override
@@ -65,13 +65,13 @@ public class RDBTransaction implements RDFBeanTransaction{
             connection.rollback();
         } catch (SQLException e) {
             throw new RepositoryException(e);
-        }        
+        }
     }
 
     @Override
     public void setRollbackOnly() {
         rollbackOnly = true;
-        
+
     }
 
 }

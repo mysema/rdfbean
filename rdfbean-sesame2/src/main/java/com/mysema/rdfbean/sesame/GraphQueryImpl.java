@@ -19,9 +19,9 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class GraphQueryImpl implements SPARQLQuery{
+public class GraphQueryImpl implements SPARQLQuery {
 
     private final SesameDialect dialect;
 
@@ -65,7 +65,7 @@ public class GraphQueryImpl implements SPARQLQuery{
     public void streamTriples(Writer writer, String contentType) {
         try {
             RDFFormat targetFormat = RDFFormat.forMIMEType(contentType);
-            if (targetFormat == null){
+            if (targetFormat == null) {
                 targetFormat = RDFFormat.RDFXML;
             }
             RDFWriter rdfWriter = Rio.createWriter(targetFormat, writer);

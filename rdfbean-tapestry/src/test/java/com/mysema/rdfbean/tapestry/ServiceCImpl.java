@@ -12,13 +12,13 @@ public class ServiceCImpl implements ServiceC {
     @Inject
     private SessionFactory sessionFactory;
 
-    public void txMethod(){
+    public void txMethod() {
         assertTrue(sessionFactory.getCurrentSession() != null);
         assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
     }
 
     @NotTransactional
-    public void nonTxMethod(){
+    public void nonTxMethod() {
         assertTrue(sessionFactory.getCurrentSession() == null);
     }
 

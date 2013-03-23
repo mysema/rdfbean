@@ -16,23 +16,22 @@ import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.XSD;
 
-
 public class JenaDialectTest {
-    
+
     private JenaDialect dialect = new JenaDialect();
-    
+
     @Test
-    public void LocalizedLiteral(){
+    public void LocalizedLiteral() {
         LIT lit = new LIT("X", Locale.ENGLISH);
         Node literal = dialect.getLiteral(lit);
         assertTrue(literal.isLiteral());
-        assertEquals("en",literal.getLiteralLanguage());
+        assertEquals("en", literal.getLiteralLanguage());
         assertNull(literal.getLiteralDatatype());
         assertEquals(lit, dialect.getLIT(literal));
     }
-    
+
     @Test
-    public void TypedLiteral(){
+    public void TypedLiteral() {
         LIT lit = new LIT("X", XSD.stringType);
         Node literal = dialect.getLiteral(lit);
         assertTrue(literal.isLiteral());
@@ -40,9 +39,9 @@ public class JenaDialectTest {
         assertEquals(XSD.stringType.getId(), literal.getLiteralDatatype().getURI());
         assertEquals(lit, dialect.getLIT(literal));
     }
-    
+
     @Test
-    public void Literal(){
+    public void Literal() {
         LIT lit = new LIT("X", RDF.text);
         Node literal = dialect.getLiteral(lit);
         assertTrue(literal.isLiteral());
@@ -50,19 +49,19 @@ public class JenaDialectTest {
         assertNull(literal.getLiteralDatatype());
         assertEquals(lit, dialect.getLIT(literal));
     }
-    
+
     @Test
-    public void Statement_in_default_Graph(){
+    public void Statement_in_default_Graph() {
         Node subject = Node.createURI(TEST.NS);
         Node predicate = Node.createURI(RDFS.label.getId());
         Node object = Node.createAnon();
         Quad quad = dialect.createStatement(subject, predicate, object);
         assertEquals(Quad.defaultGraphIRI, quad.getGraph());
-        
+
     }
-    
+
     @Test
-    public void Statement_in_named_Graph(){
+    public void Statement_in_named_Graph() {
         Node subject = Node.createURI(TEST.NS);
         Node predicate = Node.createURI(RDFS.label.getId());
         Node object = Node.createAnon();

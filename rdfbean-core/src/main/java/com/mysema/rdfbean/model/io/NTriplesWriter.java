@@ -13,18 +13,19 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class NTriplesWriter implements RDFWriter{
+public class NTriplesWriter implements RDFWriter {
 
     private final Writer writer;
-    
+
     public NTriplesWriter(Writer writer) {
-        this.writer = writer;        
+        this.writer = writer;
     }
-    
+
     @Override
-    public void begin() {}
+    public void begin() {
+    }
 
     @Override
     public void end() {
@@ -32,7 +33,7 @@ public class NTriplesWriter implements RDFWriter{
             writer.flush();
         } catch (IOException e) {
             throw new RepositoryException(e);
-        }        
+        }
     }
 
     @Override
@@ -46,15 +47,15 @@ public class NTriplesWriter implements RDFWriter{
             writer.append(" .\n");
         } catch (IOException e) {
             throw new RepositoryException(e);
-        }    
+        }
     }
 
-    public static String toString(STMT stmt){
-        return toString(stmt.getSubject()) + " " 
-            + toString(stmt.getPredicate()) + " " 
-            + toString(stmt.getObject()) + " . ";
+    public static String toString(STMT stmt) {
+        return toString(stmt.getSubject()) + " "
+                + toString(stmt.getPredicate()) + " "
+                + toString(stmt.getObject()) + " . ";
     }
-    
+
     public static String toString(NODE node) {
         if (node.isURI()) {
             return toString(node.asURI());
@@ -64,12 +65,12 @@ public class NTriplesWriter implements RDFWriter{
             return toString(node.asBNode());
         }
     }
-    
-    public static String toString(UID uid){
+
+    public static String toString(UID uid) {
         return "<" + NTriplesUtil.escapeString(uid.getValue()) + ">";
     }
-    
-    public static String toString(LIT lit){
+
+    public static String toString(LIT lit) {
         String value = "\"" + NTriplesUtil.escapeString(lit.getValue()) + "\"";
         if (lit.getLang() != null) {
             return value + "@" + LocaleUtil.toLang(lit.getLang());
@@ -77,8 +78,8 @@ public class NTriplesWriter implements RDFWriter{
             return value + "^^" + toString(lit.getDatatype());
         }
     }
-    
-    public static String toString(BID bid){
+
+    public static String toString(BID bid) {
         return "_:" + bid.getValue();
     }
 }

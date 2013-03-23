@@ -22,11 +22,11 @@ import com.mysema.rdfbean.domains.NoteRevisionTermDomain.NoteRevision;
 import com.mysema.rdfbean.domains.NoteRevisionTermDomain.Term;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({NoteRevision.class, Note.class, Term.class})
-public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTermDomain{
+@SessionConfig({ NoteRevision.class, Note.class, Term.class })
+public class ComplexPathsTest extends SessionTestBase implements NoteRevisionTermDomain {
 
     @Test
-    public void OptionalPaths() throws IOException{
+    public void OptionalPaths() throws IOException {
         Note note = new Note();
         session.save(note);
         NoteRevision rev = new NoteRevision();

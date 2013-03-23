@@ -10,32 +10,32 @@ import RDFQueryTest._
 import Conversions._
 
 class RDFQueryTest {
-    
-  val repository = new MiniRepository();  
-    
+
+  val repository = new MiniRepository();
+
   val query = new RDFQueryImpl(repository.openConnection());
-  
+
   @Test
-  def User_a_User_with_Label {        
-    query 
-      .where ( user a User, user has (RDFS.label, label)) 
-      .select ( user, label )
+  def User_a_User_with_Label {
+    query
+      .where(user a User, user has (RDFS.label, label))
+      .select(user, label)
   }
-  
+
   @Test
-  def User_in_Resources {    
-    query 
-      .where ( user in (res1, res2), user has (pred, obj) )
-      .select ( user, pred, obj )
+  def User_in_Resources {
+    query
+      .where(user in (res1, res2), user has (pred, obj))
+      .select(user, pred, obj)
   }
-  
+
   @Test
   def Label_is {
-    query 
-      .where ( label is (user, RDFS.label), label === "XXX" ) // user has (RDFS.label, "XXX")
-      .select ( user )      
+    query
+      .where(label is (user, RDFS.label), label === "XXX") // user has (RDFS.label, "XXX")
+      .select(user)
   }
-  
+
 }
 
 object RDFQueryTest {
@@ -43,7 +43,7 @@ object RDFQueryTest {
   val res1 = new BID()
   val res2 = new BID()
   val User = new UID(TEST.NS, "User")
-  
+
   // variables
   val user = new QID("user")
   val label = new QLIT("label")

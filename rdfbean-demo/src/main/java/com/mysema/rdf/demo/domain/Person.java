@@ -28,45 +28,45 @@ public class Person extends Party {
     // }
 
     public Person(String firstName, String lastName) {
-	this.firstName = Assert.hasText(firstName, "firstName");
-	this.lastName = Assert.hasText(lastName, "lastName");
+        this.firstName = Assert.hasText(firstName, "firstName");
+        this.lastName = Assert.hasText(lastName, "lastName");
     }
 
     public String getFirstName() {
-	return firstName;
+        return firstName;
     }
 
     public void setFirstName(String name) {
-	this.firstName = name;
+        this.firstName = name;
     }
 
     @Override
     public String getDisplayName() {
-	return firstName + " " + lastName;
+        return firstName + " " + lastName;
     }
 
     public String getLastName() {
-	return lastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-	this.lastName = lastName;
+        this.lastName = lastName;
     }
 
     public int getAge() {
-	return age;
+        return age;
     }
 
     public void setAge(int age) {
-	this.age = age;
+        this.age = age;
     }
 
     public Company getCompany() {
-	return company;
+        return company;
     }
 
     void setCompany(Company company) {
-	this.company = company;
+        this.company = company;
     }
 
 }

@@ -34,7 +34,7 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
 
     @Override
     @Before
-    public void setUp(){
+    public void setUp() {
         super.setUp();
         List<STMT> stmts = Arrays.asList(new STMT(RDF.type, RDF.type, RDF.Property));
         toBeRemoved = stmts;
@@ -42,100 +42,100 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Ask(){
+    public void Ask() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "ASK { ?s ?p ?o }");
         assertEquals(SPARQLQuery.ResultType.BOOLEAN, query.getResultType());
         assertTrue(query.getBoolean());
     }
 
     @Test
-    public void Ask_with_False_result(){
+    public void Ask_with_False_result() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "ASK { ?s <test:test> ?o }");
         assertEquals(SPARQLQuery.ResultType.BOOLEAN, query.getResultType());
         assertFalse(query.getBoolean());
     }
 
     @Test
-    public void Select(){
+    public void Select() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, SELECT_LIMIT_10);
         assertEquals(SPARQLQuery.ResultType.TUPLES, query.getResultType());
-        assertEquals(Arrays.asList("s","p","o"), query.getVariables());
-        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        assertEquals(Arrays.asList("s", "p", "o"), query.getVariables());
+        CloseableIterator<Map<String, NODE>> rows = query.getTuples();
         assertTrue(rows.hasNext());
-        while (rows.hasNext()){
-            Map<String,NODE> row = rows.next();
+        while (rows.hasNext()) {
+            Map<String, NODE> row = rows.next();
             System.out.println(row.get("s") + " " + row.get("p") + " " + row.get("o"));
         }
         rows.close();
     }
 
     @Test
-    public void Select_No_Results(){
+    public void Select_No_Results() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "SELECT * WHERE {?s <xxx:xxx> ?o} LIMIT 10");
         assertEquals(SPARQLQuery.ResultType.TUPLES, query.getResultType());
-        assertEquals(Arrays.asList("s","o"), query.getVariables());
-        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        assertEquals(Arrays.asList("s", "o"), query.getVariables());
+        CloseableIterator<Map<String, NODE>> rows = query.getTuples();
         assertFalse(rows.hasNext());
         rows.close();
     }
 
     @Test
-    public void Select_with_QueryTime(){
+    public void Select_with_QueryTime() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, SELECT_LIMIT_10);
         query.setMaxQueryTime(1);
-        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        CloseableIterator<Map<String, NODE>> rows = query.getTuples();
         assertTrue(rows.hasNext());
-        while (rows.hasNext()){
+        while (rows.hasNext()) {
             rows.next();
         }
         rows.close();
     }
 
     @Test
-    public void Select_with_Bindings(){
+    public void Select_with_Bindings() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "SELECT * WHERE {?s ?p ?o} LIMIT 10");
         query.setBinding("p", RDF.type);
-        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        CloseableIterator<Map<String, NODE>> rows = query.getTuples();
         assertTrue(rows.hasNext());
-        while (rows.hasNext()){
-            Map<String,NODE> row = rows.next();
+        while (rows.hasNext()) {
+            Map<String, NODE> row = rows.next();
             assertEquals(RDF.type, row.get("p"));
         }
         rows.close();
     }
 
     @Test
-    public void Select_with_Resource_Binding_no_Match(){
+    public void Select_with_Resource_Binding_no_Match() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, SELECT_LIMIT_10);
         query.setBinding("p", new UID(TEST.NS, "p" + System.currentTimeMillis()));
-        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
-        try{
+        CloseableIterator<Map<String, NODE>> rows = query.getTuples();
+        try {
             assertFalse(rows.hasNext());
-        }finally{
+        } finally {
             rows.close();
         }
     }
 
     @Test
-    public void Select_with_Literal_Binding_no_Match(){
+    public void Select_with_Literal_Binding_no_Match() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, SELECT_LIMIT_10);
         query.setBinding("o", new LIT(UUID.randomUUID().toString()));
-        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
-        try{
+        CloseableIterator<Map<String, NODE>> rows = query.getTuples();
+        try {
             assertFalse(rows.hasNext());
-        }finally{
+        } finally {
             rows.close();
         }
     }
 
     @Test
-    public void Select_with_Bindings_in_Projection(){
+    public void Select_with_Bindings_in_Projection() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "SELECT ?s ?label ?o WHERE {?s ?p ?o} LIMIT 10");
         query.setBinding("label", RDFS.label);
-        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        CloseableIterator<Map<String, NODE>> rows = query.getTuples();
         assertTrue(rows.hasNext());
-        while (rows.hasNext()){
-            Map<String,NODE> row = rows.next();
+        while (rows.hasNext()) {
+            Map<String, NODE> row = rows.next();
             System.out.println(row);
             assertEquals(RDFS.label, row.get("label"));
         }
@@ -143,12 +143,12 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Construct(){
+    public void Construct() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, CONSTRUCT_LIMIT_10);
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
         CloseableIterator<STMT> triples = query.getTriples();
         assertTrue(triples.hasNext());
-        while (triples.hasNext()){
+        while (triples.hasNext()) {
             STMT triple = triples.next();
             System.out.println(triple);
         }
@@ -156,13 +156,13 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Construct_With_Binding(){
+    public void Construct_With_Binding() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, CONSTRUCT_LIMIT_10);
         query.setBinding("s", RDF.type);
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
         CloseableIterator<STMT> triples = query.getTriples();
         assertTrue(triples.hasNext());
-        while (triples.hasNext()){
+        while (triples.hasNext()) {
             STMT triple = triples.next();
             System.out.println(triple);
         }
@@ -171,7 +171,7 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
 
     @Test
     @Ignore
-    public void Construct_With_From_Binding(){
+    public void Construct_With_From_Binding() {
         // FIXME
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL,
                 "CONSTRUCT { ?s ?p ?o } FROM ?context WHERE {?s ?p ?o} LIMIT 10");
@@ -179,7 +179,7 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
         CloseableIterator<STMT> triples = query.getTriples();
         assertTrue(triples.hasNext());
-        while (triples.hasNext()){
+        while (triples.hasNext()) {
             STMT triple = triples.next();
             System.out.println(triple);
         }
@@ -187,22 +187,21 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Construct_Multiple_Patterns(){
+    public void Construct_Multiple_Patterns() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "CONSTRUCT { ?s ?p ?o . ?s rdf:type ?type } " +
-        		"WHERE {?s ?p ?o . ?s rdf:type ?type } LIMIT 10");
+                "WHERE {?s ?p ?o . ?s rdf:type ?type } LIMIT 10");
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
         CloseableIterator<STMT> triples = query.getTriples();
         assertTrue(triples.hasNext());
-        while (triples.hasNext()){
+        while (triples.hasNext()) {
             STMT triple = triples.next();
             System.out.println(triple);
         }
         triples.close();
     }
 
-
     @Test
-    public void Construct_Stream_Triples(){
+    public void Construct_Stream_Triples() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, CONSTRUCT_LIMIT_10);
         assertEquals(SPARQLQuery.ResultType.TRIPLES, query.getResultType());
         StringWriter w = new StringWriter();
@@ -211,19 +210,19 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Select_and_Describe(){
+    public void Select_and_Describe() {
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, "SELECT ?s WHERE {?s ?p ?o} LIMIT 10");
-        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
+        CloseableIterator<Map<String, NODE>> rows = query.getTuples();
         assertEquals(Arrays.asList("s"), query.getVariables());
         assertTrue(rows.hasNext());
-        while (rows.hasNext()){
-            Map<String,NODE> row = rows.next();
+        while (rows.hasNext()) {
+            Map<String, NODE> row = rows.next();
             NODE subject = row.get("s");
-            if (subject.isURI()){
+            if (subject.isURI()) {
                 SPARQLQuery describe = connection.createQuery(QueryLanguage.SPARQL, "DESCRIBE <" + subject.getValue() + ">");
                 CloseableIterator<STMT> triples = describe.getTriples();
                 assertTrue(triples.hasNext());
-                while (triples.hasNext()){
+                while (triples.hasNext()) {
                     STMT triple = triples.next();
                     System.out.println(triple);
                 }
@@ -233,7 +232,7 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void LongQuery(){
+    public void LongQuery() {
         StringBuilder qry = new StringBuilder();
         qry.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
         qry.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n");
@@ -249,12 +248,11 @@ public class SPARQLQueryTest extends AbstractConnectionTest {
         qry.append("ORDER BY ?dimensionName\n");
 
         SPARQLQuery query = connection.createQuery(QueryLanguage.SPARQL, qry.toString());
-        CloseableIterator<Map<String,NODE>> rows = query.getTuples();
-        while (rows.hasNext()){
+        CloseableIterator<Map<String, NODE>> rows = query.getTuples();
+        while (rows.hasNext()) {
             System.out.println(rows.next());
         }
         rows.close();
     }
-
 
 }

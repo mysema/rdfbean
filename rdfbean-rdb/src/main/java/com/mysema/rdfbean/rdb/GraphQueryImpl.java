@@ -11,7 +11,7 @@ import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.PatternBlock;
 import com.mysema.rdfbean.model.STMT;
 
-public class GraphQueryImpl implements GraphQuery{
+public class GraphQueryImpl implements GraphQuery {
 
     private final SQLQuery query;
 

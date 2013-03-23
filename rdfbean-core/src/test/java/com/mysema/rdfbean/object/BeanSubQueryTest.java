@@ -12,18 +12,18 @@ import com.mysema.query.types.path.PathBuilder;
 import com.mysema.query.types.path.StringPath;
 
 public class BeanSubQueryTest {
-    
+
     private BeanSubQuery beanSubQuery = new BeanSubQuery();
 
     private PathBuilder<Object> pathBuilder = new PathBuilder<Object>(Object.class, "obj");
-    
+
     private StringPath stringPath = pathBuilder.getString("str");
-    
+
     @Before
-    public void setUp(){
+    public void setUp() {
         beanSubQuery.from(pathBuilder);
     }
-    
+
     @Test
     public void Count() {
         beanSubQuery.count();

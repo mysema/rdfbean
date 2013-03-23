@@ -13,19 +13,19 @@ import com.mysema.query.types.PredicateOperation;
 
 @SuppressWarnings("unchecked")
 public class SPARQLVisitorTest {
-    
+
     private final SPARQLVisitor visitor = new SPARQLVisitor();
-        
+
     @Test
-    public void Like_as_Matches(){     
+    public void Like_as_Matches() {
         visitor.setLikeAsMatches(true);
         visitor.handle(PredicateOperation.create(Ops.LIKE, QNODE.o, new ConstantImpl(LIT.class, new LIT("x%"))));
         assertEquals("regex(?o, ?_c2)", visitor.toString());
         assertTrue(visitor.getConstantToLabel().containsKey(new LIT("x.*")));
     }
-    
+
     @Test
-    public void Like_as_Matches_2(){
+    public void Like_as_Matches_2() {
         visitor.setLikeAsMatches(true);
         visitor.handle(PredicateOperation.create(Ops.LIKE, QNODE.o, new ConstantImpl(LIT.class, new LIT("x_"))));
         assertEquals("regex(?o, ?_c2)", visitor.toString());
@@ -44,13 +44,13 @@ public class SPARQLVisitorTest {
         visitor.visit(metadata, QueryLanguage.TUPLE);
         assertEquals(PREFIX + "SELECT ?s WHERE { ?s ?p ?o } ", stripWS(visitor.toString()));
     }
-    
+
     @Test
-    public void StringValue_StartsWith(){        
+    public void StringValue_StartsWith() {
         visitor.handle(QNODE.o.stringValue().startsWith("B"));
         assertEquals("regex(str(?o), '^B')", visitor.toString());
     }
-    
+
     public static String stripWS(String str) {
         return str.replaceAll("\\s+", " ");
     }

@@ -13,12 +13,13 @@ import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RepositoryException;
 
 /**
- * SesameTransaction provides an RDFBeanTransaction implementation for SesameConnection
- *
+ * SesameTransaction provides an RDFBeanTransaction implementation for
+ * SesameConnection
+ * 
  * @author tiwe
  * @version $Id$
  */
-public class SesameTransaction implements RDFBeanTransaction{
+public class SesameTransaction implements RDFBeanTransaction {
 
     private static final Logger logger = LoggerFactory.getLogger(SesameTransaction.class);
 
@@ -29,7 +30,7 @@ public class SesameTransaction implements RDFBeanTransaction{
     private boolean rollbackOnly;
 
     public SesameTransaction(SesameConnection connection, int isolationLevel) {
-        this.connection = Assert.notNull(connection,"connection");
+        this.connection = Assert.notNull(connection, "connection");
     }
 
     public void begin() {
@@ -45,7 +46,7 @@ public class SesameTransaction implements RDFBeanTransaction{
 
     @Override
     public void commit() {
-        if (rollbackOnly){
+        if (rollbackOnly) {
             throw new RepositoryException("Transaction is rollBackOnly");
         }
         try {
@@ -54,13 +55,13 @@ public class SesameTransaction implements RDFBeanTransaction{
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
             throw new RepositoryException(error, e);
-        }finally{
+        } finally {
             connection.cleanUpAfterCommit();
         }
 
     }
 
-    public boolean isActive(){
+    public boolean isActive() {
         return active;
     }
 
@@ -76,15 +77,15 @@ public class SesameTransaction implements RDFBeanTransaction{
 
     @Override
     public void rollback() {
-       try {
-           connection.getConnection().rollback();
-       } catch (org.openrdf.repository.RepositoryException e) {
-           String error = "Caught " + e.getClass().getName();
-           logger.error(error, e);
-           throw new RepositoryException(error, e);
-       }finally{
-           connection.cleanUpAfterRollback();
-       }
+        try {
+            connection.getConnection().rollback();
+        } catch (org.openrdf.repository.RepositoryException e) {
+            String error = "Caught " + e.getClass().getName();
+            logger.error(error, e);
+            throw new RepositoryException(error, e);
+        } finally {
+            connection.cleanUpAfterRollback();
+        }
     }
 
     @Override

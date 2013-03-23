@@ -18,11 +18,11 @@ import com.mysema.query.apt.Configuration;
  */
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-public class BeanAnnotationProcessor extends AbstractQuerydslProcessor{
-    
+public class BeanAnnotationProcessor extends AbstractQuerydslProcessor {
+
     @Override
     protected Configuration createConfiguration(RoundEnvironment roundEnv) {
-    	return new BeanConfiguration(roundEnv, processingEnv.getOptions());   
+        return new BeanConfiguration(roundEnv, processingEnv.getOptions());
     }
-    
+
 }

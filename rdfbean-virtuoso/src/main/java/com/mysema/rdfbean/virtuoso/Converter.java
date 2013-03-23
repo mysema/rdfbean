@@ -18,59 +18,59 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class Converter {
 
     private final ConverterRegistry converters;
-    
+
     private final Map<String, UID> datatypes = new HashMap<String, UID>(1024);
-    
+
     private final Map<String, Locale> locales = new HashMap<String, Locale>(128);
-    
+
     public Converter(ConverterRegistry converters) {
         this.converters = converters;
     }
-    
+
     @Nullable
     public NODE toNODE(@Nullable Object val) {
-        if (val == null){
+        if (val == null) {
             return null;
         } else if (val instanceof ExtendedString) {
-            return toNODE((ExtendedString)val);
+            return toNODE((ExtendedString) val);
         } else if (val instanceof RdfBox) {
-            return toNODE((RdfBox)val);
-        } else if (val instanceof String) {    
+            return toNODE((RdfBox) val);
+        } else if (val instanceof String) {
             return new LIT(val.toString());
         } else {
             UID datatype = converters.getDatatype(val.getClass());
-            if (datatype != null){
-                return new LIT(converters.toString(val), datatype);    
-            }else{
+            if (datatype != null) {
+                return new LIT(converters.toString(val), datatype);
+            } else {
                 throw new IllegalArgumentException("Unkown type " + val.getClass().getName());
-            }            
+            }
         }
     }
-    
-    private NODE toNODE(ExtendedString ves){
+
+    private NODE toNODE(ExtendedString ves) {
         final String value = ves.toString();
         if (ves.getIriType() == ExtendedString.IRI && (ves.getStrType() & 0x01) == 0x01) {
             if (value.startsWith("_:")) {
                 return new BID(value.substring(2));
             }
-            if (value.indexOf(':') < 0){
+            if (value.indexOf(':') < 0) {
                 return new UID(":" + value);
-            }else{
+            } else {
                 return new UID(value);
-            }                
+            }
         } else if (ves.getIriType() == ExtendedString.BNODE) {
             return new BID(value.substring(9)); // "nodeID://"
         } else {
             return new LIT(value);
         }
     }
-    
-    private LIT toNODE(RdfBox rb){
+
+    private LIT toNODE(RdfBox rb) {
         if (rb.getLang() != null) {
             return new LIT(rb.toString(), getLocale(rb.getLang()));
         } else if (rb.getType() != null) {
@@ -79,19 +79,19 @@ public class Converter {
             return new LIT(rb.toString());
         }
     }
-    
-    private UID getUID(String datatype){
+
+    private UID getUID(String datatype) {
         UID uid = datatypes.get(datatype);
-        if (uid == null){
+        if (uid == null) {
             uid = new UID(datatype);
-            datatypes.put(datatype, uid);            
+            datatypes.put(datatype, uid);
         }
         return uid;
     }
-    
-    private Locale getLocale(String lang){
+
+    private Locale getLocale(String lang) {
         Locale locale = locales.get(lang);
-        if (locale == null){
+        if (locale == null) {
             locale = LocaleUtil.parseLocale(lang);
             locales.put(lang, locale);
         }

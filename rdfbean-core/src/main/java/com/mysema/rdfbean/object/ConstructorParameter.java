@@ -24,9 +24,9 @@ public final class ConstructorParameter extends MappedProperty<Constructor<?>> {
     private final int parameterIndex;
 
     private final String property;
-    
+
     private final boolean reference;
-    
+
     public ConstructorParameter(Constructor<?> constructor, int parameterIndex, MappedClass declaringClass, String property, boolean reference) {
         super(property, constructor.getParameterAnnotations()[parameterIndex], declaringClass);
         this.constructor = constructor;

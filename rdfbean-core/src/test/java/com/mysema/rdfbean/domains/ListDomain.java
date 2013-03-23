@@ -22,7 +22,7 @@ public interface ListDomain {
     }
 
     @ClassMapping
-    public class Elements extends Identifiable{
+    public class Elements extends Identifiable {
 
         @Predicate
         public List<Element> elements;
@@ -35,14 +35,14 @@ public interface ListDomain {
     }
 
     @ClassMapping
-    public class LinkElement extends Identifiable implements Element{
+    public class LinkElement extends Identifiable implements Element {
 
         @Predicate
         public String url;
     }
 
     @ClassMapping
-    public class TextElement extends Identifiable implements Element{
+    public class TextElement extends Identifiable implements Element {
 
         @Predicate
         public String text;

@@ -16,7 +16,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows defining a default value for object/reference properties. For example a default Role of a User: 
+ * Allows defining a default value for object/reference properties. For example
+ * a default Role of a User:
+ * 
  * <pre>
  * &#64;ClassMapping(ns=TEST.NS)
  * public class User {
@@ -27,9 +29,11 @@ import java.lang.annotation.Target;
  *   ...
  * }
  * </pre>
- * &#64;Default can also be used as such without &#64;Predicate in order to define non changeable 
- * references. This is particulary useful in conjunction with &#64;Inject for 
- * injecting named services to beans: 
+ * 
+ * &#64;Default can also be used as such without &#64;Predicate in order to
+ * define non changeable references. This is particulary useful in conjunction
+ * with &#64;Inject for injecting named services to beans:
+ * 
  * <pre>
  *   &#64;Default(ns=TEST.SERVICES_NS, "userService")
  *   &#64;Inject
@@ -39,13 +43,14 @@ import java.lang.annotation.Target;
  * @author sasa
  */
 @Documented
-@Target( { METHOD, FIELD, PARAMETER })
+@Target({ METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Default {
 
     /**
-     * @return The local name of the resource URI. If namespace (ns) is not given, this is should be the full URI. 
+     * @return The local name of the resource URI. If namespace (ns) is not
+     *         given, this is should be the full URI.
      */
     String ln() default "";
 

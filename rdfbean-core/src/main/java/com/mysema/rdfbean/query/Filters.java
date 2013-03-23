@@ -12,7 +12,7 @@ import com.mysema.rdfbean.model.GroupBlock;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class Filters {
 
@@ -24,7 +24,7 @@ public class Filters {
 
     private boolean inOptional = false;
 
-    public Set<Predicate> getFilters(){
+    public Set<Predicate> getFilters() {
         return filters;
     }
 
@@ -33,19 +33,19 @@ public class Filters {
     }
 
     public void add(Predicate predicate) {
-       if (inOptional){
-           if (predicate instanceof Block){
-               optBlocks.add((Block)predicate);
-           }else{
-               optFilters.add(predicate);
-           }
-       }else{
-           filters.add(predicate);
-       }
+        if (inOptional) {
+            if (predicate instanceof Block) {
+                optBlocks.add((Block) predicate);
+            } else {
+                optFilters.add(predicate);
+            }
+        } else {
+            filters.add(predicate);
+        }
 
     }
 
-    public boolean inOptional(){
+    public boolean inOptional() {
         return inOptional;
     }
 
@@ -54,9 +54,9 @@ public class Filters {
     }
 
     public void endOptional() {
-        if (optBlocks.isEmpty()){
+        if (optBlocks.isEmpty()) {
             filters.addAll(optFilters);
-        }else{
+        } else {
             filters.add(Blocks.optional(
                     new ArrayList<Block>(optBlocks),
                     optFilters.toArray(new Predicate[optFilters.size()])));
@@ -66,17 +66,17 @@ public class Filters {
         inOptional = false;
     }
 
-    public Predicate[] toArray(){
+    public Predicate[] toArray() {
         return filters.toArray(new Predicate[filters.size()]);
     }
 
     public Block asBlock() {
         List<Block> b = new ArrayList<Block>();
         List<Predicate> f = new ArrayList<Predicate>();
-        for (Predicate filter : filters){
-            if (filter instanceof Block){
-                b.add((Block)filter);
-            }else{
+        for (Predicate filter : filters) {
+            if (filter instanceof Block) {
+                b.add((Block) filter);
+            } else {
                 f.add(filter);
             }
         }

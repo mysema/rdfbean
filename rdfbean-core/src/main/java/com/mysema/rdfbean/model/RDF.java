@@ -5,14 +5,11 @@
  */
 package com.mysema.rdfbean.model;
 
-
-
-
 /**
  * Namespace file for the RDF namespace
- *
+ * 
  * @author sasa
- *
+ * 
  */
 public final class RDF {
     public static final String NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
@@ -51,13 +48,14 @@ public final class RDF {
 
     public static final UID text = new UID(NS, "text");
 
-    private RDF() {}
+    private RDF() {
+    }
 
     public static UID getContainerMembershipProperty(int i) {
         if (i < 1) {
             throw new IllegalArgumentException("Negative index: " + i);
         }
-        return new UID(NS, "_"+i);
+        return new UID(NS, "_" + i);
     }
 
     public static boolean isContainerMembershipProperty(UID predicate) {
@@ -70,7 +68,7 @@ public final class RDF {
             char c = ln.charAt(1);
             if ('0' < c && c <= '9') {
                 result = true;
-                for (int i=2; i < ln.length() && result; i++) {
+                for (int i = 2; i < ln.length() && result; i++) {
                     c = ln.charAt(i);
                     result = '0' <= c && c <= '9';
                 }

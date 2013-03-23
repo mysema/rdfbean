@@ -18,7 +18,7 @@ import com.mysema.query.types.path.StringPath;
 /**
  * QLanguage is a Querydsl query type for QLanguage
  */
-public class QLanguage extends RelationalPathBase<QLanguage>{
+public class QLanguage extends RelationalPathBase<QLanguage> {
 
     private static final long serialVersionUID = -1756160653;
 
@@ -37,7 +37,7 @@ public class QLanguage extends RelationalPathBase<QLanguage>{
     }
 
     public QLanguage(BeanPath<? extends QLanguage> entity) {
-        super(entity.getType(),entity.getMetadata(), null, "LANGUAGE");
+        super(entity.getType(), entity.getMetadata(), null, "LANGUAGE");
     }
 
     public QLanguage(PathMetadata<?> metadata) {
@@ -45,4 +45,3 @@ public class QLanguage extends RelationalPathBase<QLanguage>{
     }
 
 }
-

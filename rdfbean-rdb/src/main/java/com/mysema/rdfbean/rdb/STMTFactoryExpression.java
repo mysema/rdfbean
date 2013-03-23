@@ -16,7 +16,7 @@ import com.mysema.rdfbean.model.PatternBlock;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
-public class STMTFactoryExpression implements FactoryExpression<STMT>{
+public class STMTFactoryExpression implements FactoryExpression<STMT> {
 
     private static final long serialVersionUID = 2264837934860429836L;
 
@@ -46,10 +46,10 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
     }
 
     @Nullable
-    private NODE getConstant(Expression<?> expr){
-        if (expr instanceof Constant<?>){
-            return (NODE)((Constant<?>) expr).getConstant();
-        }else{
+    private NODE getConstant(Expression<?> expr) {
+        if (expr instanceof Constant<?>) {
+            return (NODE) ((Constant<?>) expr).getConstant();
+        } else {
             return null;
         }
     }
@@ -63,19 +63,19 @@ public class STMTFactoryExpression implements FactoryExpression<STMT>{
     public STMT newInstance(Object... args) {
         int counter = 0;
         ID s = subject != null ? subject : getId(args[counter++]);
-        UID p = predicate != null ? predicate : (UID)getId(args[counter++]);
-        NODE o = object != null ? object : function.apply((Long)args[counter++]);
+        UID p = predicate != null ? predicate : (UID) getId(args[counter++]);
+        NODE o = object != null ? object : function.apply((Long) args[counter++]);
         UID c = context;
-        if (args.length > counter && c != null){
-            c = (UID)getId(args[counter++]);
+        if (args.length > counter && c != null) {
+            c = (UID) getId(args[counter++]);
         }
         return new STMT(s, p, o, c);
     }
 
     private ID getId(Object input) {
-        if (input instanceof Long){
-            return (ID)function.apply((Long)input);
-        }else{
+        if (input instanceof Long) {
+            return (ID) function.apply((Long) input);
+        } else {
             String val = input.toString();
             return val.contains(":") ? new UID(val) : new BID(val);
         }

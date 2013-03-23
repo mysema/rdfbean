@@ -15,24 +15,24 @@ import com.mysema.rdfbean.model.RDFS;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.STMT;
 
-public class VirtuosoTransactionTest extends AbstractConnectionTest{
-    
+public class VirtuosoTransactionTest extends AbstractConnectionTest {
+
     private RDFBeanTransaction tx;
-    
+
     @Override
     @Before
-    public void setUp(){
+    public void setUp() {
         super.setUp();
         tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
     }
-    
+
     @Test
     public void Commit() {
         STMT stmt = new STMT(new BID(), RDF.type, RDFS.Class);
         toBeRemoved = Collections.singleton(stmt);
         connection.update(null, Collections.singleton(stmt));
         tx.commit();
-        
+
         assertExists(stmt.getSubject(), null, null, null);
     }
 
@@ -59,11 +59,11 @@ public class VirtuosoTransactionTest extends AbstractConnectionTest{
         toBeRemoved = Collections.singleton(stmt);
         connection.update(null, Collections.singleton(stmt));
         tx.rollback();
-        
+
         assertNotExists(stmt.getSubject(), null, null, null);
     }
 
-    @Test(expected=RepositoryException.class)
+    @Test(expected = RepositoryException.class)
     public void SetRollbackOnly() {
         tx.setRollbackOnly();
         tx.commit();

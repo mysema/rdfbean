@@ -23,34 +23,34 @@ import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.util.BeanMap;
 
 @EagerLoad
-public class SeedEntityImpl implements SeedEntity{
+public class SeedEntityImpl implements SeedEntity {
 
     private static final Logger logger = LoggerFactory.getLogger(SeedEntityImpl.class);
 
-    private final Map<Object,Object> persisted;
+    private final Map<Object, Object> persisted;
 
     public SeedEntityImpl(
             Configuration configuration,
             SessionFactory sessionFactory,
             List<Object> entities) throws IOException {
-        this.persisted = new HashMap<Object,Object>(entities.size());
+        this.persisted = new HashMap<Object, Object>(entities.size());
         Session session = sessionFactory.openSession();
         RDFBeanTransaction tx = session.beginTransaction();
-        try{
-            for (Object entity : entities){
+        try {
+            for (Object entity : entities) {
                 replaceReferences(configuration, entity);
                 Object original = session.getByExample(entity);
-                if (original == null){
+                if (original == null) {
                     session.save(entity);
-                }else{
+                } else {
                     persisted.put(entity, original);
                 }
             }
             tx.commit();
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             tx.rollback();
-        }finally{
+        } finally {
             session.close();
         }
 
@@ -58,16 +58,16 @@ public class SeedEntityImpl implements SeedEntity{
 
     /**
      * Replace the references of the given entity with persisted ones
-     *
+     * 
      * @param entity
      */
     private void replaceReferences(Configuration configuration, Object entity) {
         BeanMap beanMap = new BeanMap(entity);
         MappedClass mappedClass = configuration.getMappedClass(entity.getClass());
-        for (MappedPath mappedPath : mappedClass.getProperties()){
-            if (mappedPath.isReference() && mappedPath.isSimpleProperty()){
+        for (MappedPath mappedPath : mappedClass.getProperties()) {
+            if (mappedPath.isReference() && mappedPath.isSimpleProperty()) {
                 Object value = mappedPath.getMappedProperty().getValue(beanMap);
-                if (value != null && persisted.containsKey(value)){
+                if (value != null && persisted.containsKey(value)) {
                     value = persisted.get(value);
                     mappedPath.getMappedProperty().setValue(beanMap, value);
                 }

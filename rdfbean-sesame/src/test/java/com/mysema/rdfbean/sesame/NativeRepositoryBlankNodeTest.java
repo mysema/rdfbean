@@ -19,27 +19,27 @@ public class NativeRepositoryBlankNodeTest {
     private NativeRepository repository;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         repository = new NativeRepository();
         repository.setDataDirName("target/NativeRepositoryBlankNodeTest");
         repository.initialize();
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         repository.close();
     }
 
     @Test
-    public void IsPreserved(){
+    public void IsPreserved() {
         RDFConnection connection = repository.openConnection();
-        try{
+        try {
             STMT stmt = new STMT(connection.createBNode(), RDF.type, RDFS.Resource);
             connection.update(null, Collections.singleton(stmt));
             assertTrue(connection.exists(stmt.getSubject(), null, null, null, false));
             connection.update(Collections.singleton(stmt), null);
             assertFalse(connection.exists(stmt.getSubject(), null, null, null, false));
-        }finally{
+        } finally {
             connection.close();
         }
     }

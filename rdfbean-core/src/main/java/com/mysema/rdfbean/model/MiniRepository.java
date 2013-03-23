@@ -30,19 +30,19 @@ import com.mysema.rdfbean.model.io.WriterUtils;
  * for use in local cacheing of statements and tests
  * 
  * @author sasa
- *
+ * 
  */
 public final class MiniRepository implements Repository {
-    
+
     private final MiniDialect dialect = new MiniDialect();
-    
+
     private long localId = 0;
-    
+
     @Nullable
     private final Map<ID, PredicateCache> objects;
-    
+
     private final Map<ID, PredicateCache> subjects;
-    
+
     public MiniRepository() {
         this(1024);
     }
@@ -50,21 +50,21 @@ public final class MiniRepository implements Repository {
     public MiniRepository(int initialCapacity) {
         this(initialCapacity, true);
     }
-    
+
     public MiniRepository(int initialCapacity, boolean inverseIndex) {
         subjects = new HashMap<ID, PredicateCache>(initialCapacity);
         if (inverseIndex) {
             objects = new HashMap<ID, PredicateCache>(initialCapacity);
-        }else{
+        } else {
             objects = null;
         }
     }
-    
+
     public MiniRepository(STMT... stmts) {
         this(stmts.length);
         add(stmts);
     }
-    
+
     public void add(STMT... stmts) {
         for (STMT stmt : stmts) {
             index(stmt.getSubject(), stmt, subjects);
@@ -74,49 +74,49 @@ public final class MiniRepository implements Repository {
         }
     }
 
-    public void clear(){
+    public void clear() {
         subjects.clear();
-        if (objects != null){
+        if (objects != null) {
             objects.clear();
         }
     }
-    
+
     @Override
     public void close() {
 
     }
-    
+
     @Override
     public void load(Format format, InputStream is, @Nullable UID context, boolean replace) {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public void export(Format format, Map<String, String> ns2prefix, UID context, OutputStream out) {
         RDFWriter writer = WriterUtils.createWriter(format, out, ns2prefix);
         RDFConnection conn = openConnection();
-        try{                
+        try {
             CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, context, false);
-            try{
+            try {
                 writer.begin();
-                while (stmts.hasNext()){
+                while (stmts.hasNext()) {
                     writer.handle(stmts.next());
                 }
                 writer.end();
-            }finally{
+            } finally {
                 stmts.close();
             }
-            
-        }finally{
+
+        } finally {
             conn.close();
-        }            
+        }
     }
-    
+
     @Override
-    public void export(Format format, UID context, OutputStream out) {        
+    public void export(Format format, UID context, OutputStream out) {
         export(format, Namespaces.DEFAULT, context, out);
     }
-    
+
     @SuppressWarnings("unchecked")
     public CloseableIterator<STMT> findStatements(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context, boolean includeInferred) {
         Iterator<STMT> iterator = null;
@@ -133,11 +133,11 @@ public final class MiniRepository implements Repository {
         }
         return new ResultIterator(iterator, subject, predicate, object, context, includeInferred);
     }
-    
+
     public boolean exists(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context) {
         return findStatements(subject, predicate, object, context, false).hasNext();
     }
-    
+
     public MiniDialect getDialect() {
         return dialect;
     }
@@ -147,10 +147,10 @@ public final class MiniRepository implements Repository {
         if (stmtCache != null) {
             return stmtCache.iterator(predicate);
         } else {
-            return Collections.<STMT>emptyList().iterator();
+            return Collections.<STMT> emptyList().iterator();
         }
     }
-    
+
     public synchronized long getNextLocalId() {
         return ++localId;
     }
@@ -160,54 +160,53 @@ public final class MiniRepository implements Repository {
         if (stmtCache == null) {
             stmtCache = new PredicateCache();
             index.put(key, stmtCache);
-        } 
+        }
         stmtCache.add(stmt);
     }
-    
+
     @Override
     public void initialize() {
     }
-    
+
     public MiniConnection openConnection() {
         return new MiniConnection(this);
     }
 
-
-    public void remove(@Nullable ID subject, @Nullable UID predicate, @Nullable  NODE object, @Nullable UID context) {
+    public void remove(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context) {
         // remove all
-        if (subject == null && predicate == null && object == null && context == null){
+        if (subject == null && predicate == null && object == null && context == null) {
             subjects.clear();
-            if (objects != null){
+            if (objects != null) {
                 objects.clear();
             }
-            
-        // subject given    
-        }else if (subject != null){
+
+            // subject given
+        } else if (subject != null) {
             PredicateCache cache = subjects.get(subject);
-            if (cache != null){
-                Iterator<STMT> stmts = cache.iterator(predicate);                
+            if (cache != null) {
+                Iterator<STMT> stmts = cache.iterator(predicate);
                 removeStatements(IteratorAdapter.asList(stmts));
-                    
-            }            
-            
-        // object given   
-        }else if (object != null && object.isResource() && objects != null){
-            PredicateCache cache = objects.get(object.asResource());
-            if (cache != null){
-                Iterator<STMT> stmts = cache.iterator(predicate);                
-                removeStatements(IteratorAdapter.asList(stmts));    
+
             }
-            
-        // predicate or context given    
-        }else{
-            for (Map.Entry<ID, PredicateCache> entry : subjects.entrySet()){
-                PredicateCache cache = entry.getValue();
-                Iterator<STMT> stmts = cache.iterator(predicate);                
+
+            // object given
+        } else if (object != null && object.isResource() && objects != null) {
+            PredicateCache cache = objects.get(object.asResource());
+            if (cache != null) {
+                Iterator<STMT> stmts = cache.iterator(predicate);
                 removeStatements(IteratorAdapter.asList(stmts));
-            }            
-        }        
+            }
+
+            // predicate or context given
+        } else {
+            for (Map.Entry<ID, PredicateCache> entry : subjects.entrySet()) {
+                PredicateCache cache = entry.getValue();
+                Iterator<STMT> stmts = cache.iterator(predicate);
+                removeStatements(IteratorAdapter.asList(stmts));
+            }
+        }
     }
-    
+
     private boolean removeIndexed(ID key, STMT stmt, Map<ID, PredicateCache> index) {
         PredicateCache stmtMap = index.get(key);
         if (stmtMap != null) {
@@ -226,20 +225,19 @@ public final class MiniRepository implements Repository {
             }
         }
     }
-    
+
     @Override
     public <RT> RT execute(RDFConnectionCallback<RT> operation) {
         RDFConnection connection = openConnection();
-        try{
-            try{
+        try {
+            try {
                 return operation.doInConnection(connection);
-            }finally{
+            } finally {
                 connection.close();
-            }    
-        }catch(IOException io){
+            }
+        } catch (IOException io) {
             throw new RepositoryException(io);
         }
     }
 
-    
 }

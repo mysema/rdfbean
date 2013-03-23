@@ -8,3 +8,4 @@
  * Model IO
  */
 package com.mysema.rdfbean.model.io;
+

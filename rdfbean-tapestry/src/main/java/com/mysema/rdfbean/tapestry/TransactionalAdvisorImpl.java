@@ -37,24 +37,23 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
         sessionFactory.setSessionContext(sessionContext);
     }
 
-
     @SuppressWarnings("unchecked")
     public void addTransactionCommitAdvice(MethodAdviceReceiver receiver) {
-        if (receiver.getInterface().getAnnotation(Transactional.class) != null){
+        if (receiver.getInterface().getAnnotation(Transactional.class) != null) {
             Transactional annotation = (Transactional) receiver.getInterface().getAnnotation(Transactional.class);
-            if (isIntercepted(annotation)){
+            if (isIntercepted(annotation)) {
                 for (Method m : receiver.getInterface().getMethods()) {
-                    if (m.getAnnotation(NotTransactional.class) == null){
+                    if (m.getAnnotation(NotTransactional.class) == null) {
                         receiver.adviseMethod(m, advice);
                     }
                 }
             }
 
-        }else{
+        } else {
             for (Method m : receiver.getInterface().getMethods()) {
                 if (m.getAnnotation(Transactional.class) != null) {
                     Transactional annotation = m.getAnnotation(Transactional.class);
-                    if (isIntercepted(annotation)){
+                    if (isIntercepted(annotation)) {
                         receiver.adviseMethod(m, advice);
                     }
                 }
@@ -64,7 +63,7 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
     }
 
     private boolean isIntercepted(Transactional annotation) {
-        switch(annotation.propagation()){
+        switch (annotation.propagation()) {
         case NOT_SUPPORTED:
         case NEVER:
         case SUPPORTS:
@@ -78,25 +77,25 @@ public class TransactionalAdvisorImpl implements TransactionalAdvisor {
     public RDFBeanTransaction doBegin(Session session) {
         RDFBeanTransaction txn = session.beginTransaction(
                 false, // not readonly
-                -1,    // default timeout
-                -1);   // default isolation
+                -1, // default timeout
+                -1); // default isolation
 
         session.setFlushMode(FlushMode.COMMIT);
         return txn;
     }
 
-    public void doCommit(Session session, RDFBeanTransaction txn){
+    public void doCommit(Session session, RDFBeanTransaction txn) {
         RuntimeException commitException = null;
         try {
             session.flush();
             txn.commit();
 
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             doRollback(txn);
             commitException = re;
         }
 
-        if (commitException != null){
+        if (commitException != null) {
             throw commitException;
         }
     }

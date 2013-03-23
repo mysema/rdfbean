@@ -21,26 +21,26 @@ import com.mysema.rdfbean.domains.UserDepartmentCompanyDomain.User;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({User.class, Department.class, Company.class})
-public class MultiSourcesTest extends AbstractRDBTest implements UserDepartmentCompanyDomain{
-    
+@SessionConfig({ User.class, Department.class, Company.class })
+public class MultiSourcesTest extends AbstractRDBTest implements UserDepartmentCompanyDomain {
+
     @Before
-    public void setUp(){
-        for (String username : Arrays.asList("X","X","Y")){
+    public void setUp() {
+        for (String username : Arrays.asList("X", "X", "Y")) {
             User user = new User();
             user.userName = username;
-            session.save(user);    
+            session.save(user);
         }
-        session.clear();   
+        session.clear();
     }
-    
+
     @Test
-    public void test(){
-        User u = Alias.alias(User.class,"u");
-        User u2 = Alias.alias(User.class,"u2");
-        assertEquals(6, session.from($(u),$(u2)).where($(u).ne($(u2))).count());
-        assertEquals(2, session.from($(u),$(u2)).where($(u).ne($(u2)), $(u.getUserName()).eq($(u2.getUserName()))).count());
-        assertEquals(2, session.from($(u),$(u2)).where($(u).ne($(u2)), $(u.getUserName()).eq($(u2.getUserName()))).list($(u),$(u2)).size());
+    public void test() {
+        User u = Alias.alias(User.class, "u");
+        User u2 = Alias.alias(User.class, "u2");
+        assertEquals(6, session.from($(u), $(u2)).where($(u).ne($(u2))).count());
+        assertEquals(2, session.from($(u), $(u2)).where($(u).ne($(u2)), $(u.getUserName()).eq($(u2.getUserName()))).count());
+        assertEquals(2, session.from($(u), $(u2)).where($(u).ne($(u2)), $(u.getUserName()).eq($(u2.getUserName()))).list($(u), $(u2)).size());
     }
-        
+
 }

@@ -7,25 +7,24 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
- *
+ * 
  */
 @SuppressWarnings("all")
-public class ClassMappingImpl implements ClassMapping{
-    
+public class ClassMappingImpl implements ClassMapping {
+
     private final String ln, ns;
-    
+
     private final Class<?> parent;
-    
+
     public ClassMappingImpl(UID id, Class<?> parent) {
         this(id.getNamespace(), id.getLocalName(), parent);
     }
-    
+
     public ClassMappingImpl(String ns, String ln, Class<?> parent) {
         this.ns = ns;
         this.ln = ln;
         this.parent = parent;
     }
-    
 
     @Override
     public String ln() {
@@ -44,7 +43,7 @@ public class ClassMappingImpl implements ClassMapping{
 
     @Override
     public Class<?> parent() {
-	return parent;
+        return parent;
     }
 
 }

@@ -18,21 +18,21 @@ import com.mysema.query.types.Path;
 import com.mysema.query.types.SubQueryExpression;
 import com.mysema.query.types.TemplateExpression;
 
-public class NamespaceCollector implements RDFVisitor<Void, Void>{
+public class NamespaceCollector implements RDFVisitor<Void, Void> {
 
     private final Set<String> namespaces = new HashSet<String>();
-        
+
     @Override
     public Void visit(QueryMetadata md, QueryLanguage<?, ?> queryType) {
         return visit(md);
     }
-    
+
     @Nullable
-    private Void visit(QueryMetadata md){
+    private Void visit(QueryMetadata md) {
         // select
         handle(md.getProjection());
         // from
-        for (JoinExpression join : md.getJoins()){
+        for (JoinExpression join : md.getJoins()) {
             join.getTarget().accept(this, null);
         }
         // where
@@ -83,15 +83,15 @@ public class NamespaceCollector implements RDFVisitor<Void, Void>{
     @Override
     public Void visit(Constant<?> expr, Void context) {
         Object o = expr.getConstant();
-        if (o instanceof Collection<?>){
-            Collection<?> col = (Collection<?>)o;
-            for (Object c : col){
-                if (c instanceof UID){
-                    namespaces.add(((UID)c).ns());
-                }  
+        if (o instanceof Collection<?>) {
+            Collection<?> col = (Collection<?>) o;
+            for (Object c : col) {
+                if (c instanceof UID) {
+                    namespaces.add(((UID) c).ns());
+                }
             }
-        }else if (o instanceof UID){
-            namespaces.add(((UID)o).ns());
+        } else if (o instanceof UID) {
+            namespaces.add(((UID) o).ns());
         }
         return null;
     }
@@ -115,8 +115,8 @@ public class NamespaceCollector implements RDFVisitor<Void, Void>{
     @Override
     public Void visit(Path<?> expr, Void context) {
         if (expr.getMetadata().getElement() instanceof Expression) {
-            handle((Expression)expr.getMetadata().getElement());    
-        }        
+            handle((Expression) expr.getMetadata().getElement());
+        }
         handle(expr.getMetadata().getParent());
         return null;
     }
@@ -132,22 +132,22 @@ public class NamespaceCollector implements RDFVisitor<Void, Void>{
         return null;
     }
 
-    private void handle(@Nullable Expression<?> e){
+    private void handle(@Nullable Expression<?> e) {
         if (e != null) {
             e.accept(this, null);
         }
     }
-        
-    private void handle(List<?> args){
+
+    private void handle(List<?> args) {
         for (Object arg : args) {
             if (arg instanceof Expression) {
-                ((Expression)arg).accept(this, null);    
-            }            
+                ((Expression) arg).accept(this, null);
+            }
         }
     }
-    
+
     public Set<String> getNamespaces() {
         return namespaces;
     }
-    
+
 }

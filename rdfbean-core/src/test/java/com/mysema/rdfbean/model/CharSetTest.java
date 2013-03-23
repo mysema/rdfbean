@@ -5,16 +5,16 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class CharSetTest {
-    
+
     private static final CharSet WS = CharSet.getInstance(" \t\n\f\r");
-    
+
     private static final CharSet WORD = CharSet.getInstance("a-zA-Z0-9");
-    
+
     @Test
     public void WS() {
         assertTrue(WS.contains(' '));
     }
-    
+
     @Test
     public void WORD() {
         assertTrue(WORD.contains('a'));

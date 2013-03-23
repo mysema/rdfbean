@@ -13,7 +13,7 @@ import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 import com.mysema.rdfbean.tapestry.services.RDFBeanModule;
 
-@SubModule( { RDFBeanModule.class })
+@SubModule({ RDFBeanModule.class })
 public class ExampleModule {
 
     @Match({ "ServiceA", "ServiceB", "ServiceC", "ServiceD" })

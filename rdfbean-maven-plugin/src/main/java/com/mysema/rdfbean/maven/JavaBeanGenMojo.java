@@ -26,15 +26,16 @@ import com.mysema.rdfbean.rdfs.RDFSClass;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
 /**
- * JavaBeanGenMojo provides a Maven plugin for Java Bean generation from OWL/RDF-S schemas
- *
+ * JavaBeanGenMojo provides a Maven plugin for Java Bean generation from
+ * OWL/RDF-S schemas
+ * 
  * @author tiwe
  * @version $Id$
- *
+ * 
  * @goal beangen
  * @phase generate-sources
  */
-public class JavaBeanGenMojo extends AbstractMojo{
+public class JavaBeanGenMojo extends AbstractMojo {
 
     /**
      * @parameter
@@ -74,18 +75,18 @@ public class JavaBeanGenMojo extends AbstractMojo{
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
         Session session = sessionFactory.openSession();
-        try{
+        try {
             JavaBeanExporter exporter = new JavaBeanExporter(true);
-            for (Map.Entry<Object, Object> entry : nsToPackage.entrySet()){
+            for (Map.Entry<Object, Object> entry : nsToPackage.entrySet()) {
                 exporter.addPackage(entry.getKey().toString(), entry.getValue().toString());
             }
             exporter.export(session, targetFolder);
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage(), e);
-        }finally{
+        } finally {
             try {
                 session.close();
-            }finally{
+            } finally {
                 sessionFactory.close();
             }
         }

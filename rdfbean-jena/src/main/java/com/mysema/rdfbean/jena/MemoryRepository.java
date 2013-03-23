@@ -9,23 +9,23 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class MemoryRepository extends JenaRepository{
+public class MemoryRepository extends JenaRepository {
 
     public MemoryRepository() {
         this(DataSourceImpl.createMem());
     }
-    
+
     public MemoryRepository(Dataset dataset) {
         super(dataset);
     }
-    
-    public void addGraph(UID context){
+
+    public void addGraph(UID context) {
         addGraph(context, Factory.createGraphMem());
     }
-    
-    public void addGraph(UID context, Graph g){
+
+    public void addGraph(UID context, Graph g) {
         graph.addGraph(Node.createURI(context.getId()), g);
     }
 

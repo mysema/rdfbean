@@ -17,19 +17,19 @@ class BeanPersistenceTest {
     person.lastName = "Smith"
     session.save(person)
     session.clear()
-    
+
     person = session.getById(person.id, classOf[Person])
     assertEquals("John", person.firstName)
     assertEquals("Smith", person.lastName)
-  }  
-    
+  }
+
 }
 
 @ClassMapping
 class Person {
   @Id var id: String = _;
-  
+
   @Predicate var firstName: String = _;
-  
+
   @Predicate var lastName: String = _;
 }

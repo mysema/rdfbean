@@ -15,16 +15,15 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 import com.mysema.rdfbean.model.Repository;
 
-
 /**
  * @author tiwe
- *
+ * 
  */
-public abstract class RDFBeanRepositoryModule extends AbstractModule{
+public abstract class RDFBeanRepositoryModule extends AbstractModule {
 
     private static final Logger logger = LoggerFactory.getLogger(RDFBeanModule.class);
 
-    public List<String> getConfiguration(){
+    public List<String> getConfiguration() {
         return Collections.singletonList("/persistence.properties");
     }
 
@@ -34,14 +33,14 @@ public abstract class RDFBeanRepositoryModule extends AbstractModule{
         // inject properties
         try {
             Properties properties = new Properties();
-            for (String res : getConfiguration()){
+            for (String res : getConfiguration()) {
                 properties.load(RDFBeanModule.class.getResourceAsStream(res));
             }
             bind(Properties.class).annotatedWith(Config.class).toInstance(properties);
-            for (Map.Entry entry : properties.entrySet()){
+            for (Map.Entry entry : properties.entrySet()) {
                 bind(String.class)
-                    .annotatedWith(Names.named(entry.getKey().toString()))
-                    .toInstance(entry.getValue().toString());
+                        .annotatedWith(Names.named(entry.getKey().toString()))
+                        .toInstance(entry.getValue().toString());
             }
         } catch (IOException e) {
             String error = "Caught " + e.getClass().getName();

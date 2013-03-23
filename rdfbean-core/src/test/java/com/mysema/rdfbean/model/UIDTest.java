@@ -17,7 +17,7 @@ public class UIDTest {
         assertEquals(RDF.NS, uid.getNamespace());
         assertEquals("type", uid.getLocalName());
     }
-    
+
     @Test
     public void GetValue() {
         assertEquals("http://www.w3.org/1999/02/22-rdf-syntax-ns#type", RDF.type.getValue());

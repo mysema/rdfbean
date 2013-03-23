@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-public class ExportTest extends AbstractExportTest{
+public class ExportTest extends AbstractExportTest {
 
     @Test
     public void Export() throws IOException {
@@ -16,7 +16,5 @@ public class ExportTest extends AbstractExportTest{
         exporter.addPackage("http://www.w3.org/TR/2003/PR-owl-guide-20031209/wine#", "com.mysema.wine");
         exporter.export(session, new File("target/export"));
     }
-    
-    
 
 }

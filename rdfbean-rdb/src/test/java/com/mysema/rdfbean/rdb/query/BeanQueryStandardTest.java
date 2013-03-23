@@ -24,7 +24,7 @@ import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @Ignore
-@SessionConfig({SimpleType.class, SimpleType2.class})
+@SessionConfig({ SimpleType.class, SimpleType2.class })
 public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDomain {
 
     protected QSimpleType v1 = new QSimpleType("v1");
@@ -33,19 +33,20 @@ public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDoma
 
     private SimpleType2 other;
 
-    private final QueryExecution standardTest = new QueryExecution(Module.SQL, Target.H2){
+    private final QueryExecution standardTest = new QueryExecution(Module.SQL, Target.H2) {
         @Override
         protected Pair<Projectable, Expression<?>[]> createQuery() {
-            return Pair.of((Projectable)session.from(v1, v2), new Expression<?>[0]);
+            return Pair.of((Projectable) session.from(v1, v2), new Expression<?>[0]);
         }
+
         @Override
         protected Pair<Projectable, Expression<?>[]> createQuery(Predicate filter) {
-            return Pair.of((Projectable)session.from(v1, v2).where(filter), new Expression<?>[]{v1, v2});
+            return Pair.of((Projectable) session.from(v1, v2).where(filter), new Expression<?>[] { v1, v2 });
         }
     };
 
     @Test
-    public void test() throws InterruptedException{
+    public void test() throws InterruptedException {
         SimpleType simpleType = new SimpleType();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MILLISECOND, 0);
@@ -75,6 +76,5 @@ public class BeanQueryStandardTest extends AbstractRDBTest implements SimpleDoma
         Thread.sleep(10);
         standardTest.report();
     }
-
 
 }

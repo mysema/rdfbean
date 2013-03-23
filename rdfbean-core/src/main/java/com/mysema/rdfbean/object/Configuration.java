@@ -15,33 +15,32 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
  * Configuration defines the main configuration interface for RDFBean
- *
+ * 
  * @author tiwe
  * @version $Id$
- *
+ * 
  */
 public interface Configuration {
-    
+
     ConverterRegistry getConverterRegistry();
 
     boolean allowCreate(Class<?> clazz);
-    
+
     boolean allowRead(MappedPath path);
-    
+
     boolean isMapped(Class<?> javaClass);
-    
+
     boolean isPolymorphic(Class<?> javaClass);
-    
+
     MappedClass getMappedClass(Class<?> javaClass);
-    
+
     List<MappedClass> getMappedClasses(UID uid);
-    
+
     Set<MappedClass> getMappedClasses();
 
     boolean isRestricted(UID uid);
-    
+
     @Nullable
     UID createURI(Object instance);
 
-        
 }

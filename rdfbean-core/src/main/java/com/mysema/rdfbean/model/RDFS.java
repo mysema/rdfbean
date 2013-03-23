@@ -5,13 +5,11 @@
  */
 package com.mysema.rdfbean.model;
 
-
-
 /**
  * Namespace file for the RDF Schema namespace
- *
+ * 
  * @author sasa
- *
+ * 
  */
 public final class RDFS {
     public static final String NS = "http://www.w3.org/2000/01/rdf-schema#";
@@ -47,5 +45,6 @@ public final class RDFS {
     public static final UID ContainerMembershipProperty = new UID(NS,
             "ContainerMembershipProperty");
 
-    private RDFS() {}
+    private RDFS() {
+    }
 }

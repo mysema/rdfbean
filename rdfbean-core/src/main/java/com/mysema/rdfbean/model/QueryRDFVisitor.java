@@ -38,12 +38,11 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 import com.mysema.util.LimitingIterable;
 import com.mysema.util.PairIterator;
 
-
 /**
  * @author tiwe
- *
+ * 
  */
-public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
+public class QueryRDFVisitor implements RDFVisitor<Object, Bindings> {
 
     private static final Map<String, Pattern> patterns = new HashMap<String, Pattern>();
 
@@ -52,7 +51,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     private static final NODEComparator nodeComparator = new NODEComparator();
 
     private final RDFConnection connection;
-    
+
     @Nullable
     private Expression<UID> context;
 
@@ -61,7 +60,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     private void bind(Bindings bindings, String key, NODE value) {
-        if (key != null && bindings.get(key) == null){
+        if (key != null && bindings.get(key) == null) {
             bindings.put(key, value);
         }
     }
@@ -69,17 +68,17 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     @SuppressWarnings("unchecked")
     private Predicate<Bindings> createAndPredicate(final Operation<?> expr, Bindings bindings) {
         return Predicates.and(
-                (Predicate)expr.getArg(0).accept(this, bindings),
-                (Predicate)expr.getArg(1).accept(this, bindings));
+                (Predicate) expr.getArg(0).accept(this, bindings),
+                (Predicate) expr.getArg(1).accept(this, bindings));
     }
 
-    private Function<STMT, Bindings> createBindingsFunction(PatternBlock expr, @Nullable Expression<UID> context, final Bindings bindings){
+    private Function<STMT, Bindings> createBindingsFunction(PatternBlock expr, @Nullable Expression<UID> context, final Bindings bindings) {
         final String s = getKey(expr.getSubject());
         final String p = getKey(expr.getPredicate());
         final String o = getKey(expr.getObject());
         final String c = getKey(expr.getContext() != null ? expr.getContext() : context);
 
-        return new Function<STMT, Bindings>(){
+        return new Function<STMT, Bindings>() {
             @Override
             public Bindings apply(STMT input) {
                 bindings.clear();
@@ -87,14 +86,14 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 bind(bindings, p, input.getPredicate());
                 bind(bindings, o, input.getObject());
                 bind(bindings, c, input.getContext());
-//                System.err.println(bindings);
+                // System.err.println(bindings);
                 return bindings;
             }
         };
     }
 
     private BooleanQuery createBooleanQuery(final Iterable<Bindings> iterable) {
-        return new BooleanQuery(){
+        return new BooleanQuery() {
             @Override
             public boolean getBoolean() {
                 return iterable.iterator().hasNext();
@@ -104,27 +103,27 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     private Predicate<Bindings> createBoundPredicate(final Operation<?> expr, final Operator<?> op) {
         final String key = getKey(expr.getArg(0));
-        return new Predicate<Bindings>(){
+        return new Predicate<Bindings>() {
             @Override
             public boolean apply(Bindings bindings) {
-                boolean rv =  bindings.get(key) != null;
+                boolean rv = bindings.get(key) != null;
                 return op == Ops.IS_NOT_NULL ? rv : !rv;
             }
         };
     }
 
     private Predicate<Bindings> createComparePredicate(final Operation<?> expr, final Operator<?> op) {
-        return new Predicate<Bindings>(){
+        return new Predicate<Bindings>() {
             @Override
             public boolean apply(Bindings bindings) {
-                NODE lhs = (NODE)expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
-                NODE rhs = (NODE)expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
+                NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
+                NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
                 int rv = nodeComparator.compare(lhs, rhs);
-                if (rv < 0){
+                if (rv < 0) {
                     return op == Ops.LT || op == Ops.LOE;
-                }else if (rv == 0){
+                } else if (rv == 0) {
                     return op == Ops.LOE || op == Ops.GOE;
-                }else{
+                } else {
                     return op == Ops.GT || op == Ops.GOE;
                 }
             }
@@ -132,7 +131,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     private Predicate<Bindings> createEqPredicate(final Operation<?> expr) {
-        return new Predicate<Bindings>(){
+        return new Predicate<Bindings>() {
             @Override
             public boolean apply(Bindings bindings) {
                 return Objects.equal(
@@ -143,45 +142,44 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     private Predicate<Bindings> createLikePredicate(final Operation<?> expr) {
-        return new Predicate<Bindings>(){
+        return new Predicate<Bindings>() {
             @Override
             public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
-                if (lhs != null && rhs != null){
+                if (lhs != null && rhs != null) {
                     Pattern pattern;
                     Map<String, Pattern> cache = patterns;
                     pattern = cache.get(rhs.getValue());
-                    if (pattern == null){
+                    if (pattern == null) {
                         String regex = rhs.getValue().replace("%", ".*").replaceAll("_", ".");
                         pattern = Pattern.compile(regex);
                         cache.put(rhs.getValue(), pattern);
                     }
                     return pattern.matcher(lhs.getValue()).matches();
-                }else{
+                } else {
                     return false;
                 }
             }
         };
     }
 
-
     private Predicate<Bindings> createMatchesPredicate(final Operation<?> expr, final Operator<?> op) {
-        return new Predicate<Bindings>(){
+        return new Predicate<Bindings>() {
             @Override
             public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
-                if (lhs != null && rhs != null){
+                if (lhs != null && rhs != null) {
                     Pattern pattern;
                     Map<String, Pattern> cache = op == Ops.MATCHES ? patterns : caseInsensitivePatterns;
                     pattern = cache.get(rhs.getValue());
-                    if (pattern == null){
+                    if (pattern == null) {
                         pattern = Pattern.compile(rhs.getValue(), op == Ops.MATCHES ? 0 : Pattern.CASE_INSENSITIVE);
                         cache.put(rhs.getValue(), pattern);
                     }
                     return pattern.matcher(lhs.getValue()).matches();
-                }else{
+                } else {
                     return false;
                 }
             }
@@ -190,27 +188,27 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     private GraphQuery createGraphQuery(QueryMetadata md, final Iterable<Bindings> iterable) {
         List<PatternBlock> patternBlocks = new ArrayList<PatternBlock>();
-        for (Expression<?> e : md.getProjection()){
-            if (e instanceof PatternBlock){
-                patternBlocks.add((PatternBlock)e);
-            }else if (e instanceof ContainerBlock){
-                for (Block b : ((ContainerBlock)e).getBlocks()){
-                    patternBlocks.add((PatternBlock)b);
+        for (Expression<?> e : md.getProjection()) {
+            if (e instanceof PatternBlock) {
+                patternBlocks.add((PatternBlock) e);
+            } else if (e instanceof ContainerBlock) {
+                for (Block b : ((ContainerBlock) e).getBlocks()) {
+                    patternBlocks.add((PatternBlock) b);
                 }
             }
         }
-        
+
         final List<Function<Bindings, STMT>> transformers = new ArrayList<Function<Bindings, STMT>>(patternBlocks.size());
-        for (PatternBlock pb : patternBlocks){
+        for (PatternBlock pb : patternBlocks) {
             transformers.add(createStatementFunction(pb));
         }
-        
-        return new GraphQuery(){
+
+        return new GraphQuery() {
             @SuppressWarnings("unchecked")
             @Override
             public CloseableIterator<STMT> getTriples() {
                 List<Iterator<STMT>> iterators = new ArrayList<Iterator<STMT>>(transformers.size());
-                for (Function<Bindings, STMT> transformer : transformers){
+                for (Function<Bindings, STMT> transformer : transformers) {
                     iterators.add(Iterators.transform(iterable.iterator(), transformer));
                 }
                 return new IteratorAdapter<STMT>(Iterators.concat(iterators.toArray(new Iterator[iterators.size()])));
@@ -219,7 +217,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     private Predicate<Bindings> createNePredicate(final Operation<?> expr) {
-        return new Predicate<Bindings>(){
+        return new Predicate<Bindings>() {
             @Override
             public boolean apply(Bindings bindings) {
                 return !Objects.equal(
@@ -232,69 +230,68 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     @SuppressWarnings("unchecked")
     private Predicate<Bindings> createOrPredicate(final Operation<?> expr, Bindings bindings) {
         return Predicates.or(
-                (Predicate)expr.getArg(0).accept(this, bindings),
-                (Predicate)expr.getArg(1).accept(this, bindings));
+                (Predicate) expr.getArg(0).accept(this, bindings),
+                (Predicate) expr.getArg(1).accept(this, bindings));
     }
 
     private Function<Bindings, STMT> createQuadFunction(final PatternBlock expr) {
-        return new Function<Bindings, STMT>(){
+        return new Function<Bindings, STMT>() {
             @Override
             public STMT apply(Bindings input) {
                 return new STMT(
-                        (ID)expr.getSubject().accept(QueryRDFVisitor.this, input),
-                        (UID)expr.getPredicate().accept(QueryRDFVisitor.this, input),
-                        (NODE)expr.getObject().accept(QueryRDFVisitor.this, input),
-                        (UID)expr.getContext().accept(QueryRDFVisitor.this, input)
-                );
+                        (ID) expr.getSubject().accept(QueryRDFVisitor.this, input),
+                        (UID) expr.getPredicate().accept(QueryRDFVisitor.this, input),
+                        (NODE) expr.getObject().accept(QueryRDFVisitor.this, input),
+                        (UID) expr.getContext().accept(QueryRDFVisitor.this, input));
             }
         };
     }
 
-    private Function<Bindings, STMT> createStatementFunction(final PatternBlock expr){
-        if (expr.getContext() != null){
+    private Function<Bindings, STMT> createStatementFunction(final PatternBlock expr) {
+        if (expr.getContext() != null) {
             return createQuadFunction(expr);
-        }else{
+        } else {
             return createTripleFunction(expr);
         }
     }
 
     private Function<Bindings, STMT> createTripleFunction(final PatternBlock expr) {
-        return new Function<Bindings, STMT>(){
+        return new Function<Bindings, STMT>() {
             @Override
             public STMT apply(Bindings input) {
                 return new STMT(
-                        (ID)expr.getSubject().accept(QueryRDFVisitor.this, input),
-                        (UID)expr.getPredicate().accept(QueryRDFVisitor.this, input),
-                        (NODE)expr.getObject().accept(QueryRDFVisitor.this, input)
-                );
+                        (ID) expr.getSubject().accept(QueryRDFVisitor.this, input),
+                        (UID) expr.getPredicate().accept(QueryRDFVisitor.this, input),
+                        (NODE) expr.getObject().accept(QueryRDFVisitor.this, input));
             }
         };
     }
 
     private TupleQuery createTupleQuery(QueryMetadata md, final Iterable<Bindings> iterable) {
         final List<String> variables = new ArrayList<String>(md.getProjection().size());
-        for (Expression<?> expr : md.getProjection()){
+        for (Expression<?> expr : md.getProjection()) {
             String key = getKey(expr);
             variables.add(key != null ? key : expr.toString());
         }
 
-        final Function<Bindings, Map<String,NODE>> bindingsToMap = new Function<Bindings, Map<String,NODE>>(){
+        final Function<Bindings, Map<String, NODE>> bindingsToMap = new Function<Bindings, Map<String, NODE>>() {
             @Override
             public Map<String, NODE> apply(Bindings input) {
-                if (variables.isEmpty()){
+                if (variables.isEmpty()) {
                     return input.toMap();
-                }else{
+                } else {
                     return input.toMap(variables);
                 }
             }
         };
 
-        return new TupleQuery(){
+        return new TupleQuery() {
             @Override
             public CloseableIterator<Map<String, NODE>> getTuples() {
-                Iterator<Map<String,NODE>> it = Iterators.transform(iterable.iterator(), bindingsToMap);
+                Iterator<Map<String, NODE>> it = Iterators.transform(iterable.iterator(), bindingsToMap);
                 return new IteratorAdapter<Map<String, NODE>>(it);
             }
+
             @Override
             public List<String> getVariables() {
                 return variables;
@@ -303,35 +300,35 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     @Nullable
-    private String getKey(Expression<?> expr){
-        if (expr instanceof Path<?>){
+    private String getKey(Expression<?> expr) {
+        if (expr instanceof Path<?>) {
             return expr.toString();
-        }else if (expr instanceof ParamExpression<?>){
-            return ((ParamExpression<?>)expr).getName();
-        }else{
+        } else if (expr instanceof ParamExpression<?>) {
+            return ((ParamExpression<?>) expr).getName();
+        } else {
             return null;
         }
     }
 
     @Override
     public NODE visit(Constant<?> expr, Bindings bindings) {
-        if (expr.getType().equals(String.class)){
+        if (expr.getType().equals(String.class)) {
             return new LIT(expr.getConstant().toString());
-        }else if (NODE.class.isAssignableFrom(expr.getType())){
-            return (NODE) expr.getConstant();    
-        }else{
+        } else if (NODE.class.isAssignableFrom(expr.getType())) {
+            return (NODE) expr.getConstant();
+        } else {
             UID datatype = ConverterRegistryImpl.DEFAULT.getDatatype(expr.getType());
             String value = ConverterRegistryImpl.DEFAULT.toString(expr.getConstant());
             return new LIT(value, datatype);
         }
-        
+
     }
 
     @SuppressWarnings("unchecked")
-    private Pair<Iterable<Bindings>, Bindings> visit(ContainerBlock expr, Bindings bindings){
+    private Pair<Iterable<Bindings>, Bindings> visit(ContainerBlock expr, Bindings bindings) {
         final List<Iterable<Bindings>> iterables = new ArrayList<Iterable<Bindings>>(expr.getBlocks().size());
         Bindings previous = null;
-        for (Block block : expr.getBlocks()){
+        for (Block block : expr.getBlocks()) {
             Bindings input = previous != null ? new Bindings(previous) : bindings;
             Pair<Iterable<Bindings>, Bindings> iterableAndBindings = (Pair) block.accept(this, input);
             iterables.add(iterableAndBindings.getFirst());
@@ -340,13 +337,13 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
         // merge
         Iterable<Bindings> iterable;
-        if (iterables.size() == 1){
+        if (iterables.size() == 1) {
             iterable = iterables.get(0);
-        }else{
+        } else {
             iterable = iterables.get(0);
-            for (int i = 1; i < iterables.size(); i++){
+            for (int i = 1; i < iterables.size(); i++) {
                 final Iterable<Bindings> pr = iterable, next = iterables.get(i);
-                iterable = new Iterable<Bindings>(){
+                iterable = new Iterable<Bindings>() {
                     @Override
                     public Iterator<Bindings> iterator() {
                         return new PairIterator<Bindings>(pr, next);
@@ -356,7 +353,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
         }
 
         // filter
-        if (expr.getFilters() != null){
+        if (expr.getFilters() != null) {
             Predicate<Bindings> predicate = (Predicate) expr.getFilters().accept(this, previous);
             iterable = Iterables.filter(iterable, predicate);
         }
@@ -371,91 +368,91 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
 
     @Override
     public Pair<Iterable<Bindings>, Bindings> visit(GraphBlock expr, Bindings bindings) {
-        try{
+        try {
             context = expr.getContext();
-            return visit((ContainerBlock)expr, bindings);    
-        }finally{
+            return visit((ContainerBlock) expr, bindings);
+        } finally {
             context = null;
-        }        
+        }
     }
 
     @Override
     public Pair<Iterable<Bindings>, Bindings> visit(GroupBlock expr, Bindings bindings) {
-        return visit((ContainerBlock)expr, bindings);
+        return visit((ContainerBlock) expr, bindings);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Object visit(final Operation<?> expr, Bindings bindings) {
         final Operator<?> op = expr.getOperator();
-        if (op == Ops.EQ){
+        if (op == Ops.EQ) {
             return createEqPredicate(expr);
 
-        }else if (op == Ops.NE){
+        } else if (op == Ops.NE) {
             return createNePredicate(expr);
 
-        }else if (op == Ops.AND){
+        } else if (op == Ops.AND) {
             return createAndPredicate(expr, bindings);
-            
-        }else if (op == Ops.IN){
+
+        } else if (op == Ops.IN) {
             // expand IN to OR/EQ
             BooleanBuilder builder = new BooleanBuilder();
-            for (Object o : ((Constant<Collection>)expr.getArg(1)).getConstant()) {
-                builder.or(ExpressionUtils.eqConst((Expression)expr.getArg(0), o));
+            for (Object o : ((Constant<Collection>) expr.getArg(1)).getConstant()) {
+                builder.or(ExpressionUtils.eqConst((Expression) expr.getArg(0), o));
             }
             return builder.getValue().accept(this, bindings);
-            
-        }else if (op == Ops.OR){
+
+        } else if (op == Ops.OR) {
             return createOrPredicate(expr, bindings);
 
-        }else if (op == Ops.NOT){
+        } else if (op == Ops.NOT) {
             return Predicates.not((Predicate) expr.getArg(0).accept(this, bindings));
 
-        }else if (op == Ops.IS_NULL || op == Ops.IS_NOT_NULL){
+        } else if (op == Ops.IS_NULL || op == Ops.IS_NOT_NULL) {
             return createBoundPredicate(expr, op);
 
-        }else if (op == Ops.LT || op == Ops.GT || op == Ops.LOE || op == Ops.GOE){
+        } else if (op == Ops.LT || op == Ops.GT || op == Ops.LOE || op == Ops.GOE) {
             return createComparePredicate(expr, op);
 
-        }else if (op == Ops.MATCHES || op == Ops.MATCHES_IC){
+        } else if (op == Ops.MATCHES || op == Ops.MATCHES_IC) {
             return createMatchesPredicate(expr, op);
 
-        }else if (op == Ops.STARTS_WITH || op == Ops.ENDS_WITH || op == Ops.STRING_CONTAINS
-               || op == Ops.STARTS_WITH_IC || op == Ops.ENDS_WITH_IC || op == Ops.STRING_CONTAINS_IC){
+        } else if (op == Ops.STARTS_WITH || op == Ops.ENDS_WITH || op == Ops.STRING_CONTAINS
+                || op == Ops.STARTS_WITH_IC || op == Ops.ENDS_WITH_IC || op == Ops.STRING_CONTAINS_IC) {
             return createStringMatchPredicate(expr, op);
 
-        }else if (op == Ops.LIKE){
+        } else if (op == Ops.LIKE) {
             return createLikePredicate(expr);
 
-        }else if (op == Ops.EQ_IGNORE_CASE){
+        } else if (op == Ops.EQ_IGNORE_CASE) {
             return createEqIgnoreCasePredicate(expr);
 
-        }else if (op == Ops.STRING_IS_EMPTY){
+        } else if (op == Ops.STRING_IS_EMPTY) {
             return createStringIsEmptyPredicate(expr);
 
-        }else if (op == Ops.CONCAT){
+        } else if (op == Ops.CONCAT) {
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
-            return new LIT(lhs.getValue()+rhs.getValue());
+            return new LIT(lhs.getValue() + rhs.getValue());
 
-        }else if (op == Ops.LOWER){
+        } else if (op == Ops.LOWER) {
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             return new LIT(lhs.getValue().toLowerCase());
 
-        }else if (op == Ops.UPPER){
+        } else if (op == Ops.UPPER) {
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             return new LIT(lhs.getValue().toUpperCase());
 
-        }else if (op == Ops.TRIM){
+        } else if (op == Ops.TRIM) {
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             return new LIT(lhs.getValue().trim());
 
-        }else if (op == Ops.SUBSTR_1ARG){
+        } else if (op == Ops.SUBSTR_1ARG) {
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
             return new LIT(lhs.getValue().substring(Integer.parseInt(rhs.getValue())));
 
-        }else if (op == Ops.SUBSTR_2ARGS){
+        } else if (op == Ops.SUBSTR_2ARGS) {
             NODE arg0 = (NODE) expr.getArg(0).accept(this, bindings);
             NODE arg1 = (NODE) expr.getArg(1).accept(this, bindings);
             NODE arg2 = (NODE) expr.getArg(2).accept(this, bindings);
@@ -463,41 +460,41 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                     Integer.parseInt(arg1.getValue()),
                     Integer.parseInt(arg2.getValue())));
 
-        }else if (op == Ops.CHAR_AT){
+        } else if (op == Ops.CHAR_AT) {
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             NODE rhs = (NODE) expr.getArg(1).accept(this, bindings);
             return new LIT(String.valueOf(lhs.getValue().charAt(Integer.parseInt(rhs.getValue()))));
 
-        }else if (op == Ops.STRING_CAST) {   
+        } else if (op == Ops.STRING_CAST) {
             NODE lhs = (NODE) expr.getArg(0).accept(this, bindings);
             return (lhs.isResource()) ? new LIT(lhs.getValue()) : lhs;
-            
-        }else{
+
+        } else {
             throw new IllegalArgumentException(expr.toString());
         }
     }
 
     private Predicate<Bindings> createStringMatchPredicate(final Operation<?> expr, final Operator<?> op) {
-        return new Predicate<Bindings>(){
+        return new Predicate<Bindings>() {
             @Override
             public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
-                if (lhs == null || rhs == null){
+                if (lhs == null || rhs == null) {
                     return false;
-                }else if (op == Ops.STARTS_WITH){
+                } else if (op == Ops.STARTS_WITH) {
                     return lhs.getValue().startsWith(rhs.getValue());
-                }else if (op == Ops.STARTS_WITH_IC){
+                } else if (op == Ops.STARTS_WITH_IC) {
                     return lhs.getValue().toLowerCase().startsWith(rhs.getValue().toLowerCase());
-                }else if (op == Ops.ENDS_WITH){
+                } else if (op == Ops.ENDS_WITH) {
                     return lhs.getValue().endsWith(rhs.getValue());
-                }else if (op == Ops.ENDS_WITH_IC){
+                } else if (op == Ops.ENDS_WITH_IC) {
                     return lhs.getValue().toLowerCase().endsWith(rhs.getValue().toLowerCase());
-                }else if (op == Ops.STRING_CONTAINS){
+                } else if (op == Ops.STRING_CONTAINS) {
                     return lhs.getValue().contains(rhs.getValue());
-                }else if (op == Ops.STRING_CONTAINS_IC){
+                } else if (op == Ops.STRING_CONTAINS_IC) {
                     return lhs.getValue().toLowerCase().contains(rhs.getValue().toLowerCase());
-                }else{
+                } else {
                     throw new IllegalArgumentException(op.toString());
                 }
             }
@@ -505,14 +502,14 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     private Predicate<Bindings> createEqIgnoreCasePredicate(final Operation<?> expr) {
-        return new Predicate<Bindings>(){
+        return new Predicate<Bindings>() {
             @Override
             public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
                 NODE rhs = (NODE) expr.getArg(1).accept(QueryRDFVisitor.this, bindings);
-                if (lhs != null && rhs != null){
+                if (lhs != null && rhs != null) {
                     return lhs.getValue().equalsIgnoreCase(rhs.getValue());
-                }else{
+                } else {
                     return lhs == rhs;
                 }
 
@@ -521,7 +518,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     private Predicate<Bindings> createStringIsEmptyPredicate(final Operation<?> expr) {
-        return new Predicate<Bindings>(){
+        return new Predicate<Bindings>() {
             @Override
             public boolean apply(Bindings bindings) {
                 NODE lhs = (NODE) expr.getArg(0).accept(QueryRDFVisitor.this, bindings);
@@ -533,14 +530,14 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     @Override
     public Pair<Iterable<Bindings>, Bindings> visit(OptionalBlock expr, final Bindings bindings) {
         // FIXME
-        final Pair<Iterable<Bindings>, Bindings> pair =  visit((ContainerBlock)expr, bindings);
-        Iterable<Bindings> iterable = new Iterable<Bindings>(){
+        final Pair<Iterable<Bindings>, Bindings> pair = visit((ContainerBlock) expr, bindings);
+        Iterable<Bindings> iterable = new Iterable<Bindings>() {
             @Override
             public Iterator<Bindings> iterator() {
                 Iterator<Bindings> iterator = pair.getFirst().iterator();
-                if (iterator.hasNext()){
+                if (iterator.hasNext()) {
                     return iterator;
-                }else{
+                } else {
                     pair.getSecond().clear();
                     return Collections.singleton(bindings).iterator();
                 }
@@ -562,10 +559,10 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     }
 
     @Override
-    public Pair<Iterable<Bindings>,Bindings> visit(final PatternBlock expr, final Bindings bindings) {
+    public Pair<Iterable<Bindings>, Bindings> visit(final PatternBlock expr, final Bindings bindings) {
         final Function<STMT, Bindings> transformer = createBindingsFunction(expr, context, bindings);
         final Expression<UID> _context = context;
-        Iterable<Bindings> iterable = new Iterable<Bindings>(){
+        Iterable<Bindings> iterable = new Iterable<Bindings>() {
             @Override
             public Iterator<Bindings> iterator() {
                 Bindings parent = bindings.getParent();
@@ -573,17 +570,17 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
                 UID p = (UID) expr.getPredicate().accept(QueryRDFVisitor.this, parent);
                 NODE o = (NODE) expr.getObject().accept(QueryRDFVisitor.this, parent);
                 UID c = null;
-                if (expr.getContext() != null){
+                if (expr.getContext() != null) {
                     c = (UID) expr.getContext().accept(QueryRDFVisitor.this, parent);
-                }else if (_context != null){
-                    c = (UID)_context.accept(QueryRDFVisitor.this, parent);
+                } else if (_context != null) {
+                    c = (UID) _context.accept(QueryRDFVisitor.this, parent);
                 }
                 bindings.clear();
                 return Iterators.transform(connection.findStatements(s, p, o, c, false), transformer);
             }
 
             @Override
-            public String toString(){
+            public String toString() {
                 return expr.toString();
             }
 
@@ -595,7 +592,7 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     @Override
     public Object visit(QueryMetadata md, QueryLanguage<?, ?> queryType) {
         Bindings initialBindings = new Bindings();
-        for (Map.Entry<ParamExpression<?>, Object> entry : md.getParams().entrySet()){
+        for (Map.Entry<ParamExpression<?>, Object> entry : md.getParams().entrySet()) {
             initialBindings.put(entry.getKey().getName(), (NODE) entry.getValue());
         }
 
@@ -605,36 +602,36 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
             uids.add((Constant<UID>) je.getTarget());
         }
         if (uids.size() == 1) {
-            where = Blocks.graph(uids.get(0), (Block)where);
-        } else  if (uids.size() > 1) {
+            where = Blocks.graph(uids.get(0), (Block) where);
+        } else if (uids.size() > 1) {
             QUID g = new QUID("__g"); // TODO : use constant
             BooleanBuilder b = new BooleanBuilder();
             for (Constant<UID> uid : uids) {
                 b.or(g.eq(uid));
             }
-            where = Blocks.graphFilter(g, (Block)where, b.getValue());
+            where = Blocks.graphFilter(g, (Block) where, b.getValue());
         }
 
         Bindings whereBindings = new Bindings(initialBindings);
-        Iterable<Bindings> iterable = (Iterable<Bindings>) ((Pair)where.accept(this, whereBindings)).getFirst();
+        Iterable<Bindings> iterable = (Iterable<Bindings>) ((Pair) where.accept(this, whereBindings)).getFirst();
 
         // TODO : sort
 
         // paging
-        if (md.getModifiers().isRestricting()){
+        if (md.getModifiers().isRestricting()) {
             iterable = new LimitingIterable<Bindings>(iterable, md.getModifiers());
         }
 
-        if (queryType == QueryLanguage.GRAPH){
+        if (queryType == QueryLanguage.GRAPH) {
             return createGraphQuery(md, iterable);
 
-        }else if (queryType == QueryLanguage.TUPLE){
+        } else if (queryType == QueryLanguage.TUPLE) {
             return createTupleQuery(md, iterable);
 
-        }else if (queryType == QueryLanguage.BOOLEAN){
+        } else if (queryType == QueryLanguage.BOOLEAN) {
             return createBooleanQuery(iterable);
 
-        }else{
+        } else {
             throw new IllegalArgumentException(queryType.toString());
         }
     }
@@ -654,11 +651,11 @@ public class QueryRDFVisitor implements RDFVisitor<Object, Bindings>{
     public Pair<? extends Iterable<Bindings>, Bindings> visit(UnionBlock expr, Bindings bindings) {
         // TODO : make sure this works
         List<Iterable<Bindings>> iterables = new ArrayList<Iterable<Bindings>>();
-        for (Block block : expr.getBlocks()){
-            Pair<Iterable<Bindings>, Bindings> iterableAndBindings = (Pair)block.accept(this, bindings);
+        for (Block block : expr.getBlocks()) {
+            Pair<Iterable<Bindings>, Bindings> iterableAndBindings = (Pair) block.accept(this, bindings);
             iterables.add(iterableAndBindings.getFirst());
         }
-        return Pair.<Iterable<Bindings>, Bindings>of(Iterables.<Bindings>concat(iterables.toArray(new Iterable[iterables.size()])), bindings);
+        return Pair.<Iterable<Bindings>, Bindings> of(Iterables.<Bindings> concat(iterables.toArray(new Iterable[iterables.size()])), bindings);
     }
 
 }

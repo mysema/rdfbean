@@ -26,34 +26,34 @@ import com.mysema.rdfbean.model.XSD;
 import com.mysema.rdfbean.owl.OWL;
 
 public class ExportNamespacesTest {
-    
+
     private MemoryRepository repository;
-    
+
     @Before
-    public void setUp() throws IOException{
+    public void setUp() throws IOException {
         repository = new MemoryRepository();
         repository.initialize();
-        
+
         RDFConnection connection = repository.openConnection();
-        try{
+        try {
             Set<STMT> added = new HashSet<STMT>();
             added.add(new STMT(RDF.type, RDF.type, RDF.Property));
             added.add(new STMT(RDF.Property, RDF.type, RDFS.Class));
             added.add(new STMT(OWL.Class, RDF.type, RDFS.Class));
             added.add(new STMT(new BID(), RDFS.label, new LIT("label", XSD.stringType)));
-            connection.update(Collections.<STMT>emptySet(), added);            
-        }finally{
+            connection.update(Collections.<STMT> emptySet(), added);
+        } finally {
             connection.close();
         }
     }
-    
+
     @After
-    public void tearDown(){
+    public void tearDown() {
         repository.close();
     }
 
     @Test
-    public void Default_Namespaces() throws UnsupportedEncodingException{
+    public void Default_Namespaces() throws UnsupportedEncodingException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         repository.export(Format.TURTLE, null, baos);
         String result = new String(baos.toByteArray(), "UTF-8");
@@ -62,11 +62,11 @@ public class ExportNamespacesTest {
         assertTrue(result.contains("rdf:Property a rdfs:Class"));
         assertTrue(result.contains("rdfs:label \"label\"^^xsd:string"));
     }
-    
+
     @Test
-    public void Explicit_Namespaces() throws UnsupportedEncodingException{
+    public void Explicit_Namespaces() throws UnsupportedEncodingException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Map<String,String> ns2prefix = new HashMap<String,String>();
+        Map<String, String> ns2prefix = new HashMap<String, String>();
         ns2prefix.put(RDF.NS, "r");
         repository.export(Format.TURTLE, ns2prefix, null, baos);
         String result = new String(baos.toByteArray(), "UTF-8");
@@ -75,5 +75,5 @@ public class ExportNamespacesTest {
         assertTrue(result.contains("r:Property a <http://www.w3.org/2000/01/rdf-schema#Class>"));
         assertTrue(result.contains("<http://www.w3.org/2000/01/rdf-schema#label> \"label\"^^<http://www.w3.org/2001/XMLSchema#string>"));
     }
-    
+
 }

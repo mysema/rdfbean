@@ -10,7 +10,7 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author sasa
- *
+ * 
  */
 public enum ContainerType {
     /**
@@ -20,22 +20,22 @@ public enum ContainerType {
     /**
      * 
      */
-    LIST(RDF.List), 
+    LIST(RDF.List),
     /**
      * 
      */
-    SEQ(RDF.Seq), 
+    SEQ(RDF.Seq),
     /**
      * 
      */
-    BAG(RDF.Bag), 
+    BAG(RDF.Bag),
     /**
      * 
      */
     ALT(RDF.Alt);
 
     private final UID uid;
-    
+
     private ContainerType(UID uid) {
         this.uid = uid;
     }

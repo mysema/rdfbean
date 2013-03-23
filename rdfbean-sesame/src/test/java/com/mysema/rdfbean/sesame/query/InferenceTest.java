@@ -18,11 +18,11 @@ import com.mysema.rdfbean.domains.InferenceDomain.Entity3;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({Entity1.class, Entity2.class, Entity3.class})
-public class InferenceTest extends SessionTestBase implements InferenceDomain{
+@SessionConfig({ Entity1.class, Entity2.class, Entity3.class })
+public class InferenceTest extends SessionTestBase implements InferenceDomain {
 
     @Test
-    public void SubClassOf(){
+    public void SubClassOf() {
         session.save(new Entity1());
         session.save(new Entity2());
         session.save(new Entity3());

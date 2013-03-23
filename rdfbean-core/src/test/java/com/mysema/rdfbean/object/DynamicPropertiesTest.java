@@ -28,9 +28,9 @@ import com.mysema.rdfbean.model.XSD;
 
 /**
  * @author mala
- *
+ * 
  */
-public class DynamicPropertiesTest implements PropertiesDomain{
+public class DynamicPropertiesTest implements PropertiesDomain {
 
     private static final String CREATOR_COMMENT = "Created under stress";
 
@@ -62,18 +62,18 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         sessionFactory.initialize();
 
         repository.add(
-                new STMT(_project, RDF.type,  new UID(TEST.NS, "Project")),
-                new STMT(_project,  _name, new LIT("TestProject")),
+                new STMT(_project, RDF.type, new UID(TEST.NS, "Project")),
+                new STMT(_project, _name, new LIT("TestProject")),
                 new STMT(_project, _created, new LIT(CREATED.toString(), XSD.date)),
                 new STMT(_person, RDF.type, new UID(TEST.NS, "Person")),
-                new STMT(_person,  _name, new LIT("Foo Bar"))
-        );
+                new STMT(_person, _name, new LIT("Foo Bar"))
+                );
 
         session = sessionFactory.openSession();
     }
 
     @After
-    public void tearDown() throws IOException{
+    public void tearDown() throws IOException {
         session.close();
     }
 
@@ -95,12 +95,12 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         // Adding dynamic data
 
         repository.add(
-               new STMT(_project, _owner, _person),
-               new STMT(_project, _deadline, new LIT(DEADLINE.toString(), XSD.date)),
-               new STMT(_project, _description, new LIT(DESCRIPTION1)),
-               new STMT(_project, _description, new LIT(DESCRIPTION2)),
-               new STMT(_project, _creatorComment, new LIT(CREATOR_COMMENT))
-        );
+                new STMT(_project, _owner, _person),
+                new STMT(_project, _deadline, new LIT(DEADLINE.toString(), XSD.date)),
+                new STMT(_project, _description, new LIT(DESCRIPTION1)),
+                new STMT(_project, _description, new LIT(DESCRIPTION2)),
+                new STMT(_project, _creatorComment, new LIT(CREATOR_COMMENT))
+                );
 
         // Checking dynamic data
 
@@ -130,9 +130,9 @@ public class DynamicPropertiesTest implements PropertiesDomain{
     }
 
     @Test
-    public void Write(){
+    public void Write() {
         Project project = new Project();
-        project.dates = new HashMap<UID,LocalDate>();
+        project.dates = new HashMap<UID, LocalDate>();
         project.dates.put(_created, CREATED);
         project.dates.put(_deadline, DEADLINE);
         session.save(project);
@@ -141,6 +141,5 @@ public class DynamicPropertiesTest implements PropertiesDomain{
         Project project2 = session.getById(project.id, Project.class);
         assertEquals(project.dates, project2.dates);
     }
-
 
 }

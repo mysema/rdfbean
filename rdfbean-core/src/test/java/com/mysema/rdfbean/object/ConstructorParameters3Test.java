@@ -18,7 +18,7 @@ import com.mysema.rdfbean.model.IDType;
 
 /**
  * @author sasa
- *
+ * 
  */
 public class ConstructorParameters3Test {
 

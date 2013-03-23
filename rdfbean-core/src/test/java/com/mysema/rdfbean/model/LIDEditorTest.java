@@ -12,10 +12,10 @@ import org.junit.Test;
 public class LIDEditorTest {
 
     private LIDEditor editor = new LIDEditor();
-    
+
     @Test
     public void GetAsText() {
-        editor.setValue(new LID("1"));        
+        editor.setValue(new LID("1"));
         assertEquals("1", editor.getAsText());
     }
 

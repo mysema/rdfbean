@@ -19,7 +19,7 @@ import org.openrdf.query.parser.TupleQueryModel;
 public class ParsingTest {
 
     @Test
-    public void TupleQuery() throws MalformedQueryException, UnsupportedQueryLanguageException{
+    public void TupleQuery() throws MalformedQueryException, UnsupportedQueryLanguageException {
         List<String> queries = new ArrayList<String>();
         queries.add("SELECT R FROM {R} rdfs:label {L}");
         queries.add("SELECT L, R FROM {R} rdfs:label {L}");
@@ -32,7 +32,7 @@ public class ParsingTest {
         queries.add("SELECT R FROM {R} rdfs:label {L} LIMIT 2 OFFSET 3");
         queries.add("SELECT val FROM {node} <ex:value> {val} WHERE val >= ANY ( SELECT value FROM {} <ex:value> {value} )");
 
-        for (String query : queries){
+        for (String query : queries) {
             TupleQueryModel model = QueryParserUtil.parseTupleQuery(QueryLanguage.SERQL, query, null);
             System.out.println(model);
             System.out.println();
@@ -40,11 +40,11 @@ public class ParsingTest {
     }
 
     @Test
-    public void GraphQuery(){
+    public void GraphQuery() {
         List<String> queries = new ArrayList<String>();
         queries.add("CONSTRUCT {S} rdf:type {O} FROM {S} rdf:type {O}");
 
-        for (String query : queries){
+        for (String query : queries) {
             GraphQueryModel model = QueryParserUtil.parseGraphQuery(QueryLanguage.SERQL, query, null);
             System.out.println(model);
             System.out.println();
@@ -52,12 +52,12 @@ public class ParsingTest {
     }
 
     @Test
-    public void GraphQuery2(){
+    public void GraphQuery2() {
         List<String> queries = new ArrayList<String>();
         queries.add("CONSTRUCT { ?s ?p ?o ; <test:test> ?o .} WHERE { ?s ?p ?o }");
         queries.add("CONSTRUCT { ?s ?p <test:test> ; <test:test> ?o .} WHERE { ?s ?p ?o }");
 
-        for (String query : queries){
+        for (String query : queries) {
             GraphQueryModel model = QueryParserUtil.parseGraphQuery(QueryLanguage.SPARQL, query, null);
             System.out.println(model);
             System.out.println();

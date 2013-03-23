@@ -18,37 +18,36 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
-
 /**
  * @author tiwe
- *
+ * 
  */
 public class ConfigurationBuilder {
-        
-    private final Map<Class<?>,MappedClass> mappedClasses = new HashMap<Class<?>,MappedClass>();
-    
+
+    private final Map<Class<?>, MappedClass> mappedClasses = new HashMap<Class<?>, MappedClass>();
+
     @Nullable
     private ConverterRegistry converterRegistry;
-    
+
     public Configuration build() {
-        if (converterRegistry == null){
+        if (converterRegistry == null) {
             converterRegistry = new ConverterRegistryImpl();
         }
-        
+
         // populate mappedSuperClasses
-        for (MappedClass mappedClass : mappedClasses.values()){
-            if (!mappedClass.getJavaClass().getSuperclass().equals(Object.class)){
+        for (MappedClass mappedClass : mappedClasses.values()) {
+            if (!mappedClass.getJavaClass().getSuperclass().equals(Object.class)) {
                 MappedClass mappedSuperClass = mappedClasses.get(mappedClass.getJavaClass().getSuperclass());
-                if (mappedSuperClass != null){
+                if (mappedSuperClass != null) {
                     mappedClass.getMappedSuperClasses().add(mappedSuperClass);
                 }
             }
         }
-        
+
         // merge data
-        for (MappedClass mappedClass : mappedClasses.values()){
+        for (MappedClass mappedClass : mappedClasses.values()) {
             Deque<MappedClass> supers = new ArrayDeque<MappedClass>(mappedClass.getMappedSuperClasses());
-            while (!supers.isEmpty()){
+            while (!supers.isEmpty()) {
                 MappedClass mappedSuperClass = supers.pop();
                 supers.addAll(mappedSuperClass.getMappedSuperClasses());
                 for (MappedPath path : mappedSuperClass.getProperties()) {
@@ -59,31 +58,30 @@ public class ConfigurationBuilder {
                 }
             }
         }
-        
+
         return new SimpleConfiguration(converterRegistry, new HashSet<MappedClass>(mappedClasses.values()));
     }
 
     public MappedClassBuilder addClass(Class<?> clazz) {
-        return addClass("java:"+clazz.getName().replace('$', '.')+"#", clazz);
+        return addClass("java:" + clazz.getName().replace('$', '.') + "#", clazz);
     }
-        
+
     public MappedClassBuilder addClass(String ns, Class<?> clazz) {
         return addClass(new UID(ns, clazz.getSimpleName()), clazz);
     }
-    
+
     public MappedClassBuilder addClass(UID uid, Class<?> clazz) {
         return addClass(uid, null, clazz);
     }
-    
+
     public MappedClassBuilder addClass(UID uid, @Nullable UID context, Class<?> clazz) {
         MappedClass mappedClass = new MappedClass(clazz, uid, context, new ArrayList<MappedClass>());
         mappedClasses.put(clazz, mappedClass);
         return new MappedClassBuilder(mappedClass);
     }
-    
+
     public void setConverterRegistry(ConverterRegistry converterRegistry) {
         this.converterRegistry = converterRegistry;
     }
-   
 
 }

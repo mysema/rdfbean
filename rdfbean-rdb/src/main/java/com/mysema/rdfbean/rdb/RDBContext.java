@@ -37,38 +37,39 @@ import com.mysema.rdfbean.rdb.support.SortableQueryMetadata;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
- * RDBContext provides shared state and functionality for RDBCOnnection and RDBQuery
- *
+ * RDBContext provides shared state and functionality for RDBCOnnection and
+ * RDBQuery
+ * 
  * @author tiwe
  * @version $Id$
  */
-public final class RDBContext implements Closeable{
-        
+public final class RDBContext implements Closeable {
+
     private final ConverterRegistry converterRegistry;
-    
+
     private final Connection connection;
-    
+
     private final IdFactory idFactory;
-    
+
     private final IdSequence idSequence;
-    
-    private final BiMap<Locale,Integer> langCache;
-    
-    private final Map<Object,Long> idCache = new HashMap<Object,Long>(1000);
-    
-    private final BiMap<NODE,Long> nodeCache;
-    
-    private final BiMap<NODE,Long> localNodeCache = HashBiMap.create();
-        
+
+    private final BiMap<Locale, Integer> langCache;
+
+    private final Map<Object, Long> idCache = new HashMap<Object, Long>(1000);
+
+    private final BiMap<NODE, Long> nodeCache;
+
+    private final BiMap<NODE, Long> localNodeCache = HashBiMap.create();
+
     private final Configuration configuration;
-    
+
     public RDBContext(
             ConverterRegistry converterRegistry,
-            IdFactory idFactory, 
-            BiMap<NODE,Long> nodeCache,  
-            BiMap<Locale,Integer> langCache,
+            IdFactory idFactory,
+            BiMap<NODE, Long> nodeCache,
+            BiMap<Locale, Integer> langCache,
             IdSequence idSequence,
-            Connection connection, 
+            Connection connection,
             SQLTemplates templates) {
         this.converterRegistry = converterRegistry;
         this.idFactory = idFactory;
@@ -78,26 +79,26 @@ public final class RDBContext implements Closeable{
         this.connection = connection;
         this.configuration = new Configuration(templates);
     }
-    
+
     public RDFBeanTransaction beginTransaction(boolean readOnly, int txTimeout, int isolationLevel) {
         try {
             connection.setAutoCommit(false);
             connection.setReadOnly(readOnly);
-            if (isolationLevel != -1){
-                connection.setTransactionIsolation(isolationLevel);    
-            }else{
+            if (isolationLevel != -1) {
+                connection.setTransactionIsolation(isolationLevel);
+            } else {
                 connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            }            
+            }
             return new RDBTransaction(connection);
         } catch (SQLException e) {
             throw new RepositoryException(e);
-        }        
+        }
     }
 
     public void clear() {
         localNodeCache.clear();
     }
-    
+
     @Override
     public void close() {
         try {
@@ -106,41 +107,41 @@ public final class RDBContext implements Closeable{
             throw new RepositoryException(e.getMessage(), e);
         }
     }
-    
-    public SQLDeleteClause createDelete(RelationalPath<?> entity){
+
+    public SQLDeleteClause createDelete(RelationalPath<?> entity) {
         return new SQLDeleteClause(connection, configuration, entity);
     }
-    
-    public SQLInsertClause createInsert(RelationalPath<?> entity){
+
+    public SQLInsertClause createInsert(RelationalPath<?> entity) {
         return new SQLInsertClause(connection, configuration, entity);
     }
-    
-    public SQLMergeClause createMerge(RelationalPath<?> entity){
+
+    public SQLMergeClause createMerge(RelationalPath<?> entity) {
         return new SQLMergeClause(connection, configuration, entity);
     }
 
-    public SQLQuery createQuery(){
+    public SQLQuery createQuery() {
         return new SQLQuery(connection, configuration, new SortableQueryMetadata());
     }
 
-    public Long getId(Object constant) {        
+    public Long getId(Object constant) {
         Long id = idCache.get(constant);
-        if (id == null){
+        if (id == null) {
             UID type = converterRegistry.getDatatype(constant.getClass());
             String lexical = converterRegistry.toString(constant);
             id = getNodeId(new LIT(lexical, type));
             // Date is not immutable, so it can't be cached safely
-            if (!java.util.Date.class.isAssignableFrom(constant.getClass())){
-                idCache.put(constant, id);    
-            }            
+            if (!java.util.Date.class.isAssignableFrom(constant.getClass())) {
+                idCache.put(constant, id);
+            }
         }
         return id;
     }
 
-    public ID getID(String lex){
-        if (lex.contains(":")){
-            return new UID(lex);            
-        }else{
+    public ID getID(String lex) {
+        if (lex.contains(":")) {
+            return new UID(lex);
+        } else {
             return new BID(lex);
         }
     }
@@ -152,7 +153,7 @@ public final class RDBContext implements Closeable{
 
     public Integer getLangId(Locale locale) {
         Integer id = langCache.get(locale);
-        if (id == null){
+        if (id == null) {
             id = idFactory.getId(locale);
             langCache.put(locale, id);
         }
@@ -164,40 +165,40 @@ public final class RDBContext implements Closeable{
     }
 
     @Nullable
-    public NODE getNode(long id, Function<Long,NODE> t) {
+    public NODE getNode(long id, Function<Long, NODE> t) {
         NODE node = nodeCache.inverse().get(id);
-        if (node == null){
+        if (node == null) {
             node = localNodeCache.inverse().get(id);
-            if (node == null){
+            if (node == null) {
                 node = t.apply(id);
                 localNodeCache.put(node, id);
             }
-        }        
+        }
         return node;
     }
 
     public Long getNodeId(NODE node) {
         Long id = nodeCache.get(node);
-        if (id == null){
+        if (id == null) {
             id = localNodeCache.get(node);
-            if (id == null){
+            if (id == null) {
                 id = idFactory.getId(node);
                 localNodeCache.put(node, id);
             }
         }
         return id;
     }
-    
+
     public Collection<NODE> getNodes() {
         return nodeCache.keySet();
     }
-    
-    public <T> T convert(String value, Class<T> requiredType){
+
+    public <T> T convert(String value, Class<T> requiredType) {
         return converterRegistry.fromString(value, requiredType);
     }
-    
-    public ConverterRegistry getConverters(){
+
+    public ConverterRegistry getConverters() {
         return converterRegistry;
     }
-        
+
 }

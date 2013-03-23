@@ -17,38 +17,38 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class TurtleWriter implements RDFWriter{
-    
+public class TurtleWriter implements RDFWriter {
+
     protected final Appendable appendable;
-    
+
     private final boolean blankNodeAsURI;
-    
+
     private final Map<String, String> prefixes;
-    
+
     @Nullable
     protected STMT last;
-        
-    public TurtleWriter(Appendable writer, Map<String,String> prefixes) {
+
+    public TurtleWriter(Appendable writer, Map<String, String> prefixes) {
         this(writer, prefixes, false);
     }
-    
-    public TurtleWriter(Appendable writer, Map<String,String> prefixes, boolean blankNodeAsURI) {
+
+    public TurtleWriter(Appendable writer, Map<String, String> prefixes, boolean blankNodeAsURI) {
         this.appendable = writer;
         this.prefixes = prefixes;
         this.blankNodeAsURI = blankNodeAsURI;
     }
-    
-    protected void append(BID bid) throws IOException{
-        if (blankNodeAsURI){
+
+    protected void append(BID bid) throws IOException {
+        if (blankNodeAsURI) {
             appendable.append("<_:").append(bid.getValue()).append(">");
-        }else{
-            appendable.append("_:").append(bid.getValue());    
-        }        
+        } else {
+            appendable.append("_:").append(bid.getValue());
+        }
     }
-    
-    protected void append(LIT lit) throws IOException{
+
+    protected void append(LIT lit) throws IOException {
         String val = lit.getValue();
         if (val.indexOf('\n') > 0 || val.indexOf('\r') > 0 || val.indexOf('\t') > 0) {
             appendable.append("\"\"\"");
@@ -57,17 +57,17 @@ public class TurtleWriter implements RDFWriter{
         } else {
             appendable.append("\"");
             appendable.append(TurtleUtil.encodeString(val));
-            appendable.append("\"");    
-        }        
-        
+            appendable.append("\"");
+        }
+
         if (lit.getLang() != null) {
-            appendable.append("@").append(LocaleUtil.toLang(lit.getLang()));            
+            appendable.append("@").append(LocaleUtil.toLang(lit.getLang()));
         } else if (!lit.getDatatype().equals(RDF.text)) {
             appendable.append("^^");
             append(lit.getDatatype());
         }
     }
-    
+
     private void append(NODE node) throws IOException {
         if (node.isURI()) {
             append(node.asURI());
@@ -77,40 +77,40 @@ public class TurtleWriter implements RDFWriter{
             append(node.asBNode());
         }
     }
-    
-    protected void append(UID uid) throws IOException{
-        if (uid.ln().length() == 0 || !TurtleUtil.isName(uid.ln())){
+
+    protected void append(UID uid) throws IOException {
+        if (uid.ln().length() == 0 || !TurtleUtil.isName(uid.ln())) {
             appendFull(uid);
-        }else{
+        } else {
             appendPrefixed(uid);
-        }            
+        }
     }
-    
-    protected void appendPredicate(UID uid) throws IOException{
-        if (uid.equals(RDF.type)){
+
+    protected void appendPredicate(UID uid) throws IOException {
+        if (uid.equals(RDF.type)) {
             appendable.append("a");
-        }else{
+        } else {
             append(uid);
         }
     }
-    
+
     protected void appendFull(UID uid) throws IOException {
         appendable.append("<").append(uid.getValue()).append(">");
     }
-    
+
     protected void appendPrefixed(UID uid) throws IOException {
-        String prefix = prefixes.get(uid.ns());        
-        if (prefix != null){
-            appendable.append(prefix).append(":").append(uid.ln());    
-        }else{
+        String prefix = prefixes.get(uid.ns());
+        if (prefix != null) {
+            appendable.append(prefix).append(":").append(uid.ln());
+        } else {
             appendable.append("<").append(NTriplesUtil.escapeString(uid.getId())).append(">");
         }
     }
 
     @Override
-    public void begin(){
-        try{
-            for (Map.Entry<String,String> entry : prefixes.entrySet()){
+    public void begin() {
+        try {
+            for (Map.Entry<String, String> entry : prefixes.entrySet()) {
                 appendable.append("@prefix ");
                 appendable.append(entry.getValue());
                 appendable.append(": <");
@@ -120,49 +120,49 @@ public class TurtleWriter implements RDFWriter{
             appendable.append("\n");
         } catch (IOException e) {
             throw new RepositoryException(e);
-        }    
+        }
     }
 
     @Override
     public void end() {
-        if (last != null){
+        if (last != null) {
             try {
                 appendable.append(" .\n");
-                if (appendable instanceof Writer){
-                    ((Writer)appendable).flush();    
-                }                
+                if (appendable instanceof Writer) {
+                    ((Writer) appendable).flush();
+                }
             } catch (IOException e) {
                 throw new RepositoryException(e);
-            }        
+            }
         }
     }
-        
+
     @Override
-    public void handle(STMT stmt){
-        try{
+    public void handle(STMT stmt) {
+        try {
             if (last == null || !last.getSubject().equals(stmt.getSubject())) {
-                if (last != null){
-                    appendable.append(" .\n");    
-                }            
+                if (last != null) {
+                    appendable.append(" .\n");
+                }
                 append(stmt.getSubject());
                 appendable.append(" ");
                 appendPredicate(stmt.getPredicate());
-                appendable.append(" ");                 
+                appendable.append(" ");
 
             } else if (!last.getPredicate().equals(stmt.getPredicate())) {
                 appendable.append(" ; ");
                 appendPredicate(stmt.getPredicate());
-                appendable.append(" ");                 
+                appendable.append(" ");
 
             } else {
                 appendable.append(" , ");
-            }                
+            }
 
-            append(stmt.getObject());           
+            append(stmt.getObject());
             last = stmt;
         } catch (IOException e) {
             throw new RepositoryException(e);
-        }    
+        }
     }
 
 }

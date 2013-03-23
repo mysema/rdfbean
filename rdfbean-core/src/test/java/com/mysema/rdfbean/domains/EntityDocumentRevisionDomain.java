@@ -50,7 +50,6 @@ public interface EntityDocumentRevisionDomain {
 
     }
 
-
     @ClassMapping
     public static class Entity {
 
@@ -95,7 +94,7 @@ public interface EntityDocumentRevisionDomain {
         }
 
         public QDocument(EntityPathBase<? extends EntityDocumentRevisionDomain.Document> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QDocument(PathMetadata<?> metadata) {

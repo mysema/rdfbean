@@ -21,15 +21,15 @@ import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig(User.class)
-public class NullProjectionTest extends AbstractRDBTest implements UserProjectionDomain{
-    
+public class NullProjectionTest extends AbstractRDBTest implements UserProjectionDomain {
+
     @Test
-    public void OrderBy() throws IOException{
+    public void OrderBy() throws IOException {
         session.save(new User());
         User user = Alias.alias(User.class, "user");
         List<String> results = session.from($(user)).list($(user.getFirstName()));
         assertFalse(results.isEmpty());
-        assertNull(results.get(0));        
-    }    
-    
+        assertNull(results.get(0));
+    }
+
 }

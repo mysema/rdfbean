@@ -30,7 +30,7 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * MappedClassFactory provides a factory for MappedClass creation
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
@@ -53,8 +53,8 @@ public class MappedClassFactory {
 
         ConstructorVisitor visitor = new ConstructorVisitor();
         try {
-            if (clazz.getClassLoader() != null){
-                InputStream is = clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/')+".class");
+            if (clazz.getClassLoader() != null) {
+                InputStream is = clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/') + ".class");
                 ClassReader cr = new ClassReader(is);
                 cr.accept(visitor, 0);
                 visitor.close();
@@ -63,7 +63,7 @@ public class MappedClassFactory {
             throw new RuntimeException(e);
         }
         Map<Integer, List<String>> paramsMap = new HashMap<Integer, List<String>>();
-        for (List<String> c : visitor.getConstructors()){
+        for (List<String> c : visitor.getConstructors()) {
             paramsMap.put(c.size(), c);
         }
 
@@ -75,7 +75,7 @@ public class MappedClassFactory {
             } else {
                 List<MappedPath> mappedArguments = new ArrayList<MappedPath>();
                 List<String> params = paramsMap.get(constructor.getParameterTypes().length);
-                if (params == null){
+                if (params == null) {
                     continue;
                 }
                 for (int i = 0; i < constructor.getParameterTypes().length; i++) {
@@ -196,7 +196,7 @@ public class MappedClassFactory {
             return new MappedPath(property, path, false);
         } else {
             if (property.isAnnotatedProperty()) {
-                return new MappedPath(property, Collections.<MappedPredicate>emptyList(), false);
+                return new MappedPath(property, Collections.<MappedPredicate> emptyList(), false);
             } else {
                 return null;
             }
@@ -233,7 +233,6 @@ public class MappedClassFactory {
             return getMappedPath(constructorParameter, path);
         }
     }
-
 
     private MappedPath getPathMapping(String classNs, Field field, MappedClass declaringClass) {
         FieldProperty property = new FieldProperty(field, declaringClass);
@@ -272,7 +271,7 @@ public class MappedClassFactory {
         }
         if (predicates != null) {
             List<MappedPredicate> predicatePath =
-                new ArrayList<MappedPredicate>(predicates.length);
+                    new ArrayList<MappedPredicate>(predicates.length);
             boolean first = true;
             for (Predicate predicate : predicates) {
                 predicatePath.add(
@@ -291,20 +290,21 @@ public class MappedClassFactory {
         ClassMapping cmap = clazz.getAnnotation(ClassMapping.class);
         if (cmap != null) {
             String ns = cmap.ns();
-            if (Strings.isNullOrEmpty(ns)){
+            if (Strings.isNullOrEmpty(ns)) {
                 ns = defaultNamespace;
             }
             String ln = cmap.ln();
-            if (Strings.isNullOrEmpty(ln)){
+            if (Strings.isNullOrEmpty(ln)) {
                 ln = clazz.getSimpleName();
             }
-            if (ns != null){
+            if (ns != null) {
                 return new UID(ns, ln);
-            }else{
+            } else {
                 throw new IllegalArgumentException("Namespace needs to be declared in ClassMapping or configuration.");
             }
         } else {
-            // NOTE : might be used for autowire etc, doesn't need ClassMapping for such cases
+            // NOTE : might be used for autowire etc, doesn't need ClassMapping
+            // for such cases
             return null;
         }
     }

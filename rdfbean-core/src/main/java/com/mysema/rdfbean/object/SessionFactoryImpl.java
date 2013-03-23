@@ -14,8 +14,9 @@ import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.ontology.Ontology;
 
 /**
- * SessionFactoryImpl is the default implementation of the SessionFactory interface
- *
+ * SessionFactoryImpl is the default implementation of the SessionFactory
+ * interface
+ * 
  * @author tiwe
  * @author sasa
  * @version $Id$
@@ -23,21 +24,21 @@ import com.mysema.rdfbean.ontology.Ontology;
 public class SessionFactoryImpl implements SessionFactory {
 
     private Configuration configuration;
-    
+
     private Ontology ontology;
-    
+
     private Iterable<Locale> locales;
-    
+
     private Map<String, ObjectRepository> objectRepositories;
-    
+
     private Repository repository;
-    
+
     private SessionContext sessionContext;
 
-    public SessionFactoryImpl(){
+    public SessionFactoryImpl() {
         this(Locale.getDefault());
     }
-    
+
     public SessionFactoryImpl(Iterable<Locale> locales) {
         this.locales = locales;
     }
@@ -49,24 +50,24 @@ public class SessionFactoryImpl implements SessionFactory {
 
     @Override
     public void close() {
-        repository.close();        
+        repository.close();
     }
 
     @Override
-    public <T> T execute(SessionCallback<T> cb){
-        if (sessionContext.getCurrentSession() != null){
+    public <T> T execute(SessionCallback<T> cb) {
+        if (sessionContext.getCurrentSession() != null) {
             return cb.doInSession(sessionContext.getCurrentSession());
-        }else{
+        } else {
             Session session = openSession();
-            try{
+            try {
                 return cb.doInSession(session);
-            }finally{
+            } finally {
                 session.close();
             }
         }
     }
-    
-    public Session getCurrentSession(){
+
+    public Session getCurrentSession() {
         return sessionContext.getCurrentSession();
     }
 
@@ -74,8 +75,8 @@ public class SessionFactoryImpl implements SessionFactory {
         return locales;
     }
 
-    public void initialize() {        
-        repository.initialize();        
+    public void initialize() {
+        repository.initialize();
     }
 
     @Override
@@ -89,7 +90,7 @@ public class SessionFactoryImpl implements SessionFactory {
         }
         return session;
     }
-    
+
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
         this.ontology = new ConfigurationOntology(configuration);
@@ -111,7 +112,7 @@ public class SessionFactoryImpl implements SessionFactory {
         this.repository = repository;
     }
 
-    public final void setSessionContext(SessionContext sessionContext){
+    public final void setSessionContext(SessionContext sessionContext) {
         this.sessionContext = sessionContext;
     }
 

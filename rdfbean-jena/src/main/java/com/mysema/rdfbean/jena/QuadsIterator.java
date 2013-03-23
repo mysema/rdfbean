@@ -11,12 +11,12 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public final class QuadsIterator implements CloseableIterator<STMT> {
-        
+
     private final JenaDialect dialect;
-    
+
     private final Iterator<Quad> quads;
 
     public QuadsIterator(JenaDialect dialect, Iterator<Quad> quads) {
@@ -26,7 +26,7 @@ public final class QuadsIterator implements CloseableIterator<STMT> {
 
     @Override
     public void close() {
-        // ?!?                
+        // ?!?
     }
 
     @Override
@@ -38,10 +38,10 @@ public final class QuadsIterator implements CloseableIterator<STMT> {
     public STMT next() {
         Quad quad = quads.next();
         return new STMT(
-            dialect.getID(quad.getSubject()),
-            dialect.getUID(quad.getPredicate()),
-            dialect.getNODE(quad.getObject()),
-            quad.getGraph() != null ? dialect.getUID(quad.getGraph()) : null);
+                dialect.getID(quad.getSubject()),
+                dialect.getUID(quad.getPredicate()),
+                dialect.getNODE(quad.getObject()),
+                quad.getGraph() != null ? dialect.getUID(quad.getGraph()) : null);
     }
 
     @Override

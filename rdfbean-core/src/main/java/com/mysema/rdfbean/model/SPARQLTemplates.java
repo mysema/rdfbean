@@ -4,29 +4,29 @@ import com.mysema.query.types.Ops;
 import com.mysema.query.types.PathType;
 import com.mysema.query.types.Templates;
 
-public class SPARQLTemplates extends Templates{
+public class SPARQLTemplates extends Templates {
 
     public static final SPARQLTemplates DEFAULT = new SPARQLTemplates();
 
     public SPARQLTemplates() {
-        add(PathType.VARIABLE,   "?{0s}");
-        add(Ops.IS_NOT_NULL,     "bound({0})");
-        add(Ops.IS_NULL,         "!bound({0})");
-        
-        add(Ops.MATCHES,         "regex({0}, {1})");
-        add(Ops.STARTS_WITH,     "regex({0}, '^{1s}')");
-        add(Ops.ENDS_WITH,       "regex({0}, '{1s}$')");
+        add(PathType.VARIABLE, "?{0s}");
+        add(Ops.IS_NOT_NULL, "bound({0})");
+        add(Ops.IS_NULL, "!bound({0})");
+
+        add(Ops.MATCHES, "regex({0}, {1})");
+        add(Ops.STARTS_WITH, "regex({0}, '^{1s}')");
+        add(Ops.ENDS_WITH, "regex({0}, '{1s}$')");
         add(Ops.STRING_CONTAINS, "regex({0}, '.*{1s}.*')");
-        
-        add(Ops.MATCHES_IC,       "regex({0}, {1},'i')");
-        add(Ops.STARTS_WITH_IC,  "regex({0}, '^{1s}','i')");
-        add(Ops.ENDS_WITH_IC,    "regex({0}, '{1s}$','i')");
-        add(Ops.STRING_CONTAINS_IC,"regex({0}, '.*{1s}.*','i')");
-        add(Ops.EQ_IGNORE_CASE,  "regex({0}, {1},'i')");
-        
+
+        add(Ops.MATCHES_IC, "regex({0}, {1},'i')");
+        add(Ops.STARTS_WITH_IC, "regex({0}, '^{1s}','i')");
+        add(Ops.ENDS_WITH_IC, "regex({0}, '{1s}$','i')");
+        add(Ops.STRING_CONTAINS_IC, "regex({0}, '.*{1s}.*','i')");
+        add(Ops.EQ_IGNORE_CASE, "regex({0}, {1},'i')");
+
         add(Ops.STRING_IS_EMPTY, "regex({0},'')");
-        
-        add(Ops.EXISTS,          "exists {{0}}"); // ?!?
+
+        add(Ops.EXISTS, "exists {{0}}"); // ?!?
     }
-    
+
 }

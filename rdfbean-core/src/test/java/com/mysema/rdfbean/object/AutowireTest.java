@@ -27,7 +27,7 @@ public class AutowireTest {
     @ClassMapping
     public final static class DomainType<T> {
 
-        @Predicate(ns=RDF.NS, ln="type")
+        @Predicate(ns = RDF.NS, ln = "type")
         Class<T> parametrizedClass;
 
         @Id(IDType.URI)
@@ -36,7 +36,7 @@ public class AutowireTest {
 
     public static class Command {
 
-        @Default(ns=TEST.NS, ln="domainType")
+        @Default(ns = TEST.NS, ln = "domainType")
         DomainType<DomainType<?>> domainType;
 
     }
@@ -45,8 +45,8 @@ public class AutowireTest {
     public void ClassReference() {
         MiniRepository repository = new MiniRepository();
         repository.add(
-            new STMT(new UID(TEST.NS, "domainType"), RDF.type, new UID(TEST.NS, "DomainType"))
-        );
+                new STMT(new UID(TEST.NS, "domainType"), RDF.type, new UID(TEST.NS, "DomainType"))
+                );
         Session session = SessionUtil.openSession(repository, DomainType.class);
         Command command = new Command();
         assertNull(command.domainType);

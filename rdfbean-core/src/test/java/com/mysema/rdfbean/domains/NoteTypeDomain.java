@@ -22,7 +22,8 @@ public interface NoteTypeDomain {
         @Predicate
         public Set<NoteType> types;
 
-        public Note() {}
+        public Note() {
+        }
 
         public Note(NoteType type) {
             this.type = type;

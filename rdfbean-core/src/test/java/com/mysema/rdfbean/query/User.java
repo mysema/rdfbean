@@ -17,46 +17,47 @@ import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
-@ClassMapping(ns=TEST.NS)
-public class User{
-    
+@ClassMapping(ns = TEST.NS)
+public class User {
+
     enum Gender {
         MALE, FEMALE
     }
-    
+
     @Id(IDType.RESOURCE)
     ID id;
-            
+
     @Predicate
     String firstName;
-    
+
     @Predicate
     String lastName;
-    
-    @Predicate(ln="buddy")
+
+    @Predicate(ln = "buddy")
     Set<User> buddies;
-    
+
     @Predicate
     List<User> buddyList;
-    
+
     @Predicate
     @Localized
     String name;
-    
-    @Predicate(ln="name")
+
+    @Predicate(ln = "name")
     @Localized
     Map<Locale, String> names;
-    
-    @Predicate(ln="buddy")
-    @MapElements(key=@Predicate(ln="firstName"))
+
+    @Predicate(ln = "buddy")
+    @MapElements(key = @Predicate(ln = "firstName"))
     Map<String, User> buddiesMapped;
-    
+
     @Predicate
     Gender gender;
-    
-    public User(){}
-    
-    public User(String firstName, String lastName){
+
+    public User() {
+    }
+
+    public User(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -108,5 +109,5 @@ public class User{
     public void setGender(Gender gender) {
         this.gender = gender;
     }
-        
+
 }

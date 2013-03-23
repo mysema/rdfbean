@@ -15,7 +15,7 @@ import com.mysema.util.BeanMap;
 
 /**
  * @author sasa
- *
+ * 
  */
 @Immutable
 public final class FieldProperty extends MappedProperty<Field> {
@@ -25,7 +25,7 @@ public final class FieldProperty extends MappedProperty<Field> {
     public FieldProperty(Field field, MappedClass declaringClass) {
         this(field, field.getAnnotations(), declaringClass);
     }
-    
+
     public FieldProperty(Field field, Annotation[] annotations, MappedClass declaringClass) {
         super(field.getName(), annotations, declaringClass);
         this.field = field;
@@ -72,5 +72,5 @@ public final class FieldProperty extends MappedProperty<Field> {
     public boolean isVirtual() {
         return false;
     }
-    
+
 }

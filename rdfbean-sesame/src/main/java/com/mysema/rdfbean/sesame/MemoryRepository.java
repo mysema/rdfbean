@@ -22,25 +22,26 @@ import com.mysema.rdfbean.model.MemoryIdSequence;
  * Implementation of the Repository interface using MemoryStore
  * 
  * @author sasa
- *
+ * 
  */
 public class MemoryRepository extends SesameRepository {
-    
+
     @Nullable
     private File dataDir;
-    
+
     @Nullable
     private IdSequence idSource;
-    
+
     /**
      * the synchronization delay is specified by a number, indicating the time
      * in milliseconds that the store will wait before it synchronizes changes
      * to disk.
      */
     private long syncDelay;
-        
-    public MemoryRepository(){}
-    
+
+    public MemoryRepository() {
+    }
+
     public MemoryRepository(@Nullable File dataDir, long syncDelay, boolean sesameInference) {
         this.dataDir = dataDir;
         setSyncDelay(syncDelay);
@@ -55,37 +56,37 @@ public class MemoryRepository extends SesameRepository {
     public MemoryRepository(@Nullable File dataDir) {
         this.dataDir = dataDir;
     }
-    
+
     @Override
     protected Repository createRepository(boolean sesameInference) {
         MemoryStore store;
-        if (dataDir != null){
+        if (dataDir != null) {
             store = new MemoryStore(dataDir);
             idSource = new FileIdSequence(new File(dataDir, "lastLocalId"));
-        }else{
+        } else {
             store = new MemoryStore();
             idSource = new MemoryIdSequence();
         }
-        if (syncDelay > 0){
+        if (syncDelay > 0) {
             store.setSyncDelay(syncDelay);
         }
-        
-        if (sesameInference){
+
+        if (sesameInference) {
             return new SailRepository(new ExtendedRDFSInferencer(store));
-        }else{
+        } else {
             return new SailRepository(store);
         }
-    }    
-    
+    }
+
     @Override
-    public long getNextLocalId(){
+    public long getNextLocalId() {
         return idSource.getNextId();
     }
-   
+
     public final void setDataDir(File dataDir) {
         this.dataDir = dataDir;
     }
-    
+
     public final void setDataDirName(String dataDirName) {
         if (!Strings.isNullOrEmpty(dataDirName)) {
             this.dataDir = new File(dataDirName);
@@ -96,5 +97,4 @@ public class MemoryRepository extends SesameRepository {
         this.syncDelay = syncDelay;
     }
 
-    
 }

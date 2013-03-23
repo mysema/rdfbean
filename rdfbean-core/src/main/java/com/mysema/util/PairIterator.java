@@ -27,7 +27,7 @@ public class PairIterator<T> implements Iterator<T> {
 
     @Override
     public boolean hasNext() {
-        while (hasNext == null){
+        while (hasNext == null) {
             produceNext();
         }
         return hasNext.booleanValue();
@@ -46,24 +46,24 @@ public class PairIterator<T> implements Iterator<T> {
         }
     }
 
-    private void produceNext(){
+    private void produceNext() {
         hasNext = true;
 
         // first
-        if (secondIterator == null || !secondIterator.hasNext()){
+        if (secondIterator == null || !secondIterator.hasNext()) {
             secondIterator = null;
-            if (!firstIterator.hasNext()){
+            if (!firstIterator.hasNext()) {
                 hasNext = false;
                 return;
-            }else{
+            } else {
                 firstIterator.next();
             }
         }
 
         // second
-        if (secondIterator == null){
+        if (secondIterator == null) {
             secondIterator = second.iterator();
-            if (!secondIterator.hasNext()){
+            if (!secondIterator.hasNext()) {
                 hasNext = null;
                 return;
             }

@@ -17,7 +17,8 @@ import com.mysema.rdfbean.model.Repository;
 
 public final class SessionUtil {
 
-    private SessionUtil() {}
+    private SessionUtil() {
+    }
 
     public static Session openSession(Class<?>... classes) {
         return openSession(new MiniRepository(), classes);
@@ -28,7 +29,7 @@ public final class SessionUtil {
     }
 
     public static Session openSession(Repository repository, @Nullable Locale locale, Class<?>... classes) {
-        return openSession(repository, locale != null ? Arrays.asList(locale) : Collections.<Locale>emptyList(), classes);
+        return openSession(repository, locale != null ? Arrays.asList(locale) : Collections.<Locale> emptyList(), classes);
     }
 
     public static Session openSession(Repository repository, Iterable<Locale> locales, Class<?>... classes) {
@@ -40,7 +41,7 @@ public final class SessionUtil {
     }
 
     public static Session openSession(Repository repository, @Nullable Locale locale, Package... packages) {
-        return openSession(repository, locale != null ? Arrays.asList(locale) : Collections.<Locale>emptyList(), packages);
+        return openSession(repository, locale != null ? Arrays.asList(locale) : Collections.<Locale> emptyList(), packages);
     }
 
     public static Session openSession(Repository repository, Iterable<Locale> locales, Package... packages) {

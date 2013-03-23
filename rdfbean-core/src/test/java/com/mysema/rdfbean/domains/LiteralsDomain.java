@@ -50,13 +50,13 @@ public interface LiteralsDomain {
 
         @Predicate
         public boolean booleanValue;
-        
+
         @Predicate
         public LocalDate localDate;
 
         @Predicate
         public DateTime dateTime;
-        
+
         public ID getId() {
             return id;
         }
@@ -105,8 +105,6 @@ public interface LiteralsDomain {
             this.dateTime = dateTime;
         }
 
-        
-        
     }
 
 }

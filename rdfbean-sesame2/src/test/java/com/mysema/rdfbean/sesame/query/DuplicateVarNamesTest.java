@@ -14,11 +14,11 @@ import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({SimpleType.class, SimpleType2.class})
-public class DuplicateVarNamesTest extends SessionTestBase{
-    
+@SessionConfig({ SimpleType.class, SimpleType2.class })
+public class DuplicateVarNamesTest extends SessionTestBase {
+
     @Test
-    public void test(){
+    public void test() {
         QSimpleType v = new QSimpleType("va");
         assertEquals(2, session.from(v).list(v.directProperty).size());
     }

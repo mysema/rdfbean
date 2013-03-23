@@ -9,12 +9,12 @@ import javax.annotation.Nullable;
 
 /**
  * SessionCallback defines a callback interface for in-session logic
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
 public interface SessionCallback<T> {
-    
+
     /**
      * @param session
      * @return

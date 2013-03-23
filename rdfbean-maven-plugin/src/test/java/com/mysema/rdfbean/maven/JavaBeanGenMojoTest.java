@@ -25,11 +25,10 @@ public class JavaBeanGenMojoTest {
         assertTrue(new File("target/JavaBeanGenMojoTest/com/example/wine/Wine.java").exists());
     }
 
-    private void set(Object obj, String fieldName, Object value) throws SecurityException, NoSuchFieldException, IllegalAccessException{
+    private void set(Object obj, String fieldName, Object value) throws SecurityException, NoSuchFieldException, IllegalAccessException {
         Field field = JavaBeanGenMojo.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(obj, value);
     }
-
 
 }

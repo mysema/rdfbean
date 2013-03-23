@@ -6,15 +6,14 @@ import org.springframework.context.support.StaticApplicationContext;
 
 import com.mysema.rdfbean.TEST;
 
-
 public class ContextAwareSessionFactoryTest {
-    
+
     @Test
-    public void test(){
-	ContextAwareSessionFactory sessionFactory = new ContextAwareSessionFactory(TEST.NS);
-	ApplicationContext appContext = new StaticApplicationContext();
-	sessionFactory.setApplicationContext(appContext);
-	// TODO : asserts
+    public void test() {
+        ContextAwareSessionFactory sessionFactory = new ContextAwareSessionFactory(TEST.NS);
+        ApplicationContext appContext = new StaticApplicationContext();
+        sessionFactory.setApplicationContext(appContext);
+        // TODO : asserts
     }
 
 }

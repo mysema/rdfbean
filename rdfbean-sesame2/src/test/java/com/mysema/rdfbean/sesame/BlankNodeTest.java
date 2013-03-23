@@ -27,61 +27,61 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.util.FileUtils;
 
 public class BlankNodeTest {
-    
+
     private Repository repository;
-    
+
     @After
-    public void tearDown(){
+    public void tearDown() {
         repository.close();
     }
-    
+
     @Test
-    public void WithMiniRepository() throws Exception{
+    public void WithMiniRepository() throws Exception {
         test(new MiniRepository());
     }
-    
+
     @Test
-    public void WithNativeRepository() throws Exception{
+    public void WithNativeRepository() throws Exception {
         File dataDir = new File("target/test-repo1");
         FileUtils.delete(dataDir);
         NativeRepository repository = new NativeRepository();
         repository.setDataDir(dataDir);
         test(repository);
     }
-    
+
     @Test
     @Ignore
-    public void WithMemoryRepository() throws Exception{
+    public void WithMemoryRepository() throws Exception {
         File dataDir = new File("target/test-repo2");
         FileUtils.delete(dataDir);
         MemoryRepository repository = new MemoryRepository();
         repository.setDataDir(dataDir);
         test(repository);
     }
-    
-    protected void test(Repository repository) throws IOException{
+
+    protected void test(Repository repository) throws IOException {
         this.repository = repository;
         repository.initialize();
-        
+
         STMT stmt = new STMT(new BID(), CORE.localId, new LIT("test"));
         RDFConnection conn = repository.openConnection();
-        try{
-            conn.update(Collections.<STMT>emptySet(), Collections.singleton(stmt));
-        }finally{
+        try {
+            conn.update(Collections.<STMT> emptySet(), Collections.singleton(stmt));
+        } finally {
             conn.close();
         }
-        
+
         conn = repository.openConnection();
-        try{
+        try {
             CloseableIterator<STMT> stmts = conn.findStatements(null, CORE.localId, null, null, false);
-            try{
+            try {
                 assertTrue(stmts.hasNext());
                 STMT other = stmts.next();
                 assertEquals(stmt.getSubject(), other.getSubject());
-            }finally{
+            } finally {
                 stmts.close();
             }
-        }finally{
+        } finally {
             conn.close();
         }
     }

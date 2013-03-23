@@ -7,45 +7,45 @@ import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactory;
 
 public abstract class Helper {
-    
-    public static Helper helper = new Helper(){
+
+    public static Helper helper = new Helper() {
         @Override
         public Repository createRepository() {
             return new MiniRepository();
-        }        
+        }
     };
-    
+
     public SessionFactory sessionFactory;
-    
+
     public Session session;
-    
+
     public Repository repository;
-    
+
     public RDFConnection connection;
-  
+
     public abstract Repository createRepository();
-    
-    public Repository newRepository(){
+
+    public Repository newRepository() {
         repository = createRepository();
         repository.initialize();
         return repository;
     }
-    
-    public RDFConnection newConnection(){
+
+    public RDFConnection newConnection() {
         connection = repository.openConnection();
         return connection;
     }
-    
-    public void closeRepository(){
+
+    public void closeRepository() {
         if (repository != null) {
-            repository.close();    
-        }        
+            repository.close();
+        }
     }
-    
-    public void closeConnection(){
+
+    public void closeConnection() {
         if (connection != null) {
-            connection.close();     
-        }       
+            connection.close();
+        }
     }
-        
+
 }

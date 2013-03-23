@@ -11,15 +11,15 @@ import javax.annotation.Nullable;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public interface RDFConnectionCallback<RT> {
 
     /**
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     @Nullable
     RT doInConnection(RDFConnection connection) throws IOException;
-    
+
 }

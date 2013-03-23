@@ -19,19 +19,19 @@ public class QueryRDFVisitorTest {
     private ID id = new BID();
 
     private QueryRDFVisitor visitor = new QueryRDFVisitor(connection);
-    
+
     private Bindings context = new Bindings(new Bindings());
-    
+
     @Before
-    public void setUp(){        
+    public void setUp() {
         connection.addStatements(
                 new STMT(id, RDF.type, RDFS.Resource),
                 new STMT(id, RDFS.label, new LIT("id")));
     }
-    
+
     @Test
-    public void PatternBlock(){
-        Iterable<Bindings> iterable = visitor.visit((PatternBlock)Blocks.SPO, context).getFirst();
+    public void PatternBlock() {
+        Iterable<Bindings> iterable = visitor.visit((PatternBlock) Blocks.SPO, context).getFirst();
         List<Bindings> rows = IteratorAdapter.asList(iterable.iterator());
         assertEquals(2, rows.size());
         assertEquals(3, rows.get(0).toMap().size());
@@ -39,18 +39,17 @@ public class QueryRDFVisitorTest {
         assertEquals(id, rows.get(0).get("s"));
         assertEquals(id, rows.get(1).get("s"));
     }
-    
+
     @Test
-    public void PatternBlock_with_unmatching_Filter(){
+    public void PatternBlock_with_unmatching_Filter() {
         GroupBlock block = (GroupBlock) Blocks.filter(Blocks.SPO, QNODE.p.eq(RDF.predicate));
         Iterable<Bindings> iterable = visitor.visit(block, context).getFirst();
         List<Bindings> rows = IteratorAdapter.asList(iterable.iterator());
-        assertEquals(0, rows.size());        
+        assertEquals(0, rows.size());
     }
-    
-    
+
     @Test
-    public void PatternBlock_with_Filter(){
+    public void PatternBlock_with_Filter() {
         GroupBlock block = (GroupBlock) Blocks.filter(Blocks.SPO, QNODE.p.eq(RDF.type));
         Iterator<Bindings> iterator = visitor.visit(block, context).getFirst().iterator();
         Map<String, NODE> row = iterator.next().toMap();
@@ -59,5 +58,5 @@ public class QueryRDFVisitorTest {
         assertEquals(id, row.get("s"));
         assertEquals(RDF.type, row.get("p"));
     }
-    
+
 }

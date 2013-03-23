@@ -17,16 +17,16 @@ import com.mysema.commons.lang.CloseableIterator;
  * @author tiwe
  */
 public final class ResultIterator implements CloseableIterator<STMT> {
-    
+
     private final Iterator<STMT> iter;
-        
-    ResultIterator(Iterator<STMT> iterator, @Nullable final ID subject, @Nullable final UID predicate, 
+
+    ResultIterator(Iterator<STMT> iterator, @Nullable final ID subject, @Nullable final UID predicate,
             @Nullable final NODE object, @Nullable final UID context, final boolean includeInferred) {
         this.iter = Iterators.filter(iterator, new Predicate<STMT>() {
             @Override
             public boolean apply(STMT stmt) {
                 return STMTMatcher.matches(stmt, subject, predicate, object, context, includeInferred);
-            }            
+            }
         });
     }
 
@@ -47,5 +47,5 @@ public final class ResultIterator implements CloseableIterator<STMT> {
     @Override
     public void remove() {
     }
-    
+
 }

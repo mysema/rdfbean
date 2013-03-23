@@ -15,14 +15,14 @@ public class SesameRepositoryTest {
     private SesameRepository repository;
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         repository.close();
     }
 
-    @Test(expected=RepositoryException.class)
-    public void initialize(){
+    @Test(expected = RepositoryException.class)
+    public void initialize() {
         repository = new MemoryRepository();
-        repository.setSources(new RDFSource("", Format.RDFXML, ""){
+        repository.setSources(new RDFSource("", Format.RDFXML, "") {
             @Override
             public InputStream openStream() throws IOException {
                 throw new IllegalStateException();

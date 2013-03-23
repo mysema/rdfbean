@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 /**
  * SessionContext provides thread bound Session access functionality
- *
+ * 
  * @author tiwe
  * @version $Id$
  */

@@ -28,7 +28,7 @@ public class ContextTest {
         @Predicate
         String property1;
 
-        @Predicate(context=TEST.NS)
+        @Predicate(context = TEST.NS)
         String property2;
 
     }
@@ -38,7 +38,7 @@ public class ContextTest {
     private Session session;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         repository = new MiniRepository();
         session = SessionUtil.openSession(repository, Entity.class);
         Entity entity = new Entity();
@@ -50,14 +50,14 @@ public class ContextTest {
     }
 
     @Test
-    public void findInstances(){
+    public void findInstances() {
         Entity entity = session.findInstances(Entity.class).get(0);
         assertEquals("X", entity.property1);
         assertEquals("Y", entity.property2);
     }
 
     @Test
-    public void findStatements(){
+    public void findStatements() {
         List<STMT> property1 = IteratorAdapter.asList(repository.findStatements(null, new UID(TEST.NS, "property1"), null, null, false));
         assertEquals(1, property1.size());
         assertNull(property1.get(0).getContext());

@@ -19,7 +19,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 public class PathEqPathTest extends SessionTestBase implements EntityDomain {
 
     @Test
-    public void test(){
+    public void test() {
         Entity entity = new Entity();
         entity.text1 = "a";
         entity.text2 = "a";
@@ -30,10 +30,10 @@ public class PathEqPathTest extends SessionTestBase implements EntityDomain {
 
         session.saveAll(entity, entity2);
 
-        Entity e1 = Alias.alias(Entity.class,"e1");
-        Entity e2 = Alias.alias(Entity.class,"e2");
+        Entity e1 = Alias.alias(Entity.class, "e1");
+        Entity e2 = Alias.alias(Entity.class, "e2");
         assertEquals(1l, session.from($(e1)).where($(e1.getText1()).eq($(e1.getText2()))).count());
-        assertEquals(2l, session.from($(e1),$(e2)).where($(e1.getText1()).eq($(e2.getText1())), $(e1).ne($(e2))).count());
+        assertEquals(2l, session.from($(e1), $(e2)).where($(e1.getText1()).eq($(e2.getText1())), $(e1).ne($(e2))).count());
 
     }
 }

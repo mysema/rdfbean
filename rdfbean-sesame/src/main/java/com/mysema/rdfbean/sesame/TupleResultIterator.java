@@ -14,7 +14,7 @@ import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class TupleResultIterator implements CloseableIterator<Map<String, NODE>> {
 
@@ -52,12 +52,12 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
     public Map<String, NODE> next() {
         try {
             BindingSet bindingSet = tupleResult.next();
-            Map<String,NODE> row = new HashMap<String,NODE>();
-            for (String name : tupleResult.getBindingNames()){
+            Map<String, NODE> row = new HashMap<String, NODE>();
+            for (String name : tupleResult.getBindingNames()) {
                 Value value = bindingSet.getValue(name);
-                if (value != null){
+                if (value != null) {
                     row.put(name, dialect.getNODE(value));
-                }else if (bindings.containsKey(name)){
+                } else if (bindings.containsKey(name)) {
                     row.put(name, bindings.get(name));
                 }
             }

@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class LIDTest {
-    
+
     private LID lid = new LID("1");
 
     @Test

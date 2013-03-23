@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 public class MiniDialectTest {
-    
+
     private MiniDialect dialect = new MiniDialect();
 
     @Test
@@ -68,6 +68,5 @@ public class MiniDialectTest {
     public void GetDatatypeUID() {
         assertNotNull(dialect.getDatatypeUID(XSD.stringType.getValue()));
     }
-
 
 }

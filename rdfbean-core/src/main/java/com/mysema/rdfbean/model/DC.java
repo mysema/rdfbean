@@ -1,7 +1,5 @@
 package com.mysema.rdfbean.model;
 
-
-
 public final class DC {
 
     public static final String NS = "http://purl.org/dc/elements/1.1/";
@@ -36,6 +34,7 @@ public final class DC {
 
     public static final UID type = new UID(NS, "type");
 
-    private DC() {}
+    private DC() {
+    }
 
 }

@@ -5,12 +5,13 @@
  */
 package com.mysema.rdfbean;
 
-
 /**
  * @author tiwe
  */
-public final class TEST {    
+public final class TEST {
     public static final String NS = "http://semantics.mysema.com/test#";
-    private TEST(){}
-    
+
+    private TEST() {
+    }
+
 }

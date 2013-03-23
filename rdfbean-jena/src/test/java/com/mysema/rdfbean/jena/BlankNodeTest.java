@@ -24,41 +24,41 @@ import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.STMT;
 
 public class BlankNodeTest {
-    
+
     private Repository repository;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         repository = new MemoryRepository();
         repository.initialize();
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         repository.close();
     }
-        
+
     @Test
-    public void test() throws IOException{        
+    public void test() throws IOException {
         STMT stmt = new STMT(new BID(), CORE.localId, new LIT("test"));
         RDFConnection conn = repository.openConnection();
-        try{
-            conn.update(Collections.<STMT>emptySet(), Collections.singleton(stmt));
-        }finally{
+        try {
+            conn.update(Collections.<STMT> emptySet(), Collections.singleton(stmt));
+        } finally {
             conn.close();
         }
-        
+
         conn = repository.openConnection();
-        try{
+        try {
             CloseableIterator<STMT> stmts = conn.findStatements(null, CORE.localId, null, null, false);
-            try{
+            try {
                 assertTrue(stmts.hasNext());
                 STMT other = stmts.next();
                 assertEquals(stmt.getSubject(), other.getSubject());
-            }finally{
+            } finally {
                 stmts.close();
             }
-        }finally{
+        } finally {
             conn.close();
         }
     }

@@ -4,24 +4,26 @@ import java.io.Writer;
 
 /**
  * SPARQLQuery defines the interface for accessing SPARQL query results
- *
+ * 
  * @author tiwe
- *
+ * 
  */
 public interface SPARQLQuery extends BooleanQuery, GraphQuery, TupleQuery {
 
-    public enum ResultType { BOOLEAN, TRIPLES, TUPLES }
+    public enum ResultType {
+        BOOLEAN, TRIPLES, TUPLES
+    }
 
     /**
      * Get the result type of the SPARQL query
-     *
+     * 
      * @return
      */
     ResultType getResultType();
 
     /**
      * Stream the results of a DESCRIBE or CONSTRUCT query
-     *
+     * 
      * @param writer
      * @param contentType
      */
@@ -29,7 +31,7 @@ public interface SPARQLQuery extends BooleanQuery, GraphQuery, TupleQuery {
 
     /**
      * Add the given binding
-     *
+     * 
      * @param variable
      * @param node
      */
@@ -37,7 +39,7 @@ public interface SPARQLQuery extends BooleanQuery, GraphQuery, TupleQuery {
 
     /**
      * Set the maximum query time in seconds
-     *
+     * 
      * @param secs
      */
     void setMaxQueryTime(int secs);

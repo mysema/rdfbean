@@ -15,21 +15,21 @@ import org.openrdf.model.Value;
 
 /**
  * StatementComparator is a Comparator implementation for OpenRDF statements
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
-public class StatementComparator implements Comparator<Statement>, Serializable{
-    
+public class StatementComparator implements Comparator<Statement>, Serializable {
+
     private static final long serialVersionUID = 3827347034847500270L;
 
     @Override
     public int compare(Statement o1, Statement o2) {
-        if (!o1.getSubject().equals(o2.getSubject())){
+        if (!o1.getSubject().equals(o2.getSubject())) {
             return compare(o1.getSubject(), o2.getSubject());
-        }else if (!o1.getPredicate().equals(o2.getPredicate())){
+        } else if (!o1.getPredicate().equals(o2.getPredicate())) {
             return compare(o1.getPredicate(), o2.getPredicate());
-        }else{
+        } else {
             return compare(o1.getObject(), o2.getObject());
         }
     }
@@ -37,22 +37,21 @@ public class StatementComparator implements Comparator<Statement>, Serializable{
     private int compare(Value object, Value object2) {
         int pos1 = getPosition(object);
         int pos2 = getPosition(object2);
-        if (pos1 != pos2){
+        if (pos1 != pos2) {
             return pos1 - pos2;
-        }else{
-            return object.toString().compareTo(object2.toString());    
-        }        
-    }
-
-    private int getPosition(Value object) {
-        if (object instanceof Literal){
-            return 3;
-        }else if (object instanceof BNode){
-            return 2;
-        }else{
-            return 1;
+        } else {
+            return object.toString().compareTo(object2.toString());
         }
     }
 
+    private int getPosition(Value object) {
+        if (object instanceof Literal) {
+            return 3;
+        } else if (object instanceof BNode) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
 
 }

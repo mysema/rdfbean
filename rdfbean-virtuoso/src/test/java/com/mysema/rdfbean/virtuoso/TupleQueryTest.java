@@ -15,7 +15,6 @@ import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.model.*;
 
-
 public class TupleQueryTest extends AbstractConnectionTest {
 
     private static final QNODE<ID> subject = new QNODE<ID>(ID.class, "s");
@@ -24,20 +23,20 @@ public class TupleQueryTest extends AbstractConnectionTest {
 
     private static final QNODE<NODE> object = new QNODE<NODE>(NODE.class, "o");
 
-    private RDFQuery query(){
+    private RDFQuery query() {
         return new RDFQueryImpl(connection);
     }
 
     @Test
-    public void Pattern(){
+    public void Pattern() {
         query().where(Blocks.pattern(subject, RDF.type, RDFS.Class)).limit(1).select(subject);
     }
 
     @Test
-    public void Pattern_with_Filters(){
+    public void Pattern_with_Filters() {
         Block pattern = Blocks.pattern(subject, predicate, object);
 
-        List<Predicate> filters = Arrays.<Predicate>asList(
+        List<Predicate> filters = Arrays.<Predicate> asList(
                 subject.eq(new UID(TEST.NS)),
                 predicate.eq(RDFS.label),
                 subject.ne(new UID(TEST.NS)),
@@ -48,31 +47,31 @@ public class TupleQueryTest extends AbstractConnectionTest {
                 object.lit().gt("X"),
                 object.lit().loe("X"),
                 object.lit().goe("X")
-        );
+                );
 
-        for (Predicate filter : filters){
+        for (Predicate filter : filters) {
             query().where(pattern, filter).limit(1).select(subject);
         }
     }
 
     @Test
-    public void SelectAll(){
-        CloseableIterator<Map<String,NODE>> iterator = query().where(Blocks.SPO).limit(1).selectAll();
+    public void SelectAll() {
+        CloseableIterator<Map<String, NODE>> iterator = query().where(Blocks.SPO).limit(1).selectAll();
         assertTrue(iterator.hasNext());
-        try{
-            while (iterator.hasNext()){
-                Map<String,NODE> row = iterator.next();
+        try {
+            while (iterator.hasNext()) {
+                Map<String, NODE> row = iterator.next();
                 assertNotNull(row.get("s"));
                 assertNotNull(row.get("p"));
                 assertNotNull(row.get("o"));
             }
-        }finally{
+        } finally {
             iterator.close();
         }
     }
 
     @Test
-    public void Pattern_with_Limit_and_Offset(){
+    public void Pattern_with_Limit_and_Offset() {
         query().where(Blocks.pattern(subject, RDF.type, RDFS.Class))
                 .limit(5)
                 .offset(20)
@@ -80,7 +79,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Group(){
+    public void Group() {
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
@@ -89,18 +88,18 @@ public class TupleQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Union(){
+    public void Union() {
         query().where(
                 Blocks.union(
-                    Blocks.pattern(subject, RDF.type, RDFS.Class),
-                    Blocks.pattern(subject, predicate, object)
-                ))
+                        Blocks.pattern(subject, RDF.type, RDFS.Class),
+                        Blocks.pattern(subject, predicate, object)
+                        ))
                 .limit(1)
                 .select(subject, predicate, object);
     }
 
     @Test
-    public void Optional(){
+    public void Optional() {
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.optional(Blocks.pattern(subject, predicate, object)))
@@ -109,7 +108,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void From(){
+    public void From() {
         UID test = new UID(TEST.NS);
         UID test2 = new UID(TEST.NS, "Res1");
         connection.update(null, Arrays.asList(new STMT(new BID(), RDFS.label, new LIT("C"), test)));
@@ -118,6 +117,5 @@ public class TupleQueryTest extends AbstractConnectionTest {
         assertTrue(query().from(test, test2).where(Blocks.pattern(subject, predicate, object)).ask());
         assertFalse(query().from(test2).where(Blocks.pattern(subject, predicate, object)).ask());
     }
-
 
 }

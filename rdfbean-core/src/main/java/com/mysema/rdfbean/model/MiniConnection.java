@@ -15,12 +15,12 @@ import com.mysema.query.QueryMetadata;
 
 /**
  * MiniConnection is an RDFConnection implementation for the MiniRepository
- *
+ * 
  * @author sasa
- *
+ * 
  */
 public class MiniConnection implements RDFConnection {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(MiniConnection.class);
 
     private final MiniRepository repository;
@@ -49,34 +49,34 @@ public class MiniConnection implements RDFConnection {
     @Override
     public BID createBNode() {
         return new BID();
-    }    
+    }
 
     @Override
     public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, D definition) {
-        throw new UnsupportedOperationException(updateLanguage.toString()); 
+        throw new UnsupportedOperationException(updateLanguage.toString());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
         if (queryLanguage == QueryLanguage.TUPLE
-            || queryLanguage == QueryLanguage.GRAPH
-            || queryLanguage == QueryLanguage.BOOLEAN){
-            if (logger.isDebugEnabled()){
-                QueryMetadata metadata = (QueryMetadata)definition;
+                || queryLanguage == QueryLanguage.GRAPH
+                || queryLanguage == QueryLanguage.BOOLEAN) {
+            if (logger.isDebugEnabled()) {
+                QueryMetadata metadata = (QueryMetadata) definition;
                 logger.debug(queryLanguage + " : " + metadata.getWhere().toString());
             }
             QueryRDFVisitor visitor = new QueryRDFVisitor(this);
-            return (Q) visitor.visit((QueryMetadata)definition, queryLanguage);
+            return (Q) visitor.visit((QueryMetadata) definition, queryLanguage);
 
-        }else{
+        } else {
             throw new UnsupportedOperationException(queryLanguage.toString());
         }
     }
 
     @Override
     public boolean exists(ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
-        if (logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug("exists " + subject + " " + predicate + " " + object + " " + context);
         }
         return repository.exists(subject, predicate, object, context);
@@ -85,7 +85,7 @@ public class MiniConnection implements RDFConnection {
     @Override
     public CloseableIterator<STMT> findStatements(ID subject, UID predicate,
             NODE object, UID context, boolean includeInferred) {
-        if (logger.isDebugEnabled()){
+        if (logger.isDebugEnabled()) {
             logger.debug("find " + subject + " " + predicate + " " + object + " " + context);
         }
         return repository.findStatements(subject, predicate, object, context, includeInferred);
@@ -125,5 +125,4 @@ public class MiniConnection implements RDFConnection {
         return InferenceOptions.DEFAULT;
     }
 
-    
 }

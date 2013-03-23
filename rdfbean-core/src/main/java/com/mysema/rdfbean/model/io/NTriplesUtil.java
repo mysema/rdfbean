@@ -2,10 +2,9 @@ package com.mysema.rdfbean.model.io;
 
 import java.util.Locale;
 
-
 /**
  * @author tiwe
- *
+ * 
  */
 final class NTriplesUtil {
 
@@ -57,6 +56,5 @@ final class NTriplesUtil {
 
     private NTriplesUtil() {
     }
-
 
 }

@@ -23,14 +23,14 @@ import com.mysema.rdfbean.model.XSD;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, Quad>{
+public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, Quad> {
 
     private static final Map<UID, RDFDatatype> datatypes = new HashMap<UID, RDFDatatype>();
 
-    static{
-        for (UID uid : Nodes.get(XSD.NS)){
+    static {
+        for (UID uid : Nodes.get(XSD.NS)) {
             datatypes.put(uid, new BaseDatatype(uid.getId()));
         }
     }
@@ -62,22 +62,22 @@ public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, Q
 
     @Override
     public ID getID(Node resource) {
-        if (resource.isURI()){
+        if (resource.isURI()) {
             return new UID(resource.getURI());
-        }else{
+        } else {
             return new BID(resource.getBlankNodeLabel());
         }
     }
 
     @Override
     public LIT getLIT(Node literal) {
-        if (!Strings.isNullOrEmpty(literal.getLiteralLanguage())){
+        if (!Strings.isNullOrEmpty(literal.getLiteralLanguage())) {
             return new LIT(literal.getLiteralLexicalForm(), literal.getLiteralLanguage());
-        }else{
+        } else {
             String datatype = literal.getLiteralDatatypeURI();
-            if (datatype == null || datatype.equals(RDF.text.getId())){
+            if (datatype == null || datatype.equals(RDF.text.getId())) {
                 return new LIT(literal.getLiteralLexicalForm(), RDF.text);
-            }else {
+            } else {
                 return new LIT(literal.getLiteralLexicalForm(), getDatatypeUID(datatype));
             }
         }
@@ -85,38 +85,39 @@ public class JenaDialect extends AbstractDialect<Node, Node, Node, Node, Node, Q
 
     @Override
     public Node getLiteral(LIT lit) {
-        if (lit.getLang() != null){
+        if (lit.getLang() != null) {
             return Node.createLiteral(lit.getValue(), LocaleUtil.toLang(lit.getLang()), false);
-        }else if (!lit.getDatatype().equals(RDF.text)){
-            if (lit.getDatatype().getNamespace().equals(XSD.NS)){
+        } else if (!lit.getDatatype().equals(RDF.text)) {
+            if (lit.getDatatype().getNamespace().equals(XSD.NS)) {
                 return Node.createLiteral(lit.getValue(), null, datatypes.get(lit.getDatatype()));
-            }else{
+            } else {
                 return Node.createLiteral(lit.getValue(), null, new BaseDatatype(lit.getDatatype().getId()));
             }
-        }else{
+        } else {
             return Node.createLiteral(lit.getValue(), null, null);
         }
     }
 
     @Override
     public NODE getNODE(Node node) {
-        if (node.isURI()){
+        if (node.isURI()) {
             return getUID(node);
-        }else if (node.isBlank()){
+        } else if (node.isBlank()) {
             return getBID(node);
-        }else{
+        } else {
             return getLIT(node);
         }
     }
+
     @Override
     public NodeType getNodeType(Node node) {
-        if (node.isURI()){
+        if (node.isURI()) {
             return NodeType.URI;
-        }else if (node.isBlank()){
+        } else if (node.isBlank()) {
             return NodeType.BLANK;
-        }else if (node.isLiteral()){
+        } else if (node.isLiteral()) {
             return NodeType.LITERAL;
-        }else{
+        } else {
             throw new IllegalArgumentException(node.toString());
         }
     }

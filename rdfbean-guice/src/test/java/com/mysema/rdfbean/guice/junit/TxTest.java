@@ -17,15 +17,15 @@ public class TxTest {
 
     @Inject
     private SessionFactory sessionFactory;
-    
+
     @Test
-    public void tx(){
+    public void tx() {
         assertNotNull(sessionFactory.getCurrentSession());
     }
-    
+
     @Test
     @NotTransactional
-    public void noTx(){
+    public void noTx() {
         assertNull(sessionFactory.getCurrentSession());
     }
 }

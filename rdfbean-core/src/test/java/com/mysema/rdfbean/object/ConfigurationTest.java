@@ -25,18 +25,18 @@ public class ConfigurationTest {
 
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void invalidPackage(){
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidPackage() {
         new DefaultConfiguration(ConfigurationTest.class.getPackage());
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void invalidClass(){
+    @Test(expected = IllegalArgumentException.class)
+    public void invalidClass() {
         new DefaultConfiguration(ConfigurationTest.class);
     }
 
     @Test
-    public void ScanPackages() throws IOException, ClassNotFoundException{
+    public void ScanPackages() throws IOException, ClassNotFoundException {
         DefaultConfiguration conf1 = new DefaultConfiguration();
         conf1.addPackages(OWL.class.getPackage());
         conf1.addClasses(TypedList.class);
@@ -46,40 +46,44 @@ public class ConfigurationTest {
         assertEquals(conf1.getMappedClasses(), conf2.getMappedClasses());
     }
 
-//    @Test
-//    public void ScanPackages_from_File() throws IOException, ClassNotFoundException{
-//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//        DefaultConfiguration conf = new DefaultConfiguration();
-//        Set<Class<?>> classes = conf.scanPackage(classLoader, CORE.class.getPackage());
-//        assertFalse(classes.isEmpty());
-//        assertTrue(classes.contains(OWL.class));
-//    }
-//
-//    @Test
-//    public void ScanPackages_from_Jar() throws IOException, ClassNotFoundException{
-//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//        DefaultConfiguration conf = new DefaultConfiguration();
-//        Set<Class<?>> classes = conf.scanPackage(classLoader, Query.class.getPackage());
-//        assertTrue(classes.contains(Projectable.class));
-//        assertTrue(classes.contains(Expression.class));
-//        assertFalse(classes.isEmpty());
-//    }
-//
+    // @Test
+    // public void ScanPackages_from_File() throws IOException,
+    // ClassNotFoundException{
+    // ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    // DefaultConfiguration conf = new DefaultConfiguration();
+    // Set<Class<?>> classes = conf.scanPackage(classLoader,
+    // CORE.class.getPackage());
+    // assertFalse(classes.isEmpty());
+    // assertTrue(classes.contains(OWL.class));
+    // }
+    //
+    // @Test
+    // public void ScanPackages_from_Jar() throws IOException,
+    // ClassNotFoundException{
+    // ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    // DefaultConfiguration conf = new DefaultConfiguration();
+    // Set<Class<?>> classes = conf.scanPackage(classLoader,
+    // Query.class.getPackage());
+    // assertTrue(classes.contains(Projectable.class));
+    // assertTrue(classes.contains(Expression.class));
+    // assertFalse(classes.isEmpty());
+    // }
+    //
     @Test
-    public void Default_Namespace_Available(){
+    public void Default_Namespace_Available() {
         Configuration configuration = new DefaultConfiguration(TEST.NS, Entity.class);
         MappedClass mappedClass = configuration.getMappedClass(Entity.class);
         assertEquals(new UID(TEST.NS, Entity.class.getSimpleName()), mappedClass.getUID());
     }
 
-    @Test(expected=IllegalArgumentException.class)
-    public void Default_Namespace_Missing(){
+    @Test(expected = IllegalArgumentException.class)
+    public void Default_Namespace_Missing() {
         Configuration configuration = new DefaultConfiguration(Entity.class);
         configuration.getMappedClass(Entity.class);
     }
-    
+
     @Test
-    public void GetMappedClasses_For_Unknown(){
+    public void GetMappedClasses_For_Unknown() {
         Configuration configuration = new DefaultConfiguration();
         assertEquals(Collections.emptyList(), configuration.getMappedClasses(new UID(TEST.NS)));
     }

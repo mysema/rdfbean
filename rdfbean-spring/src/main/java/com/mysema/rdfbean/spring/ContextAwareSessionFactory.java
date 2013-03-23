@@ -17,26 +17,27 @@ import com.mysema.rdfbean.object.ObjectRepository;
 /**
  * @author tiwe
  */
-public final class ContextAwareSessionFactory extends SpringSessionFactory implements ApplicationContextAware{
-    
+public final class ContextAwareSessionFactory extends SpringSessionFactory implements ApplicationContextAware {
+
     private String namespace = SRV.NS;
-    
-    public ContextAwareSessionFactory() {}
-    
+
+    public ContextAwareSessionFactory() {
+    }
+
     public ContextAwareSessionFactory(String namespace) {
         setNamespace(namespace);
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext){
-        setObjectRepositories(Collections.<String,ObjectRepository>singletonMap(
-                namespace, 
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        setObjectRepositories(Collections.<String, ObjectRepository> singletonMap(
+                namespace,
                 new SpringObjectRepository(applicationContext)));
-        
+
     }
 
     public void setNamespace(String namespace) {
-        this.namespace = Assert.hasText(namespace,"namespace");
+        this.namespace = Assert.hasText(namespace, "namespace");
     }
-    
+
 }

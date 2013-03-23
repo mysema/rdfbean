@@ -12,7 +12,7 @@ import com.mysema.rdfbean.owl.OWLClass;
 
 /**
  * @author sasa
- *
+ * 
  */
 @ClassMapping(ns = OWL.NS, ln = "Class")
 public class ReferenceClass extends OWLClass {

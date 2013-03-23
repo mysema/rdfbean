@@ -15,21 +15,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * &#64;Path mapping allows mapping predicate paths into read-only properties. 
- * A path can include direct and inverse mapped predicates.
+ * &#64;Path mapping allows mapping predicate paths into read-only properties. A
+ * path can include direct and inverse mapped predicates.
  * 
  * @author sasa
  */
 @Documented
-@Target( { METHOD, FIELD, PARAMETER })
+@Target({ METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Path {
 
     /**
-     * @return true if invalid values should be ignored. 
+     * @return true if invalid values should be ignored.
      */
     boolean ignoreInvalid() default false;
-    
+
     /**
      * @return Default namespace for predicates.
      */
@@ -39,5 +39,5 @@ public @interface Path {
      * @return predicate path.
      */
     Predicate[] value();
-    
+
 }

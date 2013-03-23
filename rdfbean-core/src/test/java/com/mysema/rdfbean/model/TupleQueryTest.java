@@ -28,53 +28,53 @@ public class TupleQueryTest extends AbstractConnectionTest {
 
     private static final QNODE<NODE> object = new QNODE<NODE>(NODE.class, "o");
 
-    private RDFQuery query(){
+    private RDFQuery query() {
         return new RDFQueryImpl(connection());
     }
 
     @Override
     @Before
-    public void before(){
+    public void before() {
         super.before();
         connection().update(null,
                 Arrays.asList(
-                    new STMT(new BID(), RDFS.label, new LIT("C")),
-                    new STMT(new BID(), RDF.type, RDFS.Resource)));
+                        new STMT(new BID(), RDFS.label, new LIT("C")),
+                        new STMT(new BID(), RDF.type, RDFS.Resource)));
     }
-    
+
     @Override
     @After
-    public void after(){
+    public void after() {
         connection().remove(null, null, null, null);
         super.after();
     }
 
     @Test
-    public void Pattern(){
+    public void Pattern() {
         query().where(Blocks.pattern(subject, RDF.type, RDFS.Class)).select(subject);
     }
 
     @Test
-    public void SelectAll(){
-        CloseableIterator<Map<String,NODE>> iterator = query().where(Blocks.SPO).selectAll();
+    public void SelectAll() {
+        CloseableIterator<Map<String, NODE>> iterator = query().where(Blocks.SPO).selectAll();
         assertTrue(iterator.hasNext());
-        try{
-            while (iterator.hasNext()){
-                Map<String,NODE> row = iterator.next();
+        try {
+            while (iterator.hasNext()) {
+                Map<String, NODE> row = iterator.next();
                 assertNotNull(row.get("s"));
                 assertNotNull(row.get("p"));
                 assertNotNull(row.get("o"));
             }
-        }finally{
+        } finally {
             iterator.close();
         }
     }
 
     @Test
-    public void Pattern_with_Filters(){
+    public void Pattern_with_Filters() {
         Block pattern = Blocks.pattern(subject, predicate, object);
 
-        List<Predicate> filters = Arrays.<Predicate>asList(
+        List<Predicate> filters = Arrays.<Predicate> asList(
                 subject.eq(new UID(TEST.NS)),
                 subject.in(RDF.type, RDF.first),
                 predicate.eq(RDFS.label),
@@ -90,15 +90,15 @@ public class TupleQueryTest extends AbstractConnectionTest {
                 object.lit().goe("C"),
                 object.lit().eqIgnoreCase("X"),
                 object.lit().isEmpty()
-        );
+                );
 
-        for (Predicate filter : filters){
+        for (Predicate filter : filters) {
             query().where(pattern, filter).selectSingle(subject);
         }
     }
 
     @Test
-    public void Pattern_with_Limit_and_Offset(){
+    public void Pattern_with_Limit_and_Offset() {
         query().where(Blocks.pattern(subject, RDF.type, RDFS.Class))
                 .limit(5)
                 .offset(20)
@@ -106,7 +106,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Group(){
+    public void Group() {
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
@@ -114,16 +114,16 @@ public class TupleQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Union(){
+    public void Union() {
         query().where(
                 Blocks.union(
-                    Blocks.pattern(subject, RDF.type, RDFS.Class),
-                    Blocks.pattern(subject, predicate, object)
-                )).select(subject, predicate, object);
+                        Blocks.pattern(subject, RDF.type, RDFS.Class),
+                        Blocks.pattern(subject, predicate, object)
+                        )).select(subject, predicate, object);
     }
 
     @Test
-    public void Optional(){
+    public void Optional() {
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.optional(Blocks.pattern(subject, predicate, object)))
@@ -131,7 +131,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
     }
 
     @Test
-    public void Complex(){
+    public void Complex() {
         QID u = new QID("u"), u2 = new QID("u2");
         QLIT label = new QLIT("label");
         UID User = new UID(TEST.NS, "User");
@@ -139,21 +139,21 @@ public class TupleQueryTest extends AbstractConnectionTest {
         ID id = new BID(), id2 = new BID(), id3 = new BID();
         connection().update(null,
                 Arrays.asList(
-                new STMT(id, RDF.type, User),
-                new STMT(id2, RDF.type, User),
-                new STMT(id3, RDF.type, User),
-                new STMT(id, RDFS.label, new LIT("x")),
-                new STMT(id2, RDFS.label, new LIT("x")),
-                new STMT(id3, RDFS.label, new LIT("y"))));
+                        new STMT(id, RDF.type, User),
+                        new STMT(id2, RDF.type, User),
+                        new STMT(id3, RDF.type, User),
+                        new STMT(id, RDFS.label, new LIT("x")),
+                        new STMT(id2, RDFS.label, new LIT("x")),
+                        new STMT(id3, RDFS.label, new LIT("y"))));
 
         CloseableIterator<Map<String, NODE>> iterator =
-            query().where(
-                Blocks.pattern(u,  RDF.type, User),
-                Blocks.pattern(u2, RDF.type, User),
-                Blocks.pattern(u2, RDFS.label, label),
-                Blocks.pattern(u,  RDFS.label, label),
-                u.ne(u2)
-                ).select(u, u2);
+                query().where(
+                        Blocks.pattern(u, RDF.type, User),
+                        Blocks.pattern(u2, RDF.type, User),
+                        Blocks.pattern(u2, RDFS.label, label),
+                        Blocks.pattern(u, RDFS.label, label),
+                        u.ne(u2)
+                        ).select(u, u2);
 
         List<Map<String, NODE>> list = IteratorAdapter.asList(iterator);
         assertEquals(2, list.size());
@@ -161,7 +161,7 @@ public class TupleQueryTest extends AbstractConnectionTest {
 
     @Test
     @Ignore
-    public void From(){
+    public void From() {
         UID test = new UID(TEST.NS);
         UID test2 = new UID(TEST.NS, "Res1");
         connection().update(null, Arrays.asList(new STMT(new BID(), RDFS.label, new LIT("C"), test)));

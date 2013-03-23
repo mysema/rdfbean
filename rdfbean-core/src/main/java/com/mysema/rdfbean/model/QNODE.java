@@ -11,10 +11,10 @@ import com.mysema.query.types.expr.StringOperation;
 
 /**
  * @author tiwe
- *
+ * 
  * @param <T>
  */
-public class QNODE<T extends NODE> extends Param<T>{
+public class QNODE<T extends NODE> extends Param<T> {
 
     private static final long serialVersionUID = 1134119241723346776L;
 
@@ -22,7 +22,7 @@ public class QNODE<T extends NODE> extends Param<T>{
 
     public static final QUID p = new QUID("p");
 
-    public static final QNODE<NODE> o = new QNODE<NODE>(NODE.class,"o");
+    public static final QNODE<NODE> o = new QNODE<NODE>(NODE.class, "o");
 
     public static final QID c = new QID("c");
 
@@ -39,7 +39,7 @@ public class QNODE<T extends NODE> extends Param<T>{
 
     @Nullable
     private volatile QID id;
-    
+
     @Nullable
     private volatile StringExpression stringCast;
 
@@ -51,35 +51,35 @@ public class QNODE<T extends NODE> extends Param<T>{
         super(type, variable);
     }
 
-    public PatternBlock is(Object predicate, Object subject){
+    public PatternBlock is(Object predicate, Object subject) {
         return Blocks.pattern(subject, predicate, this);
     }
 
     @SuppressWarnings("unchecked")
-    public OrderSpecifier asc(){
-        if (asc == null){
+    public OrderSpecifier asc() {
+        if (asc == null) {
             asc = new OrderSpecifier(Order.ASC, this);
         }
         return asc;
     }
 
     @SuppressWarnings("unchecked")
-    public OrderSpecifier desc(){
-        if (desc == null){
+    public OrderSpecifier desc() {
+        if (desc == null) {
             desc = new OrderSpecifier(Order.DESC, this);
         }
         return desc;
     }
 
-    public QID id(){
-        if (id == null){
+    public QID id() {
+        if (id == null) {
             id = new QID(getName());
         }
         return id;
     }
 
-    public QLIT lit(){
-        if (lit == null){
+    public QLIT lit() {
+        if (lit == null) {
             lit = new QLIT(getName());
         }
         return lit;
@@ -87,24 +87,24 @@ public class QNODE<T extends NODE> extends Param<T>{
 
     @Override
     public boolean equals(Object o) {
-        if (o == this){
+        if (o == this) {
             return true;
-        }else if (o instanceof QNODE<?>){
-            QNODE<?> other = (QNODE<?>)o;
+        } else if (o instanceof QNODE<?>) {
+            QNODE<?> other = (QNODE<?>) o;
             return other.getName().equals(getName());
-        }else{
+        } else {
             return false;
         }
     }
-    
+
     /**
      * Get a cast to String expression
-     *
-     * @see     java.lang.Object#toString()
+     * 
+     * @see java.lang.Object#toString()
      * @return
      */
     public StringExpression stringValue() {
-        if (stringCast == null){
+        if (stringCast == null) {
             stringCast = StringOperation.create(Ops.STRING_CAST, this);
         }
         return stringCast;

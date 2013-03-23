@@ -15,12 +15,13 @@ import java.lang.annotation.Target;
 import com.mysema.rdfbean.object.Configuration;
 
 /**
- * Package annotation for {@link Configuration} that defines package's mapped classes.
+ * Package annotation for {@link Configuration} that defines package's mapped
+ * classes.
  * 
  * @author sasa
  */
 @Documented
-@Target( PACKAGE )
+@Target(PACKAGE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MappedClasses {
 
@@ -28,5 +29,5 @@ public @interface MappedClasses {
      * @return
      */
     Class<?>[] value();
-    
+
 }

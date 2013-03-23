@@ -11,14 +11,14 @@ import com.mysema.rdfbean.model.NODE;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class TupleResultIterator implements CloseableIterator<Map<String, NODE>> {
 
     private final ResultSet resultSet;
-    
+
     private final JenaDialect dialect;
-    
+
     public TupleResultIterator(ResultSet resultSet, JenaDialect dialect) {
         this.resultSet = resultSet;
         this.dialect = dialect;
@@ -38,9 +38,9 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
     public Map<String, NODE> next() {
         QuerySolution solution = resultSet.next();
         Map<String, NODE> row = new HashMap<String, NODE>(resultSet.getResultVars().size());
-        for (String var : resultSet.getResultVars()){
+        for (String var : resultSet.getResultVars()) {
             RDFNode node = solution.get(var);
-            if (node != null){
+            if (node != null) {
                 row.put(var, dialect.getNODE(node.asNode()));
             }
         }

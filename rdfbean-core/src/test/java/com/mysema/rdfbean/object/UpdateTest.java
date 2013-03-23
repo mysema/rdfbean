@@ -52,7 +52,8 @@ public class UpdateTest {
         @Predicate
         Company company;
 
-        public Employee() {}
+        public Employee() {
+        }
 
         public Employee(String n, int a, Company c) {
             this.name = n;
@@ -72,8 +73,6 @@ public class UpdateTest {
             return company;
         }
 
-
-
     }
 
     @ClassMapping
@@ -82,7 +81,7 @@ public class UpdateTest {
         @Id(IDType.RESOURCE)
         ID id;
 
-        @Predicate(ln="company", inv=true)
+        @Predicate(ln = "company", inv = true)
         Set<Employee> employees = new LinkedHashSet<Employee>();
 
         @Predicate
@@ -95,7 +94,8 @@ public class UpdateTest {
         @Predicate
         String name;
 
-        public Company() {}
+        public Company() {
+        }
 
         public Company(String name) {
             this.name = name;
@@ -106,12 +106,12 @@ public class UpdateTest {
             return name;
         }
 
-        public String getDescription(){
+        public String getDescription() {
             return description;
         }
     }
 
-    @ClassMapping(ns=TEST.NS, ln="Employee")
+    @ClassMapping(ns = TEST.NS, ln = "Employee")
     public static class EmployeeInfo {
 
         @Id(IDType.RESOURCE)
@@ -120,7 +120,7 @@ public class UpdateTest {
         @Predicate
         String name;
 
-        @Path({@Predicate(ln="company"), @Predicate(ln="name")})
+        @Path({ @Predicate(ln = "company"), @Predicate(ln = "name") })
         String companyName;
 
     }
@@ -157,7 +157,7 @@ public class UpdateTest {
         };
         sessionFactory.setRepository(repository);
         DefaultConfiguration configuration = new DefaultConfiguration(TEST.NS, Employee.class, Company.class, EmployeeInfo.class);
-//        configuration.setFetchStrategies(Collections.<FetchStrategy>emptyList());
+        // configuration.setFetchStrategies(Collections.<FetchStrategy>emptyList());
         sessionFactory.setConfiguration(configuration);
         sessionFactory.initialize();
         ids = newSession().saveAll(employee, company);
@@ -233,9 +233,9 @@ public class UpdateTest {
         newSession();
         Company qCompany = alias(Company.class, "company");
         List<Company> companies = session
-            .from($(qCompany))
-            .orderBy($(qCompany.getName()).asc()) // Competitor, Example
-            .list($(qCompany));
+                .from($(qCompany))
+                .orderBy($(qCompany.getName()).asc()) // Competitor, Example
+                .list($(qCompany));
 
         assertEquals(2, companies.size());
         assertEquals("Competitor", companies.get(0).name);
@@ -316,7 +316,7 @@ public class UpdateTest {
     }
 
     @Test
-    public void GetCompanyByExample(){
+    public void GetCompanyByExample() {
         newSession();
         Company company = getCompany();
 
@@ -336,7 +336,7 @@ public class UpdateTest {
     }
 
     @Test
-    public void GetEmployeeByExample(){
+    public void GetEmployeeByExample() {
         newSession();
         Employee employee = getEmployee();
 

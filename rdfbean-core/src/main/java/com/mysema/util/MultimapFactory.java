@@ -13,14 +13,15 @@ import com.google.common.collect.Multimap;
  * @author tiwe
  */
 public final class MultimapFactory {
-    
-    private MultimapFactory(){}
-    
-    public static <K,V> Multimap<K,V> create(){
+
+    private MultimapFactory() {
+    }
+
+    public static <K, V> Multimap<K, V> create() {
         return ArrayListMultimap.create();
     }
 
-    public static <K,V> Multimap<K,V> createWithSet(){
+    public static <K, V> Multimap<K, V> createWithSet() {
         return HashMultimap.create();
     }
 

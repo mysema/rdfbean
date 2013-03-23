@@ -18,12 +18,13 @@ import com.mysema.query.types.Predicate;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**
- * BeanListSourceBuilder provides an RDFBeanQuery style query builder for paged results
- *
+ * BeanListSourceBuilder provides an RDFBeanQuery style query builder for paged
+ * results
+ * 
  * @author tiwe
  * @version $Id$
  */
-public class BeanListSourceBuilder{
+public class BeanListSourceBuilder {
 
     private final SessionFactory sessionFactory;
 
@@ -31,33 +32,33 @@ public class BeanListSourceBuilder{
 
     private final QueryMetadata metadata = new DefaultQueryMetadata();
 
-    public BeanListSourceBuilder(SessionFactory sessionFactory){
+    public BeanListSourceBuilder(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
-    public BeanListSourceBuilder from(EntityPath<?>... from){
-        for (EntityPath<?> source : from){
+    public BeanListSourceBuilder from(EntityPath<?>... from) {
+        for (EntityPath<?> source : from) {
             sources.add(source);
             metadata.addJoin(JoinType.DEFAULT, source);
         }
         return this;
     }
 
-    public BeanListSourceBuilder orderBy(OrderSpecifier<?>... o){
-        for (OrderSpecifier<?> order : o){
+    public BeanListSourceBuilder orderBy(OrderSpecifier<?>... o) {
+        for (OrderSpecifier<?> order : o) {
             metadata.addOrderBy(order);
         }
         return this;
     }
 
-    public BeanListSourceBuilder where(Predicate... o){
+    public BeanListSourceBuilder where(Predicate... o) {
         for (Predicate p : o) {
-            metadata.addWhere(p);    
-        }        
+            metadata.addWhere(p);
+        }
         return this;
     }
 
-    public <T> BeanListSource<T> list(Path<T> projection){
+    public <T> BeanListSource<T> list(Path<T> projection) {
         EntityPath<?>[] sourceArray = sources.toArray(new EntityPath[sources.size()]);
         return new BeanListSource<T>(sessionFactory, sourceArray, metadata, projection);
     }

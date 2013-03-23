@@ -7,11 +7,11 @@ import org.apache.tapestry5.beaneditor.BeanModel;
 import org.apache.tapestry5.beaneditor.PropertyModel;
 
 public class SimplePropertyModel implements PropertyModel {
-    
+
     private final String propertyName;
-    
+
     private final Class<?> propertyType;
-    
+
     public SimplePropertyModel(String name, Class<?> type) {
         this.propertyName = name;
         this.propertyType = type;

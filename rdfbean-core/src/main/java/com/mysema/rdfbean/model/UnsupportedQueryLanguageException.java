@@ -5,17 +5,16 @@
  */
 package com.mysema.rdfbean.model;
 
-
 /**
  * UnsupportedQueryLanguageException provides
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
 @SuppressWarnings("serial")
-public class UnsupportedQueryLanguageException extends RuntimeException{
+public class UnsupportedQueryLanguageException extends RuntimeException {
 
-    public UnsupportedQueryLanguageException(QueryLanguage<?,?> queryLanguage){
+    public UnsupportedQueryLanguageException(QueryLanguage<?, ?> queryLanguage) {
         super("Unsupported query language " + queryLanguage.toString());
     }
 }

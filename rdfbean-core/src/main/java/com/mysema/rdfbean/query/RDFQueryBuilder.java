@@ -75,20 +75,21 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class RDFQueryBuilder implements Visitor<Object,Filters>{
+public class RDFQueryBuilder implements Visitor<Object, Filters> {
 
     private static final Logger logger = LoggerFactory.getLogger(RDFQueryBuilder.class);
 
-    private static final Templates TEMPLATES = new Templates(){
+    private static final Templates TEMPLATES = new Templates() {
         {
             add(PathType.PROPERTY, "{0}_{1}");
             add(PathType.COLLECTION_ANY, "{0}");
             add(PathType.LISTVALUE_CONSTANT, "{0}_{1}");
             add(PathType.ARRAYVALUE_CONSTANT, "{0}_{1}");
             add(PathType.MAPVALUE_CONSTANT, "{0}_{1}");
-        }};
+        }
+    };
 
     private static final Path<LIT> COUNTER = new PathImpl<LIT>(LIT.class, "counter");
 
@@ -136,49 +137,49 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     }
 
     @SuppressWarnings("unchecked")
-    RDFQueryImpl build(boolean forCount){
+    RDFQueryImpl build(boolean forCount) {
         RDFQueryImpl query = new RDFQueryImpl(connection);
         Filters filters = new Filters();
-        //from
-        for (JoinExpression join : metadata.getJoins()){
+        // from
+        for (JoinExpression join : metadata.getJoins()) {
             query.where(handleRootPath((Path<?>) join.getTarget(), filters));
         }
 
-        //where
-        if (metadata.getWhere() != null){
+        // where
+        if (metadata.getWhere() != null) {
             query.where(transform(metadata.getWhere(), filters));
         }
 
-        //group by
-        for (Expression<?> expr : metadata.getGroupBy()){
+        // group by
+        for (Expression<?> expr : metadata.getGroupBy()) {
             query.groupBy(transform(expr, filters));
         }
 
-        //having
-        if (metadata.getHaving() != null){
+        // having
+        if (metadata.getHaving() != null) {
             query.having(transform(metadata.getHaving(), filters));
         }
         filters.beginOptional();
 
-        if (forCount){
+        if (forCount) {
             projection.add(queryOptions.isCountViaAggregation() ? Wildcard.count : COUNTER);
-        }else{
-            //order by (optional paths)
-            for (OrderSpecifier<?> os : metadata.getOrderBy()){
+        } else {
+            // order by (optional paths)
+            for (OrderSpecifier<?> os : metadata.getOrderBy()) {
                 query.orderBy(transform(filters, os));
             }
 
             // limit + offset
             query.restrict(metadata.getModifiers());
 
-            //select (optional paths);
-            for (Expression<?> expr : metadata.getProjection()){
-                if (expr instanceof FactoryExpression){
-                    FactoryExpression<?> fe = (FactoryExpression<?>)expr;
-                    for (Expression<?> e : fe.getArgs()){
+            // select (optional paths);
+            for (Expression<?> expr : metadata.getProjection()) {
+                if (expr instanceof FactoryExpression) {
+                    FactoryExpression<?> fe = (FactoryExpression<?>) expr;
+                    for (Expression<?> e : fe.getArgs()) {
                         projection.add(transform(e, filters));
                     }
-                }else{
+                } else {
                     projection.add(transform(expr, filters));
                 }
 
@@ -188,12 +189,12 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         filters.endOptional();
         query.where(filters.toArray());
 
-        if (metadata.isDistinct()){
+        if (metadata.isDistinct()) {
             query.distinct();
         }
 
-        for (Map.Entry<ParamExpression<?>, Object> entry : params.entrySet()){
-            query.set((Param)entry.getKey(), entry.getValue());
+        for (Map.Entry<ParamExpression<?>, Object> entry : params.entrySet()) {
+            query.set((Param) entry.getKey(), entry.getValue());
         }
 
         return query;
@@ -208,30 +209,30 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
     }
 
     @Nullable
-    private UID getContext(Path<?> path){
-        if (pathToContext.containsKey(path)){
+    private UID getContext(Path<?> path) {
+        if (pathToContext.containsKey(path)) {
             return pathToContext.get(path);
-        }else if (path.getMetadata().getParent() != null){
+        } else if (path.getMetadata().getParent() != null) {
             return getContext(path.getMetadata().getParent());
-        }else{
+        } else {
             return null;
         }
     }
 
     private MappedPath getMappedPath(Path<?> path) {
         PathMetadata<?> md = path.getMetadata();
-        if (path.getMetadata().getPathType() != PathType.PROPERTY){
+        if (path.getMetadata().getPathType() != PathType.PROPERTY) {
             md = md.getParent().getMetadata();
         }
         MappedClass mc = configuration.getMappedClass(md.getParent().getType());
         return mc.getMappedPath(md.getElement().toString());
     }
 
-    protected UID getTypeForDomainClass(Class<?> clazz){
+    protected UID getTypeForDomainClass(Class<?> clazz) {
         MappedClass mc = configuration.getMappedClass(clazz);
-        if (mc.getUID() != null){
+        if (mc.getUID() != null) {
             return mc.getUID();
-        }else{
+        } else {
             throw new IllegalArgumentException("Got no RDF type for " + clazz.getName());
         }
     }
@@ -242,17 +243,17 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         UID context = mappedClass.getContext();
         QID pathNode = new QID(path.toString());
         pathToMapped.put(path, pathNode);
-        if (rdfType != null){
+        if (rdfType != null) {
             Collection<UID> types = ontology.getSubtypes(rdfType);
-            if (types.size() > 1 && inferenceOptions.subClassOf()){
-                QID type = new QID(path+"_type");
+            if (types.size() > 1 && inferenceOptions.subClassOf()) {
+                QID type = new QID(path + "_type");
                 filters.add(type.in(types));
                 return Blocks.pattern(pathNode, RDF.type, type);
-            }else{
-                if (context != null){
+            } else {
+                if (context != null) {
                     pathToContext.put(path, context);
                     return Blocks.pattern(pathNode, RDF.type, rdfType, context);
-                }else{
+                } else {
                     return Blocks.pattern(pathNode, RDF.type, rdfType);
                 }
             }
@@ -261,22 +262,22 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         }
     }
 
-    private boolean inNegation(){
+    private boolean inNegation() {
         int notIndex = operatorStack.lastIndexOf(Ops.NOT);
-        if (notIndex > -1){
+        if (notIndex > -1) {
             int existsIndex = operatorStack.lastIndexOf(Ops.EXISTS);
             return notIndex > existsIndex;
         }
         return false;
     }
 
-    private boolean inOptionalPath(){
+    private boolean inOptionalPath() {
         return operatorStack.contains(Ops.IS_NULL) ||
-        operatorStack.contains(Ops.MAP_IS_EMPTY) ||
-        operatorStack.contains(Ops.CASE_WHEN) ||
-        (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
+                operatorStack.contains(Ops.MAP_IS_EMPTY) ||
+                operatorStack.contains(Ops.CASE_WHEN) ||
+                (operatorStack.contains(Ops.OR) && operatorStack.peek() != Ops.OR);
     }
-    
+
     @Nullable
     private Expression<?> transform(Expression<?> expr, Filters filters) {
         return (Expression<?>) expr.accept(this, filters);
@@ -299,57 +300,57 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         MappedPath mappedPath = getMappedPath(path);
         // id property
         if (path.getMetadata().getPathType() == PathType.PROPERTY
-            && constant.getType().equals(String.class)
-            && mappedPath.getPredicatePath().isEmpty()){
-            operation = PredicateOperation.create((Operator)operation.getOperator(),
+                && constant.getType().equals(String.class)
+                && mappedPath.getPredicatePath().isEmpty()) {
+            operation = PredicateOperation.create((Operator) operation.getOperator(),
                     path,
                     new ConstantImpl<ID>(session.getId(new LID(constant.toString()))));
 
-        // localized property
-        }else if (mappedPath.getMappedProperty().isLocalized()){
+            // localized property
+        } else if (mappedPath.getMappedProperty().isLocalized()) {
             Locale locale;
-            if (path.getMetadata().getPathType() == PathType.PROPERTY){
+            if (path.getMetadata().getPathType() == PathType.PROPERTY) {
                 locale = session.getCurrentLocale();
             } else {
-                locale = (Locale)path.getMetadata().getElement();
+                locale = (Locale) path.getMetadata().getElement();
             }
-            operation = PredicateOperation.create((Operator)operation.getOperator(),
+            operation = PredicateOperation.create((Operator) operation.getOperator(),
                     path,
                     new ConstantImpl<LIT>(new LIT(constant.toString(), locale)));
         }
         return operation;
     }
 
-    private Param<NODE> var(String var){
+    private Param<NODE> var(String var) {
         return new QNODE<NODE>(NODE.class, var);
     }
-    
-    public Expression<?> visit(Constant<?> constant, Filters filters){
+
+    public Expression<?> visit(Constant<?> constant, Filters filters) {
         Object javaValue = constant.getConstant();
         ConverterRegistry converter = configuration.getConverterRegistry();
-        if (List.class.isAssignableFrom(constant.getType()) && ((List<?>)constant.getConstant()).isEmpty()){
+        if (List.class.isAssignableFrom(constant.getType()) && ((List<?>) constant.getConstant()).isEmpty()) {
             return new ConstantImpl<UID>(RDF.nil);
 
-        }else if (NODE.class.isAssignableFrom(constant.getType())){
+        } else if (NODE.class.isAssignableFrom(constant.getType())) {
             return constant;
 
-        }else if (javaValue instanceof Class<?>){
-            UID datatype = converter.getDatatype((Class<?>)javaValue);
-            if (datatype != null){
+        } else if (javaValue instanceof Class<?>) {
+            UID datatype = converter.getDatatype((Class<?>) javaValue);
+            if (datatype != null) {
                 return new ConstantImpl<UID>(datatype);
-            }else{
-                return new ConstantImpl<UID>(getTypeForDomainClass((Class<?>)javaValue));
+            } else {
+                return new ConstantImpl<UID>(getTypeForDomainClass((Class<?>) javaValue));
             }
 
-        }else if (javaValue instanceof String){
+        } else if (javaValue instanceof String) {
             return new ConstantImpl<LIT>(new LIT(javaValue.toString(), XSD.stringType));
 
-        }else if (converter.supports(javaValue.getClass())){
+        } else if (converter.supports(javaValue.getClass())) {
             String label = converter.toString(javaValue);
             UID datatype = converter.getDatatype(javaValue.getClass());
             return new ConstantImpl<LIT>(new LIT(label, datatype));
 
-        }else{
+        } else {
             ID id = session.getId(javaValue);
             return new ConstantImpl<ID>(id);
         }
@@ -362,7 +363,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     @Nullable
     @SuppressWarnings("unchecked")
-    public Expression<?> visit(Operation<?> expr, Filters filters){
+    public Expression<?> visit(Operation<?> expr, Filters filters) {
         boolean filtersInOptional = filters.inOptional();
         boolean outerOptional = inOptionalPath();
         boolean innerOptional = false;
@@ -370,7 +371,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
         Map<Path<?>, ParamExpression<?>> origPathToMapped = null;
         Map<Path<?>, ParamExpression<?>> origPathToKnown = null;
-        if (!outerOptional && inOptionalPath()){
+        if (!outerOptional && inOptionalPath()) {
             filters.beginOptional();
             innerOptional = true;
 
@@ -386,25 +387,25 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         boolean leftConstant = expr.getArg(0) instanceof Constant<?>;
         boolean rightConstant = expr.getArgs().size() > 1 ? expr.getArg(1) instanceof Constant<?> : false;
 
-        try{
+        try {
 
-            if (!queryOptions.isPreserveStringOps()){
-                if (expr.getOperator() == Ops.STARTS_WITH && rightConstant){
-                    expr = PredicateOperation.create(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
+            if (!queryOptions.isPreserveStringOps()) {
+                if (expr.getOperator() == Ops.STARTS_WITH && rightConstant) {
+                    expr = PredicateOperation.create(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT("^" + expr.getArg(1))));
 
-                }else if (expr.getOperator() == Ops.STARTS_WITH_IC && rightConstant){
-                        expr = PredicateOperation.create(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT("^"+expr.getArg(1))));
+                } else if (expr.getOperator() == Ops.STARTS_WITH_IC && rightConstant) {
+                    expr = PredicateOperation.create(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT("^" + expr.getArg(1))));
 
-                }else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant){
+                } else if (expr.getOperator() == Ops.ENDS_WITH && rightConstant) {
                     expr = PredicateOperation.create(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
 
-                }else if (expr.getOperator() == Ops.ENDS_WITH_IC && rightConstant){
+                } else if (expr.getOperator() == Ops.ENDS_WITH_IC && rightConstant) {
                     expr = PredicateOperation.create(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(expr.getArg(1) + "$")));
 
-                }else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant){
+                } else if (expr.getOperator() == Ops.STRING_CONTAINS && rightConstant) {
                     expr = PredicateOperation.create(Ops.MATCHES, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
 
-                }else if (expr.getOperator() == Ops.STRING_CONTAINS_IC && rightConstant){
+                } else if (expr.getOperator() == Ops.STRING_CONTAINS_IC && rightConstant) {
                     expr = PredicateOperation.create(Ops.MATCHES_IC, expr.getArg(0), new ConstantImpl(new LIT(".*" + expr.getArg(1) + ".*")));
 
                 }
@@ -412,156 +413,155 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
             if (expr.getOperator() == Ops.EQ || expr.getOperator() == Ops.NE) {
                 if (leftPath && rightConstant
-                        && ((Path)expr.getArg(0)).getMetadata().getPathType() != PathType.VARIABLE){
+                        && ((Path) expr.getArg(0)).getMetadata().getPathType() != PathType.VARIABLE) {
                     expr = transformPathEqNeConstant(expr);
                 }
 
                 if (expr.getOperator() == Ops.EQ
                         && expr.getArg(0) instanceof Path
-                        && !inOptionalPath() && !inNegation()){
+                        && !inOptionalPath() && !inNegation()) {
 
-                    if (expr.getArg(1) instanceof Constant){
+                    if (expr.getArg(1) instanceof Constant) {
                         ParamExpression<?> lhs = (ParamExpression<?>) transform(expr.getArg(0), filters);
-                        Constant<?> rhs = (Constant<?>)transform(expr.getArg(1), filters);
+                        Constant<?> rhs = (Constant<?>) transform(expr.getArg(1), filters);
                         params.put(lhs, rhs.getConstant());
                         return null;
 
-                    }else if (expr.getArg(1) instanceof Path){
-                        if (pathToMapped.containsKey(expr.getArg(0))){
-                            if (!pathToMapped.containsKey(expr.getArg(1))){
-                                pathToKnown.put((Path<?>)expr.getArg(1), (ParamExpression<?>)transform(expr.getArg(0), filters));
+                    } else if (expr.getArg(1) instanceof Path) {
+                        if (pathToMapped.containsKey(expr.getArg(0))) {
+                            if (!pathToMapped.containsKey(expr.getArg(1))) {
+                                pathToKnown.put((Path<?>) expr.getArg(1), (ParamExpression<?>) transform(expr.getArg(0), filters));
                                 transform(expr.getArg(1), filters);
                                 return null;
                             }
-                        }else{
-                            pathToKnown.put((Path<?>)expr.getArg(0), (ParamExpression<?>)transform(expr.getArg(1), filters));
+                        } else {
+                            pathToKnown.put((Path<?>) expr.getArg(0), (ParamExpression<?>) transform(expr.getArg(1), filters));
                             transform(expr.getArg(0), filters);
                             return null;
                         }
-
 
                     }
 
                 }
 
-            }else if (expr.getOperator() == Ops.AND){
+            } else if (expr.getOperator() == Ops.AND) {
                 Predicate lhs, rhs;
-                if (expr.getArg(0) instanceof Operation && ((Operation)expr.getArg(0)).getOperator() == Ops.OR){
+                if (expr.getArg(0) instanceof Operation && ((Operation) expr.getArg(0)).getOperator() == Ops.OR) {
                     lhs = (Predicate) transform(expr.getArg(1), filters);
                     rhs = (Predicate) transform(expr.getArg(0), filters);
-                }else{
+                } else {
                     lhs = (Predicate) transform(expr.getArg(0), filters);
                     rhs = (Predicate) transform(expr.getArg(1), filters);
                 }
                 return lhs == null ? rhs : (rhs == null ? lhs : ExpressionUtils.and(lhs, rhs));
 
-            }else if (expr.getOperator() == Ops.IN){
+            } else if (expr.getOperator() == Ops.IN) {
                 Expression<?> lhs = expr.getArg(0);
-                if (leftPath){
+                if (leftPath) {
                     lhs = transform(lhs, filters);
                 }
-                if ((leftPath && rightPath) || (leftConstant && rightPath)){
-                    expr = (Operation)ExpressionUtils.eq(lhs, (Expression)expr.getArg(1));
-                }else if (leftPath && rightConstant){
-                    Collection col = (Collection)((Constant)expr.getArg(1)).getConstant();
-                    if (!col.isEmpty()){
+                if ((leftPath && rightPath) || (leftConstant && rightPath)) {
+                    expr = (Operation) ExpressionUtils.eq(lhs, (Expression) expr.getArg(1));
+                } else if (leftPath && rightConstant) {
+                    Collection col = (Collection) ((Constant) expr.getArg(1)).getConstant();
+                    if (!col.isEmpty()) {
                         BooleanBuilder builder = new BooleanBuilder();
-                        for (Object o : col){
+                        for (Object o : col) {
                             builder.or(ExpressionUtils.eq(lhs, new ConstantImpl(o)));
                         }
-                        expr = (Operation)builder.getValue();
-                    }else{
+                        expr = (Operation) builder.getValue();
+                    } else {
                         throw new IllegalArgumentException(expr.toString());
                     }
 
-                }else{
+                } else {
                     throw new IllegalArgumentException(expr.toString());
                 }
 
-            }else if (expr.getOperator() == Ops.BETWEEN){
+            } else if (expr.getOperator() == Ops.BETWEEN) {
                 Operator<Boolean> first = Ops.GOE, second = Ops.LOE;
                 expr = (Operation<?>) ExpressionUtils.and(
                         PredicateOperation.create(first, expr.getArg(0), expr.getArg(1)),
                         PredicateOperation.create(second, expr.getArg(0), expr.getArg(2)));
 
-            }else if (expr.getOperator() == Ops.ORDINAL){
+            } else if (expr.getOperator() == Ops.ORDINAL) {
                 Param<?> path = (Param<?>) transform(expr.getArg(0), filters);
-                Param<?> ordinalPath = new QLIT(path.getName()+"_ordinal");
+                Param<?> ordinalPath = new QLIT(path.getName() + "_ordinal");
                 filters.add(Blocks.pattern(path, CORE.enumOrdinal, ordinalPath));
                 return ordinalPath;
 
-            }else if (expr.getOperator() == Ops.INSTANCE_OF){
+            } else if (expr.getOperator() == Ops.INSTANCE_OF) {
                 Param<?> path = (Param<?>) transform(expr.getArg(0), filters);
                 Constant<?> type = (Constant<?>) transform(expr.getArg(1), filters);
                 Block pattern = Blocks.pattern(path, RDF.type, type);
-                if (inNegation() || inOptionalPath()){
+                if (inNegation() || inOptionalPath()) {
                     return pattern.exists();
-                }else{
+                } else {
                     filters.add(pattern);
                     return null;
                 }
 
-            }else if (expr.getOperator() == Ops.COL_IS_EMPTY){
+            } else if (expr.getOperator() == Ops.COL_IS_EMPTY) {
                 expr = (Operation<?>) ExpressionUtils.eq(expr.getArg(0), new ConstantImpl(RDF.nil));
 
-            }else if (expr.getOperator() == Ops.CONTAINS_KEY){
+            } else if (expr.getOperator() == Ops.CONTAINS_KEY) {
                 Path<?> path = (Path<?>) expr.getArg(0);
                 MappedPath mappedPath = getMappedPath(path);
                 MappedProperty mappedProperty = mappedPath.getMappedProperty();
                 Expression<?> key = transform(expr.getArg(1), filters);
                 Block pattern = Blocks.pattern(transform(path, filters), mappedProperty.getKeyPredicate(), key);
-                if (inNegation() || inOptionalPath()){
+                if (inNegation() || inOptionalPath()) {
                     return pattern.exists();
-                }else{
+                } else {
                     filters.add(pattern);
                     return null;
                 }
 
-            }else if (expr.getOperator() == Ops.CONTAINS_VALUE){
+            } else if (expr.getOperator() == Ops.CONTAINS_VALUE) {
                 Path<?> path = (Path<?>) expr.getArg(0);
                 MappedPath mappedPath = getMappedPath(path);
                 MappedProperty mappedProperty = mappedPath.getMappedProperty();
 
-                if (mappedProperty.getValuePredicate() != null){
+                if (mappedProperty.getValuePredicate() != null) {
                     Expression<?> value = transform(expr.getArg(1), filters);
                     Block pattern = Blocks.pattern(transform(path, filters), mappedProperty.getValuePredicate(), value);
-                    if (inNegation() || inOptionalPath()){
+                    if (inNegation() || inOptionalPath()) {
                         return pattern.exists();
-                    }else{
+                    } else {
                         filters.add(pattern);
                         return null;
                     }
 
-                }else{
-                    expr = (Operation<?>) ExpressionUtils.eq((Path)path, expr.getArg(1));
+                } else {
+                    expr = (Operation<?>) ExpressionUtils.eq((Path) path, expr.getArg(1));
                 }
 
-            }else if (expr.getOperator() == Ops.MAP_IS_EMPTY){
+            } else if (expr.getOperator() == Ops.MAP_IS_EMPTY) {
                 return PredicateOperation.create(Ops.IS_NULL, transform(expr.getArg(0), filters));
 
-            }else if (expr.getOperator() == Ops.COALESCE){
+            } else if (expr.getOperator() == Ops.COALESCE) {
                 List<Expression<?>> elements = new ArrayList<Expression<?>>();
-                expr = new OperationImpl(expr.getType(), Ops.COALESCE, 
+                expr = new OperationImpl(expr.getType(), Ops.COALESCE,
                         ImmutableList.copyOf(transformList(expr.getArg(0), elements)));
             }
 
-            if (operatorStack.peek() != expr.getOperator()){
+            if (operatorStack.peek() != expr.getOperator()) {
                 operatorStack.pop();
                 operatorStack.push(expr.getOperator());
             }
 
-            for (Expression<?> arg : expr.getArgs()){
+            for (Expression<?> arg : expr.getArgs()) {
                 Expression<?> transformed = transform(arg, filters);
-                if (transformed != null){
+                if (transformed != null) {
                     args.add(transformed);
-                }else{
+                } else {
                     logger.error(arg + " skipped");
                 }
             }
-        }finally{
+        } finally {
             operatorStack.pop();
-            if (!outerOptional && innerOptional){
-                if (!filtersInOptional){
+            if (!outerOptional && innerOptional) {
+                if (!filtersInOptional) {
                     filters.endOptional();
                 }
                 pathToMapped = origPathToMapped;
@@ -569,20 +569,20 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             }
         }
 
-        if (expr.getType().equals(Boolean.class)){
-            return new PredicateOperation((Operator)expr.getOperator(), ImmutableList.copyOf(args));
-        }else{
-            return new OperationImpl(expr.getType(),expr.getOperator(), ImmutableList.copyOf(args));
+        if (expr.getType().equals(Boolean.class)) {
+            return new PredicateOperation((Operator) expr.getOperator(), ImmutableList.copyOf(args));
+        } else {
+            return new OperationImpl(expr.getType(), expr.getOperator(), ImmutableList.copyOf(args));
         }
 
     }
 
     private List<Expression<?>> transformList(Expression<?> expr, List<Expression<?>> elements) {
-        if (expr instanceof Operation<?> && ((Operation<?>)expr).getOperator() == Ops.LIST){
-            Operation<?> list = (Operation<?>)expr;
+        if (expr instanceof Operation<?> && ((Operation<?>) expr).getOperator() == Ops.LIST) {
+            Operation<?> list = (Operation<?>) expr;
             transformList(list.getArg(0), elements);
             elements.add(list.getArg(1));
-        }else{
+        } else {
             elements.add(expr);
         }
         return elements;
@@ -590,20 +590,20 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
 
     @Override
     public Object visit(ParamExpression<?> expr, Filters context) {
-        if (NODE.class.isAssignableFrom(expr.getType())){
+        if (NODE.class.isAssignableFrom(expr.getType())) {
             return expr;
-        }else{
+        } else {
             throw new UnsupportedOperationException();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public Expression<?> visit(Path<?> path, Filters filters){
-        if (pathToMapped.containsKey(path)){
+    public Expression<?> visit(Path<?> path, Filters filters) {
+        if (pathToMapped.containsKey(path)) {
             return pathToMapped.get(path);
 
-        }else if (path.getMetadata().getParent() != null){
+        } else if (path.getMetadata().getParent() != null) {
             PathMetadata<?> md = path.getMetadata();
             PathType pathType = md.getPathType();
             ParamExpression<?> parent = (ParamExpression<?>) visit(md.getParent(), filters);
@@ -611,56 +611,56 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             ParamExpression<?> rdfPath = pathToKnown.get(path);
             UID context = getContext(path);
 
-            if (pathType.equals(PathType.PROPERTY)){
+            if (pathType.equals(PathType.PROPERTY)) {
                 MappedPath mappedPath = getMappedPath(path);
                 List<MappedPredicate> predPath = mappedPath.getPredicatePath();
-                if (predPath.size() > 0){
-                    MappedPredicate last = predPath.get(predPath.size()-1);
-                    if (last.includeInferred()){
+                if (predPath.size() > 0) {
+                    MappedPredicate last = predPath.get(predPath.size() - 1);
+                    if (last.includeInferred()) {
                         pathToContext.put(path, context = null);
-                    }else if (last.getContext() != null){
+                    } else if (last.getContext() != null) {
                         pathToContext.put(path, context = last.getContext());
-                    }else if (configuration.isMapped(path.getType())){
+                    } else if (configuration.isMapped(path.getType())) {
                         MappedClass mappedClass = configuration.getMappedClass(path.getType());
-                        if (mappedClass.getClass() != null){
+                        if (mappedClass.getClass() != null) {
                             pathToContext.put(path, mappedClass.getContext());
                         }
                     }
-                    for (int i = 0; i < predPath.size(); i++){
+                    for (int i = 0; i < predPath.size(); i++) {
                         MappedPredicate pred = predPath.get(i);
                         UID c = pred.getContext() != null ? pred.getContext() : context;
-                        if (rdfPath != null && (i == predPath.size()-1)){
+                        if (rdfPath != null && (i == predPath.size() - 1)) {
                             pathNode = rdfPath;
-                        }else if (i == predPath.size() -1){
+                        } else if (i == predPath.size() - 1) {
                             String var = path.accept(ToStringVisitor.DEFAULT, TEMPLATES);
                             pathNode = var(var);
                             varNames.disallow(var);
-                        }else{
+                        } else {
                             pathNode = var(varNames.next());
                         }
-                        if (!pred.inv()){
+                        if (!pred.inv()) {
                             filters.add(Blocks.pattern(parent, pred.getUID(), pathNode, c));
-                        }else{
+                        } else {
                             filters.add(Blocks.pattern(pathNode, pred.getUID(), parent, c));
                         }
                         parent = pathNode;
                     }
 
-                }else{
+                } else {
                     pathNode = parent;
                 }
 
-            }else if (pathType.equals(PathType.COLLECTION_ANY)){
+            } else if (pathType.equals(PathType.COLLECTION_ANY)) {
                 return visit(path.getMetadata().getParent(), filters);
 
-            }else if (pathType.equals(PathType.ARRAYVALUE)
-                    || pathType.equals(PathType.LISTVALUE)){
+            } else if (pathType.equals(PathType.ARRAYVALUE)
+                    || pathType.equals(PathType.LISTVALUE)) {
                 throw new UnsupportedOperationException(pathType + " not supported!");
 
-            }else if (pathType.equals(PathType.ARRAYVALUE)
-                    || pathType.equals(PathType.LISTVALUE_CONSTANT)){
-                int index = ((Integer)md.getElement()).intValue();
-                for (int i = 0; i < index; i++){
+            } else if (pathType.equals(PathType.ARRAYVALUE)
+                    || pathType.equals(PathType.LISTVALUE_CONSTANT)) {
+                int index = ((Integer) md.getElement()).intValue();
+                for (int i = 0; i < index; i++) {
                     pathNode = var(varNames.next());
                     filters.add(Blocks.pattern(parent, RDF.rest, pathNode, context));
                     parent = pathNode;
@@ -668,24 +668,24 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
                 pathNode = var(varNames.next());
                 filters.add(Blocks.pattern(parent, RDF.first, pathNode, context));
 
-            }else if (pathType.equals(PathType.MAPVALUE)
-                    || pathType.equals(PathType.MAPVALUE_CONSTANT)){
+            } else if (pathType.equals(PathType.MAPVALUE)
+                    || pathType.equals(PathType.MAPVALUE_CONSTANT)) {
                 MappedPath mappedPath = getMappedPath(md.getParent());
                 MappedProperty<?> mappedProperty = mappedPath.getMappedProperty();
-                if (!mappedProperty.isLocalized()){
+                if (!mappedProperty.isLocalized()) {
                     Object element = path.getMetadata().getElement();
-                    Expression<?> expr = transform(element instanceof Expression ? 
-                            (Expression)element : new ConstantImpl(element), filters);
+                    Expression<?> expr = transform(element instanceof Expression ?
+                            (Expression) element : new ConstantImpl(element), filters);
                     filters.add(Blocks.pattern(parent, mappedProperty.getKeyPredicate(), expr, context));
 
-                    if (mappedProperty.getValuePredicate() != null){
+                    if (mappedProperty.getValuePredicate() != null) {
                         pathNode = var(varNames.next());
                         filters.add(Blocks.pattern(parent, mappedProperty.getValuePredicate(), pathNode, context));
-                    }else{
+                    } else {
                         pathNode = parent;
                     }
 
-                }else{
+                } else {
                     pathNode = parent;
                 }
 
@@ -694,7 +694,7 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
             pathToMapped.put(path, pathNode);
             return pathNode;
 
-        }else{
+        } else {
             throw new IllegalArgumentException("Undeclared path " + path);
         }
 
@@ -705,41 +705,41 @@ public class RDFQueryBuilder implements Visitor<Object,Filters>{
         Filters f = new Filters();
 
         // from
-        for (JoinExpression join : md.getJoins()){
+        for (JoinExpression join : md.getJoins()) {
             f.add(handleRootPath((Path<?>) join.getTarget(), f));
         }
         // where
-        if (md.getWhere() != null){
+        if (md.getWhere() != null) {
             f.add(transform(md.getWhere(), f));
         }
         // select
-        if (!md.getProjection().isEmpty()){
+        if (!md.getProjection().isEmpty()) {
             QueryMetadata rv = new DefaultQueryMetadata().noValidate();
-            for (Expression<?> e : md.getProjection()){
+            for (Expression<?> e : md.getProjection()) {
                 rv.addProjection(transform(e, f));
             }
             rv.addWhere(f.asBlock());
             return new SubQueryExpressionImpl<Object>(Object.class, rv);
-        }else{
+        } else {
             return f.asBlock();
         }
     }
 
     @SuppressWarnings("unchecked")
-    public Expression<?> visit(TemplateExpression<?> template, Filters filters){
+    public Expression<?> visit(TemplateExpression<?> template, Filters filters) {
         ImmutableList.Builder<Object> builder = ImmutableList.builder();
-        for (Object arg : template.getArgs()){
+        for (Object arg : template.getArgs()) {
             if (arg instanceof Expression) {
-                arg = transform((Expression)arg, filters);                    
+                arg = transform((Expression) arg, filters);
             }
-            if (arg != null){
+            if (arg != null) {
                 builder.add(arg);
             }
-            
+
         }
-        if (template.getType().equals(Boolean.class)){
+        if (template.getType().equals(Boolean.class)) {
             return new BooleanTemplate(template.getTemplate(), builder.build());
-        }else{
+        } else {
             return new TemplateExpressionImpl(template.getType(), template.getTemplate(), builder.build());
         }
     }

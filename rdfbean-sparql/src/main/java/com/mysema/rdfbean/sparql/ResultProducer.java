@@ -7,7 +7,7 @@ import com.mysema.rdfbean.model.SPARQLQuery;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public interface ResultProducer {
 
@@ -16,5 +16,5 @@ public interface ResultProducer {
      * @param writer
      */
     void stream(SPARQLQuery query, Writer writer) throws IOException;
-    
+
 }

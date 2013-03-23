@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  * @author sasa
  */
 @Documented
-@Target( { METHOD, FIELD, PARAMETER })
+@Target({ METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Container {
     /**

@@ -18,7 +18,7 @@ import com.mysema.query.types.Predicate;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
 
@@ -40,122 +40,122 @@ public class RDFQueryImpl extends QueryBase<RDFQueryImpl> implements RDFQuery {
     }
 
     @Override
-    public RDFQuery from(UID... graphs){
-        for (UID uid : graphs){
+    public RDFQuery from(UID... graphs) {
+        for (UID uid : graphs) {
             queryMixin.from(new ConstantImpl<UID>(UID.class, uid));
         }
         return this;
     }
 
     @Override
-    public boolean ask(){
+    public boolean ask() {
         return createBooleanQuery().getBoolean();
     }
 
     @Override
-    public CloseableIterator<Map<String,NODE>> selectDistinct(Expression<?>... exprs){
+    public CloseableIterator<Map<String, NODE>> selectDistinct(Expression<?>... exprs) {
         return distinct().select(exprs);
     }
 
     @Override
-    public CloseableIterator<Map<String,NODE>> select(Expression<?>... exprs){
+    public CloseableIterator<Map<String, NODE>> select(Expression<?>... exprs) {
         return createTupleQuery(exprs).getTuples();
     }
 
     @Override
-    public CloseableIterator<Map<String,NODE>> selectDistinctAll(){
+    public CloseableIterator<Map<String, NODE>> selectDistinctAll() {
         return distinct().selectAll();
     }
 
     @Override
-    public CloseableIterator<Map<String,NODE>> selectAll(){
+    public CloseableIterator<Map<String, NODE>> selectAll() {
         return createTupleQuery().getTuples();
     }
 
-    public Map<String, NODE> selectSingle(Expression<?>... exprs){
-        CloseableIterator<Map<String,NODE>> it = select(exprs);
-        try{
-            if (it.hasNext()){
+    public Map<String, NODE> selectSingle(Expression<?>... exprs) {
+        CloseableIterator<Map<String, NODE>> it = select(exprs);
+        try {
+            if (it.hasNext()) {
                 return it.next();
-            }else{
+            } else {
                 return null;
             }
-        }finally{
+        } finally {
             it.close();
         }
     }
 
     @Override
-    public CloseableIterator<STMT> construct(Block... exprs){
+    public CloseableIterator<STMT> construct(Block... exprs) {
         return createGraphQuery(exprs).getTriples();
     }
 
     @Override
-    public BooleanQuery createBooleanQuery(){
+    public BooleanQuery createBooleanQuery() {
         aggregateFilters();
         return connection.createQuery(QueryLanguage.BOOLEAN, queryMixin.getMetadata());
     }
 
     @Override
-    public TupleQuery createTupleQuery(Expression<?>... exprs){
+    public TupleQuery createTupleQuery(Expression<?>... exprs) {
         aggregateFilters();
         queryMixin.addProjection(exprs);
         return connection.createQuery(QueryLanguage.TUPLE, queryMixin.getMetadata());
     }
 
     @Override
-    public GraphQuery createGraphQuery(Block... exprs){
+    public GraphQuery createGraphQuery(Block... exprs) {
         aggregateFilters();
         queryMixin.addProjection(exprs);
         return connection.createQuery(QueryLanguage.GRAPH, queryMixin.getMetadata());
     }
 
-    protected void aggregateFilters(){
-        if (!blocks.isEmpty()){
-            if (filters.getValue() == null){
+    protected void aggregateFilters() {
+        if (!blocks.isEmpty()) {
+            if (filters.getValue() == null) {
                 super.where(new GroupBlock(blocks));
-            }else{
+            } else {
                 super.where(new GroupBlock(blocks, filters.getValue()));
-            }    
-        }        
+            }
+        }
         blocks = new ArrayList<Block>();
         filters = new BooleanBuilder();
     }
 
     @Override
     public RDFQueryImpl where(Predicate o) {
-        if (o instanceof Block){
-            blocks.add((Block)o);
-        }else{
+        if (o instanceof Block) {
+            blocks.add((Block) o);
+        } else {
             filters.and(o);
         }
         return this;
     }
-    
+
     @Override
     public RDFQueryImpl where(Predicate... o) {
-        for (Predicate predicate : o){
+        for (Predicate predicate : o) {
             where(predicate);
         }
         return this;
     }
 
-    public QueryMetadata getMetadata(){
+    public QueryMetadata getMetadata() {
         return queryMixin.getMetadata();
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         QueryMetadata metadata = queryMixin.getMetadata().clone();
-        
-        if (!blocks.isEmpty()){
-            if (filters.getValue() == null){
+
+        if (!blocks.isEmpty()) {
+            if (filters.getValue() == null) {
                 metadata.addWhere(new GroupBlock(blocks));
-            }else{
+            } else {
                 metadata.addWhere(new GroupBlock(blocks, filters.getValue()));
-            }   
-        } 
-        
+            }
+        }
+
         SPARQLVisitor visitor = new SPARQLVisitor();
         visitor.setInlineAll(true);
         visitor.visit(metadata, QueryLanguage.TUPLE);

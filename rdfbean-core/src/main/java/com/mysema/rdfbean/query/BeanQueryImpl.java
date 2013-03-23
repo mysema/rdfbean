@@ -73,20 +73,20 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     @Override
     public long count() {
         TupleQuery query = createTupleQuery(true);
-        if (!connection.getQueryOptions().isCountViaAggregation()){
+        if (!connection.getQueryOptions().isCountViaAggregation()) {
             long counter = 0;
-            CloseableIterator<Map<String,NODE>> tuples = query.getTuples();
-            try{
-                while (tuples.hasNext()){
+            CloseableIterator<Map<String, NODE>> tuples = query.getTuples();
+            try {
+                while (tuples.hasNext()) {
                     counter++;
                     tuples.next();
                 }
-            }finally{
+            } finally {
                 tuples.close();
             }
             return counter;
 
-        }else{
+        } else {
             List<Map<String, NODE>> results = IteratorAdapter.asList(query.getTuples());
             NODE result = results.get(0).values().iterator().next();
             if (result.isLiteral()) {
@@ -97,7 +97,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         }
     }
 
-    private RDFQueryBuilder createBuilder(){
+    private RDFQueryBuilder createBuilder() {
         return new RDFQueryBuilder(
                 connection,
                 session,
@@ -136,7 +136,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 args[i] = getAsProjectionValue(node, factoryExpr.getArgs().get(i).getType());
             }
             offset.addAndGet(args.length);
-//            offset.add(args.length);
+            // offset.add(args.length);
             try {
                 return (RT) factoryExpr.newInstance(args);
             } catch (Exception e) {
@@ -145,7 +145,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
         } else {
             NODE node = nodes.get(variables.get(offset.intValue()));
             offset.addAndGet(1);
-//            offset.add(1);
+            // offset.add(1);
             if (node != null) {
                 return getAsProjectionValue(node, expr.getType());
             } else {
@@ -205,42 +205,42 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
 
     @SuppressWarnings("unchecked")
     @Override
-    public <RT> List<RT> list(Expression<RT> projection){
+    public <RT> List<RT> list(Expression<RT> projection) {
         if (!converterRegistry.supports(projection.getType())
-                && !(projection instanceof FactoryExpression<?>)){
+                && !(projection instanceof FactoryExpression<?>)) {
             // bulk load of resources
             queryMixin.addProjection(projection);
             long start = System.currentTimeMillis();
             TupleQuery query = createTupleQuery(false);
             CloseableIterator<Map<String, NODE>> results = query.getTuples();
             List<ID> ids = new ArrayList<ID>();
-            try{
-                while (results.hasNext()){
+            try {
+                while (results.hasNext()) {
                     Map<String, NODE> row = results.next();
-                    if (!row.isEmpty()){
+                    if (!row.isEmpty()) {
                         ids.add(row.values().iterator().next().asResource());
-                    }else{
+                    } else {
                         ids.add(null);
                     }
                 }
-            }finally{
+            } finally {
                 results.close();
             }
 
             long duration = System.currentTimeMillis() - start;
-            if (logger.isWarnEnabled() && duration > 500){
+            if (logger.isWarnEnabled() && duration > 500) {
                 logger.warn("list ids of " + projection + " took " + duration + "ms");
             }
 
-            List<RT> rv = (List)session.getAll(projection.getType(), ids.toArray(new ID[ids.size()]));
+            List<RT> rv = (List) session.getAll(projection.getType(), ids.toArray(new ID[ids.size()]));
 
             duration = System.currentTimeMillis() - start;
-            if (logger.isWarnEnabled() && duration > 500){
+            if (logger.isWarnEnabled() && duration > 500) {
                 logger.warn("list of " + projection + " took " + duration + "ms");
             }
             return rv;
 
-        }else{
+        } else {
             return super.list(projection);
         }
     }
@@ -290,17 +290,17 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
                 md.getModifiers().getOffset(),
                 total);
     }
-    
+
     @Override
     public SearchResults<Tuple> listResults(Expression<?>... args) {
         return listResults(new QTuple(args));
     }
 
     @SuppressWarnings("unchecked")
-    private <T> Expression<T> normalize(Expression<T> expr){
-        if (expr instanceof FactoryExpression<?>){
-            return (Expression<T>) FactoryExpressionUtils.wrap((FactoryExpression<?>)expr);
-        }else{
+    private <T> Expression<T> normalize(Expression<T> expr) {
+        if (expr instanceof FactoryExpression<?>) {
+            return (Expression<T>) FactoryExpressionUtils.wrap((FactoryExpression<?>) expr);
+        } else {
             return expr;
         }
     }
@@ -308,7 +308,7 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     @Override
     public Tuple uniqueResult(Expression<?>... args) {
         queryMixin.setUnique(true);
-        if (queryMixin.getMetadata().getModifiers().getLimit() == null){
+        if (queryMixin.getMetadata().getModifiers().getLimit() == null) {
             limit(2l);
         }
         return uniqueResult(iterate(args));
@@ -317,11 +317,10 @@ public class BeanQueryImpl extends ProjectableQuery<BeanQueryImpl> implements
     @Override
     public <RT> RT uniqueResult(Expression<RT> expr) {
         queryMixin.setUnique(true);
-        if (queryMixin.getMetadata().getModifiers().getLimit() == null){
+        if (queryMixin.getMetadata().getModifiers().getLimit() == null) {
             limit(2l);
         }
         return uniqueResult(iterate(expr));
     }
-
 
 }

@@ -23,12 +23,12 @@ import com.mysema.rdfbean.model.Repository;
 public class ListHandlingTest {
 
     @Test
-    public void test(){
+    public void test() {
         Repository repository = new MiniRepository();
         Session session = SessionUtil.openSession(repository, Identifiable.class, Elements.class, Element.class, LinkElement.class, TextElement.class);
 
         Elements elements = new Elements();
-        elements.elements = Arrays.<Element>asList(new LinkElement(), new TextElement());
+        elements.elements = Arrays.<Element> asList(new LinkElement(), new TextElement());
         session.save(elements);
         session.clear();
 

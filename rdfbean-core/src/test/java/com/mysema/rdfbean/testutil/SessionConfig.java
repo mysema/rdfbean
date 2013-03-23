@@ -16,10 +16,10 @@ import org.junit.Ignore;
 
 @Ignore
 @Documented
-@Target( TYPE )
+@Target(TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SessionConfig {
 
     Class<?>[] value();
-    
+
 }

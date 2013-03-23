@@ -23,9 +23,9 @@ import com.mysema.rdfbean.xsd.ConverterRegistry;
 
 /**
  * @author tiwe
- *
+ * 
  */
-class SimpleConfiguration implements Configuration{
+class SimpleConfiguration implements Configuration {
 
     private static final Set<String> buildinNamespaces = new HashSet<String>();
 
@@ -38,36 +38,36 @@ class SimpleConfiguration implements Configuration{
     }
 
     private final Set<String> restrictedResources = new HashSet<String>(buildinNamespaces);
-    
-    private final Set<MappedClass> mappedClasses;
-    
-    private final Set<Class<?>> polymorphicClasses = new HashSet<Class<?>>();
-    
-    private final Map<UID,MappedClass> uidToMappedClass = new HashMap<UID,MappedClass>();
 
-    private final Map<Class<?>,MappedClass> classToMappedClass = new HashMap<Class<?>,MappedClass>();
+    private final Set<MappedClass> mappedClasses;
+
+    private final Set<Class<?>> polymorphicClasses = new HashSet<Class<?>>();
+
+    private final Map<UID, MappedClass> uidToMappedClass = new HashMap<UID, MappedClass>();
+
+    private final Map<Class<?>, MappedClass> classToMappedClass = new HashMap<Class<?>, MappedClass>();
 
     private final ConverterRegistry converterRegistry;
-    
+
     public SimpleConfiguration(
             ConverterRegistry converterRegistry,
-            Set<MappedClass> mappedClasses){
+            Set<MappedClass> mappedClasses) {
         this.converterRegistry = converterRegistry;
         this.mappedClasses = mappedClasses;
-        for (MappedClass mappedClass : mappedClasses){
+        for (MappedClass mappedClass : mappedClasses) {
             uidToMappedClass.put(mappedClass.getUID(), mappedClass);
             classToMappedClass.put(mappedClass.getJavaClass(), mappedClass);
-            for (MappedClass superClass : mappedClass.getMappedSuperClasses()){
+            for (MappedClass superClass : mappedClass.getMappedSuperClasses()) {
                 polymorphicClasses.add(superClass.getJavaClass());
             }
         }
     }
-    
+
     @Override
     public boolean allowCreate(Class<?> clazz) {
         return true;
     }
-    
+
     @Override
     public boolean allowRead(MappedPath path) {
         return true;
@@ -96,7 +96,7 @@ class SimpleConfiguration implements Configuration{
     @Override
     public List<MappedClass> getMappedClasses(UID uid) {
         MappedClass mappedClass = uidToMappedClass.get(uid);
-        return mappedClass != null ? Collections.<MappedClass>singletonList(mappedClass) : Collections.<MappedClass>emptyList();
+        return mappedClass != null ? Collections.<MappedClass> singletonList(mappedClass) : Collections.<MappedClass> emptyList();
     }
 
     @Override
@@ -104,14 +104,14 @@ class SimpleConfiguration implements Configuration{
         return mappedClasses;
     }
 
-    public boolean isPolymorphic(Class<?> clazz){
+    public boolean isPolymorphic(Class<?> clazz) {
         return polymorphicClasses.contains(clazz);
     }
-    
-    public boolean isMapped(Class<?> clazz){
+
+    public boolean isMapped(Class<?> clazz) {
         return classToMappedClass.containsKey(clazz);
     }
-    
+
     @Override
     public boolean isRestricted(UID uid) {
         return restrictedResources.contains(uid.getId()) || restrictedResources.contains(uid.ns());

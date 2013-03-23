@@ -27,7 +27,7 @@ import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public final class DirectQuery {
 
@@ -35,7 +35,7 @@ public final class DirectQuery {
 
     private static final QueryLanguage DIRECTQUERY = new QueryLanguage("DIRECTQUERY");
 
-    private static final QueryParser DIRECTQUERY_PARSER = new QueryParser(){
+    private static final QueryParser DIRECTQUERY_PARSER = new QueryParser() {
         @Override
         /**
          * Returns the thread bound query, ignores the parameters of the method invocation
@@ -45,12 +45,13 @@ public final class DirectQuery {
         }
     };
 
-    static{
-        QueryParserRegistry.getInstance().add(new QueryParserFactory(){
+    static {
+        QueryParserRegistry.getInstance().add(new QueryParserFactory() {
             @Override
             public QueryParser getParser() {
                 return DIRECTQUERY_PARSER;
             }
+
             @Override
             public QueryLanguage getQueryLanguage() {
                 return DIRECTQUERY;
@@ -59,13 +60,13 @@ public final class DirectQuery {
     }
 
     public static TupleQuery getQuery(RepositoryConnection connection, TupleQueryModel tupleQueryModel,
-            boolean includeInferred){
+            boolean includeInferred) {
         try {
-//            System.err.println(tupleQueryModel.getTupleExpr());
+            // System.err.println(tupleQueryModel.getTupleExpr());
             QUERY_HOLDER.set(tupleQueryModel);
             TupleQuery tupleQuery = connection.prepareTupleQuery(DirectQuery.DIRECTQUERY, "");
             tupleQuery.setIncludeInferred(includeInferred);
-            return  tupleQuery;
+            return tupleQuery;
         } catch (StoreException e) {
             throw new RepositoryException(e);
         } catch (MalformedQueryException e) {
@@ -87,7 +88,7 @@ public final class DirectQuery {
             throw new RepositoryException(e);
         }
     }
-    
+
     public static BooleanQuery getQuery(RepositoryConnection connection, BooleanQueryModel booleanQueryModel,
             boolean includeInferred) {
         try {
@@ -103,21 +104,21 @@ public final class DirectQuery {
     }
 
     public static TupleResult query(RepositoryConnection connection, TupleQueryModel tupleQueryModel,
-            boolean includeInferred) throws StoreException{
+            boolean includeInferred) throws StoreException {
         return getQuery(connection, tupleQueryModel, includeInferred).evaluate();
     }
 
     public static GraphResult query(RepositoryConnection connection, GraphQueryModel graphQueryModel,
-            boolean includeInferred) throws StoreException{
+            boolean includeInferred) throws StoreException {
         return getQuery(connection, graphQueryModel, includeInferred).evaluate();
     }
 
     public static BooleanResult query(RepositoryConnection connection, BooleanQueryModel booleanQueryModel,
-            boolean includeInferred) throws StoreException{
+            boolean includeInferred) throws StoreException {
         return getQuery(connection, booleanQueryModel, includeInferred).evaluate();
     }
 
-    
-    private DirectQuery(){}
+    private DirectQuery() {
+    }
 
 }

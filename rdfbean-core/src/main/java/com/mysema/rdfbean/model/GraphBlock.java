@@ -15,7 +15,7 @@ import com.mysema.query.types.Visitor;
 import com.mysema.query.types.expr.BooleanExpression;
 import com.mysema.query.types.expr.BooleanOperation;
 
-public class GraphBlock implements ContainerBlock{
+public class GraphBlock implements ContainerBlock {
 
     private static final long serialVersionUID = -4450740702187022383L;
 
@@ -27,7 +27,7 @@ public class GraphBlock implements ContainerBlock{
     private final Expression<UID> context;
 
     public GraphBlock(Expression<UID> context, List<Block> blocks, Predicate... filters) {
-        this.blocks = Assert.notEmpty(blocks,"blocks");
+        this.blocks = Assert.notEmpty(blocks, "blocks");
         this.context = context;
         this.filters = ExpressionUtils.allOf(filters);
     }
@@ -40,13 +40,13 @@ public class GraphBlock implements ContainerBlock{
     @Override
     @SuppressWarnings("unchecked")
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        if (v instanceof RDFVisitor){
-            return (R)((RDFVisitor)v).visit(this, context);
-        }else if (v instanceof ToStringVisitor){
-            return (R)toString();
-        } else if (v.getClass().getName().equals("com.mysema.query.types.ExtractorVisitor")) {    
-            return (R)this;
-        }else{
+        if (v instanceof RDFVisitor) {
+            return (R) ((RDFVisitor) v).visit(this, context);
+        } else if (v instanceof ToStringVisitor) {
+            return (R) toString();
+        } else if (v.getClass().getName().equals("com.mysema.query.types.ExtractorVisitor")) {
+            return (R) this;
+        } else {
             throw new IllegalArgumentException(v.toString());
         }
 
@@ -71,35 +71,35 @@ public class GraphBlock implements ContainerBlock{
     }
 
     @Override
-    public BooleanExpression exists(){
+    public BooleanExpression exists() {
         return BooleanOperation.create(Ops.EXISTS, this);
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return context.hashCode();
     }
 
     @Override
-    public boolean equals(Object o){
-        if (o == this){
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
-        }else if (o instanceof GraphBlock){
-            GraphBlock gb = (GraphBlock)o;
+        } else if (o instanceof GraphBlock) {
+            GraphBlock gb = (GraphBlock) o;
             return context.equals(gb.context) && Objects.equal(filters, gb.filters) && blocks.equals(gb.blocks);
-        }else{
+        } else {
             return false;
         }
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("GRAPH ").append(context).append("{ ");
-        for (Block block : blocks){
+        for (Block block : blocks) {
             builder.append(block.toString()).append(" ");
         }
-        if (filters != null){
+        if (filters != null) {
             builder.append(" FILTER(").append(filters).append(")");
         }
         builder.append(" }");

@@ -8,7 +8,7 @@ package com.mysema.rdfbean.model;
 /**
  * Declares the inferencing options that are not provided by the RDF persistence
  * engine and are to be supported on RDFBean level
- *
+ * 
  * @author tiwe
  */
 public enum InferenceOptions {
@@ -60,7 +60,7 @@ public enum InferenceOptions {
 
     private final boolean subClassOf, subPropertyOf, untypedAsString;
 
-    private InferenceOptions(boolean subClassOf, boolean subPropertyOf, boolean untypedAsString){
+    private InferenceOptions(boolean subClassOf, boolean subPropertyOf, boolean untypedAsString) {
         this.subClassOf = subClassOf;
         this.subPropertyOf = subPropertyOf;
         this.untypedAsString = untypedAsString;
@@ -68,25 +68,28 @@ public enum InferenceOptions {
 
     /**
      * Support for matching subtype instances
+     * 
      * @return
      */
-    public boolean subClassOf(){
+    public boolean subClassOf() {
         return subClassOf;
     }
 
     /**
      * Support for matching subproperty patterns
+     * 
      * @return
      */
-    public boolean subPropertyOf(){
+    public boolean subPropertyOf() {
         return subPropertyOf;
     }
 
     /**
      * Support for matching untyped string as xsd:string typed
+     * 
      * @return
      */
-    public boolean untypedAsString(){
+    public boolean untypedAsString() {
         return untypedAsString;
     }
 }

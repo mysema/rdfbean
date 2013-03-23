@@ -8,9 +8,9 @@ import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class VirtuosoTransaction implements RDFBeanTransaction{
+public class VirtuosoTransaction implements RDFBeanTransaction {
 
     private final Connection conn;
 
@@ -18,14 +18,14 @@ public class VirtuosoTransaction implements RDFBeanTransaction{
 
     public VirtuosoTransaction(Connection connection, boolean readOnly, int txTimeout, int isolationLevel) {
         this.conn = connection;
-        try{
+        try {
             conn.setAutoCommit(false);
             conn.setReadOnly(readOnly);
-            if (isolationLevel != -1){
-                connection.setTransactionIsolation(isolationLevel);    
-            }else{
+            if (isolationLevel != -1) {
+                connection.setTransactionIsolation(isolationLevel);
+            } else {
                 connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-            }     
+            }
         } catch (SQLException e) {
             throw new RepositoryException(e);
         }
@@ -34,9 +34,9 @@ public class VirtuosoTransaction implements RDFBeanTransaction{
     @Override
     public void commit() {
         try {
-            if (!rollbackOnly){
+            if (!rollbackOnly) {
                 conn.commit();
-            }else{
+            } else {
                 throw new RepositoryException("Tx was set to rollbackOnly");
             }
         } catch (SQLException e) {

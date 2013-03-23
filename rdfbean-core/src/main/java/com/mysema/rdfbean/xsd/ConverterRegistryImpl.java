@@ -36,17 +36,17 @@ import com.mysema.rdfbean.model.XSD;
 /**
  * @author tiwe
  */
-public class ConverterRegistryImpl implements ConverterRegistry{
+public class ConverterRegistryImpl implements ConverterRegistry {
 
     public static final ConverterRegistry DEFAULT = new ConverterRegistryImpl();
-    
-    private final Map<Class<?>, Converter<?>> classToConverter = new HashMap<Class<?>,Converter<?>>();
 
-    private final Map<Class<?>, UID> classToType = new HashMap<Class<?>,UID>();
-    
+    private final Map<Class<?>, Converter<?>> classToConverter = new HashMap<Class<?>, Converter<?>>();
+
+    private final Map<Class<?>, UID> classToType = new HashMap<Class<?>, UID>();
+
     private final Map<UID, Class<?>> typeToClass = new HashMap<UID, Class<?>>();
 
-    public ConverterRegistryImpl(){
+    public ConverterRegistryImpl() {
         register(XSD.anyURI, new URIConverter());
         register(XSD.booleanType, new BooleanConverter());
         register(XSD.hexBinary, new BlobConverter());
@@ -75,20 +75,20 @@ public class ConverterRegistryImpl implements ConverterRegistry{
         register(XSD.stringType, new CharacterConverter());
         register(XSD.time, new LocalTimeConverter());
         register(XSD.time, new TimeConverter());
-        
+
         register(XSD.stringType, new LocaleConverter());
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T fromString(String value, Class<T> requiredType){
-        if (requiredType.equals(String.class)){
-            return (T)value;
+    public <T> T fromString(String value, Class<T> requiredType) {
+        if (requiredType.equals(String.class)) {
+            return (T) value;
         }
         Converter<T> converter = (Converter<T>) classToConverter.get(requiredType);
-        if (converter != null){
+        if (converter != null) {
             return converter.fromString(value);
-        }else{
+        } else {
             throw new IllegalArgumentException("No conversion for " + requiredType.getName() + " available");
         }
     }
@@ -100,16 +100,16 @@ public class ConverterRegistryImpl implements ConverterRegistry{
 
     private <T> void register(UID type, Class<T> clazz) {
         classToType.put(clazz, type);
-        if (!clazz.isPrimitive()){
-            typeToClass.put(type, clazz);    
-        }        
+        if (!clazz.isPrimitive()) {
+            typeToClass.put(type, clazz);
+        }
     }
 
     private <T> void register(UID type, Converter<T> converter) {
         register(type, converter.getJavaType());
-        classToConverter.put(converter.getJavaType(), converter);        
+        classToConverter.put(converter.getJavaType(), converter);
         Class<?> primitiveType = Primitives.unwrap(converter.getJavaType());
-        if (!primitiveType.equals(converter.getJavaType())){
+        if (!primitiveType.equals(converter.getJavaType())) {
             register(type, primitiveType);
             classToConverter.put(primitiveType, converter);
         }
@@ -124,12 +124,12 @@ public class ConverterRegistryImpl implements ConverterRegistry{
     @SuppressWarnings("unchecked")
     public <T> String toString(T javaValue) {
         if (javaValue instanceof String) {
-            return (String)javaValue;
+            return (String) javaValue;
         }
         Converter<T> converter = (Converter<T>) classToConverter.get(javaValue.getClass());
-        if (converter != null){
+        if (converter != null) {
             return converter.toString(javaValue);
-        }else{
+        } else {
             throw new IllegalArgumentException("No conversion for " + javaValue.getClass().getName() + " available");
         }
     }

@@ -55,9 +55,9 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
+public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata> {
 
     @SuppressWarnings("unchecked")
     private static final Set<Operator<?>> MATH = new HashSet<Operator<?>>(Arrays.asList(
@@ -111,28 +111,28 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         return context.getNodeId(node);
     }
 
-    private Long getId(Constant<NODE> constant){
+    private Long getId(Constant<NODE> constant) {
         return context.getNodeId(constant.getConstant());
     }
 
-    private Expression<?> handle(Expression<?> expr, QueryMetadata md){
+    private Expression<?> handle(Expression<?> expr, QueryMetadata md) {
         return (Expression<?>) expr.accept(this, md);
     }
 
     private boolean needsSymbolResolving(Operation<?> op) {
         if (Ops.equalsOps.contains(op.getOperator())
-         || Ops.notEqualsOps.contains(op.getOperator())
-         || op.getOperator() == Ops.IN
-         || op.getOperator() == Ops.ORDINAL){
-            for (Expression<?> arg : op.getArgs()){
+                || Ops.notEqualsOps.contains(op.getOperator())
+                || op.getOperator() == Ops.IN
+                || op.getOperator() == Ops.ORDINAL) {
+            for (Expression<?> arg : op.getArgs()) {
                 if (!(arg instanceof Path<?>)
-                  && !(arg instanceof ParamExpression<?>)
-                  && !(arg instanceof Constant<?>)){
+                        && !(arg instanceof ParamExpression<?>)
+                        && !(arg instanceof Constant<?>)) {
                     return true;
                 }
             }
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -148,19 +148,19 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         handle(md.getWhere(), md);
 
         // group by
-        for (Expression<?> gb : md.getGroupBy()){
+        for (Expression<?> gb : md.getGroupBy()) {
             query.groupBy(handle(gb, md));
         }
 
         // having
-        if (md.getHaving() != null){
-            query.having((Predicate)handle(md.getHaving(), md));
+        if (md.getHaving() != null) {
+            query.having((Predicate) handle(md.getHaving(), md));
         }
 
-        if (!asCount){
+        if (!asCount) {
             // order by
             asLiteral = true;
-            for (OrderSpecifier<?> order : md.getOrderBy()){
+            for (OrderSpecifier<?> order : md.getOrderBy()) {
                 query.orderBy(new OrderSpecifier(order.getOrder(), handle(order.getTarget(), md)));
             }
             asLiteral = false;
@@ -169,106 +169,105 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
             query.restrict(md.getModifiers());
 
             // distinct
-            if (md.isDistinct()){
+            if (md.isDistinct()) {
                 query.distinct();
             }
         }
 
         // select
-        if (queryType.equals(QueryLanguage.TUPLE)){
+        if (queryType.equals(QueryLanguage.TUPLE)) {
             List<String> variables = new ArrayList<String>();
             List<Expression<?>> pr = new ArrayList<Expression<?>>();
 
             Collection<? extends Expression<?>> projection = md.getProjection();
-            if (projection.isEmpty()){
+            if (projection.isEmpty()) {
                 projection = namedExpressions;
             }
-            for (Expression<?> expr : projection){
-                if (expr instanceof ParamExpression){
-                    variables.add(((ParamExpression)expr).getName());
-                }else{
+            for (Expression<?> expr : projection) {
+                if (expr instanceof ParamExpression) {
+                    variables.add(((ParamExpression) expr).getName());
+                } else {
                     variables.add(expr.toString());
                 }
-                if (resources.contains(expr) || ID.class.isAssignableFrom(expr.getType())){
+                if (resources.contains(expr) || ID.class.isAssignableFrom(expr.getType())) {
                     boolean asLit = asLiteral;
                     asLiteral = true;
                     pr.add(handle(expr, md));
                     asLiteral = asLit;
-                }else{
+                } else {
                     pr.add(handle(expr, md));
                 }
             }
 
-            return new TupleQueryImpl((SQLQuery)query, context.getConverters(), variables, pr, transformer);
+            return new TupleQueryImpl((SQLQuery) query, context.getConverters(), variables, pr, transformer);
 
-        // construct
-        }else if (queryType.equals(QueryLanguage.GRAPH)){
+            // construct
+        } else if (queryType.equals(QueryLanguage.GRAPH)) {
             // TODO : add also support for larger patterns
-            if (md.getProjection().size() == 1 && md.getProjection().get(0) instanceof PatternBlock){
+            if (md.getProjection().size() == 1 && md.getProjection().get(0) instanceof PatternBlock) {
                 List<Expression<?>> pr = new ArrayList<Expression<?>>();
-                PatternBlock pattern = (PatternBlock)md.getProjection().get(0);
-                
-                for (Expression<?> expr : Arrays.asList(pattern.getSubject(), pattern.getPredicate(), pattern.getObject(), pattern.getContext())){
-                    if (expr != null && !(expr instanceof Constant)){
-                        if (resources.contains(expr) || ID.class.isAssignableFrom(expr.getType())){
+                PatternBlock pattern = (PatternBlock) md.getProjection().get(0);
+
+                for (Expression<?> expr : Arrays.asList(pattern.getSubject(), pattern.getPredicate(), pattern.getObject(), pattern.getContext())) {
+                    if (expr != null && !(expr instanceof Constant)) {
+                        if (resources.contains(expr) || ID.class.isAssignableFrom(expr.getType())) {
                             boolean asLit = asLiteral;
                             asLiteral = true;
                             pr.add(handle(expr, md));
                             asLiteral = asLit;
-                        }else{
+                        } else {
                             pr.add(handle(expr, md));
                         }
                     }
                 }
-                return new GraphQueryImpl((SQLQuery)query, pattern, pr, transformer);
+                return new GraphQueryImpl((SQLQuery) query, pattern, pr, transformer);
 
-            }else{
+            } else {
                 throw new UnsupportedOperationException();
             }
 
-        // ask
-        }else if (queryType.equals(QueryLanguage.BOOLEAN)){
+            // ask
+        } else if (queryType.equals(QueryLanguage.BOOLEAN)) {
             return new BooleanQueryImpl((SQLQuery) query);
 
-        }else{
+        } else {
             throw new UnsupportedOperationException();
         }
-
 
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Constant<?> visit(Constant<?> constant, QueryMetadata context) {
-        if (NODE.class.isAssignableFrom(constant.getType())){
-            NODE node = (NODE)constant.getConstant();
-            if (asLiteral){
+        if (NODE.class.isAssignableFrom(constant.getType())) {
+            NODE node = (NODE) constant.getConstant();
+            if (asLiteral) {
                 return ConstantImpl.create(node.getValue());
-            }else{
+            } else {
                 return ConstantImpl.create(getId(node));
             }
-            
-        }else if (Collection.class.isAssignableFrom(constant.getType())) {    
-            Collection<?> collection = (Collection<?>)constant.getConstant();
+
+        } else if (Collection.class.isAssignableFrom(constant.getType())) {
+            Collection<?> collection = (Collection<?>) constant.getConstant();
             List<Object> rv = new ArrayList<Object>(collection.size());
-            for (Object o : collection){
-                NODE node = (NODE)o;
+            for (Object o : collection) {
+                NODE node = (NODE) o;
                 if (asLiteral) {
                     rv.add(node.getValue());
-                }else{
+                } else {
                     rv.add(getId(node));
                 }
             }
             return new ConstantImpl<List>(List.class, rv);
-            
-        }else if (String.class.equals(constant.getType())) {
+
+        } else if (String.class.equals(constant.getType())) {
             if (asLiteral) {
                 return ConstantImpl.create(constant.getConstant().toString());
-            }else{
+            } else {
                 return ConstantImpl.create(getId(new LIT(constant.getConstant().toString())));
             }
-            
-        }else if (ConverterRegistryImpl.DEFAULT.supports(constant.getType())){            
+
+        } else if (ConverterRegistryImpl.DEFAULT.supports(constant.getType())) {
             String value = ConverterRegistryImpl.DEFAULT.toString(constant.getConstant());
             if (asLiteral) {
                 return ConstantImpl.create(value);
@@ -276,8 +275,8 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
                 UID datatype = ConverterRegistryImpl.DEFAULT.getDatatype(constant.getType());
                 return ConstantImpl.create(getId(new LIT(value, datatype)));
             }
-            
-        }else{
+
+        } else {
             throw new IllegalArgumentException(constant.toString());
         }
     }
@@ -291,14 +290,14 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     public Object visit(GraphBlock expr, QueryMetadata context) {
         resources.add(expr.getContext());
         graphs.push(expr.getContext());
-        visit((ContainerBlock)expr, context);
+        visit((ContainerBlock) expr, context);
         graphs.pop();
         return null;
     }
 
     @Override
     public Object visit(GroupBlock expr, QueryMetadata context) {
-        return visit((ContainerBlock)expr, context);
+        return visit((ContainerBlock) expr, context);
     }
 
     @SuppressWarnings("unchecked")
@@ -308,26 +307,26 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         boolean asLit = asLiteral;
         asLiteral = needsSymbolResolving(expr);
 
-        try{
+        try {
             operators.push(expr.getOperator());
 
-            if (expr.getOperator() == Ops.NUMCAST){
+            if (expr.getOperator() == Ops.NUMCAST) {
                 args.add(handle(expr.getArg(0), context));
-                UID datatype = (UID) ((Constant)expr.getArg(1)).getConstant();
+                UID datatype = (UID) ((Constant) expr.getArg(1)).getConstant();
                 args.add(new ConstantImpl<Class>(this.context.getConverters().getClass(datatype)));
-            }else{
-                for (Expression<?> arg : expr.getArgs()){
+            } else {
+                for (Expression<?> arg : expr.getArgs()) {
                     args.add(handle(arg, context));
                 }
             }
-        }finally{
+        } finally {
             operators.pop();
         }
 
         asLiteral = asLit;
-        if (expr.getType().equals(Boolean.class)){
-            return new PredicateOperation((Operator)expr.getOperator(), ImmutableList.copyOf(args));
-        }else{
+        if (expr.getType().equals(Boolean.class)) {
+            return new PredicateOperation((Operator) expr.getOperator(), ImmutableList.copyOf(args));
+        } else {
             return new OperationImpl(expr.getType(), expr.getOperator(), ImmutableList.copyOf(args));
         }
     }
@@ -336,18 +335,18 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     public Object visit(OptionalBlock expr, QueryMetadata context) {
         boolean inOpt = inOptional;
         inOptional = true;
-        visit((ContainerBlock)expr, context);
+        visit((ContainerBlock) expr, context);
         inOptional = inOpt;
         return null;
     }
 
     @Nullable
-    private Object visit(ContainerBlock expr, QueryMetadata context){
-        for (Block block : expr.getBlocks()){
+    private Object visit(ContainerBlock expr, QueryMetadata context) {
+        for (Block block : expr.getBlocks()) {
             handle(block, context);
         }
-        if (expr.getFilters() != null){
-            query.where((Predicate)handle(expr.getFilters(), context));
+        if (expr.getFilters() != null) {
+            query.where((Predicate) handle(expr.getFilters(), context));
         }
         return null;
     }
@@ -364,46 +363,46 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         return visitPathOrParam(expr, expr.toString(), context);
     }
 
-    private Expression<?> visitPathOrParam(Expression<?> expr, String exprToString, QueryMetadata context){
-        if (asLiteral){
-            if (exprToSymbol.containsKey(expr)){
+    private Expression<?> visitPathOrParam(Expression<?> expr, String exprToString, QueryMetadata context) {
+        if (asLiteral) {
+            if (exprToSymbol.containsKey(expr)) {
                 return exprToSymbol.get(expr);
-            }else{
+            } else {
                 QSymbol symbol = new QSymbol(symbols.next());
                 query.leftJoin(symbol).on(symbol.id.eq(exprToMapped.get(expr)));
                 Expression<?> lexical = symbol.lexical;
-                if (inMathOperation()){
+                if (inMathOperation()) {
                     lexical = symbol.floatval;
                     numericSymbols.add(symbol);
-                }else if (inDateOperation()){
+                } else if (inDateOperation()) {
                     lexical = symbol.datetimeval;
                     dateTimeSymbols.add(symbol);
-                }else if (numericSymbols.contains(symbol)){
+                } else if (numericSymbols.contains(symbol)) {
                     lexical = symbol.floatval;
-                }else if (dateTimeSymbols.contains(symbol)){
+                } else if (dateTimeSymbols.contains(symbol)) {
                     lexical = symbol.datetimeval;
                 }
 
                 exprToSymbol.put(expr, lexical);
                 return lexical;
             }
-        }else{
+        } else {
             return exprToMapped.get(expr);
         }
     }
 
-    private boolean inMathOperation(){
-        for (Operator<?> op : operators){
-            if (MATH.contains(op)){
+    private boolean inMathOperation() {
+        for (Operator<?> op : operators) {
+            if (MATH.contains(op)) {
                 return true;
             }
         }
         return false;
     }
 
-    private boolean inDateOperation(){
-        for (Operator<?> op : operators){
-            if (DATE.contains(op)){
+    private boolean inDateOperation() {
+        for (Operator<?> op : operators) {
+            if (DATE.contains(op)) {
                 return true;
             }
         }
@@ -416,64 +415,64 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         BooleanBuilder filters = new BooleanBuilder();
         resources.add(expr.getSubject());
         resources.add(expr.getPredicate());
-        if (ID.class.isAssignableFrom(expr.getObject().getType())){
+        if (ID.class.isAssignableFrom(expr.getObject().getType())) {
             resources.add(expr.getObject());
         }
-        if (expr.getContext() != null){
+        if (expr.getContext() != null) {
             resources.add(expr.getContext());
         }
-        if (isNamed(expr.getSubject())){
+        if (isNamed(expr.getSubject())) {
             namedExpressions.add(expr.getSubject());
         }
-        if (isNamed(expr.getPredicate())){
+        if (isNamed(expr.getPredicate())) {
             namedExpressions.add(expr.getPredicate());
         }
-        if (isNamed(expr.getObject())){
+        if (isNamed(expr.getObject())) {
             namedExpressions.add(expr.getObject());
         }
-        if (isNamed(expr.getContext())){
+        if (isNamed(expr.getContext())) {
             namedExpressions.add(expr.getContext());
         }
         filters.and(visitPatternElement(context, stmt.subject, expr.getSubject()));
         filters.and(visitPatternElement(context, stmt.predicate, expr.getPredicate()));
         filters.and(visitPatternElement(context, stmt.object, expr.getObject()));
         Expression<UID> c = expr.getContext();
-        if (c == null && !graphs.isEmpty()){
+        if (c == null && !graphs.isEmpty()) {
             c = graphs.peek();
         }
-        if (c != null){
+        if (c != null) {
             filters.and(visitPatternElement(context, stmt.model, c));
         }
 
-        if (firstSource){
+        if (firstSource) {
             query.from(stmt).where(filters.getValue());
-        }else if (inOptional){
+        } else if (inOptional) {
             query.leftJoin(stmt).on(filters.getValue());
-        }else{
+        } else {
             query.innerJoin(stmt).on(filters.getValue());
         }
         firstSource = false;
         return null;
     }
 
-    private boolean isNamed(Expression<?> expr){
+    private boolean isNamed(Expression<?> expr) {
         return expr instanceof Path<?> || expr instanceof ParamExpression<?>;
     }
 
     @SuppressWarnings("unchecked")
     @Nullable
     private Predicate visitPatternElement(QueryMetadata context, NumberPath<Long> path, Expression<? extends NODE> s) {
-        if (s instanceof Constant<?>){
-            return path.eq(getId((Constant)s));
-        }else {
-            if (exprToMapped.containsKey(s)){
+        if (s instanceof Constant<?>) {
+            return path.eq(getId((Constant) s));
+        } else {
+            if (exprToMapped.containsKey(s)) {
                 return path.eq(exprToMapped.get(s));
-            }else{
+            } else {
                 exprToMapped.put(s, path);
-                if (s instanceof ParamExpression<?>){
+                if (s instanceof ParamExpression<?>) {
                     Object constant = context.getParams().get(s);
-                    if (constant != null){
-                        return path.eq(getId((NODE)constant));
+                    if (constant != null) {
+                        return path.eq(getId((NODE) constant));
                     }
                 }
             }
@@ -495,8 +494,8 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         exprToSymbol = new HashMap<Expression<?>, Expression<?>>(exprToSymbol);
 
         // copy bindings from parent
-        for (Map.Entry<ParamExpression<?>, Object> entry : context.getParams().entrySet()){
-            expr.getMetadata().setParam((ParamExpression)entry.getKey(), entry.getValue());
+        for (Map.Entry<ParamExpression<?>, Object> entry : context.getParams().entrySet()) {
+            expr.getMetadata().setParam((ParamExpression) entry.getKey(), entry.getValue());
         }
         QueryMetadata md = expr.getMetadata();
 
@@ -504,19 +503,19 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         handle(md.getWhere(), md);
 
         // group by
-        for (Expression<?> gb : md.getGroupBy()){
+        for (Expression<?> gb : md.getGroupBy()) {
             query.groupBy(handle(gb, md));
         }
 
         // having
-        if (md.getHaving() != null){
-            query.having((Predicate)handle(md.getHaving(), md));
+        if (md.getHaving() != null) {
+            query.having((Predicate) handle(md.getHaving(), md));
         }
 
         // order by
         boolean asLit = asLiteral;
         asLiteral = true;
-        for (OrderSpecifier<?> order : md.getOrderBy()){
+        for (OrderSpecifier<?> order : md.getOrderBy()) {
             query.orderBy(new OrderSpecifier(order.getOrder(), handle(order.getTarget(), md)));
         }
         asLiteral = asLit;
@@ -525,15 +524,15 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
         query.restrict(md.getModifiers());
 
         // distinct
-        if (md.isDistinct()){
+        if (md.isDistinct()) {
             query.distinct();
         }
 
         List<Expression<?>> projection = new ArrayList<Expression<?>>();
-        for (Expression<?> e : md.getProjection()){
+        for (Expression<?> e : md.getProjection()) {
             projection.add(handle(e, md));
         }
-        SubQueryExpression<?> sqe = ((SQLSubQuery)query).list(projection.toArray(new Expression[projection.size()]));
+        SubQueryExpression<?> sqe = ((SQLSubQuery) query).list(projection.toArray(new Expression[projection.size()]));
 
         firstSource = firstS;
         query = q;
@@ -546,17 +545,17 @@ public class RDBRDFVisitor implements RDFVisitor<Object, QueryMetadata>{
     @Override
     public Object visit(TemplateExpression<?> expr, QueryMetadata context) {
         ImmutableList.Builder<Object> builder = ImmutableList.builder();
-        for (Object arg : expr.getArgs()){
+        for (Object arg : expr.getArgs()) {
             if (arg instanceof Expression) {
-                builder.add(handle((Expression)arg, context));    
+                builder.add(handle((Expression) arg, context));
             } else {
                 builder.add(arg);
             }
-            
+
         }
-        if (expr.getType().equals(Boolean.class)){
+        if (expr.getType().equals(Boolean.class)) {
             return new BooleanTemplate(expr.getTemplate(), builder.build());
-        }else{
+        } else {
             return new TemplateExpressionImpl<Object>(expr.getType(), expr.getTemplate(), builder.build());
         }
     }

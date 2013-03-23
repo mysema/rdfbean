@@ -17,7 +17,7 @@ import com.mysema.query.types.path.NumberPath;
 /**
  * QStatement is a Querydsl query type for QStatement
  */
-public class QStatement extends RelationalPathBase<QStatement>{
+public class QStatement extends RelationalPathBase<QStatement> {
 
     private static final long serialVersionUID = 2085085876;
 
@@ -46,7 +46,7 @@ public class QStatement extends RelationalPathBase<QStatement>{
     }
 
     public QStatement(BeanPath<? extends QStatement> entity) {
-        super(entity.getType(),entity.getMetadata(), null, "STATEMENT");
+        super(entity.getType(), entity.getMetadata(), null, "STATEMENT");
     }
 
     public QStatement(PathMetadata<?> metadata) {
@@ -54,4 +54,3 @@ public class QStatement extends RelationalPathBase<QStatement>{
     }
 
 }
-

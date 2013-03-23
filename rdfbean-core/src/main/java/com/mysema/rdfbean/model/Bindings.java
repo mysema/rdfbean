@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class Bindings {
 
@@ -29,52 +29,52 @@ public class Bindings {
         bindings.clear();
     }
 
-    public Bindings getParent(){
+    public Bindings getParent() {
         return parent;
     }
-    
+
     @Nullable
-    public NODE get(String key){
-        if (bindings.containsKey(key)){
+    public NODE get(String key) {
+        if (bindings.containsKey(key)) {
             return bindings.get(key);
-        }else if (parent != null){
+        } else if (parent != null) {
             return parent.get(key);
-        }else{
+        } else {
             return null;
         }
     }
 
     @Nullable
-    public NODE put(String key, NODE node){
+    public NODE put(String key, NODE node) {
         return bindings.put(key, node);
     }
 
-    public Map<String, NODE> toMap(){
+    public Map<String, NODE> toMap() {
         Map<String, NODE> rv = new HashMap<String, NODE>(bindings);
-        if (parent != null){            
+        if (parent != null) {
             rv.putAll(parent.toMap());
         }
         return rv;
     }
-    
-    public Map<String, NODE> toMap(Collection<String> vars){
+
+    public Map<String, NODE> toMap(Collection<String> vars) {
         Map<String, NODE> rv = new HashMap<String, NODE>(vars.size());
-        for (String var : vars){
+        for (String var : vars) {
             NODE node = get(var);
-            if (node != null){
+            if (node != null) {
                 rv.put(var, node);
             }
         }
-        return rv;   
+        return rv;
     }
 
     @Override
-    public String toString(){
-        if (parent != null){
-            return parent + " " + bindings;    
-        }else{
+    public String toString() {
+        if (parent != null) {
+            return parent + " " + bindings;
+        } else {
             return bindings.toString();
         }
-        
+
     }
 }

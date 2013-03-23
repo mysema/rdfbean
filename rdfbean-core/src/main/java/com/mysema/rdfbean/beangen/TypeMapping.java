@@ -27,19 +27,19 @@ import com.mysema.rdfbean.xsd.Year;
 public class TypeMapping {
 
     private static final Type YEAR = new ClassType(TypeCategory.COMPARABLE, Year.class);
-    
-    private final Map<UID,Type> datatypeToType = new HashMap<UID,Type>();
-    
+
+    private final Map<UID, Type> datatypeToType = new HashMap<UID, Type>();
+
     private final boolean usePrimitives;
-    
+
     private Type defaultType;
-    
-    public TypeMapping(boolean usePrimitives){
+
+    public TypeMapping(boolean usePrimitives) {
         this.usePrimitives = usePrimitives;
         register(RDF.text, Types.STRING);
         register(XSD.anyURI, Types.URI);
         register(XSD.booleanType, Types.BOOLEAN);
-        register(XSD.byteType, Types.BYTE);               
+        register(XSD.byteType, Types.BYTE);
         register(XSD.decimalType, Types.BIG_DECIMAL);
         register(XSD.doubleType, Types.DOUBLE);
         // duration
@@ -54,20 +54,20 @@ public class TypeMapping {
         register(XSD.intType, Types.INT);
         register(XSD.longType, Types.LONG);
         register(XSD.shortType, Types.SHORT);
-        register(XSD.stringType, Types.STRING);               
+        register(XSD.stringType, Types.STRING);
         register(RDFS.Literal, Types.STRING);
-        
+
         register(XSD.date, Types.LOCAL_DATE); // joda-time
         register(XSD.dateTime, Types.DATE_TIME); // joda-time
         register(XSD.time, Types.LOCAL_TIME); // joda-time
-        
+
         defaultType = datatypeToType.get(XSD.stringType);
     }
-    
+
     private void register(UID uid, Type type) {
-        if (usePrimitives && Primitives.isWrapperType(type.getJavaClass())){
+        if (usePrimitives && Primitives.isWrapperType(type.getJavaClass())) {
             String name = Primitives.unwrap(type.getJavaClass()).getName();
-            type = new SimpleType(type.getCategory(), "java.lang."+name, "java.lang", name, true, true);
+            type = new SimpleType(type.getCategory(), "java.lang." + name, "java.lang", name, true, true);
         }
         datatypeToType.put(uid, type);
     }
@@ -77,7 +77,7 @@ public class TypeMapping {
     }
 
     public void setDefaultType(Type type) {
-        this.defaultType = type;        
+        this.defaultType = type;
     }
 
     public boolean containsKey(ID id) {

@@ -18,12 +18,11 @@ import com.mysema.commons.lang.Assert;
 import com.mysema.rdfbean.model.FileIdSequence;
 import com.mysema.rdfbean.model.IdSequence;
 
-
 /**
  * Implementation of the Repository interface using NativeStore
- *
+ * 
  * @author sasa
- *
+ * 
  */
 public class NativeRepository extends SesameRepository {
 
@@ -34,7 +33,8 @@ public class NativeRepository extends SesameRepository {
 
     private String indexes;
 
-    public NativeRepository(){}
+    public NativeRepository() {
+    }
 
     public NativeRepository(File dataDir, boolean sesameInference) {
         this.dataDir = dataDir;
@@ -47,20 +47,20 @@ public class NativeRepository extends SesameRepository {
 
     @Override
     protected Repository createRepository(boolean sesameInference) {
-        NativeStore store = new NativeStore(Assert.notNull(dataDir,"dataDir"));
-        if (indexes != null){
+        NativeStore store = new NativeStore(Assert.notNull(dataDir, "dataDir"));
+        if (indexes != null) {
             store.setTripleIndexes(indexes);
         }
         idSource = new FileIdSequence(new File(dataDir, "lastLocalId"));
-        if (sesameInference){
+        if (sesameInference) {
             return new SailRepository(new ExtendedRDFSInferencer(store));
-        }else{
+        } else {
             return new SailRepository(store);
         }
     }
 
     @Override
-    public long getNextLocalId(){
+    public long getNextLocalId() {
         return idSource.getNextId();
     }
 

@@ -6,16 +6,16 @@ import com.mysema.rdfbean.model.RepositoryException;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class JenaTransaction implements RDFBeanTransaction{
+public class JenaTransaction implements RDFBeanTransaction {
 
     private final TransactionHandler transactionHandler;
-    
+
     private boolean rollbackOnly;
-    
+
     private boolean active = true;
-    
+
     public JenaTransaction(TransactionHandler transactionHandler) {
         this.transactionHandler = transactionHandler;
         transactionHandler.begin();
@@ -23,9 +23,9 @@ public class JenaTransaction implements RDFBeanTransaction{
 
     @Override
     public void commit() {
-        if (rollbackOnly){
+        if (rollbackOnly) {
             throw new RepositoryException("Transaction is rollBackOnly");
-        }        
+        }
         transactionHandler.commit();
         active = false;
     }
@@ -42,7 +42,7 @@ public class JenaTransaction implements RDFBeanTransaction{
 
     @Override
     public void prepare() {
-        
+
     }
 
     @Override

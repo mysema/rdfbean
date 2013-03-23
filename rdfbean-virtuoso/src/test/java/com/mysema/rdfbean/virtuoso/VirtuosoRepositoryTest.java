@@ -18,55 +18,55 @@ import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.io.NTriplesWriter;
 
-public class VirtuosoRepositoryTest extends AbstractConnectionTest{
-    
+public class VirtuosoRepositoryTest extends AbstractConnectionTest {
+
     @Test
-    public void Load() throws UnsupportedEncodingException{
+    public void Load() throws UnsupportedEncodingException {
         STMT stmt = new STMT(new BID(), RDF.type, new BID());
         toBeRemoved = Collections.singleton(stmt);
         String ntriples = NTriplesWriter.toString(stmt);
-        InputStream is = new ByteArrayInputStream(ntriples.getBytes("US-ASCII"));        
+        InputStream is = new ByteArrayInputStream(ntriples.getBytes("US-ASCII"));
         repository.load(Format.NTRIPLES, is, context2, false);
-        
+
         // blank node ids are not preserved in load
         assertNotExists(stmt.getSubject(), null, null, context2);
         assertNotExists(null, null, stmt.getObject(), context2);
     }
-    
+
     @Test
-    public void Load_RDF_XML(){
+    public void Load_RDF_XML() {
         connection.remove(null, null, null, context2);
         assertNotExists(null, null, null, context2);
-        
+
         InputStream is = getClass().getResourceAsStream("/foaf.rdf");
         repository.load(Format.RDFXML, is, context2, true);
         assertExists(null, null, null, context2);
     }
 
     @Test
-    public void Load_Turtle(){
+    public void Load_Turtle() {
         connection.remove(null, null, null, context2);
         assertNotExists(null, null, null, context2);
-        
+
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, context2, true);
         assertExists(null, null, null, context2);
     }
-    
+
     @Test
     @Ignore
-    public void Export() throws UnsupportedEncodingException{
+    public void Export() throws UnsupportedEncodingException {
         DummyOutputStream out = new DummyOutputStream();
         repository.export(Format.NTRIPLES, null, out);
         assertTrue(out.getLength() > 0);
     }
-    
+
     @Test
-    public void OpenConnection(){
+    public void OpenConnection() {
         RDFConnection connection = repository.openConnection();
-        try{
+        try {
             assertNotNull(connection);
-        }finally{
+        } finally {
             connection.close();
         }
     }

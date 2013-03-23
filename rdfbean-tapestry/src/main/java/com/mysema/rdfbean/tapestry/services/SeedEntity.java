@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.tapestry.services;
 
-
 public interface SeedEntity {
 
 }

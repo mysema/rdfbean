@@ -22,32 +22,31 @@ import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 
 public class SchemaExport {
-    
-    public static void main(String[] args) throws SQLException{
+
+    public static void main(String[] args) throws SQLException {
         JdbcDataSource ds = new JdbcDataSource();
         ds.setURL("jdbc:h2:target/h2");
         ds.setUser("sa");
         ds.setPassword("");
         Connection conn = ds.getConnection();
-        
+
         // export
-        try{
+        try {
             Configuration configuration = new DefaultConfiguration();
             SQLTemplates templates = new H2Templates();
             Repository repository = new RDBRepository(configuration, ds, templates, new MemoryIdSequence());
             repository.initialize();
-            
-            NamingStrategy namingStrategy = new DefaultNamingStrategy();            
+
+            NamingStrategy namingStrategy = new DefaultNamingStrategy();
             MetaDataExporter exporter = new MetaDataExporter();
             exporter.setPackageName("com.mysema.rdfbean.rdb.schema");
             exporter.setTargetFolder(new File("src/main/java"));
             exporter.setNamingStrategy(namingStrategy);
-            exporter.export(conn.getMetaData());    
-        }finally{
+            exporter.export(conn.getMetaData());
+        } finally {
             conn.close();
         }
-        
-        
+
     }
 
 }

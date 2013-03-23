@@ -10,24 +10,27 @@ import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Objects;
 
-
 /**
  * @author sasa
- *
+ * 
  */
 @Immutable
 public final class STMTMatcher {
-    
-    @Nullable private final ID subject;
-    
-    @Nullable private final UID predicate;
-    
-    @Nullable private final NODE object;    
-    
-    @Nullable private final UID context;
-    
+
+    @Nullable
+    private final ID subject;
+
+    @Nullable
+    private final UID predicate;
+
+    @Nullable
+    private final NODE object;
+
+    @Nullable
+    private final UID context;
+
     private final boolean includeInferred;
-    
+
     public STMTMatcher(@Nullable ID subject, @Nullable UID predicate, @Nullable NODE object, @Nullable UID context,
             boolean includeInferred) {
         super();
@@ -37,31 +40,31 @@ public final class STMTMatcher {
         this.context = context;
         this.includeInferred = includeInferred;
     }
-    
+
     @Nullable
     public ID getSubject() {
         return subject;
     }
-    
+
     @Nullable
     public UID getPredicate() {
         return predicate;
     }
-    
+
     @Nullable
     public NODE getObject() {
         return object;
     }
-    
+
     @Nullable
     public UID getContext() {
         return context;
     }
-        
+
     public boolean isIncludeInferred() {
         return includeInferred;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -73,57 +76,57 @@ public final class STMTMatcher {
         result = prime * result + (includeInferred ? 1231 : 1237);
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         } else if (obj instanceof STMTMatcher) {
             STMTMatcher other = (STMTMatcher) obj;
-            
+
             // s
-            if (!Objects.equal(subject, other.subject)){
-        	return false;
-            // p
-            }else if (!Objects.equal(predicate, other.predicate)){
-        	return false;
-            // o
-            }else if (!Objects.equal(object, other.object)){
-        	return false;
-            // c
-            }else if (!Objects.equal(context, other.context)){
-        	return false;
-            }                
-            
-            if (includeInferred != other.includeInferred){
+            if (!Objects.equal(subject, other.subject)) {
                 return false;
-            }                
-    
+                // p
+            } else if (!Objects.equal(predicate, other.predicate)) {
+                return false;
+                // o
+            } else if (!Objects.equal(object, other.object)) {
+                return false;
+                // c
+            } else if (!Objects.equal(context, other.context)) {
+                return false;
+            }
+
+            if (includeInferred != other.includeInferred) {
+                return false;
+            }
+
             return true;
-            
+
         } else {
             return false;
         }
     }
-    
+
     public static boolean matches(STMT stmt, ID subject, UID predicate, NODE object, UID context, boolean includeInferred) {
-        return 
+        return
         // Subject match
         (subject == null || subject.equals(stmt.getSubject())) &&
 
-        // Predicate match
-        (predicate == null || predicate.equals(stmt.getPredicate())) &&
-        
-        // Object match
-        (object == null || object.equals(stmt.getObject())) &&
-        
-        // Context match
-        (context == null || context.equals(stmt.getContext())) &&
-        
-        // Asserted or includeInferred statement
-        (includeInferred || stmt.isAsserted());
+                // Predicate match
+                (predicate == null || predicate.equals(stmt.getPredicate())) &&
+
+                // Object match
+                (object == null || object.equals(stmt.getObject())) &&
+
+                // Context match
+                (context == null || context.equals(stmt.getContext())) &&
+
+                // Asserted or includeInferred statement
+                (includeInferred || stmt.isAsserted());
     }
-    
+
     public boolean matches(STMT stmt) {
         return matches(stmt, subject, predicate, object, context, includeInferred);
     }

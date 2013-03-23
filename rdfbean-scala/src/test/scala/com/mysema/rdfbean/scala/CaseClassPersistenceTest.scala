@@ -8,29 +8,28 @@ import org.junit.{ Ignore, Test, Before, After };
 import org.junit.Assert._;
 
 class CaseClassPersistenceTest {
-     
+
   @Test
   def Save {
     val session = SessionUtil.openSession(classOf[PersonCase])
     var person = new PersonCase(null, "John", "Smith")
-    session.save(person);    
+    session.save(person);
     session.clear();
-    
+
     person = session.getById(person.id, classOf[PersonCase])
     assertEquals("John", person.firstName)
     assertEquals("Smith", person.lastName)
   }
-     
+
 }
 
 @ClassMapping
 case class PersonCase(
   @Id id: String,
-  
-  @Predicate firstName: String, 
-  
-  @Predicate lastName: String){
-  
-}
 
+  @Predicate firstName: String,
+
+  @Predicate lastName: String) {
+
+}
 

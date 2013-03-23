@@ -26,8 +26,9 @@ import com.mysema.rdfbean.object.SessionCallback;
 import com.mysema.rdfbean.object.SessionFactory;
 
 /**
- * BeanGridDataSource provides an implementation of the GridDataSource interface for RDFBean
- *
+ * BeanGridDataSource provides an implementation of the GridDataSource interface
+ * for RDFBean
+ * 
  * @author tiwe
  */
 public class BeanGridDataSource<T> implements GridDataSource {
@@ -53,11 +54,14 @@ public class BeanGridDataSource<T> implements GridDataSource {
 
     /**
      * Create a new BeanGridDataSource instance with no filter conditions
-     *
+     * 
      * @param sessionFactory
-     * @param entity root entity of the query
-     * @param defaultOrder default order for queries, if no order is specified
-     * @param caseSensitive case sensitive ordering
+     * @param entity
+     *            root entity of the query
+     * @param defaultOrder
+     *            default order for queries, if no order is specified
+     * @param caseSensitive
+     *            case sensitive ordering
      */
     public BeanGridDataSource(SessionFactory sessionFactory, EntityPath<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive) {
         this(sessionFactory, entity, defaultOrder, caseSensitive, null);
@@ -65,30 +69,34 @@ public class BeanGridDataSource<T> implements GridDataSource {
 
     /**
      * Create a new BeanGridDataSource instance with filter conditions
-     *
+     * 
      * @param sessionFactory
-     * @param entity root entity of the query
-     * @param defaultOrder default order for queries, if no order is specified
-     * @param caseSensitive case sensitive ordering
-     * @param conditions filter conditions
+     * @param entity
+     *            root entity of the query
+     * @param defaultOrder
+     *            default order for queries, if no order is specified
+     * @param caseSensitive
+     *            case sensitive ordering
+     * @param conditions
+     *            filter conditions
      */
     @SuppressWarnings("unchecked")
     public BeanGridDataSource(SessionFactory sessionFactory, EntityPath<T> entity, OrderSpecifier<?> defaultOrder, boolean caseSensitive, @Nullable Predicate conditions) {
-        this.sessionFactory = Assert.notNull(sessionFactory,"sessionFactory");
-        this.entityType = (Class<T>) Assert.notNull(entity.getType(),"entity has no type");
+        this.sessionFactory = Assert.notNull(sessionFactory, "sessionFactory");
+        this.entityType = (Class<T>) Assert.notNull(entity.getType(), "entity has no type");
         this.entityPath = new PathBuilder<T>(entity.getType(), entity.getMetadata());
-        this.defaultOrder = Assert.notNull(defaultOrder,"defaultOrder");
+        this.defaultOrder = Assert.notNull(defaultOrder, "defaultOrder");
         this.conditions = conditions;
         this.caseSensitive = caseSensitive;
     }
 
     @Override
     public int getAvailableRows() {
-        return sessionFactory.execute(new SessionCallback<Integer>(){
+        return sessionFactory.execute(new SessionCallback<Integer>() {
             @Override
             public Integer doInSession(Session session) {
                 BeanQuery beanQuery = session.from(entityPath);
-                if (conditions != null){
+                if (conditions != null) {
                     beanQuery.where(conditions);
                 }
                 return (int) beanQuery.count();
@@ -98,8 +106,8 @@ public class BeanGridDataSource<T> implements GridDataSource {
 
     @Override
     public void prepare(final int start, final int end, final List<SortConstraint> sortConstraints) {
-        Assert.notNull(sortConstraints,"sortContraints");
-        sessionFactory.execute(new SessionCallback<Void>(){
+        Assert.notNull(sortConstraints, "sortContraints");
+        sessionFactory.execute(new SessionCallback<Void>() {
             @Override
             public Void doInSession(Session session) {
                 prepare(session, start, end, sortConstraints);
@@ -114,25 +122,29 @@ public class BeanGridDataSource<T> implements GridDataSource {
         BeanQuery beanQuery = session.from(entityPath);
         beanQuery.offset(startIndex);
         beanQuery.limit(endIndex - startIndex + 1);
-        if (sortConstraints.isEmpty()){
+        if (sortConstraints.isEmpty()) {
             beanQuery.orderBy(defaultOrder);
         }
         for (SortConstraint constraint : sortConstraints) {
             String propertyName = constraint.getPropertyModel().getPropertyName();
             Class<? extends Comparable<?>> propertyType = constraint.getPropertyModel().getPropertyType();
             ComparableExpression<?> propertyPath;
-            if (!caseSensitive && propertyType.equals(String.class)){
+            if (!caseSensitive && propertyType.equals(String.class)) {
                 propertyPath = entityPath.getString(propertyName).toLowerCase();
-            }else{
+            } else {
                 propertyPath = entityPath.getComparable(propertyName, propertyType);
             }
 
             switch (constraint.getColumnSort()) {
-                case ASCENDING:  beanQuery.orderBy(propertyPath.asc()); break;
-                case DESCENDING: beanQuery.orderBy(propertyPath.desc()); break;
+            case ASCENDING:
+                beanQuery.orderBy(propertyPath.asc());
+                break;
+            case DESCENDING:
+                beanQuery.orderBy(propertyPath.desc());
+                break;
             }
         }
-        if (conditions != null){
+        if (conditions != null) {
             beanQuery.where(conditions);
         }
         this.startIndex = startIndex;
@@ -142,10 +154,10 @@ public class BeanGridDataSource<T> implements GridDataSource {
     @Override
     public Object getRowValue(int index) {
         index = index - startIndex;
-        if (index < preparedResults.size()){
+        if (index < preparedResults.size()) {
             return preparedResults.get(index);
-        }else{
-            logger.error("Invalid index " + index + " (size " + preparedResults.size() + ")" );
+        } else {
+            logger.error("Invalid index " + index + " (size " + preparedResults.size() + ")");
             return null;
         }
     }

@@ -9,25 +9,25 @@ import org.junit.Assert._;
 
 class ImmutablePersistenceTest {
 
-  @Test 
+  @Test
   def Save {
     val session = SessionUtil.openSession(classOf[PersonImmutable])
     var person = new PersonImmutable(null, "John", "Smith")
     session.save(person)
     session.clear()
-    
+
     person = session.getById(person.id, classOf[PersonImmutable])
     assertEquals("John", person.firstName)
     assertEquals("Smith", person.lastName)
-  }  
-    
+  }
+
 }
 
 @ClassMapping
-class PersonImmutable (
-  @Id val id: String,  
-  
+class PersonImmutable(
+  @Id val id: String,
+
   @Predicate val firstName: String,
-  
-  @Predicate val lastName: String){
+
+  @Predicate val lastName: String) {
 }

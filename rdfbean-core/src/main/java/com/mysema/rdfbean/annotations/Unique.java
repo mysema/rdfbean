@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * 
  */
 @Documented
-@Target( { METHOD, FIELD, PARAMETER })
+@Target({ METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Unique {
 

@@ -17,13 +17,13 @@ public class ServiceBImpl implements ServiceB {
     private SessionFactory sessionFactory;
 
     @Override
-    public void txMethod(){
+    public void txMethod() {
         assertTrue(sessionFactory.getCurrentSession() != null);
         assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
     }
 
     @Override
-    public void nonTxMethod(){
+    public void nonTxMethod() {
         assertTrue(sessionFactory.getCurrentSession() == null);
     }
 

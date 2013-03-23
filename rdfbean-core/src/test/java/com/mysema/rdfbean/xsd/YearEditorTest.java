@@ -7,7 +7,7 @@ import org.junit.Test;
 public class YearEditorTest {
 
     private YearEditor editor = new YearEditor();
-    
+
     @Test
     public void GetAsText() {
         editor.setValue(new Year(2000));

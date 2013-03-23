@@ -16,17 +16,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * &#64;Mixin defines that a property's value is another instance of the same subject. 
- * Thus it is never used in conjunction with &#64;Predicate. &#64;Mixin property's type
- * may not be assignable from the host type (self reference). 
+ * &#64;Mixin defines that a property's value is another instance of the same
+ * subject. Thus it is never used in conjunction with &#64;Predicate. &#64;Mixin
+ * property's type may not be assignable from the host type (self reference).
  * <p>
- * Mixin references are useful when there's multiple projections (DTOs) for the same 
- * underlying resource, e.g. one containing only basic information about the subject and 
- * another containing everything else. The class containing details don't have to repeat
- * info classes properties as it can reuse it using &#64;Mixin property.
+ * Mixin references are useful when there's multiple projections (DTOs) for the
+ * same underlying resource, e.g. one containing only basic information about
+ * the subject and another containing everything else. The class containing
+ * details don't have to repeat info classes properties as it can reuse it using
+ * &#64;Mixin property.
  * </p>
  * <p>
- * For example 
+ * For example
+ * 
  * <pre>
  * &#64;ClassMapping(ns=OWL.NS, ln="Class")
  * public class ClassInfo {
@@ -61,7 +63,7 @@ import java.lang.annotation.Target;
  * @author sasa
  */
 @Documented
-@Target( { METHOD, FIELD, PARAMETER })
+@Target({ METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Mixin {

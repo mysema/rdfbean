@@ -39,7 +39,7 @@ public class MixinTest {
     private LID lid;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         session = SessionUtil.openSession(AType.class, BType.class);
         lid = session.save(new AType());
         session.flush();

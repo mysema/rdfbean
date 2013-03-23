@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.model;
 
-
 /**
  * @author tiwe
  */
@@ -33,21 +32,21 @@ public enum Format {
     /**
      * 
      */
-    TURTLE("application/x-turtle"); 
-    
+    TURTLE("application/x-turtle");
+
     private final String mimetype;
-    
-    private Format(String mime){
+
+    private Format(String mime) {
         this.mimetype = mime;
     }
-    
-    public String getMimetype(){
+
+    public String getMimetype() {
         return mimetype;
     }
 
     public static Format getFormat(String contentType, Format defaultFormat) {
-        for (Format format : values()){
-            if (format.mimetype.equals(contentType)){
+        for (Format format : values()) {
+            if (format.mimetype.equals(contentType)) {
                 return format;
             }
         }

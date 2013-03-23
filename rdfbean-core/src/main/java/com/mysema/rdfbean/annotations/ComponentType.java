@@ -15,13 +15,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines the ComponentType of a Collection or value type of a Map if it's not reachable through 
- * generic types. 
+ * Defines the ComponentType of a Collection or value type of a Map if it's not
+ * reachable through generic types.
  * 
  * @author sasa
  */
 @Documented
-@Target( { METHOD, FIELD, PARAMETER })
+@Target({ METHOD, FIELD, PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ComponentType {
 
@@ -29,5 +29,5 @@ public @interface ComponentType {
      * @return
      */
     Class<?> value();
-    
+
 }

@@ -16,11 +16,11 @@ import com.mysema.rdfbean.domains.UserProfileDomain.User;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({User.class, Profile.class, Identifiable.class})
-public class QueryByExampleTest extends AbstractRDBTest implements UserProfileDomain{
-    
+@SessionConfig({ User.class, Profile.class, Identifiable.class })
+public class QueryByExampleTest extends AbstractRDBTest implements UserProfileDomain {
+
     @Test
-    public void test(){
+    public void test() {
         User user = new User();
         user.email = "a@b.com";
         user.firstName = "Anton";
@@ -28,20 +28,20 @@ public class QueryByExampleTest extends AbstractRDBTest implements UserProfileDo
         user.password = "pass";
         user.profile = Profile.Admin;
         session.save(user);
-        
+
         User example = new User();
         example.email = user.getEmail();
         assertEquals(user, session.getByExample(example));
-        
+
         example.firstName = user.getFirstName();
         assertEquals(user, session.getByExample(example));
-        
+
         example.lastName = user.getLastName();
         assertEquals(user, session.getByExample(example));
-        
+
         example.password = user.getPassword();
         assertEquals(user, session.getByExample(example));
-        
+
         example.profile = user.getProfile();
         assertEquals(user, session.getByExample(example));
     }

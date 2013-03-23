@@ -5,8 +5,8 @@ import org.junit.Test;
 public class ExampleQueryTest {
 
     @Test
-    public void test(){
+    public void test() {
         // TODO
     }
-    
+
 }

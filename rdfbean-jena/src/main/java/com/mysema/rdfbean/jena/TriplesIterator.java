@@ -13,17 +13,17 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public final class TriplesIterator implements CloseableIterator<STMT> {
-        
+
     private final JenaDialect dialect;
-    
+
     private final ExtendedIterator<Triple> triples;
 
     @Nullable
     private final UID context;
-    
+
     public TriplesIterator(JenaDialect dialect, ExtendedIterator<Triple> triples, @Nullable UID context) {
         this.dialect = dialect;
         this.triples = triples;
@@ -32,7 +32,7 @@ public final class TriplesIterator implements CloseableIterator<STMT> {
 
     @Override
     public void close() {
-        triples.close();                
+        triples.close();
     }
 
     @Override

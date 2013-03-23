@@ -22,70 +22,70 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 import com.mysema.rdfbean.virtuoso.AbstractConnectionTest;
 
 @SessionConfig(User.class)
-public class OrderTest extends AbstractConnectionTest implements UserDomain{
-    
+public class OrderTest extends AbstractConnectionTest implements UserDomain {
+
     private User user = Alias.alias(User.class, "u");
-    
+
     @Test
-    public void OrderBy() throws  IOException{
+    public void OrderBy() throws IOException {
         session.save(new User());
         assertFalse(session.from($(user))
                 .orderBy($(user.getFirstName()).asc()).list($(user)).isEmpty());
-        
+
         assertFalse(session.from($(user))
                 .where($(user.getFirstName()).isNull())
                 .orderBy($(user.getFirstName()).asc()).list($(user)).isEmpty());
     }
-    
+
     @Test
-    public void CorrectOrder() throws  IOException{
-        for (User user : session.findInstances(User.class)){
+    public void CorrectOrder() throws IOException {
+        for (User user : session.findInstances(User.class)) {
             session.delete(user);
         }
-        
-        for (String name : Arrays.asList("C","A","D","B")){
-            session.save(new User(name));    
+
+        for (String name : Arrays.asList("C", "A", "D", "B")) {
+            session.save(new User(name));
         }
-        
+
         List<String> results = session.from($(user))
-            .orderBy($(user.getFirstName()).asc())
-            .list($(user.getFirstName()));
-        assertEquals(Arrays.asList("A","B","C","D"), results);
+                .orderBy($(user.getFirstName()).asc())
+                .list($(user.getFirstName()));
+        assertEquals(Arrays.asList("A", "B", "C", "D"), results);
     }
-    
+
     @Test
-    public void OrderWithOffset() throws  IOException{  
-        for(User user : session.findInstances(User.class)){
+    public void OrderWithOffset() throws IOException {
+        for (User user : session.findInstances(User.class)) {
             session.delete(user);
         }
-        
-        for (String name : Arrays.asList("C","A","D","B")){
-            session.save(new User(name));    
+
+        for (String name : Arrays.asList("C", "A", "D", "B")) {
+            session.save(new User(name));
         }
-        
+
         List<String> results;
-        
+
         // #1
-//        List<String> results = session.from($(user))
-//            .orderBy($(user.getFirstName()).asc())
-//            .offset(1)
-//            .list($(user.getFirstName()));
-//        assertEquals(Arrays.asList("B","C","D"), results);
+        // List<String> results = session.from($(user))
+        // .orderBy($(user.getFirstName()).asc())
+        // .offset(1)
+        // .list($(user.getFirstName()));
+        // assertEquals(Arrays.asList("B","C","D"), results);
 
         // #2
         results = session.from($(user))
-            .orderBy($(user.getFirstName()).asc())
-            .limit(3)
-            .list($(user.getFirstName()));
-        assertEquals(Arrays.asList("A","B","C"), results);
-        
+                .orderBy($(user.getFirstName()).asc())
+                .limit(3)
+                .list($(user.getFirstName()));
+        assertEquals(Arrays.asList("A", "B", "C"), results);
+
         // #3
         results = session.from($(user))
-            .orderBy($(user.getFirstName()).asc())
-            .offset(1)
-            .limit(2)
-            .list($(user.getFirstName()));
-        assertEquals(Arrays.asList("B","C"), results);
+                .orderBy($(user.getFirstName()).asc())
+                .offset(1)
+                .limit(2)
+                .list($(user.getFirstName()));
+        assertEquals(Arrays.asList("B", "C"), results);
     }
 
 }

@@ -20,20 +20,20 @@ import com.mysema.rdfbean.domains.NoteTermDomain.Term;
 import com.mysema.rdfbean.rdb.AbstractRDBTest;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({Note.class, Term.class})
-public class OptionalPathsTest extends AbstractRDBTest implements NoteTermDomain{
-    
+@SessionConfig({ Note.class, Term.class })
+public class OptionalPathsTest extends AbstractRDBTest implements NoteTermDomain {
+
     @Test
-    public void test() throws IOException{
+    public void test() throws IOException {
         Note note = new Note();
         note.lemma = "a";
         session.save(note);
-        
+
         Note noteVar = Alias.alias(Note.class);
         BooleanBuilder builder = new BooleanBuilder();
         builder.or($(noteVar.getLemma()).eq("a"));
         builder.or($(noteVar.getTerm().getMeaning()).eq("a"));
-        assertFalse(session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).isEmpty());               
+        assertFalse(session.from($(noteVar)).where(builder.getValue()).list($(noteVar)).isEmpty());
     }
 
 }

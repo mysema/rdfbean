@@ -21,8 +21,8 @@ public class RDFBeanModuleTest {
     private static Injector injector;
 
     @BeforeClass
-    public static void setUp(){
-        injector = Guice.createInjector(new RDFBeanModule(){
+    public static void setUp() {
+        injector = Guice.createInjector(new RDFBeanModule() {
             @Override
             protected void configure() {
                 super.configure();
@@ -31,6 +31,7 @@ public class RDFBeanModuleTest {
                 bind(ServiceC.class);
                 bind(ServiceD.class).to(ServiceDImpl.class);
             }
+
             @Override
             public Repository createRepository(Configuration configuration, @Config Properties properties) {
                 return new MemoryRepository();
@@ -39,7 +40,7 @@ public class RDFBeanModuleTest {
     }
 
     @Test
-    public void tx1(){
+    public void tx1() {
         ServiceA service = injector.getInstance(ServiceA.class);
         service.nonTxMethod();
         service.nonTxMethod2();
@@ -50,7 +51,7 @@ public class RDFBeanModuleTest {
     }
 
     @Test
-    public void tx2(){
+    public void tx2() {
         ServiceB service = injector.getInstance(ServiceB.class);
         service.txMethod();
         service.txReadonly();
@@ -58,26 +59,26 @@ public class RDFBeanModuleTest {
     }
 
     @Test
-    public void tx3(){
+    public void tx3() {
         ServiceC service = injector.getInstance(ServiceC.class);
         service.txMethod();
         service.nonTxMethod();
     }
 
     @Test
-    public void tx4(){
+    public void tx4() {
         ServiceD service = injector.getInstance(ServiceD.class);
         service.txMethod();
     }
 
-    @Test(expected=Exception.class)
-    public void txMethodWithException_commit() throws Exception{
+    @Test(expected = Exception.class)
+    public void txMethodWithException_commit() throws Exception {
         ServiceA service = injector.getInstance(ServiceA.class);
         service.txMethodWithException_commit();
     }
 
-    @Test(expected=Exception.class)
-    public void txMethodWithException_rollback() throws Exception{
+    @Test(expected = Exception.class)
+    public void txMethodWithException_rollback() throws Exception {
         ServiceA service = injector.getInstance(ServiceA.class);
         service.txMethodWithException_rollback();
     }

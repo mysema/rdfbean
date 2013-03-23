@@ -20,12 +20,12 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 public class SesameSessionFactoryTest {
 
     @Test
-    public void test() throws RDFParseException, IOException{
+    public void test() throws RDFParseException, IOException {
         MemoryRepository repository = new MemoryRepository();
         repository.setSources(
                 new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),
                 new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
-        );
+                );
         repository.initialize();
 
         SessionFactoryImpl sessionFactory = new SessionFactoryImpl();
@@ -33,11 +33,12 @@ public class SesameSessionFactoryTest {
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
 
-//        assertTrue(sessionFactory.getCurrentSession() == null);
-//        assertTrue(SessionFactoryUtils.createSession(sessionFactory));
-//        assertTrue(sessionFactory.getCurrentSession() != null);
-//        assertTrue(SessionFactoryUtils.releaseSession(sessionFactory.getCurrentSession(), sessionFactory));
-//        assertTrue(sessionFactory.getCurrentSession() == null);
+        // assertTrue(sessionFactory.getCurrentSession() == null);
+        // assertTrue(SessionFactoryUtils.createSession(sessionFactory));
+        // assertTrue(sessionFactory.getCurrentSession() != null);
+        // assertTrue(SessionFactoryUtils.releaseSession(sessionFactory.getCurrentSession(),
+        // sessionFactory));
+        // assertTrue(sessionFactory.getCurrentSession() == null);
     }
 
 }

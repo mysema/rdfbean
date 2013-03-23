@@ -22,59 +22,59 @@ import com.mysema.rdfbean.object.Session;
 import com.mysema.rdfbean.object.SessionFactoryImpl;
 import com.mysema.util.FileUtils;
 
-public class MemoryStoreTest implements ItemDomain{
-    
+public class MemoryStoreTest implements ItemDomain {
+
     private static final String DATA_DIR = "target/MemoryStoreTest";
-    
+
     private SessionFactoryImpl sessionFactory;
-    
+
     @Before
-    public void setUp() throws IOException{
-	Configuration configuration = new DefaultConfiguration(Item.class);
+    public void setUp() throws IOException {
+        Configuration configuration = new DefaultConfiguration(Item.class);
         MemoryRepository repository = new MemoryRepository();
-        if (new File(DATA_DIR).exists()){
+        if (new File(DATA_DIR).exists()) {
             FileUtils.delete(new File(DATA_DIR));
             new File(DATA_DIR).mkdir();
-        }        
+        }
         repository.setSesameInference(false);
         repository.setDataDirName(DATA_DIR);
         repository.setSources(
-            new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),
-            new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
-        );
-        
+                new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),
+                new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
+                );
+
         sessionFactory = new SessionFactoryImpl();
         sessionFactory.setConfiguration(configuration);
         sessionFactory.setRepository(repository);
         sessionFactory.initialize();
     }
-    
+
     @After
-    public void tearDown(){
-	sessionFactory.close();
+    public void tearDown() {
+        sessionFactory.close();
     }
-    
+
     @Test
-    public void test() throws IOException{       
-	Session session = sessionFactory.openSession();
-        RDFBeanTransaction tx = session.beginTransaction();        
-        
+    public void test() throws IOException {
+        Session session = sessionFactory.openSession();
+        RDFBeanTransaction tx = session.beginTransaction();
+
         Item item = new Item();
         item.setPath("xxx");
         session.save(item);
         tx.commit();
         session.close();
-        
+
         session = sessionFactory.openSession();
         QItem itemVar = QItem.item;
-        try{
+        try {
             assertEquals(1, session.from(itemVar).list(itemVar).size());
             Item i = session.from(itemVar).list(itemVar).get(0);
             assertNotNull(i);
             assertEquals("xxx", i.getPath());
-            
-            assertNotNull(session.from(itemVar).where(itemVar.path.eq("xxx")).uniqueResult(itemVar));    
-        }finally{
+
+            assertNotNull(session.from(itemVar).where(itemVar.path.eq("xxx")).uniqueResult(itemVar));
+        } finally {
             session.close();
         }
     }

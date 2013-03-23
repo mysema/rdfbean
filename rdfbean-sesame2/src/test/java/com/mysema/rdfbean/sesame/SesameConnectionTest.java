@@ -18,7 +18,6 @@ import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
-
 public class SesameConnectionTest {
 
     private Repository repository;
@@ -26,27 +25,27 @@ public class SesameConnectionTest {
     private RDFConnection conn;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         repository = new MemoryRepository();
         repository.initialize();
         conn = repository.openConnection();
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         conn.close();
         repository.close();
     }
 
     @Test
-    public void Update_with_nulls(){
-        conn.update(Collections.<STMT>emptySet(), null);
-        conn.update(null, Collections.<STMT>emptySet());
+    public void Update_with_nulls() {
+        conn.update(Collections.<STMT> emptySet(), null);
+        conn.update(null, Collections.<STMT> emptySet());
         conn.update(null, null);
     }
 
     @Test
-    public void Exists(){
+    public void Exists() {
         UID context = new UID(TEST.NS);
         assertFalse(conn.exists(null, null, null, context, false));
         conn.update(null, Collections.singleton(new STMT(new BID(), RDF.type, RDFS.Class, context)));

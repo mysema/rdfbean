@@ -8,12 +8,12 @@ import org.junit.Test;
 public class PatternBlockTest {
 
     @Test
-    public void Exists(){
+    public void Exists() {
         assertEquals("exists { {s} {p} {o} .  }", Blocks.SPO.exists().toString());
     }
 
     @Test
-    public void Equals(){
+    public void Equals() {
         assertFalse(Blocks.SPOC.equals(Blocks.SPO));
     }
 

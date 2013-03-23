@@ -8,20 +8,19 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class GraphResultIterator extends AbstractResultIterator{
-    
+public class GraphResultIterator extends AbstractResultIterator {
+
     private final GraphResult graphResult;
-    
-    public GraphResultIterator(GraphResult graphResult, SesameDialect dialect){
+
+    public GraphResultIterator(GraphResult graphResult, SesameDialect dialect) {
         super(dialect);
         this.graphResult = graphResult;
     }
-    
 
     @Override
-    public void close(){
+    public void close() {
         try {
             graphResult.close();
         } catch (StoreException e1) {
@@ -51,7 +50,5 @@ public class GraphResultIterator extends AbstractResultIterator{
     public void remove() {
         throw new UnsupportedOperationException("remove");
     }
-    
-
 
 }

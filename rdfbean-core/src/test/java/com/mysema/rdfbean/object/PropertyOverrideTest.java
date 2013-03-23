@@ -20,7 +20,7 @@ public class PropertyOverrideTest {
 
     @ClassMapping
     public static class WithinClass {
-        @Predicate(ns=TEST.NS)
+        @Predicate(ns = TEST.NS)
         private WithinClass reference;
 
         @InjectService

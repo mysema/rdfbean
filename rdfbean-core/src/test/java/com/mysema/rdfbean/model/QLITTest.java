@@ -5,11 +5,11 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 public class QLITTest {
-    
+
     private static final QLIT lit = new QLIT("lit");
 
     private static final LIT val = new LIT("X");
-    
+
     @Test
     public void LtLIT() {
         assertEquals("{lit} < \"X\"", lit.lt(val).toString());

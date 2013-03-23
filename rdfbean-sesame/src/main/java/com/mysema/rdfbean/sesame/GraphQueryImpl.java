@@ -23,9 +23,9 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class GraphQueryImpl implements SPARQLQuery{
+public class GraphQueryImpl implements SPARQLQuery {
 
     private final SesameDialect dialect;
 
@@ -72,7 +72,7 @@ public class GraphQueryImpl implements SPARQLQuery{
             Model model = result.asModel();
             model = new ModelOrganizer(model).organize();
             RDFFormat targetFormat = RDFFormat.forMIMEType(contentType);
-            if (targetFormat == null){
+            if (targetFormat == null) {
                 targetFormat = RDFFormat.RDFXML;
             }
             RDFWriter rdfWriter = Rio.createWriter(targetFormat, writer);
@@ -101,6 +101,5 @@ public class GraphQueryImpl implements SPARQLQuery{
     public void setMaxQueryTime(int secs) {
         graphQuery.setMaxQueryTime(secs);
     }
-
 
 }

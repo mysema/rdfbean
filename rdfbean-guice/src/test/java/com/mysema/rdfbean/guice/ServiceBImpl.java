@@ -12,18 +12,18 @@ import com.mysema.rdfbean.object.SessionFactory;
 
 public class ServiceBImpl implements ServiceB {
 
-    @Inject 
+    @Inject
     private SessionFactory sessionFactory;
-    
+
     @Override
-    public void txMethod(){
+    public void txMethod() {
         assertTrue(sessionFactory.getCurrentSession() != null);
         assertTrue(sessionFactory.getCurrentSession().getTransaction().isActive());
     }
-    
+
     @Override
-    public void nonTxMethod(){
-        assertTrue(sessionFactory.getCurrentSession() == null);        
+    public void nonTxMethod() {
+        assertTrue(sessionFactory.getCurrentSession() == null);
     }
 
     @Override

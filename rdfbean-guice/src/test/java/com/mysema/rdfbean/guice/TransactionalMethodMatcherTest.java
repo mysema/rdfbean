@@ -13,19 +13,19 @@ import java.util.Arrays;
 import org.junit.Test;
 
 public class TransactionalMethodMatcherTest {
-    
+
     @SuppressWarnings("unchecked")
     @Test
-    public void test(){
+    public void test() {
         TransactionalMethodMatcher matcher = new TransactionalMethodMatcher();
-        for (Class<?> cl : Arrays.asList(ServiceA.class, ServiceB.class, ServiceBImpl.class, ServiceC.class)){
+        for (Class<?> cl : Arrays.asList(ServiceA.class, ServiceB.class, ServiceBImpl.class, ServiceC.class)) {
             System.out.println(cl.getSimpleName());
-            for (Method m : cl.getMethods()){
-                if (m.getName().toLowerCase().contains("tx")){
+            for (Method m : cl.getMethods()) {
+                if (m.getName().toLowerCase().contains("tx")) {
                     boolean matched = matcher.matches(m);
-                    System.out.println(" " + m.getName() + " : " + matched);    
-                    assertEquals(m.getName()+"failed", matched, m.getName().toLowerCase().startsWith("tx")); 
-                }                
+                    System.out.println(" " + m.getName() + " : " + matched);
+                    assertEquals(m.getName() + "failed", matched, m.getName().toLowerCase().startsWith("tx"));
+                }
             }
             System.out.println();
         }

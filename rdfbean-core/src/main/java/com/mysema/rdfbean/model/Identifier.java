@@ -16,5 +16,5 @@ public interface Identifier {
      * @return
      */
     String getId();
-    
+
 }

@@ -16,12 +16,12 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class BooleanQueryImpl extends AbstractQueryImpl {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(BooleanQueryImpl.class);
-    
+
     public BooleanQueryImpl(Connection connection, int prefetch, String query) {
         super(connection, prefetch, query);
     }
@@ -35,7 +35,7 @@ public class BooleanQueryImpl extends AbstractQueryImpl {
         } catch (SQLException e) {
             logger.error(query);
             throw new RepositoryException(e);
-        }finally{
+        } finally {
             close();
         }
     }
@@ -62,7 +62,7 @@ public class BooleanQueryImpl extends AbstractQueryImpl {
 
     @Override
     public void streamTriples(Writer writer, String contentType) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
 
 }

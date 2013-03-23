@@ -47,7 +47,7 @@ public interface EntityDomain {
         @Predicate
         public String text2;
 
-        public String getProperty(){
+        public String getProperty() {
             return property;
         }
 
@@ -59,9 +59,10 @@ public interface EntityDomain {
             return text2;
         }
 
-        public Entity(){}
+        public Entity() {
+        }
 
-        public Entity(long rev, String t, DateTime c){
+        public Entity(long rev, String t, DateTime c) {
             revision = rev;
             text = t;
             created = c;
@@ -118,7 +119,7 @@ public interface EntityDomain {
         }
 
         public QEntity(EntityPathBase<? extends EntityDomain.Entity> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QEntity(PathMetadata<?> metadata) {

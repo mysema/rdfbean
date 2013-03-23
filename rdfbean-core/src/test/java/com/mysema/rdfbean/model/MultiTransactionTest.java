@@ -14,11 +14,11 @@ public class MultiTransactionTest {
     private MultiTransaction tx;
 
     @Before
-    public void setUp(){
-	MiniRepository repository = new MiniRepository();
+    public void setUp() {
+        MiniRepository repository = new MiniRepository();
         MultiConnection connection = new MultiConnection(repository.openConnection(), repository.openConnection());
         RDFBeanTransaction innerTx = EasyMock.createNiceMock(RDFBeanTransaction.class);
-        tx = new MultiTransaction(connection, new RDFBeanTransaction[]{innerTx});
+        tx = new MultiTransaction(connection, new RDFBeanTransaction[] { innerTx });
     }
 
     @Test

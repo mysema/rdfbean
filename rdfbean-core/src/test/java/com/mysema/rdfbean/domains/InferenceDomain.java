@@ -16,18 +16,18 @@ import com.mysema.rdfbean.annotations.Id;
 public interface InferenceDomain {
 
     @ClassMapping
-    public static class Entity1{
+    public static class Entity1 {
         @Id
         public String id;
     }
 
     @ClassMapping
-    public static class Entity2 extends Entity1{
+    public static class Entity2 extends Entity1 {
 
     }
 
     @ClassMapping
-    public static class Entity3 extends Entity2{
+    public static class Entity3 extends Entity2 {
 
     }
 
@@ -44,7 +44,7 @@ public interface InferenceDomain {
         }
 
         public QEntity1(EntityPathBase<? extends InferenceDomain.Entity1> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QEntity1(PathMetadata<?> metadata) {
@@ -61,7 +61,7 @@ public interface InferenceDomain {
 
         public final QEntity1 _super = new QEntity1(this);
 
-        //inherited
+        // inherited
         public final StringPath id = _super.id;
 
         public QEntity2(String variable) {
@@ -69,7 +69,7 @@ public interface InferenceDomain {
         }
 
         public QEntity2(EntityPathBase<? extends InferenceDomain.Entity2> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QEntity2(PathMetadata<?> metadata) {
@@ -86,7 +86,7 @@ public interface InferenceDomain {
 
         public final QEntity2 _super = new QEntity2(this);
 
-        //inherited
+        // inherited
         public final StringPath id = _super.id;
 
         public QEntity3(String variable) {
@@ -94,7 +94,7 @@ public interface InferenceDomain {
         }
 
         public QEntity3(EntityPathBase<? extends InferenceDomain.Entity3> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QEntity3(PathMetadata<?> metadata) {

@@ -19,7 +19,7 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class TupleQueryImpl implements SPARQLQuery {
 
@@ -42,8 +42,8 @@ public class TupleQueryImpl implements SPARQLQuery {
         throw new UnsupportedOperationException();
     }
 
-    private TupleQueryResult getResult() throws QueryEvaluationException{
-        if (result == null){
+    private TupleQueryResult getResult() throws QueryEvaluationException {
+        if (result == null) {
             result = query.evaluate();
         }
         return result;

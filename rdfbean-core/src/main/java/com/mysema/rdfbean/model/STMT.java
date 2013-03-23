@@ -10,25 +10,24 @@ import javax.annotation.concurrent.Immutable;
 
 import com.mysema.commons.lang.Assert;
 
-
 /**
  * STMT represents an RDF statement
  * 
  * @author sasa
- *
+ * 
  */
 @Immutable
 public final class STMT {
-    
+
     private final ID subject;
-        
+
     private final UID predicate;
-    
+
     private final NODE object;
-    
+
     @Nullable
     private final UID context;
-    
+
     private final boolean asserted;
 
     public STMT(ID subject, UID predicate, NODE object) {
@@ -38,15 +37,15 @@ public final class STMT {
     public STMT(ID subject, UID predicate, NODE object, @Nullable UID context) {
         this(subject, predicate, object, context, true);
     }
-    
+
     public STMT(STMT stmt, UID context) {
         this(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), context);
     }
 
     public STMT(ID subject, UID predicate, NODE object, @Nullable UID context, boolean asserted) {
-        this.subject = Assert.notNull(subject,"subject");
-        this.predicate = Assert.notNull(predicate,"predicate");
-        this.object = Assert.notNull(object,"object");
+        this.subject = Assert.notNull(subject, "subject");
+        this.predicate = Assert.notNull(predicate, "predicate");
+        this.object = Assert.notNull(object, "object");
         this.context = context;
         this.asserted = asserted;
     }
@@ -62,7 +61,7 @@ public final class STMT {
     public ID getSubject() {
         return subject;
     }
-    
+
     public String toString() {
         return "" + subject + " " + predicate + " " + object;
     }
@@ -97,30 +96,30 @@ public final class STMT {
         if (this == obj) {
             return true;
         } else if (obj instanceof STMT) {
-            STMT other = (STMT) obj;            
-            if (!subject.equals(other.subject)){
+            STMT other = (STMT) obj;
+            if (!subject.equals(other.subject)) {
                 return false;
-            }              
-            if (!predicate.equals(other.predicate)){
+            }
+            if (!predicate.equals(other.predicate)) {
                 return false;
-            }                           
-            if (!object.equals(other.object)){
+            }
+            if (!object.equals(other.object)) {
                 return false;
-            }                            
+            }
             if (context == null) {
-                if (other.context != null){
+                if (other.context != null) {
                     return false;
-                }                    
-            } else if (!context.equals(other.context)){
+                }
+            } else if (!context.equals(other.context)) {
                 return false;
-            }                
-            if (asserted != other.asserted){
+            }
+            if (asserted != other.asserted) {
                 return false;
-            }                
+            }
             return true;
         } else {
             return false;
         }
     }
-    
+
 }

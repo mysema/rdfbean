@@ -24,10 +24,10 @@ public interface CompanyDepartmentEmployeeDomain {
         @Id(IDType.RESOURCE)
         public ID id;
 
-        @Predicate(ln="company", inv=true)
+        @Predicate(ln = "company", inv = true)
         public List<Department> departments = new ArrayList<Department>();
 
-        @Predicate(ln="company", inv=true)
+        @Predicate(ln = "company", inv = true)
         public Department department;
 
         public ID getId() {
@@ -53,7 +53,7 @@ public interface CompanyDepartmentEmployeeDomain {
         @Predicate
         public Company company;
 
-        @Predicate(ln="department", inv=true)
+        @Predicate(ln = "department", inv = true)
         public Set<Employee> employees = new HashSet<Employee>();
 
         public ID getId() {
@@ -67,7 +67,6 @@ public interface CompanyDepartmentEmployeeDomain {
         public Set<Employee> getEmployees() {
             return employees;
         }
-
 
     }
 
@@ -87,8 +86,6 @@ public interface CompanyDepartmentEmployeeDomain {
         public Department getDepartment() {
             return department;
         }
-
-
 
     }
 

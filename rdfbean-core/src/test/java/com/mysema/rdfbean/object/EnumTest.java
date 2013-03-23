@@ -21,7 +21,7 @@ import com.mysema.rdfbean.model.UID;
 public class EnumTest {
 
     @ClassMapping
-    public static enum EnumType{
+    public static enum EnumType {
         PRIMARY,
         SECONDARY;
     }
@@ -52,7 +52,7 @@ public class EnumTest {
     }
 
     @Test
-    public void getId(){
+    public void getId() {
         MiniRepository repository = new MiniRepository();
         Session session = SessionUtil.openSession(repository, EnumType.class, EnumRef.class);
         assertEquals(new UID(TEST.NS, "PRIMARY"), session.getId(EnumType.PRIMARY));

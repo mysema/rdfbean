@@ -16,9 +16,9 @@ import com.mysema.rdfbean.object.Session;
 public interface TransactionalAdvisor {
 
     void addTransactionCommitAdvice(MethodAdviceReceiver receiver);
-    
+
     RDFBeanTransaction doBegin(Session session);
-    
+
     void doCommit(Session session, RDFBeanTransaction txn);
 
     void doRollback(RDFBeanTransaction txn);

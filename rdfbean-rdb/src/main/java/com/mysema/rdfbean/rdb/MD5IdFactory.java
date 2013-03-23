@@ -27,13 +27,13 @@ import com.mysema.rdfbean.owl.OWL;
 
 /**
  * MD5IdFactory is a MD5 hash based implementation of the IdFactory interface
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
 public class MD5IdFactory implements IdFactory {
 
-    private final Map<UID,String> uid2string = new HashMap<UID,String>();
+    private final Map<UID, String> uid2string = new HashMap<UID, String>();
 
     public MD5IdFactory() {
         register("rdf", Nodes.get(RDF.NS));
@@ -44,14 +44,14 @@ public class MD5IdFactory implements IdFactory {
     }
 
     private void register(String prefix, Collection<UID> all) {
-        for (UID id : all){
-            uid2string.put(id, prefix+":"+id.ln());
+        for (UID id : all) {
+            uid2string.put(id, prefix + ":" + id.ln());
         }
     }
 
     private String getReadableURI(UID uid) {
         String rv = uid2string.get(uid);
-        if (rv == null){
+        if (rv == null) {
             rv = uid.getId();
         }
         return rv;
@@ -61,19 +61,19 @@ public class MD5IdFactory implements IdFactory {
     public Long getId(NODE node) {
         int mask;
         String value;
-        if (node.isLiteral()){
+        if (node.isLiteral()) {
             LIT literal = node.asLiteral();
-            if (literal.getLang() != null){
+            if (literal.getLang() != null) {
                 mask = 0;
                 value = literal.getValue() + literal.getLang();
-            }else{
+            } else {
                 mask = 1;
                 value = literal.getValue() + getReadableURI(literal.getDatatype());
             }
-        }else if (node.isBNode()){
+        } else if (node.isBNode()) {
             mask = 2;
             value = node.getValue();
-        }else{
+        } else {
             mask = 3;
             value = getReadableURI(node.asURI());
         }
@@ -83,7 +83,7 @@ public class MD5IdFactory implements IdFactory {
             byte[] hash = digest.digest();
             byte[] longBytes = new byte[8];
             System.arraycopy(hash, 0, longBytes, 0, longBytes.length);
-            longBytes[0] = (byte)(mask(longBytes[0], mask));
+            longBytes[0] = (byte) (mask(longBytes[0], mask));
             return new BigInteger(longBytes).longValue();
         } catch (NoSuchAlgorithmException e) {
             throw new RepositoryException(e);
@@ -94,11 +94,15 @@ public class MD5IdFactory implements IdFactory {
     }
 
     int mask(byte b, int mask) {
-        switch (mask){
-          case 0 : return (b & ~3);     // 00
-          case 1 : return (b & ~3) | 1; // 10
-          case 2 : return (b & ~3) | 2; // 01
-          default: return (b & ~3) | 3; // 11
+        switch (mask) {
+        case 0:
+            return (b & ~3); // 00
+        case 1:
+            return (b & ~3) | 1; // 10
+        case 2:
+            return (b & ~3) | 2; // 01
+        default:
+            return (b & ~3) | 3; // 11
         }
     }
 

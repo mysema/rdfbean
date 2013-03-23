@@ -16,38 +16,38 @@ public class RepositoryTransactionTest {
     private static SesameRepository repository;
 
     @BeforeClass
-    public static void setUpClass(){
+    public static void setUpClass() {
         repository = new MemoryRepository();
         repository.setSources(
                 new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),
                 new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
-            );
+                );
         repository.initialize();
     }
 
     @AfterClass
-    public static void tearDownClass(){
+    public static void tearDownClass() {
         repository.close();
     }
 
     @Test
-    public void Create_and_Commit(){
+    public void Create_and_Commit() {
         RDFConnection connection = repository.openConnection();
-        try{
+        try {
             RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
             tx.commit();
-        }finally{
+        } finally {
             connection.close();
         }
     }
 
     @Test
-    public void Create_and_Rollback(){
+    public void Create_and_Rollback() {
         RDFConnection connection = repository.openConnection();
-        try{
+        try {
             RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
             tx.rollback();
-        }finally{
+        } finally {
             connection.close();
         }
     }

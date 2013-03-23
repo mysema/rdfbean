@@ -24,32 +24,32 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 
 public class LoadTest {
-    
-    private RDFConnectionCallback<Long> countOp = new CountOperation(); 
-    
+
+    private RDFConnectionCallback<Long> countOp = new CountOperation();
+
     private MemoryRepository repository;
-    
+
     @Before
-    public void setUp(){
+    public void setUp() {
         repository = new MemoryRepository();
         repository.addGraph(new UID(TEST.NS));
         repository.initialize();
     }
-    
+
     @After
-    public void tearDown(){
+    public void tearDown() {
         repository.close();
     }
-    
+
     @Test
-    public void Export_and_Load(){
+    public void Export_and_Load() {
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, true);
         long count1 = repository.execute(countOp);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         repository.export(Format.TURTLE, null, baos);
-        
+
         MemoryRepository repository2 = new MemoryRepository();
         repository2.addGraph(new UID(TEST.NS));
         repository2.initialize();
@@ -58,42 +58,42 @@ public class LoadTest {
         repository2.close();
         assertEquals(count1, count2);
     }
-    
+
     @Test
     @Ignore
-    public void Load_withContext_replace(){
+    public void Load_withContext_replace() {
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, true);
         long count1 = repository.execute(countOp);
         repository.execute(new Addition(new STMT(new BID(), RDF.type, RDFS.Resource, context)));
-        
+
         // reload with replace
         is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, context, true);
         assertEquals(count1, repository.execute(countOp).longValue());
     }
-    
+
     @Test
     @Ignore
-    public void Load_withContext_withoutReplace(){
+    public void Load_withContext_withoutReplace() {
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         UID context = new UID(TEST.NS);
         repository.load(Format.TURTLE, is, context, false);
         long count1 = repository.execute(countOp);
         repository.execute(new Addition(new STMT(new BID(), RDF.type, RDFS.Resource, context)));
-        
+
         // reload without replace
         is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, context, false);
         assertEquals(count1 + 1, repository.execute(countOp).longValue());
     }
-    
+
     @Test
-    public void Load_withoutContext(){
+    public void Load_withoutContext() {
         InputStream is = getClass().getResourceAsStream("/test.ttl");
         repository.load(Format.TURTLE, is, null, false);
         assertTrue(repository.execute(countOp) > 0);
     }
-    
+
 }

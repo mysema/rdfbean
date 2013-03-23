@@ -48,10 +48,9 @@ import com.mysema.rdfbean.rdfs.RDFSResource;
 import com.mysema.rdfbean.xsd.ConverterRegistry;
 import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
-
 /**
  * @author sasa
- *
+ * 
  */
 public class SchemaGen {
 
@@ -105,10 +104,10 @@ public class SchemaGen {
     }
 
     public void export(Format format, OutputStream os) {
-        try{
+        try {
             export();
             repository.export(format, ns2prefix, null, os);
-        }finally{
+        } finally {
             try {
                 os.close();
             } catch (IOException e) {
@@ -123,7 +122,7 @@ public class SchemaGen {
         MappedClass mappedClass = configuration.getMappedClass(clazz);
         OWLClass owlClass = null;
         UID cuid = mappedClass.getUID();
-        if (cuid == null){
+        if (cuid == null) {
             return null;
         }
 
@@ -142,7 +141,7 @@ public class SchemaGen {
             }
 
             // super class
-            if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class)){
+            if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class)) {
                 addParent(clazz.getSuperclass(), owlClass, session, resources);
             }
 
@@ -154,8 +153,8 @@ public class SchemaGen {
             // enum instances
             if (mappedClass.isEnum()) {
                 List<RDFSResource> oneOf = new ArrayList<RDFSResource>();
-                for (Object constant: clazz.getEnumConstants()) {
-                    Enum enumValue = (Enum)constant;
+                for (Object constant : clazz.getEnumConstants()) {
+                    Enum enumValue = (Enum) constant;
                     oneOf.add(new AnyThing(new UID(cuid.ns(), enumValue.name()), owlClass, enumValue.ordinal()));
                 }
                 owlClass.setOneOf(oneOf);
@@ -179,7 +178,7 @@ public class SchemaGen {
         String predicateNs = puid.ns();
         // No restrictions on predicates from built-in namespaces
         if (RDF.NS.equals(predicateNs) || RDFS.NS.equals(predicateNs) || OWL.NS.equals(predicateNs)) {
-           return;
+            return;
         }
         final RDFProperty property;
         boolean seenProperty = resources.containsKey(puid);
@@ -190,7 +189,7 @@ public class SchemaGen {
                 if (!(property instanceof ObjectProperty)) {
                     throw new IllegalArgumentException("Expected ObjectProperty for: " + mappedPath);
                 }
-            } else  if (!mappedProperty.isAnyResource()){
+            } else if (!mappedProperty.isAnyResource()) {
                 if (!(property instanceof DatatypeProperty)) {
                     throw new IllegalArgumentException("Expected DatatypeProperty for: " + mappedPath);
                 }
@@ -217,11 +216,13 @@ public class SchemaGen {
             if (mappedProperty.isList()) {
                 if (property.getRange().isEmpty()) {
                     RDFSClass<?> componentType =
-                        processClass(session, mappedProperty.getComponentType(), resources);
+                            processClass(session, mappedProperty.getComponentType(), resources);
                     if (useTypedLists && componentType != null) {
                         property.addRange(new TypedList(cuid.ns(), componentType));
-                        // Protege doesn't support typed lists using allValuesFrom
-                        //owlClass.setAllValuesFrom(property, new TypedList(cuid.ns(), componentType));
+                        // Protege doesn't support typed lists using
+                        // allValuesFrom
+                        // owlClass.setAllValuesFrom(property, new
+                        // TypedList(cuid.ns(), componentType));
                     } else {
                         owlClass.setAllValuesFrom(property, (RDFSClass<RDFSResource>) resources.get(RDF.List));
                     }
@@ -229,14 +230,14 @@ public class SchemaGen {
                 }
             } else {
                 RDFSClass<?> componentType =
-                    processClass(session, mappedProperty.getComponentType(),
-                            resources);
+                        processClass(session, mappedProperty.getComponentType(),
+                                resources);
                 if (componentType != null) {
                     restriction.setAllValuesFrom(componentType);
                 }
             }
 
-        // reference
+            // reference
         } else if (mappedPath.isReference()) {
             if (property.getRange().isEmpty()) {
                 RDFSClass<?> range = processClass(session,
@@ -249,13 +250,13 @@ public class SchemaGen {
             }
             restriction.setMaxCardinality(1);
 
-        // other
+            // other
         } else {
             if (property.getRange().isEmpty()) {
                 UID range;
                 if (mappedProperty.isAnyResource()) {
                     range = RDFS.Resource;
-                }else if (mappedProperty.isLocalized()){
+                } else if (mappedProperty.isLocalized()) {
                     range = RDF.text;
                 } else {
                     range = converterRegistry.getDatatype(mappedProperty.getType());

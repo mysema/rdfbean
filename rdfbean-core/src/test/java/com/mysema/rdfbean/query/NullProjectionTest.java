@@ -20,10 +20,10 @@ import com.mysema.rdfbean.domains.UserProjectionDomain.User;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig(User.class)
-public class NullProjectionTest extends SessionTestBase implements UserProjectionDomain{
+public class NullProjectionTest extends SessionTestBase implements UserProjectionDomain {
 
     @Test
-    public void OrderBy() throws IOException{
+    public void OrderBy() throws IOException {
         session.save(new User());
         User user = Alias.alias(User.class, "user");
         List<String> results = session.from($(user)).list($(user.getFirstName()));

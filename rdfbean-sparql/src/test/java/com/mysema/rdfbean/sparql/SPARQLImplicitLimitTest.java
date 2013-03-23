@@ -26,7 +26,7 @@ public class SPARQLImplicitLimitTest {
     private final MockHttpServletResponse response = new MockHttpServletResponse();
 
     @BeforeClass
-    public static void setUpClass() throws ServletException{
+    public static void setUpClass() throws ServletException {
         repository = new MemoryRepository();
         repository.initialize();
         repository.load(Format.RDFXML, SPARQLImplicitLimitTest.class.getResourceAsStream("/foaf.rdf"), null, false);
@@ -35,32 +35,32 @@ public class SPARQLImplicitLimitTest {
     }
 
     @Test
-    public void Implicit_Limit_with_Construct() throws ServletException, IOException{
+    public void Implicit_Limit_with_Construct() throws ServletException, IOException {
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } ORDER BY ?s ?p ?o");
         request.addHeader("Accept", Format.NTRIPLES.getMimetype());
         servlet.service(request, response);
         String content = response.getContentAsString();
         assertEquals(10, content.split("\n").length);
     }
-    
+
     @Test
-    public void Implicit_Limit_with_Select() throws ServletException, IOException{
+    public void Implicit_Limit_with_Select() throws ServletException, IOException {
         request.setParameter("query", "SELECT ?s ?p ?o WHERE { ?s ?p ?o }");
         request.addHeader("Accept", Format.NTRIPLES.getMimetype());
         servlet.service(request, response);
     }
-    
+
     @Test
-    public void Implicit_Limit_with_Ask() throws ServletException, IOException{
+    public void Implicit_Limit_with_Ask() throws ServletException, IOException {
         request.setParameter("query", "ASK WHERE { ?s ?p ?o }");
         request.addHeader("Accept", Format.NTRIPLES.getMimetype());
         servlet.service(request, response);
         String content = response.getContentAsString();
         assertTrue(content.contains("<boolean>true</boolean>"));
     }
-    
+
     @Test
-    public void Explicit_High_Limit_Overriden() throws ServletException, IOException{
+    public void Explicit_High_Limit_Overriden() throws ServletException, IOException {
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } ORDER BY ?s ?p ?o");
         request.setParameter("limit", "30");
         request.addHeader("Accept", Format.NTRIPLES.getMimetype());
@@ -70,7 +70,7 @@ public class SPARQLImplicitLimitTest {
     }
 
     @Test
-    public void Explicit_Low_Limit() throws ServletException, IOException{
+    public void Explicit_Low_Limit() throws ServletException, IOException {
         request.setParameter("query", "CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } ORDER BY ?s ?p ?o");
         request.setParameter("limit", "5");
         request.addHeader("Accept", Format.NTRIPLES.getMimetype());

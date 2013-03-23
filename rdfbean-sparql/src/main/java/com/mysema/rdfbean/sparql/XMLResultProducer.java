@@ -14,20 +14,20 @@ import com.mysema.rdfbean.model.SPARQLQuery;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class XMLResultProducer extends AbstractResultProducer{
+public class XMLResultProducer extends AbstractResultProducer {
 
     private static final String SPARQL_NS = "http://www.w3.org/2005/sparql-results#";
-    
+
     @Override
     public void stream(SPARQLQuery query, Writer w) throws IOException {
         XMLWriter writer = new XMLWriter(w);
-        if (query.getResultType().equals(SPARQLQuery.ResultType.BOOLEAN)){
+        if (query.getResultType().equals(SPARQLQuery.ResultType.BOOLEAN)) {
             streamBoolean(query, writer);
-        }else{
+        } else {
             streamTuple(query, writer);
-        }                 
+        }
     }
 
     private void streamBoolean(SPARQLQuery query, XMLWriter writer) throws IOException {
@@ -39,6 +39,7 @@ public class XMLResultProducer extends AbstractResultProducer{
         writer.end("results");
         writer.end("sparql");
     }
+
     private void streamTuple(SPARQLQuery query, XMLWriter writer) throws IOException {
         writer.begin("sparql");
         writer.attribute("xmlns", SPARQL_NS);
@@ -56,11 +57,11 @@ public class XMLResultProducer extends AbstractResultProducer{
                 writer.begin("binding").attribute("name", entry.getKey());
                 String type = getNodeType(entry.getValue());
                 writer.begin(type);
-                if (entry.getValue().isLiteral()){
+                if (entry.getValue().isLiteral()) {
                     LIT literal = entry.getValue().asLiteral();
-                    if (literal.getLang() != null){
+                    if (literal.getLang() != null) {
                         writer.attribute("xml:lang", LocaleUtil.toLang(literal.getLang()));
-                    }else if (!literal.getDatatype().equals(RDF.text)){
+                    } else if (!literal.getDatatype().equals(RDF.text)) {
                         writer.attribute("datatype", literal.getDatatype().getValue());
                     }
                 }
@@ -74,6 +75,4 @@ public class XMLResultProducer extends AbstractResultProducer{
         writer.end("sparql");
     }
 
-
-    
 }

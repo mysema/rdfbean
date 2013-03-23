@@ -38,13 +38,14 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.io.RDFSource;
 
 /**
- * SesameRepository provides a base class for Sesame repository based RDFBean repositories
- *
+ * SesameRepository provides a base class for Sesame repository based RDFBean
+ * repositories
+ * 
  * @author sasa
  * @author tiwe
- *
+ * 
  */
-public abstract class SesameRepository implements Repository{
+public abstract class SesameRepository implements Repository {
 
     private static final Logger logger = LoggerFactory.getLogger(SesameRepository.class);
 
@@ -57,7 +58,7 @@ public abstract class SesameRepository implements Repository{
     private boolean sesameInference = false;
 
     private InferenceOptions inference = InferenceOptions.DEFAULT;
-    
+
     private final ValueFactory valueFactory = new ValueFactoryImpl();
 
     @Override
@@ -75,17 +76,17 @@ public abstract class SesameRepository implements Repository{
     @Override
     public <RT> RT execute(RDFConnectionCallback<RT> operation) {
         RDFConnection connection = openConnection();
-        try{
+        try {
             RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
-            try{
+            try {
                 RT retVal = operation.doInConnection(connection);
                 tx.commit();
                 return retVal;
-            }catch(IOException io){
+            } catch (IOException io) {
                 tx.rollback();
                 throw new RepositoryException(io);
             }
-        }finally{
+        } finally {
             connection.close();
         }
     }
@@ -96,21 +97,21 @@ public abstract class SesameRepository implements Repository{
     }
 
     @Override
-    public void export(Format format, Map<String, String> ns2prefix, UID context, OutputStream out){
+    public void export(Format format, Map<String, String> ns2prefix, UID context, OutputStream out) {
         RDFFormat targetFormat = FormatHelper.getFormat(format);
         RDFWriter writer = Rio.createWriter(targetFormat, out);
         try {
             RepositoryConnection conn = repository.getConnection();
-            for(Map.Entry<String, String> entry : ns2prefix.entrySet()){
+            for (Map.Entry<String, String> entry : ns2prefix.entrySet()) {
                 conn.setNamespace(entry.getValue(), entry.getKey());
             }
-            try{
-                if (context != null){
+            try {
+                if (context != null) {
                     conn.export(writer, valueFactory.createURI(context.getId()));
-                }else{
-                    conn.export(writer);    
-                }                
-            }finally{
+                } else {
+                    conn.export(writer);
+                }
+            } finally {
                 conn.close();
             }
         } catch (org.openrdf.repository.RepositoryException e) {
@@ -141,7 +142,7 @@ public abstract class SesameRepository implements Repository{
                     if (sources != null && connection.isEmpty()) {
                         ValueFactory vf = connection.getValueFactory();
                         for (RDFSource source : sources) {
-                            if (source.getResource() != null){
+                            if (source.getResource() != null) {
                                 logger.info("loading " + source.getResource());
                             }
                             connection.add(source.openStream(),
@@ -151,7 +152,7 @@ public abstract class SesameRepository implements Repository{
                         }
                     }
                     connection.commit();
-                } catch(Exception e){
+                } catch (Exception e) {
                     connection.rollback();
                     throw new RepositoryException(e);
                 } finally {
@@ -166,27 +167,27 @@ public abstract class SesameRepository implements Repository{
     }
 
     @Override
-    public void load(Format format, InputStream is, @Nullable UID context, boolean replace){
+    public void load(Format format, InputStream is, @Nullable UID context, boolean replace) {
         try {
             RepositoryConnection connection = repository.getConnection();
             ValueFactory vf = connection.getValueFactory();
-            try{
+            try {
                 URI contextURI = context != null ? vf.createURI(context.getId()) : null;
-                if (!replace && context != null){
-                    if (connection.hasStatement(null, null, null, true, contextURI)){
+                if (!replace && context != null) {
+                    if (connection.hasStatement(null, null, null, true, contextURI)) {
                         return;
                     }
                 }
-                if (context != null && replace){
-                    connection.remove((Resource)null, null, null, contextURI);
+                if (context != null && replace) {
+                    connection.remove((Resource) null, null, null, contextURI);
                 }
-                if (context == null){
+                if (context == null) {
                     connection.add(is, TEST.NS, FormatHelper.getFormat(format));
-                }else{
+                } else {
                     connection.add(is, context.getId(), FormatHelper.getFormat(format), contextURI);
                 }
 
-            }finally {
+            } finally {
                 connection.close();
             }
         } catch (org.openrdf.repository.RepositoryException e) {
@@ -206,7 +207,7 @@ public abstract class SesameRepository implements Repository{
             throw new RepositoryException(e);
         }
     }
-    
+
     public final void setSesameInference(boolean sesameInference) {
         this.sesameInference = sesameInference;
         this.inference = sesameInference ? InferenceOptions.NONE : InferenceOptions.DEFAULT;

@@ -50,12 +50,14 @@ public class DeleteTest {
 
     private final MiniRepository repository = new MiniRepository();
 
-    @ClassMapping(ns=TEST.NS, ln="DeleteTest")
+    @ClassMapping(ns = TEST.NS, ln = "DeleteTest")
     public static class DeleteDTO {
         @Id
         String id;
 
-        public DeleteDTO() {}
+        public DeleteDTO() {
+        }
+
         public DeleteDTO(String id) {
             this.id = id;
         }
@@ -91,7 +93,7 @@ public class DeleteTest {
         newSession();
         assertNull(session.getById(dtest.id, DeleteTest.class));
     }
-    
+
     @Test
     public void SimpleDeleteResource() {
         DeleteTest dtest = new DeleteTest();

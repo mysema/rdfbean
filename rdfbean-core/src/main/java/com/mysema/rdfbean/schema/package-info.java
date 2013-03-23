@@ -8,3 +8,4 @@
  * Schema generation/serialization classes
  */
 package com.mysema.rdfbean.schema;
+

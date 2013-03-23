@@ -5,9 +5,9 @@ import com.mysema.query.types.expr.BooleanExpression;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public interface Block extends Predicate{
+public interface Block extends Predicate {
 
     BooleanExpression exists();
 

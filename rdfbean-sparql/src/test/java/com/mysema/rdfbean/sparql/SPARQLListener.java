@@ -7,14 +7,14 @@ import com.mysema.rdfbean.model.Format;
 import com.mysema.rdfbean.model.Repository;
 import com.mysema.rdfbean.sesame.MemoryRepository;
 
-public class SPARQLListener implements ServletContextListener{
+public class SPARQLListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        Repository repository = (Repository)sce.getServletContext().getAttribute(Repository.class.getName());
-        if (repository != null){
+        Repository repository = (Repository) sce.getServletContext().getAttribute(Repository.class.getName());
+        if (repository != null) {
             repository.close();
-        }        
+        }
     }
 
     @Override

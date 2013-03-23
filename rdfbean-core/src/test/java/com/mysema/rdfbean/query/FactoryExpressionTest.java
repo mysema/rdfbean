@@ -19,45 +19,45 @@ import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({SimpleType.class, SimpleType2.class})
-public class FactoryExpressionTest extends SessionTestBase implements SimpleDomain{
-    
+@SessionConfig({ SimpleType.class, SimpleType2.class })
+public class FactoryExpressionTest extends SessionTestBase implements SimpleDomain {
+
     private PathBuilder<SimpleType> var = new PathBuilder<SimpleType>(SimpleType.class, "var");
-    
+
     private Expression<SimpleType> projection = new QBean<SimpleType>(SimpleType.class, var.getString("directProperty"));
-    
+
     @Before
-    public void setUp(){
+    public void setUp() {
         session.saveAll(new SimpleType("a"), new SimpleType("b"), new SimpleType("c"), new SimpleType("d"));
     }
-    
+
     @Test
-    public void List(){
+    public void List() {
         List<SimpleType> result = session.from(var).list(projection);
         assertEquals(4, result.size());
-        for (SimpleType st : result){
+        for (SimpleType st : result) {
             assertNotNull(st.directProperty);
         }
     }
-    
+
     @Test
-    public void UniqueResult(){
+    public void UniqueResult() {
         assertTrue(session.from(var).limit(1).uniqueResult(projection) instanceof SimpleType);
     }
-    
+
     @Test
-    public void Iterate(){
+    public void Iterate() {
         CloseableIterator<SimpleType> it = session.from(var).iterate(projection);
-        try{
+        try {
             assertTrue(it.next() instanceof SimpleType);
             assertTrue(it.next() instanceof SimpleType);
             assertTrue(it.next() instanceof SimpleType);
             assertTrue(it.next() instanceof SimpleType);
             assertFalse(it.hasNext());
-        }finally{
+        } finally {
             it.close();
         }
-        
+
     }
 
 }

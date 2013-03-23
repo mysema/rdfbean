@@ -72,21 +72,27 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 
 /**
  * RDBRepository is a Repository implementation for the RDB module
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
 @Immutable
-public class RDBRepository implements Repository{
+public class RDBRepository implements Repository {
 
-    private static RDFFormat getRioFormat(Format format){
-        switch(format){
-            case N3: return RDFFormat.N3;
-            case NTRIPLES: return RDFFormat.NTRIPLES;
-            case RDFA: return RDFFormat.RDFA;
-            case RDFXML: return RDFFormat.RDFXML;
-            case TRIG: return RDFFormat.TRIG;
-            case TURTLE: return RDFFormat.TURTLE;
+    private static RDFFormat getRioFormat(Format format) {
+        switch (format) {
+        case N3:
+            return RDFFormat.N3;
+        case NTRIPLES:
+            return RDFFormat.NTRIPLES;
+        case RDFA:
+            return RDFFormat.RDFA;
+        case RDFXML:
+            return RDFFormat.RDFXML;
+        case TRIG:
+            return RDFFormat.TRIG;
+        case TURTLE:
+            return RDFFormat.TURTLE;
         }
         throw new IllegalArgumentException("Unsupported format : " + format);
     }
@@ -97,9 +103,9 @@ public class RDBRepository implements Repository{
 
     private final IdFactory idFactory = new MD5IdFactory();
 
-    private final BiMap<NODE,Long> nodeCache = HashBiMap.create();
+    private final BiMap<NODE, Long> nodeCache = HashBiMap.create();
 
-    private final BiMap<Locale,Integer> langCache = HashBiMap.create();
+    private final BiMap<Locale, Integer> langCache = HashBiMap.create();
 
     private final Configuration configuration;
 
@@ -117,11 +123,11 @@ public class RDBRepository implements Repository{
             SQLTemplates templates,
             IdSequence idSequence,
             RDFSource... sources) {
-        this.configuration = Assert.notNull(configuration,"configuration");
-        this.dataSource = Assert.notNull(dataSource,"dataSource");
-        this.templates = Assert.notNull(templates,"templates");
+        this.configuration = Assert.notNull(configuration, "configuration");
+        this.dataSource = Assert.notNull(dataSource, "dataSource");
+        this.templates = Assert.notNull(templates, "templates");
         this.idSequence = Assert.notNull(idSequence, "idSequence");
-        this.sources = Assert.notNull(sources,"sources");
+        this.sources = Assert.notNull(sources, "sources");
     }
 
     @Override
@@ -132,22 +138,22 @@ public class RDBRepository implements Repository{
     @Override
     public <RT> RT execute(RDFConnectionCallback<RT> operation) {
         RDFConnection connection = openConnection();
-        try{
-            try{
+        try {
+            try {
                 RDFBeanTransaction tx = connection.beginTransaction(false, 0,
                         Connection.TRANSACTION_READ_COMMITTED);
-                try{
+                try {
                     RT retVal = operation.doInConnection(connection);
                     tx.commit();
                     return retVal;
-                }catch(IOException io){
+                } catch (IOException io) {
                     tx.rollback();
                     throw io;
                 }
-            }finally{
+            } finally {
                 connection.close();
             }
-        }catch(IOException io){
+        } catch (IOException io) {
             throw new RepositoryException(io);
         }
     }
@@ -161,49 +167,49 @@ public class RDBRepository implements Repository{
     public void export(Format format, Map<String, String> ns2prefix, UID context, OutputStream out) {
         RDFWriter writer = WriterUtils.createWriter(format, out, ns2prefix);
         RDFConnection conn = openConnection();
-        try{
+        try {
             CloseableIterator<STMT> stmts = conn.findStatements(null, null, null, context, false);
-            try{
+            try {
                 writer.begin();
-                while (stmts.hasNext()){
+                while (stmts.hasNext()) {
                     writer.handle(stmts.next());
                 }
                 writer.end();
-            }finally{
+            } finally {
                 stmts.close();
             }
 
-        }finally{
+        } finally {
             conn.close();
         }
     }
 
     @Override
-    public void load(Format format, InputStream is, @Nullable UID context, boolean replace){
+    public void load(Format format, InputStream is, @Nullable UID context, boolean replace) {
         ValueFactory valueFactory = new ValueFactoryImpl();
         SesameDialect dialect = new SesameDialect(valueFactory);
         RDBConnection connection = openConnection();
-        try{
-            if (!replace && context != null){
-                if (!connection.find(null, null, null, context, false).isEmpty()){
+        try {
+            if (!replace && context != null) {
+                if (!connection.find(null, null, null, context, false).isEmpty()) {
                     return;
                 }
             }
-            if (context != null && replace){
+            if (context != null && replace) {
                 connection.deleteFromContext(context);
             }
             Set<STMT> stmts = new HashSet<STMT>(LOAD_BATCH_SIZE);
             RDFParser parser = Rio.createParser(getRioFormat(format));
             parser.setRDFHandler(createHandler(dialect, connection, stmts, context));
             parser.parse(is, context != null ? context.getValue() : TEST.NS);
-            connection.update(Collections.<STMT>emptySet(), stmts);
+            connection.update(Collections.<STMT> emptySet(), stmts);
         } catch (RDFParseException e) {
             throw new RepositoryException(e);
         } catch (RDFHandlerException e) {
             throw new RepositoryException(e);
         } catch (IOException e) {
             throw new RepositoryException(e);
-        }finally{
+        } finally {
             connection.close();
         }
     }
@@ -214,12 +220,12 @@ public class RDBRepository implements Repository{
             initSchema();
             initTables();
 
-            if (sources.length > 0){
+            if (sources.length > 0) {
                 RDBConnection connection = openConnection();
-                try{
+                try {
                     ValueFactory valueFactory = new ValueFactoryImpl();
                     SesameDialect dialect = new SesameDialect(valueFactory);
-                    for (RDFSource source : sources){
+                    for (RDFSource source : sources) {
                         Set<STMT> stmts = new HashSet<STMT>(LOAD_BATCH_SIZE);
                         RDFFormat format = getRioFormat(source.getFormat());
                         RDFParser parser = Rio.createParser(format);
@@ -227,13 +233,13 @@ public class RDBRepository implements Repository{
                         connection.deleteFromContext(context);
                         parser.setRDFHandler(createHandler(dialect, connection, stmts, context));
                         parser.parse(source.openStream(), source.getContext());
-                        connection.update(Collections.<STMT>emptySet(), stmts);
+                        connection.update(Collections.<STMT> emptySet(), stmts);
                     }
                 } catch (RDFParseException e) {
                     throw new RepositoryException(e);
                 } catch (RDFHandlerException e) {
                     throw new RepositoryException(e);
-                }finally{
+                } finally {
                     connection.close();
                 }
             }
@@ -247,7 +253,7 @@ public class RDBRepository implements Repository{
     private RDFHandler createHandler(
             final SesameDialect dialect,
             final RDBConnection connection, final Set<STMT> stmts, @Nullable final UID context) {
-        return new RDFHandlerBase(){
+        return new RDFHandlerBase() {
             @Override
             public void handleStatement(Statement stmt) throws RDFHandlerException {
                 ID sub = dialect.getID(stmt.getSubject());
@@ -255,8 +261,8 @@ public class RDBRepository implements Repository{
                 NODE obj = dialect.getNODE(stmt.getObject());
                 stmts.add(new STMT(sub, pre, obj, context));
 
-                if (stmts.size() == LOAD_BATCH_SIZE){
-                    connection.update(Collections.<STMT>emptySet(), stmts);
+                if (stmts.size() == LOAD_BATCH_SIZE) {
+                    connection.update(Collections.<STMT> emptySet(), stmts);
                     stmts.clear();
                 }
             }
@@ -266,7 +272,7 @@ public class RDBRepository implements Repository{
     @SuppressWarnings("SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE")
     private void initSchema() throws IOException, SQLException {
         Connection conn = dataSource.getConnection();
-        try{
+        try {
             SQLQuery query = new SQLQuery(conn, templates).from(QLanguage.language);
             query.count();
         } catch (Exception e) {
@@ -278,11 +284,11 @@ public class RDBRepository implements Repository{
                     if (!clause.trim().isEmpty()) {
                         stmt.execute(clause.trim());
                     }
-                }   
+                }
             } finally {
                 stmt.close();
             }
-            
+
         } finally {
             conn.close();
         }
@@ -291,7 +297,7 @@ public class RDBRepository implements Repository{
 
     private void initTables() throws IOException {
         RDBConnection conn = openConnection();
-        try{
+        try {
 
             // init languages
             Set<Locale> locales = new HashSet<Locale>(Arrays.asList(Locale.getAvailableLocales()));
@@ -305,27 +311,27 @@ public class RDBRepository implements Repository{
             Set<NODE> nodes = new HashSet<NODE>();
 
             // ontology resources
-            for (MappedClass mappedClass : configuration.getMappedClasses()){
+            for (MappedClass mappedClass : configuration.getMappedClasses()) {
                 // class id
                 nodes.add(mappedClass.getUID());
 
                 // enum constants
-                if (mappedClass.isEnum()){
-                    for (Object e : mappedClass.getJavaClass().getEnumConstants()){
-                        nodes.add(new UID(mappedClass.getUID().ns(), ((Enum<?>)e).name()));
+                if (mappedClass.isEnum()) {
+                    for (Object e : mappedClass.getJavaClass().getEnumConstants()) {
+                        nodes.add(new UID(mappedClass.getUID().ns(), ((Enum<?>) e).name()));
                     }
                 }
 
                 // property predicates
-                for (MappedPath path : mappedClass.getProperties()){
+                for (MappedPath path : mappedClass.getProperties()) {
                     MappedProperty<?> property = path.getMappedProperty();
-                    if (property.getKeyPredicate() != null){
+                    if (property.getKeyPredicate() != null) {
                         nodes.add(property.getKeyPredicate());
                     }
-                    if (property.getValuePredicate() != null){
+                    if (property.getValuePredicate() != null) {
                         nodes.add(property.getValuePredicate());
                     }
-                    for (MappedPredicate predicate : path.getPredicatePath()){
+                    for (MappedPredicate predicate : path.getPredicatePath()) {
                         nodes.add(predicate.getUID());
                     }
                 }
@@ -339,22 +345,22 @@ public class RDBRepository implements Repository{
 
             // common literals
             nodes.add(new LIT(""));
-            nodes.add(new LIT("true",XSD.booleanType));
-            nodes.add(new LIT("false",XSD.booleanType));
+            nodes.add(new LIT("true", XSD.booleanType));
+            nodes.add(new LIT("false", XSD.booleanType));
 
             // dates
             nodes.add(new LIT(converterRegistry.toString(new java.sql.Date(0)), XSD.date));
             nodes.add(new LIT(converterRegistry.toString(new java.util.Date(0)), XSD.dateTime));
 
             // letters
-            for (char c = 'a'; c <= 'z'; c++){
+            for (char c = 'a'; c <= 'z'; c++) {
                 String str = String.valueOf(c);
                 nodes.add(new LIT(str));
                 nodes.add(new LIT(str.toUpperCase(Locale.ENGLISH)));
             }
 
             // numbers
-            for (int i = -128; i < 128; i++){
+            for (int i = -128; i < 128; i++) {
                 String str = String.valueOf(i);
                 nodes.add(new LIT(str));
                 nodes.add(new LIT(str, XSD.byteType));
@@ -362,14 +368,14 @@ public class RDBRepository implements Repository{
                 nodes.add(new LIT(str, XSD.intType));
                 nodes.add(new LIT(str, XSD.longType));
                 nodes.add(new LIT(str, XSD.integerType));
-                nodes.add(new LIT(str+".0", XSD.floatType));
-                nodes.add(new LIT(str+".0", XSD.doubleType));
-                nodes.add(new LIT(str+".0", XSD.decimalType));
+                nodes.add(new LIT(str + ".0", XSD.floatType));
+                nodes.add(new LIT(str + ".0", XSD.doubleType));
+                nodes.add(new LIT(str + ".0", XSD.decimalType));
             }
 
             conn.addNodes(nodes, nodeCache);
 
-        }finally{
+        } finally {
             conn.close();
         }
     }
@@ -390,6 +396,5 @@ public class RDBRepository implements Repository{
             throw new RepositoryException(e);
         }
     }
-
 
 }

@@ -51,8 +51,8 @@ public abstract class AbstractRDBTest {
     public Session session;
 
     @BeforeClass
-    public static void setUpClass() throws IOException{
-        if (dataSource == null){
+    public static void setUpClass() throws IOException {
+        if (dataSource == null) {
             dataSource = JdbcConnectionPool.create("jdbc:h2:nioMapped:target/h2", "sa", "");
             dataSource.setMaxConnections(30);
         }
@@ -62,20 +62,20 @@ public abstract class AbstractRDBTest {
 
         // enums
         Set<STMT> added = new HashSet<STMT>();
-        for (NoteType nt : NoteType.values()){
+        for (NoteType nt : NoteType.values()) {
             added.add(new STMT(
                     new UID(TEST.NS, nt.name()),
                     CORE.enumOrdinal,
                     new LIT(String.valueOf(nt.ordinal()), XSD.integerType)));
         }
         RDFConnection connection = repository.openConnection();
-        connection.update(Collections.<STMT>emptySet(), added);
+        connection.update(Collections.<STMT> emptySet(), added);
         connection.close();
     }
 
     @AfterClass
-    public static void tearDownClass() throws IOException, SQLException{
-        if (repository != null){
+    public static void tearDownClass() throws IOException, SQLException {
+        if (repository != null) {
             repository.close();
         }
     }

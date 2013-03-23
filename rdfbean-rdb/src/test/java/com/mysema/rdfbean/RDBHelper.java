@@ -15,15 +15,15 @@ import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.rdb.RDBRepository;
 
-public class RDBHelper extends Helper{
-    
+public class RDBHelper extends Helper {
+
     private static JdbcConnectionPool dataSource;
 
     private static SQLTemplates templates = new H2Templates();
 
     @Override
     public Repository createRepository() {
-        if (dataSource == null){
+        if (dataSource == null) {
             dataSource = JdbcConnectionPool.create("jdbc:h2:nioMapped:target/h2", "sa", "");
             dataSource.setMaxConnections(30);
         }

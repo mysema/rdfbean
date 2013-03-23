@@ -14,9 +14,9 @@ import org.junit.Test;
 import com.mysema.rdfbean.model.MiniRepository;
 
 public class ConfigurationIheritanceTest {
-    
+
     public static class Identifiable {
-        
+
         private String id;
 
         public String getId() {
@@ -26,16 +26,15 @@ public class ConfigurationIheritanceTest {
         public void setId(String id) {
             this.id = id;
         }
-        
-        
+
     }
-    
+
     public static class Category extends Identifiable {
-     
+
         private String label;
 
         private Set<Category> children;
-        
+
         public String getLabel() {
             return label;
         }
@@ -51,40 +50,39 @@ public class ConfigurationIheritanceTest {
         public void setChildren(Set<Category> children) {
             this.children = children;
         }
-        
-        
+
     }
-    
+
     private Configuration configuration;
-    
+
     @Before
-    public void setUp(){
-        ConfigurationBuilder builder = new ConfigurationBuilder();        
+    public void setUp() {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.addClass(Identifiable.class).addId("id").addProperties();
         builder.addClass(Category.class).addProperties();
         configuration = builder.build();
     }
-    
+
     @Test
-    public void Identifiable_Is_Polymorphic(){
+    public void Identifiable_Is_Polymorphic() {
         assertTrue(configuration.isPolymorphic(Identifiable.class));
     }
-    
+
     @Test
-    public void Category_Isnt_Polymorphic(){
+    public void Category_Isnt_Polymorphic() {
         assertFalse(configuration.isPolymorphic(Category.class));
     }
-    
+
     @Test
-    public void MappedClass_Has_IdProperty(){
-        for (MappedClass mappedClass : configuration.getMappedClasses()){
+    public void MappedClass_Has_IdProperty() {
+        for (MappedClass mappedClass : configuration.getMappedClasses()) {
             assertTrue(mappedClass.getIdProperty() != null);
         }
     }
-    
+
     @Test
-    public void Save() throws IOException{
-        Session session = SessionUtil.openSession(new MiniRepository(), Collections.<Locale>emptySet(), configuration);
+    public void Save() throws IOException {
+        Session session = SessionUtil.openSession(new MiniRepository(), Collections.<Locale> emptySet(), configuration);
         Category category = new Category();
         category.label = "X";
         category.children = Collections.singleton(new Category());

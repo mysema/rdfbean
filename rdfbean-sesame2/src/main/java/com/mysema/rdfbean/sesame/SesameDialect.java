@@ -34,9 +34,9 @@ import com.mysema.rdfbean.model.XSD;
 
 /**
  * SesameDialect is a Dialect implementation for Sesame
- *
+ * 
  * @author sasa
- *
+ * 
  */
 public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, Literal, Statement> {
 
@@ -57,11 +57,11 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     private final ValueFactory vf;
 
     public SesameDialect(ValueFactory vf) {
-        Assert.notNull(vf,"vf");
+        Assert.notNull(vf, "vf");
         this.vf = vf;
     }
 
-    public void clear(){
+    public void clear() {
         uidCache.clear();
         bidCache.clear();
         litCache.clear();
@@ -100,7 +100,7 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     @Override
     public BNode getBNode(BID bid) {
         BNode bnode = bnodeCache.get(bid);
-        if (bnode == null){
+        if (bnode == null) {
             bnode = vf.createBNode(bid.getId());
             bnodeCache.put(bid, bnode);
             bidCache.put(bnode, bid);
@@ -112,9 +112,9 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     public ID getID(Resource resource) {
         if (resource instanceof URI) {
             return getUID((URI) resource);
-        } else if (resource instanceof BNode){
+        } else if (resource instanceof BNode) {
             return getBID((BNode) resource);
-        }else{
+        } else {
             throw new IllegalArgumentException("Expected URI or BNode, got " + resource);
         }
     }
@@ -138,17 +138,17 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     @Override
     public Literal getLiteral(LIT lit) {
         Literal literal = literalCache.get(lit);
-        if (literal == null){
+        if (literal == null) {
             if (lit.isText()) {
                 Locale lang = lit.getLang();
                 if (lang.equals(Locale.ROOT)) {
                     literal = vf.createLiteral(lit.getValue());
                 } else {
-                    literal = vf.createLiteral(lit.getValue(),  LocaleUtil.toLang(lang));
+                    literal = vf.createLiteral(lit.getValue(), LocaleUtil.toLang(lang));
                 }
             } else if (lit.isString()) {
                 literal = vf.createLiteral(lit.getValue(), getURI(XSD.stringType));
-            } else if (lit.getDatatype().equals(RDF.text)){
+            } else if (lit.getDatatype().equals(RDF.text)) {
                 literal = vf.createLiteral(lit.getValue());
             } else {
                 literal = vf.createLiteral(lit.getValue(), getURI(lit.getDatatype()));
@@ -162,9 +162,9 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     public NODE getNODE(Value node) {
         if (node instanceof Resource) {
             return getID((Resource) node);
-        } else  if (node instanceof Literal){
+        } else if (node instanceof Literal) {
             return getLIT((Literal) node);
-        }else{
+        } else {
             throw new IllegalArgumentException("Expected Resource or Literal, got " + node);
         }
     }
@@ -210,14 +210,14 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     @Override
     public URI getURI(UID uid) {
         URI uri = uriCache.get(uid);
-        if (uri == null){
+        if (uri == null) {
             uri = vf.createURI(uid.ns(), uid.ln());
             uriCache.put(uid, uri);
         }
         return uri;
     }
 
-    public ValueFactory getValueFactory(){
+    public ValueFactory getValueFactory() {
         return vf;
     }
 

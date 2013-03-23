@@ -26,35 +26,35 @@ import com.mysema.rdfbean.annotations.Predicate;
  * @author tiwe
  */
 public class BeanConfiguration extends DefaultConfiguration {
-    
-    public BeanConfiguration(RoundEnvironment roundEnv,Map<String, String> options) {
-        super(roundEnv, 
-            options, 
-            Collections.<String>emptySet(), // keywords
-            null, // entities 
-            ClassMapping.class, 
-            null, // super
-            null, // embeddable
-            null, // embedded
-            QueryTransient.class);
+
+    public BeanConfiguration(RoundEnvironment roundEnv, Map<String, String> options) {
+        super(roundEnv,
+                options,
+                Collections.<String> emptySet(), // keywords
+                null, // entities
+                ClassMapping.class,
+                null, // super
+                null, // embeddable
+                null, // embedded
+                QueryTransient.class);
     }
-    
+
     @Override
-    public boolean isValidField(VariableElement field) {        
+    public boolean isValidField(VariableElement field) {
         return super.isValidField(field) && isValid(field);
     }
 
     @Override
-    public boolean isValidGetter(ExecutableElement getter){
+    public boolean isValidGetter(ExecutableElement getter) {
         return super.isValidGetter(getter) && isValid(getter);
     }
-    
-    private boolean isValid(Element d){
-        return d.getAnnotation(InjectService.class) == null && 
-            (d.getAnnotation(Predicate.class) != null 
-            || d.getAnnotation(Path.class) != null        
-            || d.getAnnotation(Mixin.class) != null 
-            || d.getAnnotation(Id.class) != null);
+
+    private boolean isValid(Element d) {
+        return d.getAnnotation(InjectService.class) == null &&
+                (d.getAnnotation(Predicate.class) != null
+                        || d.getAnnotation(Path.class) != null
+                        || d.getAnnotation(Mixin.class) != null
+                        || d.getAnnotation(Id.class) != null);
     }
 
 }

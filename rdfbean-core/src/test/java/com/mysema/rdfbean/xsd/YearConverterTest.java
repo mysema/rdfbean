@@ -7,7 +7,7 @@ import org.junit.Test;
 public class YearConverterTest {
 
     private YearConverter converter = new YearConverter();
-    
+
     @Test
     public void FromString() {
         assertEquals(new Year(2000), converter.fromString("2000"));

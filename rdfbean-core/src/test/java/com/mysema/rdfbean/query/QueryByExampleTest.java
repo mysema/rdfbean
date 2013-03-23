@@ -15,11 +15,11 @@ import com.mysema.rdfbean.domains.UserProfileDomain.Profile;
 import com.mysema.rdfbean.domains.UserProfileDomain.User;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({User.class, Profile.class, Identifiable.class})
-public class QueryByExampleTest extends SessionTestBase implements UserProfileDomain{
+@SessionConfig({ User.class, Profile.class, Identifiable.class })
+public class QueryByExampleTest extends SessionTestBase implements UserProfileDomain {
 
     @Test
-    public void test(){
+    public void test() {
         User user = new User();
         user.email = "a@b.com";
         user.firstName = "Anton";

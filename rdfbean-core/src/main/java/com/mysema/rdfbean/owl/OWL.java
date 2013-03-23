@@ -9,9 +9,9 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * OWL defines concepts from the OWL ontology
- *
+ * 
  * @author sasa
- *
+ * 
  */
 public final class OWL {
 

@@ -14,13 +14,13 @@ import com.mysema.rdfbean.object.ObjectRepository;
 
 /**
  * @author sasa
- *
+ * 
  */
 @Immutable
 public class SpringObjectRepository implements ObjectRepository {
-    
+
     private final BeanFactory beanFactory;
-    
+
     public SpringObjectRepository(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }

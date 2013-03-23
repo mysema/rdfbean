@@ -17,7 +17,7 @@ import com.mysema.rdfbean.model.Format;
 
 /**
  * @author tiwe
- *
+ * 
  */
 @Immutable
 public class RDFSource {
@@ -34,16 +34,16 @@ public class RDFSource {
 
     public RDFSource(String resource, Format format, String context) {
         this.input = null;
-        this.resource = Assert.notNull(resource,"resource");
-        this.format = Assert.notNull(format,"format");
-        this.context = Assert.notNull(context,"context");
+        this.resource = Assert.notNull(resource, "resource");
+        this.format = Assert.notNull(format, "format");
+        this.context = Assert.notNull(context, "context");
     }
 
     public RDFSource(InputStream input, Format format, String context) {
         this.input = Assert.notNull(input, "input");
         this.resource = null;
-        this.format = Assert.notNull(format,"format");
-        this.context = Assert.notNull(context,"context");
+        this.format = Assert.notNull(format, "format");
+        this.context = Assert.notNull(context, "context");
     }
 
     public String getContext() {
@@ -59,17 +59,17 @@ public class RDFSource {
     }
 
     public InputStream openStream() throws IOException {
-        if (input != null){
+        if (input != null) {
             return input;
-        }else if (resource == null){
+        } else if (resource == null) {
             throw new IllegalStateException();
-        }else if (resource.startsWith("classpath:")){
+        } else if (resource.startsWith("classpath:")) {
             String name = resource.substring(10);
             if (name.startsWith("/")) {
                 name = name.substring(1);
             }
             return RDFSource.class.getClassLoader().getResourceAsStream(name);
-        }else{
+        } else {
             return new URL(resource).openStream();
         }
     }

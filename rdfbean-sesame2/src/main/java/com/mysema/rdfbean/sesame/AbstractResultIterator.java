@@ -8,23 +8,23 @@ import com.mysema.rdfbean.model.UID;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public abstract class AbstractResultIterator implements CloseableIterator<STMT>{
+public abstract class AbstractResultIterator implements CloseableIterator<STMT> {
 
     private final SesameDialect dialect;
-    
+
     public AbstractResultIterator(SesameDialect dialect) {
         this.dialect = dialect;
     }
-    
+
     protected STMT convert(Statement statement, boolean asserted) {
-        UID context = statement.getContext() != null ? (UID)dialect.getID(statement.getContext()) : null;
+        UID context = statement.getContext() != null ? (UID) dialect.getID(statement.getContext()) : null;
         return new STMT(
-                dialect.getID(statement.getSubject()), 
-                dialect.getUID(statement.getPredicate()), 
-                dialect.getNODE(statement.getObject()), 
+                dialect.getID(statement.getSubject()),
+                dialect.getUID(statement.getPredicate()),
+                dialect.getNODE(statement.getObject()),
                 context, asserted);
     }
-    
+
 }

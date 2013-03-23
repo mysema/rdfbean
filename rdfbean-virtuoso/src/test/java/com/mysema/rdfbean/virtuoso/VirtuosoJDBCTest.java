@@ -23,10 +23,10 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
-public class VirtuosoJDBCTest extends AbstractConnectionTest{
+public class VirtuosoJDBCTest extends AbstractConnectionTest {
 
     @Test
-    public void SPARQL_via_JDBC_Connection() throws SQLException{
+    public void SPARQL_via_JDBC_Connection() throws SQLException {
         Connection jdbcConn = (connection).getConnection();
         String javaOutput = "sparql\n define output:format '_JAVA_'\n ";
         // tuples
@@ -47,7 +47,7 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
 
     @Test
     @Ignore
-    public void Contexts() throws SQLException{
+    public void Contexts() throws SQLException {
         ID sub = new UID(TEST.NS, "e" + System.currentTimeMillis());
         UID pred = new UID(TEST.NS, "p" + System.currentTimeMillis());
         List<STMT> stmts = Arrays.asList(
@@ -60,47 +60,46 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
         Connection jdbcConn = (connection).getConnection();
         Statement stmt = jdbcConn.createStatement();
         ResultSet rs = null;
-        try{
+        try {
             Set<UID> found = new HashSet<UID>();
-//            rs = stmt.executeQuery("DB.DBA.SPARQL_SELECT_KNOWN_GRAPHS()");
+            // rs = stmt.executeQuery("DB.DBA.SPARQL_SELECT_KNOWN_GRAPHS()");
             rs = stmt.executeQuery("sparql select distinct ?g where { graph ?g { ?s ?p ?o } }");
-            while (rs.next()){
+            while (rs.next()) {
                 found.add(new UID(rs.getString(1)));
             }
-            for (UID uid : found){
+            for (UID uid : found) {
                 System.err.println(uid.getId());
             }
 
             assertTrue(found.contains(context));
             assertTrue(found.contains(context2));
 
-        }finally{
+        } finally {
             AbstractQueryImpl.close(stmt, rs);
         }
-
 
     }
 
     @Test
-    public void SPARQL_SELECT_with_Resource_binding() throws SQLException{
+    public void SPARQL_SELECT_with_Resource_binding() throws SQLException {
         Connection jdbcConn = (connection).getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        try{
+        try {
             // example on how to bind a resource
             String query = "sparql select ?s ?p ?o where { ?s `iri(??)` ?o } limit 3";
             ps = jdbcConn.prepareStatement(query);
             ps.setString(1, RDFS.label.getId());
             rs = ps.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 System.out.println(rs.getObject(1) + " " + rs.getObject(2));
             }
 
-        }finally{
-            if (rs != null){
+        } finally {
+            if (rs != null) {
                 rs.close();
             }
-            if (ps != null){
+            if (ps != null) {
                 ps.close();
             }
         }
@@ -108,33 +107,33 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
 
     @Test
     @Ignore
-    public void SPARQL_CONSTRUCT_with_Resource_binding() throws SQLException{
+    public void SPARQL_CONSTRUCT_with_Resource_binding() throws SQLException {
         // FIXME
         Connection jdbcConn = (connection).getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        try{
+        try {
             // example on how to bind a resource
             String query = "sparql construct { ?s ?p ?o } from named `iri(??)` where { ?s ?p ?o } limit 3";
             ps = jdbcConn.prepareStatement(query);
             ps.setString(1, RDFS.label.getId());
 
-        }finally{
-            if (rs != null){
+        } finally {
+            if (rs != null) {
                 rs.close();
             }
-            if (ps != null){
+            if (ps != null) {
                 ps.close();
             }
         }
     }
 
     @Test
-    public void SPARQL_via_JDBC_Connection_with_Literal_binding() throws SQLException{
+    public void SPARQL_via_JDBC_Connection_with_Literal_binding() throws SQLException {
         Connection jdbcConn = (connection).getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        try{
+        try {
             // example on how to bind a typed literal
             String query = "sparql select ?s ?p ?o where { ?s ?p `bif:__rdf_long_from_batch_params(??,??,??)` } limit 3";
             ps = jdbcConn.prepareStatement(query);
@@ -142,46 +141,46 @@ public class VirtuosoJDBCTest extends AbstractConnectionTest{
             ps.setString(2, "xxx");
             ps.setString(3, XSD.stringType.getId());
             rs = ps.executeQuery();
-            if (rs.next()){
+            if (rs.next()) {
                 System.out.println(rs.getObject(1) + " " + rs.getObject(2));
             }
 
-        }finally{
-            if (rs != null){
+        } finally {
+            if (rs != null) {
                 rs.close();
             }
-            if (ps != null){
+            if (ps != null) {
                 ps.close();
             }
         }
     }
 
-    private void query(Connection jdbcConn, String query) throws SQLException{
+    private void query(Connection jdbcConn, String query) throws SQLException {
         PreparedStatement ps = jdbcConn.prepareStatement(query);
-        try{
+        try {
             ResultSet rs = ps.executeQuery();
-            try{
+            try {
                 System.out.println("Results for " + query);
 
                 // columns
                 ResultSetMetaData rsmd = rs.getMetaData();
-                for (int i = 0; i < rsmd.getColumnCount(); i++){
-                    System.err.println((i+1) + " : " + rsmd.getColumnName(i+1));
+                for (int i = 0; i < rsmd.getColumnCount(); i++) {
+                    System.err.println((i + 1) + " : " + rsmd.getColumnName(i + 1));
                 }
                 System.err.println();
 
                 // data
-                while (rs.next()){
-                    for (int i = 0; i < rsmd.getColumnCount(); i++){
-                        Object obj = rs.getObject(i+1);
+                while (rs.next()) {
+                    for (int i = 0; i < rsmd.getColumnCount(); i++) {
+                        Object obj = rs.getObject(i + 1);
                         System.err.println(obj + " " + obj.getClass().getSimpleName());
                     }
                     System.err.println();
                 }
-            }finally{
+            } finally {
                 rs.close();
             }
-        }finally{
+        } finally {
             ps.close();
         }
     }

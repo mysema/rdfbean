@@ -15,9 +15,9 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class BooleanQueryImpl implements SPARQLQuery{
+public class BooleanQueryImpl implements SPARQLQuery {
 
     private final BooleanQuery booleanQuery;
 

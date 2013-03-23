@@ -2,12 +2,12 @@ package com.mysema.rdfbean.model;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public enum QueryOptions {
 
     // TODO : in -> or (Sesame, Core)
-    
+
     /**
      *
      */

@@ -21,7 +21,7 @@ public class SessionListTest {
     }
 
     @Test
-    public void List_uses_Cache(){
+    public void List_uses_Cache() {
         Session session = SessionUtil.openSession(Example.class);
         Example example1 = new Example();
         Example example2 = new Example();
@@ -34,7 +34,7 @@ public class SessionListTest {
     }
 
     @Test
-    public void List_populates_Cache(){
+    public void List_populates_Cache() {
         Session session = SessionUtil.openSession(Example.class);
         Example example1 = new Example();
         Example example2 = new Example();

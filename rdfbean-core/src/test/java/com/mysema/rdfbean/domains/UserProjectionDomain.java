@@ -20,21 +20,22 @@ import com.mysema.rdfbean.model.IDType;
 public interface UserProjectionDomain {
 
     @ClassMapping
-    public static class User{
+    public static class User {
 
         @Id(IDType.RESOURCE)
         public ID id;
 
         @Predicate
-        public  String firstName;
+        public String firstName;
 
-        public User(){}
+        public User() {
+        }
 
-        public User(String firstName){
+        public User(String firstName) {
             this.firstName = firstName;
         }
 
-        public String getFirstName(){
+        public String getFirstName() {
             return firstName;
         }
 
@@ -55,7 +56,7 @@ public interface UserProjectionDomain {
         }
 
         public QUser(EntityPathBase<? extends UserProjectionDomain.User> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QUser(PathMetadata<?> metadata) {

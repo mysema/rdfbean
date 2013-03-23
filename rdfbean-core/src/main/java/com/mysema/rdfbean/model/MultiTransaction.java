@@ -9,46 +9,46 @@ import com.mysema.commons.lang.Assert;
 
 /**
  * MultiTransaction is the RDFBeanTransaction of MultiConnection
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
-public class MultiTransaction implements RDFBeanTransaction{
+public class MultiTransaction implements RDFBeanTransaction {
 
     private boolean rollbackOnly = false;
-    
+
     private final MultiConnection connection;
-    
+
     private final RDFBeanTransaction[] transactions;
-    
-    public MultiTransaction(MultiConnection connection, RDFBeanTransaction[] transactions){
-        this.connection = Assert.notNull(connection,"connection");
-        this.transactions = Assert.notNull(transactions,"transactions");
-        if (transactions.length == 0){
+
+    public MultiTransaction(MultiConnection connection, RDFBeanTransaction[] transactions) {
+        this.connection = Assert.notNull(connection, "connection");
+        this.transactions = Assert.notNull(transactions, "transactions");
+        if (transactions.length == 0) {
             throw new IllegalArgumentException("No transactions given");
         }
     }
-    
+
     @Override
     public void commit() {
-        if (rollbackOnly){
+        if (rollbackOnly) {
             throw new RepositoryException("Transaction is rollBackOnly");
-        }        
-        try{
+        }
+        try {
             prepare();
-        }catch(RuntimeException e){
+        } catch (RuntimeException e) {
             rollback();
             throw new RepositoryException(e);
         }
-        
-        try{
-            for (RDFBeanTransaction tx : transactions){
+
+        try {
+            for (RDFBeanTransaction tx : transactions) {
                 tx.commit();
-            }    
-        }finally{
+            }
+        } finally {
             connection.cleanUpAfterCommit();
         }
-                
+
     }
 
     @Override
@@ -63,29 +63,29 @@ public class MultiTransaction implements RDFBeanTransaction{
 
     @Override
     public void rollback() {
-        try{
-            for (RDFBeanTransaction tx : transactions){
+        try {
+            for (RDFBeanTransaction tx : transactions) {
                 tx.rollback();
-            }    
-        }finally{
+            }
+        } finally {
             connection.cleanUpAfterCommit();
         }
-                       
+
     }
 
     @Override
     public void setRollbackOnly() {
         this.rollbackOnly = true;
-        for (RDFBeanTransaction tx : transactions){
+        for (RDFBeanTransaction tx : transactions) {
             tx.setRollbackOnly();
-        }                
+        }
     }
 
     @Override
     public void prepare() {
-        for (RDFBeanTransaction tx : transactions){
+        for (RDFBeanTransaction tx : transactions) {
             tx.prepare();
-        }        
+        }
     }
 
 }

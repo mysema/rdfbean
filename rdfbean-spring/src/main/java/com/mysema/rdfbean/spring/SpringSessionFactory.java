@@ -14,7 +14,7 @@ import com.mysema.rdfbean.object.SessionFactoryImpl;
 
 /**
  * @author sasa
- *
+ * 
  */
 public class SpringSessionFactory extends SessionFactoryImpl {
 

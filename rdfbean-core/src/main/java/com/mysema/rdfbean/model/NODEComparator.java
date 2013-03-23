@@ -6,7 +6,7 @@ import java.util.Locale;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class NODEComparator implements Comparator<NODE>, Serializable {
 
@@ -14,26 +14,26 @@ public class NODEComparator implements Comparator<NODE>, Serializable {
 
     @Override
     public int compare(NODE o1, NODE o2) {
-        if (o1 == null){
+        if (o1 == null) {
             return o2 == null ? 0 : -1;
-        }else if (o2 == null){
+        } else if (o2 == null) {
             return 1;
         }
 
         // node type
-        if (o1.getNodeType() != o2.getNodeType()){
+        if (o1.getNodeType() != o2.getNodeType()) {
             return o1.getNodeType().compareTo(o2.getNodeType());
         }
 
         // value
-        if (!o1.getValue().equals(o2.getValue())){
+        if (!o1.getValue().equals(o2.getValue())) {
             return o1.getValue().compareTo(o2.getValue());
         }
-        if (o1.isLiteral() && o2.isLiteral()){
+        if (o1.isLiteral() && o2.isLiteral()) {
             LIT l1 = o1.asLiteral();
             LIT l2 = o2.asLiteral();
             // datatype
-            if (!l1.getDatatype().equals(l2.getDatatype())){
+            if (!l1.getDatatype().equals(l2.getDatatype())) {
                 return compare(l1.getDatatype(), l2.getDatatype());
             }
             // locale

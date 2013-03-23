@@ -20,20 +20,19 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
 public class TurtleStringWriterTest {
-    
+
     private final TurtleStringWriter writer = new TurtleStringWriter();
 
     @Test
-    public void Handle(){
+    public void Handle() {
         List<UID> predicates = new ArrayList<UID>(10);
-        for (int i = 0; i < 10; i++){
-            predicates.add(new UID(TEST.NS, "pred"+i));
+        for (int i = 0; i < 10; i++) {
+            predicates.add(new UID(TEST.NS, "pred" + i));
         }
-        
-                             
+
         List<STMT> stmts = new ArrayList<STMT>(140);
-        for (int i = 0; i < 14; i++){
-            ID sub = new UID(TEST.NS, "e" + UUID.randomUUID());  
+        for (int i = 0; i < 14; i++) {
+            ID sub = new UID(TEST.NS, "e" + UUID.randomUUID());
             stmts.add(new STMT(sub, predicates.get(0), new LIT(UUID.randomUUID().toString())));
             stmts.add(new STMT(sub, predicates.get(1), new LIT("1", XSD.intType)));
             stmts.add(new STMT(sub, predicates.get(2), sub));
@@ -45,13 +44,13 @@ public class TurtleStringWriterTest {
             stmts.add(new STMT(sub, predicates.get(8), new LIT(UUID.randomUUID().toString())));
             stmts.add(new STMT(sub, predicates.get(9), new LIT("3", XSD.intType)));
         }
-        
+
         writer.begin();
-        for (STMT stmt : stmts){
+        for (STMT stmt : stmts) {
             writer.handle(stmt);
         }
         writer.end();
-        
+
         System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains(" ; ns1:pred1"));
@@ -59,71 +58,71 @@ public class TurtleStringWriterTest {
         assertTrue(str.contains("@prefix xsd: <http://www.w3.org/2001/XMLSchema#> ."));
         assertTrue(str.contains("\"3\"^^xsd:int"));
     }
-    
+
     @Test
-    public void Duplicate_Predicate(){    
+    public void Duplicate_Predicate() {
         writer.handle(new STMT(RDF.type, RDF.type, RDF.Property));
         writer.handle(new STMT(RDF.type, RDF.type, RDFS.Resource));
         writer.handle(new STMT(RDF.type, RDFS.label, new LIT("X")));
         writer.end();
-        
+
         System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains("rdf:type a rdf:Property , rdfs:Resource ; rdfs:label \"X\"^^xsd:string ."));
     }
-    
+
     @Test
-    public void Duplicate_Predicate2(){
+    public void Duplicate_Predicate2() {
         writer.handle(new STMT(RDF.type, RDFS.label, new LIT("X")));
         writer.handle(new STMT(RDF.type, RDF.type, RDF.Property));
-        writer.handle(new STMT(RDF.type, RDF.type, RDFS.Resource));        
+        writer.handle(new STMT(RDF.type, RDF.type, RDFS.Resource));
         writer.end();
-        
+
         System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains("rdf:type rdfs:label \"X\"^^xsd:string ; a rdf:Property , rdfs:Resource ."));
     }
-    
+
     @Test
-    public void Proper_Name_Usage(){
+    public void Proper_Name_Usage() {
         UID subject = new UID("http://dbpedia.org/resource/Torpparinm%C3%A4ki");
         writer.begin();
         writer.handle(new STMT(subject, RDF.type, RDFS.Resource));
         writer.end();
-        
+
         System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains("<http://dbpedia.org/resource/Torpparinm%C3%A4ki> a rdfs:Resource ."));
     }
-    
+
     @Test
-    public void Umlaut_Escaping(){
+    public void Umlaut_Escaping() {
         writer.begin();
         writer.handle(new STMT(RDF.predicate, RDFS.label, new LIT("Pr\u00E4dikat", Locale.GERMAN)));
         writer.end();
-        
+
         System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains("rdf:predicate rdfs:label \"Pr\u00E4dikat\"@de ."));
     }
-    
+
     @Test
-    public void Long_String_Encoding(){
+    public void Long_String_Encoding() {
         writer.begin();
         writer.handle(new STMT(RDF.predicate, RDFS.label, new LIT("1\n2\n3")));
         writer.end();
-        
+
         System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains("rdf:predicate rdfs:label \"\"\"1\n2\n3\"\"\"^^xsd:string ."));
     }
-    
+
     @Test
-    public void RDFText_typed_Literal(){
+    public void RDFText_typed_Literal() {
         writer.begin();
         writer.handle(new STMT(RDF.predicate, RDFS.label, new LIT("123", RDF.text)));
         writer.end();
-        
+
         System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains("rdf:predicate rdfs:label \"123\" ."));

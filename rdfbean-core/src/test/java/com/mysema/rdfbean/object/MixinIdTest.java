@@ -11,7 +11,7 @@ import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Mixin;
 
 public class MixinIdTest {
-    
+
     @ClassMapping
     public static final class AType {
         @Mixin
@@ -29,8 +29,8 @@ public class MixinIdTest {
     private Session session;
 
     @Before
-    public void setUp(){
-        session = SessionUtil.openSession(AType.class, BType.class);        
+    public void setUp() {
+        session = SessionUtil.openSession(AType.class, BType.class);
     }
 
     @Test
@@ -40,5 +40,5 @@ public class MixinIdTest {
         assertNotNull(atype.id);
         assertEquals(atype.id, atype.asBType.id);
     }
-    
+
 }

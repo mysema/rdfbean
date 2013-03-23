@@ -5,12 +5,11 @@
  */
 package com.mysema.rdfbean.model;
 
-
 /**
  * Namespace file for XML Schema namespace
- *
+ * 
  * @author sasa
- *
+ * 
  */
 public final class XSD {
     public static final String NS = "http://www.w3.org/2001/XMLSchema#";

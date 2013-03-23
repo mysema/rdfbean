@@ -15,7 +15,7 @@ import com.mysema.query.types.Predicate;
 
 /**
  * BeanSubQuery is a subquery class for use in BeanQuery instances
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
@@ -30,7 +30,7 @@ public class BeanSubQuery extends DetachableAdapter {
 
     /**
      * Defines the sources of the subquery
-     *
+     * 
      * @param o
      * @return
      */
@@ -40,23 +40,23 @@ public class BeanSubQuery extends DetachableAdapter {
 
     /**
      * Defines the order of the subquery
-     *
+     * 
      * @param o
      * @return
      */
-    public BeanSubQuery orderBy(OrderSpecifier<?>... o){
+    public BeanSubQuery orderBy(OrderSpecifier<?>... o) {
         return queryMixin.orderBy(o);
     }
 
     /**
      * Defines the filter conditions of the subquery
-     *
-     * @param o multiple mandatory filters
+     * 
+     * @param o
+     *            multiple mandatory filters
      * @return
      */
-    public BeanSubQuery where(Predicate... o){
+    public BeanSubQuery where(Predicate... o) {
         return queryMixin.where(o);
     }
-
 
 }

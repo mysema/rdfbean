@@ -15,14 +15,14 @@ import com.mysema.rdfbean.sesame.MemoryRepository;
 
 public class GuiceTestRunner extends BlockJUnit4ClassRunner {
 
-    private static final Injector injector = Guice.createInjector(new RDFBeanModule(){
+    private static final Injector injector = Guice.createInjector(new RDFBeanModule() {
         @Override
         public Repository createRepository(Configuration configuration, @Config Properties properties) {
             return new MemoryRepository();
         }
     });
 
-    public GuiceTestRunner(Class<?> klass) throws InitializationError  {
+    public GuiceTestRunner(Class<?> klass) throws InitializationError {
         super(klass);
     }
 

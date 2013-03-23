@@ -1,9 +1,8 @@
 package com.mysema.rdfbean.model;
 
-
 /**
  * @author sasa
- *
+ * 
  */
 public final class SKOS {
 
@@ -73,9 +72,7 @@ public final class SKOS {
 
     public static final UID topConceptOf = new UID(NS, "topConceptOf");
 
-    private SKOS() {}
+    private SKOS() {
+    }
 
 }
-
-
-

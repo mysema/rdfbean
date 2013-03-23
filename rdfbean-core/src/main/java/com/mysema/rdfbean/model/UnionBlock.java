@@ -11,9 +11,9 @@ import com.mysema.query.types.expr.BooleanOperation;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class UnionBlock implements Block{
+public class UnionBlock implements Block {
 
     private static final long serialVersionUID = -5081510328796327230L;
 
@@ -31,13 +31,13 @@ public class UnionBlock implements Block{
     @Override
     @SuppressWarnings("unchecked")
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        if (v instanceof RDFVisitor){
-            return (R)((RDFVisitor)v).visit(this, context);
-        }else if (v instanceof ToStringVisitor){
-            return (R)toString();
-        } else if (v.getClass().getName().equals("com.mysema.query.types.ExtractorVisitor")) {    
-            return (R)this;
-        }else{
+        if (v instanceof RDFVisitor) {
+            return (R) ((RDFVisitor) v).visit(this, context);
+        } else if (v instanceof ToStringVisitor) {
+            return (R) toString();
+        } else if (v.getClass().getName().equals("com.mysema.query.types.ExtractorVisitor")) {
+            return (R) this;
+        } else {
             throw new IllegalArgumentException(v.toString());
         }
     }
@@ -56,32 +56,32 @@ public class UnionBlock implements Block{
     }
 
     @Override
-    public BooleanExpression exists(){
+    public BooleanExpression exists() {
         return BooleanOperation.create(Ops.EXISTS, this);
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return blocks.hashCode();
     }
 
     @Override
-    public boolean equals(Object o){
-        if (o == this){
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
-        }else if (o instanceof UnionBlock){
-            UnionBlock gb = (UnionBlock)o;
+        } else if (o instanceof UnionBlock) {
+            UnionBlock gb = (UnionBlock) o;
             return blocks.equals(gb.blocks);
-        }else{
+        } else {
             return false;
         }
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder builder = new StringBuilder();
-        for (Block block : blocks){
-            if (builder.length() > 0){
+        for (Block block : blocks) {
+            if (builder.length() > 0) {
                 builder.append(" UNION ");
             }
             builder.append(block.toString());

@@ -11,12 +11,12 @@ import com.mysema.query.types.EntityPath;
 
 /**
  * BeanQuery is a Query interface for Java Bean based RDF data projections
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
 public interface BeanQuery extends Query<BeanQuery>, Projectable {
-    
+
     /**
      * Defines the sources of the query
      * 
@@ -24,5 +24,5 @@ public interface BeanQuery extends Query<BeanQuery>, Projectable {
      * @return
      */
     BeanQuery from(EntityPath<?>... o);
-       
+
 }

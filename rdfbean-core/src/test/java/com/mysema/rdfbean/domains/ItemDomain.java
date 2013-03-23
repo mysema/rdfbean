@@ -19,16 +19,15 @@ import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 
 public interface ItemDomain {
-    
 
-    @ClassMapping(ns=TEST.NS,ln="MemoryStoreTest_Item")
+    @ClassMapping(ns = TEST.NS, ln = "MemoryStoreTest_Item")
     public static class Item {
-        
+
         @Id(IDType.RESOURCE)
-        public  ID resource;
-        
-        @Predicate(ln="path")
-        public  String path;
+        public ID resource;
+
+        @Predicate(ln = "path")
+        public String path;
 
         public String getPath() {
             return path;
@@ -45,9 +44,9 @@ public interface ItemDomain {
         public void setResource(ID resource) {
             this.resource = resource;
         }
-        
+
     }
-    
+
     public class QItem extends EntityPathBase<Item> {
 
         private static final long serialVersionUID = 1916166668;
@@ -63,7 +62,7 @@ public interface ItemDomain {
         }
 
         public QItem(EntityPathBase<? extends Item> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QItem(PathMetadata<?> metadata) {

@@ -18,25 +18,25 @@ public class Company extends Party {
 
     @Predicate
     public String getOfficialName() {
-	return officialName;
+        return officialName;
     }
 
     @Required
     public void setOfficialName(String officialName) {
-	this.officialName = Assert.hasText(officialName, "officialName");
+        this.officialName = Assert.hasText(officialName, "officialName");
     }
 
     public Set<Person> getEmployees() {
-	return employees;
+        return employees;
     }
 
     public void addEmployee(Person employee) {
-	employee.setCompany(this);
-	this.employees.add(employee);
+        employee.setCompany(this);
+        this.employees.add(employee);
     }
 
     @Override
     public String getDisplayName() {
-	return officialName;
+        return officialName;
     }
 }

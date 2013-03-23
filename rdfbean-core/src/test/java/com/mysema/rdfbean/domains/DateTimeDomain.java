@@ -18,7 +18,7 @@ import com.mysema.rdfbean.model.IDType;
 public interface DateTimeDomain {
 
     @ClassMapping
-    public class Literals{
+    public class Literals {
 
         @Id(IDType.RESOURCE)
         public ID id;

@@ -8,3 +8,4 @@
  * Literal converters for XML Schema types
  */
 package com.mysema.rdfbean.xsd;
+

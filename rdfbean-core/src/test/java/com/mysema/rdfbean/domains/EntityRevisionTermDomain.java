@@ -20,9 +20,8 @@ import com.mysema.rdfbean.model.IDType;
 
 public interface EntityRevisionTermDomain {
 
-
     @ClassMapping
-    public static class EntityRevision{
+    public static class EntityRevision {
 
         @Id(IDType.RESOURCE)
         public ID id;
@@ -37,14 +36,14 @@ public interface EntityRevisionTermDomain {
             return revisionOf;
         }
 
-        public String getText(){
+        public String getText() {
             return text;
         }
 
     }
 
     @ClassMapping
-    public static class Entity{
+    public static class Entity {
 
         @Id(IDType.RESOURCE)
         public ID id;
@@ -66,7 +65,7 @@ public interface EntityRevisionTermDomain {
     }
 
     @ClassMapping
-    public static class Term{
+    public static class Term {
 
         @Id(IDType.RESOURCE)
         public ID id;
@@ -74,7 +73,7 @@ public interface EntityRevisionTermDomain {
         @Predicate
         public String text2;
 
-        public String getText2(){
+        public String getText2() {
             return text2;
         }
 
@@ -162,7 +161,7 @@ public interface EntityRevisionTermDomain {
         }
 
         public QTerm(EntityPathBase<? extends EntityRevisionTermDomain.Term> entity) {
-            super(entity.getType(),entity.getMetadata());
+            super(entity.getType(), entity.getMetadata());
         }
 
         public QTerm(PathMetadata<?> metadata) {
@@ -170,6 +169,5 @@ public interface EntityRevisionTermDomain {
         }
 
     }
-
 
 }

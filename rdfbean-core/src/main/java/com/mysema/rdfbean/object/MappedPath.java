@@ -13,7 +13,7 @@ import com.mysema.rdfbean.annotations.Path;
 
 /**
  * @author sasa
- *
+ * 
  */
 public final class MappedPath {
 
@@ -39,7 +39,7 @@ public final class MappedPath {
         } else {
             if (predicatePath.size() > 0) {
                 this.ignoreInvalid = predicatePath.get(0).ignoreInvalid();
-            }else{
+            } else {
                 this.ignoreInvalid = false;
             }
         }
@@ -84,8 +84,8 @@ public final class MappedPath {
 
     public boolean isReference() {
         return isMappedClass(mappedProperty.getTargetType())
-            || mappedProperty.isURI()
-            || mappedProperty.isInjection();
+                || mappedProperty.isURI()
+                || mappedProperty.isInjection();
     }
 
     @Deprecated
@@ -134,7 +134,7 @@ public final class MappedPath {
             } else if (!first) {
                 sb.append('.');
             }
-//            sb.append(predicate.getReadableURI());
+            // sb.append(predicate.getReadableURI());
             sb.append(predicate.toString());
             first = false;
         }
@@ -143,7 +143,7 @@ public final class MappedPath {
     }
 
     public void validate() {
-        Assert.notNull(mappedProperty,"mappedProperty");
+        Assert.notNull(mappedProperty, "mappedProperty");
         mappedProperty.validate(this);
     }
 

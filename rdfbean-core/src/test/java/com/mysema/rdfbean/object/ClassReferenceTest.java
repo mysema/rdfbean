@@ -20,7 +20,7 @@ public class ClassReferenceTest {
 
     @ClassMapping
     public final static class ClassReference {
-        @Default(ns=TEST.NS, ln="ClassReference")
+        @Default(ns = TEST.NS, ln = "ClassReference")
         Class<Object> type;
     }
 

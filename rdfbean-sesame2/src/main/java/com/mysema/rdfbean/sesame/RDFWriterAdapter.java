@@ -22,16 +22,16 @@ import com.mysema.commons.lang.Assert;
 public class RDFWriterAdapter extends RDFHandlerWrapper implements RDFWriter {
 
     private final Set<Statement> statements = new TreeSet<Statement>(new StatementComparator());
-    
+
     private final RDFWriter writer;
 
     public RDFWriterAdapter(RDFWriter writer) {
         super(writer);
-        this.writer = Assert.notNull(writer,"writer");
+        this.writer = Assert.notNull(writer, "writer");
     }
-    
+
     @Override
-    public void handleStatement(Statement stmt) throws RDFHandlerException{
+    public void handleStatement(Statement stmt) throws RDFHandlerException {
         statements.add(stmt);
     }
 
@@ -40,18 +40,18 @@ public class RDFWriterAdapter extends RDFHandlerWrapper implements RDFWriter {
         return writer.getRDFFormat();
     }
 
-//    @Override
-//    public void setBaseURI(String arg0) {
-//        writer.setBaseURI(arg0);        
-//    }
+    // @Override
+    // public void setBaseURI(String arg0) {
+    // writer.setBaseURI(arg0);
+    // }
 
     @Override
     public void endRDF() throws RDFHandlerException {
-        for (Statement stmt : statements){
+        for (Statement stmt : statements) {
             writer.handleStatement(stmt);
-        }        
+        }
         statements.clear();
-        writer.endRDF();                
+        writer.endRDF();
     }
 
 }

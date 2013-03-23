@@ -9,7 +9,8 @@ public final class FOAF {
 
     public static final String NS = "http://xmlns.com/foaf/0.1/";
 
-    private FOAF(){}
+    private FOAF() {
+    }
 
     public static final UID Agent = new UID(NS, "Agent");
 

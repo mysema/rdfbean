@@ -2,7 +2,7 @@
  * Copyright (c) 2010 Mysema Ltd.
  * All rights reserved.
  * 
- */ 
+ */
 package com.mysema.rdfbean.model;
 
 /**
@@ -14,11 +14,11 @@ public enum NodeType {
     /**
      * blank node
      */
-    BLANK, 
+    BLANK,
     /**
      * URI
      */
-    URI, 
+    URI,
     /**
      * literal
      */

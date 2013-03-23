@@ -16,7 +16,7 @@ import com.mysema.rdfbean.model.UID;
  * Default implementation of the ErrorHandler interface
  * 
  * @author sasa
- *
+ * 
  */
 public class DefaultErrorHandler implements ErrorHandler {
 
@@ -36,7 +36,7 @@ public class DefaultErrorHandler implements ErrorHandler {
     public void functionalValueError(ID subject, UID predicate,
             boolean includeInferred, UID context) {
         throw new IllegalArgumentException("Found multiple values for a functional predicate: "
-                        + predicate + " of resource" + subject);
+                + predicate + " of resource" + subject);
     }
 
     public void cardinalityError(MappedPath propertyPath, Set<? extends NODE> values) {
@@ -49,5 +49,5 @@ public class DefaultErrorHandler implements ErrorHandler {
         throw new IllegalArgumentException("Expected namespace '" + expected + "', but got "
                 + given + "'");
     }
-    
+
 }

@@ -57,7 +57,7 @@ public class SessionInvLoadTest {
     private Session session;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         session = SessionUtil.openSession(Note.class, Term.class, Comment.class);
         Term term = new Term();
         term.meaning = "X";
@@ -93,7 +93,7 @@ public class SessionInvLoadTest {
     }
 
     @Test
-    public void FindInstances_Empty_Result(){
+    public void FindInstances_Empty_Result() {
         System.out.println("Delete all notes");
         List<Note> notes = session.findInstances(Note.class);
         session.deleteAll(notes.toArray());
@@ -103,32 +103,32 @@ public class SessionInvLoadTest {
     }
 
     @Test
-    public void GetAll_Empty_Result(){
+    public void GetAll_Empty_Result() {
         System.out.println("Get all notes, empty result");
         assertEquals(Arrays.asList(null, null, null), session.getAll(Note.class, new BID(), new BID(), new BID()));
     }
 
     @Test
-    public void Get_Null_Result(){
+    public void Get_Null_Result() {
         assertNull(session.get(Note.class, new BID()));
     }
 
     @Test
-    public void FindInstances_Of_Note(){
+    public void FindInstances_Of_Note() {
         System.out.println("Get all notes");
         List<Note> notes = session.findInstances(Note.class);
         assertEquals(2, notes.size());
     }
 
     @Test
-    public void FindInstances_Of_Comment(){
+    public void FindInstances_Of_Comment() {
         System.out.println("Get all comments");
         List<Comment> comments = session.findInstances(Comment.class);
         assertEquals(4, comments.size());
     }
 
     @Test
-    public void Query_For_Notes(){
+    public void Query_For_Notes() {
         System.out.println("Query all notes");
         PathBuilder<Note> note = new PathBuilder<Note>(Note.class, "note");
         List<Note> notes = session.from(note).list(note);

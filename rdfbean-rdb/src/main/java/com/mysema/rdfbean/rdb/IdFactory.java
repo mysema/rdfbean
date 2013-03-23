@@ -11,12 +11,12 @@ import com.mysema.rdfbean.model.NODE;
 
 /**
  * IDFactory defines id creation for NODE and Locale instances
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
 public interface IdFactory {
-    
+
     /**
      * @param locale
      * @return

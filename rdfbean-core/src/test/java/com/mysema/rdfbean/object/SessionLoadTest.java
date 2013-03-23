@@ -20,7 +20,7 @@ public class SessionLoadTest {
     private ID termId, note1Id, note2Id;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         session = SessionUtil.openSession(Note.class, Term.class);
         Term term = new Term();
         term.meaning = "X";
@@ -48,14 +48,14 @@ public class SessionLoadTest {
     }
 
     @Test
-    public void FindInstances(){
+    public void FindInstances() {
         System.out.println("Get all notes");
         List<Note> notes = session.findInstances(Note.class);
         assertEquals(2, notes.size());
     }
 
     @Test
-    public void QueryAll(){
+    public void QueryAll() {
         System.out.println("Query all notes");
         PathBuilder<Note> note = new PathBuilder<Note>(Note.class, "note");
         List<Note> notes = session.from(note).list(note);
@@ -63,21 +63,21 @@ public class SessionLoadTest {
     }
 
     @Test
-    public void GetAll(){
+    public void GetAll() {
         System.out.println("Get both notes");
         List<Note> notes = session.getAll(Note.class, note1Id, note2Id);
         assertEquals(2, notes.size());
     }
 
     @Test
-    public void GetNote(){
+    public void GetNote() {
         System.out.println("Get note1");
         Note note = session.get(Note.class, note1Id);
         assertNotNull(note);
     }
 
     @Test
-    public void GetTerm(){
+    public void GetTerm() {
         System.out.println("Get term");
         Term term = session.get(Term.class, termId);
         assertNotNull(term);

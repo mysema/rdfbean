@@ -36,7 +36,7 @@ import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
-public class RDBConnectionTest extends AbstractRDBTest{
+public class RDBConnectionTest extends AbstractRDBTest {
 
     private final IdFactory idFactory = new MD5IdFactory();
 
@@ -45,17 +45,17 @@ public class RDBConnectionTest extends AbstractRDBTest{
     private Connection jdbcConn;
 
     @Before
-    public void setUp() throws SQLException{
+    public void setUp() throws SQLException {
         conn = repository.openConnection();
         jdbcConn = dataSource.getConnection();
     }
 
     @After
-    public void tearDown() throws IOException, SQLException{
-        if (conn != null){
+    public void tearDown() throws IOException, SQLException {
+        if (conn != null) {
             conn.close();
         }
-        if (jdbcConn != null){
+        if (jdbcConn != null) {
             jdbcConn.close();
         }
     }
@@ -77,106 +77,106 @@ public class RDBConnectionTest extends AbstractRDBTest{
     }
 
     @Test
-    public void DateTime(){
+    public void DateTime() {
         UtilDateConverter converter = new UtilDateConverter();
         ID subject = new BID();
         LIT object = new LIT(converter.toString(new Date()), XSD.date);
         Set<STMT> additions = new HashSet<STMT>();
-        additions.add(new STMT(subject, new UID(TEST.NS,"created"),object));
+        additions.add(new STMT(subject, new UID(TEST.NS, "created"), object));
         Set<STMT> removals = new HashSet<STMT>();
         conn.update(removals, additions);
 
         assertEquals(1, conn.find(subject, null, null, null, false).size());
-        assertEquals(1, conn.find(subject, new UID(TEST.NS,"created"), null, null, false).size());
-        assertEquals(1, conn.find(subject, new UID(TEST.NS,"created"), object, null, false).size());
+        assertEquals(1, conn.find(subject, new UID(TEST.NS, "created"), null, null, false).size());
+        assertEquals(1, conn.find(subject, new UID(TEST.NS, "created"), object, null, false).size());
     }
 
     @Test
-    public void Numeric(){
+    public void Numeric() {
         ID subject = new BID();
         Set<STMT> additions = new HashSet<STMT>();
-        additions.add(new STMT(subject, new UID(TEST.NS,"int"), new LIT("1",XSD.intType)));
-        additions.add(new STMT(subject, new UID(TEST.NS,"double"), new LIT("1.0",XSD.doubleType)));
+        additions.add(new STMT(subject, new UID(TEST.NS, "int"), new LIT("1", XSD.intType)));
+        additions.add(new STMT(subject, new UID(TEST.NS, "double"), new LIT("1.0", XSD.doubleType)));
         Set<STMT> removals = new HashSet<STMT>();
         conn.update(removals, additions);
 
         assertEquals(2, conn.find(subject, null, null, null, false).size());
-        assertEquals(1, conn.find(subject, new UID(TEST.NS,"int"), null, null, false).size());
-        assertEquals(1, conn.find(subject, new UID(TEST.NS,"int"), new LIT("1",XSD.intType), null, false).size());
-        assertEquals(1, conn.find(subject, new UID(TEST.NS,"double"),  new LIT("1.0",XSD.doubleType), null, false).size());
+        assertEquals(1, conn.find(subject, new UID(TEST.NS, "int"), null, null, false).size());
+        assertEquals(1, conn.find(subject, new UID(TEST.NS, "int"), new LIT("1", XSD.intType), null, false).size());
+        assertEquals(1, conn.find(subject, new UID(TEST.NS, "double"), new LIT("1.0", XSD.doubleType), null, false).size());
     }
-    
+
     @Test
-    public void Remove(){
+    public void Remove() {
         Set<STMT> additions = new HashSet<STMT>();
         additions.add(new STMT(RDF.type, RDF.type, RDF.Property));
         additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
         additions.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));
         Set<STMT> removals = new HashSet<STMT>();
         conn.update(removals, additions);
-        
+
         QSymbol symbol = QSymbol.symbol;
         assertEquals(1l, from(symbol).where(symbol.id.eq(id(RDF.type))).count());
         assertEquals(1l, from(symbol).where(symbol.id.eq(id(RDFS.label))).count());
         assertEquals(1l, from(symbol).where(symbol.id.eq(id(new LIT("type")))).count());
 
-        conn.remove(null,     null,     null,         RDF.type); // * * * c
+        conn.remove(null, null, null, RDF.type); // * * * c
         assertEquals(3, conn.find(RDF.type, null, null, null, false).size());
-        
-        conn.remove(null,     null,     RDF.Property, null);     // * * o *
+
+        conn.remove(null, null, RDF.Property, null); // * * o *
         assertEquals(2, conn.find(RDF.type, null, null, null, false).size());
-        
-        conn.remove(null,     RDF.type, RDF.Property, null);     // * p o *
+
+        conn.remove(null, RDF.type, RDF.Property, null); // * p o *
         assertEquals(2, conn.find(RDF.type, null, null, null, false).size());
-        
-        conn.remove(RDF.type, RDF.type, RDF.Property, null);     // s p o *
+
+        conn.remove(RDF.type, RDF.type, RDF.Property, null); // s p o *
         assertEquals(2, conn.find(RDF.type, null, null, null, false).size());
-        
-        conn.remove(RDF.type, RDF.type, null,         null);     // s p * *
+
+        conn.remove(RDF.type, RDF.type, null, null); // s p * *
         assertEquals(2, conn.find(RDF.type, null, null, null, false).size());
-        
-        conn.remove(RDF.type, null,     null,         null);     // s * * *
+
+        conn.remove(RDF.type, null, null, null); // s * * *
         assertEquals(0, conn.find(RDF.type, null, null, null, false).size());
-        
-        conn.remove(null,     null,     null,         null);     // * * * *
+
+        conn.remove(null, null, null, null); // * * * *
 
     }
 
     @Test
     public void Update() throws SQLException {
-       Set<STMT> additions = new HashSet<STMT>();
-       additions.add(new STMT(RDF.type, RDF.type, RDF.Property));
-       additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
-       additions.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));
-       Set<STMT> removals = new HashSet<STMT>();
-       conn.update(removals, additions);
+        Set<STMT> additions = new HashSet<STMT>();
+        additions.add(new STMT(RDF.type, RDF.type, RDF.Property));
+        additions.add(new STMT(RDF.type, RDFS.label, new LIT("type")));
+        additions.add(new STMT(RDF.type, RDFS.label, new LIT("tyyppi", new Locale("fi"))));
+        Set<STMT> removals = new HashSet<STMT>();
+        conn.update(removals, additions);
 
-       // print inserted triples
-       QStatement stmt = QStatement.statement;
-       QSymbol sub = new QSymbol("sub");
-       QSymbol pre = new QSymbol("pre");
-       QSymbol obj = new QSymbol("obj");
-       SQLQuery query = from(stmt);
-       query.where(stmt.subject.eq(id(RDF.type)));
-       query.innerJoin(stmt.subjectFk, sub);
-       query.innerJoin(stmt.predicateFk, pre);
-       query.innerJoin(stmt.objectFk, obj);
-       for (Tuple row : query.list(sub.lexical, pre.lexical, obj.lexical)){
-           System.out.println(Arrays.asList(row.toArray()));
-       }
+        // print inserted triples
+        QStatement stmt = QStatement.statement;
+        QSymbol sub = new QSymbol("sub");
+        QSymbol pre = new QSymbol("pre");
+        QSymbol obj = new QSymbol("obj");
+        SQLQuery query = from(stmt);
+        query.where(stmt.subject.eq(id(RDF.type)));
+        query.innerJoin(stmt.subjectFk, sub);
+        query.innerJoin(stmt.predicateFk, pre);
+        query.innerJoin(stmt.objectFk, obj);
+        for (Tuple row : query.list(sub.lexical, pre.lexical, obj.lexical)) {
+            System.out.println(Arrays.asList(row.toArray()));
+        }
 
-       QSymbol symbol = QSymbol.symbol;
-       assertEquals(1l, from(symbol).where(symbol.id.eq(id(RDF.type))).count());
-       assertEquals(1l, from(symbol).where(symbol.id.eq(id(RDFS.label))).count());
-       assertEquals(1l, from(symbol).where(symbol.id.eq(id(new LIT("type")))).count());
+        QSymbol symbol = QSymbol.symbol;
+        assertEquals(1l, from(symbol).where(symbol.id.eq(id(RDF.type))).count());
+        assertEquals(1l, from(symbol).where(symbol.id.eq(id(RDFS.label))).count());
+        assertEquals(1l, from(symbol).where(symbol.id.eq(id(new LIT("type")))).count());
 
-       assertEquals(additions.size(), from(stmt).where(stmt.subject.eq(id(RDF.type))).count());
+        assertEquals(additions.size(), from(stmt).where(stmt.subject.eq(id(RDF.type))).count());
     }
 
     @Test
-    public void Update_with_nulls(){
-        conn.update(Collections.<STMT>emptySet(), null);
-        conn.update(null, Collections.<STMT>emptySet());
+    public void Update_with_nulls() {
+        conn.update(Collections.<STMT> emptySet(), null);
+        conn.update(null, Collections.<STMT> emptySet());
         conn.update(null, null);
     }
 
@@ -189,9 +189,9 @@ public class RDBConnectionTest extends AbstractRDBTest{
         additions.add(new STMT(sub1, RDFS.label, new LIT("type")));
         additions.add(new STMT(sub1, RDFS.label, new LIT("tyyppi", new Locale("fi"))));
         additions.add(new STMT(sub2, RDF.type, RDF.Property, new UID(RDF.NS)));
-        conn.update(Collections.<STMT>emptySet(), additions);
+        conn.update(Collections.<STMT> emptySet(), additions);
 
-        for (STMT stmt : additions){
+        for (STMT stmt : additions) {
             assertEquals(stmt + " failed", 1, conn.find(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext(), false).size());
         }
     }
@@ -212,18 +212,18 @@ public class RDBConnectionTest extends AbstractRDBTest{
         removals.add(new STMT(sub1, RDFS.label, new LIT("tyyppi", new Locale("fi"))));
         removals.add(new STMT(sub2, RDF.type, RDF.Property));
         removals.add(new STMT(sub2, RDF.type, RDF.Property, new UID(RDF.NS)));
-        conn.update(removals, Collections.<STMT>emptySet());
+        conn.update(removals, Collections.<STMT> emptySet());
 
-        for (STMT stmt : removals){
+        for (STMT stmt : removals) {
             assertEquals(stmt + " failed", 0, conn.find(stmt.getSubject(), stmt.getPredicate(), stmt.getObject(), stmt.getContext(), false).size());
         }
     }
 
-    private Long id(NODE node){
+    private Long id(NODE node) {
         return idFactory.getId(node);
     }
 
-    private SQLQuery from(RelationalPath<?> entity){
+    private SQLQuery from(RelationalPath<?> entity) {
         return new SQLQuery(jdbcConn, templates).from(entity);
     }
 

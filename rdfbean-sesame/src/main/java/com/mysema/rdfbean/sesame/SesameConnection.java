@@ -53,14 +53,15 @@ import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
 import com.mysema.rdfbean.model.UpdateLanguage;
 
 /**
- * SaesameConnection is the RDFConnection implementation for RepositoryConnection usage
- *
+ * SaesameConnection is the RDFConnection implementation for
+ * RepositoryConnection usage
+ * 
  * @author sasa
- *
+ * 
  */
 public class SesameConnection implements RDFConnection {
 
-    static{
+    static {
         SesameFunctions.init();
     }
 
@@ -75,7 +76,7 @@ public class SesameConnection implements RDFConnection {
 
     private boolean readonlyTnx = false;
 
-    private final Function<STMT,Statement> stmtTransformer = new Function<STMT,Statement>(){
+    private final Function<STMT, Statement> stmtTransformer = new Function<STMT, Statement>() {
         @Override
         public Statement apply(STMT stmt) {
             return convert(stmt);
@@ -87,11 +88,11 @@ public class SesameConnection implements RDFConnection {
     private final SesameRepository repository;
 
     public SesameConnection(SesameRepository repository, RepositoryConnection connection, InferenceOptions inference) {
-        this.repository = Assert.notNull(repository,"repository");
-        this.connection = Assert.notNull(connection,"connection");
+        this.repository = Assert.notNull(repository, "repository");
+        this.connection = Assert.notNull(connection, "connection");
         this.vf = connection.getValueFactory();
         this.dialect = new SesameDialect(vf);
-        this.inference = Assert.notNull(inference,"inference");
+        this.inference = Assert.notNull(inference, "inference");
     }
 
     @Override
@@ -102,12 +103,12 @@ public class SesameConnection implements RDFConnection {
         return localTxn;
     }
 
-    public void cleanUpAfterCommit(){
+    public void cleanUpAfterCommit() {
         localTxn = null;
         readonlyTnx = false;
     }
 
-    public void cleanUpAfterRollback(){
+    public void cleanUpAfterRollback() {
         localTxn = null;
         readonlyTnx = false;
         close();
@@ -145,7 +146,7 @@ public class SesameConnection implements RDFConnection {
         return node != null ? dialect.getNode(node) : null;
     }
 
-    private Statement convert(STMT stmt){
+    private Statement convert(STMT stmt) {
         Resource subject = dialect.getResource(stmt.getSubject());
         URI predicate = dialect.getURI(stmt.getPredicate());
         Value object = dialect.getNode(stmt.getObject());
@@ -161,47 +162,47 @@ public class SesameConnection implements RDFConnection {
     @Override
     public BID createBNode() {
         return dialect.getBID(dialect.createBNode());
-    }  
+    }
 
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, D definition) {
-        if (updateLanguage == UpdateLanguage.SPARQL_UPDATE){
-            return (Q)new SPARQLUpdateClause(this, definition.toString());
-        }else{
-            throw new UnsupportedOperationException(updateLanguage.toString());    
-        }         
+        if (updateLanguage == UpdateLanguage.SPARQL_UPDATE) {
+            return (Q) new SPARQLUpdateClause(this, definition.toString());
+        } else {
+            throw new UnsupportedOperationException(updateLanguage.toString());
+        }
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, D definition) {
         boolean queryInference = !inference.subClassOf();
-        if (queryLanguage.equals(QueryLanguage.SPARQL)){
-            return (Q)createSPARQLQuery((String) definition);
+        if (queryLanguage.equals(QueryLanguage.SPARQL)) {
+            return (Q) createSPARQLQuery((String) definition);
 
-        }else if (queryLanguage.equals(QueryLanguage.TUPLE)){
+        } else if (queryLanguage.equals(QueryLanguage.TUPLE)) {
             SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
-            TupleExpr tuple = visitor.visit((QueryMetadata)definition, queryLanguage);
+            TupleExpr tuple = visitor.visit((QueryMetadata) definition, queryLanguage);
             TupleQueryModel queryModel = new TupleQueryModel(tuple);
             TupleQuery query = DirectQuery.getQuery(connection, queryModel, queryInference);
-            return (Q)new TupleQueryImpl(query, dialect);
-            
-        }else if (queryLanguage.equals(QueryLanguage.GRAPH)){
+            return (Q) new TupleQueryImpl(query, dialect);
+
+        } else if (queryLanguage.equals(QueryLanguage.GRAPH)) {
             SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
-            TupleExpr tuple = visitor.visit((QueryMetadata)definition, queryLanguage);
+            TupleExpr tuple = visitor.visit((QueryMetadata) definition, queryLanguage);
             GraphQueryModel queryModel = new GraphQueryModel(tuple);
             GraphQuery query = DirectQuery.getQuery(connection, queryModel, queryInference);
-            return (Q)new GraphQueryImpl(query, dialect);
+            return (Q) new GraphQueryImpl(query, dialect);
 
-        }else if (queryLanguage.equals(QueryLanguage.BOOLEAN)){
+        } else if (queryLanguage.equals(QueryLanguage.BOOLEAN)) {
             SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
-            TupleExpr tuple = visitor.visit((QueryMetadata)definition, queryLanguage);
+            TupleExpr tuple = visitor.visit((QueryMetadata) definition, queryLanguage);
             BooleanQueryModel queryModel = new BooleanQueryModel(tuple);
             BooleanQuery query = DirectQuery.getQuery(connection, queryModel, queryInference);
-            return (Q)new BooleanQueryImpl(query, dialect);
+            return (Q) new BooleanQueryImpl(query, dialect);
 
-        }else{
+        } else {
             throw new UnsupportedQueryLanguageException(queryLanguage);
         }
     }
@@ -209,13 +210,13 @@ public class SesameConnection implements RDFConnection {
     private SPARQLQuery createSPARQLQuery(String queryString) {
         try {
             Query query = connection.prepareQuery(org.openrdf.query.QueryLanguage.SPARQL, queryString);
-            if (query instanceof BooleanQuery){
-                return new BooleanQueryImpl((BooleanQuery)query, dialect);
-            }else if (query instanceof GraphQuery){
-                return new GraphQueryImpl((GraphQuery)query, dialect);
-            }else if (query instanceof TupleQuery){
-                return new TupleQueryImpl((TupleQuery)query, dialect);
-            }else{
+            if (query instanceof BooleanQuery) {
+                return new BooleanQueryImpl((BooleanQuery) query, dialect);
+            } else if (query instanceof GraphQuery) {
+                return new GraphQueryImpl((GraphQuery) query, dialect);
+            } else if (query instanceof TupleQuery) {
+                return new TupleQueryImpl((TupleQuery) query, dialect);
+            } else {
                 throw new RepositoryException("Unsupported query type " + query.getClass().getName());
             }
         } catch (StoreException e) {
@@ -231,7 +232,7 @@ public class SesameConnection implements RDFConnection {
         URI predicate = convert(pre);
         Value object = convert(obj);
         URI context = convert(con);
-        return new ModelResultIterator(dialect,findStatements(subject, predicate, object, includeInferred, context), includeInferred);
+        return new ModelResultIterator(dialect, findStatements(subject, predicate, object, includeInferred, context), includeInferred);
     }
 
     @Override
@@ -243,9 +244,9 @@ public class SesameConnection implements RDFConnection {
         URI context = convert(con);
 
         try {
-            if (context == null){
+            if (context == null) {
                 return connection.hasMatch(subject, predicate, object, includeInferred);
-            }else{
+            } else {
                 return connection.hasMatch(subject, predicate, object, includeInferred, context);
             }
         } catch (StoreException e) {
@@ -269,7 +270,7 @@ public class SesameConnection implements RDFConnection {
         }
     }
 
-    public RepositoryConnection getConnection(){
+    public RepositoryConnection getConnection() {
         return connection;
     }
 
@@ -301,7 +302,7 @@ public class SesameConnection implements RDFConnection {
 
     @Override
     public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
-        if (!readonlyTnx){
+        if (!readonlyTnx) {
             try {
                 if (removedStatements != null && !removedStatements.isEmpty()) {
                     connection.remove(convert(removedStatements));
@@ -319,7 +320,7 @@ public class SesameConnection implements RDFConnection {
     public QueryOptions getQueryOptions() {
         return QueryOptions.DEFAULT;
     }
-    
+
     @Override
     public InferenceOptions getInferenceOptions() {
         return inference;

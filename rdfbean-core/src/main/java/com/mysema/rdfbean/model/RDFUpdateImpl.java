@@ -8,71 +8,71 @@ import com.mysema.commons.lang.CloseableIterator;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class RDFUpdateImpl implements RDFUpdate {
 
     private final RDFConnection connection;
-    
+
     private final List<PatternBlock> delete = new ArrayList<PatternBlock>();
-    
+
     private final List<PatternBlock> insert = new ArrayList<PatternBlock>();
-    
+
     private final List<UID> from = new ArrayList<UID>();
-    
+
     private final List<UID> into = new ArrayList<UID>();
-    
+
     private final List<Block> where = new ArrayList<Block>();
-    
+
     public RDFUpdateImpl(RDFConnection connection) {
         this.connection = connection;
     }
-  
+
     @Override
     public void execute() {
         UID[] _from = from.toArray(new UID[from.size()]);
         Block[] _where = where.toArray(new Block[where.size()]);
         List<STMT> added = null;
         List<STMT> removed = null;
-        
-        if (!insert.isEmpty()){            
+
+        if (!insert.isEmpty()) {
             CloseableIterator<STMT> stmts = new RDFQueryImpl(connection)
-                .from(_from).where(_where)
-                .construct(insert.toArray(new Block[insert.size()]));            
-            added = convertStatements(stmts, into);     
-//            System.err.println("added " + added);
+                    .from(_from).where(_where)
+                    .construct(insert.toArray(new Block[insert.size()]));
+            added = convertStatements(stmts, into);
+            // System.err.println("added " + added);
         }
-        
-        if (!delete.isEmpty()){
+
+        if (!delete.isEmpty()) {
             CloseableIterator<STMT> stmts = new RDFQueryImpl(connection)
-                .from(_from).where(_where)
-                .construct(delete.toArray(new Block[delete.size()]));            
+                    .from(_from).where(_where)
+                    .construct(delete.toArray(new Block[delete.size()]));
             removed = convertStatements(stmts, from);
-//            System.err.println("removed " + removed);
+            // System.err.println("removed " + removed);
         }
-        
+
         connection.update(removed, added);
     }
 
     private List<STMT> convertStatements(CloseableIterator<STMT> stmts, List<UID> contexts) {
         List<STMT> rv = new ArrayList<STMT>();
-        try{
-            while (stmts.hasNext()){
+        try {
+            while (stmts.hasNext()) {
                 STMT stmt = stmts.next();
-                if (!contexts.isEmpty()){
-                    for (UID uid : contexts){
+                if (!contexts.isEmpty()) {
+                    for (UID uid : contexts) {
                         rv.add(new STMT(stmt, uid));
                     }
-                }else{
+                } else {
                     rv.add(stmt);
-                }                
+                }
             }
-        }finally{
+        } finally {
             stmts.close();
         }
         return rv;
     }
-    
+
     @Override
     public RDFUpdate delete(PatternBlock... patterns) {
         this.delete.addAll(Arrays.asList(patterns));

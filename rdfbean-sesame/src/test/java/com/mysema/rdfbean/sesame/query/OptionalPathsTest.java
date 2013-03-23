@@ -20,11 +20,11 @@ import com.mysema.rdfbean.domains.NoteTermDomain.Term;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({Note.class, Term.class})
-public class OptionalPathsTest extends SessionTestBase implements NoteTermDomain{
+@SessionConfig({ Note.class, Term.class })
+public class OptionalPathsTest extends SessionTestBase implements NoteTermDomain {
 
     @Test
-    public void test() throws IOException{
+    public void test() throws IOException {
         Note note = new Note();
         note.lemma = "a";
         session.save(note);

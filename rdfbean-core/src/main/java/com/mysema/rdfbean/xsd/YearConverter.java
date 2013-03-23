@@ -7,12 +7,10 @@ package com.mysema.rdfbean.xsd;
 
 import com.mysema.converters.AbstractConverter;
 
-
-
 /**
  * @author tiwe
  */
-public class YearConverter  extends AbstractConverter<Year> {
+public class YearConverter extends AbstractConverter<Year> {
 
     @Override
     public Year fromString(String str) {

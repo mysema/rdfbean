@@ -35,7 +35,7 @@ public class DomainExporterTest {
     private final DefaultConfiguration configuration = new DefaultConfiguration(TEST.NS);
 
     @Test
-    public void CompanyDepartmentEmployeeDomain() throws IOException{
+    public void CompanyDepartmentEmployeeDomain() throws IOException {
         configuration.addClasses(
                 CompanyDepartmentEmployeeDomain.Company.class,
                 CompanyDepartmentEmployeeDomain.Department.class,
@@ -46,7 +46,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void ContextDomain() throws IOException{
+    public void ContextDomain() throws IOException {
         configuration.addClasses(
                 ContextDomain.Entity1.class,
                 ContextDomain.Entity1.class,
@@ -57,7 +57,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void DateTimeDomain() throws IOException{
+    public void DateTimeDomain() throws IOException {
         configuration.addClasses(DateTimeDomain.Literals.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/DateTimeDomain"), configuration);
@@ -65,7 +65,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void EntityDocumentRevisionDomain() throws IOException{
+    public void EntityDocumentRevisionDomain() throws IOException {
         configuration.addClasses(EntityDocumentRevisionDomain.Document.class, EntityDocumentRevisionDomain.Revision.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/EntityDocumentRevisionDomain"), configuration);
@@ -73,7 +73,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void EntityDomain() throws IOException{
+    public void EntityDomain() throws IOException {
         configuration.addClasses(EntityDomain.Entity.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/EntityDomain"), configuration);
@@ -81,7 +81,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void EntityRevisionTermDomain() throws IOException{
+    public void EntityRevisionTermDomain() throws IOException {
         configuration.addClasses(
                 EntityRevisionTermDomain.Entity.class,
                 EntityRevisionTermDomain.EntityRevision.class,
@@ -92,7 +92,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void IdentityDomain() throws IOException{
+    public void IdentityDomain() throws IOException {
         configuration.addClasses(IdentityDomain.Entity1.class, IdentityDomain.Entity2.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/IdentityDomain"), configuration);
@@ -100,7 +100,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void InferenceDomain() throws IOException{
+    public void InferenceDomain() throws IOException {
         configuration.addClasses(InferenceDomain.Entity1.class, InferenceDomain.Entity2.class, InferenceDomain.Entity3.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/InferenceDomain"), configuration);
@@ -108,7 +108,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void ItemDomain() throws IOException{
+    public void ItemDomain() throws IOException {
         configuration.addClasses(ItemDomain.Item.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/ItemDomain"), configuration);
@@ -116,7 +116,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void ListDomain() throws IOException{
+    public void ListDomain() throws IOException {
         configuration.addClasses(ListDomain.Element.class, ListDomain.Elements.class, ListDomain.Identifiable.class,
                 ListDomain.LinkElement.class, ListDomain.TextElement.class);
 
@@ -125,7 +125,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void LiteralsDomain() throws IOException{
+    public void LiteralsDomain() throws IOException {
         configuration.addClasses(LiteralsDomain.Literals.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/LiteralsDomain"), configuration);
@@ -133,7 +133,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void LoadDomain() throws IOException{
+    public void LoadDomain() throws IOException {
         configuration.addClasses(LoadDomain.Document.class, LoadDomain.Entity.class, LoadDomain.Revision.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/LoadDomain"), configuration);
@@ -141,7 +141,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void NoteRevisionTermDomain() throws IOException{
+    public void NoteRevisionTermDomain() throws IOException {
         configuration.addClasses(NoteRevisionTermDomain.Note.class, NoteRevisionTermDomain.Term.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/NoteRevisionTermDomain"), configuration);
@@ -149,7 +149,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void NoteTermDomain() throws IOException{
+    public void NoteTermDomain() throws IOException {
         configuration.addClasses(NoteTermDomain.Note.class, NoteTermDomain.Term.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/NoteTermDomain"), configuration);
@@ -157,7 +157,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void NoteTypeDomain() throws IOException{
+    public void NoteTypeDomain() throws IOException {
         configuration.addClasses(NoteTypeDomain.Note.class, NoteTypeDomain.NoteType.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/NoteTypeDomain"), configuration);
@@ -165,7 +165,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void PropertiesDomain() throws IOException{
+    public void PropertiesDomain() throws IOException {
         configuration.addClasses(PropertiesDomain.Person.class, PropertiesDomain.Iteration.class, PropertiesDomain.Project.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/PropertiesDomain"), configuration);
@@ -173,7 +173,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void ResourceDomain() throws IOException{
+    public void ResourceDomain() throws IOException {
         configuration.addClasses(ResourceDomain.Resource.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/ResourceDomain"), configuration);
@@ -181,7 +181,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void SimpleDomain() throws IOException{
+    public void SimpleDomain() throws IOException {
         configuration.addClasses(SimpleDomain.SimpleType.class, SimpleDomain.SimpleType2.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/SimpleDomain"), configuration);
@@ -189,7 +189,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void UserDepartmentCompanyDomain() throws IOException{
+    public void UserDepartmentCompanyDomain() throws IOException {
         configuration.addClasses(UserDepartmentCompanyDomain.Company.class,
                 UserDepartmentCompanyDomain.Department.class, UserDepartmentCompanyDomain.User.class);
 
@@ -198,7 +198,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void UserDomain() throws IOException{
+    public void UserDomain() throws IOException {
         configuration.addClasses(UserDomain.User.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/UserDomain"), configuration);
@@ -206,7 +206,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void UserProfileDomain() throws IOException{
+    public void UserProfileDomain() throws IOException {
         configuration.addClasses(UserProfileDomain.Identifiable.class, UserProfileDomain.User.class, UserProfileDomain.Profile.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/UserProfileDomain"), configuration);
@@ -214,7 +214,7 @@ public class DomainExporterTest {
     }
 
     @Test
-    public void UserProjectionDomain() throws IOException{
+    public void UserProjectionDomain() throws IOException {
         configuration.addClasses(UserProjectionDomain.User.class);
 
         DomainExporter exporter = new DomainExporter(new File("target/UserProjectionDomain"), configuration);

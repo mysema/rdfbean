@@ -19,8 +19,8 @@ import org.openrdf.store.StoreException;
 import com.mysema.rdfbean.model.RepositoryException;
 
 /**
- * ExtendedRDFSInferencer extends ForwardChainingRDFSInferencer to add
- * better support for XSD datatype instances
+ * ExtendedRDFSInferencer extends ForwardChainingRDFSInferencer to add better
+ * support for XSD datatype instances
  * 
  * @author tiwe
  * @version $Id$
@@ -42,9 +42,9 @@ public class ExtendedRDFSInferencer extends ForwardChainingRDFSInferencer {
         InferencerConnection conn = getConnection();
         try {
             conn.begin();
-            for (Field field : XMLSchema.class.getFields()){
-                if (field.getType().equals(URI.class)){
-                    conn.addInferredStatement((URI)field.get(null), RDF.TYPE, RDFS.DATATYPE);
+            for (Field field : XMLSchema.class.getFields()) {
+                if (field.getType().equals(URI.class)) {
+                    conn.addInferredStatement((URI) field.get(null), RDF.TYPE, RDFS.DATATYPE);
                 }
             }
             // TODO : datatype relations

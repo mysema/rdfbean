@@ -5,17 +5,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class Addition implements RDFConnectionCallback<Void>{
-    
+public class Addition implements RDFConnectionCallback<Void> {
+
     private final STMT[] stmts;
-    
-    public Addition(STMT... stmts){
+
+    public Addition(STMT... stmts) {
         this.stmts = stmts;
     }
 
     @Override
     public Void doInConnection(RDFConnection connection) throws IOException {
-        connection.update(Collections.<STMT>emptySet(), new HashSet<STMT>(Arrays.asList(stmts)));
+        connection.update(Collections.<STMT> emptySet(), new HashSet<STMT>(Arrays.asList(stmts)));
         return null;
     }
 

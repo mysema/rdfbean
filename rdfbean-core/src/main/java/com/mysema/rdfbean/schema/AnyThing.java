@@ -16,21 +16,21 @@ import com.mysema.rdfbean.rdfs.RDFSResource;
 
 /**
  * @author sasa
- *
+ * 
  */
 @ClassMapping(ns = RDFS.NS, ln = "Resource")
 public class AnyThing extends RDFSResource {
 
-    @Predicate(ns=RDF.NS, ln="type")
+    @Predicate(ns = RDF.NS, ln = "type")
     private OWLClass type;
-    
-    @Predicate(ns=CORE.NS)
+
+    @Predicate(ns = CORE.NS)
     private Integer enumOrdinal;
 
     public AnyThing(UID id, OWLClass type, Integer enumOrdinal) {
         super(id);
         this.type = type;
-        this.enumOrdinal = enumOrdinal;        
+        this.enumOrdinal = enumOrdinal;
     }
 
     public OWLClass getType() {
@@ -40,5 +40,5 @@ public class AnyThing extends RDFSResource {
     public Integer getEnumOrdinal() {
         return enumOrdinal;
     }
-    
+
 }

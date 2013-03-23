@@ -5,7 +5,7 @@ import java.util.Locale;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.converters.Converter;
 
-public class LocaleConverter implements Converter<Locale>{
+public class LocaleConverter implements Converter<Locale> {
 
     @Override
     public Locale fromString(String str) {

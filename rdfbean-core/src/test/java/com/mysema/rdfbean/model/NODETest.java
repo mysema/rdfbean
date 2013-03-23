@@ -12,7 +12,7 @@ import org.junit.Test;
 public class NODETest {
 
     @Test
-    public void test(){
+    public void test() {
         NODE uri = RDF.type;
         NODE bnode = new BID();
         NODE lit = new LIT("");
@@ -21,23 +21,23 @@ public class NODETest {
         assertEquals(lit, lit.asLiteral());
     }
 
-    @Test(expected=UnsupportedOperationException.class)
-    public void LIT_As_Resource(){
+    @Test(expected = UnsupportedOperationException.class)
+    public void LIT_As_Resource() {
         new LIT("X").asResource();
     }
 
-    @Test(expected=UnsupportedOperationException.class)
-    public void LIT_As_URI(){
+    @Test(expected = UnsupportedOperationException.class)
+    public void LIT_As_URI() {
         new LIT("X").asURI();
     }
 
-    @Test(expected=UnsupportedOperationException.class)
-    public void LIT_As_Blank(){
+    @Test(expected = UnsupportedOperationException.class)
+    public void LIT_As_Blank() {
         new LIT("X").asBNode();
     }
 
-    @Test(expected=UnsupportedOperationException.class)
-    public void BID_As_LIT(){
+    @Test(expected = UnsupportedOperationException.class)
+    public void BID_As_LIT() {
         new BID().asLiteral();
     }
 

@@ -13,10 +13,10 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class BooleanQueryImpl extends AbstractQueryImpl {
-        
+
     public BooleanQueryImpl(Query query, Dataset dataset, JenaDialect dialect) {
         super(query, dataset, dialect);
     }

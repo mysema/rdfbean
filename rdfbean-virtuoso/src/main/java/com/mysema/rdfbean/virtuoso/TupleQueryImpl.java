@@ -20,20 +20,20 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class TupleQueryImpl extends AbstractQueryImpl {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(TupleQueryImpl.class);
-    
+
     private final Converter converter;
-    
+
     @Nullable
     private List<String> variables = null;
-    
+
     @Nullable
     private CloseableIterator<Map<String, NODE>> tuples = null;
-    
+
     public TupleQueryImpl(Connection connection, Converter converter, int prefetch, String query) {
         super(connection, prefetch, query);
         this.converter = converter;
@@ -46,7 +46,7 @@ public class TupleQueryImpl extends AbstractQueryImpl {
 
     @Override
     public ResultType getResultType() {
-        return ResultType.TUPLES;        
+        return ResultType.TUPLES;
     }
 
     @Override
@@ -56,8 +56,8 @@ public class TupleQueryImpl extends AbstractQueryImpl {
 
     @Override
     public CloseableIterator<Map<String, NODE>> getTuples() {
-        if (tuples == null){
-            try{
+        if (tuples == null) {
+            try {
                 produceResults();
             } catch (SQLException e) {
                 close();
@@ -69,8 +69,8 @@ public class TupleQueryImpl extends AbstractQueryImpl {
 
     @Override
     public List<String> getVariables() {
-        if (variables == null){
-            try{
+        if (variables == null) {
+            try {
                 produceResults();
             } catch (SQLException e) {
                 close();
@@ -79,21 +79,21 @@ public class TupleQueryImpl extends AbstractQueryImpl {
         }
         return variables;
     }
-    
-    private void produceResults() throws SQLException{
-        try{
+
+    private void produceResults() throws SQLException {
+        try {
             rs = executeQuery(query, true);
             ResultSetMetaData md = rs.getMetaData();
             variables = new ArrayList<String>(md.getColumnCount());
-            for (int i = 0; i < md.getColumnCount(); i++){
-                variables.add(md.getColumnName(i+1));
+            for (int i = 0; i < md.getColumnCount(); i++) {
+                variables.add(md.getColumnName(i + 1));
             }
-            tuples = new TupleResultIterator(stmt, rs, query, converter, variables, bindings);    
-        }catch(SQLException e){
+            tuples = new TupleResultIterator(stmt, rs, query, converter, variables, bindings);
+        } catch (SQLException e) {
             logger.error(query);
             throw e;
         }
-        
+
     }
 
     @Override

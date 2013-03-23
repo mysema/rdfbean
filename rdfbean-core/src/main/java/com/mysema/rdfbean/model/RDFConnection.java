@@ -14,16 +14,16 @@ import com.mysema.commons.lang.CloseableIterator;
 
 /**
  * RDFConnection defines a session interface to the Repository
- *
+ * 
  * @author tiwe
  * @version $Id$
- *
+ * 
  */
-public interface RDFConnection extends Closeable{
+public interface RDFConnection extends Closeable {
 
     /**
      * Create a new transaction for the Connection
-     *
+     * 
      * @param readOnly
      * @param txTimeout
      * @param isolationLevel
@@ -43,11 +43,11 @@ public interface RDFConnection extends Closeable{
 
     /**
      * Create a new unique Blank node
-     *
+     * 
      * @return
      */
     BID createBNode();
-    
+
     /**
      * @param <D>
      * @param <Q>
@@ -55,22 +55,22 @@ public interface RDFConnection extends Closeable{
      * @param definition
      * @return
      */
-    <D,Q> Q createUpdate(UpdateLanguage<D,Q> updateLanguage, @Nullable D definition);
-    
+    <D, Q> Q createUpdate(UpdateLanguage<D, Q> updateLanguage, @Nullable D definition);
+
     /**
      * Prepare a Query of the given query language with the given definition
-     *
+     * 
      * @param <D>
      * @param <Q>
      * @param queryLanguage
      * @param definition
      * @return
      */
-    <D,Q> Q createQuery(QueryLanguage<D,Q> queryLanguage, @Nullable D definition);
-    
+    <D, Q> Q createQuery(QueryLanguage<D, Q> queryLanguage, @Nullable D definition);
+
     /**
      * Find out if statements matching the given pattern exist
-     *
+     * 
      * @param subject
      * @param predicate
      * @param object
@@ -86,12 +86,13 @@ public interface RDFConnection extends Closeable{
 
     /**
      * Find the statements matching the given pattern
-     *
+     * 
      * @param subject
      * @param predicate
      * @param object
      * @param context
-     * @param includeInferred true, if inferred triples are included, and false, if not
+     * @param includeInferred
+     *            true, if inferred triples are included, and false, if not
      * @return
      */
     CloseableIterator<STMT> findStatements(
@@ -99,10 +100,10 @@ public interface RDFConnection extends Closeable{
             @Nullable UID predicate,
             @Nullable NODE object,
             @Nullable UID context, boolean includeInferred);
-    
+
     /**
      * Get a unallocated local id for use in a ID/LID mapping
-     *
+     * 
      * @return
      */
     long getNextLocalId();
@@ -123,18 +124,19 @@ public interface RDFConnection extends Closeable{
 
     /**
      * Update the Repository with the given statements
-     *
-     * @param removedStatements statements to be removed
-     * @param addedStatements statement to be added
+     * 
+     * @param removedStatements
+     *            statements to be removed
+     * @param addedStatements
+     *            statement to be added
      */
     void update(@Nullable Collection<STMT> removedStatements, @Nullable Collection<STMT> addedStatements);
-    
 
     /**
      * @return
      */
     QueryOptions getQueryOptions();
-    
+
     /**
      * @return
      */

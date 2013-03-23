@@ -14,7 +14,7 @@ import com.mysema.util.BeanMap;
 
 /**
  * @author tiwe
- *
+ * 
  * @param <T>
  */
 public class EntityValueEncoderFactory<T> implements ValueEncoderFactory<T> {
@@ -35,7 +35,7 @@ public class EntityValueEncoderFactory<T> implements ValueEncoderFactory<T> {
 
     @Override
     public ValueEncoder<T> create(Class<T> type) {
-        return new ValueEncoder<T>(){
+        return new ValueEncoder<T>() {
             @Override
             public String toClient(Object value) {
                 return idProperty.getValue(new BeanMap(value)).toString();
@@ -45,13 +45,13 @@ public class EntityValueEncoderFactory<T> implements ValueEncoderFactory<T> {
             public T toValue(String id) {
                 Session session = sessionFactory.getCurrentSession();
                 boolean close = session == null;
-                if (session == null){
+                if (session == null) {
                     session = sessionFactory.openSession();
                 }
-                try{
+                try {
                     return session.getById(id, cl);
-                }finally{
-                    if (close){
+                } finally {
+                    if (close) {
                         session.close();
                     }
                 }

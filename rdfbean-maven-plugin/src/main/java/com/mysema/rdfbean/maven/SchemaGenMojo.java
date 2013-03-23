@@ -40,17 +40,17 @@ import com.mysema.rdfbean.schema.SchemaGen;
 
 /**
  * SchemaGenMojo provides a Maven plugin for Sesame based schema generation
- *
+ * 
  * @author tiwe
  * @version $Id$
- *
+ * 
  * @goal schemagen
  * @phase process-classes
  * @requiresDependencyResolution compile
  */
-public class SchemaGenMojo extends AbstractMojo{
+public class SchemaGenMojo extends AbstractMojo {
 
-    private static final Comparator<Class<?>> fileComparator = new Comparator<Class<?>>(){
+    private static final Comparator<Class<?>> fileComparator = new Comparator<Class<?>>() {
         public int compare(Class<?> o1, Class<?> o2) {
             return o1.getName().compareTo(o2.getName());
         }
@@ -99,7 +99,7 @@ public class SchemaGenMojo extends AbstractMojo{
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             URLClassLoader classLoader = getProjectClassLoader();
-            final Pattern pattern = Pattern.compile(".*"+toRegex(classes)+"\\.class");
+            final Pattern pattern = Pattern.compile(".*" + toRegex(classes) + "\\.class");
             ArchiveBrowser.Filter filter = new ArchiveBrowser.Filter() {
                 public boolean accept(String name) {
                     return pattern.matcher(name).matches();
@@ -110,42 +110,43 @@ public class SchemaGenMojo extends AbstractMojo{
             DefaultConfiguration configuration = new DefaultConfiguration();
             configuration.addClasses(entityClasses.toArray(new Class[entityClasses.size()]));
 
-            if (ontology == null){
-                if (namespace.endsWith("#") || namespace.endsWith("/")){
-                    ontology = namespace.substring(0, namespace.length()-1);
-                }else{
+            if (ontology == null) {
+                if (namespace.endsWith("#") || namespace.endsWith("/")) {
+                    ontology = namespace.substring(0, namespace.length() - 1);
+                } else {
                     ontology = namespace;
                 }
             }
 
-            if (schemaFile != null){
-                if (!schemaFile.getParentFile().exists()){
-                    if (!schemaFile.getParentFile().mkdirs()){
+            if (schemaFile != null) {
+                if (!schemaFile.getParentFile().exists()) {
+                    if (!schemaFile.getParentFile().mkdirs()) {
                         getLog().info("Creation of " + schemaFile.getParentFile().getPath() + " failed");
                     }
                 }
                 OutputStream out = new FileOutputStream(schemaFile);
                 SchemaGen schemaGen = new SchemaGen()
-                    .setNamespace(prefix, namespace)
-                    .setOntology(ontology)
-                    .addExportNamespace(namespace)
-                    .setConfiguration(configuration);
-                if (useTurtle){
+                        .setNamespace(prefix, namespace)
+                        .setOntology(ontology)
+                        .addExportNamespace(namespace)
+                        .setConfiguration(configuration);
+                if (useTurtle) {
                     schemaGen.export(Format.TURTLE, out);
-                }else{
+                } else {
                     schemaGen.export(Format.RDFXML, out);
                 }
             }
 
-            if (classListFile != null){
+            if (classListFile != null) {
                 StringBuilder builder = new StringBuilder();
-                for (Class<?> clazz : entityClasses){
-                    if (builder.length() > 0){
+                for (Class<?> clazz : entityClasses) {
+                    if (builder.length() > 0) {
                         builder.append("\n");
                     }
                     builder.append(clazz.getName());
                 }
-//                FileUtils.writeStringToFile(classListFile, builder.toString(), "UTF-8");
+                // FileUtils.writeStringToFile(classListFile,
+                // builder.toString(), "UTF-8");
                 Files.write(builder.toString(), classListFile, Charsets.UTF_8);
             }
 
@@ -159,24 +160,24 @@ public class SchemaGenMojo extends AbstractMojo{
     }
 
     private List<Class<?>> getEntityClasses(URLClassLoader classLoader, ArchiveBrowser.Filter filter) throws IOException,
-        ClassNotFoundException {
+            ClassNotFoundException {
         List<Class<?>> entityClasses = new ArrayList<Class<?>>();
-        for (URL url : classLoader.getURLs()){
+        for (URL url : classLoader.getURLs()) {
             Iterator<?> classContents = ArchiveBrowser.getBrowser(url, filter);
-            while (classContents.hasNext()){
+            while (classContents.hasNext()) {
                 ClassFile classFile = null;
                 DataInputStream in = null;
-                try{
-                    in = new DataInputStream((InputStream)classContents.next());
+                try {
+                    in = new DataInputStream((InputStream) classContents.next());
                     classFile = new ClassFile(in);
-                }finally{
-                    if (in != null){
+                } finally {
+                    if (in != null) {
                         in.close();
                     }
                 }
                 AnnotationsAttribute annotations = (AnnotationsAttribute)
-                    classFile.getAttribute(AnnotationsAttribute.visibleTag);
-                if (annotations != null && annotations.getAnnotation(ClassMapping.class.getName()) != null){
+                        classFile.getAttribute(AnnotationsAttribute.visibleTag);
+                if (annotations != null && annotations.getAnnotation(ClassMapping.class.getName()) != null) {
                     Class<?> clazz = Class.forName(classFile.getName(), true, classLoader);
                     entityClasses.add(clazz);
                 }
@@ -190,9 +191,9 @@ public class SchemaGenMojo extends AbstractMojo{
     protected URLClassLoader getProjectClassLoader() throws DependencyResolutionRequiredException, MalformedURLException {
         List<String> classpathElements = project.getCompileClasspathElements();
         List<URL> urls = new ArrayList<URL>(classpathElements.size());
-        for (String element : classpathElements){
+        for (String element : classpathElements) {
             File file = new File(element);
-            if (file.exists()){
+            if (file.exists()) {
                 urls.add(file.toURI().toURL());
             }
         }
@@ -200,13 +201,11 @@ public class SchemaGenMojo extends AbstractMojo{
     }
 
     private String toRegex(String classes) {
-        if (classes != null){
+        if (classes != null) {
             return classes.replace("**", ".*").replace("*", "\\w+");
-        }else{
+        } else {
             return "";
         }
     }
-
-
 
 }

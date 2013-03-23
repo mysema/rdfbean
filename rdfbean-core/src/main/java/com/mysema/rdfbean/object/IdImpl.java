@@ -12,30 +12,29 @@ import com.mysema.rdfbean.model.IDType;
 
 /**
  * @author tiwe
- *
+ * 
  */
 @SuppressWarnings("all")
 public class IdImpl implements Id {
 
     private final IDType idType;
-    
+
     private final String ns;
-    
+
     public IdImpl(IDType idType) {
         this(idType, "");
     }
-    
+
     public IdImpl(IDType idType, String ns) {
         this.idType = idType;
         this.ns = ns;
     }
-    
+
     @Override
     public IDType value() {
         return idType;
     }
-    
-       
+
     @Override
     public String ns() {
         return ns;

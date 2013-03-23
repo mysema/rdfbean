@@ -6,7 +6,7 @@ import com.mysema.rdfbean.model.BooleanQuery;
 public class BooleanQueryImpl implements BooleanQuery {
 
     private final SQLQuery query;
-    
+
     public BooleanQueryImpl(SQLQuery query) {
         this.query = query;
     }

@@ -16,7 +16,7 @@ import com.mysema.util.BeanMap;
 
 /**
  * @author sasa
- *
+ * 
  */
 @Immutable
 public final class MethodProperty extends MappedProperty<Method> {
@@ -35,30 +35,31 @@ public final class MethodProperty extends MappedProperty<Method> {
         Class<?> returnType = method.getReturnType();
         Class<?>[] parameterTypes = method.getParameterTypes();
         if (name.startsWith("is")
-                && parameterTypes.length == 0 
-                && ( returnType.equals(boolean.class) 
-                        || returnType.equals(Boolean.class) )) {
-            return Character.toString(Character.toLowerCase(name.charAt(2))) + name.substring(3); 
-        } else if (name.startsWith("get") 
-                && parameterTypes.length == 0 
+                && parameterTypes.length == 0
+                && (returnType.equals(boolean.class)
+                || returnType.equals(Boolean.class))) {
+            return Character.toString(Character.toLowerCase(name.charAt(2))) + name.substring(3);
+        } else if (name.startsWith("get")
+                && parameterTypes.length == 0
                 && !returnType.equals(void.class)) {
             return Character.toString(Character.toLowerCase(name.charAt(3))) + name.substring(4);
-        } else if (name.startsWith("set") // allow method chaining by returning "this"
+        } else if (name.startsWith("set") // allow method chaining by returning
+                                          // "this"
                 && parameterTypes.length == 1) {
             return Character.toString(Character.toLowerCase(name.charAt(3))) + name.substring(4);
         } else {
             throw new IllegalArgumentException("Not getter or setter method: " + method);
         }
     }
-    
+
     private final boolean getter;
-    
+
     private final Method method;
 
     public MethodProperty(Method method, MappedClass declaringClass) {
         this(method, method.getAnnotations(), declaringClass);
     }
-    
+
     public MethodProperty(Method method, Annotation[] annotations, MappedClass declaringClass) {
         super(getPropertyName(method), annotations, declaringClass);
         this.method = method;
@@ -109,7 +110,7 @@ public final class MethodProperty extends MappedProperty<Method> {
     public boolean isVirtual() {
         return getSetter() == null;
     }
-    
+
     @Nullable
     private Method getSetter() {
         Method setter = null;
@@ -139,7 +140,7 @@ public final class MethodProperty extends MappedProperty<Method> {
         }
         return setter;
     }
-    
+
     private String capitalize(String name) {
         return Character.toUpperCase(name.charAt(0)) + name.substring(1);
     }

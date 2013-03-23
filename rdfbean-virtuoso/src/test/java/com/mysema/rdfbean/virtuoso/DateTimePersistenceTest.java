@@ -27,15 +27,15 @@ import com.mysema.rdfbean.xsd.ConverterRegistryImpl;
 public class DateTimePersistenceTest extends AbstractConnectionTest {
 
     @Test
-    public void Round_Trip(){
+    public void Round_Trip() {
         ConverterRegistry converters = new ConverterRegistryImpl();
 
         // load data
         ID sub = new BID();
         List<STMT> stmts = Arrays.asList(
-                new STMT(sub, pre(1), new LIT(converters.toString(new DateTime(2000,1,1,1,1,1,0)), XSD.dateTime)),
-                new STMT(sub, pre(2), new LIT(converters.toString(new LocalDate(2000,1,1)), XSD.date)),
-                new STMT(sub, pre(3), new LIT(converters.toString(new LocalTime(5,2,3)), XSD.time)),
+                new STMT(sub, pre(1), new LIT(converters.toString(new DateTime(2000, 1, 1, 1, 1, 1, 0)), XSD.dateTime)),
+                new STMT(sub, pre(2), new LIT(converters.toString(new LocalDate(2000, 1, 1)), XSD.date)),
+                new STMT(sub, pre(3), new LIT(converters.toString(new LocalTime(5, 2, 3)), XSD.time)),
 
                 new STMT(sub, pre(4), new LIT(converters.toString(new java.sql.Date(0)), XSD.date)),
                 new STMT(sub, pre(5), new LIT(converters.toString(new java.util.Date(0)), XSD.dateTime)),
@@ -48,8 +48,8 @@ public class DateTimePersistenceTest extends AbstractConnectionTest {
         assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(queried));
     }
 
-    private UID pre(int i){
-        return new UID(TEST.NS, "test"+i);
+    private UID pre(int i) {
+        return new UID(TEST.NS, "test" + i);
     }
 
 }

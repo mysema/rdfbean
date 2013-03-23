@@ -15,23 +15,23 @@ import com.mysema.commons.lang.Assert;
 
 /**
  * @author sasa
- *
+ * 
  */
 @Immutable
 public final class MappedConstructor {
 
     private final Constructor<?> constructor;
-    
+
     private final List<MappedPath> mappedArguments;
-    
+
     public MappedConstructor(Constructor<?> constructor) {
-        this(constructor, Collections.<MappedPath>emptyList());
+        this(constructor, Collections.<MappedPath> emptyList());
     }
 
     public MappedConstructor(Constructor<?> constructor,
             List<MappedPath> mappedArguments) {
-        this.constructor = Assert.notNull(constructor,"constructor");
-        this.mappedArguments = Assert.notNull(mappedArguments,"mappedArguments");
+        this.constructor = Assert.notNull(constructor, "constructor");
+        this.mappedArguments = Assert.notNull(mappedArguments, "mappedArguments");
         this.constructor.setAccessible(true);
         for (MappedPath path : mappedArguments) {
             path.setConstructorArgument(true);
@@ -49,7 +49,7 @@ public final class MappedConstructor {
     public int getArgumentCount() {
         return mappedArguments.size();
     }
-    
+
     public String toString() {
         return constructor.toString();
     }

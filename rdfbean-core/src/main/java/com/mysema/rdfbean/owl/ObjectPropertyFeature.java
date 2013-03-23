@@ -15,8 +15,8 @@ import com.mysema.rdfbean.model.UID;
  */
 @ClassMapping(ns = OWL.NS)
 public enum ObjectPropertyFeature {
-    InverseFunctionalProperty, 
-    SymmetricProperty, 
+    InverseFunctionalProperty,
+    SymmetricProperty,
     TransitiveProperty;
 
     @Id

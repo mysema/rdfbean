@@ -14,13 +14,13 @@ public class DataSourceTest {
 
     @Test
     @Ignore
-    public void NamedGraph_Usage(){
+    public void NamedGraph_Usage() {
         DataSource dataSource = DataSourceImpl.createMem();
         Node subject = Node.createURI(TEST.NS);
         Node predicate = Node.createURI(RDFS.label.getId());
         Node object = Node.createAnon();
-        dataSource.asDatasetGraph().add(new Quad(Quad.defaultGraphIRI, subject, predicate, object));        
+        dataSource.asDatasetGraph().add(new Quad(Quad.defaultGraphIRI, subject, predicate, object));
         dataSource.asDatasetGraph().deleteAny(Node.ANY, subject, Node.ANY, Node.ANY);
     }
-    
+
 }

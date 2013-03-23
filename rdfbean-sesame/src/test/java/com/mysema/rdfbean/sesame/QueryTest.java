@@ -12,16 +12,16 @@ import com.mysema.rdfbean.model.GraphQueryTest;
 import com.mysema.rdfbean.model.RDFUpdateTest;
 import com.mysema.rdfbean.model.TupleQueryTest;
 
-@SuiteClasses({BooleanQueryTest.class,
-    GraphQueryTest.class,
-    TupleQueryTest.class,
-    RDFUpdateTest.class})
+@SuiteClasses({ BooleanQueryTest.class,
+        GraphQueryTest.class,
+        TupleQueryTest.class,
+        RDFUpdateTest.class })
 @RunWith(Suite.class)
 public class QueryTest {
-    
+
     @BeforeClass
-    public static void beforeClass(){
+    public static void beforeClass() {
         Helper.helper = new SesameHelper();
     }
-    
+
 }

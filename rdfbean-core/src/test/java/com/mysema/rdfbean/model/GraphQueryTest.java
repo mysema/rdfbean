@@ -12,46 +12,45 @@ public class GraphQueryTest extends AbstractConnectionTest {
 
     private static final QNODE<NODE> object = new QNODE<NODE>(NODE.class, "o");
 
-    private RDFQuery query(){
+    private RDFQuery query() {
         return new RDFQueryImpl(connection());
     }
 
     @Test
-    public void Patterns(){
+    public void Patterns() {
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
-               .construct(Blocks.pattern(subject, predicate, object));
+                .construct(Blocks.pattern(subject, predicate, object));
     }
 
     @Test
-    public void Patterns_as_Group(){
+    public void Patterns_as_Group() {
         query().where(
                 Blocks.group(
-                    Blocks.pattern(subject, RDF.type, RDFS.Class),
-                    Blocks.pattern(subject, predicate, object)))
-               .construct(Blocks.pattern(subject, predicate, object));
+                        Blocks.pattern(subject, RDF.type, RDFS.Class),
+                        Blocks.pattern(subject, predicate, object)))
+                .construct(Blocks.pattern(subject, predicate, object));
     }
 
     @Test
-    public void Two_Patterns(){
+    public void Two_Patterns() {
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
-               .construct(
-                   Blocks.pattern(subject, RDF.type,  RDFS.Class),
-                   Blocks.pattern(subject, predicate, object));
+                .construct(
+                        Blocks.pattern(subject, RDF.type, RDFS.Class),
+                        Blocks.pattern(subject, predicate, object));
     }
 
     @Test
-    public void Group(){
+    public void Group() {
         query().where(
                 Blocks.pattern(subject, RDF.type, RDFS.Class),
                 Blocks.pattern(subject, predicate, object))
-               .construct(
-                   Blocks.pattern(subject, RDF.type,  RDFS.Class),
-                   Blocks.pattern(subject, predicate, object));
+                .construct(
+                        Blocks.pattern(subject, RDF.type, RDFS.Class),
+                        Blocks.pattern(subject, predicate, object));
     }
-
 
 }

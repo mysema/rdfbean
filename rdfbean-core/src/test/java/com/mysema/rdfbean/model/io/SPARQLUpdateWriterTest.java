@@ -19,20 +19,19 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
 public class SPARQLUpdateWriterTest {
-    
+
     private final SPARQLUpdateWriter writer = new SPARQLUpdateWriter(new UID(TEST.NS), false);
 
     @Test
-    public void Handle(){
+    public void Handle() {
         List<UID> predicates = new ArrayList<UID>(10);
-        for (int i = 0; i < 10; i++){
-            predicates.add(new UID(TEST.NS, "pred"+i));
+        for (int i = 0; i < 10; i++) {
+            predicates.add(new UID(TEST.NS, "pred" + i));
         }
-        
-                             
+
         List<STMT> stmts = new ArrayList<STMT>(140);
-        for (int i = 0; i < 14; i++){
-            ID sub = new UID(TEST.NS, "e" + UUID.randomUUID());  
+        for (int i = 0; i < 14; i++) {
+            ID sub = new UID(TEST.NS, "e" + UUID.randomUUID());
             stmts.add(new STMT(sub, predicates.get(0), new LIT(UUID.randomUUID().toString())));
             stmts.add(new STMT(sub, predicates.get(1), new LIT("1", XSD.intType)));
             stmts.add(new STMT(sub, predicates.get(2), sub));
@@ -44,28 +43,27 @@ public class SPARQLUpdateWriterTest {
             stmts.add(new STMT(sub, predicates.get(8), new LIT(UUID.randomUUID().toString())));
             stmts.add(new STMT(sub, predicates.get(9), new LIT("3", XSD.intType)));
         }
-        
-        
+
         writer.begin();
-        for (STMT stmt : stmts){
+        for (STMT stmt : stmts) {
             writer.handle(stmt);
         }
         writer.end();
-        
-//        System.out.println(writer.toString());
+
+        // System.out.println(writer.toString());
         String str = writer.toString();
         assertTrue(str.contains(" ; ns1:pred1"));
         assertTrue(str.contains("PREFIX ns1: <http://semantics.mysema.com/test#>"));
         assertTrue(str.contains("PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"));
         assertTrue(str.contains("\"3\"^^xsd:int"));
     }
-    
+
     @Test
-    public void RDFType_as_rdf_type(){
+    public void RDFType_as_rdf_type() {
         writer.begin();
         writer.handle(new STMT(RDF.type, RDF.type, RDF.Property));
         writer.end();
-        
+
         assertFalse(writer.toString().contains(" a "));
         assertTrue(writer.toString().contains("rdf:type rdf:type"));
     }

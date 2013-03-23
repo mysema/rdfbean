@@ -5,7 +5,6 @@
  */
 package com.mysema.rdfbean.sesame;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,64 +36,66 @@ import com.mysema.rdfbean.testutil.SessionRule;
 
 /**
  * @author sasa
- *
+ * 
  */
-public abstract class SessionTestBase implements SimpleDomain{
-    
+public abstract class SessionTestBase implements SimpleDomain {
+
     protected static final QSimpleType var = new QSimpleType("var");
-    
+
     protected static final QSimpleType2 var2 = new QSimpleType2("var2");
-    
+
     protected static MemoryRepository repository;
-    
+
     private static SessionFactory sessionFactory;
-    
+
     @Rule
     public SessionRule sessionRule = new SessionRule(repository);
-    
+
     public Session session;
-    
+
     private List<Session> openSessions = new ArrayList<Session>();
-        
+
     @BeforeClass
-    public static void before() throws IOException{
+    public static void before() throws IOException {
         repository = new MemoryRepository();
         repository.setSources(
                 new RDFSource("classpath:/test.ttl", Format.TURTLE, TEST.NS),
                 new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
-        );
+                );
         repository.initialize();
-        
+
         // enums
         Set<STMT> added = new HashSet<STMT>();
         UID ntType = new UID(TEST.NS, NoteType.class.getSimpleName());
-        for (NoteType nt : NoteType.values()){
+        for (NoteType nt : NoteType.values()) {
             UID ntId = new UID(TEST.NS, nt.name());
             added.add(new STMT(ntId, RDF.type, ntType));
             added.add(new STMT(ntId, CORE.enumOrdinal, new LIT(String.valueOf(nt.ordinal()), XSD.integerType)));
         }
         RDFConnection connection = repository.openConnection();
-        connection.update(Collections.<STMT>emptySet(), added);
+        connection.update(Collections.<STMT> emptySet(), added);
         connection.close();
     }
-    
+
     @AfterClass
-    public static void after(){
-        try{
-            if (sessionFactory != null) sessionFactory.close();
-            if (repository != null) repository.close();    
-        }finally{
+    public static void after() {
+        try {
+            if (sessionFactory != null)
+                sessionFactory.close();
+            if (repository != null)
+                repository.close();
+        } finally {
             sessionFactory = null;
             repository = null;
-        }        
+        }
     }
-    
+
     @After
-    public void tearDown() throws IOException{
-        for (Session s : openSessions){
+    public void tearDown() throws IOException {
+        for (Session s : openSessions) {
             s.close();
         }
         System.out.println();
     }
-    
+
 }

@@ -38,8 +38,8 @@ public abstract class AbstractConnectionTest {
     protected RDFConnection connection;
 
     @BeforeClass
-    public static void setUpClass() throws IOException{
-        if (dataSource == null){
+    public static void setUpClass() throws IOException {
+        if (dataSource == null) {
             dataSource = JdbcConnectionPool.create("jdbc:h2:nioMapped:target/h2", "sa", "");
             dataSource.setMaxConnections(30);
         }
@@ -49,20 +49,20 @@ public abstract class AbstractConnectionTest {
     }
 
     @AfterClass
-    public static void tearDownClass() throws IOException, SQLException{
-        if (repository != null){
+    public static void tearDownClass() throws IOException, SQLException {
+        if (repository != null) {
             repository.close();
         }
     }
 
     @Before
-    public void setUp(){
+    public void setUp() {
         connection = repository.openConnection();
     }
 
     @After
-    public void tearDown(){
-        if (connection != null){
+    public void tearDown() {
+        if (connection != null) {
             connection.close();
         }
     }

@@ -19,32 +19,32 @@ public class IdMappingTest {
 
     @Id(value = IDType.URI, ns = "http://example.com/")
     String id;
-    
+
     @Test
     public void Success() {
         MiniRepository repository = new MiniRepository();
         Session session = SessionUtil.openSession(repository, IdMappingTest.class);
-        
+
         IdMappingTest instance = new IdMappingTest();
         instance.id = "abc";
         session.save(instance);
         session.clear();
-        
+
         UID id = new UID("http://example.com/abc");
         assertTrue(repository.exists(id, null, null, null));
         IdMappingTest instance2 = session.get(IdMappingTest.class, id);
-        assertEquals(instance.id, instance2.id);        
+        assertEquals(instance.id, instance2.id);
     }
-    
-    @Test(expected=IllegalArgumentException.class)
+
+    @Test(expected = IllegalArgumentException.class)
     public void Error() {
         MiniRepository repository = new MiniRepository();
         UID id = new UID("http://example2.com/abc");
         UID type = new UID(TEST.NS, "IdMappingTest");
         repository.add(new STMT(id, RDF.type, type));
-        
+
         Session session = SessionUtil.openSession(repository, IdMappingTest.class);
         session.get(IdMappingTest.class, id);
     }
-    
+
 }

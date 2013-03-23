@@ -13,7 +13,7 @@ import org.junit.Test;
 import com.mysema.rdfbean.TEST;
 
 public class RDFTest {
-    
+
     @Test
     public void IsContainerMembershipProperty() {
         assertFalse(RDF.isContainerMembershipProperty(new UID(TEST.NS, "foo")));

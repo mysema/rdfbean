@@ -11,9 +11,9 @@ import com.mysema.query.types.Expression;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public interface RDFQuery extends Query<RDFQuery>{
+public interface RDFQuery extends Query<RDFQuery> {
 
     RDFQuery addFlag(Position position, String flag);
 

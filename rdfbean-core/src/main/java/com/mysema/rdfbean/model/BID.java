@@ -15,7 +15,7 @@ import com.mysema.commons.lang.Assert;
  * BID represents a blank node
  * 
  * @author sasa
- *
+ * 
  */
 @Immutable
 public final class BID extends ID {
@@ -23,13 +23,13 @@ public final class BID extends ID {
     private static final long serialVersionUID = 4477657161877734394L;
 
     public BID() {
-        this("b"+UUID.randomUUID().toString());
+        this("b" + UUID.randomUUID().toString());
     }
-    
+
     public BID(String bnodeId) {
-        super(Assert.hasText(bnodeId,"bnodeId"));
+        super(Assert.hasText(bnodeId, "bnodeId"));
     }
-    
+
     @Override
     public String toString() {
         return "_:" + id;
@@ -77,7 +77,7 @@ public final class BID extends ID {
     }
 
     @Override
-    public BID asBNode(){
+    public BID asBNode() {
         return this;
     }
 }

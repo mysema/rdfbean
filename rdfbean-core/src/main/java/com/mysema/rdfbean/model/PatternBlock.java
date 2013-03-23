@@ -13,9 +13,9 @@ import com.mysema.query.types.expr.BooleanOperation;
 
 /**
  * @author tiwe
- *
+ * 
  */
-public class PatternBlock implements Block{
+public class PatternBlock implements Block {
 
     private static final long serialVersionUID = -3450122105441266114L;
 
@@ -38,7 +38,7 @@ public class PatternBlock implements Block{
     public PatternBlock(Expression<ID> subject, Expression<UID> predicate, Expression<NODE> object) {
         this(subject, predicate, object, null);
     }
-    
+
     public OptionalBlock asOptional() {
         return Blocks.optional(this);
     }
@@ -68,13 +68,13 @@ public class PatternBlock implements Block{
     @Override
     @SuppressWarnings("unchecked")
     public <R, C> R accept(Visitor<R, C> v, C context) {
-        if (v instanceof RDFVisitor){
-            return (R)((RDFVisitor)v).visit(this, context);
-        }else if (v instanceof ToStringVisitor){
-            return (R)toString();
-        } else if (v.getClass().getName().equals("com.mysema.query.types.ExtractorVisitor")) {    
-            return (R)this;
-        }else{
+        if (v instanceof RDFVisitor) {
+            return (R) ((RDFVisitor) v).visit(this, context);
+        } else if (v instanceof ToStringVisitor) {
+            return (R) toString();
+        } else if (v.getClass().getName().equals("com.mysema.query.types.ExtractorVisitor")) {
+            return (R) this;
+        } else {
             throw new IllegalArgumentException(v.toString());
         }
     }
@@ -85,35 +85,35 @@ public class PatternBlock implements Block{
     }
 
     @Override
-    public BooleanExpression exists(){
+    public BooleanExpression exists() {
         return BooleanOperation.create(Ops.EXISTS, Blocks.group(this));
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return subject.hashCode();
     }
 
     @Override
-    public boolean equals(Object o){
-        if (o == this){
+    public boolean equals(Object o) {
+        if (o == this) {
             return true;
-        }else if (o instanceof PatternBlock){
-            PatternBlock p = (PatternBlock)o;
+        } else if (o instanceof PatternBlock) {
+            PatternBlock p = (PatternBlock) o;
             return p.subject.equals(subject)
-                && p.predicate.equals(predicate)
-                && p.object.equals(object)
-                && Objects.equal(p.context, context);
-        }else{
+                    && p.predicate.equals(predicate)
+                    && p.object.equals(object)
+                    && Objects.equal(p.context, context);
+        } else {
             return false;
         }
     }
 
     @Override
-    public String toString(){
-        if (context != null){
+    public String toString() {
+        if (context != null) {
             return subject + " " + predicate + " " + object + " " + context + " .";
-        }else{
+        } else {
             return subject + " " + predicate + " " + object + " .";
         }
     }

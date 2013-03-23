@@ -12,22 +12,21 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-
 /**
  * @author tiwe
  */
 public final class STMTCache {
-    
+
     @Nullable
     private Set<STMT> multi;
-    
+
     @Nullable
     private STMT single;
-    
+
     public STMTCache(@Nullable STMT single) {
         this.single = single;
     }
-    
+
     public void add(STMT stmt) {
         if (multi == null) {
             if (single == null) {
@@ -41,20 +40,20 @@ public final class STMTCache {
             multi.add(stmt);
         }
     }
-    
+
     public Iterator<STMT> iterator() {
         if (multi == null) {
             if (single == null) {
-                return Collections.<STMT>emptyList().iterator();
+                return Collections.<STMT> emptyList().iterator();
             } else {
-//                return new SingletonIterator<STMT>(single);
+                // return new SingletonIterator<STMT>(single);
                 return Collections.singleton(single).iterator();
             }
         } else {
             return multi.iterator();
         }
     }
-    
+
     public boolean remove(STMT stmt) {
         if (multi == null) {
             if (stmt.equals(single)) {
@@ -67,7 +66,7 @@ public final class STMTCache {
             return multi.remove(stmt);
         }
     }
-    
+
     public String toString() {
         if (multi != null) {
             return multi.toString();

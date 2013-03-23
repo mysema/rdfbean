@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 
 /**
  * Modules defines the Tapestry IoC modules to be used in the test
- *
+ * 
  * @author tiwe
  * @version $Id$
  */
@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Inherited
 public @interface Modules {
-    
+
     /**
      * @return
      */

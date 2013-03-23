@@ -22,10 +22,10 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * @author tiwe
- *
+ * 
  */
 public class GraphQueryImpl extends AbstractQueryImpl {
-    
+
     public GraphQueryImpl(Query query, Dataset dataset, JenaDialect dialect) {
         super(query, dataset, dialect);
     }
@@ -62,19 +62,19 @@ public class GraphQueryImpl extends AbstractQueryImpl {
     public void streamTriples(Writer w, String contentType) {
         Format format = Format.getFormat(contentType, Format.RDFXML);
         RDFWriter writer;
-        if (format == Format.RDFXML){
+        if (format == Format.RDFXML) {
             writer = new Basic();
-        }else if (format == Format.NTRIPLES){
-            writer = new NTripleWriter();            
-        }else if (format == Format.TURTLE || format == Format.N3){
+        } else if (format == Format.NTRIPLES) {
+            writer = new NTripleWriter();
+        } else if (format == Format.TURTLE || format == Format.N3) {
             writer = new N3TurtleJenaWriter();
-        }else {
+        } else {
             throw new IllegalArgumentException(format.toString());
         }
-        
+
         QueryExecution exec = createExecution();
         Model resultModel = query.isConstructType() ? exec.execConstruct() : exec.execDescribe();
-        writer.write(resultModel, w, null);     
+        writer.write(resultModel, w, null);
     }
 
 }

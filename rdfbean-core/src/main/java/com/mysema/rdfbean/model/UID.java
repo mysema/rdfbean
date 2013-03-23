@@ -14,7 +14,7 @@ import com.mysema.commons.lang.Assert;
  * UID represents an URI resource
  * 
  * @author sasa
- *
+ * 
  */
 @Immutable
 public final class UID extends ID {
@@ -22,10 +22,10 @@ public final class UID extends ID {
     private static final long serialVersionUID = -5243644990902193387L;
 
     private final int i;
-    
+
     @Nullable
     private transient String ns, ln;
-    
+
     public static UID create(@Nullable String parentNs, String ns, String ln, @Nullable String elementName) {
         if (isBlank(ns)) {
             if (!isBlank(parentNs)) {
@@ -42,9 +42,9 @@ public final class UID extends ID {
         }
         return new UID(ns, ln);
     }
-    
+
     public UID(String uri) {
-        super(Assert.hasText(uri,"uri").intern());
+        super(Assert.hasText(uri, "uri").intern());
         int tmp = uri.lastIndexOf('#');
         if (tmp < 0) {
             tmp = uri.lastIndexOf('/');
@@ -58,37 +58,37 @@ public final class UID extends ID {
         tmp += 1;
         this.i = tmp;
     }
-    
+
     public UID(String namespace, String localeName) {
-        super((Assert.hasText(namespace,"ns") + Assert.notNull(localeName,"ln")).intern());
+        super((Assert.hasText(namespace, "ns") + Assert.notNull(localeName, "ln")).intern());
         i = namespace.length();
         this.ns = namespace;
         this.ln = localeName;
     }
-    
+
     public String ln() {
-        if (ln == null){
+        if (ln == null) {
             if (i < id.length()) {
                 ln = id.substring(i);
             } else {
                 ln = "";
-            }    
+            }
         }
-        return ln;        
+        return ln;
     }
 
     public String ns() {
-        if (ns == null){
+        if (ns == null) {
             if (i > 0) {
                 ns = id.substring(0, i);
             } else {
                 ns = id;
-            } 
+            }
         }
         return ns;
-        
+
     }
-    
+
     public String getNamespace() {
         return ns();
     }
@@ -96,10 +96,10 @@ public final class UID extends ID {
     public String getLocalName() {
         return ln();
     }
-    
+
     @Override
     public NodeType getNodeType() {
-	return NodeType.URI;
+        return NodeType.URI;
     }
 
     @Override
@@ -138,12 +138,12 @@ public final class UID extends ID {
             return false;
         }
     }
-    
+
     @Override
-    public UID asURI(){
+    public UID asURI() {
         return this;
     }
-    
+
     private static boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
     }

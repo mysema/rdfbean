@@ -14,26 +14,25 @@ import com.mysema.rdfbean.model.STMT;
 
 /**
  * ModelResultIterator provides a CloseableIterator adapter for ModelResults
- *
+ * 
  * @author tiwe
  * @author sasa
  * @version $Id$
  */
-public class ModelResultIterator extends AbstractResultIterator{
-    
+public class ModelResultIterator extends AbstractResultIterator {
+
     private final ModelResult statements;
-    
+
     private final boolean includeInferred;
-    
-    public ModelResultIterator(SesameDialect dialect, ModelResult statements, boolean includeInferred){
+
+    public ModelResultIterator(SesameDialect dialect, ModelResult statements, boolean includeInferred) {
         super(dialect);
-        this.statements = Assert.notNull(statements,"statements");
+        this.statements = Assert.notNull(statements, "statements");
         this.includeInferred = includeInferred;
     }
-    
 
     @Override
-    public void close(){
+    public void close() {
         try {
             statements.close();
         } catch (StoreException e1) {
@@ -63,5 +62,5 @@ public class ModelResultIterator extends AbstractResultIterator{
     public void remove() {
         throw new UnsupportedOperationException("remove");
     }
-    
+
 }

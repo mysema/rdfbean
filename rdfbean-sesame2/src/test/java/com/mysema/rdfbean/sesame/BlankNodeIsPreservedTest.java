@@ -12,7 +12,7 @@ import com.mysema.rdfbean.model.BID;
 public class BlankNodeIsPreservedTest {
 
     @Test
-    public void IsPreserved(){
+    public void IsPreserved() {
         ValueFactory valueFactory = new ValueFactoryImpl();
         SesameDialect dialect = new SesameDialect(valueFactory);
         BNode bNode = valueFactory.createBNode();

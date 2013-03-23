@@ -8,17 +8,17 @@ import org.junit.{ Ignore, Test, Before, After };
 import org.junit.Assert._;
 
 class LiteralConversionTest {
-    
-  @Test  
+
+  @Test
   def Conversion {
     val repository = new MiniRepository()
     val connection = repository.openConnection()
-    
+
     connection.findStatements(null, null, "XXX", null, false)
-    connection.findStatements(null, null, 1,     null, false)
+    connection.findStatements(null, null, 1, null, false)
     connection.close()
     repository.close()
   }
-    
+
 }
 

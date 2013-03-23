@@ -23,39 +23,38 @@ import com.mysema.rdfbean.object.SessionFactory;
 import com.mysema.rdfbean.object.SimpleSessionContext;
 import com.mysema.rdfbean.object.TxException;
 
-
 /**
  * TransactionalInterceptor provides a MethodInterceptor implementation for
  * transactional method interception
- *
+ * 
  * @author tiwe
  * @version $Id$
- *
+ * 
  */
 @ThreadSafe
-class TransactionalInterceptor implements MethodInterceptor{
+class TransactionalInterceptor implements MethodInterceptor {
 
-    private final Provider<Map<Method,Transactional>> configuration;
+    private final Provider<Map<Method, Transactional>> configuration;
 
     private SimpleSessionContext sessionContext;
 
-    public TransactionalInterceptor(Provider<Map<Method,Transactional>> configuration) {
+    public TransactionalInterceptor(Provider<Map<Method, Transactional>> configuration) {
         this.configuration = configuration;
     }
 
     @Override
-    public Object invoke(MethodInvocation methodInvocation) throws Throwable { //NOSONAR
+    public Object invoke(MethodInvocation methodInvocation) throws Throwable { // NOSONAR
         Transactional annotation = configuration.get().get(methodInvocation.getMethod());
         boolean inSession = false;
         boolean inTx = false;
-        if (sessionContext.getCurrentSession() != null){
+        if (sessionContext.getCurrentSession() != null) {
             inSession = true;
             Session session = sessionContext.getCurrentSession();
             inTx = session.getTransaction() != null && session.getTransaction().isActive();
         }
 
         boolean intercepted = isIntercepted(annotation, inTx);
-        if (!intercepted){
+        if (!intercepted) {
             return methodInvocation.proceed();
         }
 
@@ -67,17 +66,17 @@ class TransactionalInterceptor implements MethodInterceptor{
             Object result;
             try {
                 result = methodInvocation.proceed();
-            } catch(Exception e) {
-                if (txn.isRollbackOnly() || isRollbackNecessary(annotation, e, txn)){
+            } catch (Exception e) {
+                if (txn.isRollbackOnly() || isRollbackNecessary(annotation, e, txn)) {
                     doRollback(txn);
-                }else{
+                } else {
                     doCommit(session, txn);
                 }
                 throw e;
             }
-            if (!txn.isRollbackOnly()){
+            if (!txn.isRollbackOnly()) {
                 doCommit(session, txn);
-            }else{
+            } else {
                 doRollback(txn);
             }
             return result;
@@ -85,34 +84,34 @@ class TransactionalInterceptor implements MethodInterceptor{
         } finally {
             session.setFlushMode(savedFlushMode);
             sessionContext.releaseSession();
-            if (!inSession){
+            if (!inSession) {
                 session.close();
             }
         }
     }
 
     private boolean isIntercepted(Transactional annotation, boolean inTx) {
-        switch(annotation.propagation()){
+        switch (annotation.propagation()) {
         case REQUIRED:
         case REQUIRES_NEW:
         case NESTED:
-            if (inTx){
+            if (inTx) {
                 return false;
             }
             break;
 
         case MANDATORY:
-            if (inTx){
+            if (inTx) {
                 return false;
-            }else{
+            } else {
                 throw new TxException("Tx propagation " + annotation.propagation() + " without transaction");
             }
 
         case NOT_SUPPORTED:
         case NEVER:
-            if (inTx){
+            if (inTx) {
                 throw new TxException("Tx propagation " + annotation.propagation() + " in transaction");
-            }else{
+            } else {
                 return false;
             }
         }
@@ -135,12 +134,12 @@ class TransactionalInterceptor implements MethodInterceptor{
             session.flush();
             txn.commit();
 
-        } catch(RuntimeException re) {
+        } catch (RuntimeException re) {
             doRollback(txn);
             commitException = re;
         }
 
-        if (commitException != null){
+        if (commitException != null) {
             throw commitException;
         }
     }
@@ -167,7 +166,7 @@ class TransactionalInterceptor implements MethodInterceptor{
     }
 
     @Inject
-    public void setSessionFactory(SessionFactory sessionFactory){
+    public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionContext = new SimpleSessionContext(sessionFactory);
         sessionFactory.setSessionContext(sessionContext);
     }

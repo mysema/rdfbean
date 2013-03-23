@@ -32,27 +32,27 @@ import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.XSD;
 
 /**
- * SesameDialect is a Dialect implementation for Sesame 
+ * SesameDialect is a Dialect implementation for Sesame
  * 
  * @author sasa
- *
+ * 
  */
 public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, Literal, Statement> {
-    
+
     private final Map<BNode, BID> bnodeCache = new HashMap<BNode, BID>(1024);
-    
-    private final Map<Literal, LIT> literalCache = new HashMap<Literal, LIT>(1024); 
-    
-    private final Map<URI, UID> uriCache = new HashMap<URI, UID>(1024); 
-        
-    private final ValueFactory vf; 
+
+    private final Map<Literal, LIT> literalCache = new HashMap<Literal, LIT>(1024);
+
+    private final Map<URI, UID> uriCache = new HashMap<URI, UID>(1024);
+
+    private final ValueFactory vf;
 
     public SesameDialect(ValueFactory vf) {
-        Assert.notNull(vf,"vf");
+        Assert.notNull(vf, "vf");
         this.vf = vf;
     }
 
-    public void clear(){
+    public void clear() {
         uriCache.clear();
         bnodeCache.clear();
         literalCache.clear();
@@ -62,7 +62,7 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     public BNode createBNode() {
         return vf.createBNode();
     }
-    
+
     @Override
     public Statement createStatement(Resource subject, URI predicate, Value object) {
         return vf.createStatement(subject, predicate, object);
@@ -92,9 +92,9 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     public ID getID(Resource resource) {
         if (resource instanceof URI) {
             return getUID((URI) resource);
-        } else if (resource instanceof BNode){
+        } else if (resource instanceof BNode) {
             return getBID((BNode) resource);
-        }else{
+        } else {
             throw new IllegalArgumentException("Expected URI or BNode, got " + resource);
         }
     }
@@ -122,11 +122,11 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
             if (lang.equals(Locale.ROOT)) {
                 return vf.createLiteral(lit.getValue());
             } else {
-                return vf.createLiteral(lit.getValue(),  LocaleUtil.toLang(lang));
+                return vf.createLiteral(lit.getValue(), LocaleUtil.toLang(lang));
             }
         } else if (lit.isString()) {
             return vf.createLiteral(lit.getValue(), getURI(XSD.stringType));
-        } else if (lit.getDatatype().equals(RDF.text)){    
+        } else if (lit.getDatatype().equals(RDF.text)) {
             return vf.createLiteral(lit.getValue());
         } else {
             return vf.createLiteral(lit.getValue(), getURI(lit.getDatatype()));
@@ -137,9 +137,9 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
     public NODE getNODE(Value node) {
         if (node instanceof Resource) {
             return getID((Resource) node);
-        } else  if (node instanceof Literal){
+        } else if (node instanceof Literal) {
             return getLIT((Literal) node);
-        }else{
+        } else {
             throw new IllegalArgumentException("Expected Resource or Literal, got " + node);
         }
     }
@@ -181,13 +181,13 @@ public class SesameDialect extends AbstractDialect<Value, Resource, BNode, URI, 
         }
         return uid;
     }
-    
+
     @Override
     public URI getURI(UID uid) {
         return vf.createURI(uid.ns(), uid.ln());
     }
-    
-    public ValueFactory getValueFactory(){
+
+    public ValueFactory getValueFactory() {
         return vf;
     }
 

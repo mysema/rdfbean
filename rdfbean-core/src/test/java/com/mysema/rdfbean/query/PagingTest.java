@@ -30,8 +30,8 @@ public class PagingTest extends SessionTestBase implements EntityDomain {
     private static final Entity entity = Alias.alias(Entity.class);
 
     @Before
-    public void setUp(){
-        for (int i = 0; i < 9; i++){
+    public void setUp() {
+        for (int i = 0; i < 9; i++) {
             Entity entity = new Entity();
             entity.id = new UID(TEST.NS, "e" + String.valueOf(i));
             entity.property = String.valueOf(i);
@@ -41,18 +41,18 @@ public class PagingTest extends SessionTestBase implements EntityDomain {
     }
 
     @Test
-    public void test(){
+    public void test() {
         assertResultSize(9, 9, null);
-        assertResultSize(9, 2, new QueryModifiers(2l,null));
-        assertResultSize(9, 2, new QueryModifiers(2l,0l));
-        assertResultSize(9, 2, new QueryModifiers(2l,3l));
-        assertResultSize(9, 9, new QueryModifiers(20l,null));
-        assertResultSize(9, 9, new QueryModifiers(20l,0l));
-        assertResultSize(9, 5, new QueryModifiers(20l,4l));
-        assertResultSize(9, 0, new QueryModifiers(10l,9l));
+        assertResultSize(9, 2, new QueryModifiers(2l, null));
+        assertResultSize(9, 2, new QueryModifiers(2l, 0l));
+        assertResultSize(9, 2, new QueryModifiers(2l, 3l));
+        assertResultSize(9, 9, new QueryModifiers(20l, null));
+        assertResultSize(9, 9, new QueryModifiers(20l, 0l));
+        assertResultSize(9, 5, new QueryModifiers(20l, 4l));
+        assertResultSize(9, 0, new QueryModifiers(10l, 9l));
     }
 
-    private void assertResultSize(int total, int size, @Nullable QueryModifiers modifiers){
+    private void assertResultSize(int total, int size, @Nullable QueryModifiers modifiers) {
         // via list
         assertEquals(size, createQuery(modifiers).list($(entity)).size());
         System.out.println();
@@ -68,9 +68,10 @@ public class PagingTest extends SessionTestBase implements EntityDomain {
         System.out.println();
     }
 
-    private BeanQuery createQuery(@Nullable QueryModifiers modifiers){
+    private BeanQuery createQuery(@Nullable QueryModifiers modifiers) {
         BeanQuery beanQuery = session.from($(entity)).orderBy($(entity.getProperty()).asc());
-        if (modifiers != null) beanQuery.restrict(modifiers);
+        if (modifiers != null)
+            beanQuery.restrict(modifiers);
         return beanQuery;
     }
 }

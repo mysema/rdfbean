@@ -9,7 +9,7 @@ import org.junit.Test;
 public class LocaleConverterTest {
 
     private LocaleConverter converter = new LocaleConverter();
-    
+
     @Test
     public void FromString() {
         assertEquals(Locale.ENGLISH, converter.fromString("en"));
