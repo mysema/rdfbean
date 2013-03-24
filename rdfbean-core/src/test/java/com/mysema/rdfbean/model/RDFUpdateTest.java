@@ -66,7 +66,6 @@ public class RDFUpdateTest extends AbstractConnectionTest {
     }
 
     @Test
-    @Ignore // fails in Jenkins
     public void Delete_From_From_Where() throws IOException {
         connection().update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex1)));
         connection().update(null, Collections.singleton(new STMT(RDFS.Resource, RDF.type, RDFS.Class, ex2)));
