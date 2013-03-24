@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-guice</artifactId>
   <packaging>jar</packaging>
   <name>RDFBean - Guice</name>
-  
+
   <parent>
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
     <version>1.6.1-SNAPSHOT</version>
     <relativePath>../rdfbean-root/pom.xml</relativePath>
-  </parent>  
-  
+  </parent>
+
   <dependencies>
     <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-core</artifactId>
       <version>${project.version}</version>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-sesame</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
@@ -35,14 +37,14 @@
       <groupId>aopalliance</groupId>
       <artifactId>aopalliance</artifactId>
       <version>1.0</version>
-    </dependency>     
-    
+    </dependency>
+
     <dependency>
       <groupId>com.mysema.spring</groupId>
       <artifactId>spring-tx-annotations</artifactId>
       <version>0.1.0</version>
     </dependency>
-    
+
   </dependencies>
-  
+
 </project>

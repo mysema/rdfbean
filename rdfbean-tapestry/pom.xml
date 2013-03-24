@@ -1,79 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-tapestry</artifactId>
   <packaging>jar</packaging>
   <name>RDFBean - Tapestry</name>
-  
+
   <parent>
     <groupId>com.mysema.rdf</groupId>
     <artifactId>rdfbean-root</artifactId>
     <version>1.6.1-SNAPSHOT</version>
     <relativePath>../rdfbean-root/pom.xml</relativePath>
-  </parent>  
-  
+  </parent>
+
   <properties>
     <tapestry.version>5.2.0</tapestry.version>
   </properties>
-  
+
   <dependencies>
     <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-core</artifactId>
       <version>${project.version}</version>
-    </dependency>  
-        <dependency>
+    </dependency>
+    <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-sesame</artifactId>
       <version>${project.version}</version>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.apache.tapestry</groupId>
       <artifactId>tapestry-core</artifactId>
       <version>${tapestry.version}</version>
       <scope>provided</scope>
-    </dependency>   
-    
+    </dependency>
+
     <!-- tx annotations -->
     <dependency>
       <groupId>com.mysema.spring</groupId>
       <artifactId>spring-tx-annotations</artifactId>
       <version>0.1.0</version>
     </dependency>
-    
+
     <!-- test -->
-   <dependency>
+    <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-core</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
-    </dependency>     
+    </dependency>
     <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-sesame</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>     
-    
+    </dependency>
+
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
-           <groupId>org.apache.maven.plugins</groupId>
-           <artifactId>maven-jar-plugin</artifactId>
-           <configuration>
-           <archive>
-             <manifestEntries>
-               <Tapestry-Module-Classes>com.mysema.rdfbean.tapestry.services.RDFBeanModule</Tapestry-Module-Classes>
-             </manifestEntries>
-           </archive>
-           </configuration>
-       </plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Tapestry-Module-Classes>com.mysema.rdfbean.tapestry.services.RDFBeanModule</Tapestry-Module-Classes>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
-  
-  
+
+
 </project>

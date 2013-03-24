@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-rdb</artifactId>
@@ -12,10 +14,10 @@
     <version>1.6.1-SNAPSHOT</version>
     <relativePath>../rdfbean-root/pom.xml</relativePath>
   </parent>
-  
+
   <properties>
-  	<sesame.version>3.0-alpha1</sesame.version>
-  </properties>	
+    <sesame.version>3.0-alpha1</sesame.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -34,7 +36,7 @@
       <groupId>com.mysema.querydsl</groupId>
       <artifactId>querydsl-sql-codegen</artifactId>
       <version>${querydsl.version}</version>
-    </dependency>       
+    </dependency>
 
     <!-- RDF I/O from Sesame RIO -->
     <dependency>
@@ -47,13 +49,13 @@
       <artifactId>sesame-rio-rdfxml</artifactId>
       <version>${sesame.version}</version>
     </dependency>
-    
-	<dependency>
+
+    <dependency>
       <groupId>org.openrdf.sesame</groupId>
       <artifactId>sesame-rio-ntriples</artifactId>
       <version>${sesame.version}</version>
       <scope>test</scope>
-    </dependency>     	
+    </dependency>
 
     <!-- test deps -->
     <dependency>
@@ -76,8 +78,8 @@
         </exclusion>
       </exclusions>
     </dependency>
-	      
-	<!-- JDBC drivers -->
+
+    <!-- JDBC drivers -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
@@ -89,10 +91,10 @@
       <artifactId>mysql-connector-java</artifactId>
       <version>5.1.6</version>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
 
   </dependencies>
-  
+
   <repositories>
     <repository>
       <releases>
@@ -105,6 +107,6 @@
       <url>http://repo.aduna-software.org/maven2/releases</url>
       <layout>default</layout>
     </repository>
-  </repositories>  
-   
+  </repositories>
+
 </project>

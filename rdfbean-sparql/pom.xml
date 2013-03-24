@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-sparql</artifactId>
@@ -18,7 +20,7 @@
     <jetty.version>6.1.0-SNAPSHOT</jetty.version>
     <sesame.version>3.0-alpha1</sesame.version>
   </properties>
-  
+
   <dependencies>
     <dependency>
       <groupId>com.mysema.rdf</groupId>
@@ -30,7 +32,7 @@
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
       <scope>provided</scope>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-asl</artifactId>
@@ -41,8 +43,8 @@
       <groupId>com.mysema.commons</groupId>
       <artifactId>mysema-commons-fluxml</artifactId>
       <version>0.2.7</version>
-    </dependency>  
-  
+    </dependency>
+
     <!-- test -->
     <dependency>
       <groupId>com.mysema.rdf</groupId>
@@ -56,31 +58,23 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <version>1.6.1</version>
       <scope>test</scope>
-    </dependency>  
-    <!-- 
-    <dependency>
-      <groupId>com.mysema.commons</groupId>
-      <artifactId>mysema-commons-jetty</artifactId>
-      <version>${jetty.version}</version>
-      <scope>test</scope>
     </dependency>
-     -->
-    
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
       <version>${spring.version}</version>
       <scope>test</scope>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <version>${spring.version}</version>
       <scope>test</scope>
-    </dependency>  
-  
+    </dependency>
+
   </dependencies>
-  
+
   <repositories>
     <repository>
       <releases>
@@ -93,6 +87,6 @@
       <url>http://repo.aduna-software.org/maven2/releases</url>
       <layout>default</layout>
     </repository>
-  </repositories>  
-   
+  </repositories>
+
 </project>
