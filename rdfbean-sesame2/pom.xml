@@ -14,7 +14,7 @@
   </parent>
 
   <properties>
-    <sesame.version>2.6.10</sesame.version>
+    <sesame.version>2.7.5</sesame.version>
   </properties>
 
   <dependencies>
@@ -101,20 +101,4 @@
 
     </plugins>
   </build>
-
-  <repositories>
-    <repository>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-        <checksumPolicy>fail</checksumPolicy>
-      </releases>
-      <id>adunaReleases</id>
-      <name>Aduna Software</name>
-      <url>http://repo.aduna-software.org/maven2/releases</url>
-      <layout>default</layout>
-    </repository>
-  </repositories>
-
-
 </project>

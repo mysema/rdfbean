@@ -137,7 +137,7 @@ public abstract class SesameRepository implements Repository {
                 repository = createRepository(sesameInference);
                 repository.initialize();
                 RepositoryConnection connection = repository.getConnection();
-                connection.setAutoCommit(false);
+                connection.begin();
                 try {
                     if (sources != null && connection.isEmpty()) {
                         ValueFactory vf = connection.getValueFactory();
