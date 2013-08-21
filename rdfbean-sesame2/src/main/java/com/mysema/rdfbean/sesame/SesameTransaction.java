@@ -5,6 +5,7 @@
  */
 package com.mysema.rdfbean.sesame;
 
+import org.openrdf.repository.UnknownTransactionStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +24,6 @@ public class SesameTransaction implements RDFBeanTransaction {
 
     private static final Logger logger = LoggerFactory.getLogger(SesameTransaction.class);
 
-    private boolean active = false;
-
     private final SesameConnection connection;
 
     private boolean rollbackOnly;
@@ -35,13 +34,12 @@ public class SesameTransaction implements RDFBeanTransaction {
 
     public void begin() {
         try {
-            connection.getConnection().setAutoCommit(false);
+            connection.getConnection().begin();
         } catch (org.openrdf.repository.RepositoryException e) {
             String error = "Caught " + e.getClass().getName();
             logger.error(error, e);
             throw new RuntimeException(error, e);
         }
-        active = true;
     }
 
     @Override
@@ -62,7 +60,15 @@ public class SesameTransaction implements RDFBeanTransaction {
     }
 
     public boolean isActive() {
-        return active;
+        try {
+            return connection.getConnection().isActive();
+        } catch (UnknownTransactionStateException e) {
+            logger.error(e.getMessage(), e);
+            throw new RepositoryException(e.getMessage(), e);
+        } catch (org.openrdf.repository.RepositoryException e) {
+            logger.error(e.getMessage(), e);
+            throw new RepositoryException(e.getMessage(), e);
+        }
     }
 
     @Override
