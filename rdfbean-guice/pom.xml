@@ -21,7 +21,7 @@
     </dependency>
     <dependency>
       <groupId>com.mysema.rdf</groupId>
-      <artifactId>rdfbean-sesame</artifactId>
+      <artifactId>rdfbean-sesame3</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
