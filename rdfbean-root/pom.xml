@@ -33,8 +33,8 @@
     <module>../rdfbean-core</module>    
     
     <!-- persistence -->
-    <module>../rdfbean-sesame</module>
-    <module>../rdfbean-sesame2</module>       
+    <module>../rdfbean-sesame2</module>    
+    <module>../rdfbean-sesame3</module>
     <module>../rdfbean-jena</module>
     <module>../rdfbean-virtuoso</module>
     <module>../rdfbean-rdb</module>
