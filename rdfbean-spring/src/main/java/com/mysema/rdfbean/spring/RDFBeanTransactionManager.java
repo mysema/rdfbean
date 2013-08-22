@@ -299,6 +299,11 @@ public class RDFBeanTransactionManager extends AbstractPlatformTransactionManage
                 session.close();
             }
         }
+
+        @Override
+        public void flush() {
+            session.flush();            
+        }
     }
 
 }
