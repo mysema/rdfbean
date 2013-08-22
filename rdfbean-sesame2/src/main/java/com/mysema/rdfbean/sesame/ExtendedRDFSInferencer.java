@@ -41,7 +41,7 @@ public class ExtendedRDFSInferencer extends ForwardChainingRDFSInferencer {
 
         InferencerConnection conn = getConnection();
         try {
-            // conn.begin();
+            conn.begin();
             for (Field field : XMLSchema.class.getFields()) {
                 if (field.getType().equals(URI.class)) {
                     conn.addInferredStatement((URI) field.get(null), RDF.TYPE, RDFS.DATATYPE);

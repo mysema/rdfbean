@@ -9,7 +9,6 @@
     <relativePath>../rdfbean-root/pom.xml</relativePath>
   </parent>
 
-  <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-demo</artifactId>
   <packaging>jar</packaging>
   <name>RDFBean Demo</name>
@@ -24,7 +23,7 @@
   <dependencies>
     <dependency>
       <groupId>com.mysema.rdf</groupId>
-      <artifactId>rdfbean-sesame3</artifactId>
+      <artifactId>rdfbean-sesame2</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
