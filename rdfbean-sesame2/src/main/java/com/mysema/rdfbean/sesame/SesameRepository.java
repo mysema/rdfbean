@@ -53,8 +53,6 @@ public abstract class SesameRepository implements Repository {
 
     private org.openrdf.repository.Repository repository;
 
-    private boolean initialized = false;
-
     private boolean sesameInference = false;
 
     private InferenceOptions inference = InferenceOptions.DEFAULT;
@@ -64,7 +62,6 @@ public abstract class SesameRepository implements Repository {
     @Override
     public void close() {
         try {
-            initialized = false;
             repository.shutDown();
         } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
@@ -77,7 +74,8 @@ public abstract class SesameRepository implements Repository {
     public <RT> RT execute(RDFConnectionCallback<RT> operation) {
         RDFConnection connection = openConnection();
         try {
-            RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT, RDFBeanTransaction.ISOLATION);
+            RDFBeanTransaction tx = connection.beginTransaction(false, RDFBeanTransaction.TIMEOUT,
+                    RDFBeanTransaction.ISOLATION);
             try {
                 RT retVal = operation.doInConnection(connection);
                 tx.commit();
@@ -132,7 +130,7 @@ public abstract class SesameRepository implements Repository {
     }
 
     public void initialize() {
-        if (!initialized) {
+        if (repository == null || !repository.isInitialized()) {
             try {
                 repository = createRepository(sesameInference);
                 repository.initialize();
@@ -145,8 +143,7 @@ public abstract class SesameRepository implements Repository {
                             if (source.getResource() != null) {
                                 logger.info("loading " + source.getResource());
                             }
-                            connection.add(source.openStream(),
-                                    source.getContext(),
+                            connection.add(source.openStream(), source.getContext(),
                                     FormatHelper.getFormat(source.getFormat()),
                                     vf.createURI(source.getContext()));
                         }
@@ -162,7 +159,6 @@ public abstract class SesameRepository implements Repository {
             } catch (org.openrdf.repository.RepositoryException e) {
                 throw new RepositoryException(e);
             }
-            initialized = true;
         }
     }
 
