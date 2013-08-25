@@ -174,6 +174,7 @@ public abstract class SesameRepository implements Repository {
                         return;
                     }
                 }
+                connection.begin();
                 if (context != null && replace) {
                     connection.remove((Resource) null, null, null, contextURI);
                 }
@@ -182,7 +183,11 @@ public abstract class SesameRepository implements Repository {
                 } else {
                     connection.add(is, context.getId(), FormatHelper.getFormat(format), contextURI);
                 }
+                connection.commit();
 
+            } catch (RepositoryException e) {
+                connection.rollback();
+                throw new RepositoryException(e);
             } finally {
                 connection.close();
             }
