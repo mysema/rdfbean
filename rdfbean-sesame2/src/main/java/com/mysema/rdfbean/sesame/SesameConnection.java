@@ -98,7 +98,8 @@ public class SesameConnection implements RDFConnection {
 
     private final InferenceOptions inference;
 
-    public SesameConnection(SesameRepository repository, RepositoryConnection connection, InferenceOptions inference) {
+    public SesameConnection(SesameRepository repository, RepositoryConnection connection,
+            InferenceOptions inference) {
         this.repository = Assert.notNull(repository, "repository");
         this.connection = Assert.notNull(connection, "connection");
         this.vf = connection.getValueFactory();
@@ -220,7 +221,8 @@ public class SesameConnection implements RDFConnection {
 
     private SPARQLQuery createSPARQLQuery(String queryString) {
         try {
-            Query query = connection.prepareQuery(org.openrdf.query.QueryLanguage.SPARQL, queryString);
+            Query query = connection.prepareQuery(org.openrdf.query.QueryLanguage.SPARQL,
+                    queryString);
             if (query instanceof BooleanQuery) {
                 return new BooleanQueryImpl((BooleanQuery) query, dialect);
             } else if (query instanceof GraphQuery) {
@@ -228,7 +230,8 @@ public class SesameConnection implements RDFConnection {
             } else if (query instanceof TupleQuery) {
                 return new TupleQueryImpl((TupleQuery) query, dialect);
             } else {
-                throw new RepositoryException("Unsupported query type " + query.getClass().getName());
+                throw new RepositoryException("Unsupported query type "
+                        + query.getClass().getName());
             }
         } catch (MalformedQueryException e) {
             throw new QueryException(e);
@@ -238,20 +241,21 @@ public class SesameConnection implements RDFConnection {
     }
 
     @Override
-    public CloseableIterator<STMT> findStatements(ID sub, UID pre, NODE obj, UID con, boolean includeInferred) {
+    public CloseableIterator<STMT> findStatements(ID sub, UID pre, NODE obj, UID con,
+            boolean includeInferred) {
         Resource subject = convert(sub);
         URI predicate = convert(pre);
         Value object = convert(obj);
         URI context = convert(con);
 
         // default results
-        return new RepositoryResultIterator(dialect,
-                findStatements(subject, predicate, object, includeInferred, context), includeInferred);
+        return new RepositoryResultIterator(dialect, findStatements(subject, predicate, object,
+                includeInferred, context), includeInferred);
     }
 
     @Override
-    public boolean exists(@Nullable ID sub, @Nullable UID pre, @Nullable NODE obj, @Nullable UID con,
-            boolean includeInferred) {
+    public boolean exists(@Nullable ID sub, @Nullable UID pre, @Nullable NODE obj,
+            @Nullable UID con, boolean includeInferred) {
         Resource subject = convert(sub);
         URI predicate = convert(pre);
         Value object = convert(obj);
@@ -261,23 +265,26 @@ public class SesameConnection implements RDFConnection {
             if (context == null) {
                 return connection.hasStatement(subject, predicate, object, includeInferred);
             } else {
-                return connection.hasStatement(subject, predicate, object, includeInferred, context);
+                return connection
+                        .hasStatement(subject, predicate, object, includeInferred, context);
             }
         } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
     }
 
-    private RepositoryResult<Statement> findStatements(
-            @Nullable Resource subject, @Nullable URI predicate, @Nullable Value object,
-            boolean includeInferred, @Nullable URI context) {
+    private RepositoryResult<Statement> findStatements(@Nullable Resource subject,
+            @Nullable URI predicate, @Nullable Value object, boolean includeInferred,
+            @Nullable URI context) {
         try {
             if (context == null) {
                 return connection.getStatements(subject, predicate, object, includeInferred);
             } else if (includeInferred) {
-                return connection.getStatements(subject, predicate, object, includeInferred, context, null);
+                return connection.getStatements(subject, predicate, object, includeInferred,
+                        context, null);
             } else {
-                return connection.getStatements(subject, predicate, object, includeInferred, context);
+                return connection.getStatements(subject, predicate, object, includeInferred,
+                        context);
             }
         } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
@@ -308,8 +315,15 @@ public class SesameConnection implements RDFConnection {
         Value obj = object != null ? dialect.getNode(object) : null;
         URI cont = context != null ? dialect.getURI(context) : null;
         try {
+            connection.begin();
             connection.remove(subj, pred, obj, cont);
+            connection.commit();
         } catch (org.openrdf.repository.RepositoryException e) {
+            try {
+                connection.rollback();
+            } catch (org.openrdf.repository.RepositoryException e1) {
+                throw new RepositoryException(e);
+            }
             throw new RepositoryException(e);
         }
     }
@@ -318,13 +332,24 @@ public class SesameConnection implements RDFConnection {
     public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
         if (!readonlyTnx) {
             try {
+                if (localTxn == null) {
+                    connection.begin();
+                }
                 if (removedStatements != null && !removedStatements.isEmpty()) {
                     connection.remove(convert(removedStatements));
                 }
                 if (addedStatements != null && !addedStatements.isEmpty()) {
                     connection.add(convert(addedStatements));
                 }
+                if (localTxn == null) {
+                    connection.commit();
+                }
             } catch (org.openrdf.repository.RepositoryException e) {
+                try {
+                    connection.rollback();
+                } catch (org.openrdf.repository.RepositoryException e1) {
+                    throw new RepositoryException(e);
+                }
                 throw new RepositoryException(e);
             }
         }
