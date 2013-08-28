@@ -315,9 +315,7 @@ public class SesameConnection implements RDFConnection {
         Value obj = object != null ? dialect.getNode(object) : null;
         URI cont = context != null ? dialect.getURI(context) : null;
         try {
-            connection.begin();
             connection.remove(subj, pred, obj, cont);
-            connection.commit();
         } catch (org.openrdf.repository.RepositoryException e) {
             try {
                 connection.rollback();
