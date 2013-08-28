@@ -4,12 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.sql.Time;
 import java.sql.Timestamp;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
 import org.junit.After;
 import org.junit.Test;
 
@@ -49,15 +47,17 @@ public class DateTimePersistenceTest {
         repository.execute(new Addition(
                 new STMT(sub, pre(1), new LIT(converters.toString(new DateTime()), XSD.dateTime)),
                 new STMT(sub, pre(2), new LIT(converters.toString(new LocalDate()), XSD.date)),
-                new STMT(sub, pre(3), new LIT(converters.toString(new LocalTime()), XSD.time)),
+                //temporarily disabled - Bug in Sesame <= 2.7.5 - https://openrdf.atlassian.net/browse/SES-1914
+                //new STMT(sub, pre(3), new LIT(converters.toString(new LocalTime()), XSD.time)),
 
-                new STMT(sub, pre(4), new LIT(converters.toString(new java.sql.Date(0)), XSD.date)),
-                new STMT(sub, pre(5), new LIT(converters.toString(new java.util.Date(0)), XSD.dateTime)),
-                new STMT(sub, pre(6), new LIT(converters.toString(new Time(0)), XSD.time)),
-                new STMT(sub, pre(7), new LIT(converters.toString(new Timestamp(0)), XSD.dateTime))
+                new STMT(sub, pre(3), new LIT(converters.toString(new java.sql.Date(0)), XSD.date)),
+                new STMT(sub, pre(4), new LIT(converters.toString(new java.util.Date(0)), XSD.dateTime)),
+                //temporarily disabled - Bug in Sesame <= 2.7.5 - https://openrdf.atlassian.net/browse/SES-1914
+                //new STMT(sub, pre(6), new LIT(converters.toString(new Time(0)), XSD.time)),
+                new STMT(sub, pre(5), new LIT(converters.toString(new Timestamp(0)), XSD.dateTime))
                 ));
         long count = repository.execute(new CountOperation());
-        assertEquals(7, count);
+        assertEquals(5, count);
 
         // export
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -69,7 +69,7 @@ public class DateTimePersistenceTest {
         repository.load(Format.TURTLE, in, new UID(TEST.NS), true);
 
         count = repository.execute(new CountOperation());
-        assertEquals(7 * 2, count);
+        assertEquals(5 * 2, count);
     }
 
     private UID pre(int i) {
