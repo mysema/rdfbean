@@ -57,4 +57,10 @@ public interface SessionFactory {
      */
     <T> T execute(SessionCallback<T> cb);
 
+    /**
+     * Returns configuration of SessionFactory 
+     * @return
+     */
+    Configuration getConfiguration();
+
 }

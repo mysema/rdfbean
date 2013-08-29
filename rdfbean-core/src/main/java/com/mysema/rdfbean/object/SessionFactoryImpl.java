@@ -116,4 +116,9 @@ public class SessionFactoryImpl implements SessionFactory {
         this.sessionContext = sessionContext;
     }
 
+    @Override
+    public Configuration getConfiguration() {
+        return this.configuration;
+    }
+
 }
