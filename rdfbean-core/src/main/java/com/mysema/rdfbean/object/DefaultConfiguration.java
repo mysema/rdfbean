@@ -89,6 +89,11 @@ public class DefaultConfiguration implements Configuration {
         addPackages(packages);
     }
 
+    public DefaultConfiguration(@Nullable String defaultNamespace, String... packages) {
+        this(defaultNamespace);
+        scanPackages(packages);
+    }
+
     public final void addClasses(Class<?>... classes) {
         for (Class<?> clazz : classes) {
             if (clazz.getAnnotation(ClassMapping.class) != null) {
@@ -96,9 +101,11 @@ public class DefaultConfiguration implements Configuration {
                 if (mappedClass.getUID() != null) {
                     ClassMapping classMapping = clazz.getAnnotation(ClassMapping.class);
                     if (clazz.isEnum() && !classMapping.parent().equals(Object.class)) {
-                        MappedClass parentClass = mappedClassFactory.getMappedClass(classMapping.parent());
+                        MappedClass parentClass = mappedClassFactory.getMappedClass(classMapping
+                                .parent());
                         for (Object constant : clazz.getEnumConstants()) {
-                            UID instance = new UID(mappedClass.getClassNs(), ((Enum) constant).name());
+                            UID instance = new UID(mappedClass.getClassNs(),
+                                    ((Enum) constant).name());
                             addClass(instance, parentClass);
                         }
                     }
@@ -109,7 +116,8 @@ public class DefaultConfiguration implements Configuration {
                 }
                 mappedClasses.add(mappedClass);
             } else {
-                throw new IllegalArgumentException("No @ClassMapping annotation for " + clazz.getName());
+                throw new IllegalArgumentException("No @ClassMapping annotation for "
+                        + clazz.getName());
             }
         }
     }
@@ -129,7 +137,8 @@ public class DefaultConfiguration implements Configuration {
             if (classes != null) {
                 addClasses(classes.value());
             } else {
-                throw new IllegalArgumentException("No @MappedClasses annotation for " + pack.getName());
+                throw new IllegalArgumentException("No @MappedClasses annotation for "
+                        + pack.getName());
             }
         }
     }
@@ -150,7 +159,8 @@ public class DefaultConfiguration implements Configuration {
         Class<?> clazz = instance.getClass();
         UID context = getMappedClass(clazz).getContext();
         if (context != null) {
-            return new UID(context.getId() + "#", clazz.getSimpleName() + "-" + UUID.randomUUID().toString());
+            return new UID(context.getId() + "#", clazz.getSimpleName() + "-"
+                    + UUID.randomUUID().toString());
         }
         return null;
     }
@@ -206,4 +216,18 @@ public class DefaultConfiguration implements Configuration {
         }
     }
 
+    public void scanPackages(String... packages) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        for (String pkg : packages) {
+            try {
+                for (Class<?> cl : ClassPathUtils.scanPackage(classLoader, pkg)) {
+                    if (cl.getAnnotation(ClassMapping.class) != null) {
+                        addClasses(cl);
+                    }
+                }
+            } catch (IOException e) {
+                throw new ConfigurationException(e);
+            }
+        }
+    }
 }
