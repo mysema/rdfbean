@@ -27,7 +27,6 @@ public class HTTPRepository extends SesameRepository {
         this.url = url;
     }
 
-
     @Override
     protected Repository createRepository(boolean sesameInference) {
         if (this.url != null) {
@@ -36,7 +35,6 @@ public class HTTPRepository extends SesameRepository {
             throw new RepositoryException("URL for remote repository not provided.");
         }
     }
-
 
     @Override
     public long getNextLocalId() {
