@@ -48,7 +48,9 @@ import com.mysema.rdfbean.model.RDFBeanTransaction;
 import com.mysema.rdfbean.model.RDFConnection;
 import com.mysema.rdfbean.model.RepositoryException;
 import com.mysema.rdfbean.model.SPARQLQuery;
+import com.mysema.rdfbean.model.SPARQLTemplates;
 import com.mysema.rdfbean.model.SPARQLUpdateClause;
+import com.mysema.rdfbean.model.SPARQLVisitor;
 import com.mysema.rdfbean.model.STMT;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.model.UnsupportedQueryLanguageException;
@@ -97,14 +99,17 @@ public class SesameConnection implements RDFConnection {
     private final SesameRepository repository;
 
     private final InferenceOptions inference;
+    
+    private final boolean remote;
 
     public SesameConnection(SesameRepository repository, RepositoryConnection connection,
-            InferenceOptions inference) {
+            InferenceOptions inference, boolean remote) {
         this.repository = Assert.notNull(repository, "repository");
         this.connection = Assert.notNull(connection, "connection");
         this.vf = connection.getValueFactory();
         this.dialect = new SesameDialect(vf);
         this.inference = inference;
+        this.remote = remote;
     }
 
     @Override
@@ -193,6 +198,14 @@ public class SesameConnection implements RDFConnection {
         if (queryLanguage.equals(QueryLanguage.SPARQL)) {
             return (Q) createSPARQLQuery((String) definition);
 
+        } else if (remote) {
+            SPARQLVisitor visitor = new SPARQLVisitor(SPARQLTemplates.DEFAULT, "");
+            QueryMetadata md = (QueryMetadata) definition;
+            visitor.visit(md, queryLanguage);
+            SPARQLQuery query = createSPARQLQuery(visitor.toString());
+            visitor.addBindings(query, md);
+            return (Q) query;
+            
         } else if (queryLanguage.equals(QueryLanguage.TUPLE)) {
             SesameRDFVisitor visitor = new SesameRDFVisitor(dialect);
             TupleExpr tuple = visitor.visit((QueryMetadata) definition, queryLanguage);

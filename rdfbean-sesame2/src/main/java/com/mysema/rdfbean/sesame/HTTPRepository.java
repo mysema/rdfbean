@@ -5,6 +5,8 @@
  */
 package com.mysema.rdfbean.sesame;
 
+import java.io.File;
+
 import javax.annotation.Nullable;
 
 import org.openrdf.repository.Repository;
@@ -21,16 +23,29 @@ public class HTTPRepository extends SesameRepository {
 
     @Nullable
     private String url;
-
+    
+    @Nullable
+    private File dataDir;
+    
+    @Nullable
+    private String username, password;
 
     public HTTPRepository(String url) {
+        super(true);
         this.url = url;
     }
 
     @Override
     protected Repository createRepository(boolean sesameInference) {
         if (this.url != null) {
-            return new org.openrdf.repository.http.HTTPRepository(url);
+            org.openrdf.repository.http.HTTPRepository repository = new org.openrdf.repository.http.HTTPRepository(url);
+            if (dataDir != null) {
+                repository.setDataDir(dataDir);
+            }
+            if (username != null || password != null) {
+                repository.setUsernameAndPassword(username, password);
+            }            
+            return repository;
         } else {
             throw new RepositoryException("URL for remote repository not provided.");
         }
@@ -39,6 +54,15 @@ public class HTTPRepository extends SesameRepository {
     @Override
     public long getNextLocalId() {
         throw new UnsupportedOperationException("NextLocalId is not supported by remote repositories");
+    }
+
+    public void setDataDir(File dataDir) {
+        this.dataDir = dataDir;
+    }
+    
+    public void setUsernameAndPassword(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
 }
