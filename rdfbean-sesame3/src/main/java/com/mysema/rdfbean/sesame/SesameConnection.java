@@ -296,6 +296,11 @@ public class SesameConnection implements RDFConnection {
         try {
             connection.removeMatch(subj, pred, obj, cont);
         } catch (StoreException e) {
+            try {
+                connection.rollback();
+            } catch (StoreException e1) {
+                throw new RepositoryException(e1);
+            }
             throw new RepositoryException(e);
         }
     }
@@ -304,13 +309,24 @@ public class SesameConnection implements RDFConnection {
     public void update(Collection<STMT> removedStatements, Collection<STMT> addedStatements) {
         if (!readonlyTnx) {
             try {
+                if (localTxn == null) {
+                    connection.begin();
+                }
                 if (removedStatements != null && !removedStatements.isEmpty()) {
                     connection.remove(convert(removedStatements));
                 }
                 if (addedStatements != null && !addedStatements.isEmpty()) {
                     connection.add(convert(addedStatements));
                 }
+                if (localTxn == null) {
+                    connection.commit();
+                }
             } catch (StoreException e) {
+                try {
+                    connection.rollback();
+                } catch (StoreException e1) {
+                    throw new RepositoryException(e1);
+                }
                 throw new RepositoryException(e);
             }
         }
