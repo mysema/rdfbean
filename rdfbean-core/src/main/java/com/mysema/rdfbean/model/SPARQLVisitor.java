@@ -10,6 +10,7 @@ import java.util.Stack;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableSet;
+import com.mysema.query.BooleanBuilder;
 import com.mysema.query.JoinExpression;
 import com.mysema.query.QueryFlag;
 import com.mysema.query.QueryFlag.Position;
@@ -19,6 +20,7 @@ import com.mysema.query.support.SerializerBase;
 import com.mysema.query.types.Constant;
 import com.mysema.query.types.ConstantImpl;
 import com.mysema.query.types.Expression;
+import com.mysema.query.types.ExpressionUtils;
 import com.mysema.query.types.Operator;
 import com.mysema.query.types.Ops;
 import com.mysema.query.types.OrderSpecifier;
@@ -51,6 +53,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     private boolean inlineResources = false;
 
     private boolean likeAsMatches = false;
+    
+    private boolean inToOr = false;
 
     @Nullable
     private QueryMetadata metadata;
@@ -322,7 +326,7 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
                 if (!first) {
                     append(", ");
                 }
-                visit(new ConstantImpl<Object>(o), null);
+                visitConstant(o);
                 first = false;
             }
             append(")");
@@ -364,7 +368,15 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
     @SuppressWarnings("unchecked")
     @Override
     protected void visitOperation(Class<?> type, Operator<?> operator, List<? extends Expression<?>> args) {
-        if (operator == Ops.LIKE && likeAsMatches && args.get(1) instanceof Constant) {
+        if (operator == Ops.IN && inToOr) { 
+            BooleanBuilder builder = new BooleanBuilder();
+            for (Object arg : ((Constant<Collection>)args.get(1)).getConstant()) {
+                builder.or(ExpressionUtils.eq(args.get(0), new ConstantImpl(arg)));
+            }
+            builder.getValue().accept(this, null);
+            return;
+            
+        } else if (operator == Ops.LIKE && likeAsMatches && args.get(1) instanceof Constant) {
             operator = Ops.MATCHES;
             String value = ((Constant<LIT>) args.get(1)).getConstant().getValue().replace("%", ".*").replace("_", ".");
             args = Arrays.asList(args.get(0), new ConstantImpl<LIT>(LIT.class, new LIT(value)));
@@ -420,4 +432,8 @@ public class SPARQLVisitor extends SerializerBase<SPARQLVisitor> implements RDFV
         this.inlineAll = inlineAll;
     }
 
+    public void setInToOr(boolean inToOr) {
+        this.inToOr = inToOr;
+    }
+    
 }

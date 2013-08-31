@@ -55,19 +55,11 @@ public abstract class SesameRepository implements Repository {
 
     private boolean sesameInference = false;
 
+    private boolean serializeQueries = false;
+    
     private InferenceOptions inference = InferenceOptions.DEFAULT;
 
     private final ValueFactory valueFactory = new ValueFactoryImpl();
-    
-    private final boolean remote;
-    
-    public SesameRepository(boolean remote) {
-        this.remote = remote;
-    }
-    
-    public SesameRepository() {
-        this(false);
-    }
 
     @Override
     public void close() {
@@ -213,7 +205,7 @@ public abstract class SesameRepository implements Repository {
     @Override
     public RDFConnection openConnection() {
         try {
-            return new SesameConnection(this, repository.getConnection(), inference, remote);
+            return new SesameConnection(this, repository.getConnection(), inference, serializeQueries);
         } catch (org.openrdf.repository.RepositoryException e) {
             throw new RepositoryException(e);
         }
@@ -227,4 +219,9 @@ public abstract class SesameRepository implements Repository {
     public void setSources(RDFSource... sources) {
         this.sources = sources;
     }
+
+    public void setSerializeQueries(boolean serializeQueries) {
+        this.serializeQueries = serializeQueries;
+    }
+        
 }

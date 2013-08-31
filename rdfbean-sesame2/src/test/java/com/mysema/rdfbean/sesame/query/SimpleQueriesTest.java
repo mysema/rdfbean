@@ -17,14 +17,19 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.types.Predicate;
+import com.mysema.rdfbean.TEST;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType;
 import com.mysema.rdfbean.domains.SimpleDomain.SimpleType2;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.object.BeanQuery;
 import com.mysema.rdfbean.sesame.SessionTestBase;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({ SimpleType.class, SimpleType2.class })
 public class SimpleQueriesTest extends SessionTestBase {
+    
+    private static final UID uid1 = new UID(TEST.NS, "instance1");
+    private static final UID uid2 = new UID(TEST.NS, "instance2");
 
     private SimpleType instance;
 
@@ -35,8 +40,27 @@ public class SimpleQueriesTest extends SessionTestBase {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void in_empty() {
+    public void InEmpty() {
+        System.out.println("inEmpty");
         where(var.directProperty.in(Collections.<String> emptySet())).list(var);
+    }
+    
+    @Test
+    public void Get1() {
+        assertNotNull(session.get(SimpleType.class, uid1));
+    }
+    
+    @Test
+    public void Get2() {
+        assertNotNull(session.get(SimpleType.class, uid2));
+    }
+    
+    @Test
+    public void GetAll() {
+        System.out.println("getAll");
+        List<SimpleType> instances = session.getAll(SimpleType.class, uid1, uid2);
+        assertNotNull(instances.get(0));
+        assertNotNull(instances.get(1));
     }
 
     @Test
@@ -60,7 +84,7 @@ public class SimpleQueriesTest extends SessionTestBase {
     @Test
     public void AllDistinctInstances() {
         System.out.println("allDistinctInstances");
-        assertEquals(2, session.from(var).listDistinct(var).size());
+        assertEquals(2, session.from(var).distinct().list(var).size());
     }
 
     @Test
@@ -98,10 +122,10 @@ public class SimpleQueriesTest extends SessionTestBase {
 
     @Test
     public void ByNumericProperty() {
+        System.out.println("byNumericProperty");
         assertEquals(1, where(var.numericProperty.eq(10)).list(var).size());
         assertEquals(1, where(var.numericProperty.eq(20)).list(var).size());
         assertEquals(0, where(var.numericProperty.eq(30)).list(var).size());
-
     }
 
     @Test

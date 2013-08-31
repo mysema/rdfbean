@@ -24,13 +24,11 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
 
     private final SesameDialect dialect;
 
-
     public TupleResultIterator(TupleQueryResult tupleResult, Map<String, NODE> bindings, SesameDialect dialect) {
         this.tupleResult = tupleResult;
         this.bindings = bindings;
         this.dialect = dialect;
     }
-
 
     @Override
     public void close() {
@@ -41,7 +39,6 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
         }
     }
 
-
     @Override
     public boolean hasNext() {
         try {
@@ -50,7 +47,6 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
             throw new RepositoryException(e);
         }
     }
-
 
     @Override
     public Map<String, NODE> next() {
@@ -70,7 +66,6 @@ public class TupleResultIterator implements CloseableIterator<Map<String, NODE>>
             throw new RepositoryException(e);
         }
     }
-
 
     @Override
     public void remove() {

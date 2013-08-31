@@ -79,10 +79,12 @@ public class SessionTestBase implements SimpleDomain {
     @AfterClass
     public static void after() {
         try {
-            if (sessionFactory != null)
+            if (sessionFactory != null) {
                 sessionFactory.close();
-            if (repository != null)
+            }                
+            if (repository != null) {
                 repository.close();
+            }                
         } finally {
             sessionFactory = null;
             repository = null;

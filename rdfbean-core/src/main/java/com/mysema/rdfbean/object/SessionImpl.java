@@ -35,6 +35,7 @@ import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.Assert;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.commons.lang.IteratorAdapter;
+import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.EntityPath;
 import com.mysema.rdfbean.CORE;
 import com.mysema.rdfbean.annotations.ContainerType;
@@ -1073,6 +1074,7 @@ public final class SessionImpl implements Session {
             }
             RDFQuery query = createQuery(mappedClass, null, polymorphic);
             query.where(QNODE.s.in(ids));
+
             CloseableIterator<STMT> stmts = query.construct(Blocks.SPOC);
             Map<ID, Multimap<UID, STMT>> directProps = getPropertiesMap(stmts, false);
 

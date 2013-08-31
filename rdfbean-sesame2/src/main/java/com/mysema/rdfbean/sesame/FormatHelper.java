@@ -20,7 +20,6 @@ final class FormatHelper {
     private FormatHelper() {
     }
 
-
     public static RDFFormat getFormat(Format format) {
         switch (format) {
         case N3:

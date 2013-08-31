@@ -28,29 +28,20 @@ public class RDFWriterAdapter extends RDFHandlerWrapper implements RDFWriter {
 
     private final RDFWriter writer;
 
-
     public RDFWriterAdapter(RDFWriter writer) {
         super(writer);
         this.writer = Assert.notNull(writer, "writer");
     }
-
 
     @Override
     public void handleStatement(Statement stmt) throws RDFHandlerException {
         statements.add(stmt);
     }
 
-
     @Override
     public RDFFormat getRDFFormat() {
         return writer.getRDFFormat();
     }
-
-
-    // @Override
-    // public void setBaseURI(String arg0) {
-    // writer.setBaseURI(arg0);
-    // }
 
     @Override
     public void endRDF() throws RDFHandlerException {
@@ -61,18 +52,15 @@ public class RDFWriterAdapter extends RDFHandlerWrapper implements RDFWriter {
         writer.endRDF();
     }
 
-
     @Override
     public void setWriterConfig(WriterConfig config) {
         writer.setWriterConfig(config);
     }
 
-
     @Override
     public WriterConfig getWriterConfig() {
         return writer.getWriterConfig();
     }
-
 
     @Override
     public Collection<RioSetting<?>> getSupportedSettings() {

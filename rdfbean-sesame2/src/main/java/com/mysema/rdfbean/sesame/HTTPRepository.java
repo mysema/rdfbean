@@ -30,9 +30,9 @@ public class HTTPRepository extends SesameRepository {
     @Nullable
     private String username, password;
 
-    public HTTPRepository(String url) {
-        super(true);
+    public HTTPRepository(String url) {        
         this.url = url;
+        setSerializeQueries(true);
     }
 
     @Override
