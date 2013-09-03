@@ -14,7 +14,7 @@
 	</parent>
 
 	<properties>
-		<sesame.version>2.7.5</sesame.version>
+		<sesame.version>2.7.6</sesame.version>
 	</properties>
 
 	<dependencies>
