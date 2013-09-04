@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 
 import org.openrdf.repository.Repository;
 
+import com.mysema.rdfbean.model.FileIdSequence;
 import com.mysema.rdfbean.model.IdSequence;
 import com.mysema.rdfbean.model.MemoryIdSequence;
 import com.mysema.rdfbean.model.RepositoryException;
@@ -50,7 +51,11 @@ public class HTTPRepository extends SesameRepository {
             if (username != null || password != null) {
                 repository.setUsernameAndPassword(username, password);
             }
-            idSource = new MemoryIdSequence();
+            if (dataDir != null) {
+                idSource = new FileIdSequence(new File(dataDir, "lastLocalId"));
+            } else {
+                idSource = new MemoryIdSequence();    
+            }            
             return repository;
         } else {
             throw new RepositoryException("URL for remote repository not provided.");

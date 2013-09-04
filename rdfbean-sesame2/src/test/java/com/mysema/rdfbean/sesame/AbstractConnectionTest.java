@@ -27,7 +27,6 @@ public abstract class AbstractConnectionTest {
                 new RDFSource("classpath:/foaf.rdf", Format.RDFXML, FOAF.NS)
                 );
         repository.initialize();
-
     }
 
     @AfterClass
