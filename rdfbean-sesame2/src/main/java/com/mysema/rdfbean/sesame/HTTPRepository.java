@@ -28,17 +28,17 @@ public class HTTPRepository extends SesameRepository {
 
     @Nullable
     private File dataDir;
+    
     @Nullable
     private IdSequence idSource;
+    
     @Nullable
     private String username, password;
-
 
     public HTTPRepository(String url) {
         this.url = url;
         setSerializeQueries(true);
     }
-
 
     @Override
     protected Repository createRepository(boolean sesameInference) {
@@ -57,17 +57,14 @@ public class HTTPRepository extends SesameRepository {
         }
     }
 
-
     @Override
     public long getNextLocalId() {
         return idSource.getNextId();
     }
 
-
     public void setDataDir(File dataDir) {
         this.dataDir = dataDir;
     }
-
 
     public void setUsernameAndPassword(String username, String password) {
         this.username = username;
