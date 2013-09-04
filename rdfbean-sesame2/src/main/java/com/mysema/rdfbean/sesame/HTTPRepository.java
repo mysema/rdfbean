@@ -11,6 +11,8 @@ import javax.annotation.Nullable;
 
 import org.openrdf.repository.Repository;
 
+import com.mysema.rdfbean.model.IdSequence;
+import com.mysema.rdfbean.model.MemoryIdSequence;
 import com.mysema.rdfbean.model.RepositoryException;
 
 /**
@@ -23,17 +25,20 @@ public class HTTPRepository extends SesameRepository {
 
     @Nullable
     private String url;
-    
+
     @Nullable
     private File dataDir;
-    
+    @Nullable
+    private IdSequence idSource;
     @Nullable
     private String username, password;
 
-    public HTTPRepository(String url) {        
+
+    public HTTPRepository(String url) {
         this.url = url;
         setSerializeQueries(true);
     }
+
 
     @Override
     protected Repository createRepository(boolean sesameInference) {
@@ -44,22 +49,26 @@ public class HTTPRepository extends SesameRepository {
             }
             if (username != null || password != null) {
                 repository.setUsernameAndPassword(username, password);
-            }            
+            }
+            idSource = new MemoryIdSequence();
             return repository;
         } else {
             throw new RepositoryException("URL for remote repository not provided.");
         }
     }
 
+
     @Override
     public long getNextLocalId() {
-        throw new UnsupportedOperationException("NextLocalId is not supported by remote repositories");
+        return idSource.getNextId();
     }
+
 
     public void setDataDir(File dataDir) {
         this.dataDir = dataDir;
     }
-    
+
+
     public void setUsernameAndPassword(String username, String password) {
         this.username = username;
         this.password = password;
