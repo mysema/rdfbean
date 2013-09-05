@@ -23,7 +23,7 @@
       <plugin>
         <groupId>org.jboss.maven.plugins</groupId>
         <artifactId>maven-jdocbook-plugin</artifactId>        
-        <version>2.3.5</version>
+        <version>2.3.8</version>
         <extensions>true</extensions>
         <configuration>
           <sourceDocumentName>RDFBean_Reference.xml</sourceDocumentName>
@@ -60,6 +60,26 @@
             <groupId>net.sf.xslthl</groupId>
             <artifactId>xslthl</artifactId>
             <version>2.0.1</version>          
+          </dependency>
+		  <dependency>
+		    <groupId>apache-xerces</groupId>
+		    <artifactId>xercesImpl</artifactId>
+		    <version>2.9.1</version>
+		  </dependency>
+		  <dependency>
+		    <groupId>apache-xalan</groupId>
+		    <artifactId>xalan</artifactId>
+		    <version>2.7.1.patch01-brew</version>
+		  </dependency>
+		  <dependency>
+		    <groupId>apache-xalan</groupId>
+		    <artifactId>serializer</artifactId>
+		    <version>2.7.1.patch01-brew</version>
+		  </dependency>
+		  <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>1.1</version>
           </dependency>
         </dependencies>
       </plugin>
