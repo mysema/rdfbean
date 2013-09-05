@@ -7,7 +7,9 @@ package com.mysema.rdfbean.query;
 
 import static com.mysema.query.alias.Alias.$;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -15,6 +17,12 @@ import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain;
 import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain.Company;
 import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain.Department;
 import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain.Employee;
+import com.mysema.rdfbean.domains.SongPlaybackMusicStore.MusicStore;
+import com.mysema.rdfbean.domains.SongPlaybackMusicStore.Song;
+import com.mysema.rdfbean.domains.SongPlaybackMusicStore.SongPlayback;
+import com.mysema.rdfbean.model.LID;
+import com.mysema.rdfbean.model.MiniConnection;
+import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({ Company.class, Department.class, Employee.class })
@@ -55,4 +63,29 @@ public class InverseMappingTest extends SessionTestBase implements CompanyDepart
 
     }
 
+    @Test
+    public void testInverseIDMapping() {
+        Song song = new Song();
+        MusicStore musicStore = new MusicStore();
+        SongPlayback songPlayback = new SongPlayback();
+
+        LID songLID = session.save(song);
+        LID musicStoreLID = session.save(musicStore);
+        session.flush();
+        song = session.get(Song.class, songLID);
+        musicStore = session.get(MusicStore.class, musicStoreLID);
+        session.clear();
+
+        songPlayback.datetime = new DateTime();
+        songPlayback.song = song.id;
+        songPlayback.store = musicStore.id;
+        session.save(songPlayback);
+        session.flush();
+        session.clear();
+
+        MiniConnection conn = repository.openConnection();
+        assertTrue(conn.exists(null, new UID("http://www.foo.com#musicStore"), null, null, true));
+        assertTrue(conn.exists(null, new UID("http://www.foo.com#playback"), null, null, true));
+        conn.close();
+    }
 }
