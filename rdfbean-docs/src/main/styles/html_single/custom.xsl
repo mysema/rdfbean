@@ -26,7 +26,7 @@
         exclude-result-prefixes="xslthl"
         version='1.0'>
         
-  <xsl:import href="&db_xsl_path;/html/chunk.xsl"/>
+  <xsl:import href="&db_xsl_path;/html/docbook.xsl"/>
   <xsl:import href="&db_xsl_path;/html/highlight.xsl"/>
 
 <!-- Extensions -->

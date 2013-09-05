@@ -1,0 +1,119 @@
+@IMPORT url("highlight.css");
+
+html {
+  padding:       0pt;
+  margin:        0pt;
+}
+
+body {
+  color: #333333;  
+  font-family:   Arial, Sans-serif;
+  margin: 15px 30px;
+}
+
+div.book, div.chapter, div.appendix, div.part, body > div.sect1 {
+  margin-left: 10%;
+  margin-right: 10%;	
+}	
+
+div {
+  margin:        0pt;
+}
+
+p {
+  text-align:    justify;
+}
+
+hr {
+    background: none repeat scroll 0 0 #CCCCFF;
+    border: 1px solid #CCCCC;
+}
+
+h1,h2,h3,h4 {
+  /*color:         #234623;*/
+  font-family:   Arial, Sans-serif;
+}
+
+pre {
+  line-height:   1.0;
+  /*color:         black;*/
+}
+
+pre.programlisting {
+  font-size:     10pt;
+  padding:       6pt 10pt;
+  border: 1px solid #CCCCCC;
+  border-radius: 3px 3px 3px 3px;
+  background:    #f8f8f8;
+  clear:         both;
+}
+
+div.table {
+  margin:        1em;
+  padding:       0.5em;
+  text-align:    center;
+}
+
+div.table table {
+  display:       table;
+  width:         100%;
+}
+
+div.table td {
+  padding-left:  7px;
+  padding-right: 7px;
+}
+
+.sidebar {
+  float: right;
+  margin: 10px 0 10px 30px;
+  padding: 10px 20px 20px 20px;
+  width: 33%;
+  border: 1px solid black;
+  background-color: #F4F4F4;
+  font-size: 14px;
+}
+
+.mediaobject {
+  padding-top: 30px; 
+  padding-bottom: 30px; 
+}
+
+.legalnotice {
+  font-family: Verdana, Arial, helvetica, sans-serif;
+  font-size: 12px;
+  font-style: italic;
+}
+
+p.releaseinfo {
+  font-size: 100%;
+  font-weight: bold;
+  font-family: Verdana, Arial, helvetica, sans-serif;
+  padding-top: 10px;
+}
+
+p.pubdate {
+    font-size: 120%;
+    font-weight: bold; 
+    font-family: Verdana, Arial, helvetica, sans-serif;
+}
+
+span.productname {
+    font-size: 200%;
+    font-weight: bold; 
+    font-family: Verdana, Arial, helvetica, sans-serif;
+}
+
+.code {
+	font-size: 14px;
+	/*color: 0000C0;*/
+}
+
+div.table td, div.table th {
+    padding: 7px;
+}
+
+a {
+	text-decoration: none;
+	/*color: #3030D8;*/
+}
