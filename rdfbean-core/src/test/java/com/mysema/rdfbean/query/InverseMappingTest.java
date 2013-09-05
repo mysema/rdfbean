@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.joda.time.DateTime;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.mysema.query.alias.Alias;
@@ -25,7 +26,7 @@ import com.mysema.rdfbean.model.MiniConnection;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.testutil.SessionConfig;
 
-@SessionConfig({ Company.class, Department.class, Employee.class })
+@SessionConfig({ Company.class, Department.class, Employee.class})
 public class InverseMappingTest extends SessionTestBase implements CompanyDepartmentEmployeeDomain {
 
     @Test
@@ -64,6 +65,7 @@ public class InverseMappingTest extends SessionTestBase implements CompanyDepart
     }
 
     @Test
+    @Ignore // inverse properties are not stored
     public void testInverseIDMapping() {
         Song song = new Song();
         MusicStore musicStore = new MusicStore();
