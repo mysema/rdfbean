@@ -101,8 +101,11 @@ public class User {
     the annotation's inv attribute to true. Inverse means that the host entity is not in the subject position for
     the bound triples, but in the object position and the bound values correspond to the subjects of the triples.</para>
     
-    <para>Inverse Predicates cannot be declared on literal properties.(is it still true?). We have to warn you that inverse property is read-only!
+    <para>Inverse Predicates cannot be declared on literal properties. We have to point out that inverse property is read-only!
     It means that when you call save() on given object, inverse properties will NOT be stored even though they have some values!</para>
+    
+    <para>Working with triplestore database sometimes requires to use specific context. For that situations, there is context property in Prediate annotation, where you can specify
+    context, where property should be placed. By default no context is used - default graph is used. Context should be URI.</para>
     
     </sect2>
     
