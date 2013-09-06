@@ -221,6 +221,13 @@ import com.mysema.rdfbean.annotations.MappedClasses;
       <para><emphasis>Path</emphasis> defines a chain of predicates for read-only properties. The value accessible
       by the predicate path is bound to the property. Path can contain both direct and inverse predicates. Example is needed ??? </para>
     
+    <programlisting language="java">
+    <![CDATA[
+        @Path({ @Predicate(ln = "firstHopPredicate"), @Predicate(ln = "secondHopPredicate") })
+        private String predicate;
+    ]]>
+    </programlisting>
+    
     </sect2>
     
     <sect2>
@@ -273,7 +280,9 @@ public class User {
     
       <title>ComponentType</title>
     
-      <para><emphasis>ComponentType</emphasis> ???</para>
+      <para><emphasis>ComponentType</emphasis> defines the ComponentType of a Collection or value type of a Map if it's not reachable through generic types.</para>
+      
+      <para>Example ???</para>
       
     </sect2>
     
@@ -297,7 +306,19 @@ public class User {
     
       <title>Default</title>
     
-      <para><emphasis>Default</emphasis> and Defaults ???</para>
+      <para><emphasis>Default</emphasis> and <emphasis>Defaults</emphasis> are both annotations which defines default values for specified object property. 
+      Default values for literal are not currently supported : </para>
+      
+      <programlisting language="java">
+<![CDATA[
+ClassMapping(ns=TEST.NS)
+public class User {
+ 
+@Default(ns=TEST.NS, "UserRole")
+@Predicate
+private Role role;
+}
+]]></programlisting>
       
     </sect2>
     
@@ -305,7 +326,20 @@ public class User {
     
       <title>InjectService</title>
     
-      <para><emphasis>InjectService</emphasis> ???</para>
+      <para><emphasis>InjectService</emphasis> denotes that the property the value should be acquired from Session's parent ObjectRepository, 
+      e.g. a service bean managed by Spring. Used in conjunction with @Predicate and/or @Default, this can be used to define a)
+  constant, b) data dependent or c) data dependent with optional default value
+  service references.
+  Injection can be used for example for
+  
+  <orderedlist>
+  	<listitem><para>Pluggable authorization service used in bean's methods to check access
+  	rights manually usign {@link InjectService} and {@link Default}.</para></listitem>
+  	<listitem><para>Data dependent UI handlers (e.g. Spring MVC Controllers) with some
+  	generic default controller that is overridable in data using
+  	{@link InjectService}, {@link Default} and {@link Predicate}.</para></listitem>
+  	<listitem><para>Manual - and thus well controlled - lazy loading.</para></listitem>
+  </orderedlist></para>
       
     </sect2>
     
@@ -313,7 +347,16 @@ public class User {
     
       <title>MapElements</title>
     
-      <para><emphasis>MapElements</emphasis> ???</para>
+      <para><emphasis>MapElements</emphasis> defines how Map's keys and values are mapped to RDF. Map's are mapped using 1) Predicate to define target and 2) MapElements to 
+      define how that object is mapped to Map elements.</para>
+
+	<programlisting language="java"><![CDATA[
+@Predicate(ns = RDFS.NS, ln = "subClassOf", inv = true)
+@MapElements(key = @Predicate(ns = RDFS.NS, ln = "label"))
+private Map<String, RDFSClass> subClassesByLabel;]]>
+	</programlisting> 
+
+	<para>If the component (value) type is not readable from property's generic signature, it can be defined using @ComponentType.</para> 
       
     </sect2>
     
@@ -321,7 +364,7 @@ public class User {
     
       <title>Properties</title>
     
-      <para><emphasis>Properties</emphasis> ???</para>
+      <para><emphasis>Properties</emphasis> maps multiple predicates to this property. </para>
       
     </sect2>
     
