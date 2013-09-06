@@ -48,30 +48,24 @@ public class SPARQLUpdateClause implements SPARQLUpdate {
         case LOAD:
             // TODO
             break;
+        case COPY:
+            // TODO
+            break;
+        case MOVE:
+            // TODO
+            break;
+        case ADD:
+            // TODO
+            break;
         case DELETE:
             executeDelete();
             break;
         case INSERT:
             executeInsert();
             break;
-        case MODIFY:
-            executeModify();
-            break;
         default:
             throw new IllegalStateException("Unknown clause " + clause.getType());
         }
-    }
-
-    private long executeModify() {
-        List<STMT> added = null, removed = null;
-        if (clause.getInsert() != null) {
-            added = getTriples(clause.getInsert(), clause.getPattern());
-        }
-        if (clause.getDelete() != null) {
-            removed = getTriples(clause.getDelete(), clause.getPattern());
-        }
-        connection.update(removed, added);
-        return 0l;
     }
 
     private long executeInsert() {

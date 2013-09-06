@@ -16,7 +16,7 @@ import com.google.common.base.Strings;
 public class UpdateClause {
 
     public enum Type {
-        CLEAR, CREATE, DELETE, DROP, INSERT, LOAD, MODIFY
+        CLEAR, CREATE, DELETE, DROP, INSERT, LOAD, COPY, MOVE, ADD
     }
 
     private final Map<String, String> prefixes;

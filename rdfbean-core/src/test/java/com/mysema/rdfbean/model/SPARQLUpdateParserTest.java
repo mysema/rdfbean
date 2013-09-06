@@ -203,56 +203,27 @@ public class SPARQLUpdateParserTest {
     }
 
     @Test
-    public void Modify() throws IOException {
-        // MODIFY [ <uri> ]* DELETE { template } INSERT { template } [ WHERE {
-        // pattern } ]
-        UpdateClause modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT { ?s ?p2 ?o2 }");
-        assertEquals(UpdateClause.Type.MODIFY, modify.getType());
-        assertEquals("?s ?p ?o", modify.getDelete());
-        assertEquals("?s ?p2 ?o2", modify.getInsert());
+    public void Copy_From_Into() throws IOException {
+        UpdateClause load = parse("COPY <http://example.com> TO <http://example2.com>");
+        assertEquals(UpdateClause.Type.COPY, load.getType());
+        assertEquals(example, load.getSource());
+        assertEquals(new UID("http://example2.com"), load.getTarget());
     }
-
+    
     @Test
-    public void Modify_Empty_Delete() throws IOException {
-        UpdateClause modify = parse("MODIFY DELETE {} INSERT { ?s ?p2 ?o2 }");
-        assertEquals(UpdateClause.Type.MODIFY, modify.getType());
-        assertNull(modify.getDelete());
-        assertEquals("?s ?p2 ?o2", modify.getInsert());
+    public void Move_From_Into() throws IOException {
+        UpdateClause load = parse("MOVE <http://example.com> TO <http://example2.com>");
+        assertEquals(UpdateClause.Type.MOVE, load.getType());
+        assertEquals(example, load.getSource());
+        assertEquals(new UID("http://example2.com"), load.getTarget());
     }
-
+    
     @Test
-    public void Modify_Empty_Insert() throws IOException {
-        UpdateClause modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT {}");
-        assertEquals(UpdateClause.Type.MODIFY, modify.getType());
-        assertEquals("?s ?p ?o", modify.getDelete());
-        assertNull(modify.getInsert());
-    }
-
-    @Test
-    public void Modify_URI() throws IOException {
-        UpdateClause modify = parse("MODIFY <http://ex1.com> DELETE { ?s ?p ?o } INSERT { ?s ?p2 ?o2 }");
-        assertEquals(UpdateClause.Type.MODIFY, modify.getType());
-        assertEquals("?s ?p ?o", modify.getDelete());
-        assertEquals("?s ?p2 ?o2", modify.getInsert());
-        assertEquals(ex1, modify.getInto().get(0));
-    }
-
-    @Test
-    public void Modify_URI_URI() throws IOException {
-        UpdateClause modify = parse("MODIFY <http://ex1.com> <http://ex2.com> DELETE { ?s ?p ?o } INSERT { ?s ?p2 ?o2 }");
-        assertEquals(UpdateClause.Type.MODIFY, modify.getType());
-        assertEquals("?s ?p ?o", modify.getDelete());
-        assertEquals("?s ?p2 ?o2", modify.getInsert());
-        assertEquals(Arrays.asList(ex1, ex2), modify.getInto());
-    }
-
-    @Test
-    public void Modify_Where() throws IOException {
-        UpdateClause modify = parse("MODIFY DELETE { ?s ?p ?o } INSERT { ?s2 ?p2 ?o2 } WHERE { ?s3 ?p3 ?o3 }");
-        assertEquals(UpdateClause.Type.MODIFY, modify.getType());
-        assertEquals("?s ?p ?o", modify.getDelete());
-        assertEquals("?s2 ?p2 ?o2", modify.getInsert());
-        assertEquals("?s3 ?p3 ?o3", modify.getPattern());
+    public void Add_From_Into() throws IOException {
+        UpdateClause load = parse("ADD <http://example.com> TO <http://example2.com>");
+        assertEquals(UpdateClause.Type.ADD, load.getType());
+        assertEquals(example, load.getSource());
+        assertEquals(new UID("http://example2.com"), load.getTarget());
     }
 
     private UpdateClause parse(String string) throws IOException {

@@ -41,7 +41,11 @@ public class SPARQLUpdateParser {
     private static final CharSet GRAPH = CharSet.getInstance("GRAPH");
 
     private static final CharSet INTO = CharSet.getInstance("INTO");
+    
+    private static final CharSet TO = CharSet.getInstance("TO");
 
+    private static final CharSet DEFAULT = CharSet.getInstance("DEFAULT");
+    
     private static final CharSet INSERT = CharSet.getInstance("INSERT");
 
     private static final CharSet SILENT = CharSet.getInstance("SILENT");
@@ -101,8 +105,12 @@ public class SPARQLUpdateParser {
                 return insert();
             } else if (start.equals("LOAD")) {
                 return load();
-            } else if (start.equals("MODIFY")) {
-                return modify();
+            } else if (start.equals("COPY")) {
+                return copy();
+            } else if (start.equals("MOVE")) {
+                return move();
+            } else if (start.equals("ADD")) {
+                return add();
             } else {
                 throw new IllegalStateException("Illegal query start '" + start + "'");
             }
@@ -111,30 +119,6 @@ public class SPARQLUpdateParser {
         } finally {
             in.close();
         }
-    }
-
-    private UpdateClause modify() throws IOException {
-        // MODIFY [ <uri> ]* DELETE { template } INSERT { template } [ WHERE {
-        // pattern } ]
-        UpdateClause modify = new UpdateClause(prefixes, UpdateClause.Type.MODIFY);
-        nextChar();
-        while (in(LT)) {
-            pushback();
-            modify.addInto(uri());
-            skipWhitespace();
-            nextChar();
-        }
-        skipWhileIn(DELETE, WS);
-        modify.setDelete(block());
-        skipWhileIn(INSERT, WS);
-        modify.setInsert(block());
-        skipWhitespace();
-        nextChar();
-        if (ch > -1 && ch < 65535) { // FIXME
-            skipWhileIn(WHERE, WS);
-            modify.setPattern(block());
-        }
-        return modify;
     }
 
     private UpdateClause load() throws IOException {
@@ -148,6 +132,33 @@ public class SPARQLUpdateParser {
         } else {
             return new UpdateClause(prefixes, UpdateClause.Type.LOAD, remoteURI);
         }
+    }
+    
+    private UpdateClause copy() throws IOException {
+        // COPY <GRAPH_URI> TO <GRAPH_URI2> 
+        UID contextSource = uri();
+        skipWhileIn(WS, TO);
+        UID contextTarget = uri();
+
+        return new UpdateClause(prefixes, UpdateClause.Type.COPY, contextSource, contextTarget);
+    }
+    
+    private UpdateClause move() throws IOException {
+        // MOVE <GRAPH_URI> TO <GRAPH_URI2> 
+        UID contextSource = uri();
+        skipWhileIn(WS, TO);
+        UID contextTarget = uri();
+
+        return new UpdateClause(prefixes, UpdateClause.Type.MOVE, contextSource, contextTarget);
+    }
+    
+    private UpdateClause add() throws IOException {
+        // ADD <GRAPH_URI> TO <GRAPH_URI2>
+        UID contextSource = uri();
+        skipWhileIn(WS, TO);
+        UID contextTarget = uri();
+
+        return new UpdateClause(prefixes, UpdateClause.Type.ADD, contextSource, contextTarget);
     }
 
     private UpdateClause insert() throws IOException {
