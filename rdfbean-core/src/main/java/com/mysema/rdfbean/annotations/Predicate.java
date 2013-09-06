@@ -43,7 +43,11 @@ public @interface Predicate {
     /**
      * True if property is mapped to inverse of this predicate, i.e.
      * triple(*value*, predicate, this). If false, then maps directly to this
-     * predicate triple(this, predicate, *value*).
+     * predicate triple(this, predicate, *value*). 
+     * <p>
+     * NOTE : Inverse of the predicate is READ-ONLY, it means that any value
+     * of property will not be stored into repository when save() operation
+     * is called.
      */
     boolean inv() default false;
 
