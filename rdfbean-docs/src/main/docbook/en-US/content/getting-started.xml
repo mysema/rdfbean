@@ -3,28 +3,73 @@
 <chapter id="getting-started" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Getting started with RDFBean</title>
     
-    <para>The core of RDFBean usage is the usage of RDFBean annotated domain types.</para>
-    
     <sect1>
     
       <title>RDFBean annotations</title>
       
+      <para>The core of RDFBean is the usage of annotated domain types. There are numerous types of annotations in RDFBean. 
+      They will be discussed later in this chapter. To make annotations work you have to added them to RDFBean Configuration class. 
+      Typically it is sufficient to use DefaultConfiguration class which is default implementation of Configuration interface.
+      If you need your custom implementation, you can create your own configuration class which implements Configuration interface.
+      Basically there are two different ways how to enable annotations in domain objects.</para>
+      
+      <para>The first way is to use programatical approach  : </para>
+      
+      <programlisting language="java"><![CDATA[
+Configuration configuration = new DefaultConfiguration();
+configuration.addClasses(SomeClass.class,...); //added classes using vararg method
+configuration.scanPackages("this.is.the.package.to.scan"); //scanning all classes in package
+]]></programlisting>
+      
+      <para>The second way is to declare configuration bean in Spring's application context. DefaultConfiguration class contains constructor which provide
+      package scaning. You have to set 'packages' variable with the package name where your domain objects are placed. The second parameter is defaultNamespace. This parameter specifies ???(if no namespace is in ClassMapping, this one is used?)</para>
+      
+      <programlisting language="java"><![CDATA[
+<!-- Scanning of all domain objects -->
+<bean id="configuration" class="com.mysema.rdfbean.object.DefaultConfiguration">
+    <constructor-arg name="defaultNamespace" value="http://www.foo.com/test" />
+    <constructor-arg name="packages" value="org.springframework.data.rdf.domain" />
+</bean>
+]]></programlisting>
       <sect2>
       
       <title>ClassMapping</title>
       
-      <para><emphasis>ClassMapping</emphasis> declares a mapping from a Java type to an RDF type. If your Java type 
-      simple name
-      is equal to the local name of the RDF type, which is a good practice, all you need to do is to declare 
-      the namespace. The namespace is best kept accessible via a public static final String constant : </para>
+      <para><emphasis>ClassMapping</emphasis> declares a mapping from a Java type to an RDF type. 
+      It is the most important annotation as it says to annotation scanner, that this class is domain object.
+      Without specifying this annotation, the class is not considered as RDFBean domain object. 
+      If your Java type simple name is equal to the local name of the RDF type, which is a good practice, all you need to do is to declare 
+      the namespace. In other words, namespace is concated with class name and it produces fully qualified URI of owl:Class. </para>
       
-<programlisting language="java"><![CDATA[    
-@ClassMapping(ns=TEST.NS)
+      <programlisting language="java"><![CDATA[    
+@ClassMapping(ns="http://www.somedomain.com/your/ontology/test.owl#")
 public class User {
-
     // ...
 }
-]]></programlisting>        
+]]></programlisting>  
+      
+     <para>The code transfered to semantic notation :</para>
+      
+      <programlisting language="java"><![CDATA[    
+<everyUserObjectInstance> rdf:type <http://www.somedomain.com/your/ontology/test.owl#User>
+]]></programlisting>
+      
+      
+<para>The namespace is best kept accessible via a public static final String constant. Sometimes the name of class is different from desired rdf:type name. 
+    Therefore local name (ln) could be specified in ClassMapping annotation.</para>
+
+<programlisting language="java"><![CDATA[    
+@ClassMapping(ns="http://www.somedomain.com/your/ontology/test.owl#", ln="RDFTypeClassName")
+public class User {
+    // ...
+}
+]]></programlisting>
+
+<para>It will led to following output triple.</para>
+
+      <programlisting language="java"><![CDATA[    
+<everyUserObjectInstance> rdf:type <http://www.somedomain.com/your/ontology/test.owl#RDFTypeClassName>
+]]></programlisting>
 
     </sect2>
       
@@ -56,7 +101,8 @@ public class User {
     the annotation's inv attribute to true. Inverse means that the host entity is not in the subject position for
     the bound triples, but in the object position and the bound values correspond to the subjects of the triples.</para>
     
-    <para>Inverse Predicates cannot be declared on literal properties.</para>
+    <para>Inverse Predicates cannot be declared on literal properties.(is it still true?). We have to warn you that inverse property is read-only!
+    It means that when you call save() on given object, inverse properties will NOT be stored even though they have some values!</para>
     
     </sect2>
     
@@ -65,8 +111,9 @@ public class User {
     <title>Id</title>
     
     <para><emphasis>Id</emphasis> is used to annotate properties holding the id of the entity. The default is to handle 
-    the id as an RDFBean managed integer surrogate id. Numeric ids are shorter than full URLs or bnode ids and are easier
-    to use on the application level :</para>
+    the id as an RDFBean managed integer surrogate id(Local ID - LID). Numeric ids are shorter than full URLs or bnode ids and are easier
+    to use on the application level. At the same time, it provides more Hibernate-like experience for developers, as Local ID is long type. Even though
+    String is commonly used to represent local id on domain object level.</para>
     
 <programlisting language="java"><![CDATA[    
 @ClassMapping(ns=TEST.NS)
@@ -83,10 +130,26 @@ public class User {
 }
 ]]></programlisting>          
     
-    <para>Alternatively the id can be injected in IDType.URI or IDType.RESOURCE form. Use the UID or ID type for URI 
-    injection
-    and ID for RESOURCE typed injection.</para>
+    <para>Alternatively the id can be injected in IDType.URI or IDType.RESOURCE form by specifying value property in @Id annotation. 
+    The IDType.URI should be used when you can ensure Id of object instance is URI. Sometimes the ID can be URI but also blank node.
+    In that cases IDType.RESOURCE is more abstract as it allows UID (URI identifier) and also BID (blank node identifier). If IDType.URI is specified
+    your Id property has to be of type UID or ID. When Id is value=IDType.RESOURCE, property has to be ID type.</para>
+  
+<programlisting language="java"><![CDATA[    
+@ClassMapping(ns=TEST.NS)
+public class User {
+
+    @Id(value=IDType.URI) //it has to be URI
+    private UID id;
+
+    @Predicate(ln="user_name")
+    private String userName;
     
+    @Predicate
+    private String email;
+}
+]]></programlisting>  
+ 
     </sect2>
     
     <sect2>
@@ -135,7 +198,7 @@ import com.mysema.rdfbean.annotations.MappedClasses;
     
       <para><emphasis>Mixin</emphasis> defines a view on the host type's subject with a different type.
         Mixin can't be combined with Predicate or Path, since the RDF identity of the mixin property is the 
-        same as the host's identity.</para>    
+        same as the host's identity. ??? -> please provide some example</para>    
     
     </sect2>
     
@@ -153,7 +216,7 @@ import com.mysema.rdfbean.annotations.MappedClasses;
       <title>Path</title>
     
       <para><emphasis>Path</emphasis> defines a chain of predicates for read-only properties. The value accessible
-      by the predicate path is bound to the property. Path can contain both direct and inverse predicates. </para>
+      by the predicate path is bound to the property. Path can contain both direct and inverse predicates. Example is needed ??? </para>
     
     </sect2>
     
@@ -203,6 +266,61 @@ public class User {
     
     </sect2>
 -->	
+    <sect2>
+    
+      <title>ComponentType</title>
+    
+      <para><emphasis>ComponentType</emphasis> ???</para>
+      
+    </sect2>
+    
+    <sect2>
+    
+      <title>Container</title>
+    
+      <para><emphasis>Container</emphasis> ???</para>
+      
+    </sect2>
+    
+    <sect2>
+    
+      <title>ContainerType</title>
+    
+      <para><emphasis>ContainerType</emphasis> ???</para>
+      
+    </sect2>
+    
+     <sect2>
+    
+      <title>Default</title>
+    
+      <para><emphasis>Default</emphasis> and Defaults ???</para>
+      
+    </sect2>
+    
+     <sect2>
+    
+      <title>InjectService</title>
+    
+      <para><emphasis>InjectService</emphasis> ???</para>
+      
+    </sect2>
+    
+     <sect2>
+    
+      <title>MapElements</title>
+    
+      <para><emphasis>MapElements</emphasis> ???</para>
+      
+    </sect2>
+    
+     <sect2>
+    
+      <title>Properties</title>
+    
+      <para><emphasis>Properties</emphasis> ???</para>
+      
+    </sect2>
     
     </sect1>
     
@@ -387,6 +505,41 @@ session.delete(user);
     </execution>
   </executions>
 </plugin>
+]]></programlisting>
+      
+      <para>There is problem with m2e connector in Eclipse IDE. Therefore your pom.xml has to contain also following lines : </para>
+      
+<programlisting language="xml"><![CDATA[
+<!-- Necessary for Eclipse runtime -->
+<pluginManagement>
+  <plugins>
+    <plugin>
+      <groupId>org.eclipse.m2e</groupId>
+      <artifactId>lifecycle-mapping</artifactId>
+      <version>1.0.0</version>
+      <configuration>
+        <lifecycleMappingMetadata>
+          <pluginExecutions>
+            <pluginExecution>
+              <pluginExecutionFilter>
+                <groupId>com.mysema.maven</groupId>
+                <artifactId>maven-apt-plugin</artifactId>
+                <versionRange>[1.0,)</versionRange>
+                <goals>
+                  <goal>test-process</goal>
+                  <goal>add-test-sources</goal>
+                </goals>
+              </pluginExecutionFilter>
+              <action>
+                <ignore />
+              </action>
+            </pluginExecution>
+          </pluginExecutions>
+        </lifecycleMappingMetadata>
+      </configuration>
+    </plugin>
+  </plugins>
+</pluginManagement>
 ]]></programlisting>
       
       </sect2>

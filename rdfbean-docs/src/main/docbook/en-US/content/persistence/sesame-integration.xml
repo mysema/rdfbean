@@ -3,12 +3,14 @@
 <sect1 id="sesame-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>Sesame</title>
     
-    <para>The RDFBean sesame module depends currently on Sesame 3.0 alpha. We chose the 3.0 branch
-      since it provides better transactional support and a more compact API than Sesame 2.*.</para>
+    <para>The RDFBean sesame module depends currently on Sesame 2.7.6. <emphasis>It is change from past where previous versions 
+    of RDFBean depended on Sesame 3.0 alpha.</emphasis></para>
       
-   	<para>Sessame 2.3 support is provided via the rdfbean-sesame2 module.</para>   
+   	<para>Sessame 2.7 support is provided via the rdfbean-sesame2 module.</para>   
+   	
+   	<para>Sessame 3.0 alpha support is provided via the rdfbean-sesame3 module.</para>   
       
-    <para>The main Repository backends of this module are MemoryRepository and NativeRepository.</para>
+    <para>From version 1.7, RDFBean implements three main Sesame Repository backends : MemoryRepository, NativeRepository, HTTPRepository.</para>
     
     <sect2>
       <title>MemoryRepository</title>
@@ -26,6 +28,13 @@
       
       <para>NativeRepository is slower for small amounts of triples than the MemoryRepository, but scales
       better with higher amounts of triples</para>
+    </sect2>
+    
+    <sect2>
+      <title>HTTPRepository</title>
+      
+      <para>HTTPRepository is an Repository implementation wrapping the Sesame HTTPRepository. 
+      This allow RDFBean users to use remote repositories like OWLIM etc.</para>
     </sect2>
     
     <sect2>
