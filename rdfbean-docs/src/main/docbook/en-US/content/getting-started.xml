@@ -118,17 +118,16 @@ public class User {
     
     <title>Id</title>
     
-    <para><emphasis>Id</emphasis> is used to annotate properties holding the id of the entity. The default is to handle 
-    the id as an RDFBean managed integer surrogate id(Local ID - LID). Numeric ids are shorter than full URLs or bnode ids and are easier
-    to use on the application level. At the same time, it provides more Hibernate-like experience for developers, as Local ID is long type. Even though
-    String is commonly used to represent local id on domain object level.</para>
+    <para><emphasis>Id</emphasis> is used to annotate properties holding the id of the entity. From version 1.7, the default value has changed.
+    From this version the id is represented by default as IDType.RESOURCE. This type allows values which are instances of ID interface(blank nodes(BID class), URIs - UID class).
+    </para>
     
 <programlisting language="java"><![CDATA[    
 @ClassMapping(ns=TEST.NS)
 public class User {
 
     @Id
-    private String id;
+    private ID id;
 
     @Predicate(ln="user_name")
     private String userName;
@@ -138,10 +137,11 @@ public class User {
 }
 ]]></programlisting>          
     
-    <para>Alternatively the id can be injected in IDType.URI or IDType.RESOURCE form by specifying value property in @Id annotation. 
+    <para>Alternatively the id can be injected in IDType.URI form by specifying value property in @Id annotation. 
     The IDType.URI should be used when you can ensure Id of object instance is URI. Sometimes the ID can be URI but also blank node.
-    In that cases IDType.RESOURCE is more abstract as it allows UID (URI identifier) and also BID (blank node identifier). If IDType.URI is specified
-    your Id property has to be of type UID or ID. When Id is value=IDType.RESOURCE, property has to be ID type.</para>
+    In that cases IDType.RESOURCE(the default value for Id annotation) is more abstract as it allows UID (URI identifier) and also BID (blank node identifier). 
+    If IDType.URI is specified, your Id property has to be of type UID or ID. When Id is value=IDType.RESOURCE, property has to be ID type.
+    </para>
   
 <programlisting language="java"><![CDATA[    
 @ClassMapping(ns=TEST.NS)
@@ -158,6 +158,25 @@ public class User {
 }
 ]]></programlisting>  
  
+ 	<para>RDFBean also provides it's own Id type - Local. Local resource is managed integer surrogate id(LID class). Numeric ids are shorter than full URLs or bnode ids and are easier
+    to use on the application level. At the same time, it provides more Hibernate-like experience for developers, as Local ID is long type. Even though
+    String is commonly used to represent local id on domain object level.</para>
+    
+    <programlisting language="java"><![CDATA[    
+@ClassMapping(ns=TEST.NS)
+public class User {
+
+    @Id(value=IDType.LOCAL) 
+    private String id;
+
+    @Predicate(ln="user_name")
+    private String userName;
+    
+    @Predicate
+    private String email;
+}
+]]></programlisting>  
+
     </sect2>
     
     <sect2>
