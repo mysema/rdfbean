@@ -31,6 +31,11 @@ configuration.scanPackages("this.is.the.package.to.scan"); //scanning all classe
     <constructor-arg name="packages" value="org.springframework.data.rdf.domain" />
 </bean>
 ]]></programlisting>
+
+ 	  <caution><para>When you will create your domain objects and you will specify your own custom constructor with parameters, 
+ 	  do not forget to specify parameterless constructor as well. It is necessary for correct object creationing.</para></caution>
+      
+
       <sect2>
       
       <title>ClassMapping</title>
