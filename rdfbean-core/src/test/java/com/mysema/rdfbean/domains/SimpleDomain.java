@@ -29,12 +29,13 @@ import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.MapElements;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.IDType;
 
 public interface SimpleDomain {
 
     @ClassMapping(ns = TEST.NS, ln = "TestType1")
     public class SimpleType {
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate(ln = "directProperty1")
@@ -155,7 +156,7 @@ public interface SimpleDomain {
     @ClassMapping(ns = TEST.NS, ln = "TestType2")
     public class SimpleType2 {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Path({ @Predicate(ln = "testType"), @Predicate(ln = "directProperty") })

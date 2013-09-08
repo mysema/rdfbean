@@ -10,13 +10,14 @@ import org.junit.Test;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.IDType;
 
 public class ListContainerTest {
 
     @ClassMapping
     public static class Example {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate
@@ -27,7 +28,7 @@ public class ListContainerTest {
     @ClassMapping
     public static class ChildContainer {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate
@@ -38,7 +39,7 @@ public class ListContainerTest {
     @ClassMapping
     public static class Child {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
     }

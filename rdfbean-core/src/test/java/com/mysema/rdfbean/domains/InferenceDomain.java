@@ -12,12 +12,13 @@ import com.mysema.query.types.path.EntityPathBase;
 import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
+import com.mysema.rdfbean.model.IDType;
 
 public interface InferenceDomain {
 
     @ClassMapping
     public static class Entity1 {
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
     }
 

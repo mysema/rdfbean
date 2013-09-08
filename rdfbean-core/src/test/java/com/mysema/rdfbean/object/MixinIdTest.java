@@ -9,6 +9,7 @@ import org.junit.Test;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Mixin;
+import com.mysema.rdfbean.model.IDType;
 
 public class MixinIdTest {
 
@@ -16,13 +17,13 @@ public class MixinIdTest {
     public static final class AType {
         @Mixin
         BType asBType = new BType();
-        @Id
+        @Id(IDType.LOCAL)
         String id;
     }
 
     @ClassMapping
     public static final class BType {
-        @Id
+        @Id(IDType.LOCAL)
         String id;
     }
 

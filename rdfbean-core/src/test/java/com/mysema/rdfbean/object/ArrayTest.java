@@ -8,13 +8,14 @@ import org.junit.Test;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
 
 @ClassMapping
 public class ArrayTest {
 
-    @Id
+    @Id(IDType.LOCAL)
     public String id;
 
     @Predicate

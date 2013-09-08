@@ -27,12 +27,13 @@ import com.mysema.rdfbean.annotations.Container;
 import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniRepository;
 
 @ClassMapping
 public class DeleteTest {
 
-    @Id
+    @Id(IDType.LOCAL)
     private String id;
 
     @Predicate
@@ -52,7 +53,7 @@ public class DeleteTest {
 
     @ClassMapping(ns = TEST.NS, ln = "DeleteTest")
     public static class DeleteDTO {
-        @Id
+        @Id(IDType.LOCAL)
         String id;
 
         public DeleteDTO() {

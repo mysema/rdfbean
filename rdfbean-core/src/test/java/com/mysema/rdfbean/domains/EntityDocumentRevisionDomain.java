@@ -53,7 +53,7 @@ public interface EntityDocumentRevisionDomain {
     @ClassMapping
     public static class Entity {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate
@@ -72,7 +72,7 @@ public interface EntityDocumentRevisionDomain {
     @ClassMapping
     public static class Document {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         public String getId() {

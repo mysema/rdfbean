@@ -8,13 +8,14 @@ package com.mysema.rdfbean.domains;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.IDType;
 
 public interface UserDepartmentCompanyDomain {
 
     @ClassMapping
     public static class User {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate
@@ -40,7 +41,7 @@ public interface UserDepartmentCompanyDomain {
     @ClassMapping
     public static class Department {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate
@@ -59,7 +60,7 @@ public interface UserDepartmentCompanyDomain {
     @ClassMapping
     public static class Company {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         public String getId() {

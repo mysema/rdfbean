@@ -15,12 +15,13 @@ import com.mysema.query.types.path.StringPath;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.IDType;
 
 public interface LoadDomain {
 
     @ClassMapping
     public class Document {
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate
@@ -29,7 +30,7 @@ public interface LoadDomain {
 
     @ClassMapping
     public class Entity {
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate
@@ -42,7 +43,7 @@ public interface LoadDomain {
 
     @ClassMapping
     public class Revision {
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate

@@ -4,11 +4,12 @@ import com.mysema.rdf.demo.DEMO;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.IDType;
 
 @ClassMapping(ns = DEMO.NS)
 public abstract class Party {
 
-    @Id
+    @Id(IDType.LOCAL)
     private String id;
 
     public String getId() {

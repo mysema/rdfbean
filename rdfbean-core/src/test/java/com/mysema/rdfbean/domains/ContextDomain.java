@@ -4,6 +4,7 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Context;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
+import com.mysema.rdfbean.model.IDType;
 
 public interface ContextDomain {
 
@@ -17,7 +18,7 @@ public interface ContextDomain {
     @Context(NS1)
     public static class Entity1 {
 
-        @Id
+        @Id(IDType.LOCAL)
         String id;
 
         @Predicate
@@ -39,7 +40,7 @@ public interface ContextDomain {
     @ClassMapping
     public static class Entity2 {
 
-        @Id
+        @Id(IDType.LOCAL)
         String id;
 
         @Predicate(context = NS2)
@@ -61,7 +62,7 @@ public interface ContextDomain {
     @ClassMapping
     public static class Entity3 {
 
-        @Id
+        @Id(IDType.LOCAL)
         String id;
 
         @Predicate(context = NS3)

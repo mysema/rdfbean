@@ -11,6 +11,7 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.annotations.Properties;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.NODE;
 import com.mysema.rdfbean.model.UID;
 
@@ -28,7 +29,7 @@ public interface PropertiesDomain {
     @ClassMapping
     public static class Person {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate
@@ -38,7 +39,7 @@ public interface PropertiesDomain {
     @ClassMapping
     public static class Iteration {
 
-        @Id
+        @Id(IDType.LOCAL)
         String id;
 
         @Predicate
@@ -48,7 +49,7 @@ public interface PropertiesDomain {
     @ClassMapping
     public static class Project {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
 
         @Predicate

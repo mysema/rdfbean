@@ -48,7 +48,7 @@ public @interface Id {
     /**
      * @return
      */
-    IDType value() default IDType.LOCAL;
+    IDType value() default IDType.RESOURCE;
 
     /**
      * Namespace of the mapped ids. When ns is not empty local names will be

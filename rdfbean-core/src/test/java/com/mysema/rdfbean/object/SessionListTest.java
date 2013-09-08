@@ -10,13 +10,14 @@ import org.junit.Test;
 import com.mysema.query.alias.Alias;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
+import com.mysema.rdfbean.model.IDType;
 
 public class SessionListTest {
 
     @ClassMapping
     public static class Example {
 
-        @Id
+        @Id(IDType.LOCAL)
         public String id;
     }
 

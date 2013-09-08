@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Mixin;
+import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.LID;
 
 public class MixinTest {
@@ -22,7 +23,7 @@ public class MixinTest {
     public static final class AType {
         @Mixin
         BType asBType;
-        @Id
+        @Id(IDType.LOCAL)
         LID id;
     }
 
@@ -30,7 +31,7 @@ public class MixinTest {
     public static final class BType {
         @Mixin
         AType asAType;
-        @Id
+        @Id(IDType.LOCAL)
         LID id;
     }
 
