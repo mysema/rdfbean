@@ -8,13 +8,9 @@
 {
 	<http://www.foo.com/Job/1> rdf:type foo:Job .
 	<http://www.foo.com/Job/1> foo:jobId "1"^^xsd:string .
-	<http://www.foo.com/Job/1> rdfs:label "Build complete Sestate"^^xsd:string .
-	<http://www.foo.com/Job/1> foo:profile <http://www.foo.com/Profile/sestate> .
 	<http://www.foo.com/Job/1> foo:jobItem <http://www.foo.com/JobItem/1> .
 	
 	<http://www.foo.com/JobItem/1> rdf:type foo:JobItem .
 	<http://www.foo.com/JobItem/1> foo:jobItemId "1"^^xsd:string .
-	<http://www.foo.com/JobItem/1> foo:order "1"^^xsd:integer .
 	<http://www.foo.com/JobItem/1> foo:repositoryContext <http://www.foo.com/RepositoryContext/test> . 
-	<http://www.foo.com/JobItem/1> foo:plan  <http://www.foo.com/Plan/1> .
 }
