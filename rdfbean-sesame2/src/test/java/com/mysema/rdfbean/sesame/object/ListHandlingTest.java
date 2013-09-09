@@ -27,7 +27,7 @@ public class ListHandlingTest extends SessionTestBase {
     @Test
     public void test() throws IOException {
         MemoryRepository repository = new MemoryRepository();
-        repository.setSources(new RDFSource("classpath:/list_test.trig", Format.TRIG, TEST.NS));
+        repository.setSources(new RDFSource("classpath:/list_test.ttl", Format.TURTLE, TEST.NS));
         repository.initialize();
         Session privateSession = SessionUtil.openSession(repository, Job.class, JobItem.class);
         Job job = privateSession.get(Job.class, new UID("http://www.foo.com/Job/1"));
