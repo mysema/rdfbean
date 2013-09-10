@@ -1,17 +1,17 @@
 <?xml version='1.0' encoding="UTF-8"?>
 <!DOCTYPE preface PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <preface id="preface">
-	<title>Preface</title>
+    <title>Preface</title>
 
-	<para>
-		RDFBean is an Object/RDF persistence framework for Java. It provides a
-		simple, yet highly expressive annotation based mapping language and a
-		type-safe query language based on Querydsl. The combination of a
-		generic data persistence model (RDF) and a type-safe access layer for
-		entities and queries makes it an ideal tool for rapid application
-		development.
+    <para>
+        RDFBean is an Object/RDF persistence framework for Java. It provides a
+        simple, yet highly expressive annotation based mapping language and a
+        type-safe query language based on Querydsl. The combination of a
+        generic data persistence model (RDF) and a type-safe access layer for
+        entities and queries makes it an ideal tool for rapid application
+        development.
     </para>
 
-	<!-- more -->
+    <!-- more -->
 
 </preface>

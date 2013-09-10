@@ -52,10 +52,10 @@
     
       <title>RDF persistence providers</title>
     
-      <xi:include href="content/persistence/sesame-integration.xml" />	  
-	  <xi:include href="content/persistence/jena-integration.xml" />
-	  <xi:include href="content/persistence/virtuoso-integration.xml" />
-	  <xi:include href="content/persistence/rdb-integration.xml" />
+      <xi:include href="content/persistence/sesame-integration.xml" />  
+      <xi:include href="content/persistence/jena-integration.xml" />
+      <xi:include href="content/persistence/virtuoso-integration.xml" />
+      <xi:include href="content/persistence/rdb-integration.xml" />
     
     </chapter>
     
@@ -63,10 +63,10 @@
     
       <title>Service integration</title>
     
-    <!-- Service level integration -->
-    <xi:include href="content/integration/spring-integration.xml" />
-    <xi:include href="content/integration/guice-integration.xml" />
-    <xi:include href="content/integration/tapestry-integration.xml" />    
+      <!-- Service level integration -->
+      <xi:include href="content/integration/spring-integration.xml" />
+      <xi:include href="content/integration/guice-integration.xml" />
+      <xi:include href="content/integration/tapestry-integration.xml" />    
     
     </chapter>
 

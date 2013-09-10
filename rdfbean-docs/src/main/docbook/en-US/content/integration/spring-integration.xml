@@ -1,39 +1,41 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <sect1 id="spring-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
-    <title>Spring integration</title>
-    
-	<sect2>
-		
-		<title>Dependencies</title>
-		
-		<para>Add the following additional dependency to be able to use Spring integration features</para>
-		
-<programlisting language="xml">
+  <title>Spring integration</title>
+
+  <sect2>
+
+    <title>Dependencies</title>
+
+    <para>Add the following additional dependency to be able to use
+      Spring integration features</para>
+
+    <programlisting language="xml">
 <![CDATA[    
     <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-spring</artifactId>
       <version>${rdfbean.version}</version>
     </dependency>
-	
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.6.1</version>
-    </dependency>  		
+    </dependency>  
 ]]>
-</programlisting>    		
-		
-	</sect2>
-	
-    <sect2>
-    
-      <title>Basic wiring</title>
-    
-      <para>The following Spring XML configuration demonstrates a basic configuration for RDFBean persistence in Spring.</para>
-    
-<programlisting language="xml">
+</programlisting>
+
+  </sect2>
+
+  <sect2>
+
+    <title>Basic wiring</title>
+
+    <para>The following Spring XML configuration demonstrates a basic
+      configuration for RDFBean persistence in Spring.</para>
+
+    <programlisting language="xml">
 <![CDATA[    
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -96,19 +98,20 @@
   
 </beans>    
 ]]>
-</programlisting>    
-    
-    </sect2>
-    
-    <sect2>
-    
-      <title>Transactional services</title>
-    
-      <para>To create transactional services you can annotate your services with Spring's transactional annotations.</para>
-	  
-	  <para>Here is a minimal example :</para>
-	  
-<programlisting language="java">
+</programlisting>
+
+  </sect2>
+
+  <sect2>
+
+    <title>Transactional services</title>
+
+    <para>To create transactional services you can annotate your
+      services with Spring's transactional annotations.</para>
+
+    <para>Here is a minimal example :</para>
+
+    <programlisting language="java">
 <![CDATA[    
 public interface UserService {
     
@@ -117,14 +120,15 @@ public interface UserService {
     
     @Transactional
     void saveUser(User user);
-	
-}	  
-]]>
-</programlisting>    
 
-	<para>For details on how to enable Spring AOP with transactions refer to the Spring Reference Documentation.</para>
-    
-    </sect2>
-    
-    
+}  
+]]>
+</programlisting>
+
+    <para>For details on how to enable Spring AOP with transactions
+      refer to the Spring Reference Documentation.</para>
+
+  </sect2>
+
+
 </sect1>    

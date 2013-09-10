@@ -22,40 +22,40 @@ repository.initialize();
 ]]>
 </programlisting>
 
-	<para>For additional security you can restrict the write access of the VirtuosoRepository instance to specific contexts like this :</para>        
+<para>For additional security you can restrict the write access of the VirtuosoRepository instance to specific contexts like this :</para>        
 
 <programlisting language="java">
 <![CDATA[             
-repository.setAllowedGraphs(Arrays.asList(context, context2));	
+repository.setAllowedGraphs(Arrays.asList(context, context2));
 ]]>
 </programlisting>
 
-	</sect2>
+</sect2>
     
     <sect2>
-    	<title>Blank node handling</title>
-    	
-    	<para>Blank nodes can be referred to by their internal id when they are declared as URIs in SPARQL or N3 (incl. Turtle, NTriples) form.</para>
-    	
-    	<para>For example the blank node</para>
-    	
+    <title>Blank node handling</title>
+    
+    <para>Blank nodes can be referred to by their internal id when they are declared as URIs in SPARQL or N3 (incl. Turtle, NTriples) form.</para>
+    
+    <para>For example the blank node</para>
+    
 <programlisting>
 <![CDATA[             
-_:bnode678fds676	
+_:bnode678fds676
 ]]>
 </programlisting>
 
-		<para>with the internal id "bnode678fds676" can be referred to like this </para>
-		
+<para>with the internal id "bnode678fds676" can be referred to like this </para>
+
 <programlisting>
 <![CDATA[             
-<_:bnode678fds676>	
+<_:bnode678fds676>
 ]]>
-</programlisting>		
-		
-		<para>To make sure that the internal ids of blank nodes are preserved in the persistence process they have to be serialized in URI form or to be added
-		via the RepositoryConnection.update(...) method.</para>
-		
+</programlisting>
+
+<para>To make sure that the internal ids of blank nodes are preserved in the persistence process they have to be serialized in URI form or to be added
+via the RepositoryConnection.update(...) method.</para>
+
     </sect2>
     
 </sect1>

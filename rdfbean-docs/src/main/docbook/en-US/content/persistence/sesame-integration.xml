@@ -6,9 +6,9 @@
     <para>The RDFBean sesame module depends currently on Sesame 2.7.6. <emphasis>It is change from past where previous versions 
     of RDFBean depended on Sesame 3.0 alpha.</emphasis></para>
       
-   	<para>Sessame 2.7 support is provided via the rdfbean-sesame2 module.</para>   
-   	
-   	<para>Sessame 3.0 alpha support is provided via the rdfbean-sesame3 module.</para>   
+   <para>Sessame 2.7 support is provided via the rdfbean-sesame2 module.</para>   
+   
+   <para>Sessame 3.0 alpha support is provided via the rdfbean-sesame3 module.</para>   
       
     <para>From version 1.7, RDFBean implements three main Sesame Repository backends : MemoryRepository, NativeRepository, HTTPRepository.</para>
     

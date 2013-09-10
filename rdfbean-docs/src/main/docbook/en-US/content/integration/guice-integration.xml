@@ -1,54 +1,57 @@
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 
 <sect1 id="guice-integration" xmlns:xi="http://www.w3.org/2001/XInclude">
-	
-    <title>Guice integration</title>
-	
-	<sect2>
-		
-		<title>Dependencies</title>
-		
-		<para>Add the following additional dependency to be able to use Guice integration features</para>
-		
-<programlisting language="xml">
+
+  <title>Guice integration</title>
+
+  <sect2>
+
+    <title>Dependencies</title>
+
+    <para>Add the following additional dependency to be able to use
+      Guice integration features</para>
+
+    <programlisting language="xml">
 <![CDATA[    
     <dependency>
       <groupId>com.mysema.rdf</groupId>
       <artifactId>rdfbean-guice</artifactId>
       <version>${rdfbean.version}</version>
     </dependency>
-	
+    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.6.1</version>
-    </dependency>  	
+    </dependency>      
 ]]>
-</programlisting>    		
-		
-	</sect2>	
-    
-	<sect2>
-		
-		<title>Getting started</title>
-	
-    	<para>
-    	To get started with RDFBean you can use the com.mysema.rdfbean.guice.RDFBeanModule and override the relevant methods to customize
-		the services and configuration.
-		</para>
-    
-		<para>
-		Here is an example :
-		</para>	
-		
-<programlisting language="java">
+</programlisting>
+
+  </sect2>
+
+  <sect2>
+
+    <title>Getting started</title>
+
+    <para>
+      To get started with RDFBean you can use the
+      com.mysema.rdfbean.guice.RDFBeanModule and override the relevant
+      methods to customize
+      the services and configuration.
+    </para>
+
+    <para>
+      Here is an example :
+    </para>
+
+    <programlisting language="java">
 <![CDATA[    
 RDFBeanModule module = new RDFBeanModule(){
     @Override
     public Repository createRepository(Configuration configuration) {
         return new MemoryRepository();
     }            
-	
+    
     // alternatively override getAnnotatedPackages, if you have annotated your domain packages
     @Override
     protected Class<?>[] getAnnotatedClasses() {
@@ -56,8 +59,8 @@ RDFBeanModule module = new RDFBeanModule(){
     }
 }
 ]]>
-</programlisting>    			
-	
-	</sect2>
-	
+</programlisting>
+
+  </sect2>
+
 </sect1>    

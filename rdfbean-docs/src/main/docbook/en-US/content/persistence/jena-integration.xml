@@ -4,7 +4,7 @@
     <title>Jena</title>
     
     <para>
-    	The RDFBean Jena integration works on top of the DatasetGraph interface. It supports in it's current no inferencing and no Bean queries.
+    The RDFBean Jena integration works on top of the DatasetGraph interface. It supports in it's current no inferencing and no Bean queries.
      </para>
     
     <sect2>
@@ -27,8 +27,8 @@ repository.initialize();
     
       <title>MemoryRepository</title>
     
-    	<para>For simple memory based usage RDFBean provides the MemoryRepository class which can be instantiated via its empty constructor :</para>
-    	
+    <para>For simple memory based usage RDFBean provides the MemoryRepository class which can be instantiated via its empty constructor :</para>
+    
 <programlisting language="java">
 <![CDATA[         
 JenaRepository repository = new MemoryRepository();

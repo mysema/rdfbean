@@ -15,27 +15,27 @@
       Repository API and represents a single threaded session with the Repository instance.</para>
       
       <sect2>
-	  	
-	  	<title>Adding and removing statements</title>
-		
-		<para>Adding and removing statements happens through a single method in the RDFConnection interface. Here is an example :</para>
-		
+          
+          <title>Adding and removing statements</title>
+        
+        <para>Adding and removing statements happens through a single method in the RDFConnection interface. Here is an example :</para>
+        
 <programlisting language="java">
 <![CDATA[         
 RDFConnection connection = repository.openConnection();
 connection.update(null, Arrays.asList(stmtToBeAdded1, stmtToBeAdded2));
 ]]>
-</programlisting>    		
+</programlisting>            
 
-		<para>Or to remove statements :</para>
-		
+        <para>Or to remove statements :</para>
+        
 <programlisting language="java">
 <![CDATA[         
 connection.update(Arrays.asList(stmtToBeRemoved1, stmtToBeRemoved2), null);
 ]]>
-</programlisting>		
-		
-	  <para>To remove statements through a pattern matching the statements to be removed, use the remove method like this :</para>	
+</programlisting>        
+        
+      <para>To remove statements through a pattern matching the statements to be removed, use the remove method like this :</para>    
 
 <programlisting language="java">
 <![CDATA[         
@@ -43,17 +43,17 @@ UID customerType = new UID("http://example.com/", "Customer");
 connection.remove(null, RDF.type, customerType, null);
 ]]>
 </programlisting>
-		
-	  <para>The given example removes all statements matching { ?s rdf:type example:Customer } in all named graphs.</para>	
-		
-	  </sect2>
+        
+      <para>The given example removes all statements matching { ?s rdf:type example:Customer } in all named graphs.</para>    
+        
+      </sect2>
  
       <sect2>
       
         <title>SPARQL queries</title>
-      	
-      	<para>SPARQL querying is supported via the generic query support in the RDFConnection interface. Below is an example :</para>
-      	
+          
+          <para>SPARQL querying is supported via the generic query support in the RDFConnection interface. Below is an example :</para>
+          
 <programlisting language="java">
 <![CDATA[         
 SPARQLQuery query= connection.createQuery(QueryLanguage.SPARQL, "SELECT * WHERE { ?s ?p ?o }");
@@ -67,10 +67,10 @@ try{
     rows.close();
 }
 ]]>
-</programlisting>	      	
-      	
-      	<para>For CONSTRUCT and DESCRIBE queries the usage follows the patterns :</para>
-      	
+</programlisting>              
+          
+          <para>For CONSTRUCT and DESCRIBE queries the usage follows the patterns :</para>
+          
 <programlisting language="java">
 <![CDATA[         
 SPARQLQuery query= connection.createQuery(QueryLanguage.SPARQL, "CONSTRUCT {?s ?p ?o} WHERE { ?s ?p ?o }");
@@ -84,45 +84,45 @@ try{
     triples.close();
 }
 ]]>
-</programlisting>	        	
-      	
+</programlisting>                
+          
       </sect2>
       
       <sect2>
       
-      	<title>SPARQL Update support</title>
+          <title>SPARQL Update support</title>
       
-      	<para>Coming soon!</para>
+          <para>Coming soon!</para>
       
       </sect2>
  
- 	  <sect2>
-	  
-	  	<title>RDF I/O</title>
-	  
-	    <para>RDF I/O happens through the Repository interface.</para>
-	  
-	  	<para>The method load is used to load statements from an external source into a named or the default graph :</para>
-	  	
+       <sect2>
+      
+          <title>RDF I/O</title>
+      
+        <para>RDF I/O happens through the Repository interface.</para>
+      
+          <para>The method load is used to load statements from an external source into a named or the default graph :</para>
+          
 <programlisting language="java">
 <![CDATA[         
 repository.load(Format.RDFXML, getClass().getResourceAsStream("/example.rdf"), new UID("http://example.com"), false);
 ]]>
-</programlisting>	  	
+</programlisting>          
 
-		<para>The given example loads the contents of the classpath:/example.rdf resource into named graph &lt;http://example.com&gt; without 
-		replacing the contents of the named graph.</para>
+        <para>The given example loads the contents of the classpath:/example.rdf resource into named graph &lt;http://example.com&gt; without 
+        replacing the contents of the named graph.</para>
 
-		<para>To export the contents of the Repository invoke the export method :</para>
+        <para>To export the contents of the Repository invoke the export method :</para>
 
 <programlisting language="java">
 <![CDATA[         
 ByteArrayOutputStream out = new ByteArrayOutputStream();
 repository.export(Format.RDFXML, null, out);
 ]]>
-</programlisting>	  	
-	  
-	  </sect2>
+</programlisting>          
+      
+      </sect2>
       
       
     </sect1>
