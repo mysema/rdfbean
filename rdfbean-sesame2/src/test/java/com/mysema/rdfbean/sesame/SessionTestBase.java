@@ -81,10 +81,10 @@ public class SessionTestBase implements SimpleDomain {
         try {
             if (sessionFactory != null) {
                 sessionFactory.close();
-            }                
+            }
             if (repository != null) {
                 repository.close();
-            }                
+            }
         } finally {
             sessionFactory = null;
             repository = null;

@@ -8,15 +8,15 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({ SimpleType.class, SimpleType2.class })
 public class SimpleQueries2Test extends SimpleQueriesTest {
-    
+
     private static boolean initialized = false;
-    
+
     @BeforeClass
     public static void setUpClass() {
         if (!initialized) {
             repository.setSerializeQueries(true);
             initialized = true;
-        }        
+        }
     }
 
 }

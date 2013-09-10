@@ -27,7 +27,7 @@ import com.mysema.rdfbean.testutil.SessionConfig;
 
 @SessionConfig({ SimpleType.class, SimpleType2.class })
 public class SimpleQueriesTest extends SessionTestBase {
-    
+
     private static final UID uid1 = new UID(TEST.NS, "instance1");
     private static final UID uid2 = new UID(TEST.NS, "instance2");
 
@@ -44,17 +44,17 @@ public class SimpleQueriesTest extends SessionTestBase {
         System.out.println("inEmpty");
         where(var.directProperty.in(Collections.<String> emptySet())).list(var);
     }
-    
+
     @Test
     public void Get1() {
         assertNotNull(session.get(SimpleType.class, uid1));
     }
-    
+
     @Test
     public void Get2() {
         assertNotNull(session.get(SimpleType.class, uid2));
     }
-    
+
     @Test
     public void GetAll() {
         System.out.println("getAll");

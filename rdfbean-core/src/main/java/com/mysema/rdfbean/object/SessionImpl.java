@@ -450,6 +450,9 @@ public final class SessionImpl implements Session {
             }
 
             if (nodes == null) {
+                if (list.size() == 0) {
+                    list.add(subject);
+                } 
                 break;
             }
             NODE value = nodes.get(QNODE.first.getName());
