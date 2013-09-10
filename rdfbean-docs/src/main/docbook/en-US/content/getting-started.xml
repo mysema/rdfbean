@@ -256,6 +256,17 @@ import com.mysema.rdfbean.annotations.MappedClasses;
     
     <sect2>
     
+      <title>Properties</title>
+      
+      <para>
+       Properties can be used to map multiple properties to a Map. It can be used to map all properties 
+       or only those that are not otherwise mapped.
+      </para>    
+    
+    </sect2>
+    
+    <sect2>
+    
       <title>Required</title>
     
       <para><emphasis>Required</emphasis> defines that a certain property is mandatory.</para>
@@ -536,6 +547,57 @@ session.delete(user);
     
 ]]></programlisting>
 
+      </sect2>
+      
+      <sect2>
+      
+        <title>Configuration</title>
+        
+        <para>
+        The default way to configure RDFBean is to use the DefaultConfiguration class like this
+        </para>
+
+<programlisting language="java"><![CDATA[
+Configuration configuration = new DefaultConfiguration(<your entity classes here>);
+]]></programlisting>
+
+        <para>
+        If you want to scan annotated classes instead from the classpath, that's supported as well
+        </para>
+
+<programlisting language="java"><![CDATA[
+DefaultConfiguration configuration = new DefaultConfiguration();
+configuration.scanPackages(<your domain packages>);
+]]></programlisting>
+
+        <para>
+        If you prefer to work with not annotated classes you can use the ConfigurationBuilder class 
+        to build a Configuration object fluently like this
+        </para>
+
+<programlisting language="java"><![CDATA[
+ConfigurationBuilder builder = new ConfigurationBuilder();
+builder.addClass(Identifiable.class).addId("id").addProperties();
+builder.addClass(Category.class).addProperties();
+builder.addClass(Product.class).addProperties();
+builder.addClass(Profile.class).addProperties();
+builder.addClass(User.class).addProperties();
+Configuration configuration = builder.build();
+]]></programlisting>
+
+        <para>
+        The ConfigurationBuilder offers various methods to customize the mapping of the classes to 
+        RDF predicates. Here are a few
+        </para>
+
+<programlisting language="java"><![CDATA[
+ConfigurationBuilder builder = new ConfigurationBuilder();
+builder.addClass(TEST.NS, Labeled.class)
+        .addLocalized("label", RDFS.label)
+        .addProperty("comment", RDFS.comment);
+Configuration configuration = builder.build();
+]]></programlisting>
+              
       </sect2>
 	  
     </sect1>
