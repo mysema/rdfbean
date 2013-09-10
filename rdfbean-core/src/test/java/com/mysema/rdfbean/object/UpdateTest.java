@@ -31,7 +31,6 @@ import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.Path;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.LID;
 import com.mysema.rdfbean.model.MiniRepository;
 
@@ -40,7 +39,7 @@ public class UpdateTest {
     @ClassMapping
     public static class Employee {
 
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate
@@ -78,7 +77,7 @@ public class UpdateTest {
     @ClassMapping
     public static class Company {
 
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate(ln = "company", inv = true)
@@ -114,7 +113,7 @@ public class UpdateTest {
     @ClassMapping(ns = TEST.NS, ln = "Employee")
     public static class EmployeeInfo {
 
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate

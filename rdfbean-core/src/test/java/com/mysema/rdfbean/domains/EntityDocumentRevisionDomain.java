@@ -24,7 +24,7 @@ public interface EntityDocumentRevisionDomain {
     @ClassMapping
     public static class Revision {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         @Predicate

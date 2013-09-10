@@ -17,13 +17,12 @@ import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 public class SessionInvLoadTest {
 
     @ClassMapping
     public static class Note {
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate(ln = "note", inv = true)
@@ -38,7 +37,7 @@ public class SessionInvLoadTest {
 
     @ClassMapping
     public static class Term {
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate
@@ -47,7 +46,7 @@ public class SessionInvLoadTest {
 
     @ClassMapping
     public static class Comment {
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate

@@ -7,7 +7,6 @@ package com.mysema.rdfbean.rdfs;
 
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 /**
  * @author sasa
@@ -15,7 +14,7 @@ import com.mysema.rdfbean.model.IDType;
  */
 public class MappedResourceBase {
 
-    @Id(IDType.RESOURCE)
+    @Id
     private ID id;
 
     public MappedResourceBase() {

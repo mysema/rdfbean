@@ -11,7 +11,6 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.RDFS;
 
 public interface SongPlaybackMusicStore {
@@ -19,7 +18,7 @@ public interface SongPlaybackMusicStore {
     @ClassMapping(ns = "http://www.foo.com#")
     public class Song {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         public ID getId() {
@@ -34,7 +33,7 @@ public interface SongPlaybackMusicStore {
     @ClassMapping(ns = "http://www.foo.com#")
     public class SongPlayback {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         @Predicate(inv = true, ln = "playback")
@@ -51,7 +50,7 @@ public interface SongPlaybackMusicStore {
     @ClassMapping(ns = "http://www.foo.com#")
     public class MusicStore {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         public ID getId() {

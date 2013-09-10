@@ -32,7 +32,7 @@ public class MultiPropertyTest {
 
     private static final UID NAME3 = new UID(TEST.NS, "name3");
 
-    @Id(IDType.RESOURCE)
+    @Id
     ID id;
 
     @Predicate(ln = "name")

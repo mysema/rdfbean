@@ -13,14 +13,13 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 public interface DateTimeDomain {
 
     @ClassMapping
     public class Literals {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         @Predicate

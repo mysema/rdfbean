@@ -22,7 +22,6 @@ import com.mysema.rdfbean.annotations.ContainerType;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.RDF;
 import com.mysema.rdfbean.model.STMT;
@@ -30,7 +29,7 @@ import com.mysema.rdfbean.model.STMT;
 @ClassMapping
 public class ContainerTest {
 
-    @Id(IDType.RESOURCE)
+    @Id
     ID id;
 
     @Predicate

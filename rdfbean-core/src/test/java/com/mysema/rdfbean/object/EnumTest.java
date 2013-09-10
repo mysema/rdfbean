@@ -14,7 +14,6 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.MiniRepository;
 import com.mysema.rdfbean.model.UID;
 
@@ -29,7 +28,7 @@ public class EnumTest {
     @ClassMapping
     public static class EnumRef {
 
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate

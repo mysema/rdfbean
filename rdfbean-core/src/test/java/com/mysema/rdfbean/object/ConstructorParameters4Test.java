@@ -9,14 +9,13 @@ import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 public class ConstructorParameters4Test {
 
     @ClassMapping
     public static class Entity {
 
-        @Id(IDType.RESOURCE)
+        @Id
         final ID id;
 
         @Predicate

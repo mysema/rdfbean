@@ -16,7 +16,6 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.object.Configuration;
 import com.mysema.rdfbean.object.DefaultConfiguration;
 import com.mysema.rdfbean.object.Session;
@@ -33,10 +32,12 @@ public class SeedEntityTest {
 
     @ClassMapping(ns = TEST.NS)
     public static class User {
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
+        
         @Predicate
         String firstName;
+        
         @Predicate
         String lastName;
 
@@ -51,8 +52,9 @@ public class SeedEntityTest {
 
     @ClassMapping(ns = TEST.NS)
     public static class Article {
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
+        
         @Predicate
         User author;
     }

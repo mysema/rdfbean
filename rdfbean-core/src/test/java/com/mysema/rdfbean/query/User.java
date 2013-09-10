@@ -15,7 +15,6 @@ import com.mysema.rdfbean.annotations.Localized;
 import com.mysema.rdfbean.annotations.MapElements;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 @ClassMapping(ns = TEST.NS)
 public class User {
@@ -24,7 +23,7 @@ public class User {
         MALE, FEMALE
     }
 
-    @Id(IDType.RESOURCE)
+    @Id
     ID id;
 
     @Predicate

@@ -15,7 +15,6 @@ import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.BID;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 /**
  * @author sasa
@@ -25,7 +24,7 @@ public class ConstructorParameters2Test {
 
     @ClassMapping
     public static final class Child {
-        @Id(IDType.RESOURCE)
+        @Id
         final ID id;
 
         @Predicate
@@ -39,7 +38,7 @@ public class ConstructorParameters2Test {
 
     @ClassMapping
     public static final class Parent {
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
     }
 

@@ -29,7 +29,7 @@ public class IdReferenceTest {
 
     @ClassMapping
     public final static class IDResource {
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
     }
 

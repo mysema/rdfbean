@@ -14,14 +14,13 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 public interface CompanyDepartmentEmployeeDomain {
 
     @ClassMapping
     public class Company {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         @Predicate(ln = "company", inv = true)
@@ -47,7 +46,7 @@ public interface CompanyDepartmentEmployeeDomain {
     @ClassMapping
     public class Department {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         @Predicate
@@ -73,7 +72,7 @@ public interface CompanyDepartmentEmployeeDomain {
     @ClassMapping
     public class Employee {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         @Predicate

@@ -16,14 +16,13 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 public interface NoteRevisionTermDomain {
 
     @ClassMapping
     public static class NoteRevision {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         @Predicate
@@ -45,7 +44,7 @@ public interface NoteRevisionTermDomain {
     @ClassMapping
     public static class Note {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         @Predicate
@@ -67,7 +66,7 @@ public interface NoteRevisionTermDomain {
     @ClassMapping
     public static class Term {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         @Predicate

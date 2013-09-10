@@ -16,14 +16,13 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 public interface ItemDomain {
 
     @ClassMapping(ns = TEST.NS, ln = "MemoryStoreTest_Item")
     public static class Item {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID resource;
 
         @Predicate(ln = "path")

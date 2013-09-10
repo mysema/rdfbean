@@ -16,14 +16,13 @@ import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Predicate;
 import com.mysema.rdfbean.model.ID;
-import com.mysema.rdfbean.model.IDType;
 
 public class InverseMappingTest {
 
     @ClassMapping
     public static class Company {
 
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate(ln = "company", inv = true)
@@ -33,7 +32,7 @@ public class InverseMappingTest {
     @ClassMapping
     public static class Department {
 
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate
@@ -46,7 +45,7 @@ public class InverseMappingTest {
     @ClassMapping
     public static class Employee {
 
-        @Id(IDType.RESOURCE)
+        @Id
         ID id;
 
         @Predicate

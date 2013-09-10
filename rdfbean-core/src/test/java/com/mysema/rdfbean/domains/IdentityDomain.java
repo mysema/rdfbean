@@ -15,7 +15,7 @@ public interface IdentityDomain {
     @ClassMapping
     public static class Entity1 {
 
-        @Id(IDType.RESOURCE)
+        @Id
         public ID id;
 
         public ID getId() {
