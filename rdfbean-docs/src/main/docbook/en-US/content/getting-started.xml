@@ -395,14 +395,6 @@ private Map<String, RDFSClass> subClassesByLabel;]]>
       
     </sect2>
     
-     <sect2>
-    
-      <title>Properties</title>
-    
-      <para><emphasis>Properties</emphasis> maps multiple predicates to this property. </para>
-      
-    </sect2>
-    
     </sect1>
     
     <sect1>
