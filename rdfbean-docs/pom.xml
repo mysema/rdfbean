@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd" xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -7,13 +9,13 @@
     <artifactId>rdfbean-root</artifactId>
     <version>1.7.0-SNAPSHOT</version>
     <relativePath>../rdfbean-root/pom.xml</relativePath>
-  </parent>  
+  </parent>
 
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-docs</artifactId>
   <name>RDFBean - Documentation</name>
   <packaging>jdocbook</packaging>
-  
+
   <properties>
     <xslthl.config>http://docbook.sourceforge.net/release/xsl/current/highlighting/xslthl-config.xml</xslthl.config>
   </properties>
@@ -22,7 +24,7 @@
     <plugins>
       <plugin>
         <groupId>org.jboss.maven.plugins</groupId>
-        <artifactId>maven-jdocbook-plugin</artifactId>        
+        <artifactId>maven-jdocbook-plugin</artifactId>
         <version>2.3.5</version>
         <extensions>true</extensions>
         <configuration>
@@ -44,7 +46,7 @@
               <formatName>html_single</formatName>
               <finalName>index.html</finalName>
               <stylesheetResource>file:${basedir}/src/main/styles/html_single/custom.xsl</stylesheetResource>
-            </format>            
+            </format>
             <format>
               <formatName>pdf</formatName>
               <stylesheetResource>file:${basedir}/src/main/styles/pdf/custom.xsl</stylesheetResource>
@@ -59,24 +61,24 @@
           <dependency>
             <groupId>net.sf.xslthl</groupId>
             <artifactId>xslthl</artifactId>
-            <version>2.0.1</version>          
+            <version>2.0.1</version>
           </dependency>
-		  <dependency>
-		    <groupId>apache-xerces</groupId>
-		    <artifactId>xercesImpl</artifactId>
-		    <version>2.9.1</version>
-		  </dependency>
-		  <dependency>
-		    <groupId>apache-xalan</groupId>
-		    <artifactId>xalan</artifactId>
-		    <version>2.7.1.patch01-brew</version>
-		  </dependency>
-		  <dependency>
-		    <groupId>apache-xalan</groupId>
-		    <artifactId>serializer</artifactId>
-		    <version>2.7.1.patch01-brew</version>
-		  </dependency>
-		  <dependency>
+          <dependency>
+            <groupId>apache-xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
+          </dependency>
+          <dependency>
+            <groupId>apache-xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.1.patch01-brew</version>
+          </dependency>
+          <dependency>
+            <groupId>apache-xalan</groupId>
+            <artifactId>serializer</artifactId>
+            <version>2.7.1.patch01-brew</version>
+          </dependency>
+          <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom</artifactId>
             <version>1.1</version>
@@ -85,7 +87,7 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <repositories>
     <repository>
       <id>jboss</id>
@@ -94,9 +96,9 @@
     <repository>
       <id>jboss2</id>
       <url>https://repository.jboss.org/nexus/content/repositories/releases</url>
-    </repository>   
+    </repository>
   </repositories>
-  
+
   <pluginRepositories>
     <pluginRepository>
       <id>jboss</id>
@@ -118,6 +120,6 @@
         <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
-  </pluginRepositories>  
+  </pluginRepositories>
 
 </project>
