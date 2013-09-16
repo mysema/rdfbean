@@ -52,7 +52,7 @@
       <id>no-virtuoso</id>
       <properties>
         <failIfNoTests>false</failIfNoTests>
-        <test/>
+        <test>X</test>
       </properties>
     </profile>
   </profiles>
