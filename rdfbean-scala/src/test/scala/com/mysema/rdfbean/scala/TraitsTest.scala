@@ -3,6 +3,7 @@ package com.mysema.rdfbean.scala
 import com.mysema.rdfbean.TEST
 import com.mysema.rdfbean.model.{ RDFS }
 import com.mysema.rdfbean.`object`.{ Session, SessionUtil }
+import com.mysema.rdfbean.model.IDType
 
 import org.junit.{ Ignore, Test, Before, After };
 import org.junit.Assert._;
@@ -68,7 +69,7 @@ class Document extends Identifiable with Labeled with Commented {
 
 @ClassMapping
 trait Identifiable {
-  @Id var id: String = _
+  @Id(IDType.LOCAL) var id: String = _
 }
 
 @ClassMapping

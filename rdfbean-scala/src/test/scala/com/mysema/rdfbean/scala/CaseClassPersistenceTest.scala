@@ -3,6 +3,7 @@ package com.mysema.rdfbean.scala
 import com.mysema.rdfbean.TEST
 import com.mysema.rdfbean.`object`.Session
 import com.mysema.rdfbean.`object`.SessionUtil
+import com.mysema.rdfbean.model.IDType
 
 import org.junit.{ Ignore, Test, Before, After };
 import org.junit.Assert._;
@@ -25,7 +26,7 @@ class CaseClassPersistenceTest {
 
 @ClassMapping
 case class PersonCase(
-  @Id id: String,
+  @Id(IDType.LOCAL) id: String,
 
   @Predicate firstName: String,
 
