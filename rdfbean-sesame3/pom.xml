@@ -4,7 +4,7 @@
   <groupId>com.mysema.rdf</groupId>
   <artifactId>rdfbean-sesame3</artifactId>
   <packaging>jar</packaging>
-  <name>RDFBean - Sesame</name>
+  <name>RDFBean - Sesame 3</name>
 
   <parent>
     <groupId>com.mysema.rdf</groupId>
