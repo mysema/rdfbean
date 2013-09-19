@@ -245,12 +245,10 @@ import com.mysema.rdfbean.annotations.MappedClasses;
       <para><emphasis>Path</emphasis> defines a chain of predicates for read-only properties. The value accessible
       by the predicate path is bound to the property. Path can contain both direct and inverse predicates. Example is needed ??? </para>
     
-    <programlisting language="java">
-    <![CDATA[
-        @Path({ @Predicate(ln = "firstHopPredicate"), @Predicate(ln = "secondHopPredicate") })
-        private String predicate;
-    ]]>
-    </programlisting>
+    <programlisting language="java"><![CDATA[
+@Path({ @Predicate(ln = "firstHopPredicate"), @Predicate(ln = "secondHopPredicate") })
+private String predicate;
+    ]]></programlisting>
     
     </sect2>
     
@@ -260,8 +258,71 @@ import com.mysema.rdfbean.annotations.MappedClasses;
       
       <para>
        Properties can be used to map multiple properties to a Map. It can be used to map all properties 
-       or only those that are not otherwise mapped.
+       or only those that are not otherwise mapped. The key of Map object has to be UID as it represents predicates. Values could be of any type. There is important notice that
+       class type of value is considered during mapping. E.g. following code will map all predicates to dates field which are type of LocalDate (xsd:date).
       </para>    
+    
+     <programlisting language="java"><![CDATA[
+@Properties(includeMapped = true)
+public Map<UID, LocalDate> dates;
+    ]]></programlisting>
+    
+    <para>The @Properties annotation has attribute includeMapped which is very important for mapping behavior. Let's consider following domain object : </para>
+    
+     <programlisting language="java">
+    <![CDATA[
+@ClassMapping
+public static class Project {
+
+@Id(IDType.LOCAL)
+public String id;
+
+@Predicate
+public LocalDate created;
+
+@Properties(includeMapped = true)
+public Map<UID, LocalDate> dates;
+    }
+     ]]>
+    </programlisting>
+    
+    <para>Repository contains following triples : </para>
+    
+     <programlisting language="java"><![CDATA[
+<http://www.foo.com/Project/1> rdf:type foo:Project . 
+<http://www.foo.com/Project/1> foo:created "2013-01-01"^^xsd:date . 
+<http://www.foo.com/Project/1> foo:updated "2013-01-01"^^xsd:date . 
+]]></programlisting>
+    
+    <para>Without specifying parameter includeMapped=true(default value for @Properties is false), field dates would contain only foo:updated predicate with value "2013-01-01". If you set includeMapped to true, 
+    you will see foo:updated and also foo:created inside dates property.</para>
+    
+    <para>The value type could be also Collection. This option is especially worth to use when there could be multiple values for the same predicate. 
+    As you can see in following example, it is neccessary to have Set defined for value in Map. Otherwise there could be problem with mapping correct foo:updated value. </para>
+    
+    <programlisting language="java"><![CDATA[
+@ClassMapping
+public static class Project {
+
+@Id(IDType.LOCAL)
+public String id;
+
+@Predicate
+public LocalDate created;
+
+@Properties(includeMapped = true)
+public Map<UID, Set<LocalDate>> dates;
+}
+]]></programlisting>
+    
+    <para>With repository containing following triples : </para>
+    
+     <programlisting language="java"><![CDATA[
+     <http://www.foo.com/Project/1> rdf:type foo:Project . 
+     <http://www.foo.com/Project/1> foo:created "2013-01-01"^^xsd:date .
+     <http://www.foo.com/Project/1> foo:updated "2013-01-01"^^xsd:date . 
+     <http://www.foo.com/Project/1> foo:updated "2013-01-02"^^xsd:date . 
+     ]]></programlisting>
     
     </sect2>
     
