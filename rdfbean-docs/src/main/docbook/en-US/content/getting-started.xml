@@ -223,9 +223,39 @@ import com.mysema.rdfbean.annotations.MappedClasses;
 
       <title>Mixin</title>
     
-      <para><emphasis>Mixin</emphasis> defines a view on the host type's subject with a different type.
-        Mixin can't be combined with Predicate or Path, since the RDF identity of the mixin property is the 
-        same as the host's identity. ??? -> please provide some example</para>    
+      <para><emphasis>Mixin</emphasis> defines that a property's value is another instance of the same subject. Thus it is never used in conjunction with @Predicate. 
+      @Mixin property's type may not be assignable from the host type (self reference). Mixin references are useful when there's multiple projections (DTOs) for the 
+      same underlying resource, e.g. one containing only basic information about the subject and another containing everything else. The class containing 
+      details don't have to repeat info classes properties as it can reuse it using @Mixin property. For example : </para>
+
+<programlisting language="java"><![CDATA[
+@ClassMapping(ns=OWL.NS, ln="Class")
+public class ClassInfo {
+   
+@Id
+private UID id;
+   
+@Predicate(ns=RDFS.NS)
+private String label;
+}
+ 
+@ClassMapping(ns=OWL.NS, ln="Class")
+public class ClassDetails {
+ 
+@Predicate(ns=RDFS.NS)
+private Set<ClassInfo> subClassOf;
+   
+@Mixin
+private ClassInfo info;
+   
+@Predicate
+private Set&lt;OWLClass> complementOf = new LinkedHashSet&lt;OWLClass>();
+   
+@Predicate
+private Set&lt;OWLClass> disjointWith = new LinkedHashSet&lt;OWLClass>();
+   
+...
+}]]></programlisting>
     
     </sect2>
     
