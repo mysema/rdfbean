@@ -44,5 +44,7 @@ public @interface MapElements {
 
     // TODO: Refactor into Path
     Predicate value() default @Predicate(ns = "");
+    
+    String context() default "";
 
 }
