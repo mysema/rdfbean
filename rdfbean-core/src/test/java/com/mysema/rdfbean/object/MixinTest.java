@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.mysema.rdfbean.annotations.ClassMapping;
 import com.mysema.rdfbean.annotations.Id;
 import com.mysema.rdfbean.annotations.Mixin;
+import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.IDType;
 import com.mysema.rdfbean.model.LID;
 
@@ -37,23 +38,23 @@ public class MixinTest {
 
     private Session session;
 
-    private LID lid;
+    private ID id;
 
     @Before
     public void setUp() {
         session = SessionUtil.openSession(AType.class, BType.class);
-        lid = session.save(new AType());
+        id = session.save(new AType());
         session.flush();
         session.clear();
     }
 
     @Test
     public void SelfReferenceTest() {
-        AType atype = session.get(AType.class, lid);
+        AType atype = session.get(AType.class, id);
         assertNotNull(atype);
-        assertEquals(lid, atype.id);
+        assertEquals(session.getLID(id), atype.id);
         assertNotNull(atype.asBType);
-        assertEquals(lid, atype.asBType.id);
+        assertEquals(session.getLID(id), atype.asBType.id);
     }
 
 }

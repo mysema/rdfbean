@@ -21,7 +21,7 @@ import com.mysema.rdfbean.domains.CompanyDepartmentEmployeeDomain.Employee;
 import com.mysema.rdfbean.domains.SongPlaybackMusicStore.MusicStore;
 import com.mysema.rdfbean.domains.SongPlaybackMusicStore.Song;
 import com.mysema.rdfbean.domains.SongPlaybackMusicStore.SongPlayback;
-import com.mysema.rdfbean.model.LID;
+import com.mysema.rdfbean.model.ID;
 import com.mysema.rdfbean.model.MiniConnection;
 import com.mysema.rdfbean.model.UID;
 import com.mysema.rdfbean.testutil.SessionConfig;
@@ -71,8 +71,8 @@ public class InverseMappingTest extends SessionTestBase implements CompanyDepart
         MusicStore musicStore = new MusicStore();
         SongPlayback songPlayback = new SongPlayback();
 
-        LID songLID = session.save(song);
-        LID musicStoreLID = session.save(musicStore);
+        ID songLID = session.save(song);
+        ID musicStoreLID = session.save(musicStore);
         session.flush();
         song = session.get(Song.class, songLID);
         musicStore = session.get(MusicStore.class, musicStoreLID);

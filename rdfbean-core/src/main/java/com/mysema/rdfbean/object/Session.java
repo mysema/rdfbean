@@ -296,9 +296,9 @@ public interface Session extends ObjectRepository, Closeable {
      * 
      * @param instance
      *            instance of a mapped class to be persisted/updated.
-     * @return a local id assigned for given instance.
+     * @return 
      */
-    LID save(Object instance);
+    ID save(Object instance);
 
     /**
      * Bulk save. See save(Object).
@@ -307,7 +307,7 @@ public interface Session extends ObjectRepository, Closeable {
      *            instances to be persisted/updated.
      * @return
      */
-    List<LID> saveAll(Object... instance);
+    List<ID> saveAll(Object... instance);
 
     /**
      * @return current flush mode of this session.

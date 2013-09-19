@@ -1659,7 +1659,7 @@ public final class SessionImpl implements Session {
     }
 
     @Override
-    public LID save(Object instance) {
+    public ID save(Object instance) {
         boolean flush = false;
         if (seen == null) {
             seen = new HashSet<Object>();
@@ -1674,12 +1674,12 @@ public final class SessionImpl implements Session {
                 flush();
             }
         }
-        return getLID(subject);
+        return subject;
     }
 
     @Override
-    public List<LID> saveAll(Object... instances) {
-        List<LID> ids = new ArrayList<LID>(instances.length);
+    public List<ID> saveAll(Object... instances) {
+        List<ID> ids = new ArrayList<ID>(instances.length);
         seen = new HashSet<Object>(instances.length * 3);
         for (Object instance : instances) {
             ids.add(save(assertMapped(instance)));

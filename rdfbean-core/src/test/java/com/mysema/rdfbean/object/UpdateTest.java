@@ -124,7 +124,7 @@ public class UpdateTest {
 
     }
 
-    private List<LID> ids;
+    private List<ID> ids;
 
     private MiniRepository repository;
 
