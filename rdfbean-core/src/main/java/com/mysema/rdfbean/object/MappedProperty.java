@@ -76,6 +76,9 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
 
     @Nullable
     private Class<?> componentType;
+    
+    @Nullable
+    private UID context;
 
     private Class<?> keyType;
 
@@ -149,6 +152,9 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         Properties propertiesAnno = getAnnotation(Properties.class);
         if (propertiesAnno != null) {
             includeMapped = propertiesAnno.includeMapped();
+            if (!propertiesAnno.context().isEmpty()) {
+                context = new UID(propertiesAnno.context());
+            }
         }
     }
 
@@ -351,6 +357,11 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
         Id annotation = getAnnotation(Id.class);
         return annotation != null ? annotation.ns() : null;
     }
+    
+    @Nullable
+    public UID getContext() {
+        return context;
+    }
 
     public boolean isAnnotatedProperty() {
         if (!annotations.isEmpty()) {
@@ -404,10 +415,6 @@ public abstract class MappedProperty<M extends Member & AnnotatedElement> implem
     public boolean isDynamic() {
         return isAnnotationPresent(Properties.class);
     }
-
-    // public boolean isPolymorphic() {
-    // return MappedClass.isPolymorphic(getTargetType());
-    // }
 
     public boolean isConstructorParameter() {
         return getMember() instanceof Constructor<?>;

@@ -123,8 +123,7 @@ public class MappedClassFactory {
                     if (!UID.class.equals(property.getKeyType())) {
                         throw new IllegalArgumentException(
                                 "Key must be type of com.mysema.rdfbean.model.UID");
-                    }
-                    else {
+                    } else {
                         mappedClass.addDynamicProperty(property);
                     }
                 }

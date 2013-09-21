@@ -34,4 +34,9 @@ public @interface Properties {
      * True if invalid values should be ignored.
      */
     boolean ignoreInvalid() default false;
+    
+    /**
+     * 
+     */
+    String context() default "";
 }

@@ -215,11 +215,17 @@ public final class SessionImpl implements Session {
     @SuppressWarnings("unchecked")
     private void bindDynamicProperties(ID subject, Multimap<UID, STMT> properties, BeanMap beanMap, MappedClass mappedClass) {
         for (MappedProperty<?> property : mappedClass.getDynamicProperties()) {
+            UID context = property.getContext();
             Map<UID, Object> values = new HashMap<UID, Object>();
 
             for (STMT stmt : properties.values()) {
                 if (stmt.getPredicate().equals(CORE.localId)) {
                     // skip local ids
+                    continue;
+                }
+                
+                if (context != null && !context.equals(stmt.getContext())) {
+                    // skip context mismatch
                     continue;
                 }
 
@@ -234,18 +240,21 @@ public final class SessionImpl implements Session {
                     // for resources make sure that componentType is compatible
                     // with the resource
                     if (stmt.getObject().isResource()) {
-                        List<STMT> typeStmts = findStatements(stmt.getObject().asResource(), RDF.type, null, null, false);
-                        boolean matched = false;
-                        for (STMT typeStmt : typeStmts) {
-                            for (MappedClass cl : configuration.getMappedClasses(typeStmt.getObject().asURI())) {
-                                if (componentType.isAssignableFrom(cl.getJavaClass())) {
-                                    matched = true;
+                        if (!ID.class.isAssignableFrom(componentType)) {
+                            List<STMT> typeStmts = findStatements(stmt.getObject().asResource(), RDF.type, null, null, false);
+                            boolean matched = false;
+                            for (STMT typeStmt : typeStmts) {
+                                for (MappedClass cl : configuration.getMappedClasses(typeStmt.getObject().asURI())) {
+                                    if (componentType.isAssignableFrom(cl.getJavaClass())) {
+                                        matched = true;
+                                    }
                                 }
                             }
+                            if (!matched) {
+                                continue;
+                            }    
                         }
-                        if (!matched) {
-                            continue;
-                        }
+                        
                         // for literals, make sure that componentType is a
                         // literal type
                     } else {
@@ -1871,6 +1880,9 @@ public final class SessionImpl implements Session {
         for (MappedProperty<?> property : mappedClass.getDynamicProperties()) {
             Map<?, ?> properties = (Map) property.getValue(beanMap);
             if (properties != null) {
+                if (property.getContext() != null) {
+                    context = property.getContext();
+                }
                 for (Map.Entry<?, ?> entry : properties.entrySet()) {
                     UID predicate = toRDF(entry.getKey(), context).asURI();
                     if (entry.getValue() instanceof Collection) {
