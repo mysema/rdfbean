@@ -1763,8 +1763,9 @@ public final class SessionImpl implements Session {
     }
 
     @SuppressWarnings("unchecked")
-    private void toRDF(Object instance, ID subject, UID context, MappedClass mappedClass, boolean update) {
+    private void toRDF(Object instance, ID subject, UID parentContext, MappedClass mappedClass, boolean update) {
         UID uri = mappedClass.getUID();
+        UID context = parentContext;
         if (!update && uri != null) {
             recordAddStatement(subject, RDF.type, uri, context);
         }
@@ -1779,6 +1780,8 @@ public final class SessionImpl implements Session {
                 UID predicate = mappedPredicate.getUID();
                 if (mappedPredicate.getContext() != null) {
                     context = mappedPredicate.getContext();
+                } else {
+                    context = parentContext;
                 }
 
                 if (update) {
@@ -1882,6 +1885,8 @@ public final class SessionImpl implements Session {
             if (properties != null) {
                 if (property.getContext() != null) {
                     context = property.getContext();
+                } else {
+                    context = parentContext;
                 }
                 for (Map.Entry<?, ?> entry : properties.entrySet()) {
                     UID predicate = toRDF(entry.getKey(), context).asURI();

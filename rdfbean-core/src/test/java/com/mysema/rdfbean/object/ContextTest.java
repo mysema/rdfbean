@@ -31,6 +31,9 @@ public class ContextTest {
 
         @Predicate(context = TEST.NS)
         String property2;
+        
+        @Predicate
+        String property3;
 
     }
 
@@ -45,6 +48,7 @@ public class ContextTest {
         Entity entity = new Entity();
         entity.property1 = "X";
         entity.property2 = "Y";
+        entity.property3 = "Z";
         session.save(entity);
         session.flush();
         session.clear();
@@ -66,6 +70,10 @@ public class ContextTest {
         List<STMT> property2 = IteratorAdapter.asList(repository.findStatements(null, new UID(TEST.NS, "property2"), null, null, false));
         assertEquals(1, property2.size());
         assertEquals(new UID(TEST.NS), property2.get(0).getContext());
+        
+        List<STMT> property3 = IteratorAdapter.asList(repository.findStatements(null, new UID(TEST.NS, "property3"), null, null, false));
+        assertEquals(1, property3.size());
+        assertNull(property3.get(0).getContext());
     }
 
 }
