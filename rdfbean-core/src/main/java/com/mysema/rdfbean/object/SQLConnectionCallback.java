@@ -10,7 +10,7 @@ import java.sql.Connection;
 import javax.annotation.Nullable;
 
 /**
- * SessionCallback defines a callback interface for in-session logic
+ * SQLConnectionCallback defines a callback interface for in-session logic
  * 
  * @author tiwe
  * @version $Id$
