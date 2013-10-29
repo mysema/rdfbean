@@ -24,6 +24,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.mysema.rdf</groupId>
+      <artifactId>rdfbean-sesame2</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.openlinksw</groupId>
       <artifactId>virtjdbc4</artifactId>
       <version>1.0</version>
