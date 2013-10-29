@@ -489,50 +489,39 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
         }
         PreparedStatement stmt = null;
         try {
-            
             if (format == Format.N3 || format == Format.TURTLE || format == Format.NTRIPLES) {
-
-            	byte[] bytes = ByteStreams.toByteArray(is);
-            	String content = new String(bytes, format == Format.NTRIPLES ? Charsets.US_ASCII : Charsets.UTF_8);
+                byte[] bytes = ByteStreams.toByteArray(is);
+                String content = new String(bytes, format == Format.NTRIPLES ? Charsets.US_ASCII : Charsets.UTF_8);
                 stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
                 stmt.setString(1, content);
                 stmt.setString(2, context != null ? context.getId() : defaultGraph.getId());
                 stmt.execute();
-                
             } else if (format == Format.RDFXML) {
-                
-            	loadRdfXml(is, context);
-            
+                loadRdfXml(is, context);
             } else {
-                throw new IllegalArgumentException("Unsupported forma " + format);
+                throw new IllegalArgumentException("Unsupported format " + format);
             }
         } finally {
             if (stmt != null) {
                 stmt.close();
             }
         }
-
     }
-    
+
     private void loadRdfXml(InputStream is, @Nullable UID context) {
-    	try {
-    		
-    		UID currentContext = context != null ? context : defaultGraph;
-    		
-    		RDFParser rioParser = Rio.createParser(RDFFormat.RDFXML);
-    		rioParser.setRDFHandler(new RDFStreamingHandler(this, currentContext));
-    		
-    		// parses and adds triples
-    		rioParser.parse(is, currentContext.getId());
-    		
-    		
-    	} catch (RDFParseException e) {
-    		throw new RepositoryException(e);
-    	} catch (RDFHandlerException e) {
-    		throw new RepositoryException(e);
-    	} catch (IOException e) {
-    		throw new RepositoryException(e);
-    	}
+        try {
+            UID currentContext = context != null ? context : defaultGraph;
+            RDFParser rioParser = Rio.createParser(RDFFormat.RDFXML);
+            rioParser.setRDFHandler(new RDFStreamingHandler(this, currentContext));
+            // parses and adds triples
+            rioParser.parse(is, currentContext.getId());
+        } catch (RDFParseException e) {
+            throw new RepositoryException(e);
+        } catch (RDFHandlerException e) {
+            throw new RepositoryException(e);
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }
     }
     
 
