@@ -15,7 +15,7 @@ import com.mysema.rdfbean.model.Format;
  * @author tiwe
  * @version $Id$
  */
-final class FormatHelper {
+public final class FormatHelper {
 
     private FormatHelper() {
     }

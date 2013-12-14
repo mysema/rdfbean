@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2010 Mysema Ltd.
+ * All rights reserved.
+ *
+ */
 package com.mysema.rdfbean.virtuoso;
 
 import java.io.IOException;
@@ -18,7 +23,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
@@ -26,8 +30,6 @@ import org.openrdf.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.ByteStreams;
 import com.mysema.commons.l10n.support.LocaleUtil;
 import com.mysema.commons.lang.CloseableIterator;
 import com.mysema.query.QueryMetadata;
@@ -56,6 +58,7 @@ import com.mysema.rdfbean.model.io.SPARQLUpdateWriter;
 import com.mysema.rdfbean.model.io.TurtleStringWriter;
 import com.mysema.rdfbean.object.SQLConnectionCallback;
 import com.mysema.rdfbean.owl.OWL;
+import com.mysema.rdfbean.sesame.FormatHelper;
 
 /**
  * @author tiwe
@@ -482,36 +485,14 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             throw new RepositoryException(e);
         }
     }
-
+    
     public void load(Format format, InputStream is, @Nullable UID context, boolean replace) throws SQLException, IOException {
         if (context != null && replace) {
             remove(null, null, null, context);
         }
-        PreparedStatement stmt = null;
-        try {
-            if (format == Format.N3 || format == Format.TURTLE || format == Format.NTRIPLES) {
-                byte[] bytes = ByteStreams.toByteArray(is);
-                String content = new String(bytes, format == Format.NTRIPLES ? Charsets.US_ASCII : Charsets.UTF_8);
-                stmt = connection.prepareStatement("DB.DBA.TTLP(?,'',?,0)");
-                stmt.setString(1, content);
-                stmt.setString(2, context != null ? context.getId() : defaultGraph.getId());
-                stmt.execute();
-            } else if (format == Format.RDFXML) {
-                loadRdfXml(is, context);
-            } else {
-                throw new IllegalArgumentException("Unsupported format " + format);
-            }
-        } finally {
-            if (stmt != null) {
-                stmt.close();
-            }
-        }
-    }
-
-    private void loadRdfXml(InputStream is, @Nullable UID context) {
         try {
             UID currentContext = context != null ? context : defaultGraph;
-            RDFParser rioParser = Rio.createParser(RDFFormat.RDFXML);
+            RDFParser rioParser = Rio.createParser(FormatHelper.getFormat(format));
             rioParser.setRDFHandler(new RDFStreamingHandler(this, currentContext));
             // parses and adds triples
             rioParser.parse(is, currentContext.getId());
@@ -523,7 +504,6 @@ public class VirtuosoRepositoryConnection implements RDFConnection {
             throw new RepositoryException(e);
         }
     }
-    
 
     private void remove(Collection<STMT> removedStatements) throws SQLException {
         verifyNotReadOnly();

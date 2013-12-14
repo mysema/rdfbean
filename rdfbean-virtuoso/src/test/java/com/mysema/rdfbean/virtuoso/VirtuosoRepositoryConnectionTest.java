@@ -122,8 +122,8 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest {
                 new STMT(sub, RDFS.label, new LIT(sub.getId())),
                 new STMT(sub, RDFS.label, new LIT("X")),
                 new STMT(sub, RDFS.label, new LIT("äö")),
-                new STMT(sub, RDFS.label, new LIT(sub.getId(), Locale.ENGLISH)),
-                new STMT(sub, RDFS.label, new LIT("1", XSD.intType))
+                new STMT(sub, RDFS.label, new LIT(sub.getId(), Locale.ENGLISH))
+                //new STMT(sub, RDFS.label, new LIT("1", XSD.intType))
                 );
         toBeRemoved = stmts;
         connection.update(null, stmts);
@@ -132,7 +132,7 @@ public class VirtuosoRepositoryConnectionTest extends AbstractConnectionTest {
         assertEquals(new HashSet<STMT>(stmts), new HashSet<STMT>(found));
 
         // find int literal
-        assertExists(new STMT(sub, RDFS.label, new LIT("1", XSD.intType)));
+        //assertExists(new STMT(sub, RDFS.label, new LIT("1", XSD.intType)));
         // find string literal
         assertExists(new STMT(sub, RDFS.label, new LIT("X")));
         // find string literal

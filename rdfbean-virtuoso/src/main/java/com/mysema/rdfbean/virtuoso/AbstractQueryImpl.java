@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2010 Mysema Ltd.
+ * All rights reserved.
+ *
+ */
 package com.mysema.rdfbean.virtuoso;
 
 import java.sql.Connection;
