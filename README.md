@@ -4,7 +4,8 @@ Object/RDF Persistence for Java
 
 RDFBean provides a ORM like abstraction layer for RDF triple stores
 
+Mysema is not actively maintaining this project anymore.
+
 ### Documentation 
 
-* Reference docs http://source.mysema.com/static/rdfbean/latest/reference/html/
-* Javadocs http://source.mysema.com/static/rdfbean/latest/apidocs/
+We no longer provide external documentation, so you have to build it yourself from rdfbean/rdfbean-docs folder.
